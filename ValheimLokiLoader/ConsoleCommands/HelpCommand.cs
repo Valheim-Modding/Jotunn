@@ -10,7 +10,7 @@
         {
             Console.instance.Print("Available commands:");
 
-            foreach (ConsoleCommand cmd in Commands)
+            foreach (ConsoleCommand cmd in CommandManager.ConsoleCommands)
             {
                 Console.instance.Print(cmd.Name + " - " + cmd.Help);
             }

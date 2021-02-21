@@ -37,8 +37,26 @@
     <Reference Include="assembly_guiutils">
       <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_guiutils.dll</HintPath>
     </Reference>
+    <Reference Include="assembly_lux">
+      <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_lux.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_postprocessing, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_postprocessing.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_simplemeshcombine">
+      <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_simplemeshcombine.dll</HintPath>
+    </Reference>
     <Reference Include="assembly_steamworks">
       <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_sunshafts, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_sunshafts.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_utils, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_utils.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>G:\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_valheim.dll</HintPath>
@@ -265,15 +283,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandManager.cs" />
     <Compile Include="ConsoleCommand.cs" />
-    <Compile Include="ConsoleCommands\AddSkillCommand.cs" />
     <Compile Include="ConsoleCommands\ClearCommand.cs" />
     <Compile Include="ConsoleCommands\HelpCommand.cs" />
+    <Compile Include="ConsoleCommands\SkinColorCommand.cs" />
+    <Compile Include="ConsoleCommands\TpCommand.cs" />
     <Compile Include="ConsoleCommands\TestCommand.cs" />
+    <Compile Include="LocalizationManager.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Patches\ConsoleCommandsPatches.cs" />
     <Compile Include="Loader.cs" />
+    <Compile Include="Patches\PlayerPatches.cs" />
+    <Compile Include="Patches\SkillsPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SkillManager.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>

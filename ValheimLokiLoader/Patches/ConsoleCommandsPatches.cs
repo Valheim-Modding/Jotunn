@@ -19,7 +19,7 @@ namespace ValheimLokiLoader.Patches
                     return;
                 }
 
-                ConsoleCommand cmd = ConsoleCommand.Commands.Find(c => c.Name == parts[0]);
+                ConsoleCommand cmd = CommandManager.ConsoleCommands.Find(c => c.Name == parts[0]);
 
                 // If we found a command, execute it
                 if (cmd != null)

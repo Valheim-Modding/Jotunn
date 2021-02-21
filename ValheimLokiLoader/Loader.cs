@@ -14,16 +14,24 @@ namespace ValheimLokiLoader
             harmony.PatchAll();
 
             initializeCommands();
+            initializeTests();
 
             Debug.Log("Loki Loader loaded successfully");
         }
 
         void initializeCommands()
         {
-            ConsoleCommand.Add(new HelpCommand());
-            ConsoleCommand.Add(new TestCommand());
-            ConsoleCommand.Add(new ClearCommand());
-            ConsoleCommand.Add(new AddSkillCommand());
+            CommandManager.AddConsoleCommand(new HelpCommand());
+            CommandManager.AddConsoleCommand(new TestCommand());
+            CommandManager.AddConsoleCommand(new ClearCommand());
+            CommandManager.AddConsoleCommand(new TpCommand());
+            CommandManager.AddConsoleCommand(new SkinColorCommand());
+        }
+
+        void initializeTests()
+        {
+            // Test adding a skill
+            //SkillManager.AddSkill("dank", "dank meme 420 test");
         }
     }
 }
