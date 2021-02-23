@@ -283,21 +283,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandManager.cs" />
+    <Compile Include="Managers\CommandManager.cs" />
     <Compile Include="ConsoleCommand.cs" />
     <Compile Include="ConsoleCommands\ClearCommand.cs" />
     <Compile Include="ConsoleCommands\HelpCommand.cs" />
+    <Compile Include="ConsoleCommands\PieceTestCommand.cs" />
     <Compile Include="ConsoleCommands\SkinColorCommand.cs" />
+    <Compile Include="ConsoleCommands\RaiseSkillCommand.cs" />
+    <Compile Include="ConsoleCommands\ListPlayersCommand.cs" />
     <Compile Include="ConsoleCommands\TpCommand.cs" />
     <Compile Include="ConsoleCommands\TestCommand.cs" />
-    <Compile Include="LocalizationManager.cs" />
+    <Compile Include="Managers\LocalizationManager.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Patches\ConsoleCommandsPatches.cs" />
     <Compile Include="Loader.cs" />
+    <Compile Include="Patches\ZNetScenePatches.cs" />
     <Compile Include="Patches\PlayerPatches.cs" />
     <Compile Include="Patches\SkillsPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SkillManager.cs" />
+    <Compile Include="Managers\SkillManager.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>

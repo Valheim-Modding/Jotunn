@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using HarmonyLib;
+using ValheimLokiLoader.Managers;
 
 namespace ValheimLokiLoader.Patches
 {
@@ -24,6 +26,23 @@ namespace ValheimLokiLoader.Patches
                 // If we found a command, execute it
                 if (cmd != null)
                 {
+                    /*
+                    
+                    TODO: Make arguments split take quotes into account
+
+                    string argsStr = "";
+                    
+                    if (text.Contains(' '))
+                    {
+                        argsStr = text.Substring(text.IndexOf(' '), text.Length);
+                    }
+                    
+                    string[] args = Regex.Matches(argsStr, @",(?=([^\"]*\"[^\"]*\")*[^\"]*$)")
+                        .Cast<Match>()
+                        .Select(m => m.Value)
+                        .ToArray();
+                    */
+
                     string[] args = new string[parts.Length - 1];
                     Array.Copy(parts, 1, args, 0, parts.Length - 1);
                     cmd.Run(args);

@@ -2,6 +2,7 @@
 using BepInEx;
 using HarmonyLib;
 using ValheimLokiLoader.ConsoleCommands;
+using ValheimLokiLoader.Managers;
 
 namespace ValheimLokiLoader
 {
@@ -25,13 +26,16 @@ namespace ValheimLokiLoader
             CommandManager.AddConsoleCommand(new TestCommand());
             CommandManager.AddConsoleCommand(new ClearCommand());
             CommandManager.AddConsoleCommand(new TpCommand());
+            CommandManager.AddConsoleCommand(new ListPlayersCommand());
             CommandManager.AddConsoleCommand(new SkinColorCommand());
+            CommandManager.AddConsoleCommand(new RaiseSkillCommand());
+            CommandManager.AddConsoleCommand(new PieceTestCommand());
         }
 
         void initializeTests()
         {
             // Test adding a skill
-            //SkillManager.AddSkill("dank", "dank meme 420 test");
+            // SkillManager.AddSkill("dank", "dank meme 420 test");
         }
     }
 }

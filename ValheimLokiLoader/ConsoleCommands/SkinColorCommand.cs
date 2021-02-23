@@ -6,7 +6,7 @@ namespace ValheimLokiLoader.ConsoleCommands
     {
         public override string Name => "skin_color";
 
-        public override string Help => "sets skin color";
+        public override string Help => "Sets player skin color";
 
         public override void Run(string[] args)
         {

@@ -1,4 +1,6 @@
-﻿namespace ValheimLokiLoader.ConsoleCommands
+﻿using ValheimLokiLoader.Managers;
+
+namespace ValheimLokiLoader.ConsoleCommands
 {
     class HelpCommand : ConsoleCommand
     {

@@ -6,7 +6,7 @@ namespace ValheimLokiLoader.ConsoleCommands
     {
         public override string Name => "test_cmd";
 
-        public override string Help => "wow some nice help for it";
+        public override string Help => "Some testing command";
 
         public override void Run(string[] args)
         {

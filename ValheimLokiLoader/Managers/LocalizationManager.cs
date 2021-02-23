@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ValheimLokiLoader
+namespace ValheimLokiLoader.Managers
 {
     public static class LocalizationManager
     {
