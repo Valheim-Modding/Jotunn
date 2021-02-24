@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using BepInEx;
 using HarmonyLib;
 using ValheimLokiLoader.ConsoleCommands;
@@ -14,28 +15,22 @@ namespace ValheimLokiLoader
             Harmony harmony = new Harmony("loki-loader");
             harmony.PatchAll();
 
-            initializeCommands();
-            initializeTests();
+            initManagers();
+            initCommands();
 
             Debug.Log("Loki Loader loaded successfully");
         }
 
-        void initializeCommands()
+        void initManagers()
         {
-            CommandManager.AddConsoleCommand(new HelpCommand());
-            CommandManager.AddConsoleCommand(new TestCommand());
-            CommandManager.AddConsoleCommand(new ClearCommand());
-            CommandManager.AddConsoleCommand(new TpCommand());
-            CommandManager.AddConsoleCommand(new ListPlayersCommand());
-            CommandManager.AddConsoleCommand(new SkinColorCommand());
-            CommandManager.AddConsoleCommand(new RaiseSkillCommand());
-            CommandManager.AddConsoleCommand(new PieceTestCommand());
+            PrefabManager.Init();
+            PieceManager.Init();
         }
 
-        void initializeTests()
+        void initCommands()
         {
-            // Test adding a skill
-            // SkillManager.AddSkill("dank", "dank meme 420 test");
+            CommandManager.AddConsoleCommand(new HelpCommand());
+            CommandManager.AddConsoleCommand(new ClearCommand());
         }
     }
 }

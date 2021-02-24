@@ -1,4 +1,4 @@
 .vs/
 packages/
-ValheimLokiLoader/bin
-ValheimLokiLoader/obj
+**/bin
+**/obj

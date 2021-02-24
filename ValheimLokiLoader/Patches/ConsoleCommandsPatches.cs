@@ -49,7 +49,24 @@ namespace ValheimLokiLoader.Patches
                     return;
                 }
 
-                // If no command, display error
+                // If a default command, don't display error
+                if (CommandManager.DefaultConsoleCommands.Contains(parts[0]))
+                {
+                    return;
+                }
+
+                // If a cheat command, check if cheats enabled
+                if (CommandManager.DefaultCheatConsoleCommands.Contains(parts[0]))
+                {
+                    if (!Console.instance.IsCheatsEnabled())
+                    {
+                        __instance.Print("Cannot use this command without cheats enabled. Use 'imacheater' to enable cheats");
+                    }
+
+                    return;
+                }
+
+                // Display error otherwise
                 __instance.Print("Invalid command");
             }
         }

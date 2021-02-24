@@ -1,60 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using HarmonyLib;
 using UnityEngine;
+using ValheimLokiLoader.Managers;
 
 namespace ValheimLokiLoader.Patches
 {
     class ZNetScenePatches
     {
+
         [HarmonyPatch(typeof(ZNetScene), "Awake")]
         public static class AwakePatch
         {
-            // TODO: Register new prefabs here
-
-            public static void Prefix(ref ZNetScene __instance, ref Dictionary<int, GameObject> ___m_namedPrefabs)
+            public static void Postfix(ref ZNetScene __instance, ref Dictionary<int, GameObject> ___m_namedPrefabs)
             {
-                Debug.Log("---- ZNetScene Awake ----");
+                Debug.Log("---- Registering custom prefabs ----");
 
-                /*
-                Debug.Log("---- Starting creation of bush ----");
-                // GameObject carrotSaplingPrefab = __instance.GetPrefab("sapling_carrot");
-                GameObject carrotSaplingPrefab = __instance.m_prefabs.Find(p => p.name == "sapling_carrot");
+                // Call event handlers to load prefabs
+                PrefabManager.LoadPrefabs();
 
-                if (carrotSaplingPrefab == null)
+                // Load prefabs into game
+                foreach (var pair in PrefabManager.Prefabs)
                 {
-                    Debug.LogError("carrot sapling prefab not found");
-                    return;
+                    GameObject prefab = pair.Value;
+
+                    __instance.m_prefabs.Add(prefab);
+                    ___m_namedPrefabs.Add(prefab.name.GetStableHashCode(), prefab);
+
+                    Debug.Log("Added prefab: " + pair.Key);
                 }
-
-                // GameObject grownBushPrefab = __instance.GetPrefab("BlueberryBush");
-                GameObject grownBushPrefab = __instance.m_prefabs.Find(p => p.name == "BlueberryBush");
-
-                if (grownBushPrefab == null)
-                {
-                    Debug.LogError("grown bush prefab not found");
-                    return;
-                }
-
-                GameObject bushPlantPrefab = UnityEngine.Object.Instantiate(carrotSaplingPrefab);
-                bushPlantPrefab.name = "blueberry_bush_sapling";
-                __instance.m_prefabs.Add(bushPlantPrefab);
-                //___m_namedPrefabs.Add(bushPlantPrefab.name.GetStableHashCode(), bushPlantPrefab);
-
-                Piece piece = bushPlantPrefab.GetComponent<Piece>();
-                piece.m_name = "blueberry bush sapling";
-                piece.m_description = "blueberry bush seed desc";
-
-                Plant plant = bushPlantPrefab.GetComponent<Plant>();
-                plant.m_name = "blueberry bush sapling";
-                plant.m_grownPrefabs = new GameObject[] { grownBushPrefab };
-                plant.m_growTime = 1f;
-                plant.m_growTimeMax = 2f;
-
-                Debug.Log("---- Registered prefab ----");
-                */
             }
         }
     }

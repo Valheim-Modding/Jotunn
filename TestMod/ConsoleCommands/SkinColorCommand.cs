@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using ValheimLokiLoader;
 
-namespace ValheimLokiLoader.ConsoleCommands
+namespace TestMod.ConsoleCommands
 {
     public class SkinColorCommand : ConsoleCommand
     {
