@@ -7,25 +7,41 @@ namespace ValheimLokiLoader.Managers
     public static class PrefabManager
     {
         public static event EventHandler PrefabLoad;
-        public static Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
-        private static GameObject prefabContainer;
-        private static bool prefabsLoaded = false;
+        public static GameObject prefabContainer;
+        internal static Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
+
+        private static bool loaded = false;
 
         internal static void Init()
         {
             prefabContainer = new GameObject("_LokiPrefabs");
             prefabContainer.SetActive(false);
             UnityEngine.Object.DontDestroyOnLoad(prefabContainer);
+
             Debug.Log("Initialized PrefabManager");
         }
 
         internal static void LoadPrefabs()
         {
-            if (!prefabsLoaded)
+            Debug.Log("---- Registering custom prefabs ----");
+
+            // Call event handlers to load prefabs
+            PrefabLoad?.Invoke(null, EventArgs.Empty);
+
+            var namedPrefabs = Util.GetPrivateField<Dictionary<int, GameObject>>(ZNetScene.instance, "m_namedPrefabs");
+
+            // Load prefabs into game
+            foreach (var pair in Prefabs)
             {
-                PrefabLoad(null, null);
-                prefabsLoaded = true;
+                GameObject prefab = pair.Value;
+
+                ZNetScene.instance.m_prefabs.Add(prefab);
+                namedPrefabs.Add(prefab.name.GetStableHashCode(), prefab);
+
+                Debug.Log("Added prefab: " + pair.Key);
             }
+
+            loaded = true;
         }
 
         public static void AddPrefab(GameObject prefab, string name)
@@ -38,12 +54,29 @@ namespace ValheimLokiLoader.Managers
 
         public static GameObject GetPrefab(string name)
         {
+            Debug.Log("Getting: " + name);
+
             if (Prefabs.ContainsKey(name))
             {
                 return Prefabs[name];
             }
 
-            return ZNetScene.instance.GetPrefab(name);
+            if (!ZNetScene.instance)
+            {
+                Debug.LogError("\t-> ZNetScene instance null for some reason");
+                return null;
+            }
+
+            foreach (GameObject obj in ZNetScene.instance.m_prefabs)
+            {
+                if (obj.name == name)
+                {
+                    return obj;
+                }
+            }
+
+            Debug.LogError("\t-> Failed to find: " + name);
+            return null;
         }
     }
 }

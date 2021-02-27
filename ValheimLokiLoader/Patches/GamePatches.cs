@@ -6,16 +6,16 @@ using ValheimLokiLoader.Managers;
 
 namespace ValheimLokiLoader.Patches
 {
-    class ZNetScenePatches
+    class GamePatches
     {
 
-        [HarmonyPatch(typeof(ZNetScene), "Awake")]
+        [HarmonyPatch(typeof(Game), "Awake")]
         public static class AwakePatch
         {
-            public static void Postfix()
+            public static void Prefix(ref Game __instance)
             {
-                Debug.Log("----> ZNetScene Awake");
-                PrefabManager.LoadPrefabs();
+                Debug.Log("----> Game Awake");
+                // PieceManager.LoadPieces();
             }
         }
     }

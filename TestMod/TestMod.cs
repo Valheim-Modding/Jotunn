@@ -15,10 +15,11 @@ namespace TestMod
         void Awake()
         {
             initCommands();
-            // initSkills();
+            initSkills();
 
+            ObjectManager.ObjectLoad += initObjects;
             PrefabManager.PrefabLoad += initPrefabs;
-            PieceManager.LoadPieces += initPieces;
+            PieceManager.PieceLoad += initPieces;
         }
 
         void initCommands()
@@ -28,6 +29,7 @@ namespace TestMod
             CommandManager.AddConsoleCommand(new ListPlayersCommand());
             CommandManager.AddConsoleCommand(new SkinColorCommand());
             CommandManager.AddConsoleCommand(new RaiseSkillCommand());
+            CommandManager.AddConsoleCommand(new BetterSpawnCommand());
         }
 
         void initSkills()
@@ -43,10 +45,16 @@ namespace TestMod
             initBushPrefab();
         }
 
+        // Init objects
+        void initObjects(object sender, EventArgs e)
+        {
+            ObjectManager.AddItem("blueberry_seeds");
+        }
+
         // Init pieces after prefabs are created
         void initPieces(object sender, EventArgs e)
         {
-            PieceManager.AddToPieceTable("_CultivatorPieceTable", "blueberry_bush_sapling");
+            PieceManager.AddToPieceTable("cultivator", "blueberry_bush_sapling");
         }
 
         // Create bush seeds prefab that's a copy of carrot seeds
@@ -69,11 +77,9 @@ namespace TestMod
             ItemDrop item = bushSeedsPrefab.GetComponent<ItemDrop>();
             item.m_itemData.m_shared.m_name = "Blueberry Seeds";
             item.m_itemData.m_shared.m_description = "Plant these if you like Blueberries...";
+            item.m_itemData.m_dropPrefab = bushSeedsPrefab;
 
             PrefabManager.AddPrefab(bushSeedsPrefab, "blueberry_seeds");
-            ObjectDB.instance.m_items.Add(bushSeedsPrefab);
-
-            Util.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
         }
 
         // Create a bush prefab that's a copy of the sapling prefab

@@ -7,7 +7,7 @@ namespace ValheimLokiLoader.Managers
 {
     public static class CommandManager
     {
-        public static List<ConsoleCommand> ConsoleCommands = new List<ConsoleCommand>();
+        internal static List<ConsoleCommand> ConsoleCommands = new List<ConsoleCommand>();
         public static readonly List<string> DefaultConsoleCommands = new List<string>()
         {
             // "help" command not included since we want to overwrite it

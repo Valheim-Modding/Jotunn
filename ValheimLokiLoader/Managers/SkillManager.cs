@@ -5,7 +5,7 @@ namespace ValheimLokiLoader.Managers
 {
     public static class SkillManager
     {
-        public static List<Skills.SkillDef> Skills = new List<Skills.SkillDef>();
+        internal static List<Skills.SkillDef> Skills = new List<Skills.SkillDef>();
         private static int nextSkillId = 1000;
 
         public static Skills.SkillDef AddSkill(string name, string description, float increaseStep = 1f, Sprite icon = null)

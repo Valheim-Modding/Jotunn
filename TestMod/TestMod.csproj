@@ -286,6 +286,7 @@
     <Compile Include="ConsoleCommands\ListPlayersCommand.cs" />
     <Compile Include="ConsoleCommands\RaiseSkillCommand.cs" />
     <Compile Include="ConsoleCommands\SkinColorCommand.cs" />
+    <Compile Include="ConsoleCommands\BetterSpawnCommand.cs" />
     <Compile Include="ConsoleCommands\TestCommand.cs" />
     <Compile Include="ConsoleCommands\TpCommand.cs" />
     <Compile Include="TestMod.cs" />

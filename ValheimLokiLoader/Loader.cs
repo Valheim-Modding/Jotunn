@@ -8,23 +8,18 @@ using ValheimLokiLoader.Managers;
 namespace ValheimLokiLoader
 {
     [BepInPlugin("com.bepinex.plugins.loki-loader", "Loki Loader", "0.0.1")]
-    class Loader : BaseUnityPlugin
+    internal class Loader : BaseUnityPlugin
     {
         void Awake()
         {
             Harmony harmony = new Harmony("loki-loader");
             harmony.PatchAll();
 
-            initManagers();
+            PrefabManager.Init();
+
             initCommands();
 
             Debug.Log("Loki Loader loaded successfully");
-        }
-
-        void initManagers()
-        {
-            PrefabManager.Init();
-            PieceManager.Init();
         }
 
         void initCommands()

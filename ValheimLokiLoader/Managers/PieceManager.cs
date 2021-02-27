@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,23 +7,19 @@ namespace ValheimLokiLoader.Managers
 {
     public static class PieceManager
     {
-        public static event EventHandler LoadPieces;
+        public static event EventHandler PieceLoad;
+
         private static Dictionary<string, PieceTable> pieceTables = new Dictionary<string, PieceTable>();
-        private static bool piecesLoaded = false;
-
-        internal static void Init()
+        private static Dictionary<string, string> pieceTableNameMap = new Dictionary<string, string>()
         {
-            SceneManager.sceneLoaded += loadPieceTables;
-        }
+            { "cultivator", "_CultivatorPieceTable" },
+            { "hammer", "_HammerPieceTable" },
+            { "hoe", "_HoePieceTable" }
+        };
+        private static bool loaded = false;
 
-        private static void loadPieceTables(Scene scene, LoadSceneMode mode)
+        internal static void LoadPieces()
         {
-            // Only load once
-            if (scene.name != "main" || piecesLoaded)
-            {
-                return;
-            }
-
             pieceTables.Clear();
             Debug.Log("---- Loading piece tables ----");
 
@@ -38,21 +32,58 @@ namespace ValheimLokiLoader.Managers
             }
 
             Debug.Log("---- Loading pieces ----");
-            LoadPieces(null, null);
-            piecesLoaded = true;
+            PieceLoad?.Invoke(null, EventArgs.Empty);
+            loaded = true;
         }
 
         public static void AddToPieceTable(string pieceTable, string prefabName)
         {
-            // TODO: Error check if prefab exists
-            pieceTables[pieceTable].m_pieces.Add(ZNetScene.instance.GetPrefab(prefabName));
+            PieceTable table = getPieceTable(pieceTable);
+            GameObject prefab = PrefabManager.GetPrefab(prefabName);
+
+            if (!table)
+            {
+                Debug.LogError("Piece table does not exist: " + pieceTable);
+                return;
+            }
+
+            if (!prefab)
+            {
+                Debug.LogError("Prefab does not exist: " + prefabName);
+                return;
+            }
+
+            table.m_pieces.Add(prefab);
             Debug.Log("Added piece: " + prefabName + " to " + pieceTable);
         }
 
         public static void AddToPieceTable(string pieceTable, GameObject prefab)
         {
-            pieceTables[pieceTable].m_pieces.Add(prefab);
+            PieceTable table = getPieceTable(pieceTable);
+
+            if (!table)
+            {
+                Debug.LogError("Piece table does not exist: " + pieceTable);
+                return;
+            }
+
+            table.m_pieces.Add(prefab);
             Debug.Log("Added piece: " + prefab.name + " to " + pieceTable);
+        }
+
+        private static PieceTable getPieceTable(string name)
+        {
+            if (pieceTables.ContainsKey(name))
+            {
+                return pieceTables[name];
+            }
+
+            if (pieceTableNameMap.ContainsKey(name))
+            {
+                return pieceTables[pieceTableNameMap[name]];
+            }
+
+            return null;
         }
     }
 }
