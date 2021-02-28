@@ -46,16 +46,56 @@ namespace ValheimLokiLoader.Managers
 
         public static void AddPrefab(GameObject prefab, string name)
         {
+            if (GetPrefab(name))
+            {
+                Debug.LogError("Prefab already exists: " + name);
+                return;
+            }
+
             prefab.name = name;
             prefab.transform.parent = prefabContainer.transform;
             prefab.SetActive(true);
             Prefabs.Add(name, prefab);
         }
 
+        public static GameObject CreatePrefab(string name)
+        {
+            GameObject prefab = new GameObject(name);
+            prefab.transform.parent = prefabContainer.transform;
+
+            // TODO: Add any components required for it to work as a prefab (ZNetView, etc?)
+            Prefabs.Add(name, prefab);
+
+            return prefab;
+        }
+
+        public static GameObject CreatePrefab(string name, string baseName)
+        {
+            if (GetPrefab(name))
+            {
+                Debug.LogError("Prefab already exists: " + name);
+                return null;
+            }
+
+            GameObject prefabBase = GetPrefab(baseName);
+
+            if (!prefabBase)
+            {
+                Debug.LogError("Prefab base does not exist: " + baseName);
+                return null;
+            }
+
+            GameObject prefab = UnityEngine.Object.Instantiate(prefabBase, prefabContainer.transform);
+            prefab.name = name;
+            prefab.SetActive(true);
+            Prefabs.Add(name, prefab);
+
+            return prefab;
+        }
+
+        
         public static GameObject GetPrefab(string name)
         {
-            Debug.Log("Getting: " + name);
-
             if (Prefabs.ContainsKey(name))
             {
                 return Prefabs[name];
@@ -75,7 +115,6 @@ namespace ValheimLokiLoader.Managers
                 }
             }
 
-            Debug.LogError("\t-> Failed to find: " + name);
             return null;
         }
     }

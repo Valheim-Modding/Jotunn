@@ -30,5 +30,22 @@ namespace ValheimLokiLoader.Patches
                 Debug.Log("----> Loading player: " + __instance.m_name);
             }
         }
+
+
+        [HarmonyPatch(typeof(Player), "PlacePiece")]
+        public static class PlacePiecePatch
+        {
+            public static void Postfix(ref Player __instance, Piece piece, bool __result, GameObject ___m_placementGhost)
+            {
+                EventManager.OnPlayerPlacedPiece(new Events.PlayerPlacedPieceEventArgs()
+                {
+                    Player = __instance,
+                    Piece = piece,
+                    Position = ___m_placementGhost.transform.position,
+                    Rotation = ___m_placementGhost.transform.rotation,
+                    Success = __result
+                });
+            }
+        }
     }
 }

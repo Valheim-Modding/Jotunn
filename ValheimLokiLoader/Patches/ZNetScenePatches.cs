@@ -16,6 +16,7 @@ namespace ValheimLokiLoader.Patches
             {
                 Debug.Log("----> ZNetScene Awake");
                 PrefabManager.LoadPrefabs();
+                ZoneManager.LoadZoneData();
             }
         }
     }

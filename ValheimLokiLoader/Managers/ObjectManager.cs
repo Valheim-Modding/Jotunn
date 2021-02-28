@@ -8,12 +8,11 @@ namespace ValheimLokiLoader.Managers
     {
         public static event EventHandler ObjectLoad;
         internal static List<GameObject> Items = new List<GameObject>();
+        internal static List<Recipe> Recipes = new List<Recipe>();
 
-        private static bool loaded = false;
-
-        internal static void LoadItems()
+        internal static void LoadObjects()
         {
-            Debug.Log("---- Registering custom items ----");
+            Debug.Log("---- Registering custom objects ----");
 
             ObjectLoad?.Invoke(null, EventArgs.Empty);
 
@@ -23,8 +22,13 @@ namespace ValheimLokiLoader.Managers
                 Debug.Log("Added item: " + obj.name);
             }
 
+            foreach (Recipe recipe in Recipes)
+            {
+                ObjectDB.instance.m_recipes.Add(recipe);
+                Debug.Log("Added item recipe: " + recipe.m_item.m_itemData.m_shared.m_name);
+            }
+
             Util.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
-            loaded = true;
         }
 
         public static void AddItem(string prefabName)
@@ -35,6 +39,11 @@ namespace ValheimLokiLoader.Managers
         public static void AddItem(GameObject item)
         {
             Items.Add(item);
+        }
+
+        public static void AddRecipe(Recipe recipe)
+        {
+            Recipes.Add(recipe);
         }
     }
 }
