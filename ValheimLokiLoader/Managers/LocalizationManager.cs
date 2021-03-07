@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using ValheimLokiLoader.Utils;
 
 namespace ValheimLokiLoader.Managers
 {
@@ -9,7 +6,7 @@ namespace ValheimLokiLoader.Managers
     {
         public static void AddTranslation(string key, string text)
         {
-            Util.InvokePrivate(Localization.instance, "AddWord", new object[] { key, text });
+            ReflectionUtils.InvokePrivate(Localization.instance, "AddWord", new object[] { key, text });
         }
     }
 }

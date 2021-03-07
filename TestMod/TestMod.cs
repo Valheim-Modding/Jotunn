@@ -67,7 +67,7 @@ namespace TestMod
         void initSkills()
         {
             // Test adding a skill
-            SkillManager.AddSkill("Testing", "A nice testing skill");
+            SkillManager.AddSkill("testing", "Testing", "A nice testing skill");
         }
     }
 }

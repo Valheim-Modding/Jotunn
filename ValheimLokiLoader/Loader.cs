@@ -16,6 +16,7 @@ namespace ValheimLokiLoader
             harmony.PatchAll();
 
             PrefabManager.Init();
+            PieceManager.Init();
 
             initCommands();
 

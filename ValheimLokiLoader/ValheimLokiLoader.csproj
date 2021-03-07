@@ -283,6 +283,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\PrefabConfig.cs" />
     <Compile Include="Events\PlayerEventArgs.cs" />
     <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
     <Compile Include="Managers\CommandManager.cs" />
@@ -305,7 +306,8 @@
     <Compile Include="Patches\SkillsPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Managers\SkillManager.cs" />
-    <Compile Include="Util.cs" />
+    <Compile Include="Utils\ReflectionUtils.cs" />
+    <Compile Include="Utils\AssetUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

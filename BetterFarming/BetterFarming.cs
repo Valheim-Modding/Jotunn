@@ -1,19 +1,18 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using BepInEx;
 using ValheimLokiLoader;
 using ValheimLokiLoader.ConsoleCommands;
 using ValheimLokiLoader.Managers;
 using ValheimLokiLoader.Events;
-using System;
+using BetterFarming.Prefabs;
 
-namespace TestMod
+namespace BetterFarming
 {
     [BepInPlugin("com.bepinex.plugins.better-farming", "Better Farming", "0.0.1")]
     [BepInDependency("com.bepinex.plugins.loki-loader")]
     class BetterFarming : BaseUnityPlugin
     {
-        private Skills.SkillType farmingSkillType;
-
         void Awake()
         {
             initSkills();
@@ -26,61 +25,77 @@ namespace TestMod
             EventManager.PlayerPlacedPiece += onPlayerPlacedPiece;
         }
 
+        // Callback for when a player places a piece
         private void onPlayerPlacedPiece(object sender, PlayerPlacedPieceEventArgs e)
         {
-            if (e.Piece.gameObject.GetComponent<Plant>())
+            // If player successfully plants something
+            if (e.Success && e.Piece.gameObject.GetComponent<Plant>())
             {
-                Debug.Log("Placed a plant, nice");
-                e.Player.RaiseSkill(farmingSkillType);
+                // Give player farming experience
+                e.Player.RaiseSkill(SkillManager.GetSkill("farming").m_skill);
+
+                // Decerease time it takes to grow
+                float factor = getGrowTimeDecreaseFactor();
+                Plant plant = e.Piece.GetComponent<Plant>();
+                plant.m_growTimeMax *= factor;
+                plant.m_growTime *= factor;
             }
+        }
+
+        // Compute by what factor to decrease plant grow time based on current farming skill level
+        private float getGrowTimeDecreaseFactor()
+        {
+            float skillLevel = Player.m_localPlayer.GetSkillFactor(SkillManager.GetSkill("farming").m_skill);
+            float maxDecreaseFactor = 0.5f;
+
+            return (skillLevel / 100f) * maxDecreaseFactor;
         }
 
         // Init skills
         void initSkills()
         {
-            farmingSkillType = SkillManager.AddSkill("Farming", "Grow and harvest crops").m_skill;
+            SkillManager.AddSkill("farming", "Farming", "Grow and harvest crops");
         }
 
         // Init zone data
         void initZone(object sender, EventArgs e)
         {
-            var veg = ZoneSystem.instance.m_vegetation.Find(v => v.m_prefab.name == "Pickable_SeedCarrot");
-            veg.m_name = "pickable_blueberry_seeds";
-            veg.m_prefab = PrefabManager.GetPrefab("pickable_blueberry_seeds");
-            ZoneManager.AddVegetation(veg);
-
-            // Create vegetation item
-            /*
-            ZoneManager.AddVegetation(new ZoneSystem.ZoneVegetation()
-            {
-                m_name = "nice_meme",
-                m_min = 50f,
-                m_max = 100f,
-                m_prefab = PrefabManager.GetPrefab("meme_stone"),
-                m_biome = Heightmap.Biome.Meadows
-            });
-            */
+            // Copy the Pickable_SeedCarrot vegetation and create pickable blueberry seeds
+            var seedVeg = ZoneSystem.instance.m_vegetation.Find(v => v.m_prefab.name == "Pickable_SeedCarrot");
+            seedVeg.m_name = "Pickable_BlueberrySeeds";
+            seedVeg.m_prefab = PrefabManager.GetPrefab("Pickable_BlueberrySeeds");
+            ZoneManager.AddVegetation(seedVeg);
         }
 
         // Init prefabs
         void initPrefabs(object sender, EventArgs e)
         {
-            initBushSeedsPrefab();
-            initPickableBushSeedsPrefab();
-            initBushPrefab();
+            // Blueberry growing
+            PrefabManager.RegisterPrefab(new BlueberrySeedsPrefab());
+            PrefabManager.RegisterPrefab(new PickableBlueberryBushSeedsPrefab());
+            PrefabManager.RegisterPrefab(new BlueberryBushSaplingPrefab());
+
+            // Raspberry growing
+            PrefabManager.RegisterPrefab(new RaspberrySeedsPrefab());
+            PrefabManager.RegisterPrefab(new PickableRaspberryBushSeedsPrefab());
+            PrefabManager.RegisterPrefab(new RaspberryBushSaplingPrefab());
+
+            // Farming station
+            PrefabManager.RegisterPrefab(new FarmingStationPrefab());
         }
 
         // Init objects
         void initObjects(object sender, EventArgs e)
         {
             // Items
-            ObjectManager.AddItem("blueberry_seeds");
+            ObjectManager.RegisterItem("BlueberrySeeds");
+            ObjectManager.RegisterItem("RaspberrySeeds");
 
             // Recipes
-            ObjectManager.AddRecipe(new Recipe()
+            ObjectManager.RegisterRecipe(new Recipe()
             {
-                m_item = PrefabManager.GetPrefab("blueberry_seeds").GetComponent<ItemDrop>(),
-                m_craftingStation = PrefabManager.GetPrefab("piece_cauldron").GetComponent<CraftingStation>(),
+                m_item = PrefabManager.GetPrefab("BlueberrySeeds").GetComponent<ItemDrop>(),
+                m_craftingStation = PrefabManager.GetPrefab("FarmingStation").GetComponent<CraftingStation>(),
                 m_resources = new Piece.Requirement[]
                 {
                     new Piece.Requirement()
@@ -90,82 +105,31 @@ namespace TestMod
                     }
                 }
             });
+
+            ObjectManager.RegisterRecipe(new Recipe()
+            {
+                m_item = PrefabManager.GetPrefab("RaspberrySeeds").GetComponent<ItemDrop>(),
+                m_craftingStation = PrefabManager.GetPrefab("FarmingStation").GetComponent<CraftingStation>(),
+                m_resources = new Piece.Requirement[]
+                {
+                    new Piece.Requirement()
+                    {
+                        m_resItem = PrefabManager.GetPrefab("Raspberry").GetComponent<ItemDrop>(),
+                        m_amount = 10
+                    }
+                }
+            });
         }
 
         // Init pieces after prefabs are created
         void initPieces(object sender, EventArgs e)
         {
-            PieceManager.AddToPieceTable("cultivator", "blueberry_bush_sapling");
-        }
+            // Hammer pieces
+            PieceManager.RegisterPiece("Hammer", "FarmingStation");
 
-        // Create bush seeds prefab that's a copy of carrot seeds
-        void initBushSeedsPrefab()
-        {
-            // Bush seeds prefab
-            GameObject bushSeedsPrefab = PrefabManager.CreatePrefab("blueberry_seeds", "CarrotSeeds");
-
-            // Turn all models blue
-            foreach (Transform child in bushSeedsPrefab.transform)
-            {
-                MeshRenderer renderer = child.GetComponent<MeshRenderer>();
-                renderer.material.color = new Color(renderer.material.color.r, renderer.material.color.g, 0.9f);
-            }
-
-            // Configure item drop
-            ItemDrop item = bushSeedsPrefab.GetComponent<ItemDrop>();
-            item.m_itemData.m_shared.m_name = "Blueberry Seeds";
-            item.m_itemData.m_shared.m_description = "Plant these if you like Blueberries...";
-            item.m_itemData.m_dropPrefab = bushSeedsPrefab;
-        }
-
-        // Create a pickable bush seed prefab that's a copy of the carrot seeds
-        void initPickableBushSeedsPrefab()
-        {
-            GameObject prefab = PrefabManager.CreatePrefab("pickable_blueberry_seeds", "Pickable_SeedCarrot");
-            prefab.transform.localScale = new Vector3(1f, 1.2f, 1f);
-
-            // Turn all models blue
-            foreach (Transform child in prefab.transform)
-            {
-                MeshRenderer renderer = child.GetComponent<MeshRenderer>();
-                renderer.material.color = new Color(renderer.material.color.r, renderer.material.color.g, 0.9f);
-            }
-
-            Pickable pickable = prefab.GetComponent<Pickable>();
-            pickable.m_itemPrefab = PrefabManager.GetPrefab("blueberry_seeds");
-        }
-
-        // Create a bush prefab that's a copy of the sapling prefab
-        void initBushPrefab()
-        {
-            GameObject bushPlantPrefab = PrefabManager.CreatePrefab("blueberry_bush_sapling", "sapling_carrot");
-
-            // Turn all models blue
-            foreach (Transform child in bushPlantPrefab.transform)
-            {
-                MeshRenderer renderer = child.GetComponent<MeshRenderer>();
-                renderer.material.color = new Color(renderer.material.color.r, renderer.material.color.g, 0.9f);
-            }
-
-            // Configure piece
-            Piece piece = bushPlantPrefab.GetComponent<Piece>();
-            piece.m_name = "Blueberry Bush Sapling";
-            piece.m_description = "Plant blueberry seeds to grow a blueberry bush";
-            piece.m_icon = PrefabManager.GetPrefab("Blueberries").GetComponent<ItemDrop>().m_itemData.GetIcon();
-            piece.m_resources = new Piece.Requirement[] {
-                new Piece.Requirement()
-                {
-                    m_amount = 1,
-                    m_resItem = PrefabManager.GetPrefab("blueberry_seeds").GetComponent<ItemDrop>()
-                }
-            };
-
-            // Configure plant growth
-            Plant plant = bushPlantPrefab.GetComponent<Plant>();
-            plant.m_name = "Blueberry Bush Sapling";
-            plant.m_grownPrefabs = new GameObject[] { PrefabManager.GetPrefab("BlueberryBush") };
-            plant.m_growTime = 1f;
-            plant.m_growTimeMax = 2f;
+            // Cultivator pieces
+            PieceManager.RegisterPiece("Cultivator", "Sapling_BlueberryBush");
+            PieceManager.RegisterPiece("Cultivator", "Sapling_RaspberryBush");
         }
     }
 }

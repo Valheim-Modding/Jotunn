@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ValheimLokiLoader.Utils;
 
 namespace ValheimLokiLoader.Managers
 {
@@ -19,31 +20,41 @@ namespace ValheimLokiLoader.Managers
             foreach (GameObject obj in Items)
             {
                 ObjectDB.instance.m_items.Add(obj);
-                Debug.Log("Added item: " + obj.name);
+                Debug.Log("Registered item: " + obj.name);
             }
 
             foreach (Recipe recipe in Recipes)
             {
                 ObjectDB.instance.m_recipes.Add(recipe);
-                Debug.Log("Added item recipe: " + recipe.m_item.m_itemData.m_shared.m_name);
+                Debug.Log("Registered item recipe: " + recipe.m_item.m_itemData.m_shared.m_name);
             }
 
-            Util.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
+            ReflectionUtils.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
         }
 
-        public static void AddItem(string prefabName)
+        public static void RegisterItem(string prefabName)
         {
             Items.Add(PrefabManager.GetPrefab(prefabName));
         }
 
-        public static void AddItem(GameObject item)
+        public static void RegisterItem(GameObject item)
         {
             Items.Add(item);
         }
 
-        public static void AddRecipe(Recipe recipe)
+        public static void RegisterRecipe(Recipe recipe)
         {
             Recipes.Add(recipe);
+        }
+
+        public static GameObject GetItemPrefab(string name)
+        {
+            return ObjectDB.instance.GetItemPrefab(name);
+        }
+
+        public static ItemDrop GetItemDrop(string name)
+        {
+            return GetItemPrefab(name)?.GetComponent<ItemDrop>();
         }
     }
 }

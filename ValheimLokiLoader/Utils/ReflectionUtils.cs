@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using UnityEngine;
 
-namespace ValheimLokiLoader
+namespace ValheimLokiLoader.Utils
 {
-    public class Util
+    public class ReflectionUtils
     {
         public static object InvokePrivate(object instance, string name, object[] args = null)
         {

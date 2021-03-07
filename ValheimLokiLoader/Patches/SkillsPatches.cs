@@ -11,8 +11,9 @@ namespace ValheimLokiLoader.Patches
         {
             public static void Postfix(ref Skills __instance)
             {
-                foreach (Skills.SkillDef skill in SkillManager.Skills)
+                foreach (var pair in SkillManager.Skills)
                 {
+                    Skills.SkillDef skill = pair.Value;
                     __instance.m_skills.Add(skill);
                     System.Console.WriteLine("Added extra skill: " + skill.m_skill);
                 }
@@ -24,10 +25,13 @@ namespace ValheimLokiLoader.Patches
         {
             public static bool Prefix(ref bool __result, Skills.SkillType type)
             {
-                if (SkillManager.Skills.Exists(s => s.m_skill == type))
+                foreach (var pair in SkillManager.Skills)
                 {
-                    __result = true;
-                    return false;
+                    if (pair.Value.m_skill == type)
+                    {
+                        __result = true;
+                        return false;
+                    }
                 }
 
                 return true;

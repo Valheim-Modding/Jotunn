@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ValheimLokiLoader.Utils;
 
 namespace ValheimLokiLoader.ConsoleCommands
 {
@@ -10,7 +11,7 @@ namespace ValheimLokiLoader.ConsoleCommands
 
         public override void Run(string[] args)
         {
-            Util.GetPrivateField<List<string>>(Console.instance, "m_chatBuffer").Clear();
+            ReflectionUtils.GetPrivateField<List<string>>(Console.instance, "m_chatBuffer").Clear();
             Console.instance.m_output.text = "";
         }
     }
