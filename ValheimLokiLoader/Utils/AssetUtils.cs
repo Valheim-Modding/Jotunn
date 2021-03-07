@@ -22,5 +22,18 @@ namespace ValheimLokiLoader.Utils
             tex.LoadImage(fileData);
             return tex;
         }
+
+        // Mesh path relative to "plugins" BepInEx folder
+        public static Mesh LoadMesh(string meshPath)
+        {
+            string path = Path.Combine(Paths.PluginPath, meshPath);
+
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
+            return ObjImporter.ImportFile(path);
+        }
     }
 }
