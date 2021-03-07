@@ -9,9 +9,10 @@ namespace SimpleMounts
     public class Rideable : MonoBehaviour, Interactable
     {
         public static bool IsRiding = false;
-        public bool needsSaddle = true;
-        public float speed = 15f;
-        public float runSpeed = 20f;
+        public bool requiresSaddle = true;
+        public float requiredRidingLevel = 0f;
+        public float speed = 8f;
+        public float runSpeed = 12f;
         public float jumpForce = 15f;
         private bool isBeingRidden = false;
         private float oldRiderSpeed, oldRiderRunSpeed;
@@ -34,7 +35,7 @@ namespace SimpleMounts
                 rider.transform.rotation = animal.GetLookYaw();
 
                 // Stop riding
-                if (Input.GetKeyDown(KeyCode.V))
+                if (ZInput.GetButton("Unmount"))
                 {
                     StopRide();
                 }
@@ -125,6 +126,38 @@ namespace SimpleMounts
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Stopped riding animal");
         }
 
+        public bool CanRide(Humanoid user)
+        {
+            // Check if required skill level met
+            if (requiredRidingLevel > 0)
+            {
+                Skills.SkillDef skill = SkillManager.GetSkill("riding");
+                
+                if (user.GetSkillFactor(skill.m_skill) < requiredRidingLevel)
+                {
+                    Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Need to have min riding skill level " + requiredRidingLevel);
+                    return false;
+                }
+            }
+
+            // Check if saddle present
+            if (requiresSaddle)
+            {
+                foreach (ItemDrop.ItemData item in user.GetInventory().GetAllItems())
+                {
+                    if (item.m_shared.m_name == "Saddle")
+                    {
+                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You need a saddle to ride this animal");
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
         public bool Interact(Humanoid user, bool hold)
         {
             if (IsRiding && isBeingRidden)
@@ -133,39 +166,29 @@ namespace SimpleMounts
                 return true;
             }
 
-            if (needsSaddle)
-            {
-                foreach (ItemDrop.ItemData item in user.GetInventory().GetAllItems())
-                {
-                    if (item.m_shared.m_name == "Saddle")
-                    {
-                        UseItem(user, item);
-                        return true;
-                    }
-                }
-            }
-            else
+            if (CanRide(user))
             {
                 rider = user;
                 StartRide();
             }
 
-            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You need a saddle to ride this animal");
             return false;
         }
 
         public bool UseItem(Humanoid user, ItemDrop.ItemData item)
         {
+            if (IsRiding && isBeingRidden)
+            {
+                StopRide();
+                return true;
+            }
+
             if (item.m_shared.m_name != "Saddle")
             {
                 return false;
             }
 
-            if (isBeingRidden)
-            {
-                StopRide();
-            }
-            else
+            if (CanRide(user))
             {
                 rider = user;
                 StartRide();

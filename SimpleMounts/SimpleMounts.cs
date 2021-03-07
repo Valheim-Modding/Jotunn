@@ -17,8 +17,15 @@ namespace SimpleMounts
             PrefabManager.PrefabLoad += initPrefabs;
             PrefabManager.PrefabsLoaded += modifyPrefabs;
             ObjectManager.ObjectLoad += initObjects;
+            InputManager.InputLoad += initInputs;
 
             SkillManager.AddSkill("riding", "Riding", "Ride animals");
+        }
+
+        private void initInputs(object sender, EventArgs e)
+        {
+            // Init unmount key
+            InputManager.AddButton("Unmount", KeyCode.V);
         }
 
         private void initPrefabs(object sender, EventArgs e)

@@ -11,7 +11,6 @@ namespace ValheimLokiLoader.Utils
         public static Texture2D LoadTexture(string texturePath)
         {
             string path = Path.Combine(Paths.PluginPath, texturePath);
-            Debug.Log("Loading texture from: " + path);
 
             if (!File.Exists(path))
             {

@@ -283,6 +283,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\ButtonConfig.cs" />
     <Compile Include="Entities\PrefabConfig.cs" />
     <Compile Include="Events\PlayerEventArgs.cs" />
     <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
@@ -291,6 +292,7 @@
     <Compile Include="ConsoleCommands\ClearCommand.cs" />
     <Compile Include="ConsoleCommands\HelpCommand.cs" />
     <Compile Include="Managers\EventManager.cs" />
+    <Compile Include="Managers\InputManager.cs" />
     <Compile Include="Managers\LocalizationManager.cs" />
     <Compile Include="Managers\ObjectManager.cs" />
     <Compile Include="Managers\PieceManager.cs" />
@@ -300,6 +302,7 @@
     <Compile Include="Loader.cs" />
     <Compile Include="Patches\GamePatches.cs" />
     <Compile Include="Patches\ObjectDBPatches.cs" />
+    <Compile Include="Patches\ZInputPatches.cs" />
     <Compile Include="Patches\ZoneSystemPatches.cs" />
     <Compile Include="Patches\ZNetScenePatches.cs" />
     <Compile Include="Patches\PlayerPatches.cs" />
