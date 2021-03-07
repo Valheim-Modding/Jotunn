@@ -17,7 +17,8 @@ namespace ValheimLokiLoader.Managers
             foreach (var pair in Buttons)
             {
                 var btn = pair.Value;
-                if (btn.Axis.Length > 0)
+
+                if (btn.Axis != null && btn.Axis.Length > 0)
                 {
                     ZInput.instance.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
                 }
@@ -25,6 +26,7 @@ namespace ValheimLokiLoader.Managers
                 {
                     ZInput.instance.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
                 }
+
                 Debug.Log("Registered input: " + pair.Key);
             }
         }

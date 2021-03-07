@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ValheimLokiLoader.Entities
 {
     public class ButtonConfig
     {
         public string Name { get; set; }
-        public string Axis { get; set; }
+        public string Axis { get; set; } = null;
         public KeyCode Key { get; set; }
-        public bool Inverted { get; set; }
-        public float RepeatDelay { get; set; }
-        public float RepeatInterval { get; set; }
+        public bool Inverted { get; set; } = false;
+        public float RepeatDelay { get; set; } = 0.0f;
+        public float RepeatInterval { get; set; } = 0.0f;
     }
 }
