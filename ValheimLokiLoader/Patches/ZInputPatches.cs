@@ -22,7 +22,7 @@ namespace ValheimLokiLoader.Patches
             public static void Postfix(ref ZInput __instance)
             {
                 Debug.Log("----> ZInput Reset");
-                InputManager.Instance.LoadInputs(__instance);
+                InputManager.Instance.Load(__instance);
             }
         }
     }

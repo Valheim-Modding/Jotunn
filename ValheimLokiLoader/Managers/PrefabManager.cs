@@ -34,7 +34,12 @@ namespace ValheimLokiLoader.Managers
             Debug.Log("Initialized PrefabManager");
         }
 
-        internal void LoadPrefabs()
+        internal override void Register()
+        {
+            // TODO: Split register and load logic
+        }
+
+        internal override void Load()
         {
             Debug.Log("---- Registering custom prefabs ----");
             

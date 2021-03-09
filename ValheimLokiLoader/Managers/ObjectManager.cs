@@ -25,7 +25,7 @@ namespace ValheimLokiLoader.Managers
             Instance = this;
         }
 
-        internal override void Load()
+        internal override void Register()
         {
             Debug.Log("---- Registering custom objects ----");
 
@@ -35,19 +35,27 @@ namespace ValheimLokiLoader.Managers
 
             // Register new items and recipes
             ObjectRegister?.Invoke(null, EventArgs.Empty);
+        }
 
+        internal override void Load()
+        {
+            Debug.Log("---- Loading custom objects ----");
+
+            // Load items
             foreach (GameObject obj in Items)
             {
                 ObjectDB.instance.m_items.Add(obj);
-                Debug.Log("Registered item: " + obj.name);
+                Debug.Log("Loaded item: " + obj.name);
             }
 
+            // Load recipes
             foreach (Recipe recipe in Recipes)
             {
                 ObjectDB.instance.m_recipes.Add(recipe);
-                Debug.Log("Registered item recipe: " + recipe.m_item.m_itemData.m_shared.m_name);
+                Debug.Log("Loaded item recipe: " + recipe.m_item.m_itemData.m_shared.m_name);
             }
 
+            // Update hashes
             ReflectionUtils.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
         }
 

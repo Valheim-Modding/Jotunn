@@ -15,7 +15,7 @@ namespace ValheimLokiLoader.Patches
             public static void Postfix()
             {
                 Debug.Log("----> ZNetScene Awake");
-                PrefabManager.Instance.LoadPrefabs();
+                PrefabManager.Instance.Load();
                 ZoneManager.Instance.Register();
             }
         }

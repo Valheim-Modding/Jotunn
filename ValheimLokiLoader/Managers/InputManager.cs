@@ -24,7 +24,7 @@ namespace ValheimLokiLoader.Managers
             Instance = this;
         }
 
-        internal void LoadInputs(ZInput zinput)
+        internal void Load(ZInput zinput)
         {
             Debug.Log("---- Registering custom inputs ----");
 

@@ -39,6 +39,11 @@ namespace ValheimLokiLoader.Managers
             Debug.Log("Initialized PieceTableManager");
         }
 
+        internal override void Register()
+        {
+            // TODO: Split register and load logic
+        }
+
         internal override void Load()
         {
             pieceTables.Clear();

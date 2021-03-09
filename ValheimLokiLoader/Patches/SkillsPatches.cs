@@ -11,6 +11,7 @@ namespace ValheimLokiLoader.Patches
         {
             public static void Postfix(ref Skills __instance)
             {
+                // TODO: Move into SkillsManager Register
                 foreach (var pair in SkillManager.Instance.Skills)
                 {
                     Skills.SkillDef skill = pair.Value;

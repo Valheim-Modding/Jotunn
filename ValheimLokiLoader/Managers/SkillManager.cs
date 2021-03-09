@@ -22,8 +22,8 @@ namespace ValheimLokiLoader.Managers
 
         public Skills.SkillDef RegisterSkill(string id, string name, string description, float increaseStep = 1f, Sprite icon = null)
         {
-            LocalizationManager.Instance.AddTranslation("skill_" + nextSkillId, name);
-            LocalizationManager.Instance.AddTranslation("skill_" + nextSkillId + "_description", description);
+            LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId, name);
+            LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId + "_description", description);
 
             Skills.SkillDef skillDef = new Skills.SkillDef()
             {
