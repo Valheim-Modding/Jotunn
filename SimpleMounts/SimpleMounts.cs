@@ -5,6 +5,7 @@ using ValheimLokiLoader;
 using ValheimLokiLoader.ConsoleCommands;
 using ValheimLokiLoader.Managers;
 using ValheimLokiLoader.Events;
+using ValheimLokiLoader.Entities;
 
 namespace SimpleMounts
 {
@@ -25,7 +26,7 @@ namespace SimpleMounts
         private void initInputs(object sender, EventArgs e)
         {
             // Init unmount key
-            InputManager.AddButton("Unmount", KeyCode.V);
+            InputManager.RegisterButton("Unmount", KeyCode.V);
         }
 
         private void initPrefabs(object sender, EventArgs e)
@@ -46,21 +47,21 @@ namespace SimpleMounts
             ObjectManager.RegisterItem("Saddle");
 
             // Recipes
-            ObjectManager.RegisterRecipe(new Recipe()
+            ObjectManager.RegisterRecipe(new RecipeConfig()
             {
-                m_item = PrefabManager.GetPrefab("Saddle").GetComponent<ItemDrop>(),
-                m_craftingStation = PrefabManager.GetPrefab("forge").GetComponent<CraftingStation>(),
-                m_resources = new Piece.Requirement[]
+                Item = "Saddle",
+                CraftingStation = "forge",
+                Requirements = new PieceRequirementConfig[]
                 {
-                    new Piece.Requirement()
+                    new PieceRequirementConfig()
                     {
-                        m_resItem = PrefabManager.GetPrefab("Iron").GetComponent<ItemDrop>(),
-                        m_amount = 4
+                        Item = "Iron",
+                        Amount = 4
                     },
-                    new Piece.Requirement()
+                    new PieceRequirementConfig()
                     {
-                        m_resItem = PrefabManager.GetPrefab("DeerHide").GetComponent<ItemDrop>(),
-                        m_amount = 10
+                        Item = "DeerHide",
+                        Amount = 10
                     }
                 }
             });

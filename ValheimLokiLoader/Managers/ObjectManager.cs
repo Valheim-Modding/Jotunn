@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using ValheimLokiLoader.Utils;
+using ValheimLokiLoader.Entities;
 
 namespace ValheimLokiLoader.Managers
 {
@@ -40,6 +41,11 @@ namespace ValheimLokiLoader.Managers
         public static void RegisterItem(GameObject item)
         {
             Items.Add(item);
+        }
+
+        public static void RegisterRecipe(RecipeConfig recipe)
+        {
+            Recipes.Add(recipe.GetRecipe());
         }
 
         public static void RegisterRecipe(Recipe recipe)

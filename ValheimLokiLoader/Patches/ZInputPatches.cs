@@ -14,17 +14,17 @@ namespace ValheimLokiLoader.Patches
             public static void Prefix()
             {
                 Debug.Log("----> ZInput Initialize");
-                InputManager.InputLoad?.Invoke(null, EventArgs.Empty);
+                InputManager.RegisterInputs();
             }
         }
 
         [HarmonyPatch(typeof(ZInput), "Reset")]
         public static class ResetPatch
         {
-            public static void Postfix()
+            public static void Postfix(ref ZInput __instance)
             {
-                Debug.Log("----> ZInput Initialize");
-                InputManager.LoadInputs();
+                Debug.Log("----> ZInput Reset");
+                InputManager.LoadInputs(__instance);
             }
         }
     }
