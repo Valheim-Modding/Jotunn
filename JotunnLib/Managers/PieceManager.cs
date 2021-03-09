@@ -33,7 +33,7 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            pieceTableContainer = new GameObject("_LokiPieceTables");
+            pieceTableContainer = new GameObject("_PieceTables");
             UnityEngine.Object.DontDestroyOnLoad(pieceTableContainer);
 
             Debug.Log("Initialized PieceTableManager");

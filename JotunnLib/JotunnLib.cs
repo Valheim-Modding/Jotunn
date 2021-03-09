@@ -8,8 +8,8 @@ using JotunnLib.Managers;
 
 namespace JotunnLib
 {
-    [BepInPlugin("com.bepinex.plugins.loki-loader", "Loki Loader", "0.0.1")]
-    internal class Loader : BaseUnityPlugin
+    [BepInPlugin("com.bepinex.plugins.jotunnlib", "JotunnLib", "0.0.1")]
+    internal class JotunnLib : BaseUnityPlugin
     {
         // Load order for managers
         private readonly List<Type> managerTypes = new List<Type>()
@@ -30,11 +30,11 @@ namespace JotunnLib
         private void Awake()
         {
             // Initialize harmony patches
-            Harmony harmony = new Harmony("loki-loader");
+            Harmony harmony = new Harmony("jotunnlib");
             harmony.PatchAll();
 
             // Create and initialize all managers
-            GameObject root = new GameObject("_LokiRoot");
+            GameObject root = new GameObject("_JotunnLibRoot");
 
             foreach (Type managerType in managerTypes)
             {
@@ -48,7 +48,7 @@ namespace JotunnLib
 
             initCommands();
 
-            Debug.Log("Loki Loader loaded successfully");
+            Debug.Log("JotunnLib loaded successfully");
         }
 
         private void initCommands()

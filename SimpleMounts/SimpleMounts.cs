@@ -10,7 +10,7 @@ using JotunnLib.Entities;
 namespace SimpleMounts
 {
     [BepInPlugin("com.bepinex.plugins.simple-mounts", "Simple Mounts", "0.0.1")]
-    [BepInDependency("com.bepinex.plugins.loki-loader")]
+    [BepInDependency("com.bepinex.plugins.jotunnlib")]
     class BetterFarming : BaseUnityPlugin
     {
         void Awake()

@@ -8,8 +8,8 @@ using System;
 
 namespace TestMod
 {
-    [BepInPlugin("com.bepinex.plugins.loki-loader.testmod", "Loki Loader Test Mod", "0.0.1")]
-    [BepInDependency("com.bepinex.plugins.loki-loader")]
+    [BepInPlugin("com.bepinex.plugins.jotunnlib.testmod", "JotunnLib Test Mod", "0.0.1")]
+    [BepInDependency("com.bepinex.plugins.jotunnlib")]
     class TestMod : BaseUnityPlugin
     {
         public static TestMod Instance { get; private set; }

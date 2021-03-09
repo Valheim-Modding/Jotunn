@@ -10,7 +10,7 @@ using BetterFarming.Prefabs;
 namespace BetterFarming
 {
     [BepInPlugin("com.bepinex.plugins.better-farming", "Better Farming", "0.0.1")]
-    [BepInDependency("com.bepinex.plugins.loki-loader")]
+    [BepInDependency("com.bepinex.plugins.jotunnlib")]
     class BetterFarming : BaseUnityPlugin
     {
         void Awake()

@@ -302,7 +302,7 @@
     <Compile Include="Managers\PrefabManager.cs" />
     <Compile Include="Managers\ZoneManager.cs" />
     <Compile Include="Patches\ConsoleCommandsPatches.cs" />
-    <Compile Include="Loader.cs" />
+    <Compile Include="JotunnLib.cs" />
     <Compile Include="Patches\GamePatches.cs" />
     <Compile Include="Patches\ObjectDBPatches.cs" />
     <Compile Include="Patches\ZInputPatches.cs" />
