@@ -16,6 +16,11 @@ namespace ValheimLokiLoader.Managers
         {
             Debug.Log("---- Registering custom objects ----");
 
+            // Clear existing items and recipes
+            Items.Clear();
+            Recipes.Clear();
+
+            // Register new items and recipes
             ObjectLoad?.Invoke(null, EventArgs.Empty);
 
             foreach (GameObject obj in Items)

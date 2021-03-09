@@ -12,8 +12,6 @@ namespace ValheimLokiLoader.Managers
         public static GameObject prefabContainer;
         internal static Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
 
-        private static bool loaded = false;
-
         internal static void Init()
         {
             prefabContainer = new GameObject("_LokiPrefabs");
@@ -26,6 +24,14 @@ namespace ValheimLokiLoader.Managers
         internal static void LoadPrefabs()
         {
             Debug.Log("---- Registering custom prefabs ----");
+            
+            // Clear existing
+            Prefabs.Clear();
+
+            foreach (Transform child in prefabContainer.transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
 
             // Call event handlers to load prefabs
             PrefabLoad?.Invoke(null, EventArgs.Empty);
@@ -46,7 +52,6 @@ namespace ValheimLokiLoader.Managers
             // Send event that all prefabs are loaded
             PrefabsLoaded?.Invoke(null, EventArgs.Empty);
             Debug.Log("All prefabs loaded");
-            loaded = true;
         }
 
         public static void RegisterPrefab(GameObject prefab, string name)
