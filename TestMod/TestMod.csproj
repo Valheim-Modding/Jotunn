@@ -293,9 +293,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ValheimLokiLoader\ValheimLokiLoader.csproj">
+    <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">
       <Project>{a6082a59-38be-4cab-9078-2c8fcda65b8f}</Project>
-      <Name>ValheimLokiLoader</Name>
+      <Name>JotunnLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

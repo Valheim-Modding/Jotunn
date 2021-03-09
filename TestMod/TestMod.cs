@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using BepInEx;
 using TestMod.ConsoleCommands;
-using ValheimLokiLoader;
-using ValheimLokiLoader.ConsoleCommands;
-using ValheimLokiLoader.Managers;
+using JotunnLib;
+using JotunnLib.ConsoleCommands;
+using JotunnLib.Managers;
 using System;
 
 namespace TestMod

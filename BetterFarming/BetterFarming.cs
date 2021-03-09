@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 using BepInEx;
-using ValheimLokiLoader;
-using ValheimLokiLoader.ConsoleCommands;
-using ValheimLokiLoader.Managers;
-using ValheimLokiLoader.Events;
+using JotunnLib;
+using JotunnLib.ConsoleCommands;
+using JotunnLib.Managers;
+using JotunnLib.Events;
 using BetterFarming.Prefabs;
 
 namespace BetterFarming

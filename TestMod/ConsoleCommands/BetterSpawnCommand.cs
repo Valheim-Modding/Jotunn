@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using ValheimLokiLoader;
-using ValheimLokiLoader.Managers;
+using JotunnLib;
+using JotunnLib.Managers;
 
 namespace TestMod.ConsoleCommands
 {

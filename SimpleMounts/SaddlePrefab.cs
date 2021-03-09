@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using BepInEx;
 using UnityEngine;
-using ValheimLokiLoader.Entities;
-using ValheimLokiLoader.Utils;
+using JotunnLib.Entities;
+using JotunnLib.Utils;
 
 namespace SimpleMounts
 {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using ValheimLokiLoader.Managers;
-using ValheimLokiLoader.Entities;
+using JotunnLib.Managers;
+using JotunnLib.Entities;
 
 namespace BetterFarming.Prefabs
 {

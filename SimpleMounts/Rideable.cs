@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using ValheimLokiLoader.Utils;
-using ValheimLokiLoader.Managers;
+using JotunnLib.Utils;
+using JotunnLib.Managers;
 
 namespace SimpleMounts
 {

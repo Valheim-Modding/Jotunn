@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using ValheimLokiLoader.Entities;
+using JotunnLib.Entities;
 
 namespace BetterFarming.Prefabs
 {
