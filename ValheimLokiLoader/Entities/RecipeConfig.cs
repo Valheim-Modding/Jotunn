@@ -26,10 +26,10 @@ namespace ValheimLokiLoader.Entities
 
             return new Recipe()
             {
-                m_item = PrefabManager.GetPrefab(Item).GetComponent<ItemDrop>(),
+                m_item = PrefabManager.Instance.GetPrefab(Item).GetComponent<ItemDrop>(),
                 m_amount = Amount,
                 m_enabled = Enabled,
-                m_craftingStation = PrefabManager.GetPrefab(CraftingStation).GetComponent<CraftingStation>(),
+                m_craftingStation = PrefabManager.Instance.GetPrefab(CraftingStation).GetComponent<CraftingStation>(),
                 m_minStationLevel = MinStationLevel,
                 m_resources = resources
             };

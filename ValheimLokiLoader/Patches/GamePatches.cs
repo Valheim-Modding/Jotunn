@@ -15,7 +15,7 @@ namespace ValheimLokiLoader.Patches
             public static void Prefix(ref Game __instance)
             {
                 Debug.Log("----> Game Awake");
-                // PieceManager.LoadPieces();
+                // PieceManager.Load();
             }
         }
     }

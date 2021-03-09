@@ -17,10 +17,10 @@ namespace BetterFarming
         {
             initSkills();
 
-            ObjectManager.ObjectLoad += initObjects;
-            PrefabManager.PrefabLoad += initPrefabs;
-            PieceManager.PieceLoad += initPieces;
-            ZoneManager.ZoneLoad += initZone;
+            ObjectManager.Instance.ObjectRegister += initObjects;
+            PrefabManager.Instance.PrefabRegister += initPrefabs;
+            PieceManager.Instance.PieceRegister += initPieces;
+            ZoneManager.Instance.ZoneLoad += initZone;
 
             EventManager.PlayerPlacedPiece += onPlayerPlacedPiece;
         }
@@ -32,7 +32,7 @@ namespace BetterFarming
             if (e.Success && e.Piece.gameObject.GetComponent<Plant>())
             {
                 // Give player farming experience
-                e.Player.RaiseSkill(SkillManager.GetSkill("farming").m_skill);
+                e.Player.RaiseSkill(SkillManager.Instance.GetSkill("farming").m_skill);
 
                 // Decerease time it takes to grow
                 float factor = getGrowTimeDecreaseFactor();
@@ -45,7 +45,7 @@ namespace BetterFarming
         // Compute by what factor to decrease plant grow time based on current farming skill level
         private float getGrowTimeDecreaseFactor()
         {
-            float skillLevel = Player.m_localPlayer.GetSkillFactor(SkillManager.GetSkill("farming").m_skill);
+            float skillLevel = Player.m_localPlayer.GetSkillFactor(SkillManager.Instance.GetSkill("farming").m_skill);
             float maxDecreaseFactor = 0.5f;
 
             return (skillLevel / 100f) * maxDecreaseFactor;
@@ -54,7 +54,7 @@ namespace BetterFarming
         // Init skills
         void initSkills()
         {
-            SkillManager.AddSkill("farming", "Farming", "Grow and harvest crops");
+            SkillManager.Instance.RegisterSkill("farming", "Farming", "Grow and harvest crops");
         }
 
         // Init zone data
@@ -63,58 +63,58 @@ namespace BetterFarming
             // Copy the Pickable_SeedCarrot vegetation and create pickable blueberry seeds
             var seedVeg = ZoneSystem.instance.m_vegetation.Find(v => v.m_prefab.name == "Pickable_SeedCarrot");
             seedVeg.m_name = "Pickable_BlueberrySeeds";
-            seedVeg.m_prefab = PrefabManager.GetPrefab("Pickable_BlueberrySeeds");
-            ZoneManager.AddVegetation(seedVeg);
+            seedVeg.m_prefab = PrefabManager.Instance.GetPrefab("Pickable_BlueberrySeeds");
+            ZoneManager.Instance.RegisterVegetation(seedVeg);
         }
 
         // Init prefabs
         void initPrefabs(object sender, EventArgs e)
         {
             // Blueberry growing
-            PrefabManager.RegisterPrefab(new BlueberrySeedsPrefab());
-            PrefabManager.RegisterPrefab(new PickableBlueberryBushSeedsPrefab());
-            PrefabManager.RegisterPrefab(new BlueberryBushSaplingPrefab());
+            PrefabManager.Instance.RegisterPrefab(new BlueberrySeedsPrefab());
+            PrefabManager.Instance.RegisterPrefab(new PickableBlueberryBushSeedsPrefab());
+            PrefabManager.Instance.RegisterPrefab(new BlueberryBushSaplingPrefab());
 
             // Raspberry growing
-            PrefabManager.RegisterPrefab(new RaspberrySeedsPrefab());
-            PrefabManager.RegisterPrefab(new PickableRaspberryBushSeedsPrefab());
-            PrefabManager.RegisterPrefab(new RaspberryBushSaplingPrefab());
+            PrefabManager.Instance.RegisterPrefab(new RaspberrySeedsPrefab());
+            PrefabManager.Instance.RegisterPrefab(new PickableRaspberryBushSeedsPrefab());
+            PrefabManager.Instance.RegisterPrefab(new RaspberryBushSaplingPrefab());
 
             // Farming station
-            PrefabManager.RegisterPrefab(new FarmingStationPrefab());
+            PrefabManager.Instance.RegisterPrefab(new FarmingStationPrefab());
         }
 
         // Init objects
         void initObjects(object sender, EventArgs e)
         {
             // Items
-            ObjectManager.RegisterItem("BlueberrySeeds");
-            ObjectManager.RegisterItem("RaspberrySeeds");
+            ObjectManager.Instance.RegisterItem("BlueberrySeeds");
+            ObjectManager.Instance.RegisterItem("RaspberrySeeds");
 
             // Recipes
-            ObjectManager.RegisterRecipe(new Recipe()
+            ObjectManager.Instance.RegisterRecipe(new Recipe()
             {
-                m_item = PrefabManager.GetPrefab("BlueberrySeeds").GetComponent<ItemDrop>(),
-                m_craftingStation = PrefabManager.GetPrefab("FarmingStation").GetComponent<CraftingStation>(),
+                m_item = PrefabManager.Instance.GetPrefab("BlueberrySeeds").GetComponent<ItemDrop>(),
+                m_craftingStation = PrefabManager.Instance.GetPrefab("FarmingStation").GetComponent<CraftingStation>(),
                 m_resources = new Piece.Requirement[]
                 {
                     new Piece.Requirement()
                     {
-                        m_resItem = PrefabManager.GetPrefab("Blueberries").GetComponent<ItemDrop>(),
+                        m_resItem = PrefabManager.Instance.GetPrefab("Blueberries").GetComponent<ItemDrop>(),
                         m_amount = 10
                     }
                 }
             });
 
-            ObjectManager.RegisterRecipe(new Recipe()
+            ObjectManager.Instance.RegisterRecipe(new Recipe()
             {
-                m_item = PrefabManager.GetPrefab("RaspberrySeeds").GetComponent<ItemDrop>(),
-                m_craftingStation = PrefabManager.GetPrefab("FarmingStation").GetComponent<CraftingStation>(),
+                m_item = PrefabManager.Instance.GetPrefab("RaspberrySeeds").GetComponent<ItemDrop>(),
+                m_craftingStation = PrefabManager.Instance.GetPrefab("FarmingStation").GetComponent<CraftingStation>(),
                 m_resources = new Piece.Requirement[]
                 {
                     new Piece.Requirement()
                     {
-                        m_resItem = PrefabManager.GetPrefab("Raspberry").GetComponent<ItemDrop>(),
+                        m_resItem = PrefabManager.Instance.GetPrefab("Raspberry").GetComponent<ItemDrop>(),
                         m_amount = 10
                     }
                 }
@@ -125,11 +125,11 @@ namespace BetterFarming
         void initPieces(object sender, EventArgs e)
         {
             // Hammer pieces
-            PieceManager.RegisterPiece("Hammer", "FarmingStation");
+            PieceManager.Instance.RegisterPiece("Hammer", "FarmingStation");
 
             // Cultivator pieces
-            PieceManager.RegisterPiece("Cultivator", "Sapling_BlueberryBush");
-            PieceManager.RegisterPiece("Cultivator", "Sapling_RaspberryBush");
+            PieceManager.Instance.RegisterPiece("Cultivator", "Sapling_BlueberryBush");
+            PieceManager.Instance.RegisterPiece("Cultivator", "Sapling_RaspberryBush");
         }
     }
 }

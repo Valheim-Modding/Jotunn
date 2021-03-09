@@ -4,12 +4,25 @@ using UnityEngine;
 
 namespace ValheimLokiLoader.Managers
 {
-    public static class ZoneManager
+    public class ZoneManager : Manager
     {
-        public static event EventHandler ZoneLoad;
-        internal static List<ZoneSystem.ZoneVegetation> Vegetation = new List<ZoneSystem.ZoneVegetation>();
+        public static ZoneManager Instance { get; private set; }
 
-        internal static void LoadZoneData()
+        public event EventHandler ZoneLoad;
+        internal List<ZoneSystem.ZoneVegetation> Vegetation = new List<ZoneSystem.ZoneVegetation>();
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        internal override void Register()
         {
             Debug.Log("---- Registering custom zone data ----");
 
@@ -23,7 +36,7 @@ namespace ValheimLokiLoader.Managers
             }
         }
 
-        public static void AddVegetation(ZoneSystem.ZoneVegetation veg)
+        public void RegisterVegetation(ZoneSystem.ZoneVegetation veg)
         {
             Vegetation.Add(veg);
         }

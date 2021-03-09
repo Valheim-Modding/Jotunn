@@ -12,7 +12,7 @@ namespace ValheimLokiLoader.ConsoleCommands
         {
             Console.instance.Print("Available commands:");
 
-            foreach (ConsoleCommand cmd in CommandManager.ConsoleCommands)
+            foreach (ConsoleCommand cmd in CommandManager.Instance.ConsoleCommands)
             {
                 Console.instance.Print(cmd.Name + " - " + cmd.Help);
             }

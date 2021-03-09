@@ -12,7 +12,7 @@ namespace TestMod.ConsoleCommands
 
         public override void Run(string[] args)
         {
-            GameObject prefab = PrefabManager.GetPrefab(args[0]);
+            GameObject prefab = PrefabManager.Instance.GetPrefab(args[0]);
 
             if (!prefab)
             {

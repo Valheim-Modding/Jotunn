@@ -3,15 +3,27 @@ using UnityEngine;
 
 namespace ValheimLokiLoader.Managers
 {
-    public static class SkillManager
+    public class SkillManager : Manager
     {
-        internal static Dictionary<string, Skills.SkillDef> Skills = new Dictionary<string, Skills.SkillDef>();
-        private static int nextSkillId = 1000;
+        public static SkillManager Instance { get; private set; }
 
-        public static Skills.SkillDef AddSkill(string id, string name, string description, float increaseStep = 1f, Sprite icon = null)
+        internal Dictionary<string, Skills.SkillDef> Skills = new Dictionary<string, Skills.SkillDef>();
+        private int nextSkillId = 1000;
+        private void Awake()
         {
-            LocalizationManager.AddTranslation("skill_" + nextSkillId, name);
-            LocalizationManager.AddTranslation("skill_" + nextSkillId + "_description", description);
+            if (Instance != null)
+            {
+                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        public Skills.SkillDef RegisterSkill(string id, string name, string description, float increaseStep = 1f, Sprite icon = null)
+        {
+            LocalizationManager.Instance.AddTranslation("skill_" + nextSkillId, name);
+            LocalizationManager.Instance.AddTranslation("skill_" + nextSkillId + "_description", description);
 
             Skills.SkillDef skillDef = new Skills.SkillDef()
             {
@@ -27,7 +39,7 @@ namespace ValheimLokiLoader.Managers
             return skillDef;
         }
 
-        public static Skills.SkillDef GetSkill(string id)
+        public Skills.SkillDef GetSkill(string id)
         {
             if (Skills.ContainsKey(id))
             {

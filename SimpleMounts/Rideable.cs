@@ -20,12 +20,12 @@ namespace SimpleMounts
         private Humanoid rider;
         private Character animal;
 
-        void Start()
+        private void Start()
         {
             animal = GetComponent<Character>();
         }
 
-        void Update()
+        private void Update()
         {
             if (IsRiding && isBeingRidden)
             {
@@ -131,7 +131,7 @@ namespace SimpleMounts
             // Check if required skill level met
             if (requiredRidingLevel > 0)
             {
-                Skills.SkillDef skill = SkillManager.GetSkill("riding");
+                Skills.SkillDef skill = SkillManager.Instance.GetSkill("riding");
                 
                 if (user.GetSkillFactor(skill.m_skill) < requiredRidingLevel)
                 {

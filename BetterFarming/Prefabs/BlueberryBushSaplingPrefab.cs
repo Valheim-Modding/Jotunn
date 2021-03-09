@@ -30,19 +30,19 @@ namespace BetterFarming.Prefabs
             Piece piece = Prefab.GetComponent<Piece>();
             piece.m_name = "Blueberry Bush Sapling";
             piece.m_description = "Plant blueberry seeds to grow a blueberry bush";
-            piece.m_icon = PrefabManager.GetPrefab("Blueberries").GetComponent<ItemDrop>().m_itemData.GetIcon();
+            piece.m_icon = PrefabManager.Instance.GetPrefab("Blueberries").GetComponent<ItemDrop>().m_itemData.GetIcon();
             piece.m_resources = new Piece.Requirement[] {
                 new Piece.Requirement()
                 {
                     m_amount = 1,
-                    m_resItem = PrefabManager.GetPrefab("BlueberrySeeds").GetComponent<ItemDrop>()
+                    m_resItem = PrefabManager.Instance.GetPrefab("BlueberrySeeds").GetComponent<ItemDrop>()
                 }
             };
 
             // Configure plant growth
             Plant plant = Prefab.GetComponent<Plant>();
             plant.m_name = "Blueberry Bush Sapling";
-            plant.m_grownPrefabs = new GameObject[] { PrefabManager.GetPrefab("BlueberryBush") };
+            plant.m_grownPrefabs = new GameObject[] { PrefabManager.Instance.GetPrefab("BlueberryBush") };
         }
     }
 }

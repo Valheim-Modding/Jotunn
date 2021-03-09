@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace ValheimLokiLoader.Managers
 {
-    public static class CommandManager
+    public class CommandManager : Manager
     {
-        internal static List<ConsoleCommand> ConsoleCommands = new List<ConsoleCommand>();
+        public static CommandManager Instance { get; private set; }
+
+        // TODO: Make these lists immutable
         public static readonly List<string> DefaultConsoleCommands = new List<string>()
         {
             // "help" command not included since we want to overwrite it
@@ -19,11 +19,24 @@ namespace ValheimLokiLoader.Managers
         {
             "genloc", "debugmode", "spawn", "pos", "goto", "exploremap", "resetmap", "killall", "tame",
             "hair", "beard", "location", "raiseskill", "resetskill", "freefly", "ffsmooth", "tod",
-            "env", "resetenv", "wind", "god", "event", "stopevent", "randomevent", "save",
+            "env", "resetenv", "wind", "god", "event", "stopevent", "randomevent", "save", "tameall",
             "resetcharacter", "removedrops", "setkey", "resetkeys", "listkeys", "players", "dpsdebug"
         };
 
-        public static void AddConsoleCommand(ConsoleCommand cmd)
+        internal List<ConsoleCommand> ConsoleCommands = new List<ConsoleCommand>();
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        public void RegisterConsoleCommand(ConsoleCommand cmd)
         {
             // Cannot override default command
             if (DefaultConsoleCommands.Contains(cmd.Name))

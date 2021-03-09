@@ -15,39 +15,39 @@ namespace SimpleMounts
     {
         void Awake()
         {
-            PrefabManager.PrefabLoad += initPrefabs;
-            PrefabManager.PrefabsLoaded += modifyPrefabs;
-            ObjectManager.ObjectLoad += initObjects;
-            InputManager.InputLoad += initInputs;
+            PrefabManager.Instance.PrefabRegister += initPrefabs;
+            PrefabManager.Instance.PrefabsLoaded += modifyPrefabs;
+            ObjectManager.Instance.ObjectRegister += initObjects;
+            InputManager.Instance.InputRegister += initInputs;
 
-            SkillManager.AddSkill("riding", "Riding", "Ride animals");
+            SkillManager.Instance.RegisterSkill("riding", "Riding", "Ride animals");
         }
 
         private void initInputs(object sender, EventArgs e)
         {
             // Init unmount key
-            InputManager.RegisterButton("Unmount", KeyCode.V);
+            InputManager.Instance.RegisterButton("Unmount", KeyCode.V);
         }
 
         private void initPrefabs(object sender, EventArgs e)
         {
             // Init saddle
-            PrefabManager.RegisterPrefab(new SaddlePrefab());
+            PrefabManager.Instance.RegisterPrefab(new SaddlePrefab());
         }
 
         private void modifyPrefabs(object sender, EventArgs e)
         {
             // Add rideable component to animals
-            PrefabManager.GetPrefab("Deer").AddComponent<Rideable>();
+            PrefabManager.Instance.GetPrefab("Deer").AddComponent<Rideable>();
         }
 
         private void initObjects(object sender, EventArgs e)
         {
             // Objects
-            ObjectManager.RegisterItem("Saddle");
+            ObjectManager.Instance.RegisterItem("Saddle");
 
             // Recipes
-            ObjectManager.RegisterRecipe(new RecipeConfig()
+            ObjectManager.Instance.RegisterRecipe(new RecipeConfig()
             {
                 Item = "Saddle",
                 CraftingStation = "forge",

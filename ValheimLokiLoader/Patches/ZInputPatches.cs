@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using HarmonyLib;
 using ValheimLokiLoader.Managers;
 
 namespace ValheimLokiLoader.Patches
 {
-    class ZInputPatches
+    internal class ZInputPatches
     {
         [HarmonyPatch(typeof(ZInput), "Initialize")]
         public static class InitializePatch
@@ -14,7 +12,7 @@ namespace ValheimLokiLoader.Patches
             public static void Prefix()
             {
                 Debug.Log("----> ZInput Initialize");
-                InputManager.RegisterInputs();
+                InputManager.Instance.Register();
             }
         }
 
@@ -24,7 +22,7 @@ namespace ValheimLokiLoader.Patches
             public static void Postfix(ref ZInput __instance)
             {
                 Debug.Log("----> ZInput Reset");
-                InputManager.LoadInputs(__instance);
+                InputManager.Instance.LoadInputs(__instance);
             }
         }
     }

@@ -6,13 +6,26 @@ using ValheimLokiLoader.Entities;
 
 namespace ValheimLokiLoader.Managers
 {
-    public static class ObjectManager
+    public class ObjectManager : Manager
     {
-        public static event EventHandler ObjectLoad;
-        internal static List<GameObject> Items = new List<GameObject>();
-        internal static List<Recipe> Recipes = new List<Recipe>();
+        public static ObjectManager Instance { get; private set; }
 
-        internal static void LoadObjects()
+        public event EventHandler ObjectRegister;
+        internal List<GameObject> Items = new List<GameObject>();
+        internal List<Recipe> Recipes = new List<Recipe>();
+        
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        internal override void Load()
         {
             Debug.Log("---- Registering custom objects ----");
 
@@ -21,7 +34,7 @@ namespace ValheimLokiLoader.Managers
             Recipes.Clear();
 
             // Register new items and recipes
-            ObjectLoad?.Invoke(null, EventArgs.Empty);
+            ObjectRegister?.Invoke(null, EventArgs.Empty);
 
             foreach (GameObject obj in Items)
             {
@@ -38,32 +51,32 @@ namespace ValheimLokiLoader.Managers
             ReflectionUtils.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
         }
 
-        public static void RegisterItem(string prefabName)
+        public void RegisterItem(string prefabName)
         {
-            Items.Add(PrefabManager.GetPrefab(prefabName));
+            Items.Add(PrefabManager.Instance.GetPrefab(prefabName));
         }
 
-        public static void RegisterItem(GameObject item)
+        public void RegisterItem(GameObject item)
         {
             Items.Add(item);
         }
 
-        public static void RegisterRecipe(RecipeConfig recipe)
+        public void RegisterRecipe(RecipeConfig recipe)
         {
             Recipes.Add(recipe.GetRecipe());
         }
 
-        public static void RegisterRecipe(Recipe recipe)
+        public void RegisterRecipe(Recipe recipe)
         {
             Recipes.Add(recipe);
         }
 
-        public static GameObject GetItemPrefab(string name)
+        public GameObject GetItemPrefab(string name)
         {
             return ObjectDB.instance.GetItemPrefab(name);
         }
 
-        public static ItemDrop GetItemDrop(string name)
+        public ItemDrop GetItemDrop(string name)
         {
             return GetItemPrefab(name)?.GetComponent<ItemDrop>();
         }

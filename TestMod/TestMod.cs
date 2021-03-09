@@ -40,7 +40,7 @@ namespace TestMod
             {
                 Vector3 pos = Player.m_localPlayer.transform.position + Vector3.up * 5;
                 Quaternion rot = Player.m_localPlayer.transform.rotation;
-                GameObject log = UnityEngine.Object.Instantiate(PrefabManager.GetPrefab("beech_log"), pos, rot);
+                GameObject log = UnityEngine.Object.Instantiate(PrefabManager.Instance.GetPrefab("beech_log"), pos, rot);
                 
                 log.transform.Rotate(new Vector3(90f, 0f, 0f));
                 log.GetComponent<Rigidbody>().velocity = Player.m_localPlayer.transform.forward * 100;
@@ -56,18 +56,18 @@ namespace TestMod
 
         void initCommands()
         {
-            CommandManager.AddConsoleCommand(new TestCommand());
-            CommandManager.AddConsoleCommand(new TpCommand());
-            CommandManager.AddConsoleCommand(new ListPlayersCommand());
-            CommandManager.AddConsoleCommand(new SkinColorCommand());
-            CommandManager.AddConsoleCommand(new RaiseSkillCommand());
-            CommandManager.AddConsoleCommand(new BetterSpawnCommand());
+            CommandManager.Instance.RegisterConsoleCommand(new TestCommand());
+            CommandManager.Instance.RegisterConsoleCommand(new TpCommand());
+            CommandManager.Instance.RegisterConsoleCommand(new ListPlayersCommand());
+            CommandManager.Instance.RegisterConsoleCommand(new SkinColorCommand());
+            CommandManager.Instance.RegisterConsoleCommand(new RaiseSkillCommand());
+            CommandManager.Instance.RegisterConsoleCommand(new BetterSpawnCommand());
         }
 
         void initSkills()
         {
             // Test adding a skill
-            SkillManager.AddSkill("testing", "Testing", "A nice testing skill");
+            SkillManager.Instance.RegisterSkill("testing", "Testing", "A nice testing skill");
         }
     }
 }

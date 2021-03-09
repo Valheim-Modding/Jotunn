@@ -19,8 +19,8 @@ namespace ValheimLokiLoader.Patches
 
                 if (SceneManager.GetActiveScene().name == "main")
                 {
-                    ObjectManager.LoadObjects();
-                    PieceManager.LoadPieces();
+                    ObjectManager.Instance.Load();
+                    PieceManager.Instance.Load();
                 }
             }
         }

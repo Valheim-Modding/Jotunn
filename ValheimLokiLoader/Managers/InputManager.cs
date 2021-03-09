@@ -5,13 +5,26 @@ using ValheimLokiLoader.Entities;
 
 namespace ValheimLokiLoader.Managers
 {
-    public static class InputManager
+    public class InputManager : Manager
     {
-        public static EventHandler InputLoad;
-        internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
-        private static bool inputsLoaded = false;
+        public static InputManager Instance { get; private set; }
 
-        internal static void LoadInputs(ZInput zinput)
+        public EventHandler InputRegister;
+        internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
+        private bool inputsRegistered = false;
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        internal void LoadInputs(ZInput zinput)
         {
             Debug.Log("---- Registering custom inputs ----");
 
@@ -38,18 +51,29 @@ namespace ValheimLokiLoader.Managers
             }
         }
 
-        internal static void RegisterInputs()
+        internal override void Register()
         {
-            if (inputsLoaded)
+            if (inputsRegistered)
             {
                 return;
             }
 
-            InputLoad?.Invoke(null, EventArgs.Empty);
-            inputsLoaded = true;
+            InputRegister?.Invoke(null, EventArgs.Empty);
+            inputsRegistered = true;
         }
 
-        public static void RegisterButton(
+        public void RegisterButton(string name, ButtonConfig button)
+        {
+            if (Buttons.ContainsKey(name))
+            {
+                Debug.LogError("Cannot have duplicate button: " + name);
+                return;
+            }
+
+            Buttons.Add(name, button);
+        }
+
+        public void RegisterButton(
             string name,
             KeyCode key,
             float repeatDelay = 0.0f,
@@ -70,7 +94,7 @@ namespace ValheimLokiLoader.Managers
             });
         }
 
-        public static void RegisterButton(
+        public void RegisterButton(
             string name,
             string axis,
             bool inverted = false,
@@ -91,17 +115,6 @@ namespace ValheimLokiLoader.Managers
                 RepeatDelay = repeatDelay,
                 RepeatInterval = repeatInterval
             });
-        }
-
-        public static void RegisterButton(string name, ButtonConfig button)
-        {
-            if (Buttons.ContainsKey(name))
-            {
-                Debug.LogError("Cannot have duplicate button: " + name);
-                return;
-            }
-
-            Buttons.Add(name, button);
         }
     }
 }

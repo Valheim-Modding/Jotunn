@@ -29,7 +29,7 @@ namespace BetterFarming.Prefabs
             }
 
             Pickable pickable = Prefab.GetComponent<Pickable>();
-            pickable.m_itemPrefab = PrefabManager.GetPrefab("RaspberrySeeds");
+            pickable.m_itemPrefab = PrefabManager.Instance.GetPrefab("RaspberrySeeds");
         }
     }
 }

@@ -5,7 +5,7 @@ using ValheimLokiLoader.Managers;
 
 namespace ValheimLokiLoader.Patches
 {
-    class ConsoleCommandsPatches
+    internal class ConsoleCommandsPatches
     {
         [HarmonyPatch(typeof(Console), "InputText")]
         public static class ConsoleInputTextPatch
@@ -21,7 +21,7 @@ namespace ValheimLokiLoader.Patches
                     return;
                 }
 
-                ConsoleCommand cmd = CommandManager.ConsoleCommands.Find(c => c.Name == parts[0]);
+                ConsoleCommand cmd = CommandManager.Instance.ConsoleCommands.Find(c => c.Name == parts[0]);
 
                 // If we found a command, execute it
                 if (cmd != null)

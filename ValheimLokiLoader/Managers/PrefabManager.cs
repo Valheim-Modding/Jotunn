@@ -6,13 +6,26 @@ using ValheimLokiLoader.Utils;
 
 namespace ValheimLokiLoader.Managers
 {
-    public static class PrefabManager
+    public class PrefabManager : Manager
     {
-        public static event EventHandler PrefabLoad, PrefabsLoaded;
-        public static GameObject prefabContainer;
-        internal static Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
+        public static PrefabManager Instance { get; private set; }
 
-        internal static void Init()
+        public event EventHandler PrefabRegister, PrefabsLoaded;
+        internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
+        private GameObject prefabContainer;
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        internal override void Init()
         {
             prefabContainer = new GameObject("_LokiPrefabs");
             prefabContainer.SetActive(false);
@@ -21,7 +34,7 @@ namespace ValheimLokiLoader.Managers
             Debug.Log("Initialized PrefabManager");
         }
 
-        internal static void LoadPrefabs()
+        internal void LoadPrefabs()
         {
             Debug.Log("---- Registering custom prefabs ----");
             
@@ -34,7 +47,7 @@ namespace ValheimLokiLoader.Managers
             }
 
             // Call event handlers to load prefabs
-            PrefabLoad?.Invoke(null, EventArgs.Empty);
+            PrefabRegister?.Invoke(null, EventArgs.Empty);
 
             var namedPrefabs = ReflectionUtils.GetPrivateField<Dictionary<int, GameObject>>(ZNetScene.instance, "m_namedPrefabs");
 
@@ -54,7 +67,7 @@ namespace ValheimLokiLoader.Managers
             Debug.Log("All prefabs loaded");
         }
 
-        public static void RegisterPrefab(GameObject prefab, string name)
+        public void RegisterPrefab(GameObject prefab, string name)
         {
             if (GetPrefab(name))
             {
@@ -68,7 +81,7 @@ namespace ValheimLokiLoader.Managers
             Prefabs.Add(name, prefab);
         }
 
-        public static void RegisterPrefab(PrefabConfig prefabConfig)
+        public void RegisterPrefab(PrefabConfig prefabConfig)
         {
             if (prefabConfig.BasePrefabName == null || prefabConfig.BasePrefabName == "")
             {
@@ -82,8 +95,7 @@ namespace ValheimLokiLoader.Managers
             prefabConfig.Register();
         }
 
-
-        public static GameObject CreatePrefab(string name)
+        public GameObject CreatePrefab(string name)
         {
             GameObject prefab = new GameObject(name);
             prefab.transform.parent = prefabContainer.transform;
@@ -94,7 +106,7 @@ namespace ValheimLokiLoader.Managers
             return prefab;
         }
 
-        public static GameObject CreatePrefab(string name, string baseName)
+        public GameObject CreatePrefab(string name, string baseName)
         {
             if (GetPrefab(name))
             {
@@ -118,7 +130,7 @@ namespace ValheimLokiLoader.Managers
             return prefab;
         }
 
-        public static GameObject GetPrefab(string name)
+        public GameObject GetPrefab(string name)
         {
             if (Prefabs.ContainsKey(name))
             {

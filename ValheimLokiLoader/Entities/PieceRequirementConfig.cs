@@ -17,7 +17,7 @@ namespace ValheimLokiLoader.Entities
         {
             return new Piece.Requirement()
             {
-                m_resItem = PrefabManager.GetPrefab(Item).GetComponent<ItemDrop>(),
+                m_resItem = PrefabManager.Instance.GetPrefab(Item).GetComponent<ItemDrop>(),
                 m_amount = Amount,
                 m_amountPerLevel = AmountPerLevel,
                 m_recover = Recover

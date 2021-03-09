@@ -15,7 +15,7 @@ namespace ValheimLokiLoader.Patches
             public static void Postfix()
             {
                 Debug.Log("----> ZoneSystem Awake");
-                // ZoneManager.LoadZoneData();
+                // ZoneManager.Instance.Register();
             }
         }
 

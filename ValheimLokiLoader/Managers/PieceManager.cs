@@ -5,22 +5,33 @@ using UnityEngine.SceneManagement;
 
 namespace ValheimLokiLoader.Managers
 {
-    public static class PieceManager
+    public class PieceManager : Manager
     {
-        public static event EventHandler PieceTableLoad;
-        public static event EventHandler PieceLoad;
+        public static PieceManager Instance { get; private set; }
+        public event EventHandler PieceTableRegister;
+        public event EventHandler PieceRegister;
 
-        private static Dictionary<string, PieceTable> pieceTables = new Dictionary<string, PieceTable>();
-        private static Dictionary<string, string> pieceTableNameMap = new Dictionary<string, string>()
+        private Dictionary<string, PieceTable> pieceTables = new Dictionary<string, PieceTable>();
+        private Dictionary<string, string> pieceTableNameMap = new Dictionary<string, string>()
         {
             { "Cultivator", "_CultivatorPieceTable" },
             { "Hammer", "_HammerPieceTable" },
             { "Hoe", "_HoePieceTable" }
         };
-        private static GameObject pieceTableContainer;
-        private static bool loaded = false;
+        private GameObject pieceTableContainer;
 
-        internal static void Init()
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        internal override void Init()
         {
             pieceTableContainer = new GameObject("_LokiPieceTables");
             UnityEngine.Object.DontDestroyOnLoad(pieceTableContainer);
@@ -28,7 +39,7 @@ namespace ValheimLokiLoader.Managers
             Debug.Log("Initialized PieceTableManager");
         }
 
-        internal static void LoadPieces()
+        internal override void Load()
         {
             pieceTables.Clear();
             
@@ -49,7 +60,7 @@ namespace ValheimLokiLoader.Managers
                 Debug.Log("Loaded existing piece table: " + name);
             }
 
-            PieceTableLoad?.Invoke(null, EventArgs.Empty);
+            PieceTableRegister?.Invoke(null, EventArgs.Empty);
 
             foreach (var pair in pieceTables)
             {
@@ -67,11 +78,10 @@ namespace ValheimLokiLoader.Managers
             }
 
             Debug.Log("---- Loading pieces ----");
-            PieceLoad?.Invoke(null, EventArgs.Empty);
-            loaded = true;
+            PieceRegister?.Invoke(null, EventArgs.Empty);
         }
 
-        public static void RegisterPieceTable(string name)
+        public void RegisterPieceTable(string name)
         {
             if (pieceTables.ContainsKey(name))
             {
@@ -86,10 +96,10 @@ namespace ValheimLokiLoader.Managers
             pieceTables.Add(name, table);
         }
 
-        public static void RegisterPiece(string pieceTable, string prefabName)
+        public void RegisterPiece(string pieceTable, string prefabName)
         {
             PieceTable table = getPieceTable(pieceTable);
-            GameObject prefab = PrefabManager.GetPrefab(prefabName);
+            GameObject prefab = PrefabManager.Instance.GetPrefab(prefabName);
 
             if (!table)
             {
@@ -107,7 +117,7 @@ namespace ValheimLokiLoader.Managers
             Debug.Log("Registered piece: " + prefabName + " to " + pieceTable);
         }
 
-        public static void RegisterPiece(string pieceTable, GameObject prefab)
+        public void RegisterPiece(string pieceTable, GameObject prefab)
         {
             PieceTable table = getPieceTable(pieceTable);
 
@@ -121,7 +131,7 @@ namespace ValheimLokiLoader.Managers
             Debug.Log("Registered piece: " + prefab.name + " to " + pieceTable);
         }
 
-        private static PieceTable getPieceTable(string name)
+        private PieceTable getPieceTable(string name)
         {
             if (pieceTables.ContainsKey(name))
             {
