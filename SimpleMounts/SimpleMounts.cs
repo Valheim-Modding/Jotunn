@@ -11,8 +11,10 @@ namespace SimpleMounts
 {
     [BepInPlugin("com.bepinex.plugins.simple-mounts", "Simple Mounts", "0.0.1")]
     [BepInDependency("com.bepinex.plugins.jotunnlib")]
-    class BetterFarming : BaseUnityPlugin
+    public class SimpleMounts : BaseUnityPlugin
     {
+        public static Skills.SkillType RidingSkillType = 0;
+
         void Awake()
         {
             PrefabManager.Instance.PrefabRegister += initPrefabs;
@@ -20,7 +22,7 @@ namespace SimpleMounts
             ObjectManager.Instance.ObjectRegister += initObjects;
             InputManager.Instance.InputRegister += initInputs;
 
-            SkillManager.Instance.RegisterSkill("riding", "Riding", "Ride animals");
+            RidingSkillType = SkillManager.Instance.RegisterSkill("Riding", "Ride animals");
         }
 
         private void initInputs(object sender, EventArgs e)

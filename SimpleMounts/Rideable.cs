@@ -131,9 +131,7 @@ namespace SimpleMounts
             // Check if required skill level met
             if (requiredRidingLevel > 0)
             {
-                Skills.SkillDef skill = SkillManager.Instance.GetSkill("riding");
-                
-                if (user.GetSkillFactor(skill.m_skill) < requiredRidingLevel)
+                if (user.GetSkillFactor(SimpleMounts.RidingSkillType) < requiredRidingLevel)
                 {
                     Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Need to have min riding skill level " + requiredRidingLevel);
                     return false;

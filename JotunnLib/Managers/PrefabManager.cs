@@ -9,10 +9,10 @@ namespace JotunnLib.Managers
     public class PrefabManager : Manager
     {
         public static PrefabManager Instance { get; private set; }
+        internal static GameObject PrefabContainer;
 
         public event EventHandler PrefabRegister, PrefabsLoaded;
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
-        private GameObject prefabContainer;
 
         private void Awake()
         {
@@ -27,9 +27,10 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            prefabContainer = new GameObject("_LokiPrefabs");
-            prefabContainer.SetActive(false);
-            UnityEngine.Object.DontDestroyOnLoad(prefabContainer);
+            PrefabContainer = new GameObject("Prefabs");
+            PrefabContainer.transform.parent = JotunnLib.RootObject.transform;
+            PrefabContainer.SetActive(false);
+            UnityEngine.Object.DontDestroyOnLoad(PrefabContainer);
 
             Debug.Log("Initialized PrefabManager");
         }
@@ -46,7 +47,7 @@ namespace JotunnLib.Managers
             // Clear existing
             Prefabs.Clear();
 
-            foreach (Transform child in prefabContainer.transform)
+            foreach (Transform child in PrefabContainer.transform)
             {
                 GameObject.Destroy(child.gameObject);
             }
@@ -81,7 +82,7 @@ namespace JotunnLib.Managers
             }
 
             prefab.name = name;
-            prefab.transform.parent = prefabContainer.transform;
+            prefab.transform.parent = PrefabContainer.transform;
             prefab.SetActive(true);
             Prefabs.Add(name, prefab);
         }
@@ -103,7 +104,7 @@ namespace JotunnLib.Managers
         public GameObject CreatePrefab(string name)
         {
             GameObject prefab = new GameObject(name);
-            prefab.transform.parent = prefabContainer.transform;
+            prefab.transform.parent = PrefabContainer.transform;
 
             // TODO: Add any components required for it to work as a prefab (ZNetView, etc?)
             Prefabs.Add(name, prefab);
@@ -127,7 +128,7 @@ namespace JotunnLib.Managers
                 return null;
             }
 
-            GameObject prefab = UnityEngine.Object.Instantiate(prefabBase, prefabContainer.transform);
+            GameObject prefab = UnityEngine.Object.Instantiate(prefabBase, PrefabContainer.transform);
             prefab.name = name;
             prefab.SetActive(true);
             Prefabs.Add(name, prefab);

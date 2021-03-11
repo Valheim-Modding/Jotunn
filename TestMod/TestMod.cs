@@ -12,13 +12,11 @@ namespace TestMod
     [BepInDependency("com.bepinex.plugins.jotunnlib")]
     class TestMod : BaseUnityPlugin
     {
-        public static TestMod Instance { get; private set; }
+        public static Skills.SkillType TestSkillType = 0;
         private bool keybindsOn = false;
 
         void Awake()
         {
-            Instance = this;
-
             initCommands();
             initSkills();
         }
@@ -67,7 +65,7 @@ namespace TestMod
         void initSkills()
         {
             // Test adding a skill
-            SkillManager.Instance.RegisterSkill("testing", "Testing", "A nice testing skill");
+            TestSkillType = SkillManager.Instance.RegisterSkill("Testing", "A nice testing skill");
         }
     }
 }

@@ -13,6 +13,8 @@ namespace BetterFarming
     [BepInDependency("com.bepinex.plugins.jotunnlib")]
     class BetterFarming : BaseUnityPlugin
     {
+        public static Skills.SkillType FarmingSkillType = 0;
+
         void Awake()
         {
             initSkills();
@@ -32,7 +34,7 @@ namespace BetterFarming
             if (e.Success && e.Piece.gameObject.GetComponent<Plant>())
             {
                 // Give player farming experience
-                e.Player.RaiseSkill(SkillManager.Instance.GetSkill("farming").m_skill);
+                e.Player.RaiseSkill(FarmingSkillType);
 
                 // Decerease time it takes to grow
                 float factor = getGrowTimeDecreaseFactor();
@@ -45,7 +47,7 @@ namespace BetterFarming
         // Compute by what factor to decrease plant grow time based on current farming skill level
         private float getGrowTimeDecreaseFactor()
         {
-            float skillLevel = Player.m_localPlayer.GetSkillFactor(SkillManager.Instance.GetSkill("farming").m_skill);
+            float skillLevel = Player.m_localPlayer.GetSkillFactor(FarmingSkillType);
             float maxDecreaseFactor = 0.5f;
 
             return (skillLevel / 100f) * maxDecreaseFactor;
@@ -54,7 +56,7 @@ namespace BetterFarming
         // Init skills
         void initSkills()
         {
-            SkillManager.Instance.RegisterSkill("farming", "Farming", "Grow and harvest crops");
+            FarmingSkillType = SkillManager.Instance.RegisterSkill("Farming", "Grow and harvest crops");
         }
 
         // Init zone data

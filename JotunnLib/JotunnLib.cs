@@ -27,6 +27,8 @@ namespace JotunnLib
 
         private readonly List<Manager> managers = new List<Manager>();
 
+        internal static GameObject RootObject;
+
         private void Awake()
         {
             // Initialize harmony patches
@@ -34,11 +36,11 @@ namespace JotunnLib
             harmony.PatchAll();
 
             // Create and initialize all managers
-            GameObject root = new GameObject("_JotunnLibRoot");
+            RootObject = new GameObject("_JotunnLibRoot");
 
             foreach (Type managerType in managerTypes)
             {
-                managers.Add((Manager)root.AddComponent(managerType));
+                managers.Add((Manager)RootObject.AddComponent(managerType));
             }
 
             foreach (Manager manager in managers)
