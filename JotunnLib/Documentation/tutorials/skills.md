@@ -3,7 +3,7 @@ Creation of custom skills is done through the `SkillManager` singleton class.
 This will automatically take care of incrementing the skill's SkillType (unique numerical ID), so there will be no conflicts between skills added by various mods.
 
 ### Usage
-To create a new skill, you must call the [RegisterSkill](xref:JotunnLib.Managers.SkillManager.html#JotunnLib_Managers_SkillManager_RegisterSkill_System_String_System_String_System_Single_UnityEngine_Sprite_) function.
+To create a new skill, you must call the RegisterSkill function.
 
 This should be called from within your mod's `Awake` method, and it will return a randomly generated SkillType for your new skill.
 ```cs

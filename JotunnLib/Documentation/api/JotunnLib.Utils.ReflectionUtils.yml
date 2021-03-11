@@ -1,0 +1,531 @@
+### YamlMime:ManagedReference
+items:
+- uid: JotunnLib.Utils.ReflectionUtils
+  commentId: T:JotunnLib.Utils.ReflectionUtils
+  id: ReflectionUtils
+  parent: JotunnLib.Utils
+  children:
+  - JotunnLib.Utils.ReflectionUtils.GetPrivateField``1(System.Object,System.String)
+  - JotunnLib.Utils.ReflectionUtils.InvokePrivate(System.Object,System.String,System.Object[])
+  - JotunnLib.Utils.ReflectionUtils.SetPrivateField(System.Object,System.String,System.Object)
+  langs:
+  - csharp
+  - vb
+  name: ReflectionUtils
+  nameWithType: ReflectionUtils
+  fullName: JotunnLib.Utils.ReflectionUtils
+  type: Class
+  source:
+    remote:
+      path: JotunnLib/Utils/ReflectionUtils.cs
+      branch: main
+      repo: git@github.com:raduschirliu/valheim-loki-loader
+    id: ReflectionUtils
+    path: Utils/ReflectionUtils.cs
+    startLine: 5
+  assemblies:
+  - JotunnLib
+  namespace: JotunnLib.Utils
+  syntax:
+    content: public class ReflectionUtils
+    content.vb: Public Class ReflectionUtils
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.ToString
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  modifiers.csharp:
+  - public
+  - class
+  modifiers.vb:
+  - Public
+  - Class
+- uid: JotunnLib.Utils.ReflectionUtils.InvokePrivate(System.Object,System.String,System.Object[])
+  commentId: M:JotunnLib.Utils.ReflectionUtils.InvokePrivate(System.Object,System.String,System.Object[])
+  id: InvokePrivate(System.Object,System.String,System.Object[])
+  parent: JotunnLib.Utils.ReflectionUtils
+  langs:
+  - csharp
+  - vb
+  name: InvokePrivate(Object, String, Object[])
+  nameWithType: ReflectionUtils.InvokePrivate(Object, String, Object[])
+  fullName: JotunnLib.Utils.ReflectionUtils.InvokePrivate(System.Object, System.String, System.Object[])
+  type: Method
+  source:
+    remote:
+      path: JotunnLib/Utils/ReflectionUtils.cs
+      branch: main
+      repo: git@github.com:raduschirliu/valheim-loki-loader
+    id: InvokePrivate
+    path: Utils/ReflectionUtils.cs
+    startLine: 7
+  assemblies:
+  - JotunnLib
+  namespace: JotunnLib.Utils
+  syntax:
+    content: public static object InvokePrivate(object instance, string name, object[] args = null)
+    parameters:
+    - id: instance
+      type: System.Object
+    - id: name
+      type: System.String
+    - id: args
+      type: System.Object[]
+    return:
+      type: System.Object
+    content.vb: Public Shared Function InvokePrivate(instance As Object, name As String, args As Object() = Nothing) As Object
+  overload: JotunnLib.Utils.ReflectionUtils.InvokePrivate*
+  nameWithType.vb: ReflectionUtils.InvokePrivate(Object, String, Object())
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: JotunnLib.Utils.ReflectionUtils.InvokePrivate(System.Object, System.String, System.Object())
+  name.vb: InvokePrivate(Object, String, Object())
+- uid: JotunnLib.Utils.ReflectionUtils.GetPrivateField``1(System.Object,System.String)
+  commentId: M:JotunnLib.Utils.ReflectionUtils.GetPrivateField``1(System.Object,System.String)
+  id: GetPrivateField``1(System.Object,System.String)
+  parent: JotunnLib.Utils.ReflectionUtils
+  langs:
+  - csharp
+  - vb
+  name: GetPrivateField<T>(Object, String)
+  nameWithType: ReflectionUtils.GetPrivateField<T>(Object, String)
+  fullName: JotunnLib.Utils.ReflectionUtils.GetPrivateField<T>(System.Object, System.String)
+  type: Method
+  source:
+    remote:
+      path: JotunnLib/Utils/ReflectionUtils.cs
+      branch: main
+      repo: git@github.com:raduschirliu/valheim-loki-loader
+    id: GetPrivateField
+    path: Utils/ReflectionUtils.cs
+    startLine: 20
+  assemblies:
+  - JotunnLib
+  namespace: JotunnLib.Utils
+  syntax:
+    content: public static T GetPrivateField<T>(object instance, string name)
+    parameters:
+    - id: instance
+      type: System.Object
+    - id: name
+      type: System.String
+    typeParameters:
+    - id: T
+    return:
+      type: '{T}'
+    content.vb: Public Shared Function GetPrivateField(Of T)(instance As Object, name As String) As T
+  overload: JotunnLib.Utils.ReflectionUtils.GetPrivateField*
+  nameWithType.vb: ReflectionUtils.GetPrivateField(Of T)(Object, String)
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+  fullName.vb: JotunnLib.Utils.ReflectionUtils.GetPrivateField(Of T)(System.Object, System.String)
+  name.vb: GetPrivateField(Of T)(Object, String)
+- uid: JotunnLib.Utils.ReflectionUtils.SetPrivateField(System.Object,System.String,System.Object)
+  commentId: M:JotunnLib.Utils.ReflectionUtils.SetPrivateField(System.Object,System.String,System.Object)
+  id: SetPrivateField(System.Object,System.String,System.Object)
+  parent: JotunnLib.Utils.ReflectionUtils
+  langs:
+  - csharp
+  - vb
+  name: SetPrivateField(Object, String, Object)
+  nameWithType: ReflectionUtils.SetPrivateField(Object, String, Object)
+  fullName: JotunnLib.Utils.ReflectionUtils.SetPrivateField(System.Object, System.String, System.Object)
+  type: Method
+  source:
+    remote:
+      path: JotunnLib/Utils/ReflectionUtils.cs
+      branch: main
+      repo: git@github.com:raduschirliu/valheim-loki-loader
+    id: SetPrivateField
+    path: Utils/ReflectionUtils.cs
+    startLine: 33
+  assemblies:
+  - JotunnLib
+  namespace: JotunnLib.Utils
+  syntax:
+    content: public static void SetPrivateField(object instance, string name, object value)
+    parameters:
+    - id: instance
+      type: System.Object
+    - id: name
+      type: System.String
+    - id: value
+      type: System.Object
+    content.vb: Public Shared Sub SetPrivateField(instance As Object, name As String, value As Object)
+  overload: JotunnLib.Utils.ReflectionUtils.SetPrivateField*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+references:
+- uid: JotunnLib.Utils
+  commentId: N:JotunnLib.Utils
+  name: JotunnLib.Utils
+  nameWithType: JotunnLib.Utils
+  fullName: JotunnLib.Utils
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: JotunnLib.Utils.ReflectionUtils.InvokePrivate*
+  commentId: Overload:JotunnLib.Utils.ReflectionUtils.InvokePrivate
+  name: InvokePrivate
+  nameWithType: ReflectionUtils.InvokePrivate
+  fullName: JotunnLib.Utils.ReflectionUtils.InvokePrivate
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: System.Object[]
+  isExternal: true
+  name: Object[]
+  nameWithType: Object[]
+  fullName: System.Object[]
+  nameWithType.vb: Object()
+  fullName.vb: System.Object()
+  name.vb: Object()
+  spec.csharp:
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: '[]'
+    nameWithType: '[]'
+    fullName: '[]'
+  spec.vb:
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ()
+    nameWithType: ()
+    fullName: ()
+- uid: JotunnLib.Utils.ReflectionUtils.GetPrivateField*
+  commentId: Overload:JotunnLib.Utils.ReflectionUtils.GetPrivateField
+  name: GetPrivateField
+  nameWithType: ReflectionUtils.GetPrivateField
+  fullName: JotunnLib.Utils.ReflectionUtils.GetPrivateField
+- uid: '{T}'
+  commentId: '!:T'
+  definition: T
+  name: T
+  nameWithType: T
+  fullName: T
+- uid: T
+  commentId: '!:T'
+  name: T
+  nameWithType: T
+  fullName: T
+- uid: JotunnLib.Utils.ReflectionUtils.SetPrivateField*
+  commentId: Overload:JotunnLib.Utils.ReflectionUtils.SetPrivateField
+  name: SetPrivateField
+  nameWithType: ReflectionUtils.SetPrivateField
+  fullName: JotunnLib.Utils.ReflectionUtils.SetPrivateField

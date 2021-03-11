@@ -6,7 +6,7 @@
           "files": [
             "*.csproj"
           ],
-          "cwd": ".",
+          "src": ".",
           "exclude": [
             "**/obj/**",
             "**/bin/**",
@@ -14,34 +14,23 @@
           ]
         }
       ],
-      "dest": "obj/api"
+      "dest": "Documentation/api"
     }
   ],
   "build": {
     "content": [
       {
         "files": [
-          "api/**.yml"
+          "**/*.md",
+          "**/*.yml"
         ],
-        "cwd": "obj"
-      },
-      {
-        "files": [
-          "api/*.md",
-          "tutorials/**.md",
-          "toc.yml",
-          "*.md"
-        ],
-        "exclude": [
-          "obj/**",
-          "_site/**"
-        ]
+        "src": "Documentation"
       }
     ],
     "resource": [
       {
         "files": [
-          "images/**"
+          "Documentation/images/**/*"
         ],
         "exclude": [
           "obj/**",

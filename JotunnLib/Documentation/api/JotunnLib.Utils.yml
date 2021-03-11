@@ -1,0 +1,28 @@
+### YamlMime:ManagedReference
+items:
+- uid: JotunnLib.Utils
+  commentId: N:JotunnLib.Utils
+  id: JotunnLib.Utils
+  children:
+  - JotunnLib.Utils.AssetUtils
+  - JotunnLib.Utils.ReflectionUtils
+  langs:
+  - csharp
+  - vb
+  name: JotunnLib.Utils
+  nameWithType: JotunnLib.Utils
+  fullName: JotunnLib.Utils
+  type: Namespace
+  assemblies:
+  - JotunnLib
+references:
+- uid: JotunnLib.Utils.ReflectionUtils
+  commentId: T:JotunnLib.Utils.ReflectionUtils
+  name: ReflectionUtils
+  nameWithType: ReflectionUtils
+  fullName: JotunnLib.Utils.ReflectionUtils
+- uid: JotunnLib.Utils.AssetUtils
+  commentId: T:JotunnLib.Utils.AssetUtils
+  name: AssetUtils
+  nameWithType: AssetUtils
+  fullName: JotunnLib.Utils.AssetUtils

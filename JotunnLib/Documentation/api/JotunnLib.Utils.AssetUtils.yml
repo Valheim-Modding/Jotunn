@@ -1,0 +1,456 @@
+### YamlMime:ManagedReference
+items:
+- uid: JotunnLib.Utils.AssetUtils
+  commentId: T:JotunnLib.Utils.AssetUtils
+  id: AssetUtils
+  parent: JotunnLib.Utils
+  children:
+  - JotunnLib.Utils.AssetUtils.LoadMesh(System.String)
+  - JotunnLib.Utils.AssetUtils.LoadTexture(System.String)
+  langs:
+  - csharp
+  - vb
+  name: AssetUtils
+  nameWithType: AssetUtils
+  fullName: JotunnLib.Utils.AssetUtils
+  type: Class
+  source:
+    remote:
+      path: JotunnLib/Utils/AssetUtils.cs
+      branch: main
+      repo: git@github.com:raduschirliu/valheim-loki-loader
+    id: AssetUtils
+    path: Utils/AssetUtils.cs
+    startLine: 7
+  assemblies:
+  - JotunnLib
+  namespace: JotunnLib.Utils
+  syntax:
+    content: public static class AssetUtils
+    content.vb: Public Module AssetUtils
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.ToString
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  modifiers.csharp:
+  - public
+  - static
+  - class
+  modifiers.vb:
+  - Public
+  - Module
+- uid: JotunnLib.Utils.AssetUtils.LoadTexture(System.String)
+  commentId: M:JotunnLib.Utils.AssetUtils.LoadTexture(System.String)
+  id: LoadTexture(System.String)
+  parent: JotunnLib.Utils.AssetUtils
+  langs:
+  - csharp
+  - vb
+  name: LoadTexture(String)
+  nameWithType: AssetUtils.LoadTexture(String)
+  fullName: JotunnLib.Utils.AssetUtils.LoadTexture(System.String)
+  type: Method
+  source:
+    remote:
+      path: JotunnLib/Utils/AssetUtils.cs
+      branch: main
+      repo: git@github.com:raduschirliu/valheim-loki-loader
+    id: LoadTexture
+    path: Utils/AssetUtils.cs
+    startLine: 10
+  assemblies:
+  - JotunnLib
+  namespace: JotunnLib.Utils
+  syntax:
+    content: public static Texture2D LoadTexture(string texturePath)
+    parameters:
+    - id: texturePath
+      type: System.String
+    return:
+      type: UnityEngine.Texture2D
+    content.vb: Public Shared Function LoadTexture(texturePath As String) As Texture2D
+  overload: JotunnLib.Utils.AssetUtils.LoadTexture*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+- uid: JotunnLib.Utils.AssetUtils.LoadMesh(System.String)
+  commentId: M:JotunnLib.Utils.AssetUtils.LoadMesh(System.String)
+  id: LoadMesh(System.String)
+  parent: JotunnLib.Utils.AssetUtils
+  langs:
+  - csharp
+  - vb
+  name: LoadMesh(String)
+  nameWithType: AssetUtils.LoadMesh(String)
+  fullName: JotunnLib.Utils.AssetUtils.LoadMesh(System.String)
+  type: Method
+  source:
+    remote:
+      path: JotunnLib/Utils/AssetUtils.cs
+      branch: main
+      repo: git@github.com:raduschirliu/valheim-loki-loader
+    id: LoadMesh
+    path: Utils/AssetUtils.cs
+    startLine: 26
+  assemblies:
+  - JotunnLib
+  namespace: JotunnLib.Utils
+  syntax:
+    content: public static Mesh LoadMesh(string meshPath)
+    parameters:
+    - id: meshPath
+      type: System.String
+    return:
+      type: UnityEngine.Mesh
+    content.vb: Public Shared Function LoadMesh(meshPath As String) As Mesh
+  overload: JotunnLib.Utils.AssetUtils.LoadMesh*
+  modifiers.csharp:
+  - public
+  - static
+  modifiers.vb:
+  - Public
+  - Shared
+references:
+- uid: JotunnLib.Utils
+  commentId: N:JotunnLib.Utils
+  name: JotunnLib.Utils
+  nameWithType: JotunnLib.Utils
+  fullName: JotunnLib.Utils
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  name: Object
+  nameWithType: Object
+  fullName: System.Object
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  name: ToString()
+  nameWithType: Object.ToString()
+  fullName: System.Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    nameWithType: Object.ToString
+    fullName: System.Object.ToString
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object)
+  nameWithType: Object.Equals(Object)
+  fullName: System.Object.Equals(System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: Equals(Object, Object)
+  nameWithType: Object.Equals(Object, Object)
+  fullName: System.Object.Equals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    nameWithType: Object.Equals
+    fullName: System.Object.Equals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  name: ReferenceEquals(Object, Object)
+  nameWithType: Object.ReferenceEquals(Object, Object)
+  fullName: System.Object.ReferenceEquals(System.Object, System.Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    nameWithType: Object.ReferenceEquals
+    fullName: System.Object.ReferenceEquals
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: ', '
+    nameWithType: ', '
+    fullName: ', '
+  - uid: System.Object
+    name: Object
+    nameWithType: Object
+    fullName: System.Object
+    isExternal: true
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  name: GetHashCode()
+  nameWithType: Object.GetHashCode()
+  fullName: System.Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    nameWithType: Object.GetHashCode
+    fullName: System.Object.GetHashCode
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  name: GetType()
+  nameWithType: Object.GetType()
+  fullName: System.Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    nameWithType: Object.GetType
+    fullName: System.Object.GetType
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  name: MemberwiseClone()
+  nameWithType: Object.MemberwiseClone()
+  fullName: System.Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    nameWithType: Object.MemberwiseClone
+    fullName: System.Object.MemberwiseClone
+    isExternal: true
+  - name: (
+    nameWithType: (
+    fullName: (
+  - name: )
+    nameWithType: )
+    fullName: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: JotunnLib.Utils.AssetUtils.LoadTexture*
+  commentId: Overload:JotunnLib.Utils.AssetUtils.LoadTexture
+  name: LoadTexture
+  nameWithType: AssetUtils.LoadTexture
+  fullName: JotunnLib.Utils.AssetUtils.LoadTexture
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  name: String
+  nameWithType: String
+  fullName: System.String
+- uid: UnityEngine.Texture2D
+  commentId: T:UnityEngine.Texture2D
+  parent: UnityEngine
+  isExternal: true
+  name: Texture2D
+  nameWithType: Texture2D
+  fullName: UnityEngine.Texture2D
+- uid: UnityEngine
+  commentId: N:UnityEngine
+  isExternal: true
+  name: UnityEngine
+  nameWithType: UnityEngine
+  fullName: UnityEngine
+- uid: JotunnLib.Utils.AssetUtils.LoadMesh*
+  commentId: Overload:JotunnLib.Utils.AssetUtils.LoadMesh
+  name: LoadMesh
+  nameWithType: AssetUtils.LoadMesh
+  fullName: JotunnLib.Utils.AssetUtils.LoadMesh
+- uid: UnityEngine.Mesh
+  commentId: T:UnityEngine.Mesh
+  parent: UnityEngine
+  isExternal: true
+  name: Mesh
+  nameWithType: Mesh
+  fullName: UnityEngine.Mesh

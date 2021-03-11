@@ -1,0 +1,48 @@
+### YamlMime:ManagedReference
+items:
+- uid: JotunnLib.Entities
+  commentId: N:JotunnLib.Entities
+  id: JotunnLib.Entities
+  children:
+  - JotunnLib.Entities.ButtonConfig
+  - JotunnLib.Entities.PieceRequirementConfig
+  - JotunnLib.Entities.PrefabConfig
+  - JotunnLib.Entities.RecipeConfig
+  langs:
+  - csharp
+  - vb
+  name: JotunnLib.Entities
+  nameWithType: JotunnLib.Entities
+  fullName: JotunnLib.Entities
+  type: Namespace
+  assemblies:
+  - JotunnLib
+references:
+- uid: JotunnLib.Entities.ButtonConfig
+  commentId: T:JotunnLib.Entities.ButtonConfig
+  parent: JotunnLib.Entities
+  name: ButtonConfig
+  nameWithType: ButtonConfig
+  fullName: JotunnLib.Entities.ButtonConfig
+- uid: JotunnLib.Entities.PieceRequirementConfig
+  commentId: T:JotunnLib.Entities.PieceRequirementConfig
+  name: PieceRequirementConfig
+  nameWithType: PieceRequirementConfig
+  fullName: JotunnLib.Entities.PieceRequirementConfig
+- uid: JotunnLib.Entities.PrefabConfig
+  commentId: T:JotunnLib.Entities.PrefabConfig
+  parent: JotunnLib.Entities
+  name: PrefabConfig
+  nameWithType: PrefabConfig
+  fullName: JotunnLib.Entities.PrefabConfig
+- uid: JotunnLib.Entities.RecipeConfig
+  commentId: T:JotunnLib.Entities.RecipeConfig
+  parent: JotunnLib.Entities
+  name: RecipeConfig
+  nameWithType: RecipeConfig
+  fullName: JotunnLib.Entities.RecipeConfig
+- uid: JotunnLib.Entities
+  commentId: N:JotunnLib.Entities
+  name: JotunnLib.Entities
+  nameWithType: JotunnLib.Entities
+  fullName: JotunnLib.Entities

@@ -1,0 +1,35 @@
+### YamlMime:ManagedReference
+items:
+- uid: JotunnLib
+  commentId: N:JotunnLib
+  id: JotunnLib
+  children:
+  - JotunnLib.ConsoleCommand
+  - JotunnLib.Manager
+  langs:
+  - csharp
+  - vb
+  name: JotunnLib
+  nameWithType: JotunnLib
+  fullName: JotunnLib
+  type: Namespace
+  assemblies:
+  - JotunnLib
+references:
+- uid: JotunnLib.Manager
+  commentId: T:JotunnLib.Manager
+  parent: JotunnLib
+  name: Manager
+  nameWithType: Manager
+  fullName: JotunnLib.Manager
+- uid: JotunnLib.ConsoleCommand
+  commentId: T:JotunnLib.ConsoleCommand
+  parent: JotunnLib
+  name: ConsoleCommand
+  nameWithType: ConsoleCommand
+  fullName: JotunnLib.ConsoleCommand
+- uid: JotunnLib
+  commentId: N:JotunnLib
+  name: JotunnLib
+  nameWithType: JotunnLib
+  fullName: JotunnLib
