@@ -15,7 +15,7 @@ namespace SimpleMounts
     {
         public static Skills.SkillType RidingSkillType = 0;
 
-        void Awake()
+        private void Awake()
         {
             PrefabManager.Instance.PrefabRegister += initPrefabs;
             PrefabManager.Instance.PrefabsLoaded += modifyPrefabs;

@@ -1,0 +1,11 @@
+- name: Skills
+  href: skills.md
+
+- name: Prefabs
+  href: prefabs.md
+
+- name: Items
+  href: items.md
+
+- name: Recipes
+  href: recipes.md

@@ -1,6 +1,24 @@
 - name: Introduction
   href: intro.md
-- name: Skills
-  href: skills.md
-- name: Items
-  href: items.md
+  
+- name: Getting started
+  href: getting-started.md
+
+- name: Custom data
+  href: data/toc.yml
+  topicHref: data/overview.md
+
+- name: Custom commands
+  href: commands/toc.yml
+  topicHref: commands/overview.md
+
+- name: Inputs
+  href: inputs/toc.yml
+  topicHref: inputs/overview.md
+
+- name: Events
+  href: events/toc.yml
+  topicHref: events/overview.md
+
+- name: Localization
+  href: localization.md
