@@ -1,0 +1,20 @@
+jobs:
+  build_docs:
+    runs-on: ubuntu-latest
+    name: Builds documentation and publishes to GitHub Pages
+    steps:
+    # Checkout repo
+    - uses: actions/checkout@v1
+
+    # Build docs
+    - uses: nikeee/docfx-action@v1.0.0
+      name: Build documentation
+      with:
+        args: JotunnLib/docfx.json
+
+    # Publish generated site using GitHub Pages
+    - uses: maxheld83/ghpages@master
+      name: Publish documentation to GitHub Pages
+      env:
+        BUILD_DIR: JotunnLib/_site # docfx's default output directory is _site
+        GH_PAT: ${{ secrets.GH_PAT }} # See https://github.com/maxheld83/ghpages
