@@ -376,7 +376,7 @@
     <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Managers\CommandManager.cs" />
-    <Compile Include="ConsoleCommand.cs" />
+    <Compile Include="Entities\ConsoleCommand.cs" />
     <Compile Include="ConsoleCommands\ClearCommand.cs" />
     <Compile Include="ConsoleCommands\HelpCommand.cs" />
     <Compile Include="Managers\EventManager.cs" />

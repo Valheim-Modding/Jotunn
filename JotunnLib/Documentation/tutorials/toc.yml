@@ -24,4 +24,5 @@
   href: localization.md
 
 - name: Utils
-  href: utils.md
+  href: utils/toc.yml
+  topicHref: utils/overview.md

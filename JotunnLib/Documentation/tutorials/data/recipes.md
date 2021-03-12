@@ -1,4 +1,5 @@
 # Registering custom recipes
+_Recipes_ in Valheim are anything that the player is able to hold in their inventory.  
 Creation of custom recipes is done through the [ObjectManager](xref:JotunnLib.Managers.ObjectManager) singleton class.
 
 ## Usage
@@ -11,7 +12,7 @@ private void Awake()
 }
 ```
 
-then, create the handler. You can register custom items and recipes from this handler
+then, create the handler. You can register custom items and recipes from this handler. To register custom items, you must either pass a [RecipeConfig](xref:JotunnLib.Entities.RecipeConfig) instance to the function, or a Valheim `Recipe` object. The following example demonstrates how to use the [RecipeConfig](xref:JotunnLib.Entities.RecipeConfig), as it is easier and less verbose.
 
 ```cs
 private void initObjects(object sender, EventArgs e)

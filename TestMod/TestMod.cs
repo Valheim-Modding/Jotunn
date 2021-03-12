@@ -54,7 +54,7 @@ namespace TestMod
 
         void initCommands()
         {
-            CommandManager.Instance.RegisterConsoleCommand(new TestCommand());
+            CommandManager.Instance.RegisterConsoleCommand(new PrintItemsCommand());
             CommandManager.Instance.RegisterConsoleCommand(new TpCommand());
             CommandManager.Instance.RegisterConsoleCommand(new ListPlayersCommand());
             CommandManager.Instance.RegisterConsoleCommand(new SkinColorCommand());

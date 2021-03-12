@@ -1,4 +1,5 @@
 # Registering custom items
+_Items_ in Valheim are anything that the player is able to hold in their inventory.  
 Creation of custom items is done through the [ObjectManager](xref:JotunnLib.Managers.ObjectManager) singleton class.
 
 ## Usage

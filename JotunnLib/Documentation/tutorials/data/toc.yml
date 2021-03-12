@@ -9,3 +9,12 @@
 
 - name: Recipes
   href: recipes.md
+
+- name: Pieces
+  href: pieces.md
+
+- name: Piece tables
+  href: piece-tables.md
+
+- name: Vegetation
+  href: vegetation.md

@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
-using JotunnLib;
+using JotunnLib.Entities;
 
 namespace TestMod.ConsoleCommands
 {
-    public class TestCommand : ConsoleCommand
+    public class PrintItemsCommand : ConsoleCommand
     {
-        public override string Name => "test_cmd";
+        public override string Name => "print_items";
 
-        public override string Help => "Some testing command";
+        public override string Help => "Prints all existing items";
 
         public override void Run(string[] args)
         {
