@@ -2,7 +2,7 @@
 Creation of custom recipes is done through the [ObjectManager](xref:JotunnLib.Managers.ObjectManager) singleton class.
 
 ## Usage
-To create a new recipe, you must first add a handler for the [ObjectLoad](xref:JotunnLib.Managers.ObjectManager.ObjectLoad) event
+To create a new recipe, you must first add a handler for the [ObjectRegister](xref:JotunnLib.Managers.ObjectManager.ObjectRegister) event
 
 ```cs
 private void Awake()
