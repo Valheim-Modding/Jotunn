@@ -5,3 +5,5 @@ packages/
 JotunnLib/log.txt
 JotunnLib/_site/
 JotunnLib/Documentation/api
+lib/
+Lib/

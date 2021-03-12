@@ -10,6 +10,15 @@ jobs:
     steps:
     # Checkout repo
     - uses: actions/checkout@v1
+      name: Checkout repo
+
+    # Install NuGet
+    - uses: nuget/setup-nuget@v1
+      name: Install NuGet
+
+    # Install NuGet dependencies
+    - name: Install NuGet dependencies
+      run: nuget restore JotunnLib.sln
 
     # Build docs
     - uses: nikeee/docfx-action@v1.0.0
