@@ -14,6 +14,12 @@ Instructions for installing and using JotunnLib as a user:
 ## Developing mods
 Visit our [documentation site](https://jotunnlib.github.io/jotunnlib) for more info.
 
+## Repo structure
+The repository is split up into a few parts:
+- Code relating to JotunnLib is in the [JotunnLib](https://github.com/jotunnlib/jotunnlib/tree/main/JotunnLib) folder
+- Documentation source for JotunnLib is within the [JotunnLib/Documentation](https://github.com/jotunnlib/jotunnlib/tree/main/JotunnLib/Documentation) folder
+- Demo mod used as an example is in the [TestMod](https://github.com/jotunnlib/jotunnlib/tree/main/TestMod) folder
+
 ## Issues
 Have any issues or feature requests? Open a [pull request](https://github.com/jotunnlib/jotunnlib/pulls) or submit an [issue](https://github.com/jotunnlib/jotunnlib/issues)!
 
