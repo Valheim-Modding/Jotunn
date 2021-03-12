@@ -30,7 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-    <ItemGroup>
+  <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
@@ -370,7 +370,7 @@
     <Compile Include="ConsoleCommands\RaiseSkillCommand.cs" />
     <Compile Include="ConsoleCommands\SkinColorCommand.cs" />
     <Compile Include="ConsoleCommands\BetterSpawnCommand.cs" />
-    <Compile Include="ConsoleCommands\TestCommand.cs" />
+    <Compile Include="ConsoleCommands\PrintItemsCommand.cs" />
     <Compile Include="ConsoleCommands\TpCommand.cs" />
     <Compile Include="TestMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
