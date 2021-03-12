@@ -5,9 +5,16 @@ using BepInEx;
 
 namespace JotunnLib.Utils
 {
+    /// <summary>
+    /// Util functions related to loading assets at runtime.
+    /// </summary>
     public static class AssetUtils
     {
-        // Texture path relative to "plugins" BepInEx folder
+        /// <summary>
+        /// Loads a 2D texture from file at runtime.
+        /// </summary>
+        /// <param name="texturePath">Texture path relative to "plugins" BepInEx folder</param>
+        /// <returns>Texture2D loaded, or null if invalid path</returns>
         public static Texture2D LoadTexture(string texturePath)
         {
             string path = Path.Combine(Paths.PluginPath, texturePath);
@@ -23,7 +30,11 @@ namespace JotunnLib.Utils
             return tex;
         }
 
-        // Mesh path relative to "plugins" BepInEx folder
+        /// <summary>
+        /// Loads a mesh from a .obj file at runtime.
+        /// </summary>
+        /// <param name="meshPath">Mesh path relative to "plugins" BepInEx folder</param>
+        /// <returns>Texture2D loaded, or null if invalid path</returns>
         public static Mesh LoadMesh(string meshPath)
         {
             string path = Path.Combine(Paths.PluginPath, meshPath);
