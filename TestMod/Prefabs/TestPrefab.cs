@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using JotunnLib.Entities;
 
-namespace TestMod
+namespace TestMod.Prefabs
 {
     public class TestPrefab : PrefabConfig
     {

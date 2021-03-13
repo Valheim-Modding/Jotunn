@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace JotunnLib.Managers
 {
-    public class ZoneManager : Manager
+    internal class ZoneManager : Manager
     {
         public static ZoneManager Instance { get; private set; }
 

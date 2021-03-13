@@ -7,6 +7,7 @@ using JotunnLib.ConsoleCommands;
 using JotunnLib.Entities;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
+using TestMod.Prefabs;
 
 namespace TestMod
 {
@@ -17,15 +18,18 @@ namespace TestMod
         public static Skills.SkillType TestSkillType = 0;
         private bool showMenu = false;
 
+        // Init handlers
         private void Awake()
         {
             ObjectManager.Instance.ObjectRegister += registerObjects;
             PrefabManager.Instance.PrefabRegister += registerPrefabs;
+            PieceManager.Instance.PieceRegister += registerPieces;
 
             registerCommands();
             registerSkills();
         }
 
+        // Called every second
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Insert))
@@ -34,7 +38,8 @@ namespace TestMod
             }
         }
 
-        void OnGUI()
+        // Display our GUI if enabled
+        private void OnGUI()
         {
             if (showMenu)
             {
@@ -42,11 +47,20 @@ namespace TestMod
             }
         }
 
+        // Register new prefabs
         private void registerPrefabs(object sender, EventArgs e)
         {
             PrefabManager.Instance.RegisterPrefab(new TestPrefab());
+            PrefabManager.Instance.RegisterPrefab(new TestCubePrefab());
         }
 
+        // Register new pieces
+        private void registerPieces(object sender, EventArgs e)
+        {
+            PieceManager.Instance.RegisterPiece("Hammer", "TestCube");
+        }
+
+        // Register new items and recipes
         private void registerObjects(object sender, EventArgs e)
         {
             // Items
@@ -84,6 +98,7 @@ namespace TestMod
             });
         }
 
+        // Register new console commands
         private void registerCommands()
         {
             CommandManager.Instance.RegisterConsoleCommand(new PrintItemsCommand());
@@ -95,6 +110,7 @@ namespace TestMod
         }
 
 
+        // Register new skills
         void registerSkills()
         {
             // Test adding a skill with a texture

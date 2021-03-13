@@ -90,6 +90,10 @@ namespace JotunnLib.Managers
             Prefabs.Add(name, prefab);
         }
 
+        /// <summary>
+        /// Registers a new prefab from given PrefabConfig instance
+        /// </summary>
+        /// <param name="prefabConfig">Prefab configuration</param>
         public void RegisterPrefab(PrefabConfig prefabConfig)
         {
             if (prefabConfig.BasePrefabName == null || prefabConfig.BasePrefabName == "")
@@ -101,20 +105,43 @@ namespace JotunnLib.Managers
                 prefabConfig.Prefab = CreatePrefab(prefabConfig.Name, prefabConfig.BasePrefabName);
             }
 
-            prefabConfig.Register();
+            // If no error occured, register prefab
+            if (prefabConfig.Prefab != null)
+            {
+                prefabConfig.Register();
+            }
         }
 
+        /// <summary>
+        /// Registers a new prefab that's an empty primitive, with just a ZNetView component
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public GameObject CreatePrefab(string name)
         {
-            GameObject prefab = new GameObject(name);
+            if (GetPrefab(name))
+            {
+                Debug.LogError("Prefab already exists: " + name);
+                return null;
+            }
+
+            GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            prefab.name = name;
             prefab.transform.parent = PrefabContainer.transform;
 
             // TODO: Add any components required for it to work as a prefab (ZNetView, etc?)
-            Prefabs.Add(name, prefab);
+            prefab.AddComponent<ZNetView>();
 
+            Prefabs.Add(name, prefab);
             return prefab;
         }
 
+        /// <summary>
+        /// Registers a new prefab that's a copy of given base.
+        /// </summary>
+        /// <param name="name">New prefab name</param>
+        /// <param name="baseName">Base prefab name</param>
+        /// <returns>New prefab object</returns>
         public GameObject CreatePrefab(string name, string baseName)
         {
             if (GetPrefab(name))

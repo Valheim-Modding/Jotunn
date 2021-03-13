@@ -123,7 +123,7 @@ namespace JotunnLib.Managers
             Debug.Log("Registered piece: " + prefabName + " to " + pieceTable);
         }
 
-        public void RegisterPiece(string pieceTable, GameObject prefab)
+        internal void RegisterPiece(string pieceTable, GameObject prefab)
         {
             PieceTable table = getPieceTable(pieceTable);
 

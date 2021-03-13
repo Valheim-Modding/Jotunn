@@ -17,11 +17,11 @@ namespace JotunnLib.Entities
 
         public Recipe GetRecipe()
         {
-            Piece.Requirement[] resources = new Piece.Requirement[Requirements.Length];
+            Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];
 
-            for (int i = 0; i < resources.Length; i++)
+            for (int i = 0; i < reqs.Length; i++)
             {
-                resources[i] = Requirements[i].GetPieceRequirement();
+                reqs[i] = Requirements[i].GetPieceRequirement();
             }
 
             return new Recipe()
@@ -31,7 +31,7 @@ namespace JotunnLib.Entities
                 m_enabled = Enabled,
                 m_craftingStation = PrefabManager.Instance.GetPrefab(CraftingStation).GetComponent<CraftingStation>(),
                 m_minStationLevel = MinStationLevel,
-                m_resources = resources
+                m_resources = reqs
             };
         }
     }

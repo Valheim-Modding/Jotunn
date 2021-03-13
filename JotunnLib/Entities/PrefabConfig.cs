@@ -20,5 +20,14 @@ namespace JotunnLib.Entities
         }
 
         public abstract void Register();
+
+        public Piece AddPiece(PieceConfig pieceConfig)
+        {
+            Piece piece = Prefab.AddComponent<Piece>();
+            piece.m_name = pieceConfig.Name;
+            piece.m_description = pieceConfig.Description;
+            piece.m_resources = pieceConfig.GetRequirements();
+            return piece;
+        }
     }
 }
