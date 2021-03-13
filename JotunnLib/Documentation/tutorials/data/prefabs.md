@@ -13,7 +13,7 @@ For a list of existing in-game prefabs, check [this handy Reddit thread](https:/
 ## Example
 In order to create a prefab, there's a couple different approaches:
 - [PrefabConfig approach](#prefabconfig-approach): using a [PrefabConfig](xref:JotunnLib.Entities.PrefabConfig) to hold our Prefab info
-- [CreatePrefab approach](#functional-approach): Using the `CreatePrefab` functions
+- [CreatePrefab approach](#createprefab-approach): Using the `CreatePrefab` functions
 
 Below we'll look at both ways of creating the exact same prefab. You'll notice that the functional approach may look neater, however, it gets unwieldy fairly quickly when you register many prefabs within the same file - hence the PrefabConfig approach is recommended.
 

@@ -4,7 +4,7 @@ Creation of custom recipes is done through the [ObjectManager](xref:JotunnLib.Ma
 
 All recipes will always be loaded **after** all items. However, recipes will be loaded in the order that you call the `RegisterRecipe` function.
 
-**Note:** You **must** only use names of existing prefabs (either ones you created or default Valheim ones). This can be prefabs that have already been registered by another mod, or that already exist in the game. Here is a [list of availible prefabs](prefabs.md#Existing-prefabs).
+**Note:** You **must** only use names of existing prefabs (either ones you created or default Valheim ones). This can be prefabs that have already been registered by another mod, or that already exist in the game. Here is a [list of availible prefabs](prefabs.md).
 
 ## Example
 To create a new recipe, you must first add a handler for the [ObjectRegister](xref:JotunnLib.Managers.ObjectManager.ObjectRegister) event
