@@ -1,6 +1,9 @@
 # JotunnLib
 Currently, this documentation site is split into two sections.
 
+## Source code
+The source code is available on GitHub, [here](https://github.com/jotunnlib/jotunnlib) 
+
 ## Tutorials
 This section contains tutorials on how to get started with using JotunnLib, and how to create a basic mod. View it [here](tutorials/intro.md)
 

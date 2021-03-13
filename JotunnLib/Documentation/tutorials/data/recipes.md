@@ -2,7 +2,7 @@
 _Recipes_ in Valheim are anything that the player is able to hold in their inventory.  
 Creation of custom recipes is done through the [ObjectManager](xref:JotunnLib.Managers.ObjectManager) singleton class.
 
-## Usage
+## Example
 To create a new recipe, you must first add a handler for the [ObjectRegister](xref:JotunnLib.Managers.ObjectManager.ObjectRegister) event
 
 ```cs
