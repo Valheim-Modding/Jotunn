@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JotunnLib.Utils;
+using JotunnLib.Entities;
 
 namespace JotunnLib.ConsoleCommands
 {

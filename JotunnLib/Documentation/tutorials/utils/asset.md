@@ -19,7 +19,12 @@ we can load a 2D texture dynamically by doing the following anywhere in our code
 Texture2D texture = AssetUtils.LoadTexture("MyTexture.jpg");
 ```
 
-this `texture` object can now be used as a sprite for an item, or anything else.
+this `texture` object can now be used as a sprite for an item, or anything else. For example, creating a sprite
+
+```cs
+Texture2D texture = AssetUtils.LoadTexture("MyTexture.jpg");
+Sprite sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+```
 
 ## Loading models
 Loading `.obj` models at runtime can be done through the [AssetUtils.LoadMesh](xref:JotunnLib.Utils.AssetUtils.LoadMesh(System.String)) static function.

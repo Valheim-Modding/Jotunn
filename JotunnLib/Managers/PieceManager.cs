@@ -10,6 +10,7 @@ namespace JotunnLib.Managers
         public static PieceManager Instance { get; private set; }
         public event EventHandler PieceTableRegister;
         public event EventHandler PieceRegister;
+        internal GameObject PieceTableContainer;
 
         private Dictionary<string, PieceTable> pieceTables = new Dictionary<string, PieceTable>();
         private Dictionary<string, string> pieceTableNameMap = new Dictionary<string, string>()
@@ -18,7 +19,6 @@ namespace JotunnLib.Managers
             { "Hammer", "_HammerPieceTable" },
             { "Hoe", "_HoePieceTable" }
         };
-        private GameObject pieceTableContainer;
 
         private void Awake()
         {
@@ -33,8 +33,9 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            pieceTableContainer = new GameObject("_PieceTables");
-            UnityEngine.Object.DontDestroyOnLoad(pieceTableContainer);
+            PieceTableContainer = new GameObject("PieceTables");
+            PieceTableContainer.transform.parent = JotunnLib.RootObject.transform;
+            UnityEngine.Object.DontDestroyOnLoad(PieceTableContainer);
 
             Debug.Log("Initialized PieceTableManager");
         }
@@ -48,7 +49,7 @@ namespace JotunnLib.Managers
         {
             pieceTables.Clear();
             
-            foreach (Transform child in pieceTableContainer.transform)
+            foreach (Transform child in PieceTableContainer.transform)
             {
                 GameObject.Destroy(child.gameObject);
             }
@@ -95,7 +96,7 @@ namespace JotunnLib.Managers
             }
 
             GameObject obj = new GameObject(name);
-            obj.transform.parent = pieceTableContainer.transform;
+            obj.transform.parent = PieceTableContainer.transform;
 
             PieceTable table = obj.AddComponent<PieceTable>();
             pieceTables.Add(name, table);

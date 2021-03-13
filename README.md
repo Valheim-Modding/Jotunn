@@ -11,6 +11,36 @@ Instructions for installing and using JotunnLib as a user:
     Unzip the downloaded files into `<Steam Location>\steamapps\common\Valheim\BepInEx\plugins`.
 3. That's it! Now download some mods which use JotunnLib! :)
 
+## Features & Roadmap
+Currently, JotunnLib lets you create & add all of the following custom things into Valheim:
+
+- [x] Custom prefabs
+- [x] Custom inventory items
+- [x] Custom recipes
+    - [ ] Create using JSON
+- [x] Custom input buttons
+    - [ ] Ability to change custom keybinds in-game via settings menu
+- [x] Custom skills
+    - [ ] Add using JSON
+- [x] Custom localizations for current language
+    - [ ] Localizations for other languages
+    - [ ] Localizations from JSON file
+- [x] Custom piece tables (create your own variant of the Hammer, Cultivator, etc.)
+    - [ ] Create using JSON
+- [x] Custom pieces to existing piece tables (adding extra items to Hammer, Cultivator, etc.)
+    - [ ] Add using JSON
+- [x] Custom vegetation spawning in the world
+- [x] Utils for loading custom assets at runtime
+    - [x] Loading 2D textures
+    - [x] Loading meshes from .obj model files
+- [ ] Custom commands
+    - [x] Custom console commands
+    - [ ] Custom chat commands
+- [ ] Listening to game events
+    - [x] (Currently very few event listeners implemented)
+    - [ ] All game events
+- [ ] Custom tabs for in-game settings menu
+
 ## Developing mods
 Visit our [documentation site](https://jotunnlib.github.io/jotunnlib) for more info.
 

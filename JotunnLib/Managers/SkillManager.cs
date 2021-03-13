@@ -42,7 +42,7 @@ namespace JotunnLib.Managers
             Skills.SkillDef skillDef = new Skills.SkillDef()
             {
                 m_skill = (Skills.SkillType)nextSkillId,
-                m_description = "skill_" + nextSkillId + "_description",
+                m_description = "$skill_" + nextSkillId + "_description",
                 m_increseStep = increaseStep, // nice they spelled increase wrong 
                 m_icon = icon
             };
@@ -63,6 +63,20 @@ namespace JotunnLib.Managers
             if (Skills.ContainsKey(skillType))
             {
                 return Skills[skillType];
+            }
+
+            if (Player.m_localPlayer != null)
+            {
+                if (Player.m_localPlayer.GetSkills() != null)
+                {
+                    foreach (Skills.SkillDef skill in Player.m_localPlayer.GetSkills().m_skills)
+                    {
+                        if (skill.m_skill == skillType)
+                        {
+                            return skill;
+                        }
+                    }
+                }
             }
 
             return null;

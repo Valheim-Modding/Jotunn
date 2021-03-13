@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using BepInEx;
 using HarmonyLib;
 using JotunnLib.ConsoleCommands;
@@ -8,9 +9,12 @@ using JotunnLib.Managers;
 
 namespace JotunnLib
 {
-    [BepInPlugin("com.bepinex.plugins.jotunnlib", "JotunnLib", "0.0.1")]
+    [BepInPlugin("com.bepinex.plugins.jotunnlib", "JotunnLib", Version)]
     internal class JotunnLib : BaseUnityPlugin
     {
+        // Version
+        public const string Version = "0.0.1";
+
         // Load order for managers
         private readonly List<Type> managerTypes = new List<Type>()
         {
@@ -37,6 +41,7 @@ namespace JotunnLib
 
             // Create and initialize all managers
             RootObject = new GameObject("_JotunnLibRoot");
+            GameObject.DontDestroyOnLoad(RootObject);
 
             foreach (Type managerType in managerTypes)
             {
@@ -50,7 +55,16 @@ namespace JotunnLib
 
             initCommands();
 
-            Debug.Log("JotunnLib loaded successfully");
+            Debug.Log("JotunnLib v" + Version + " loaded successfully");
+        }
+
+        private void OnGUI()
+        {
+            // Display version in main menu
+            if (SceneManager.GetActiveScene().name == "start")
+            {
+                GUI.Label(new Rect(Screen.width - 100, 5, 100, 25), "JotunnLib v" + Version);
+            }
         }
 
         private void initCommands()

@@ -1,4 +1,5 @@
 ﻿using JotunnLib.Managers;
+using JotunnLib.Entities;
 
 namespace JotunnLib.ConsoleCommands
 {
