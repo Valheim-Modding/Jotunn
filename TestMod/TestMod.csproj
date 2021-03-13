@@ -374,6 +374,7 @@
     <Compile Include="ConsoleCommands\TpCommand.cs" />
     <Compile Include="TestMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestPrefab.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">

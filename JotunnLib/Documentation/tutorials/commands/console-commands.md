@@ -8,7 +8,7 @@ _Note: Console command names **must** be unique._
 ## Example
 From the [TestMod](https://github.com/jotunnlib/jotunnlib/blob/main/TestMod/ConsoleCommands/PrintItemsCommand.cs), creating a custom console command which will print all registered item names.  
 
-The custom console command:
+The custom console command
 ```cs
 public class PrintItemsCommand : ConsoleCommand
 {
@@ -28,7 +28,7 @@ public class PrintItemsCommand : ConsoleCommand
 }
 ```
 
-Registering the console command:
+Finally, registering the console command
 
 ```cs
 private void Awake()

@@ -6,6 +6,9 @@ using JotunnLib.Utils;
 
 namespace JotunnLib.Managers
 {
+    /// <summary>
+    /// Handles all logic to do with managing custom prefabs added into the game.
+    /// </summary>
     public class PrefabManager : Manager
     {
         public static PrefabManager Instance { get; private set; }
@@ -73,7 +76,7 @@ namespace JotunnLib.Managers
             Debug.Log("All prefabs loaded");
         }
 
-        public void RegisterPrefab(GameObject prefab, string name)
+        internal void RegisterPrefab(GameObject prefab, string name)
         {
             if (GetPrefab(name))
             {
@@ -136,6 +139,11 @@ namespace JotunnLib.Managers
             return prefab;
         }
 
+        /// <summary>
+        /// Returns an existing prefab with given name, or null if none exist.
+        /// </summary>
+        /// <param name="name">Name of the prefab to search for</param>
+        /// <returns></returns>
         public GameObject GetPrefab(string name)
         {
             if (Prefabs.ContainsKey(name))

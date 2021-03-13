@@ -22,3 +22,9 @@ namespace TestMod
     }
 }
 ```
+
+_Note: Unless you actually have any levels in your skill, it won't show up in the skils menu. You must first raise your skill (either using a command, or actually implementing a way to earn levels) in order to be able to see it_
+
+This is what it should look like in game:
+
+![Our Skill in Game](/Documentation/images/data/test-skill.png "Our Skill in Game")

@@ -4,6 +4,7 @@ using BepInEx;
 using TestMod.ConsoleCommands;
 using JotunnLib;
 using JotunnLib.ConsoleCommands;
+using JotunnLib.Entities;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
 
@@ -18,8 +19,11 @@ namespace TestMod
 
         private void Awake()
         {
-            initCommands();
-            initSkills();
+            ObjectManager.Instance.ObjectRegister += registerObjects;
+            PrefabManager.Instance.PrefabRegister += registerPrefabs;
+
+            registerCommands();
+            registerSkills();
         }
 
         private void Update()
@@ -38,7 +42,49 @@ namespace TestMod
             }
         }
 
-        private void initCommands()
+        private void registerPrefabs(object sender, EventArgs e)
+        {
+            PrefabManager.Instance.RegisterPrefab(new TestPrefab());
+        }
+
+        private void registerObjects(object sender, EventArgs e)
+        {
+            // Items
+            ObjectManager.Instance.RegisterItem("TestPrefab");
+
+            // Recipes
+            ObjectManager.Instance.RegisterRecipe(new RecipeConfig()
+            {
+                // Name of the prefab for the crafted item
+                Item = "TestPrefab",
+
+                // Name of the prefab for the crafting station we wish to use
+                CraftingStation = "forge",
+
+                // List of requirements to craft your item
+                Requirements = new PieceRequirementConfig[]
+                {
+                    new PieceRequirementConfig()
+                    {
+                        // Prefab name of requirement
+                        Item = "Blueberries",
+
+                        // Amount required
+                        Amount = 2
+                    },
+                    new PieceRequirementConfig()
+                    {
+                        // Prefab name of requirement
+                        Item = "DeerHide",
+
+                        // Amount required
+                        Amount = 1
+                    }
+                }
+            });
+        }
+
+        private void registerCommands()
         {
             CommandManager.Instance.RegisterConsoleCommand(new PrintItemsCommand());
             CommandManager.Instance.RegisterConsoleCommand(new TpCommand());
@@ -49,7 +95,7 @@ namespace TestMod
         }
 
 
-        void initSkills()
+        void registerSkills()
         {
             // Test adding a skill with a texture
             Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");

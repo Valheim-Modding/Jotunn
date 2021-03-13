@@ -4,7 +4,7 @@ Custom inputs can be registered through the [InputManager](xref:JotunnLib.Manage
 ## Example
 First, within `Awake` in your mod class, create register handler for the [InputRegister](xref:JotunnLib.Managers.InputManager.InputRegister)
 
-```csharp
+```cs
 private void Awake()
 {
     InputManager.Instance.InputRegister += initInputs;
@@ -14,7 +14,7 @@ private void Awake()
 Next, register your inputs within the handler using the `RegisterInput` command from [InputManager](xref:JotunnLib.Managers.InputManager).
 This version of [RegisterInput](JotunnLib.Managers.InputManager.RegisterButton(System.String,UnityEngine.KeyCode,System.Single,System.Single)) takes a string argument for the key name (this **MUST** be unique), and a UnityEngine KeyCode as the default arguments
 
-```csharp
+```cs
 private void initInputs(object sender, EventArgs e)
 {
     InputManager.Instance.RegisterButton("Unmount", KeyCode.V);
