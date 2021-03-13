@@ -6,7 +6,7 @@ using JotunnLib.Utils;
 namespace JotunnLib.Managers
 {
     /// <summary>
-    /// Handles all logic to do with managing the game's localizations
+    /// Handles all logic to do with managing the game's localizations.
     /// </summary>
     public class LocalizationManager : Manager
     {

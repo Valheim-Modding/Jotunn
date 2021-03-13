@@ -36,3 +36,6 @@ namespace TestMod
 
 That's it! Now you can go about creating your mod as normal, using any HarmonyX or JotunnLib functionality as you wish.  
 Refer to the following sections for guides on how to use JotunnLib to add custom data to the game.
+
+## Installing your mod
+Just like any other BepInEx mod, you can install it by just putting the mod DLL file in `BepInEx/plugins`, along with any other assets it may need.

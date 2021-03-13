@@ -1,2 +1,0 @@
-# Events list
-WIP
