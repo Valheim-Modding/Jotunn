@@ -39,10 +39,15 @@ jobs:
                 mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
                 mv ~/BepInExRaw/BepInExPack_Valheim/unstripped_corlib/* ~/VHINSTALL/valheim_Data/Managed/
                 mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
-                ls ~
 
             # Build DLLs
             - name: Build solution
               run: |
                 export VALHEIM_INSTALL=~/VHINSTALL/
                 xbuild JotunnLib.sln /p:Configuration=Debug
+
+            # Upload artifact
+            - uses: actions/upload-artifact@v2
+              with:
+                name: JotunnLib-${{ github.event.number }}.dll
+                path: JotunnLib/obj/Debug/JotunnLib.dll
