@@ -389,7 +389,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)TestMod.dll" "$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\TestMod.dll" /Y
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT' ">xcopy "$(TargetDir)TestMod.dll" "$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\TestMod.dll" /Y
 xcopy "$(ProjectDir)Assets" "$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\Assets\" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>
