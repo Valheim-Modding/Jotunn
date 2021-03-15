@@ -12,6 +12,7 @@ namespace JotunnLib.Managers
         public event EventHandler PieceRegister;
         internal GameObject PieceTableContainer;
 
+        private bool loaded = false;
         private Dictionary<string, PieceTable> pieceTables = new Dictionary<string, PieceTable>();
         private Dictionary<string, string> pieceTableNameMap = new Dictionary<string, string>()
         {
@@ -47,6 +48,12 @@ namespace JotunnLib.Managers
 
         internal override void Load()
         {
+            if (loaded)
+            {
+                return;
+            }
+
+            // Clear piece tables and re-load
             pieceTables.Clear();
             
             foreach (Transform child in PieceTableContainer.transform)
@@ -85,6 +92,7 @@ namespace JotunnLib.Managers
 
             Debug.Log("---- Loading pieces ----");
             PieceRegister?.Invoke(null, EventArgs.Empty);
+            loaded = true;
         }
 
         public void RegisterPieceTable(string name)
@@ -116,6 +124,12 @@ namespace JotunnLib.Managers
             if (!prefab)
             {
                 Debug.LogError("Prefab does not exist: " + prefabName);
+                return;
+            }
+
+            if (!prefab.GetComponent<Piece>())
+            {
+                Debug.LogError("Prefab does not have Piece component: " + prefabName);
                 return;
             }
 

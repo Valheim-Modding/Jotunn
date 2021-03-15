@@ -77,7 +77,7 @@ private void registerPieces(object sender, EventArgs e)
 }
 ```
 
-That's all! Now, if we pick up a piece of Wood in game we'll get the recipe, and can now build our cube using the hammer!
+That's all! Now, if we pick up a piece of Wood in game we'll get the recipe, and can now build our cube using the hammer!  
 
 ![Cube Piece in Build Menu](../../images/data/cube-piece-inv.png "Cube Piece in Build Menu")
 ![Cube Piece in World](../../images/data/cube-piece-world.png "Cube Piece in World")

@@ -52,7 +52,7 @@ namespace JotunnLib.Managers
             foreach (Recipe recipe in Recipes)
             {
                 ObjectDB.instance.m_recipes.Add(recipe);
-                Debug.Log("Loaded item recipe: " + recipe.m_item.m_itemData.m_shared.m_name);
+                Debug.Log("Loaded item recipe: " + recipe.name);
             }
 
             // Update hashes
@@ -69,9 +69,17 @@ namespace JotunnLib.Managers
             Items.Add(item);
         }
 
-        public void RegisterRecipe(RecipeConfig recipe)
+        public void RegisterRecipe(RecipeConfig recipeConfig)
         {
-            Recipes.Add(recipe.GetRecipe());
+            Recipe recipe = recipeConfig.GetRecipe();
+
+            if (recipe == null)
+            {
+                Debug.LogError("Failed to add recipe for item: " + recipeConfig.Item);
+                return;
+            }
+
+            Recipes.Add(recipe);
         }
 
         public void RegisterRecipe(Recipe recipe)

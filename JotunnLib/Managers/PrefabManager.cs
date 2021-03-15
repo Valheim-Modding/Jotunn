@@ -16,6 +16,7 @@ namespace JotunnLib.Managers
 
         public event EventHandler PrefabRegister, PrefabsLoaded;
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
+        private bool loaded = false;
 
         private void Awake()
         {
@@ -46,21 +47,16 @@ namespace JotunnLib.Managers
         internal override void Load()
         {
             Debug.Log("---- Registering custom prefabs ----");
-            
-            // Clear existing
-            Prefabs.Clear();
-
-            foreach (Transform child in PrefabContainer.transform)
-            {
-                GameObject.Destroy(child.gameObject);
-            }
 
             // Call event handlers to load prefabs
-            PrefabRegister?.Invoke(null, EventArgs.Empty);
-
-            var namedPrefabs = ReflectionUtils.GetPrivateField<Dictionary<int, GameObject>>(ZNetScene.instance, "m_namedPrefabs");
+            if (!loaded)
+            {
+                PrefabRegister?.Invoke(null, EventArgs.Empty);
+            }
 
             // Load prefabs into game
+            var namedPrefabs = ReflectionUtils.GetPrivateField<Dictionary<int, GameObject>>(ZNetScene.instance, "m_namedPrefabs");
+
             foreach (var pair in Prefabs)
             {
                 GameObject prefab = pair.Value;
@@ -72,8 +68,13 @@ namespace JotunnLib.Managers
             }
 
             // Send event that all prefabs are loaded
-            PrefabsLoaded?.Invoke(null, EventArgs.Empty);
+            if (!loaded)
+            {
+                PrefabsLoaded?.Invoke(null, EventArgs.Empty);
+            }
+
             Debug.Log("All prefabs loaded");
+            loaded = true;
         }
 
         internal void RegisterPrefab(GameObject prefab, string name)
@@ -129,8 +130,9 @@ namespace JotunnLib.Managers
             prefab.name = name;
             prefab.transform.parent = PrefabContainer.transform;
 
-            // TODO: Add any components required for it to work as a prefab (ZNetView, etc?)
-            prefab.AddComponent<ZNetView>();
+            // Add ZNetView and make prefabs persistent by default
+            ZNetView newView = prefab.AddComponent<ZNetView>();
+            newView.m_persistent = true;
 
             Prefabs.Add(name, prefab);
             return prefab;
