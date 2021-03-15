@@ -40,7 +40,6 @@ jobs:
                 mv ~/BepInExRaw/BepInExPack_Valheim/unstripped_corlib/* ~/VHINSTALL/valheim_Data/Managed/
                 mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
                 export VALHEIM_INSTALL=~/VHINSTALL/
-                ls JotunnLib/obj/Debug/
 
             # Build DLLs
             - name: Build solution
