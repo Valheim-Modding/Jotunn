@@ -55,4 +55,4 @@ jobs:
             - uses: actions/upload-artifact@v2
               with:
                 name: JotunnLib-${{ steps.date.outputs.date }}.dll
-                path: JotunnLib/obj/Debug/JotunnLib.dll
+                path: JotunnLib/obj/Release/JotunnLib.dll
