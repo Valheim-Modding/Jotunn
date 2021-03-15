@@ -14,9 +14,14 @@ namespace JotunnLib.Patches
         {
             public static void Postfix()
             {
+#if DEBUG
                 Debug.Log("----> ZNetScene Awake");
+#endif
+                PrefabManager.Instance.Register();
                 PrefabManager.Instance.Load();
+
                 ZoneManager.Instance.Register();
+                ZoneManager.Instance.Load();
             }
         }
     }

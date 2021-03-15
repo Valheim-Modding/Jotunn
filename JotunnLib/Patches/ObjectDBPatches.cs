@@ -15,7 +15,9 @@ namespace JotunnLib.Patches
         {
             public static void Postfix()
             {
+#if DEBUG
                 Debug.Log("----> ObjectDB Awake");
+#endif
 
                 if (SceneManager.GetActiveScene().name == "main")
                 {

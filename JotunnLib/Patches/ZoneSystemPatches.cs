@@ -14,7 +14,9 @@ namespace JotunnLib.Patches
         {
             public static void Postfix()
             {
+#if DEBUG
                 Debug.Log("----> ZoneSystem Awake");
+#endif
                 // ZoneManager.Instance.Register();
             }
         }

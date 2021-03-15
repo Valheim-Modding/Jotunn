@@ -15,19 +15,12 @@ namespace JotunnLib.Patches
         {
             public static void Prefix(ref Player __instance, ref bool ___m_firstSpawn)
             {
+#if DEBUG
                 // Temp: disable valkyrie animation during testing for sanity reasons
                 ___m_firstSpawn = false;
+#endif
 
                 EventManager.OnPlayerSpawned(__instance);
-            }
-        }
-
-        [HarmonyPatch(typeof(Player), "Load")]
-        public static class LoadPatch
-        {
-            public static void Prefix(ref Player __instance)
-            {
-                Debug.Log("----> Loading player: " + __instance.m_name);
             }
         }
 
