@@ -39,8 +39,10 @@ jobs:
                 mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
                 mv ~/BepInExRaw/BepInExPack_Valheim/unstripped_corlib/* ~/VHINSTALL/valheim_Data/Managed/
                 mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
-                export VALHEIM_INSTALL=~/VHINSTALL/
+                ls ~
 
             # Build DLLs
             - name: Build solution
-              run: xbuild JotunnLib.sln /p:Configuration=Debug
+              run: |
+                export VALHEIM_INSTALL=~/VHINSTALL/
+                xbuild JotunnLib.sln /p:Configuration=Debug
