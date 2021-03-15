@@ -24,10 +24,14 @@ private void initObjects(object sender, EventArgs e)
     // Recipes
     ObjectManager.Instance.RegisterRecipe(new RecipeConfig()
     {
+        // Name of the recipe (defaults to "Recipe_YourItem")
+        Name = "Recipe_TestPrefab",
+
         // Name of the prefab for the crafted item
         Item = "TestPrefab",
 
         // Name of the prefab for the crafting station we wish to use
+        // Can set this to null or leave out if you want your recipe to be craftable in your inventory
         CraftingStation = "forge",
 
         // List of requirements to craft your item
