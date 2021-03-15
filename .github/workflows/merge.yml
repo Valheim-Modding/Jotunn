@@ -1,5 +1,8 @@
-name: Create DLL on PR
-'on': pull_request
+name: Create DLL on merge to main
+'on':
+    push:
+        branches:
+            - main
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -41,10 +44,15 @@ jobs:
             - name: Build solution
               run: |
                 export VALHEIM_INSTALL=~/VHINSTALL/
-                xbuild JotunnLib.sln /p:Configuration=Debug
+                xbuild JotunnLib.sln /p:Configuration=Release
+
+            # Get date
+            - name: Get current date
+              id: date
+              run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
             # Upload artifact
             - uses: actions/upload-artifact@v2
               with:
-                name: JotunnLib-dev-pr-${{ github.event.number }}.dll
+                name: JotunnLib-${{ steps.date.outputs.date }}.dll
                 path: JotunnLib/obj/Debug/JotunnLib.dll
