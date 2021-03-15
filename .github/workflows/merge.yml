@@ -9,6 +9,11 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v2
+
+            # Get date
+            - name: Get current date
+              id: date
+              run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
             
             - name: Setup DotNet
               uses: actions/setup-dotnet@v1
@@ -45,11 +50,6 @@ jobs:
               run: |
                 export VALHEIM_INSTALL=~/VHINSTALL/
                 xbuild JotunnLib.sln /p:Configuration=Release
-
-            # Get date
-            - name: Get current date
-              id: date
-              run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
             # Upload artifact
             - uses: actions/upload-artifact@v2
