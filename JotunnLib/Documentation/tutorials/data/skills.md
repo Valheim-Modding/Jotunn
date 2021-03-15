@@ -27,4 +27,4 @@ _Note: Unless you actually have any levels in your skill, it won't show up in th
 
 This is what it should look like in game:
 
-![Our Skill in Game](/Documentation/images/data/test-skill.png "Our Skill in Game")
+![Our Skill in Game](../../images/data/test-skill.png "Our Skill in Game")

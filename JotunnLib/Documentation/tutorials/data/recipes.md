@@ -56,4 +56,4 @@ private void initObjects(object sender, EventArgs e)
 
 That's it! Now, we can visit a forge with some blueberries and deer hide in our inventory, and we can craft our item!
 
-![Our Recipe in Game](/Documentation/images/data/test-recipe.png "Our Recipe in Game")
+![Our Recipe in Game](../../images/data/test-recipe.png "Our Recipe in Game")

@@ -27,4 +27,4 @@ private void initObjects(object sender, EventArgs e)
 
 That's it! Now, we can type `spawn TestPrefab` in game, and we can see our pick-up-able item!
 
-![Our Item in Game](/Documentation/images/data/test-item.png "Our Item in Game")
+![Our Item in Game](../../images/data/test-item.png "Our Item in Game")

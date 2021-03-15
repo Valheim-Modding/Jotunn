@@ -106,4 +106,4 @@ private void registerPrefabs(object sender, EventArgs e)
 That's it!  
 Now if we go in-game and type `spawn TestPrefab` in our console, it'll spawn what looks to be a piece of wood on the ground. In fact, this is the item we've just created! It however looks like a piece of wood since we copied the existing `Wood` prefab, and did not change its model.
 
-![TestPrefab in Game](/Documentation/images/data/test-prefab.png "TestPrefab in Game")
+![TestPrefab in Game](../../images/data/test-prefab.png "TestPrefab in Game")
