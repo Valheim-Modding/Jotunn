@@ -416,6 +416,6 @@
     <Error Condition="!Exists('..\packages\docfx.console.2.56.7\build\docfx.console.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\docfx.console.2.56.7\build\docfx.console.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)JotunnLib.dll" "$(VALHEIM_INSTALL)\BepInEx\plugins\JotunnLib.dll"</PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT' ">copy "$(TargetDir)JotunnLib.dll" "$(VALHEIM_INSTALL)\BepInEx\plugins\JotunnLib.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>
