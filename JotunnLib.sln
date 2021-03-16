@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnLib", "JotunnLib\Jotu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMod", "TestMod\TestMod.csproj", "{4C2C2CF0-05F9-42C9-AD1D-5CD040D06344}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnDoc", "JotunnDoc\JotunnDoc.csproj", "{C1CE124B-037E-46F6-A4BF-58793967D471}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4C2C2CF0-05F9-42C9-AD1D-5CD040D06344}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C2C2CF0-05F9-42C9-AD1D-5CD040D06344}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C2C2CF0-05F9-42C9-AD1D-5CD040D06344}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1CE124B-037E-46F6-A4BF-58793967D471}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1CE124B-037E-46F6-A4BF-58793967D471}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1CE124B-037E-46F6-A4BF-58793967D471}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1CE124B-037E-46F6-A4BF-58793967D471}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
