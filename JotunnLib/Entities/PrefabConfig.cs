@@ -44,6 +44,9 @@ namespace JotunnLib.Entities
             piece.m_name = pieceConfig.Name;
             piece.m_description = pieceConfig.Description;
             piece.m_resources = pieceConfig.GetRequirements();
+            piece.m_enabled = pieceConfig.Enabled;
+            piece.m_icon = pieceConfig.Icon;
+            piece.m_allowedInDungeons = pieceConfig.AllowedInDungeons;
             return piece;
         }
     }

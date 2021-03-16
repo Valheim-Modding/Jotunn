@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using UnityEngine;
 
 namespace JotunnLib.Entities
 {
@@ -9,6 +6,9 @@ namespace JotunnLib.Entities
     {
         public string Name { get; set; }
         public string Description { get; set; } = "";
+        public bool Enabled { get; set; } = true;
+        public bool AllowedInDungeons { get; set; } = false;
+        public Sprite Icon { get; set; }
         public PieceRequirementConfig[] Requirements { get; set; } = new PieceRequirementConfig[0];
 
         public Piece.Requirement[] GetRequirements()
