@@ -12,7 +12,6 @@ RUN apt update \
 
 # Setup Valheim dependencies
 RUN wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.800/" \
-    && ls -R / | grep steamcmd \
     && unzip bepinex.zip -d ~/BepInExRaw \
     && ../home/steam/steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/steam/VHINSTALL +app_update 896660 validate +exit \
     && mv /home/steam/VHINSTALL/valheim_server_Data/ /home/steam/VHINSTALL/valheim_Data/ \
@@ -24,5 +23,5 @@ COPY . ./
 
 CMD xbuild JotunnLib.sln /p:Configuration=Release \
     && mkdir -p output-release \
-    && cp JotunnLib/obj/Debug/JotunnLib.dll output-release/ \
+    && cp JotunnLib/obj/Release/JotunnLib.dll output-release/ \
     && echo "Success! Please find the JotunnLib DLL at output-release\JotunnLib.dll"

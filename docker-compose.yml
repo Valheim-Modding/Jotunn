@@ -22,3 +22,5 @@ services:
             dockerfile: Dockerfile.prod
         volumes:
             - '.:/build'
+        environment: 
+            - 'VALHEIM_INSTALL:/home/steam/VHINSTALL/'
