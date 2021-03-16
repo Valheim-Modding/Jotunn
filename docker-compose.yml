@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+    development:
+        # stdin_open: true # docker run -i
+        # tty: true # docker run -t
+        container_name: JotunnLib-container
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - '.:/build'
