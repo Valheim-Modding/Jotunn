@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 using BepInEx;
 using TestMod.ConsoleCommands;
@@ -15,8 +16,11 @@ namespace TestMod
     [BepInDependency("com.bepinex.plugins.jotunnlib")]
     class TestMod : BaseUnityPlugin
     {
+        public static AssetBundle Assets;
         public static Skills.SkillType TestSkillType = 0;
+
         private bool showMenu = false;
+        private Sprite testSkillSprite;
 
         // Init handlers
         private void Awake()
@@ -26,6 +30,7 @@ namespace TestMod
             PieceManager.Instance.PieceRegister += registerPieces;
             InputManager.Instance.InputRegister += registerInputs;
 
+            loadAssets();
             registerCommands();
             registerSkills();
         }
@@ -60,12 +65,25 @@ namespace TestMod
             // Init menu toggle key
             InputManager.Instance.RegisterButton("TestMod_Menu", KeyCode.Insert);
         }
+        
+        // Load assets from disk
+        private void loadAssets()
+        {
+            // Load texture
+            Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");
+            testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
+
+            // Load asset bundle
+            Assets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
+        }
 
         // Register new prefabs
         private void registerPrefabs(object sender, EventArgs e)
         {
+            // Register prefabs using PrefabConfig
             PrefabManager.Instance.RegisterPrefab(new TestPrefab());
             PrefabManager.Instance.RegisterPrefab(new TestCubePrefab());
+            PrefabManager.Instance.RegisterPrefab(new BundlePrefab());
         }
 
         // Register new pieces
@@ -83,7 +101,7 @@ namespace TestMod
             // Recipes
             ObjectManager.Instance.RegisterRecipe(new RecipeConfig()
             {
-                // Name of the recipe (defaults to "Recipe_YourItem")
+                // Name of the recipe (defaults to "Recipe_YourItem" if null)
                 Name = "Recipe_TestPrefab",
 
                 // Name of the prefab for the crafted item
@@ -126,7 +144,6 @@ namespace TestMod
             CommandManager.Instance.RegisterConsoleCommand(new RaiseSkillCommand());
             CommandManager.Instance.RegisterConsoleCommand(new BetterSpawnCommand());
         }
-
 
         // Register new skills
         void registerSkills()
