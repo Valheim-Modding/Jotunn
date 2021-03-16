@@ -1,0 +1,17 @@
+# Pull latest Ubuntu latest
+FROM cm2network/steamcmd:latest
+
+USER root
+
+# Set working directory
+WORKDIR /build
+
+# Setup SteamCMD
+RUN apt update \
+    && apt install --yes --install-recommends git mono-complete mono-xbuild unzip wget unzip
+
+COPY . ./
+
+CMD xbuild JotunnLib.sln /p:Configuration=Debug \
+    && cp JotunnLib/obj/Debug/JotunnLib.dll /VHINSTALL/BepInEx/plugins/\
+    && echo "Success! JotunnLib has been install to Valheim install directory for testing"

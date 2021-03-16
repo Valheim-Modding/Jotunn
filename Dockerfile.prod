@@ -22,7 +22,7 @@ RUN wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/deniks
 
 COPY . ./
 
-CMD xbuild JotunnLib.sln /p:Configuration=Debug \
-    && mkdir -p docker-output \
-    && cp JotunnLib/obj/Debug/JotunnLib.dll docker-output/ \
-    && echo "Success! Please find the JotunnLib DLL at docker-output\JotunnLib.dll"
+CMD xbuild JotunnLib.sln /p:Configuration=Release \
+    && mkdir -p output-release \
+    && cp JotunnLib/obj/Debug/JotunnLib.dll output-release/ \
+    && echo "Success! Please find the JotunnLib DLL at output-release\JotunnLib.dll"
