@@ -61,7 +61,7 @@ namespace JotunnLib.Utils
                 return null;
             }
 
-            return AssetBundle.LoadFromFile(bundlePath);
+            return AssetBundle.LoadFromFile(path);
         }
     }
 }

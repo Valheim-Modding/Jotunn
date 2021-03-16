@@ -34,8 +34,6 @@ namespace JotunnLib.Managers
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = JotunnLib.RootObject.transform;
             PrefabContainer.SetActive(false);
-
-            Debug.Log("Initialized PrefabManager");
         }
 
         internal override void Register()

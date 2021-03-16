@@ -372,6 +372,7 @@
     <Compile Include="ConsoleCommands\BetterSpawnCommand.cs" />
     <Compile Include="ConsoleCommands\PrintItemsCommand.cs" />
     <Compile Include="ConsoleCommands\TpCommand.cs" />
+    <Compile Include="Prefabs\BundlePrefab.cs" />
     <Compile Include="Prefabs\TestCubePrefab.cs" />
     <Compile Include="TestMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
