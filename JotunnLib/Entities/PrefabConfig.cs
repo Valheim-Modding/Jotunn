@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using JotunnLib.Managers;
 
 namespace JotunnLib.Entities
 {
@@ -6,20 +7,36 @@ namespace JotunnLib.Entities
     {
         public string Name { get; private set; }
         public string BasePrefabName { get; private set; }
-        public GameObject Prefab { get; set; }
+        public GameObject Prefab { get; private set; }
+
+        public PrefabConfig()
+        {
+            // Do nothing, initialize and register your own prefabs
+        }
 
         public PrefabConfig(string name)
         {
             Name = name;
+            Prefab = PrefabManager.Instance.CreatePrefab(Name);
         }
 
         public PrefabConfig(string name, string baseName)
         {
             Name = name;
             BasePrefabName = baseName;
+            Prefab = PrefabManager.Instance.CreatePrefab(Name, BasePrefabName);
         }
 
-        public abstract void Register();
+        public PrefabConfig(AssetBundle assetBundle, string assetName)
+        {
+            Name = assetName;
+            Prefab = (GameObject)assetBundle.LoadAsset(assetName);
+        }
+
+        public virtual void Register()
+        {
+            // Override this to make it do things
+        }
 
         public Piece AddPiece(PieceConfig pieceConfig)
         {

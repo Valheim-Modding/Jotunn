@@ -46,5 +46,22 @@ namespace JotunnLib.Utils
 
             return ObjImporter.ImportFile(path);
         }
+
+        /// <summary>
+        /// Loads an asset bundle at runtime.
+        /// </summary>
+        /// <param name="bundlePath">Asset bundle path relative to "plugins" BepInEx folder</param>
+        /// <returns>AssetBundle loaded, or null if invalid path</returns>
+        public static AssetBundle LoadAssetBundle(string bundlePath)
+        {
+            string path = Path.Combine(Paths.PluginPath, bundlePath);
+
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
+            return AssetBundle.LoadFromFile(bundlePath);
+        }
     }
 }
