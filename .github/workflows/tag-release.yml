@@ -1,0 +1,70 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Create Release
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Extract tag name
+        id: tag
+        uses: actions/github-script@0.2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            return context.payload.ref.replace(/\/refs\/tags\//, '');
+
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+
+      - name: Install SteamCMD
+        uses: CyberAndrii/setup-steamcmd@v1
+
+      # Install NuGet
+      - uses: nuget/setup-nuget@v1
+        name: Install NuGet
+
+      # Install NuGet dependencies
+      - name: Install NuGet dependencies
+        run: nuget restore JotunnLib.sln
+
+      # Get build commands
+      - name: Get build commands
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git mono-complete mono-xbuild unzip
+
+      # Prepare Valheim dependencies
+      - name: Prepare Valheim dependencies
+        run: |
+          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.800/"
+          unzip bepinex.zip -d ~/BepInExRaw
+          steamcmd +login anonymous +force_install_dir ~/VHINSTALL +app_update 896660 validate +exit
+          mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
+          mv ~/BepInExRaw/BepInExPack_Valheim/unstripped_corlib/* ~/VHINSTALL/valheim_Data/Managed/
+          mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
+
+      # Build DLLs
+      - name: Build solution
+        run: |
+          export VALHEIM_INSTALL=~/VHINSTALL/
+          xbuild JotunnLib.sln /p:Configuration=Release
+          mv JotunnLib/obj/Release/JotunnLib.dll JotunnLib-${{ steps.tag.outputs.result }}.dll
+          xbuild JotunnLib.sln /p:Configuration=Debug
+          mv JotunnLib/obj/Debug/JotunnLib.dll JotunnLib-DEBUG-${{ steps.tag.outputs.result }}.dll
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            JotunnLib-${{ steps.tag.outputs.result }}.dll
+            JotunnLib-DEBUG-${{ steps.tag.outputs.result }}.dll
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
