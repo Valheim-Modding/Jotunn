@@ -22,6 +22,6 @@ RUN wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/deniks
 COPY . ./
 
 CMD xbuild JotunnLib.sln /p:Configuration=Release \
-    && mkdir -p output-release \
-    && cp JotunnLib/obj/Release/JotunnLib.dll output-release/ \
-    && echo "Success! Please find the JotunnLib DLL at output-release\JotunnLib.dll"
+    && mkdir -p releases \
+    && cp JotunnLib/obj/Release/JotunnLib.dll releases/ \
+    && echo "Success! Please find the JotunnLib DLL at releases\JotunnLib.dll"
