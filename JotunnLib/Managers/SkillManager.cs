@@ -67,10 +67,18 @@ namespace JotunnLib.Managers
         /// <param name="icon">Icon for the skill</param>
         /// <returns>The SkillType of the newly registered skill</returns>
         [System.Obsolete("Use `RegisterSkill(SkillConfig config)` instead. This method could potentially break user saves.", true)]
-        public Skills.SkillType RegisterSkill(string name, string description, float increaseStep = 1f, Sprite icon = null)
+        public Skills.SkillType RegisterSkill(
+            string name,
+            string description,
+            float increaseStep = 1f,
+            Sprite icon = null,
+            bool createLocalizations = true)
         {
-            LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId, name);
-            LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId + "_description", description);
+            if (createLocalizations)
+            {
+                LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId, name);
+                LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId + "_description", description);
+            }
 
             Skills.SkillDef skillDef = new Skills.SkillDef()
             {

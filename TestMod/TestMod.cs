@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using UnityEngine;
 using BepInEx;
 using TestMod.ConsoleCommands;
@@ -29,6 +28,7 @@ namespace TestMod
             PrefabManager.Instance.PrefabRegister += registerPrefabs;
             PieceManager.Instance.PieceRegister += registerPieces;
             InputManager.Instance.InputRegister += registerInputs;
+            LocalizationManager.Instance.LocalizationRegister += registerLocalization;
 
             loadAssets();
             registerCommands();
@@ -75,6 +75,7 @@ namespace TestMod
 
             // Load asset bundle
             Assets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
+            Debug.Log(Assets);
         }
 
         // Register new prefabs
@@ -130,6 +131,23 @@ namespace TestMod
                         // Amount required
                         Amount = 1
                     }
+                }
+            });
+        }
+
+        // Registers localizations
+        void registerLocalization(object sender, EventArgs e)
+        {
+            LocalizationManager.Instance.RegisterLocalization(new LocalizationConfig()
+            {
+                Language = "English",
+                Translations =
+                {
+                    { "test_prefab_name", "Test Prefab" },
+                    { "test_prefab_desc", "We're using this as a test" },
+
+                    { "test_cube_name", "Test Cube" },
+                    { "test_cube_desc", "A nice test cube!" },
                 }
             });
         }

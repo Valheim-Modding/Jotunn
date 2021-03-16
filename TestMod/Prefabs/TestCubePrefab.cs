@@ -21,10 +21,10 @@ namespace TestMod.Prefabs
             Piece piece = AddPiece(new PieceConfig()
             {
                 // The name that shows up in game
-                Name = "Test cube",
+                Name = "$test_cube_name",
 
                 // The description that shows up in game
-                Description = "A nice test cube",
+                Description = "$test_cube_desc",
 
                 // What items we'll need to build it
                 Requirements = new PieceRequirementConfig[]

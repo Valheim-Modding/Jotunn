@@ -36,8 +36,6 @@ namespace JotunnLib.Managers
         {
             PieceTableContainer = new GameObject("PieceTables");
             PieceTableContainer.transform.parent = JotunnLib.RootObject.transform;
-
-            Debug.Log("Initialized PieceTableManager");
         }
 
         internal override void Register()

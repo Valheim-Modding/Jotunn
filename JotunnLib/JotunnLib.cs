@@ -51,6 +51,7 @@ namespace JotunnLib
             foreach (Manager manager in managers)
             {
                 manager.Init();
+                Debug.Log("Initialized " + manager.GetType().Name);
             }
 
             initCommands();
