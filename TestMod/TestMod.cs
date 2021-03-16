@@ -24,6 +24,7 @@ namespace TestMod
             ObjectManager.Instance.ObjectRegister += registerObjects;
             PrefabManager.Instance.PrefabRegister += registerPrefabs;
             PieceManager.Instance.PieceRegister += registerPieces;
+            InputManager.Instance.InputRegister += registerInputs;
 
             registerCommands();
             registerSkills();
@@ -32,9 +33,16 @@ namespace TestMod
         // Called every second
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Insert))
+            // Since our Update function in our BepInEx mod class will load BEFORE Valheim loads,
+            // we need to check that ZInput is ready to use first.
+            if (ZInput.instance != null)
             {
-                showMenu = !showMenu;
+                // Check if our button is pressed. This will only return true ONCE, right after our button is pressed.
+                // If we hold the button down, it won't spam toggle our menu.
+                if (ZInput.GetButtonDown("TestMod_Menu"))
+                {
+                    showMenu = !showMenu;
+                }
             }
         }
 
@@ -43,8 +51,14 @@ namespace TestMod
         {
             if (showMenu)
             {
-                GUI.Box(new Rect(40, 40, 100, 400), "TestMod");
+                GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
             }
+        }
+
+        private void registerInputs(object sender, EventArgs e)
+        {
+            // Init menu toggle key
+            InputManager.Instance.RegisterButton("TestMod_Menu", KeyCode.Insert);
         }
 
         // Register new prefabs
