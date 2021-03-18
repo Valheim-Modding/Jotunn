@@ -9,7 +9,9 @@ namespace JotunnDoc
 {
     public class Doc
     {
+        public bool Generated { get; private set; }
         public string FilePath { get; protected set; }
+
         private StreamWriter writer;
 
         public Doc(string filePath)
@@ -85,6 +87,7 @@ namespace JotunnDoc
         {
             writer.Flush();
             writer.Close();
+            Generated = true;
         }
     }
 }

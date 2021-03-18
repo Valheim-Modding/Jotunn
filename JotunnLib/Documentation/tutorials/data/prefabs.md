@@ -10,7 +10,7 @@ Prefabs can be created by creating a handler within your mod's `Awake` function 
 Note that prefabs are configured to be persistent by default, so if placed (as a piece or dropped) they'll be saved with your world. If you wish to change that behaviour, modify the `ZNetView` component on the prefab and set `m_persistent = false`.
 
 ## Existing prefabs
-For a list of existing in-game prefabs, check [this handy Reddit thread](https://www.reddit.com/r/valheim/comments/lig8ml/spawn_item_command_list/). The prefab names are the same as their names when using the `spawn` console command.
+For a list of all existing in-game prefabs, check [this page](../../conceptual/prefabs/prefab-list.md). The prefab names are the same as their names when using the `spawn` console command.
 
 ## Example
 In order to create a prefab, there's a couple different approaches:

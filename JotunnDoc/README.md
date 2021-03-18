@@ -1,0 +1,2 @@
+# JotunnDoc
+This folder of the repository contains JotunnDoc, a utility mod which we use to generate some of the documentation on our website. This mod scrapes game data, and generates some markdown files with info about the items, recipes, prefabs, etc. in the game. All of the lists in our "conceptual documentation" section are automatically generated using JotunnDoc.

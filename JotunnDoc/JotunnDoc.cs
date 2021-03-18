@@ -27,6 +27,9 @@ namespace JotunnDoc
                 new PrefabDoc(),
                 new ItemDoc(),
                 new RecipeDoc(),
+                new InputDoc(),
+                new PieceTableDoc(),
+                new PieceDoc(),
                 new StatusEffectDoc(),
                 new RPCDoc()
             };

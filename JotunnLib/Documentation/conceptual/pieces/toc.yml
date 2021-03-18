@@ -1,5 +1,5 @@
-- name: Item list
-  href: item-list.md
+- name: Piece list
+  href: piece-list.md
 
-- name: Recipe list
-  href: recipe-list.md
+- name: Piece table list
+  href: piece-table-list.md

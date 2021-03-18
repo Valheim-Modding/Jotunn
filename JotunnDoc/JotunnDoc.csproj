@@ -367,6 +367,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Doc.cs" />
+    <Compile Include="Docs\InputDoc.cs" />
+    <Compile Include="Docs\PieceDoc.cs" />
+    <Compile Include="Docs\PieceTableDoc.cs" />
     <Compile Include="Docs\RPCDoc.cs" />
     <Compile Include="Docs\StatusEffectDoc.cs" />
     <Compile Include="Docs\RecipeDoc.cs" />

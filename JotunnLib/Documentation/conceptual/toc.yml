@@ -8,3 +8,11 @@
 - name: Objects
   href: objects/toc.yml
   topicHref: objects/overview.md
+
+- name: Pieces
+  href: pieces/toc.yml
+  topicHref: pieces/overview.md
+
+- name: Input
+  href: input/toc.yml
+  topicHref: input/overview.md
