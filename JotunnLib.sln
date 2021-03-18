@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMod", "TestMod\TestMod.csproj", "{4C2C2CF0-05F9-42C9-AD1D-5CD040D06344}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnDoc", "JotunnDoc\JotunnDoc.csproj", "{C1CE124B-037E-46F6-A4BF-58793967D471}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A6082A59-38BE-4CAB-9078-2C8FCDA65B8F} = {A6082A59-38BE-4CAB-9078-2C8FCDA65B8F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

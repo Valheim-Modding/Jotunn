@@ -367,8 +367,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Doc.cs" />
+    <Compile Include="Docs\RPCDoc.cs" />
+    <Compile Include="Docs\StatusEffectDoc.cs" />
+    <Compile Include="Docs\RecipeDoc.cs" />
+    <Compile Include="Docs\ItemDoc.cs" />
+    <Compile Include="Docs\PrefabDoc.cs" />
     <Compile Include="JotunnDoc.cs" />
+    <Compile Include="Patches\ZRoutedRpcPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">
+      <Project>{a6082a59-38be-4cab-9078-2c8fcda65b8f}</Project>
+      <Name>JotunnLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

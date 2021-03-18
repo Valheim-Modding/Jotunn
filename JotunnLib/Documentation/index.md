@@ -9,6 +9,9 @@ This section contains tutorials on how to get started with using JotunnLib, and 
 
 _Warning: Many sections are still a WIP. However, it currently contains enough information to allow you to get started. You can also refer to the [TestMod](https://github.com/jotunnlib/jotunnlib/tree/main/TestMod) to see examples in action._
 
+## Conceptual
+This section contains information about how Valheim itself works, as well as how JotunnLib interfaces with the game. There likely will not be many code examples here, but rather high level overviews of how various systems work. View it [here](conceptual/intro.md) 
+
 ## API Documentation
 This section contains documentation on all of the public code within JotunnLib. View it [here](xref:JotunnLib)
 
