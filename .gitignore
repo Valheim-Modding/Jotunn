@@ -8,3 +8,7 @@ JotunnLib/Documentation/api
 lib/
 Lib/
 releases/
+
+# VS Code
+.vscode/*
+!.vscode/tasks.json
