@@ -56,7 +56,7 @@ jobs:
         run: |
           export VALHEIM_INSTALL=~/VHINSTALL/
           xbuild JotunnLib.sln /p:Configuration=Release
-          mv JotunnLib/obj/Release/JotunnLib.dll JotunnLib-${{ steps.tag.outputs.result }}.dll
+          mv JotunnLib/obj/Release/JotunnLib.dll JotunnLib.dll
           xbuild JotunnLib.sln /p:Configuration=Debug
           mv JotunnLib/obj/Debug/JotunnLib.dll JotunnLib-DEBUG-${{ steps.tag.outputs.result }}.dll
 
