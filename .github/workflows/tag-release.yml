@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 name: Create Release
 
@@ -64,7 +64,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            JotunnLib-${{ steps.tag.outputs.result }}.dll
+            JotunnLib.dll
             JotunnLib-DEBUG-${{ steps.tag.outputs.result }}.dll
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
