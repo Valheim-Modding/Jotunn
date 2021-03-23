@@ -59,16 +59,34 @@ namespace JotunnLib.Managers
             ReflectionUtils.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
         }
 
+        /// <summary>
+        /// Registers a new item from given prefab name
+        /// </summary>
+        /// <param name="prefabName">Name of prefab to use for item</param>
         public void RegisterItem(string prefabName)
         {
             Items.Add(PrefabManager.Instance.GetPrefab(prefabName));
         }
 
+        /// <summary>
+        /// Registers new item from given GameObject. GameObject MUST be also registered as a prefab
+        /// </summary>
+        /// <param name="item">GameObject to use for item</param>
         public void RegisterItem(GameObject item)
         {
+            // Set layer if not already set
+            if (item.layer == 0)
+            {
+                item.layer = LayerMask.NameToLayer("item");
+            }
+
             Items.Add(item);
         }
 
+        /// <summary>
+        /// Registers a new recipe
+        /// </summary>
+        /// <param name="recipeConfig">Recipe details</param>
         public void RegisterRecipe(RecipeConfig recipeConfig)
         {
             Recipe recipe = recipeConfig.GetRecipe();
@@ -84,11 +102,22 @@ namespace JotunnLib.Managers
 
         public void RegisterRecipe(Recipe recipe)
         {
+            if (recipe == null)
+            {
+                Debug.LogError("Failed to add null recipe");
+                return;
+            }
+
             Recipes.Add(recipe);
         }
 
         public GameObject GetItemPrefab(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
             return ObjectDB.instance.GetItemPrefab(name);
         }
 

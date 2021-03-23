@@ -99,7 +99,7 @@ namespace JotunnLib.Managers
         {
             if (pieceTables.ContainsKey(name))
             {
-                Debug.Log("Cannot register piece table with existing name" + name);
+                Debug.Log("Failed to register piece table with existing name: " + name);
                 return;
             }
 
@@ -112,41 +112,47 @@ namespace JotunnLib.Managers
 
         public void RegisterPiece(string pieceTable, string prefabName)
         {
-            PieceTable table = getPieceTable(pieceTable);
             GameObject prefab = PrefabManager.Instance.GetPrefab(prefabName);
-
-            if (!table)
-            {
-                Debug.LogError("Piece table does not exist: " + pieceTable);
-                return;
-            }
 
             if (!prefab)
             {
-                Debug.LogError("Prefab does not exist: " + prefabName);
+                Debug.LogError("Failed to register Piece with invalid prefab: " + prefabName);
                 return;
             }
 
-            if (!prefab.GetComponent<Piece>())
-            {
-                Debug.LogError("Prefab does not have Piece component: " + prefabName);
-                return;
-            }
-
-            table.m_pieces.Add(prefab);
-            Debug.Log("Registered piece: " + prefabName + " to " + pieceTable);
+            RegisterPiece(pieceTable, prefab);
         }
 
         internal void RegisterPiece(string pieceTable, GameObject prefab)
         {
             PieceTable table = getPieceTable(pieceTable);
 
+            // Error checking
             if (!table)
             {
-                Debug.LogError("Piece table does not exist: " + pieceTable);
+                Debug.LogError("Failed to register piece, Piece table does not exist: " + pieceTable);
                 return;
             }
 
+            if (!prefab)
+            {
+                Debug.LogError("Failed to register Piece with null prefab");
+                return;
+            }
+
+            if (!prefab.GetComponent<Piece>())
+            {
+                Debug.LogError("Failed to register piece, Prefab does not have Piece component: " + prefab.name);
+                return;
+            }
+
+            // Set layer if not already set
+            if (prefab.layer == 0)
+            {
+                prefab.layer = LayerMask.NameToLayer("piece");
+            }
+
+            // Add prefab
             table.m_pieces.Add(prefab);
             Debug.Log("Registered piece: " + prefab.name + " to " + pieceTable);
         }

@@ -120,9 +120,15 @@ namespace JotunnLib.Managers
         /// <returns></returns>
         public GameObject CreatePrefab(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                Debug.LogError("Failed to create prefab with invalid name: " + name);
+                return null;
+            }
+
             if (GetPrefab(name))
             {
-                Debug.LogError("Prefab already exists: " + name);
+                Debug.LogError("Failed to create prefab, name already exists: " + name);
                 return null;
             }
 
@@ -146,9 +152,15 @@ namespace JotunnLib.Managers
         /// <returns>New prefab object</returns>
         public GameObject CreatePrefab(string name, string baseName)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                Debug.LogError("Failed to create prefab with invalid name: " + name);
+                return null;
+            }
+
             if (GetPrefab(name))
             {
-                Debug.LogError("Prefab already exists: " + name);
+                Debug.LogError("Failed to create prefab, name already exists: " + name);
                 return null;
             }
 
@@ -156,7 +168,7 @@ namespace JotunnLib.Managers
 
             if (!prefabBase)
             {
-                Debug.LogError("Prefab base does not exist: " + baseName);
+                Debug.LogError("Failed to create prefab, base does not exist: " + baseName);
                 return null;
             }
 
@@ -175,6 +187,11 @@ namespace JotunnLib.Managers
         /// <returns></returns>
         public GameObject GetPrefab(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
             if (Prefabs.ContainsKey(name))
             {
                 return Prefabs[name];
@@ -186,12 +203,12 @@ namespace JotunnLib.Managers
                 return null;
             }
 
-            foreach (GameObject obj in ZNetScene.instance.m_prefabs)
+            var namedPrefabs = ReflectionUtils.GetPrivateField<Dictionary<int, GameObject>>(ZNetScene.instance, "m_namedPrefabs");
+            int key = name.GetStableHashCode();
+
+            if (namedPrefabs.ContainsKey(key))
             {
-                if (obj.name == name)
-                {
-                    return obj;
-                }
+                return namedPrefabs[key];
             }
 
             return null;
