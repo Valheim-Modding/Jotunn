@@ -34,7 +34,6 @@ namespace JotunnLib.Managers
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = JotunnLib.RootObject.transform;
             PrefabContainer.SetActive(false);
-            UnityEngine.Object.DontDestroyOnLoad(PrefabContainer);
 
             Debug.Log("Initialized PrefabManager");
         }

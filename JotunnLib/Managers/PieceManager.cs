@@ -36,7 +36,6 @@ namespace JotunnLib.Managers
         {
             PieceTableContainer = new GameObject("PieceTables");
             PieceTableContainer.transform.parent = JotunnLib.RootObject.transform;
-            UnityEngine.Object.DontDestroyOnLoad(PieceTableContainer);
 
             Debug.Log("Initialized PieceTableManager");
         }
