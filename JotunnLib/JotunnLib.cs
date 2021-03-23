@@ -13,7 +13,7 @@ namespace JotunnLib
     internal class JotunnLib : BaseUnityPlugin
     {
         // Version
-        public const string Version = "0.1.1";
+        public const string Version = "0.1.3";
 
         // Load order for managers
         private readonly List<Type> managerTypes = new List<Type>()
