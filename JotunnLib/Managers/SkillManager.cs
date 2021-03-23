@@ -32,16 +32,17 @@ namespace JotunnLib.Managers
         /// </summary>
         public class SkillConfig
         {
+            private string _identifier;
             public string Identifier
             {
-                get { return Identifier; }
+                get { return this._identifier; }
                 set
                 {
-                    Identifier = value;
-                    UID = value.GetStableHashCode();
+                    this._identifier = value;
+                    UID = (Skills.SkillType)value.GetStableHashCode();
                 }
             }
-            public int UID { get; private set; }
+            public Skills.SkillType UID { get; private set; }
             public string Name { get; set; }
             public string Description { get; set; }
             public Sprite Icon { get; set; }
