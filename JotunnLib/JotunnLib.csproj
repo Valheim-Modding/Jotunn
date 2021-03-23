@@ -374,6 +374,7 @@
     <Compile Include="Entities\PieceRequirementConfig.cs" />
     <Compile Include="Entities\PrefabConfig.cs" />
     <Compile Include="Entities\RecipeConfig.cs" />
+    <Compile Include="Entities\SkillConfig.cs" />
     <Compile Include="Events\PlayerEventArgs.cs" />
     <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
     <Compile Include="Manager.cs" />

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JotunnLib.Entities;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace JotunnLib.Managers
@@ -13,7 +14,7 @@ namespace JotunnLib.Managers
         /// </summary>
         public static SkillManager Instance { get; private set; }
 
-        internal Dictionary<Skills.SkillType, Skills.SkillDef> Skills = new Dictionary<Skills.SkillType, Skills.SkillDef>();
+        internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
         // FIXME: Deprecate
         private int nextSkillId = 1000;
         private void Awake()
@@ -25,35 +26,6 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
-        }
-
-        /// <summary>
-        /// Configuration class for custom skills
-        /// </summary>
-        public class SkillConfig
-        {
-            private string _identifier;
-            public string Identifier
-            {
-                get { return this._identifier; }
-                set
-                {
-                    this._identifier = value;
-                    UID = (Skills.SkillType)value.GetStableHashCode();
-                }
-            }
-            public Skills.SkillType UID { get; private set; }
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public Sprite Icon { get; set; }
-            public float IncreaseStep { get; set; }
-
-            // BaseSkill and JSON support targets v0.2.0
-            //private Skills.SkillType BaseSkill { get; set; }
-            //private static SkillConfig FromJson(string json)
-            //{
-            //    return null; // TODO: Make this work
-            //}
         }
 
         /// <summary>
@@ -80,18 +52,22 @@ namespace JotunnLib.Managers
                 LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId + "_description", description);
             }
 
-            Skills.SkillDef skillDef = new Skills.SkillDef()
+            SkillConfig skillConfig = new SkillConfig()
             {
-                m_skill = (Skills.SkillType)nextSkillId,
-                m_description = "$skill_" + nextSkillId + "_description",
-                m_increseStep = increaseStep, // nice they spelled increase wrong 
-                m_icon = icon
+                Identifier = name + nextSkillId.ToString(),
+                Name = name,
+                Description = description,
+                IncreaseStep = increaseStep,
+                Icon = icon
             };
 
-            Skills.Add((Skills.SkillType)nextSkillId, skillDef);
+            LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID, skillConfig.Name);
+            LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID + "_description", skillConfig.Description);
+
+            Skills.Add(skillConfig.UID, skillConfig);
             nextSkillId++;
 
-            return skillDef.m_skill;
+            return skillConfig.UID;
         }
 
         /// <summary>
@@ -104,16 +80,8 @@ namespace JotunnLib.Managers
             LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID, skillConfig.Name);
             LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID + "_description", skillConfig.Description);
 
-            Skills.SkillDef skillDef = new Skills.SkillDef()
-            {
-                m_skill = (Skills.SkillType)skillConfig.UID,
-                m_description = "$skill_" + skillConfig.UID + "_description",
-                m_increseStep = skillConfig.IncreaseStep,
-                m_icon = skillConfig.Icon
-            };
-
-            Skills.Add((Skills.SkillType)skillConfig.UID, skillDef);
-            return skillDef.m_skill;
+            Skills.Add(skillConfig.UID, skillConfig);
+            return skillConfig.UID;
         }
 
         /// <summary>
@@ -146,7 +114,13 @@ namespace JotunnLib.Managers
         {
             if (Skills.ContainsKey(skillType))
             {
-                return Skills[skillType];
+                return new Skills.SkillDef()
+                {
+                    m_description = Skills[skillType].Description,
+                    m_icon = Skills[skillType].Icon,
+                    m_increseStep = Skills[skillType].IncreaseStep,
+                    m_skill = Skills[skillType].UID
+                };
             }
 
             if (Player.m_localPlayer != null)
