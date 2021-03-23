@@ -1,58 +1,59 @@
 name: Create DLL on merge to main
-'on':
-    push:
-        branches:
-            - main
+"on":
+  push:
+    branches:
+      - main
+      - dev
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-            # Get date
-            - name: Get current date
-              id: date
-              run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-            
-            - name: Setup DotNet
-              uses: actions/setup-dotnet@v1
+      # Get date
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
-            - name: Install SteamCMD
-              uses: CyberAndrii/setup-steamcmd@v1
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
 
-            # Install NuGet
-            - uses: nuget/setup-nuget@v1
-              name: Install NuGet
+      - name: Install SteamCMD
+        uses: CyberAndrii/setup-steamcmd@v1
 
-            # Install NuGet dependencies
-            - name: Install NuGet dependencies
-              run: nuget restore JotunnLib.sln
+      # Install NuGet
+      - uses: nuget/setup-nuget@v1
+        name: Install NuGet
 
-            # Get build commands
-            - name: Get build commands
-              run: |
-                sudo apt-get update
-                sudo apt-get install -y git mono-complete mono-xbuild unzip
+      # Install NuGet dependencies
+      - name: Install NuGet dependencies
+        run: nuget restore JotunnLib.sln
 
-            # Prepare Valheim dependencies
-            - name: Prepare Valheim dependencies
-              run: |
-                wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.800/"
-                unzip bepinex.zip -d ~/BepInExRaw
-                steamcmd +login anonymous +force_install_dir ~/VHINSTALL +app_update 896660 validate +exit
-                mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
-                mv ~/BepInExRaw/BepInExPack_Valheim/unstripped_corlib/* ~/VHINSTALL/valheim_Data/Managed/
-                mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
+      # Get build commands
+      - name: Get build commands
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git mono-complete mono-xbuild unzip
 
-            # Build DLLs
-            - name: Build solution
-              run: |
-                export VALHEIM_INSTALL=~/VHINSTALL/
-                xbuild JotunnLib.sln /p:Configuration=Release
+      # Prepare Valheim dependencies
+      - name: Prepare Valheim dependencies
+        run: |
+          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.800/"
+          unzip bepinex.zip -d ~/BepInExRaw
+          steamcmd +login anonymous +force_install_dir ~/VHINSTALL +app_update 896660 validate +exit
+          mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
+          mv ~/BepInExRaw/BepInExPack_Valheim/unstripped_corlib/* ~/VHINSTALL/valheim_Data/Managed/
+          mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
 
-            # Upload artifact
-            - uses: actions/upload-artifact@v2
-              with:
-                name: JotunnLib-${{ steps.date.outputs.date }}.dll
-                path: JotunnLib/obj/Release/JotunnLib.dll
+      # Build DLLs
+      - name: Build solution
+        run: |
+          export VALHEIM_INSTALL=~/VHINSTALL/
+          xbuild JotunnLib.sln /p:Configuration=Release
+
+      # Upload artifact
+      - uses: actions/upload-artifact@v2
+        with:
+          name: JotunnLib-${{ steps.date.outputs.date }}.dll
+          path: JotunnLib/obj/Release/JotunnLib.dll
