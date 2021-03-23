@@ -169,13 +169,7 @@ namespace TestMod
             // Test adding a skill with a texture
             Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");
             Sprite testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
-            TestSkillType = SkillManager.Instance.RegisterSkill(new SkillConfig()
-            {
-                Identifier = "com.jotunnlib.testmod.testskill",
-                Name = "Testing Skill",
-                Description = "A nice testing skill!",
-                Icon = testSkillSprite
-            });
+            TestSkillType = SkillManager.Instance.RegisterSkill("com.jotunnlib.testmod.testskill", "TestingSkill", "A nice testing skill!", 1f, testSkillSprite);
         }
     }
 }

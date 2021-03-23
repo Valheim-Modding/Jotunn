@@ -1,4 +1,4 @@
-﻿using System;
+﻿using JotunnLib.Entities;
 using System.Collections.Generic;
 using UnityEngine;
 using JotunnLib.Entities;
@@ -15,7 +15,7 @@ namespace JotunnLib.Managers
         /// </summary>
         public static SkillManager Instance { get; private set; }
 
-        internal Dictionary<Skills.SkillType, Skills.SkillDef> Skills = new Dictionary<Skills.SkillType, Skills.SkillDef>();
+        internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
         // FIXME: Deprecate
         private int nextSkillId = 1000;
         private void Awake()
@@ -53,18 +53,22 @@ namespace JotunnLib.Managers
                 LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId + "_description", description);
             }
 
-            Skills.SkillDef skillDef = new Skills.SkillDef()
+            SkillConfig skillConfig = new SkillConfig()
             {
-                m_skill = (Skills.SkillType)nextSkillId,
-                m_description = "$skill_" + nextSkillId + "_description",
-                m_increseStep = increaseStep, // nice they spelled increase wrong 
-                m_icon = icon
+                Identifier = name + nextSkillId.ToString(),
+                Name = name,
+                Description = description,
+                IncreaseStep = increaseStep,
+                Icon = icon
             };
 
-            Skills.Add((Skills.SkillType)nextSkillId, skillDef);
+            LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID, skillConfig.Name);
+            LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID + "_description", skillConfig.Description);
+
+            Skills.Add(skillConfig.UID, skillConfig);
             nextSkillId++;
 
-            return skillDef.m_skill;
+            return skillConfig.UID;
         }
 
         /// <summary>
@@ -80,34 +84,8 @@ namespace JotunnLib.Managers
                 return global::Skills.SkillType.None;
             }
 
-            if (Skills.ContainsKey(skillConfig.UID))
-            {
-                Debug.LogError("Failed to register skill with conflicting UID (m_skill): " + skillConfig.UID);
-                return global::Skills.SkillType.None;
-            }
-
-            if ((int)skillConfig.UID < 1000)
-            {
-                Debug.LogError("Failed to register skill with invalid UID (m_skill), please use a UID >= 1000: " + (int)skillConfig.UID);
-                return global::Skills.SkillType.None;
-            }
-
-            if (registerLocalizations)
-            {
-                LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID, skillConfig.Name);
-                LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID + "_description", skillConfig.Description);
-            }
-
-            Skills.SkillDef skillDef = new Skills.SkillDef()
-            {
-                m_skill = skillConfig.UID,
-                m_description = "$skill_" + skillConfig.UID + "_description",
-                m_increseStep = skillConfig.IncreaseStep,
-                m_icon = skillConfig.Icon
-            };
-
-            Skills.Add(skillConfig.UID, skillDef);
-            return skillDef.m_skill;
+            Skills.Add(skillConfig.UID, skillConfig);
+            return skillConfig.UID;
         }
 
         /// <summary>
@@ -146,7 +124,13 @@ namespace JotunnLib.Managers
         {
             if (Skills.ContainsKey(skillType))
             {
-                return Skills[skillType];
+                return new Skills.SkillDef()
+                {
+                    m_description = Skills[skillType].Description,
+                    m_icon = Skills[skillType].Icon,
+                    m_increseStep = Skills[skillType].IncreaseStep,
+                    m_skill = Skills[skillType].UID
+                };
             }
 
             if (Player.m_localPlayer != null)
