@@ -8,7 +8,6 @@ using JotunnLib.Entities;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
 using TestMod.Prefabs;
-using static JotunnLib.Managers.SkillManager;
 
 namespace TestMod
 {
