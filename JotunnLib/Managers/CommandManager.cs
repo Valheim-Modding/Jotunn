@@ -14,7 +14,7 @@ namespace JotunnLib.Managers
             // "help" command not included since we want to overwrite it
             
             // Basic commands
-            "kick", "ban", "unban", "banned", "ping", "lodbias", "info", "imacheater"
+            "kick", "ban", "unban", "banned", "ping", "lodbias", "info", "devcommands"
         };
         public static readonly List<string> DefaultCheatConsoleCommands = new List<string>()
         {
