@@ -15,7 +15,7 @@ namespace JotunnLib.Entities
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    Debug.LogError("Error, SkillConfig cannot havae invalid Identifier: " + value);
+                    Debug.LogError("Error, SkillConfig cannot have invalid Identifier: " + value);
                     return;
                 }
 
