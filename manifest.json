@@ -1,9 +1,9 @@
 {
     "name": "JotunnLib",
-    "version_number": "0.1.3",
+    "version_number": "0.1.4",
     "website_url": "https://github.com/jotunnlib/jotunnlib",
     "description": "JotunnLib is a modding library for Valheim, with the goal of making the lives of mod developers easier. It's a centralized API to allow mod developers to easily add custom items, recipes, prefabs, and more to the game, working for both servers and clients.",
     "dependencies": [
-        "bbepis-BepInExPack-5.3.1"
+        "denikson-BepInExPack_Valheim-5.4.800"
     ]
 }
