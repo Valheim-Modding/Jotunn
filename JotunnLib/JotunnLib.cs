@@ -9,11 +9,12 @@ using JotunnLib.Managers;
 
 namespace JotunnLib
 {
-    [BepInPlugin("com.bepinex.plugins.jotunnlib", "JotunnLib", Version)]
-    internal class JotunnLib : BaseUnityPlugin
+    [BepInPlugin(ModGuid, "JotunnLib", Version)]
+    public class JotunnLib : BaseUnityPlugin
     {
-        // Version
+        // BepInEx plugin parameters
         public const string Version = "0.1.3";
+        public const string ModGuid = "com.bepinex.plugins.jotunnlib";
 
         // Load order for managers
         private readonly List<Type> managerTypes = new List<Type>()

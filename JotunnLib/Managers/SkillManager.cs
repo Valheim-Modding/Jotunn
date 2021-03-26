@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using JotunnLib.Entities;
 
 namespace JotunnLib.Managers
 {
@@ -28,35 +30,6 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Configuration class for custom skills
-        /// </summary>
-        public class SkillConfig
-        {
-            private string _identifier;
-            public string Identifier
-            {
-                get { return this._identifier; }
-                set
-                {
-                    this._identifier = value;
-                    UID = (Skills.SkillType)value.GetStableHashCode();
-                }
-            }
-            public Skills.SkillType UID { get; private set; }
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public Sprite Icon { get; set; }
-            public float IncreaseStep { get; set; }
-
-            // BaseSkill and JSON support targets v0.2.0
-            //private Skills.SkillType BaseSkill { get; set; }
-            //private static SkillConfig FromJson(string json)
-            //{
-            //    return null; // TODO: Make this work
-            //}
-        }
-
-        /// <summary>
         /// DEPRECATED DUE TO POSSIBLE CONFLICT ISSUE, see: <see href="https://github.com/jotunnlib/jotunnlib/issues/18">GitHub Issue</see>
         /// <para/>
         /// Register a new skill with given parameters, and registers translations for it in the current localization
@@ -66,7 +39,9 @@ namespace JotunnLib.Managers
         /// <param name="increaseStep"></param>
         /// <param name="icon">Icon for the skill</param>
         /// <returns>The SkillType of the newly registered skill</returns>
-        [System.Obsolete("Use `RegisterSkill(SkillConfig config)` instead. This method could potentially break user saves.", true)]
+        [Obsolete(
+            "Use `RegisterSkill(SkillConfig config)` instead. This method could potentially cause users to lose skill save progress",
+            true)]
         public Skills.SkillType RegisterSkill(string name, string description, float increaseStep = 1f, Sprite icon = null)
         {
             LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId, name);
@@ -91,20 +66,41 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="skillConfig">SkillConfig object representing new skill to register</param>
         /// <returns>The SkillType of the newly registered skill</returns>
-        public Skills.SkillType RegisterSkill(SkillConfig skillConfig)
+        public Skills.SkillType RegisterSkill(SkillConfig skillConfig, bool registerLocalizations = true)
         {
-            LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID, skillConfig.Name);
-            LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID + "_description", skillConfig.Description);
+            if (string.IsNullOrEmpty(skillConfig.Identifier))
+            {
+                Debug.LogError("Failed to register skill with invalid identifier: " + skillConfig.Identifier);
+                return global::Skills.SkillType.None;
+            }
+
+            if (Skills.ContainsKey(skillConfig.UID))
+            {
+                Debug.LogError("Failed to register skill with conflicting UID (m_skill): " + skillConfig.UID);
+                return global::Skills.SkillType.None;
+            }
+
+            if ((int)skillConfig.UID < 1000)
+            {
+                Debug.LogError("Failed to register skill with invalid UID (m_skill), please use a UID >= 1000: " + (int)skillConfig.UID);
+                return global::Skills.SkillType.None;
+            }
+
+            if (registerLocalizations)
+            {
+                LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID, skillConfig.Name);
+                LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID + "_description", skillConfig.Description);
+            }
 
             Skills.SkillDef skillDef = new Skills.SkillDef()
             {
-                m_skill = (Skills.SkillType)skillConfig.UID,
+                m_skill = skillConfig.UID,
                 m_description = "$skill_" + skillConfig.UID + "_description",
                 m_increseStep = skillConfig.IncreaseStep,
                 m_icon = skillConfig.Icon
             };
 
-            Skills.Add((Skills.SkillType)skillConfig.UID, skillDef);
+            Skills.Add(skillConfig.UID, skillDef);
             return skillDef.m_skill;
         }
 
@@ -117,7 +113,13 @@ namespace JotunnLib.Managers
         /// <param name="increaseStep"></param>
         /// <param name="icon">Icon for the skill</param>
         /// <returns>The SkillType of the newly registered skill</returns>
-        public Skills.SkillType RegisterSkill(string identifer, string name, string description, float increaseStep = 1f, Sprite icon = null)
+        public Skills.SkillType RegisterSkill(
+            string identifer,
+            string name,
+            string description,
+            float increaseStep = 1f,
+            Sprite icon = null,
+            bool registerLocalizations = true)
         {
             return RegisterSkill(new SkillConfig()
             {
@@ -126,7 +128,7 @@ namespace JotunnLib.Managers
                 Description = description,
                 IncreaseStep = increaseStep,
                 Icon = icon
-            });
+            }, registerLocalizations);
         }
 
         /// <summary>
@@ -165,6 +167,11 @@ namespace JotunnLib.Managers
         /// <returns>Custom skill with given SkillType</returns>
         public Skills.SkillDef GetSkill(string identifier)
         {
+            if (string.IsNullOrEmpty(identifier))
+            {
+                return null;
+            }
+
             return GetSkill((Skills.SkillType)identifier.GetStableHashCode());
         }
     }

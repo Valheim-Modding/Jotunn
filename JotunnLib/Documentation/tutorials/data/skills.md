@@ -10,14 +10,28 @@ This should be called from within your mod's `Awake` method, and it will return 
 namespace TestMod
 {
     [BepInPlugin("com.bepinex.plugins.jotunnlib.testmod", "JotunnLib Test Mod", "0.0.1")]
-    [BepInDependency("com.bepinex.plugins.jotunnlib")]
+    [BepInDependency(JotunnLib.JotunnLib.ModGuid)]
     class TestMod : BaseUnityPlugin
     {
         public static Skills.SkillType TestSkillType = 0;
 
         private void Awake()
         {
-            TestSkillType = SkillManager.Instance.RegisterSkill("Testing", "A nice testing skill");
+            TestSkillType = SkillManager.Instance.RegisterSkill(new SkillConfig()
+            {
+                // This should be a UNIQUE string, which will be used to generate a unique numerical ID for your skill
+                Identifier = "com.jotunnlibteam.testmod.testskill",
+
+                // The name of the skill in-game
+                Name = "Testing Skill",
+
+                // The description of your skill in-game
+                Description = "A nice testing skill!",
+
+                // The skill's icon. This can be left out to use the default icon.
+                // To see info on loading icons, see the tutorial under "Utils > Asset Utils"
+                Icon = testSkillSprite
+            });
         }
     }
 }

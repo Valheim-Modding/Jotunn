@@ -12,7 +12,7 @@ using TestMod.Prefabs;
 namespace TestMod
 {
     [BepInPlugin("com.bepinex.plugins.jotunnlib.testmod", "JotunnLib Test Mod", "0.1.0")]
-    [BepInDependency("com.bepinex.plugins.jotunnlib")]
+    [BepInDependency(JotunnLib.JotunnLib.ModGuid)]
     class TestMod : BaseUnityPlugin
     {
         public static Skills.SkillType TestSkillType = 0;
@@ -134,7 +134,13 @@ namespace TestMod
             // Test adding a skill with a texture
             Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");
             Sprite testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
-            TestSkillType = SkillManager.Instance.RegisterSkill("com.jotunnlib.testmod.testskill", "Testing Skill", "A nice testing skill!", 1f, testSkillSprite);
+            TestSkillType = SkillManager.Instance.RegisterSkill(new SkillConfig()
+            {
+                Identifier = "com.jotunnlib.testmod.testskill",
+                Name = "Testing Skill",
+                Description = "A nice testing skill!",
+                Icon = testSkillSprite
+            });
         }
     }
 }

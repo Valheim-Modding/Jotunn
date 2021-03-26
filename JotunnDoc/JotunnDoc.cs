@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 namespace JotunnDoc
 {
     [BepInPlugin("com.bepinex.plugins.jotunndoc", "JotunnDoc", "0.1.0")]
-    [BepInDependency("com.bepinex.plugins.jotunnlib")]
+    [BepInDependency(JotunnLib.JotunnLib.ModGuid)]
     public class JotunnDoc : BaseUnityPlugin
     {
         private List<Doc> docs;

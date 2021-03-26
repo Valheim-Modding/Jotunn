@@ -10,7 +10,7 @@ Setting up development environment to create a mod using JotunnLib and Visual st
 3. Adding references to the project:
     - Click `References > Add reference`
 
-    - Navigate to your Valheim folder (should be `<Steam path>/steamapps/common/Valheim/valheim_Data/managed`). Add all of the DLLs there _except_ for `Mono.security.dll`, `mscorlib.dll`, `System.configuration.dll`, `System.dll`, and `System.xml.dll`.
+    - Navigate to your Valheim folder (should be `<Steam path>/steamapps/common/Valheim/unstripped_corlib`). Add all of the DLLs there _except_ for `Mono.security.dll`, `mscorlib.dll`, `System.configuration.dll`, `System.dll`, and `System.xml.dll`.
     ![Adding Valheim Assemblies](../images/getting-started/vs-valheim-assemblies.png "Adding Valheim Assemblies")
     
     - Navigate to your BepInEx core folder in Valheim (should be `<Steam path>/steamapps/common/Valheim/BepInEx/core`). Add all of the DLLs there _except_ for `0Harmony20.dll`.
@@ -20,13 +20,13 @@ Setting up development environment to create a mod using JotunnLib and Visual st
 4. Using the `NuGet Packge Manager`, download and install `HarmonyX` as a dependency.
 
 ## Creating your mod
-To use JotunnLib, you must add it as a BepInEx dependency.
+To use JotunnLib, you must add it as a BepInEx dependency. If possible, please use our `JotunnLib.JotunnLib.ModGuid` variable to reference our mod, to prevent against any issues if this changes in the future.
 
 ```cs
 namespace TestMod
 {
     [BepInPlugin("com.bepinex.plugins.testmod", "JotunnLib Test Mod", "0.0.1")]
-    [BepInDependency("com.bepinex.plugins.jotunnlib")]
+    [BepInDependency(JotunnLib.JotunnLib.ModGuid)]
     public class TestMod : BaseUnityPlugin
     {
         // ...
