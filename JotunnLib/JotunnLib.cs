@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using BepInEx;
-using HarmonyLib;
 using JotunnLib.ConsoleCommands;
 using JotunnLib.Managers;
+using JotunnLib.Utils;
 
 namespace JotunnLib
 {
@@ -35,9 +35,8 @@ namespace JotunnLib
 
         private void Awake()
         {
-            // Initialize harmony patches
-            Harmony harmony = new Harmony("jotunnlib");
-            harmony.PatchAll();
+            // Initialize the patches
+            PatchInitializer.InitializePatches();
 
             // Create and initialize all managers
             RootObject = new GameObject("_JotunnLibRoot");
