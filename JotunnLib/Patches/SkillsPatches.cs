@@ -14,7 +14,7 @@ namespace JotunnLib.Patches
             On.Skills.CheatResetSkill += Skills_CheatResetSkill;
         }
 
-        private void Skills_CheatResetSkill(On.Skills.orig_CheatResetSkill orig, Skills self, string name)
+        private static void Skills_CheatResetSkill(On.Skills.orig_CheatResetSkill orig, Skills self, string name)
         {
             foreach (var config in SkillManager.Instance.Skills)
             {
@@ -28,10 +28,8 @@ namespace JotunnLib.Patches
             orig(self, name);
         }
 
-        private void Skills_CheatRaiseSkill(On.Skills.orig_CheatRaiseSkill orig, Skills self, string name, float value)
+        private static void Skills_CheatRaiseSkill(On.Skills.orig_CheatRaiseSkill orig, Skills self, string name, float value)
         {
-
-
             foreach (var config in SkillManager.Instance.Skills)
             {
                 if (config.Value.Name.ToLower() == name.ToLower())
