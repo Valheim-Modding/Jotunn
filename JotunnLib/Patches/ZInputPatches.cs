@@ -1,33 +1,35 @@
 ﻿using UnityEngine;
-using HarmonyLib;
 using JotunnLib.Managers;
+using JotunnLib.Utils;
+using UnityEngine.UI;
 
 namespace JotunnLib.Patches
 {
-    internal class ZInputPatches
+    internal class ZInputPatches : PatchInitializer
     {
-        [HarmonyPatch(typeof(ZInput), "Initialize")]
-        public static class InitializePatch
+        internal override void Init()
         {
-            public static void Prefix()
-            {
-#if DEBUG
-                Debug.Log("----> ZInput Initialize");
-#endif
-                InputManager.Instance.Register();
-            }
+            On.ZInput.Initialize += ZInput_Initialize;
+            On.ZInput.Reset += ZInput_Reset;
         }
 
-        [HarmonyPatch(typeof(ZInput), "Reset")]
-        public static class ResetPatch
+        private static void ZInput_Reset(On.ZInput.orig_Reset orig, ZInput self)
         {
-            public static void Postfix(ref ZInput __instance)
-            {
+            orig(self);
 #if DEBUG
-                Debug.Log("----> ZInput Reset");
+            Debug.Log("----> ZInput Reset");
 #endif
-                InputManager.Instance.Load(__instance);
-            }
+            InputManager.Instance.Load(self);
+        }
+
+        private static void ZInput_Initialize(On.ZInput.orig_Initialize orig)
+        {
+#if DEBUG
+            Debug.Log("----> ZInput Initialize");
+#endif
+            InputManager.Instance.Register();
+            
+            orig();
         }
     }
 }
