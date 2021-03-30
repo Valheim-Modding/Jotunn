@@ -1,43 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using HarmonyLib;
 using UnityEngine;
 using JotunnLib.Utils;
 using JotunnLib.Managers;
 
 namespace JotunnLib.Patches
 {
-    class LocalizationPatches
+    class LocalizationPatches : PatchInitializer
     {
-        [HarmonyPatch(typeof(Localization), "LoadLanguages")]
-        public static class LoadLanguagesPatch
+        internal override void Init()
         {
-            public static void Postfix(ref Localization __instance, ref List<string> __result)
-            {
-                LocalizationManager.Instance.Register();
-
-                // Add in localized languages that do not yet exist
-                foreach (string language in LocalizationManager.Instance.Languages)
-                {
-                    if (!__result.Contains(language))
-                    {
-                        __result.Add(language);
-                    }
-                }
-            }
+            On.Localization.LoadLanguages += Localization_LoadLanguages;
+            On.Localization.SetupLanguage += Localization_SetupLanguage;
         }
 
-        [HarmonyPatch(typeof(Localization), "SetupLanguage")]
-        public static class SetupLanguagePatch
+        private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
         {
-            public static void Postfix(ref Localization __instance, string language)
-            {
-                Debug.Log("\t-> SetupLanguage called");
+            bool result = orig(self, language);
+            Debug.Log("\t-> SetupLanguage called");
 
-                // Register & load localizations for selected language
-                LocalizationManager.Instance.Register();
-                LocalizationManager.Instance.Load(__instance, language);
+            // Register & load localizations for selected language
+            LocalizationManager.Instance.Register();
+            LocalizationManager.Instance.Load(self, language);
+
+            return result;
+        }
+
+        private List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
+        {
+            List<string> result = orig(self);
+            LocalizationManager.Instance.Register();
+
+            // Add in localized languages that do not yet exist
+            foreach (string language in LocalizationManager.Instance.Languages)
+            {
+                if (!result.Contains(language))
+                {
+                    result.Add(language);
+                }
             }
+
+            return result;
         }
     }
 }
