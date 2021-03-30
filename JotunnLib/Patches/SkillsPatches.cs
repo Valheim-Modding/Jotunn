@@ -67,9 +67,10 @@ namespace JotunnLib.Patches
             // TODO: Move into SkillsManager Register
             foreach (var pair in SkillManager.Instance.Skills)
             {
-                Skills.SkillDef skill = pair.Value;
-                self.m_skills.Add(skill);
-                System.Console.WriteLine("Added extra skill: " + skill.m_skill);
+                // TODO: Quaesar pls fix me!
+                // Skills.SkillDef skill = pair.Value;
+                // self.m_skills.Add(skill);
+                // System.Console.WriteLine("Added extra skill: " + skill.m_skill);
             }
 
         }
