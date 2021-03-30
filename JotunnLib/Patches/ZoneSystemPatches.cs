@@ -1,33 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using HarmonyLib;
 using UnityEngine;
 using JotunnLib.Managers;
+using JotunnLib.Utils;
 
 namespace JotunnLib.Patches
 {
-    class ZoneSystemPatches
+    class ZoneSystemPatches : PatchInitializer
     {
-
-        [HarmonyPatch(typeof(ZoneSystem), "Awake")]
-        public static class AwakePatch
+        internal override void Init()
         {
-            public static void Postfix()
-            {
-#if DEBUG
-                Debug.Log("----> ZoneSystem Awake");
-#endif
-                // ZoneManager.Instance.Register();
-            }
+            On.ZoneSystem.Awake += ZoneSystem_Awake;
+            On.ZoneSystem.SpawnZone += ZoneSystem_SpawnZone;
         }
 
-        [HarmonyPatch(typeof(ZoneSystem), "SpawnZone")]
-        public static class SpawnZonePatch
+        private static void ZoneSystem_Awake(On.ZoneSystem.orig_Awake orig, ZoneSystem self)
         {
-            public static void Prefix(Vector2i zoneID)
-            {
-                // Debug.Log("-> Spawning zone: " + zoneID);
-            }
+            orig(self);
+#if DEBUG
+            Debug.Log("----> ZoneSystem Awake");
+#endif
+            // ZoneManager.Instance.Register();
+        }
+
+        private static bool ZoneSystem_SpawnZone(On.ZoneSystem.orig_SpawnZone orig, ZoneSystem self, Vector2i zoneID, ZoneSystem.SpawnMode mode, out GameObject root)
+        {
+            // Debug.Log("-> Spawning zone: " + zoneID);
+            return orig(self, zoneID, mode, out root);
         }
     }
 }
