@@ -3,42 +3,46 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using HarmonyLib;
 using JotunnLib.Managers;
+using JotunnLib.Utils;
+using Steamworks;
 
 namespace JotunnLib.Patches
 {
-    class PlayerPatches
+    class PlayerPatches : PatchInitializer
     {
-        [HarmonyPatch(typeof(Player), "OnSpawned")]
-        public static class OnSpawnedPatch
+        internal override void Init()
         {
-            public static void Prefix(ref Player __instance, ref bool ___m_firstSpawn)
-            {
-#if DEBUG
-                // Temp: disable valkyrie animation during testing for sanity reasons
-                ___m_firstSpawn = false;
-#endif
-
-                EventManager.OnPlayerSpawned(__instance);
-            }
+            On.Player.OnSpawned += Player_OnSpawned;
+            On.Player.PlacePiece += Player_PlacePiece;
         }
 
-
-        [HarmonyPatch(typeof(Player), "PlacePiece")]
-        public static class PlacePiecePatch
+        private static bool Player_PlacePiece(On.Player.orig_PlacePiece orig, Player self, Piece piece)
         {
-            public static void Postfix(ref Player __instance, Piece piece, bool __result, GameObject ___m_placementGhost)
+            bool result = orig(self, piece);
+
+            EventManager.OnPlayerPlacedPiece(new Events.PlayerPlacedPieceEventArgs()
             {
-                EventManager.OnPlayerPlacedPiece(new Events.PlayerPlacedPieceEventArgs()
-                {
-                    Player = __instance,
-                    Piece = piece,
-                    Position = ___m_placementGhost.transform.position,
-                    Rotation = ___m_placementGhost.transform.rotation,
-                    Success = __result
-                });
-            }
+                Player=self,
+                Piece=piece,
+                Position=self.m_placementGhost.transform.position,
+                Rotation=self.m_placementGhost.transform.rotation,
+                Success = result
+            });
+
+            return result;
+        }
+
+        private static void Player_OnSpawned(On.Player.orig_OnSpawned orig, Player self)
+        {
+#if DEBUG
+            // Temp: disable valkyrie animation during testing for sanity reasons
+            self.m_firstSpawn = false;
+#endif
+
+            EventManager.OnPlayerSpawned(self);
+
+            orig(self);
         }
     }
 }
