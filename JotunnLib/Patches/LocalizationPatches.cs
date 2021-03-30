@@ -14,7 +14,7 @@ namespace JotunnLib.Patches
             On.Localization.SetupLanguage += Localization_SetupLanguage;
         }
 
-        private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
+        private static bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
         {
             bool result = orig(self, language);
             Debug.Log("\t-> SetupLanguage called");
@@ -26,7 +26,7 @@ namespace JotunnLib.Patches
             return result;
         }
 
-        private List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
+        private static List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
         {
             List<string> result = orig(self);
             LocalizationManager.Instance.Register();
