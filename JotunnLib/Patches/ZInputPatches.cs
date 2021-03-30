@@ -7,7 +7,7 @@ namespace JotunnLib.Patches
 {
     internal class ZInputPatches : PatchInitializer
     {
-        internal override void Init()
+        public override void Init()
         {
             On.ZInput.Initialize += ZInput_Initialize;
             On.ZInput.Reset += ZInput_Reset;

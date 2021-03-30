@@ -8,7 +8,7 @@ namespace JotunnLib.Patches
 {
     class LocalizationPatches : PatchInitializer
     {
-        internal override void Init()
+        public override void Init()
         {
             On.Localization.LoadLanguages += Localization_LoadLanguages;
             On.Localization.SetupLanguage += Localization_SetupLanguage;

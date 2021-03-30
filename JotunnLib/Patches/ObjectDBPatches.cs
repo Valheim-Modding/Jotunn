@@ -9,7 +9,7 @@ namespace JotunnLib.Patches
 {
     class ObjectDBPatches : PatchInitializer
     {
-        internal override void Init()
+        public override void Init()
         {
             On.ObjectDB.Awake += ObjectDB_Awake;
 

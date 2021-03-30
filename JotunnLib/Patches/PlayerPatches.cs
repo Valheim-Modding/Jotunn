@@ -11,7 +11,7 @@ namespace JotunnLib.Patches
 {
     class PlayerPatches : PatchInitializer
     {
-        internal override void Init()
+        public override void Init()
         {
             On.Player.OnSpawned += Player_OnSpawned;
             On.Player.PlacePiece += Player_PlacePiece;

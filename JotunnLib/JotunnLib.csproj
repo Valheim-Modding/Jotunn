@@ -425,5 +425,11 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <PostBuildEvent>copy "$(TargetDir)$(TargetFileName)" "$(VALHEIM_INSTALL)\BepInEx\plugins" /y</PostBuildEvent>
+  </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetDir)$(TargetFileName) "$(VALHEIM_INSTALL)\BepInEx\plugins" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

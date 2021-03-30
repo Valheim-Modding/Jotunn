@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BepInEx;
-using HarmonyLib;
 using UnityEngine;
 using JotunnLib.Managers;
 using JotunnDoc.Docs;

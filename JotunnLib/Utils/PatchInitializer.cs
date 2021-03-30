@@ -13,7 +13,7 @@ namespace JotunnLib.Utils
 {
     public abstract class PatchInitializer
     {
-        internal abstract void Init();
+        public abstract void Init();
 
         public static void InitializePatches()
         {

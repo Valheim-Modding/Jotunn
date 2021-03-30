@@ -8,7 +8,7 @@ namespace JotunnLib.Patches
 {
     class ZoneSystemPatches : PatchInitializer
     {
-        internal override void Init()
+        public override void Init()
         {
             On.ZoneSystem.Awake += ZoneSystem_Awake;
             On.ZoneSystem.SpawnZone += ZoneSystem_SpawnZone;
