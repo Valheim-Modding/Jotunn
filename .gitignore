@@ -12,3 +12,6 @@ releases/
 # VS Code
 .vscode/*
 !.vscode/tasks.json
+
+# csproj.user file (for local environment)
+*.csproj.user
