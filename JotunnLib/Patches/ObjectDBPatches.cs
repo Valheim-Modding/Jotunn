@@ -1,32 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using HarmonyLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using JotunnLib.Managers;
+using JotunnLib.Utils;
 
 namespace JotunnLib.Patches
 {
-    class ObjectDBPatches
+    class ObjectDBPatches : PatchInitializer
     {
-
-        [HarmonyPatch(typeof(ObjectDB), "Awake")]
-        public static class AwakePatch
+        internal override void Init()
         {
-            public static void Postfix()
-            {
+            On.ObjectDB.Awake += ObjectDB_Awake;
+
+        }
+
+        private static void ObjectDB_Awake(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
 #if DEBUG
-                Debug.Log("----> ObjectDB Awake");
+            Debug.Log("----> ObjectDB Awake");
 #endif
 
-                if (SceneManager.GetActiveScene().name == "main")
-                {
-                    ObjectManager.Instance.Register();
-                    ObjectManager.Instance.Load();
+            if (SceneManager.GetActiveScene().name == "main")
+            {
+                ObjectManager.Instance.Register();
+                ObjectManager.Instance.Load();
 
-                    PieceManager.Instance.Register();
-                    PieceManager.Instance.Load();
-                }
+                PieceManager.Instance.Register();
+                PieceManager.Instance.Load();
             }
         }
     }
