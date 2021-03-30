@@ -14,7 +14,7 @@ namespace JotunnLib.Patches
             On.Console.InputText += Console_InputText;
         }
 
-        private void Console_InputText(On.Console.orig_InputText orig, Console self)
+        private static void Console_InputText(On.Console.orig_InputText orig, Console self)
         {
             orig(self);
 
