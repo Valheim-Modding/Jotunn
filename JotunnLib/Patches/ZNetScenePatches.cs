@@ -1,28 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using HarmonyLib;
 using UnityEngine;
 using JotunnLib.Managers;
+using JotunnLib.Utils;
 
 namespace JotunnLib.Patches
 {
-    class ZNetScenePatches
+    class ZNetScenePatches : PatchInitializer
     {
 
-        [HarmonyPatch(typeof(ZNetScene), "Awake")]
-        public static class AwakePatch
+        internal override void Init()
         {
-            public static void Postfix()
-            {
-#if DEBUG
-                Debug.Log("----> ZNetScene Awake");
-#endif
-                PrefabManager.Instance.Register();
-                PrefabManager.Instance.Load();
+            On.ZNetScene.Awake += ZNetScene_Awake;
+        }
 
-                ZoneManager.Instance.Register();
-                ZoneManager.Instance.Load();
-            }
+        private static void ZNetScene_Awake(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        {
+            orig(self);
+
+#if DEBUG
+            Debug.Log("----> ZNetScene Awake");
+#endif
+            PrefabManager.Instance.Register();
+            PrefabManager.Instance.Load();
+
+            ZoneManager.Instance.Register();
+            ZoneManager.Instance.Load();
+
         }
     }
 }
