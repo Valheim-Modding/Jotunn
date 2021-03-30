@@ -1,49 +1,42 @@
 ﻿using System.Collections.Generic;
-using HarmonyLib;
 using JotunnLib.Managers;
-using UnityEngine;
+using JotunnLib.Utils;
 
 namespace JotunnLib.Patches
 {
-    class SkillsPatches
+    class SkillsPatches : PatchInitializer
     {
-        [HarmonyPatch(typeof(Skills), "Awake")]
-        public static class AwakePatch
+        internal override void Init()
         {
-            public static void Postfix(ref Skills __instance)
-            {
-                // TODO: Move into SkillsManager Register
-                foreach (var pair in SkillManager.Instance.Skills)
-                {
-                    Skills.SkillDef skill = new Skills.SkillDef()
-                    {
-                        m_description = pair.Value.Description,
-                        m_icon = pair.Value.Icon,
-                        m_increseStep = pair.Value.IncreaseStep,
-                        m_skill = pair.Value.UID
-                    };
-                    __instance.m_skills.Add(skill);
-                    System.Console.WriteLine("Added extra skill: " + skill.m_skill);
-                }
-            }
+            On.Skills.Awake += Skills_Awake;
+            On.Skills.IsSkillValid += Skills_IsSkillValid;
         }
 
-        [HarmonyPatch(typeof(Skills), "IsSkillValid")]
-        public static class IsSkillValidPatch
+        private static bool Skills_IsSkillValid(On.Skills.orig_IsSkillValid orig, Skills self, Skills.SkillType type)
         {
-            public static bool Prefix(ref bool __result, Skills.SkillType type)
+            foreach (var pair in SkillManager.Instance.Skills)
             {
-                foreach (var pair in SkillManager.Instance.Skills)
+                if (pair.Value.m_skill == type)
                 {
-                    if (pair.Value.UID == type)
-                    {
-                        __result = true;
-                        return false;
-                    }
+                     return true;
                 }
-
-                return true;
             }
+
+            return orig(self, type);
+        }
+
+        private static void Skills_Awake(On.Skills.orig_Awake orig, Skills self)
+        {
+            orig(self);
+
+            // TODO: Move into SkillsManager Register
+            foreach (var pair in SkillManager.Instance.Skills)
+            {
+                Skills.SkillDef skill = pair.Value;
+                self.m_skills.Add(skill);
+                System.Console.WriteLine("Added extra skill: " + skill.m_skill);
+            }
+
         }
 
         [HarmonyPatch(typeof(Skills), "CheatRaiseSkill")]
