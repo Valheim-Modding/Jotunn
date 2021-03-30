@@ -9,7 +9,7 @@ namespace JotunnLib.Patches
 {
     internal class ConsoleCommandsPatches : PatchInitializer
     {
-        internal override void Init()
+        public override void Init()
         {
             On.Console.InputText += Console_InputText;
         }

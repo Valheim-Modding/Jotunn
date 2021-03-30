@@ -9,7 +9,7 @@ namespace JotunnLib.Patches
     class ZNetScenePatches : PatchInitializer
     {
 
-        internal override void Init()
+        public override void Init()
         {
             On.ZNetScene.Awake += ZNetScene_Awake;
         }

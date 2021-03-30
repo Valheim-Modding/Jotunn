@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using JotunnLib.Utils;
 using UnityEngine;
-using HarmonyLib;
 
 namespace JotunnDoc.Patches
 {
-    class ZRoutedRpcPatches
+    internal class ZRoutedRpcPatches : PatchInitializer
     {
-        [HarmonyPatch(typeof(ZRoutedRpc), "Register", typeof(string), typeof(Action))]
-        public static class Register
+        public override void Init()
         {
-            public static void Postfix(string name)
-            {
-                Debug.Log("Registered RPC: " + name + " (" + name.GetStableHashCode() + ")");
-            }
+            On.ZRoutedRpc.Register += ZRoutedRpc_Register;
         }
+
+        private static void ZRoutedRpc_Register(On.ZRoutedRpc.orig_Register orig, ZRoutedRpc self, string name, Action<long> f)
+        {
+            Debug.Log("Registered RPC: " + name + " (" + name.GetStableHashCode() + ")");
+            orig(self, name, f);
+        }
+
     }
 }
