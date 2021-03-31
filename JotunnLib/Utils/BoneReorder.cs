@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using JotunnLib.Managers;
 
 namespace JotunnLib.Utils
 {
@@ -24,7 +25,7 @@ namespace JotunnLib.Utils
         {
             if (!Applied)
             {
-                ODB.ObjectDBHelper.OnAfterInit += () =>
+                ObjectManager.OnAfterInit += () =>
                 {
                     On.VisEquipment.SetUtilityEquiped += VisEquipmentOnSetUtilityEquiped;
                     On.VisEquipment.SetShoulderEquiped += VisEquipmentOnSetShoulderEquiped;
