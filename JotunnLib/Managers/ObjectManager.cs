@@ -11,6 +11,9 @@ namespace JotunnLib.Managers
         public static ObjectManager Instance { get; private set; }
 
         public event EventHandler ObjectRegister;
+        internal static readonly List<CustomItem> CustomItems = new List<CustomItem>();
+        internal static readonly List<CustomRecipe> CustomRecipes = new List<CustomRecipe>();
+        internal static readonly List<CustomStatusEffect> CustomStatusEffects = new List<CustomStatusEffect>();
         internal List<GameObject> Items = new List<GameObject>();
         internal List<Recipe> Recipes = new List<Recipe>();
         

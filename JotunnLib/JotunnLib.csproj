@@ -14,6 +14,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -32,6 +34,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+   <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="assembly_googleanalytics_publicized">
@@ -386,6 +392,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\ButtonConfig.cs" />
+    <Compile Include="Entities\CustomItem.cs" />
     <Compile Include="Entities\LocalizationConfig.cs" />
     <Compile Include="Entities\PieceConfig.cs" />
     <Compile Include="Entities\PieceRequirementConfig.cs" />
@@ -418,12 +425,18 @@
     <Compile Include="Patches\SkillsPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Managers\SkillManager.cs" />
+    <Compile Include="Utils\BoneReorder.cs" />
+    <Compile Include="Utils\Class1.cs" />
+    <Compile Include="Utils\Language.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Utils\ObjImporter.cs" />
     <Compile Include="Utils\PatchInitializer.cs" />
+    <Compile Include="Utils\Paths.cs" />
     <Compile Include="Utils\PatchPriorityAttribute.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Utils\AssetUtils.cs" />
+    <Compile Include="Utils\SimpleJson.cs" />
+    <Compile Include="Utils\WeightedList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Documentation\*.md" />
