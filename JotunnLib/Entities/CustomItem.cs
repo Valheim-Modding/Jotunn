@@ -31,7 +31,7 @@ namespace JotunnLib.Entities
 
         public static bool IsCustomItem(string prefabName)
         {
-            foreach (var customItem in ObjectManager.CustomItems)
+            foreach (var customItem in ObjectManager.Instance.Items)
             {
                 if (customItem.ItemPrefab.name == prefabName)
                 {
@@ -161,7 +161,7 @@ namespace JotunnLib.Entities
         {
             foreach (var inventoryItem in self.m_inventory)
             {
-                foreach (var customItem in ObjectManager.CustomItems)
+                foreach (var customItem in ObjectManager.Instance.Items)
                 {
                     if (inventoryItem.TokenName() == customItem.ItemDrop.TokenName())
                     {
