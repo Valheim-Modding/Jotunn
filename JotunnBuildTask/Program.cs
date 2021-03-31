@@ -110,6 +110,7 @@ namespace JotunnBuildTask
             modder.ReadingMode = ReadingMode.Deferred;
 
             ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, "valheim_Data", "Managed"));
+            ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, "unstripped_corlib"));
 
             modder.Read();
 
