@@ -34,6 +34,7 @@ namespace JotunnLib.Managers
         {
             JotunnLib.Logger.LogDebug($"Hooking ObjectDB Awake.");
             On.ObjectDB.Awake += AddCustomData;
+            On.Player.Load += ReloadKnownRecipes;
         }
 
         private void Awake()
@@ -57,7 +58,7 @@ namespace JotunnLib.Managers
             Recipes.Clear();
 
             
-            On.Player.Load += ReloadKnownRecipes;
+            
 
             SaveCustomData.Init();
 
