@@ -448,7 +448,7 @@
     <Compile Include="Utils\SimpleJson.cs" />
     <Compile Include="Utils\WeightedList.cs" />
   </ItemGroup>
-  <Import Project="..\Environment.props" />
+  <Import Project="../Environment.props" />
   <ItemGroup>
     <None Include="Documentation\*.md" />
     <None Include="app.config" />

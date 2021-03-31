@@ -404,5 +404,5 @@
     <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\Environment.props" />
+  <Import Project="../Environment.props" />
 </Project>
