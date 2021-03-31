@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Remoting.Channels;
 using System.Security.Cryptography;
+using System.Text;
+using Mono.Cecil;
+using MonoMod;
+using MonoMod.RuntimeDetour.HookGen;
 
 namespace JotunnBuildTask
 {
     internal class Program
     {
+        private static string ValheimPath = "";
+
         /// <summary>
         ///     Create new MMHOOK dll's if they don't exist or have changed
         /// </summary>
@@ -16,6 +23,7 @@ namespace JotunnBuildTask
         {
             try
             {
+
                 if (args.Length != 1)
                 {
                     Console.WriteLine("Only one argument: Path to Valheim");
@@ -29,7 +37,9 @@ namespace JotunnBuildTask
 
                 var outputFolder = Path.Combine(args[0], "BepInEx", "plugins", "MMHOOK");
 
-                foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_Data", "Managed"), "assembly_*.dll"))
+                ValheimPath = args[0];
+
+                foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_Data", "Managed", "publicized_assemblies"), "assembly_*.dll"))
                 {
                     HashAndCompare(file, outputFolder);
                 }
@@ -65,7 +75,7 @@ namespace JotunnBuildTask
             }
 
             // only write the hash to file if HookGen was successful
-            if (InvokeHookgen(file, Path.Combine(outputFolder, "MMHOOK_" + Path.GetFileName(file))))
+            if (InvokeHookgen(file, Path.Combine(outputFolder, "MMHOOK_" + Path.GetFileName(file)), hash))
             {
                 File.WriteAllText(Path.Combine(outputFolder, Path.GetFileName(file) + ".hash"), hash);
             }
@@ -77,15 +87,37 @@ namespace JotunnBuildTask
         /// <param name="file">input dll</param>
         /// <param name="output">output dll</param>
         /// <returns></returns>
-        private static bool InvokeHookgen(string file, string output)
+        private static bool InvokeHookgen(string file, string output, string md5)
         {
-            var psi = new ProcessStartInfo(Path.Combine(Environment.CurrentDirectory, "MonoMod.RuntimeDetour.HookGen.exe"));
-            psi.CreateNoWindow = true;
-            psi.Arguments = " --private --orig \"" + file + "\" \"" + output + "\"";
-            psi.UseShellExecute = true;
-            var hookGen = Process.Start(psi);
-            hookGen.WaitForExit();
-            return hookGen.ExitCode == 0;
+            MonoModder modder = new MonoModder();
+            modder.InputPath = file;
+            modder.OutputPath = output;
+            modder.ReadingMode = ReadingMode.Deferred;
+
+            ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, "valheim_Data", "Managed"));
+
+            modder.Read();
+
+            modder.MapDependencies();
+
+            if (File.Exists(output))
+            {
+                Console.WriteLine($"Clearing {output}");
+                File.Delete(output);
+            }
+
+            HookGenerator hookGenerator = new HookGenerator(modder, Path.GetFileName(output));
+
+            using (ModuleDefinition mOut = hookGenerator.OutputModule)
+            {
+                hookGenerator.Generate();
+                mOut.Types.Add(new TypeDefinition("BepHookGen", "hash" + md5, TypeAttributes.AutoClass));
+                mOut.Write(output);
+            }
+
+            Console.WriteLine($"Finished writing {output}");
+
+            return true;
         }
 
         /// <summary>
