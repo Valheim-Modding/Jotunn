@@ -96,6 +96,7 @@ namespace TestMod
         // Register new items and recipes
         private void registerObjects(object sender, EventArgs e)
         {
+            /*
             // Items
             ObjectManager.Instance.RegisterItem("TestPrefab");
 
@@ -133,6 +134,7 @@ namespace TestMod
                     }
                 }
             });
+            */
         }
 
         // Registers localizations

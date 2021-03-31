@@ -36,6 +36,7 @@ namespace JotunnBuildTask
             {
                 assemblyDefinition = AssemblyDefinition.ReadAssembly(file);
                 ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, "valheim_Data", "Managed"));
+                ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, "unstripped_corlib"));
             }
             catch (Exception exception)
             {
