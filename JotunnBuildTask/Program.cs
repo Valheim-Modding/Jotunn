@@ -16,6 +16,12 @@ namespace JotunnBuildTask
         {
             try
             {
+                if (args.Length != 1)
+                {
+                    Console.WriteLine("Ony one argument: Path to Valheim");
+                    return -2;
+                }
+
                 if (!Directory.Exists(Path.Combine(args[0], "BepinEx", "plugins", "MMHOOK")))
                 {
                     Directory.CreateDirectory(Path.Combine(args[0], "BepinEx", "plugins", "MMHOOK"));
