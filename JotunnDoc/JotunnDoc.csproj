@@ -59,31 +59,31 @@
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_googleanalytics">
-      <HintPath>..\lib\MMHOOK_assembly_googleanalytics.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_googleanalytics.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_guiutils">
-      <HintPath>..\lib\MMHOOK_assembly_guiutils.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_guiutils.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_lux">
-      <HintPath>..\lib\MMHOOK_assembly_lux.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_lux.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_postprocessing">
-      <HintPath>..\lib\MMHOOK_assembly_postprocessing.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_postprocessing.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_simplemeshcombine">
-      <HintPath>..\lib\MMHOOK_assembly_simplemeshcombine.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_simplemeshcombine.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_steamworks">
-      <HintPath>..\lib\MMHOOK_assembly_steamworks.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_steamworks.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_sunshafts">
-      <HintPath>..\lib\MMHOOK_assembly_sunshafts.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_sunshafts.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_utils">
-      <HintPath>..\lib\MMHOOK_assembly_utils.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_utils.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_valheim">
-      <HintPath>..\lib\MMHOOK_assembly_valheim.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_valheim.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx, Version=5.4.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -399,6 +399,9 @@
       <Project>{a6082a59-38be-4cab-9078-2c8fcda65b8f}</Project>
       <Name>JotunnLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

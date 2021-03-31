@@ -15,3 +15,4 @@ releases/
 
 # csproj.user file (for local environment)
 *.csproj.user
+*.user
