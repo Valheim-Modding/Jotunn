@@ -58,6 +58,7 @@
     </Reference>
     <Reference Include="assembly_steamworks_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_steamworks_publicized.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="assembly_sunshafts_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_sunshafts_publicized.dll</HintPath>
@@ -459,5 +460,8 @@
   </Target>
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <PostBuildEvent>copy $(TargetDir)$(TargetFileName) "$(VALHEIM_INSTALL)\BepInEx\plugins" /y</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)publish.ps1" -Target "$(ConfigurationName)" -TargetPath "$(TargetDir.TrimEnd('\'))" -TargetAssembly "$(TargetFileName)" -ValheimPath "$(VALHEIM_INSTALL.TrimEnd('\'))"</PostBuildEvent>
   </PropertyGroup>
 </Project>
