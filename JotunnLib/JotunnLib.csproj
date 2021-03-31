@@ -37,7 +37,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-   <LangVersion>preview</LangVersion>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="assembly_googleanalytics_publicized">
@@ -83,32 +83,32 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\HarmonyXInterop.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_assembly_googleanalytics_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_googleanalytics_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_googleanalytics">
+      <HintPath>$(VALHEIM_INSTALL)\Bepinex\plugins\MMHOOK\MMHOOK_assembly_googleanalytics.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_assembly_guiutils_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_guiutils_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_guiutils">
+      <HintPath>$(VALHEIM_INSTALL)\Bepinex\plugins\MMHOOK\MMHOOK_assembly_guiutils.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_assembly_lux_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_lux_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_lux">
+      <HintPath>$(VALHEIM_INSTALL)\Bepinex\plugins\MMHOOK\MMHOOK_assembly_lux.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_assembly_postprocessing_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_postprocessing_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_postprocessing">
+      <HintPath>$(VALHEIM_INSTALL)\Bepinex\plugins\MMHOOK\MMHOOK_assembly_postprocessing.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_assembly_simplemeshcombine_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_simplemeshcombine_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_simplemeshcombine">
+      <HintPath>$(VALHEIM_INSTALL)\Bepinex\plugins\MMHOOK\MMHOOK_assembly_simplemeshcombine.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_assembly_steamworks_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_steamworks_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_steamworks">
+      <HintPath>$(VALHEIM_INSTALL)\Bepinex\plugins\MMHOOK\MMHOOK_assembly_steamworks.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_assembly_sunshafts_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_sunshafts_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_sunshafts">
+      <HintPath>$(VALHEIM_INSTALL)\Bepinex\plugins\MMHOOK\MMHOOK_assembly_sunshafts.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_assembly_utils_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_utils_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_utils">
+      <HintPath>$(VALHEIM_INSTALL)\Bepinex\plugins\MMHOOK\MMHOOK_assembly_utils.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_assembly_valheim_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_valheim_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_valheim">
+      <HintPath>$(VALHEIM_INSTALL)\Bepinex\plugins\MMHOOK\MMHOOK_assembly_valheim.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -393,9 +393,13 @@
   <ItemGroup>
     <Compile Include="Entities\ButtonConfig.cs" />
     <Compile Include="Entities\CustomItem.cs" />
+    <Compile Include="Entities\CustomRecipe.cs" />
+    <Compile Include="Entities\CustomStatusEffect.cs" />
     <Compile Include="Entities\LocalizationConfig.cs" />
+    <Compile Include="Entities\Mock.cs" />
     <Compile Include="Entities\PieceConfig.cs" />
     <Compile Include="Entities\PieceRequirementConfig.cs" />
+    <Compile Include="Entities\prefab.cs" />
     <Compile Include="Entities\PrefabConfig.cs" />
     <Compile Include="Entities\RecipeConfig.cs" />
     <Compile Include="Entities\SkillConfig.cs" />
@@ -412,6 +416,7 @@
     <Compile Include="Managers\ObjectManager.cs" />
     <Compile Include="Managers\PieceManager.cs" />
     <Compile Include="Managers\PrefabManager.cs" />
+    <Compile Include="Managers\SaveManager.cs" />
     <Compile Include="Managers\ZoneManager.cs" />
     <Compile Include="Patches\ConsoleCommandsPatches.cs" />
     <Compile Include="JotunnLib.cs" />
@@ -426,13 +431,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Managers\SkillManager.cs" />
     <Compile Include="Utils\BoneReorder.cs" />
-    <Compile Include="Utils\Class1.cs" />
+    <Compile Include="Utils\EventsHelper.cs" />
+    <Compile Include="Utils\Hashes.cs" />
     <Compile Include="Utils\Language.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Utils\ObjImporter.cs" />
     <Compile Include="Utils\PatchInitializer.cs" />
     <Compile Include="Utils\Paths.cs" />
-    <Compile Include="Utils\PatchPriorityAttribute.cs" />
+    <Compile Include="Utils\ReflectionHelper.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Utils\AssetUtils.cs" />
     <Compile Include="Utils\SimpleJson.cs" />

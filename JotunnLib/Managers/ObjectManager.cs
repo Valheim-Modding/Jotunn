@@ -59,7 +59,7 @@ namespace JotunnLib.Managers
             }
 
             // Update hashes
-            ReflectionUtils.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
+            ReflectionHelper.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
         }
 
         /// <summary>

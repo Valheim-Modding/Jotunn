@@ -3,7 +3,7 @@ using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using ValheimLib.Util.Reflection;
+using JotunnLib.Utils;
 
 namespace JotunnLib.Utils
 {
@@ -64,7 +64,7 @@ namespace JotunnLib.Utils
         private static void AddLanguageFilesFromPluginFolder()
         {
             var communityTranslationsFilePaths = new List<string>();
-            var languagePaths = Directory.GetFiles(Util.Paths.LanguageTranslationsFolder, CommunityTranslationFileName, SearchOption.AllDirectories);
+            var languagePaths = Directory.GetFiles(Paths.LanguageTranslationsFolder, CommunityTranslationFileName, SearchOption.AllDirectories);
             foreach (var path in languagePaths)
             {
                 var isTranslationFile = Path.GetDirectoryName(Path.GetDirectoryName(path)).EndsWith(TranslationsFolderName);
@@ -75,7 +75,7 @@ namespace JotunnLib.Utils
                 }
             }
 
-            languagePaths = Directory.GetFiles(Util.Paths.LanguageTranslationsFolder, "*.json", SearchOption.AllDirectories);
+            languagePaths = Directory.GetFiles(Paths.LanguageTranslationsFolder, "*.json", SearchOption.AllDirectories);
             foreach (var path in languagePaths)
             {
                 if (communityTranslationsFilePaths.Contains(path))
@@ -90,7 +90,7 @@ namespace JotunnLib.Utils
                 }
             }
 
-            languagePaths = Directory.GetFiles(Util.Paths.LanguageTranslationsFolder, "*.language", SearchOption.AllDirectories);
+            languagePaths = Directory.GetFiles(Paths.LanguageTranslationsFolder, "*.language", SearchOption.AllDirectories);
             foreach (var path in languagePaths)
             {
                 AddPath(path);
@@ -161,13 +161,13 @@ namespace JotunnLib.Utils
                 var language = Path.GetFileName(Path.GetDirectoryName(path));
                 AddJson(language, fileContent);
 
-                Log.LogInfo($"Added json language file {Path.GetFileName(path)}");
+                JotunnLib.Logger.LogInfo($"Added json language file {Path.GetFileName(path)}");
             }
             else
             {
                 Add(fileContent);
 
-                Log.LogInfo($"Added language file {Path.GetFileName(path)}");
+                JotunnLib.Logger.LogInfo($"Added language file {Path.GetFileName(path)}");
             }
 
         }
