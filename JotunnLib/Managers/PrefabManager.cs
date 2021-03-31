@@ -52,7 +52,7 @@ namespace JotunnLib.Managers
             }
 
             // Load prefabs into game
-            var namedPrefabs = ReflectionUtils.GetPrivateField<Dictionary<int, GameObject>>(ZNetScene.instance, "m_namedPrefabs");
+            var namedPrefabs = ReflectionHelper.GetPrivateField<Dictionary<int, GameObject>>(ZNetScene.instance, "m_namedPrefabs");
 
             foreach (var pair in Prefabs)
             {
@@ -201,7 +201,7 @@ namespace JotunnLib.Managers
                 return null;
             }
 
-            var namedPrefabs = ReflectionUtils.GetPrivateField<Dictionary<int, GameObject>>(ZNetScene.instance, "m_namedPrefabs");
+            var namedPrefabs = ReflectionHelper.GetPrivateField<Dictionary<int, GameObject>>(ZNetScene.instance, "m_namedPrefabs");
             int key = name.GetStableHashCode();
 
             if (namedPrefabs.ContainsKey(key))

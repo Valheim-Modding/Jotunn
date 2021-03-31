@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ValheimLib.Util.Events
+namespace JotunnLib.Utils
 {
     /// <summary>
     /// Helper class for C# Events
@@ -26,7 +26,7 @@ namespace ValheimLib.Util.Events
                 }
                 catch (Exception e)
                 {
-                    Log.LogError(e);
+                    JotunnLib.Logger.LogError(e);
                 }
             }
         }
@@ -52,7 +52,7 @@ namespace ValheimLib.Util.Events
                 }
                 catch (Exception e)
                 {
-                    Log.LogError(e);
+                    JotunnLib.Logger.LogError(e);
                 }
             }
         }

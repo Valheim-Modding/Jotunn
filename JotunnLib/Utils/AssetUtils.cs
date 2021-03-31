@@ -17,7 +17,7 @@ namespace JotunnLib.Utils
         /// <returns>Texture2D loaded, or null if invalid path</returns>
         public static Texture2D LoadTexture(string texturePath)
         {
-            string path = Path.Combine(Paths.PluginPath, texturePath);
+            string path = Path.Combine(BepInEx.Paths.PluginPath, texturePath);
 
             if (!File.Exists(path))
             {
@@ -37,7 +37,7 @@ namespace JotunnLib.Utils
         /// <returns>Texture2D loaded, or null if invalid path</returns>
         public static Mesh LoadMesh(string meshPath)
         {
-            string path = Path.Combine(Paths.PluginPath, meshPath);
+            string path = Path.Combine(BepInEx.Paths.PluginPath, meshPath);
 
             if (!File.Exists(path))
             {
@@ -54,7 +54,7 @@ namespace JotunnLib.Utils
         /// <returns>AssetBundle loaded, or null if invalid path</returns>
         public static AssetBundle LoadAssetBundle(string bundlePath)
         {
-            string path = Path.Combine(Paths.PluginPath, bundlePath);
+            string path = Path.Combine(BepInEx.Paths.PluginPath, bundlePath);
 
             if (!File.Exists(path))
             {

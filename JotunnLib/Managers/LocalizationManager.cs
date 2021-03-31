@@ -56,7 +56,7 @@ namespace JotunnLib.Managers
                 foreach (var pair in localization.Translations)
                 {
                     Debug.Log("\tAdded translation: " + pair.Key + " -> " + pair.Value);
-                    ReflectionUtils.InvokePrivate(instance, "AddWord", new object[] { pair.Key, pair.Value });
+                    ReflectionHelper.InvokePrivate(instance, "AddWord", new object[] { pair.Key, pair.Value });
                 }
             }
         }
@@ -68,7 +68,7 @@ namespace JotunnLib.Managers
         /// <param name="text">Translation</param>
         public void RegisterTranslation(string key, string text)
         {
-            ReflectionUtils.InvokePrivate(Localization.instance, "AddWord", new object[] { key, text });
+            ReflectionHelper.InvokePrivate(Localization.instance, "AddWord", new object[] { key, text });
         }
 
         /// <summary>

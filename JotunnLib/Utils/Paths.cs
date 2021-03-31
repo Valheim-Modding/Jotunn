@@ -5,18 +5,18 @@ namespace JotunnLib.Utils
 {
     public static class Paths
     {
-        public static string ValheimLibFolder
+        public static string JotunnLibFolder
         {
             get
             {
-                var saveDataPath = Utils.GetSaveDataPath();
-                const string valheimLibFolder = nameof(ValheimLib);
+                var saveDataPath = global::Utils.GetSaveDataPath();
+                const string jotunnLibFolder = nameof(JotunnLib);
 
-                return Path.Combine(saveDataPath, valheimLibFolder);
+                return Path.Combine(saveDataPath, jotunnLibFolder);
             }
         }
 
-        public static string CustomItemDataFolder => Path.Combine(ValheimLibFolder, "CustomItemData");
+        public static string CustomItemDataFolder => Path.Combine(JotunnLibFolder, "CustomItemData");
 
         public static string LanguageTranslationsFolder => BepInEx.Paths.PluginPath;
     }

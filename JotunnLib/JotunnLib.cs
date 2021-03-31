@@ -16,6 +16,8 @@ namespace JotunnLib
         public const string Version = "0.2.0";
         public const string ModGuid = "com.bepinex.plugins.jotunnlib";
 
+        public static BepInEx.Logging.ManualLogSource Logger;
+
         // Load order for managers
         private readonly List<Type> managerTypes = new List<Type>()
         {
@@ -36,6 +38,7 @@ namespace JotunnLib
 
         private void Awake()
         {
+            Logger = base.Logger;
             // Initialize the patches
             PatchInitializer.InitializePatches();
 
@@ -51,12 +54,12 @@ namespace JotunnLib
             foreach (Manager manager in managers)
             {
                 manager.Init();
-                Debug.Log("Initialized " + manager.GetType().Name);
+                Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
 
             initCommands();
 
-            Debug.Log("JotunnLib v" + Version + " loaded successfully");
+            Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
         }
 
         private void OnGUI()

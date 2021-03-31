@@ -107,7 +107,7 @@ namespace JotunnLib.Managers
 
             if (inventoryId != null)
             {
-                var inventoryFilePath = Path.Combine(Util.Paths.CustomItemDataFolder, inventoryId);
+                var inventoryFilePath = Path.Combine(Paths.CustomItemDataFolder, inventoryId);
                 var hasDataForThisInventory = File.Exists(inventoryFilePath);
                 if (hasDataForThisInventory)
                 {
