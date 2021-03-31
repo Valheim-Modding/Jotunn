@@ -19,7 +19,6 @@ Push-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
 # Test some preliminaries
 ("$TargetPath",
  "$ValheimPath",
- "$ValheimPath\unstripped_corlib",
  "$(Get-Location)\libraries"
 ) | % {
     if (!(Test-Path "$_")) {Write-Error -ErrorAction Stop -Message "$_ folder is missing"}
@@ -41,8 +40,8 @@ if ($Target.Equals("Debug")) {
         $pdb = "$TargetPath\" + ($asm -Replace('.dll','.pdb'))
         if (Test-Path -Path "$pdb") {
             Write-Host "Copy Debug files for plugin $asm"
-            Copy-Item -Path "$pdb" -Destination "$plug" -Force
-            start "$(Get-Location)\libraries\Debug\pdb2mdb.exe" "$plug\$asm"
+            Copy-Item -Path "$pdb" -Destination "$ValheimPath\BepInEx\plugins" -Force
+            start "$(Get-Location)\libraries\Debug\pdb2mdb.exe" "$ValheimPath\BepInEx\plugins\$asm"
         }
     }
         
