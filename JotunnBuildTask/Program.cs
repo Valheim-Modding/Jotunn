@@ -125,7 +125,15 @@ namespace JotunnBuildTask
             modder.OutputPath = output;
             modder.ReadingMode = ReadingMode.Deferred;
 
-            ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, "valheim_Data", "Managed"));
+            if (Directory.Exists(Path.Combine(ValheimPath, "valheim_Data", "Managed")))
+            {
+                ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, "valheim_Data", "Managed"));
+            }
+
+            if (Directory.Exists(Path.Combine(ValheimPath, "valheim_server_Data", "Managed")))
+            {
+                ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, "valheim_server_Data", "Managed"));
+            }
             ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, "unstripped_corlib"));
 
             modder.Read();
