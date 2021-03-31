@@ -16,9 +16,6 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
 
@@ -33,8 +30,10 @@ jobs:
       # Get build commands
       - name: Get build commands
         run: |
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+          echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
           sudo apt-get update
-          sudo apt-get install -y git mono-complete mono-xbuild unzip
+          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip
 
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
@@ -43,14 +42,16 @@ jobs:
           unzip bepinex.zip -d ~/BepInExRaw
           steamcmd +login anonymous +force_install_dir ~/VHINSTALL +app_update 896660 validate +exit
           mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
-          mv ~/BepInExRaw/BepInExPack_Valheim/unstripped_corlib/* ~/VHINSTALL/valheim_Data/Managed/
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
+
+      - name: Set references to DLLs
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
       # Build DLLs
       - name: Build solution
         run: |
-          export VALHEIM_INSTALL=~/VHINSTALL/
-          xbuild JotunnLib.sln /p:Configuration=Release
+          msbuild JotunnLib.sln /p:Configuration=Release
 
       # Upload artifact
       - uses: actions/upload-artifact@v2
