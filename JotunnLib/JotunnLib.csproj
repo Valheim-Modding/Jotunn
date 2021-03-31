@@ -77,31 +77,31 @@
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\HarmonyXInterop.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_googleanalytics">
-      <HintPath>..\lib\MMHOOK_assembly_googleanalytics.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_googleanalytics.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_guiutils">
-      <HintPath>..\lib\MMHOOK_assembly_guiutils.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_guiutils.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_lux">
-      <HintPath>..\lib\MMHOOK_assembly_lux.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_lux.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_postprocessing">
-      <HintPath>..\lib\MMHOOK_assembly_postprocessing.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_postprocessing.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_simplemeshcombine">
-      <HintPath>..\lib\MMHOOK_assembly_simplemeshcombine.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_simplemeshcombine.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_steamworks">
-      <HintPath>..\lib\MMHOOK_assembly_steamworks.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_steamworks.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_sunshafts">
-      <HintPath>..\lib\MMHOOK_assembly_sunshafts.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_sunshafts.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_utils">
-      <HintPath>..\lib\MMHOOK_assembly_utils.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_utils.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_assembly_valheim">
-      <HintPath>..\lib\MMHOOK_assembly_valheim.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_valheim.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -122,13 +122,14 @@
     <Reference Include="Mono.Security">
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\Mono.Security.dll</HintPath>
     </Reference>
-    <Reference Include="MonoMod.RuntimeDetour, Version=20.11.26.2, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
+    <Reference Include="MonoMod, Version=21.3.28.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.21.3.28.2\lib\net40\MonoMod.exe</HintPath>
     </Reference>
-    <Reference Include="MonoMod.Utils, Version=20.11.26.2, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\MonoMod.Utils.dll</HintPath>
+    <Reference Include="MonoMod.RuntimeDetour, Version=21.3.28.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.RuntimeDetour.21.3.28.2\lib\net40\MonoMod.RuntimeDetour.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.Utils, Version=21.3.28.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.Utils.21.3.28.2\lib\net40\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -417,6 +418,7 @@
     <Compile Include="Managers\SkillManager.cs" />
     <Compile Include="Utils\ObjImporter.cs" />
     <Compile Include="Utils\PatchInitializer.cs" />
+    <Compile Include="Utils\PatchPriorityAttribute.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Utils\AssetUtils.cs" />
   </ItemGroup>
@@ -429,7 +431,14 @@
     <PostBuildEvent>copy "$(TargetDir)$(TargetFileName)" "$(VALHEIM_INSTALL)\BepInEx\plugins" /y</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="PrepareForBuild">
+    <Exec Command="$(TargetDir)JotunnBuildTask.exe $(VALHEIM_INSTALL)" WorkingDirectory="$(TargetDir)">
+    </Exec>
+  </Target>
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)$(TargetFileName) "$(VALHEIM_INSTALL)\BepInEx\plugins" /Y</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>call $(ProjectDir)mmhook.bat</PreBuildEvent>
   </PropertyGroup>
 </Project>
