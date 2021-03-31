@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Mono.Cecil;
-using Mono.Collections.Generic;
 
 namespace JotunnBuildTask
 {
     public static class AssemblyPublicizer
     {
         /// <summary>
-        /// Publicize a dll
+        ///     Publicize a dll
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
         public static bool PublicizeDll(string file, string ValheimPath)
         {
-            string outputPath = Path.Combine(Path.GetDirectoryName(file), "publicized_assemblies");
+            var outputPath = Path.Combine(Path.GetDirectoryName(file), "publicized_assemblies");
 
             if (!File.Exists(file))
             {
@@ -35,8 +33,9 @@ namespace JotunnBuildTask
             try
             {
                 assemblyDefinition = AssemblyDefinition.ReadAssembly(file);
-                ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, "valheim_Data", "Managed"));
-                ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, "unstripped_corlib"));
+                ((BaseAssemblyResolver) assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, "valheim_Data",
+                    "Managed"));
+                ((BaseAssemblyResolver) assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, "unstripped_corlib"));
             }
             catch (Exception exception)
             {
@@ -44,10 +43,11 @@ namespace JotunnBuildTask
                 return false;
             }
 
+            // Get all type definitions
             var types = GetTypeDefinitions(assemblyDefinition.MainModule);
+
             var methods = types.SelectMany(x => x.Methods).Where(x => x.IsPublic == false);
             var fields = types.SelectMany(x => x.Fields).Where(x => x.IsPublic == false);
-
 
             foreach (var type in types)
             {
@@ -76,7 +76,7 @@ namespace JotunnBuildTask
             }
 
 
-            string outputFilename = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}_publicized{Path.GetExtension(file)}");
+            var outputFilename = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}_publicized{Path.GetExtension(file)}");
 
             try
             {
@@ -93,7 +93,7 @@ namespace JotunnBuildTask
         }
 
         /// <summary>
-        /// Returns all type definitions for the module
+        ///     Returns all type definitions for the module
         /// </summary>
         /// <param name="moduleDefinition"></param>
         /// <returns></returns>
@@ -103,7 +103,7 @@ namespace JotunnBuildTask
         }
 
         /// <summary>
-        /// Get all type definitions recursive
+        ///     Get all type definitions recursive
         /// </summary>
         /// <param name="typeDefinitions"></param>
         /// <returns></returns>
