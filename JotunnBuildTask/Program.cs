@@ -38,22 +38,27 @@ namespace JotunnBuildTask
                 var outputFolder = Path.Combine(args[0], "BepInEx", "plugins", "MMHOOK");
 
                 ValheimPath = args[0];
-
-                foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_Data", "Managed"), "assembly_*.dll"))
+                if (Directory.Exists(Path.Combine(args[0], "valheim_Data", "Managed")))
                 {
-                    if (!HashAndCompare(file, outputFolder))
+                    foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_Data", "Managed"), "assembly_*.dll"))
                     {
-                        Console.WriteLine($"Error occured on {file}");
-                        return -3;
+                        if (!HashAndCompare(file, outputFolder))
+                        {
+                            Console.WriteLine($"Error occured on {file}");
+                            return -3;
+                        }
                     }
                 }
 
-                foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_server_Data", "Managed"), "assembly_*.dll"))
+                if (Directory.Exists(Path.Combine(args[0], "valheim_server_Data", "Managed")))
                 {
-                    if (!HashAndCompare(file, outputFolder))
+                    foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_server_Data", "Managed"), "assembly_*.dll"))
                     {
-                        Console.WriteLine($"Error occured on {file}");
-                        return -3;
+                        if (!HashAndCompare(file, outputFolder))
+                        {
+                            Console.WriteLine($"Error occured on {file}");
+                            return -3;
+                        }
                     }
                 }
 
