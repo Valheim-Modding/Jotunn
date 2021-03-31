@@ -446,21 +446,18 @@
     <Compile Include="Utils\SimpleJson.cs" />
     <Compile Include="Utils\WeightedList.cs" />
   </ItemGroup>
+  <Import Project="..\Environment.props" />
   <ItemGroup>
     <None Include="Documentation\*.md" />
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-    <PostBuildEvent>copy "$(TargetDir)$(TargetFileName)" "$(VALHEIM_INSTALL)\BepInEx\plugins" /y</PostBuildEvent>
-  </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="PrepareForBuild">
     <Exec Command="$(TargetDir)JotunnBuildTask.exe $(VALHEIM_INSTALL)" WorkingDirectory="$(TargetDir)">
     </Exec>
   </Target>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <PostBuildEvent>copy $(TargetDir)$(TargetFileName) "$(VALHEIM_INSTALL)\BepInEx\plugins" /y</PostBuildEvent>
   </PropertyGroup>
 </Project>
