@@ -460,9 +460,6 @@
     </Exec>
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetDir)$(TargetFileName) "$(VALHEIM_INSTALL)\BepInEx\plugins" /Y</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
