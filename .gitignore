@@ -363,3 +363,6 @@ FodyWeavers.xsd
 
 # prevent user valheim install path bleeding
 Environment.props
+
+# not the root libraries folder
+!libraries/*
