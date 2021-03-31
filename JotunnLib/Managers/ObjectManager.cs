@@ -30,12 +30,18 @@ namespace JotunnLib.Managers
         /// </summary>
         public static Action OnAfterInit;
 
+        internal override void Init()
+        {
+            JotunnLib.Logger.LogDebug($"Hooking ObjectDB Awake.");
+            On.ObjectDB.Awake += AddCustomData;
+        }
+
         private void Awake()
         {
             if (Instance != null)
             {
                 Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
-                On.ObjectDB.Awake += AddCustomData;
+                
                 return;
             }
 
