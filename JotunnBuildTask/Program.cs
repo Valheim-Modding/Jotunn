@@ -13,7 +13,15 @@ namespace JotunnBuildTask
     internal class Program
     {
         private static string ValheimPath = "";
-
+        public const string _valheimServerData = "valheim_server_Data";
+        public const string _valheimData= "valheim_Data";
+        public const string _managed = "Managed";
+        public const string _unstripped_corlib = "unstripped_corlib";
+        public const string _publicized_assemblies = "publicized_assemblies";
+        public const string _bepinex = "BepInEx";
+        public const string _plugins = "plugins";
+        public const string _mmhook = "MMHOOK";
+        public const string _publicized = "publicized";
         /// <summary>
         ///     Create new MMHOOK dll's if they don't exist or have changed
         /// </summary>
@@ -30,17 +38,17 @@ namespace JotunnBuildTask
                     return -2;
                 }
 
-                if (!Directory.Exists(Path.Combine(args[0], "BepInEx", "plugins", "MMHOOK")))
+                if (!Directory.Exists(Path.Combine(args[0], _bepinex, _plugins, _mmhook)))
                 {
-                    Directory.CreateDirectory(Path.Combine(args[0], "BepInEx", "plugins", "MMHOOK"));
+                    Directory.CreateDirectory(Path.Combine(args[0], _bepinex, _plugins, _mmhook));
                 }
 
-                var outputFolder = Path.Combine(args[0], "BepInEx", "plugins", "MMHOOK");
+                var outputFolder = Path.Combine(args[0], _bepinex, _plugins, _mmhook);
 
                 ValheimPath = args[0];
-                if (Directory.Exists(Path.Combine(args[0], "valheim_Data", "Managed")))
+                if (Directory.Exists(Path.Combine(args[0], _valheimData, _managed)))
                 {
-                    foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_Data", "Managed"), "assembly_*.dll"))
+                    foreach (var file in Directory.GetFiles(Path.Combine(args[0], _valheimData, _managed), "assembly_*.dll"))
                     {
                         if (!HashAndCompare(file, outputFolder))
                         {
@@ -50,9 +58,9 @@ namespace JotunnBuildTask
                     }
                 }
 
-                if (Directory.Exists(Path.Combine(args[0], "valheim_server_Data", "Managed")))
+                if (Directory.Exists(Path.Combine(args[0], _valheimServerData, _managed)))
                 {
-                    foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_server_Data", "Managed"), "assembly_*.dll"))
+                    foreach (var file in Directory.GetFiles(Path.Combine(args[0], _valheimServerData, _managed), "assembly_*.dll"))
                     {
                         if (!HashAndCompare(file, outputFolder))
                         {
@@ -99,11 +107,11 @@ namespace JotunnBuildTask
                 return false;
             }
 
-            string publicizedFile = Path.Combine(Path.GetDirectoryName(file), "publicized_assemblies",
-                $"{Path.GetFileNameWithoutExtension(file)}_publicized{Path.GetExtension(file)}");
+            string publicizedFile = Path.Combine(Path.GetDirectoryName(file), _publicized_assemblies,
+                $"{Path.GetFileNameWithoutExtension(file)}_{_publicized}{Path.GetExtension(file)}");
 
             // only write the hash to file if HookGen was successful
-            if (InvokeHookgen(publicizedFile, Path.Combine(outputFolder, $"MMHOOK_{Path.GetFileNameWithoutExtension(file)}_publicized{Path.GetExtension(file)}"), hash))
+            if (InvokeHookgen(publicizedFile, Path.Combine(outputFolder, $"{_mmhook}_{Path.GetFileNameWithoutExtension(file)}_{_publicized}{Path.GetExtension(file)}"), hash))
             {
                 File.WriteAllText(hashFilePath, hash);
                 return true;
@@ -125,16 +133,16 @@ namespace JotunnBuildTask
             modder.OutputPath = output;
             modder.ReadingMode = ReadingMode.Deferred;
 
-            if (Directory.Exists(Path.Combine(ValheimPath, "valheim_Data", "Managed")))
+            if (Directory.Exists(Path.Combine(ValheimPath, _valheimData, _managed)))
             {
-                ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, "valheim_Data", "Managed"));
+                ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, _valheimData, _managed));
             }
 
-            if (Directory.Exists(Path.Combine(ValheimPath, "valheim_server_Data", "Managed")))
+            if (Directory.Exists(Path.Combine(ValheimPath, _valheimServerData, _managed)))
             {
-                ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, "valheim_server_Data", "Managed"));
+                ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, _valheimServerData, _managed));
             }
-            ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, "unstripped_corlib"));
+            ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, _unstripped_corlib));
 
             modder.Read();
 
