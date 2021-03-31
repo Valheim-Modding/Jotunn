@@ -39,9 +39,13 @@ namespace JotunnBuildTask
 
                 ValheimPath = args[0];
 
-                foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_Data", "Managed", "publicized_assemblies"), "assembly_*.dll"))
+                foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_Data", "Managed"), "assembly_*.dll"))
                 {
-                    HashAndCompare(file, outputFolder);
+                    if (!HashAndCompare(file, outputFolder))
+                    {
+                        Console.WriteLine($"Error occured on {file}");
+                        return -3;
+                    }
                 }
 
                 return 0;
@@ -49,7 +53,6 @@ namespace JotunnBuildTask
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
                 return -1;
             }
         }
@@ -60,25 +63,37 @@ namespace JotunnBuildTask
         /// </summary>
         /// <param name="file">dll to monomod</param>
         /// <param name="outputFolder">output file name</param>
-        private static void HashAndCompare(string file, string outputFolder)
+        private static bool HashAndCompare(string file, string outputFolder)
         {
             var hash = MD5HashFile(file);
 
-            if (File.Exists(Path.Combine(outputFolder, Path.GetFileName(file) + ".hash")))
+            string hashFilePath = Path.Combine(outputFolder, Path.GetFileName(file) + ".hash");
+            if (File.Exists(hashFilePath))
             {
                 // read hash and compare
-                var oldHash = File.ReadAllText(Path.Combine(outputFolder, Path.GetFileName(file) + ".hash"));
+                var oldHash = File.ReadAllText(hashFilePath);
                 if (hash == oldHash)
                 {
-                    return;
+                    return true;
                 }
             }
 
-            // only write the hash to file if HookGen was successful
-            if (InvokeHookgen(file, Path.Combine(outputFolder, "MMHOOK_" + Path.GetFileName(file)), hash))
+            if (!AssemblyPublicizer.PublicizeDll(file, ValheimPath))
             {
-                File.WriteAllText(Path.Combine(outputFolder, Path.GetFileName(file) + ".hash"), hash);
+                return false;
             }
+
+            string publicizedFile = Path.Combine(Path.GetDirectoryName(file), "publicized_assemblies",
+                $"{Path.GetFileNameWithoutExtension(file)}_publicized{Path.GetExtension(file)}");
+
+            // only write the hash to file if HookGen was successful
+            if (InvokeHookgen(publicizedFile, Path.Combine(outputFolder, $"MMHOOK_{Path.GetFileNameWithoutExtension(file)}_publicized{Path.GetExtension(file)}"), hash))
+            {
+                File.WriteAllText(hashFilePath, hash);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
