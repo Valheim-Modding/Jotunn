@@ -417,6 +417,7 @@
     <Compile Include="Patches\SkillsPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Managers\SkillManager.cs" />
+    <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Utils\ObjImporter.cs" />
     <Compile Include="Utils\PatchInitializer.cs" />
     <Compile Include="Utils\PatchPriorityAttribute.cs" />
