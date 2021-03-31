@@ -35,6 +35,7 @@ namespace JotunnLib.Managers
             if (Instance != null)
             {
                 Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                On.ObjectDB.Awake += AddCustomData;
                 return;
             }
 
@@ -48,6 +49,13 @@ namespace JotunnLib.Managers
             // Clear existing items and recipes
             Items.Clear();
             Recipes.Clear();
+
+            
+            On.Player.Load += ReloadKnownRecipes;
+
+            SaveCustomData.Init();
+
+            ItemDropMockFix.Switch(true);
 
             // Register new items and recipes
             ObjectRegister?.Invoke(null, EventArgs.Empty);
@@ -70,12 +78,7 @@ namespace JotunnLib.Managers
             //    ObjectDB.instance.m_recipes.Add(recipe);
             //    Debug.Log("Loaded item recipe: " + recipe.name);
             //}
-            On.ObjectDB.Awake += AddCustomData;
-            On.Player.Load += ReloadKnownRecipes;
-
-            SaveCustomData.Init();
-
-            ItemDropMockFix.Switch(true);
+            
 
             // Update hashes
             ReflectionHelper.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
@@ -178,6 +181,7 @@ namespace JotunnLib.Managers
 
         private void AddCustomItems(ObjectDB self)
         {
+            Debug.Log($"Adding custom item........................................");
             foreach (var customItem in Items)
             {
                 var itemDrop = customItem.ItemDrop;

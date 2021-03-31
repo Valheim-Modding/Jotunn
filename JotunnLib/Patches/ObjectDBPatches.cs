@@ -11,7 +11,7 @@ namespace JotunnLib.Patches
     {
         public override void Init()
         {
-            On.ObjectDB.Awake += ObjectDB_Awake;
+            //On.ObjectDB.Awake += ObjectDB_Awake;
 
         }
 
