@@ -411,6 +411,7 @@
     <Compile Include="Patches\LocalizationPatches.cs" />
     <Compile Include="Patches\ObjectDBPatches.cs" />
     <Compile Include="Patches\ZInputPatches.cs" />
+    <Compile Include="Patches\ZNetPatches.cs" />
     <Compile Include="Patches\ZoneSystemPatches.cs" />
     <Compile Include="Patches\ZNetScenePatches.cs" />
     <Compile Include="Patches\PlayerPatches.cs" />
