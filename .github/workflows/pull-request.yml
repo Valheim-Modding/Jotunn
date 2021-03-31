@@ -7,9 +7,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
 
@@ -24,8 +21,10 @@ jobs:
       # Get build commands
       - name: Get build commands
         run: |
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+          echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
           sudo apt-get update
-          sudo apt-get install -y git mono-complete mono-xbuild unzip
+          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip
 
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
@@ -43,7 +42,7 @@ jobs:
       # Build DLLs
       - name: Build solution
         run: |
-          xbuild JotunnLib.sln /p:Configuration=Debug
+          msbuild JotunnLib.sln /p:Configuration=Debug
 
       # Upload artifact
       - uses: actions/upload-artifact@v2
