@@ -18,7 +18,7 @@ namespace JotunnBuildTask
             {
                 if (args.Length != 1)
                 {
-                    Console.WriteLine("Ony one argument: Path to Valheim");
+                    Console.WriteLine("Only one argument: Path to Valheim");
                     return -2;
                 }
 
@@ -64,6 +64,7 @@ namespace JotunnBuildTask
                 }
             }
 
+            // only write the hash to file if HookGen was successful
             if (InvokeHookgen(file, Path.Combine(outputFolder, "MMHOOK_" + Path.GetFileName(file))))
             {
                 File.WriteAllText(Path.Combine(outputFolder, Path.GetFileName(file) + ".hash"), hash);
