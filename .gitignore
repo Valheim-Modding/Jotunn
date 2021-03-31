@@ -362,4 +362,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # prevent user valheim install path bleeding
-Directory.Build.props
+Environment.props
