@@ -30,9 +30,9 @@ namespace JotunnBuildTask
                     return -2;
                 }
 
-                if (!Directory.Exists(Path.Combine(args[0], "BepinEx", "plugins", "MMHOOK")))
+                if (!Directory.Exists(Path.Combine(args[0], "BepInEx", "plugins", "MMHOOK")))
                 {
-                    Directory.CreateDirectory(Path.Combine(args[0], "BepinEx", "plugins", "MMHOOK"));
+                    Directory.CreateDirectory(Path.Combine(args[0], "BepInEx", "plugins", "MMHOOK"));
                 }
 
                 var outputFolder = Path.Combine(args[0], "BepInEx", "plugins", "MMHOOK");
@@ -47,6 +47,17 @@ namespace JotunnBuildTask
                         return -3;
                     }
                 }
+
+                foreach (var file in Directory.GetFiles(Path.Combine(args[0], "valheim_server_Data", "Managed"), "assembly_*.dll"))
+                {
+                    if (!HashAndCompare(file, outputFolder))
+                    {
+                        Console.WriteLine($"Error occured on {file}");
+                        return -3;
+                    }
+                }
+
+
 
                 return 0;
             }
