@@ -85,6 +85,15 @@ namespace JotunnLib.Managers
             }
 
             Skills.Add(skillConfig.UID, skillConfig);
+
+            if (registerLocalizations)
+            {
+                foreach (var translation in skillConfig.Localizations.Values)
+                {
+                    LocalizationManager.Instance.RegisterLocalizationConfig(translation);
+                }
+            }
+
             return skillConfig.UID;
         }
 

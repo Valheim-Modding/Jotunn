@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using JotunnLib.Utils;
+﻿using System.Collections.Generic;
+using System.Linq;
 using JotunnLib.Managers;
+using JotunnLib.Utils;
+using UnityEngine;
 
 namespace JotunnLib.Patches
 {
-    class LocalizationPatches : PatchInitializer
+    internal class LocalizationPatches : PatchInitializer
     {
         public override void Init()
         {
@@ -16,8 +16,8 @@ namespace JotunnLib.Patches
 
         private static bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
         {
-            bool result = orig(self, language);
-            Debug.Log("\t-> SetupLanguage called");
+            var result = orig(self, language);
+            Debug.Log($"\t-> SetupLanguage called {language}");
 
             // Register & load localizations for selected language
             LocalizationManager.Instance.Register();
@@ -28,11 +28,11 @@ namespace JotunnLib.Patches
 
         private static List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
         {
-            List<string> result = orig(self);
+            var result = orig(self);
             LocalizationManager.Instance.Register();
 
             // Add in localized languages that do not yet exist
-            foreach (string language in LocalizationManager.Instance.Languages)
+            foreach (var language in LocalizationManager.Instance.Localizations.Keys.OrderBy(x => x))
             {
                 if (!result.Contains(language))
                 {

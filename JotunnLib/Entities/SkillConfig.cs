@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace JotunnLib.Entities
 {
@@ -29,6 +30,7 @@ namespace JotunnLib.Entities
         public string Description { get; set; }
         public Sprite Icon { get; set; }
         public float IncreaseStep { get; set; }
+        public Dictionary<string, LocalizationConfig> Localizations { get; private set; } = new Dictionary<string, LocalizationConfig>();
 
         /// <summary>
         /// Creates a SkillConfig object for mods that previously used SkillInjector

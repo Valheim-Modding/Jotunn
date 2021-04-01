@@ -52,7 +52,7 @@ namespace JotunnLib.Entities
             try
             {
                 var tokenName = self.TokenName();
-                if (tokenName[0] != Language.TokenFirstChar)
+                if (tokenName[0] != LocalizationManager.TokenFirstChar)
                 {
                     throw new Exception($"Item name first char should be $ for token lookup ! (current item name : {tokenName})");
                 }
