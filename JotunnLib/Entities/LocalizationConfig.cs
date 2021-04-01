@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace JotunnLib.Entities
 {
     public class LocalizationConfig
     {
-        public string Language { get; set; } = "English";
         public Dictionary<string, string> Translations = new Dictionary<string, string>();
+
+        public LocalizationConfig(string language)
+        {
+            Language = language;
+        }
+
+        public string Language { get; set; } = "English";
     }
 }
