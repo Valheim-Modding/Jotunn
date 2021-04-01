@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using BepInEx;
@@ -40,7 +42,7 @@ namespace JotunnLib
         {
             Logger = base.Logger;
             // Initialize the patches
-            PatchInitializer.InitializePatches();
+            InitializePatches();
 
             // Create and initialize all managers
             RootObject = new GameObject("_JotunnLibRoot");
@@ -60,6 +62,32 @@ namespace JotunnLib
             initCommands();
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
+        }
+
+        private void InitializePatches()
+        {
+            // Reflect through everything
+
+            List<Tuple<MethodInfo, int>> types = new List<Tuple<MethodInfo, int>>();
+
+            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var type in asm.GetTypes())
+                {
+                    foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(x => x.GetCustomAttributes(typeof(PatchInitAttribute), false).Length == 1))
+                    {
+                        var attribute = method.GetCustomAttributes(typeof(PatchInitAttribute), false).FirstOrDefault() as PatchInitAttribute;
+                        types.Add(new Tuple<MethodInfo, int>(method, attribute.Priority));
+                    }
+                }
+            }
+
+            // Invoke the method
+            foreach (Tuple<MethodInfo, int> entry in types.OrderBy(x => x.Item2))
+            {
+                Debug.Log($"Applying patches in {entry.Item1.DeclaringType.Name}.{entry.Item1.Name}");
+                entry.Item1.Invoke(null, null);
+            }
         }
 
         private void OnGUI()

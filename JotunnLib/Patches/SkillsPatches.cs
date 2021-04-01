@@ -4,9 +4,10 @@ using UnityEngine;
 
 namespace JotunnLib.Patches
 {
-    class SkillsPatches : PatchInitializer
+    class SkillsPatches 
     {
-        public override void Init()
+        [PatchInit(0)]
+        public static void Init()
         {
             On.Skills.Awake += Skills_Awake;
             On.Skills.IsSkillValid += Skills_IsSkillValid;

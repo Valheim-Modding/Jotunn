@@ -6,9 +6,10 @@ using JotunnLib.Utils;
 
 namespace JotunnLib.Patches
 {
-    class ZoneSystemPatches : PatchInitializer
+    class ZoneSystemPatches
     {
-        public override void Init()
+        [PatchInit(0)]
+        public static void Init()
         {
             On.ZoneSystem.Awake += ZoneSystem_Awake;
             On.ZoneSystem.SpawnZone += ZoneSystem_SpawnZone;

@@ -1,7 +1,7 @@
 ﻿// JotunnLib
 // a Valheim mod
 // 
-// File:    PatchPriorityAttribute.cs
+// File:    PatchInitAttribute.cs
 // Project: JotunnLib
 
 using System;
@@ -14,11 +14,12 @@ namespace JotunnLib.Utils
     /// zero - neutral
     /// positive - late
     /// </summary>
-    public class PatchPriorityAttribute: Attribute
+    [AttributeUsage(AttributeTargets.Method)]
+    public class PatchInitAttribute: Attribute
     {
         public int Priority { get; set; }
 
-        public PatchPriorityAttribute(int priority)
+        public PatchInitAttribute(int priority)
         {
             Priority = priority;
         }

@@ -6,10 +6,11 @@ using JotunnLib.Utils;
 
 namespace JotunnLib.Patches
 {
-    class ZNetScenePatches : PatchInitializer
+    class ZNetScenePatches 
     {
 
-        public override void Init()
+        [PatchInit(0)]
+        public static void Init()
         {
             On.ZNetScene.Awake += ZNetScene_Awake;
         }
