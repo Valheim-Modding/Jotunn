@@ -41,9 +41,7 @@ namespace JotunnLib
         private void Awake()
         {
             Logger = base.Logger;
-            // Initialize the patches
-            InitializePatches();
-
+            
             // Create and initialize all managers
             RootObject = new GameObject("_JotunnLibRoot");
             GameObject.DontDestroyOnLoad(RootObject);
@@ -59,21 +57,30 @@ namespace JotunnLib
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
 
+            // Initialize the patches
+            InitializePatches();
+
             initCommands();
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
         }
 
+        /// <summary>
+        /// Invoke Patch initialization methods
+        /// </summary>
         private void InitializePatches()
         {
             // Reflect through everything
 
             List<Tuple<MethodInfo, int>> types = new List<Tuple<MethodInfo, int>>();
 
+            // Check in all assemblies
             foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
             {
+                // and all types
                 foreach (var type in asm.GetTypes())
                 {
+                    // on methods with the PatchInit attribute
                     foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(x => x.GetCustomAttributes(typeof(PatchInitAttribute), false).Length == 1))
                     {
                         var attribute = method.GetCustomAttributes(typeof(PatchInitAttribute), false).FirstOrDefault() as PatchInitAttribute;
@@ -83,10 +90,10 @@ namespace JotunnLib
             }
 
             // Invoke the method
-            foreach (Tuple<MethodInfo, int> entry in types.OrderBy(x => x.Item2))
+            foreach (Tuple<MethodInfo, int> tuple in types.OrderBy(x => x.Item2))
             {
-                Debug.Log($"Applying patches in {entry.Item1.DeclaringType.Name}.{entry.Item1.Name}");
-                entry.Item1.Invoke(null, null);
+                Debug.Log($"Applying patches in {tuple.Item1.DeclaringType.Name}.{tuple.Item1.Name}");
+                tuple.Item1.Invoke(null, null);
             }
         }
 
