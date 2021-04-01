@@ -65,7 +65,7 @@ namespace TestMod
             // Init menu toggle key
             InputManager.Instance.RegisterButton("TestMod_Menu", KeyCode.Insert);
         }
-        
+
         // Load assets from disk
         private void loadAssets()
         {
@@ -140,9 +140,8 @@ namespace TestMod
         // Registers localizations
         void registerLocalization(object sender, EventArgs e)
         {
-            LocalizationManager.Instance.RegisterLocalization(new LocalizationConfig()
+            LocalizationManager.Instance.RegisterLocalizationConfig(new LocalizationConfig("English")
             {
-                Language = "English",
                 Translations =
                 {
                     { "test_prefab_name", "Test Prefab" },

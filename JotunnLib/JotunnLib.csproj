@@ -435,7 +435,6 @@
     <Compile Include="Utils\BoneReorder.cs" />
     <Compile Include="Utils\EventsHelper.cs" />
     <Compile Include="Utils\Hashes.cs" />
-    <Compile Include="Utils\Language.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Utils\MockExtentions.cs" />
     <Compile Include="Utils\ObjImporter.cs" />
