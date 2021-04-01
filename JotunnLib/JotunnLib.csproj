@@ -454,11 +454,17 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="BeforeBuild">
-    <Exec Command="$(TargetDir)JotunnBuildTask.exe %22$(VALHEIM_INSTALL)%22" WorkingDirectory="$(TargetDir)">
-    </Exec>
+  <Target Name="JotunnBuildTask" BeforeTargets="BeforeBuild">
+    <Message Text="Running JotunnBuildTask" />  
+    <Exec Command="$(TargetDir)JotunnBuildTask.exe %22$(VALHEIM_INSTALL)%22" WorkingDirectory="$(TargetDir)" />
   </Target>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+<PropertyGroup>
+  <BuildDependsOn>
+    JotunnBuildTask;
+    $(BuildDependsOn);
+  </BuildDependsOn>
+</PropertyGroup>
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <PostBuildEvent>copy $(TargetDir)$(TargetFileName) "$(VALHEIM_INSTALL)\BepInEx\plugins" /y
     powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)publish.ps1" -Target "$(ConfigurationName)" -TargetPath "$(TargetDir.TrimEnd('\'))" -TargetAssembly "$(TargetFileName)" -ValheimPath "$(VALHEIM_INSTALL.TrimEnd('\'))"</PostBuildEvent>
