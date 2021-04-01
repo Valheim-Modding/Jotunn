@@ -4,15 +4,16 @@ using JotunnLib.Utils;
 
 namespace JotunnLib.Patches
 {
-    public class ZNetPatches : PatchInitializer
+    public class ZNetPatches
     {
-        public override void Init()
+        [PatchInit(0)]
+        public static void Init()
         {
             On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch;
         }
 
         // to keep sane during testing period
-        private void ProvidePasswordPatch(On.ZNet.orig_RPC_ClientHandshake orig, ZNet self, ZRpc rpc, bool needPassword)
+        private static void ProvidePasswordPatch(On.ZNet.orig_RPC_ClientHandshake orig, ZNet self, ZRpc rpc, bool needPassword)
         {
             if (Environment.GetCommandLineArgs().Any(x => x.ToLower() == "+password"))
             {

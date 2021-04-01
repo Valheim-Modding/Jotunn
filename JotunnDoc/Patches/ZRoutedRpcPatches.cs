@@ -8,9 +8,10 @@ using UnityEngine;
 
 namespace JotunnDoc.Patches
 {
-    internal class ZRoutedRpcPatches : PatchInitializer
+    internal class ZRoutedRpcPatches
     {
-        public override void Init()
+        [PatchInit(0)]
+        public static void Init()
         {
             On.ZRoutedRpc.Register += ZRoutedRpc_Register;
         }

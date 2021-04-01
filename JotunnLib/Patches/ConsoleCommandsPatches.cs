@@ -7,9 +7,10 @@ using Steamworks;
 
 namespace JotunnLib.Patches
 {
-    internal class ConsoleCommandsPatches : PatchInitializer
+    internal class ConsoleCommandsPatches 
     {
-        public override void Init()
+        [PatchInit(0)]
+        public static void Init()
         {
             On.Console.InputText += Console_InputText;
         }

@@ -24,6 +24,12 @@ namespace JotunnLib.Managers
             Instance = this;
         }
 
+        internal override void Init()
+        {
+            On.ZInput.Initialize += ZInput_Initialize;
+            On.ZInput.Reset += ZInput_Reset;
+        }
+
         internal void Load(ZInput zinput)
         {
             Debug.Log("---- Registering custom inputs ----");
@@ -116,5 +122,26 @@ namespace JotunnLib.Managers
                 RepeatInterval = repeatInterval
             });
         }
+
+
+        private static void ZInput_Reset(On.ZInput.orig_Reset orig, ZInput self)
+        {
+            orig(self);
+#if DEBUG
+            Debug.Log("----> ZInput Reset");
+#endif
+            InputManager.Instance.Load(self);
+        }
+
+        private static void ZInput_Initialize(On.ZInput.orig_Initialize orig)
+        {
+#if DEBUG
+            Debug.Log("----> ZInput Initialize");
+#endif
+            InputManager.Instance.Register();
+            
+            orig();
+        }
+
     }
 }

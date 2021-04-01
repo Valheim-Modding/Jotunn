@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using JotunnLib.Entities;
 using JotunnLib.Utils;
 using UnityEngine;
@@ -67,10 +68,42 @@ namespace JotunnLib.Managers
         /// </summary>
         internal override void Init()
         {
+            On.Localization.LoadLanguages += Localization_LoadLanguages;
+            On.Localization.SetupLanguage += Localization_SetupLanguage;
+
             var doQuoteLineSplitMethodInfo = typeof(Localization).GetMethod(nameof(Localization.DoQuoteLineSplit), ReflectionHelper.AllBindingFlags);
             DoQuoteLineSplit =
                 (Func<StringReader, List<List<string>>>) Delegate.CreateDelegate(typeof(Func<StringReader, List<List<string>>>), null,
                     doQuoteLineSplitMethodInfo);
+        }
+
+        private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
+        {
+            var result = orig(self, language);
+            Debug.Log($"\t-> SetupLanguage called {language}");
+
+            // Register & load localizations for selected language
+            Register();
+            Load(self, language);
+
+            return result;
+        }
+
+        private List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
+        {
+            var result = orig(self);
+            LocalizationManager.Instance.Register();
+
+            // Add in localized languages that do not yet exist
+            foreach (var language in Localizations.Keys.OrderBy(x => x))
+            {
+                if (!result.Contains(language))
+                {
+                    result.Add(language);
+                }
+            }
+
+            return result;
         }
 
         /// <summary>

@@ -7,9 +7,11 @@ using JotunnLib.Utils;
 
 namespace JotunnLib.Patches
 {
-    class ObjectDBPatches : PatchInitializer
+    // TODO: Probably not needed anymore, someone please check - Algorithman
+    class ObjectDBPatches 
     {
-        public override void Init()
+        [PatchInit(0)]
+        public static void Init()
         {
             //On.ObjectDB.Awake += ObjectDB_Awake;
 
