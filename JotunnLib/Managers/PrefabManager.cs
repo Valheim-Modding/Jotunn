@@ -13,7 +13,7 @@ namespace JotunnLib.Managers
     public class PrefabManager : Manager
     {
         public static PrefabManager Instance { get; private set; }
-        internal static GameObject PrefabContainer;
+        private static GameObject PrefabContainer;
 
         public event EventHandler PrefabRegister, PrefabsLoaded;
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
@@ -27,7 +27,6 @@ namespace JotunnLib.Managers
 
         internal List<WeakReference> NetworkedModdedPrefabs = new List<WeakReference>();
 
-        private static GameObject _parent;
         /// <summary>
         /// Parent is the Root GameObject that have as childs every Modded GameObject done through InstantiateClone.
         /// Feel free to add your modded prefabs here too
@@ -36,14 +35,14 @@ namespace JotunnLib.Managers
         {
             get
             {
-                if (!_parent)
+                if (!PrefabContainer)
                 {
-                    _parent = new GameObject(ModdedPrefabsParentName);
-                    UnityObject.DontDestroyOnLoad(_parent);
-                    _parent.SetActive(false);
+                    PrefabContainer = new GameObject(ModdedPrefabsParentName);
+                    UnityObject.DontDestroyOnLoad(PrefabContainer);
+                    PrefabContainer.SetActive(false);
                 }
 
-                return _parent;
+                return PrefabContainer;
             }
         }
 
@@ -123,7 +122,7 @@ namespace JotunnLib.Managers
             }
 
             prefab.name = name;
-            prefab.transform.parent = PrefabContainer.transform;
+            prefab.transform.parent = Parent.transform;
             prefab.SetActive(true);
             Prefabs.Add(name, prefab);
         }
