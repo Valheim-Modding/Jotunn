@@ -55,6 +55,10 @@ namespace JotunnLib.Configs
             return $"SkillConfig(Identifier='{Identifier}', UID={UID}, Name='{Name}')";
         }
 
+        /// <summary>
+        ///     Converts a JotunnLib SkillConfig into a Valheim SkillDef
+        /// </summary>
+        /// <returns>Valheim SkillDef</returns>
         public Skills.SkillDef ToSkillDef()
         {
             return new Skills.SkillDef()
@@ -91,11 +95,21 @@ namespace JotunnLib.Configs
             };
         }
 
+        /// <summary>
+        ///     Loads a single SkillConfig from a JSON string
+        /// </summary>
+        /// <param name="json">JSON text</param>
+        /// <returns>Loaded SkillConfigs</returns>
         public static SkillConfig FromJson(string json)
         {
             return SimpleJson.SimpleJson.DeserializeObject<SkillConfig>(json);
         }
 
+        /// <summary>
+        ///     Loads a list of SkillConfigs from a JSON string
+        /// </summary>
+        /// <param name="json">JSON text</param>
+        /// <returns>Loaded list of SkillConfigs</returns>
         public static List<SkillConfig> ListFromJson(string json)
         {
             return SimpleJson.SimpleJson.DeserializeObject<List<SkillConfig>>(json);

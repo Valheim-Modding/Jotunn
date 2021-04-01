@@ -2,7 +2,7 @@
   {
       "Identifier": "jotunn.testmod.testskill",
       "Name": "TestSkill",
-      "Description": "A testing skill for the test mod",
+      "Description": "A test skill from the test mod",
       "IconPath": "TestMod/Assets/test_skill.jpg"
   },
   {

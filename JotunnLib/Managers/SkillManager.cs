@@ -88,9 +88,15 @@ namespace JotunnLib.Managers
 
             Skills.Add(skillConfig.UID, skillConfig);
 
-            foreach (var translation in skillConfig.Localizations.Values)
+            // TODO: Localizations need to be fixed, since they currently have no way of getting the randomly generated skill UID
+            foreach (var pair in skillConfig.Localizations)
             {
-                LocalizationManager.Instance.AddLocalizationConfig(translation);
+                if (pair.Value.Language != pair.Key)
+                {
+                    pair.Value.Language = pair.Key;
+                }
+
+                LocalizationManager.Instance.AddLocalization(pair.Value);
             }
 
             if (autoLocalize)
@@ -114,6 +120,7 @@ namespace JotunnLib.Managers
         /// <param name="description">Description of the new skill</param>
         /// <param name="increaseStep"></param>
         /// <param name="icon">Icon for the skill</param>
+        /// <param name="autoLocalize">Automatically generate English localizations for the given name and description</param>
         /// <returns>The SkillType of the newly registered skill</returns>
         public Skills.SkillType AddSkill(
             string identifer,
@@ -121,7 +128,7 @@ namespace JotunnLib.Managers
             string description,
             float increaseStep = 1f,
             Sprite icon = null,
-            bool registerLocalizations = true)
+            bool autoLocalize = true)
         {
             return AddSkill(new SkillConfig()
             {
@@ -130,9 +137,13 @@ namespace JotunnLib.Managers
                 Description = description,
                 IncreaseStep = increaseStep,
                 Icon = icon
-            }, registerLocalizations);
+            }, autoLocalize);
         }
 
+        /// <summary>
+        ///     Register skills defined in a JSON file at given path, relative to BepInEx/plugins
+        /// </summary>
+        /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
         public void RegisterFromJson(string path)
         {
             string absPath = Path.Combine(Paths.PluginPath, path);
@@ -148,7 +159,7 @@ namespace JotunnLib.Managers
 
             foreach (SkillConfig skill in skills)
             {
-                AddSkill(skill);
+                AddSkill(skill, skill.Localizations.Count != 0);
             }
         }
 
