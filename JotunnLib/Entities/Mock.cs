@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using JotunnLib.Managers;
+using JotunnLib.Utils;
+using UnityEngine;
 using UnityObject = UnityEngine.Object;
 
 namespace JotunnLib.Entities
@@ -13,11 +15,11 @@ namespace JotunnLib.Entities
         {
             var g = new GameObject(name + "_" + nameof(Mock<T>));
             UnityObject.DontDestroyOnLoad(g);
-            g.transform.SetParent(Prefab.Parent.transform);
+            g.transform.SetParent(PrefabManager.Parent.transform);
             g.SetActive(false);
 
             var mock = g.AddComponent<T>();
-            mock.name = Prefab.MockPrefix + name;
+            mock.name = PrefabExtensions.MockPrefix + name;
 
             return mock;
         }

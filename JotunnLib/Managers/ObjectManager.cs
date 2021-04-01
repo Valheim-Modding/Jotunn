@@ -11,9 +11,6 @@ namespace JotunnLib.Managers
         public static ObjectManager Instance { get; private set; }
 
         public event EventHandler ObjectRegister;
-        //internal static readonly List<CustomItem> CustomItems = new List<CustomItem>();
-        //internal static readonly List<CustomRecipe> CustomRecipes = new List<CustomRecipe>();
-        //internal static readonly List<CustomStatusEffect> CustomStatusEffects = new List<CustomStatusEffect>();
         internal List<CustomItem> Items = new List<CustomItem>();
         internal List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
@@ -32,7 +29,6 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            JotunnLib.Logger.LogDebug($"Hooking ObjectDB Awake.");
             On.ObjectDB.Awake += AddCustomData;
             On.Player.Load += ReloadKnownRecipes;
         }
@@ -91,35 +87,6 @@ namespace JotunnLib.Managers
             ReflectionHelper.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
         }
 
-        /// <summary>
-        /// Registers a new item from given prefab name
-        /// </summary>
-        /// <param name="prefabName">Name of prefab to use for item</param>
-        //public void RegisterItem(string prefabName)
-        //{
-        //    Items.Add(PrefabManager.Instance.GetPrefab(prefabName));
-        //}
-
-        /// <summary>
-        /// Registers new item from given GameObject. GameObject MUST be also registered as a prefab
-        /// </summary>
-        /// <param name="item">GameObject to use for item</param>
-        //public void RegisterItem(GameObject item)
-        //{
-        //    // Set layer if not already set
-        //    if (item.layer == 0)
-        //    {
-        //        item.layer = LayerMask.NameToLayer("item");
-        //    }
-
-        //    Items.Add(item);
-        //}
-
-        /// <summary>
-        /// Registers a new recipe
-        /// </summary>
-        /// <param name="recipeConfig">Recipe details</param>
-
         //public void RegisterRecipe(RecipeConfig recipeConfig)
         //{
         //    Recipe recipe = recipeConfig.GetRecipe();
@@ -137,7 +104,8 @@ namespace JotunnLib.Managers
             if (customItem.IsValid())
             {
                 Items.Add(customItem);
-                customItem.ItemPrefab.NetworkRegister();
+                PrefabManager.Instance.NetworkRegister(customItem.ItemPrefab);
+                //customItem.ItemPrefab.NetworkRegister();
 
                 return true;
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using JotunnLib.Entities;
 using JotunnLib.Utils;
+using UnityObject = UnityEngine.Object;
 
 namespace JotunnLib.Managers
 {
@@ -18,6 +19,34 @@ namespace JotunnLib.Managers
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
         private bool loaded = false;
 
+
+        /// <summary>
+        /// Name of the Root GameObject that have as childs every Modded GameObject done through InstantiateClone.
+        /// </summary>
+        public const string ModdedPrefabsParentName = "ModdedPrefabs";
+
+        internal List<WeakReference> NetworkedModdedPrefabs = new List<WeakReference>();
+
+        private static GameObject _parent;
+        /// <summary>
+        /// Parent is the Root GameObject that have as childs every Modded GameObject done through InstantiateClone.
+        /// Feel free to add your modded prefabs here too
+        /// </summary>
+        public static GameObject Parent
+        {
+            get
+            {
+                if (!_parent)
+                {
+                    _parent = new GameObject(ModdedPrefabsParentName);
+                    UnityObject.DontDestroyOnLoad(_parent);
+                    _parent.SetActive(false);
+                }
+
+                return _parent;
+            }
+        }
+
         private void Awake()
         {
             if (Instance != null)
@@ -31,6 +60,7 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
+            On.ZNetScene.Awake += AddCustomPrefabsToZNetSceneDictionary;
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = JotunnLib.RootObject.transform;
             PrefabContainer.SetActive(false);
@@ -211,5 +241,68 @@ namespace JotunnLib.Managers
 
             return null;
         }
+
+
+
+        private void AddCustomPrefabsToZNetSceneDictionary(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        {
+            orig(self);
+
+            if (self)
+            {
+                foreach (var weakReference in NetworkedModdedPrefabs)
+                {
+                    if (weakReference.IsAlive)
+                    {
+                        var prefab = (GameObject)weakReference.Target;
+                        if (prefab)
+                        {
+                            self.AddPrefab(prefab);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Allow you to register to the ZNetScene list so that its correctly networked by the game.
+        /// </summary>
+        /// <param name="prefab">Prefab to register to the ZNetScene list</param>
+        public void NetworkRegister(GameObject prefab)
+        {
+            NetworkedModdedPrefabs.Add(new WeakReference(prefab));
+
+            var zNetScene = ZNetScene.instance;
+            if (zNetScene)
+            {
+                zNetScene.AddPrefab(prefab);
+            }
+        }
+
+        /// <summary>
+        /// Allow you to clone a given prefab without modifying the original. Also handle the networking and unique naming.
+        /// </summary>
+        /// <param name="gameObject">prefab that you want to clone</param>
+        /// <param name="nameToSet">name for the new clone</param>
+        /// <param name="zNetRegister">Must be true if you want to have the prefab correctly networked and handled by the ZDO system. True by default</param>
+        /// <returns></returns>
+        public GameObject InstantiateClone(GameObject gameObject, string nameToSet, bool zNetRegister = true)
+        {
+            const char separator = '_';
+
+            var methodBase = new System.Diagnostics.StackTrace().GetFrame(1).GetMethod();
+            var id = methodBase.DeclaringType.Assembly.GetName().Name + separator + methodBase.DeclaringType.Name + separator + methodBase.Name;
+
+            var prefab = UnityEngine.Object.Instantiate(gameObject, Parent.transform);
+            prefab.name = nameToSet + separator + id;
+
+            if (zNetRegister)
+            {
+                NetworkRegister(prefab);
+            }
+
+            return prefab;
+        }
+
     }
 }

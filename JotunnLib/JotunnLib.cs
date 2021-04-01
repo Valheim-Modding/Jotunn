@@ -18,7 +18,7 @@ namespace JotunnLib
         public const string Version = "0.2.0";
         public const string ModGuid = "com.bepinex.plugins.jotunnlib";
 
-        public static BepInEx.Logging.ManualLogSource Logger;
+        public static new BepInEx.Logging.ManualLogSource Logger;
 
         // Load order for managers
         private readonly List<Type> managerTypes = new List<Type>()
@@ -46,6 +46,7 @@ namespace JotunnLib
             RootObject = new GameObject("_JotunnLibRoot");
             GameObject.DontDestroyOnLoad(RootObject);
 
+            //Temporarily init VL's localisations until full implementation is merged.
             Utils.Language.Init();
 
             foreach (Type managerType in managerTypes)
@@ -59,9 +60,10 @@ namespace JotunnLib
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
 
-            PrefabManagerVL.Init();
+            //Temporarily init VL's prefabs until full implementation is merged.
+            //PrefabManagerVL.Init();
 
-            //Temporarily init VL's localisations until full implementation is merged.
+            
             
 
             initCommands();

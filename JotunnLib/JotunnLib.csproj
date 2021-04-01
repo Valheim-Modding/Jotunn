@@ -401,7 +401,6 @@
     <Compile Include="Entities\Mock.cs" />
     <Compile Include="Entities\PieceConfig.cs" />
     <Compile Include="Entities\PieceRequirementConfig.cs" />
-    <Compile Include="Entities\prefab.cs" />
     <Compile Include="Entities\PrefabConfig.cs" />
     <Compile Include="Entities\RecipeConfig.cs" />
     <Compile Include="Entities\SkillConfig.cs" />

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityObject = UnityEngine.Object;
 using System.Collections.Generic;
+using JotunnLib.Utils;
 
 namespace JotunnLib.Entities
 {
