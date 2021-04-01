@@ -418,6 +418,7 @@
     <Compile Include="Managers\ObjectManager.cs" />
     <Compile Include="Managers\PieceManager.cs" />
     <Compile Include="Managers\PrefabManager.cs" />
+    <Compile Include="Managers\PrefabManagerVL.cs" />
     <Compile Include="Managers\SaveManager.cs" />
     <Compile Include="Managers\ZoneManager.cs" />
     <Compile Include="Patches\ConsoleCommandsPatches.cs" />

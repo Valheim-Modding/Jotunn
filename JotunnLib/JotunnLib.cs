@@ -46,6 +46,8 @@ namespace JotunnLib
             RootObject = new GameObject("_JotunnLibRoot");
             GameObject.DontDestroyOnLoad(RootObject);
 
+            Utils.Language.Init();
+
             foreach (Type managerType in managerTypes)
             {
                 managers.Add((Manager)RootObject.AddComponent(managerType));
@@ -57,8 +59,10 @@ namespace JotunnLib
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
 
-            // Initialize the patches
-            InitializePatches();
+            PrefabManagerVL.Init();
+
+            //Temporarily init VL's localisations until full implementation is merged.
+            
 
             initCommands();
 
