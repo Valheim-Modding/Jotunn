@@ -17,7 +17,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
                 return;
             }
 
@@ -32,11 +32,11 @@ namespace JotunnLib.Managers
 
         internal void Load(ZInput zinput)
         {
-            Debug.Log("---- Registering custom inputs ----");
+            Logger.LogInfo("---- Registering custom inputs ----");
 
             if (zinput == null)
             {
-                Debug.LogError("\t-> ZInput does not exist yet, delaying...");
+                Logger.LogError("\t-> ZInput does not exist yet, delaying...");
                 return;
             }
 
@@ -53,7 +53,7 @@ namespace JotunnLib.Managers
                     zinput.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
                 }
 
-                Debug.Log("Registered input: " + pair.Key);
+                Logger.LogInfo("Registered input: " + pair.Key);
             }
         }
 
@@ -72,7 +72,7 @@ namespace JotunnLib.Managers
         {
             if (Buttons.ContainsKey(name))
             {
-                Debug.LogError("Cannot have duplicate button: " + name);
+                Logger.LogError("Cannot have duplicate button: " + name);
                 return;
             }
 
@@ -87,7 +87,7 @@ namespace JotunnLib.Managers
         {
             if (Buttons.ContainsKey(name))
             {
-                Debug.LogError("Cannot have duplicate button: " + name);
+                Logger.LogError("Cannot have duplicate button: " + name);
                 return;
             }
 
@@ -109,7 +109,7 @@ namespace JotunnLib.Managers
         {
             if (Buttons.ContainsKey(name))
             {
-                Debug.LogError("Cannot have duplicate button: " + name);
+                Logger.LogError("Cannot have duplicate button: " + name);
                 return;
             }
 
@@ -128,7 +128,7 @@ namespace JotunnLib.Managers
         {
             orig(self);
 #if DEBUG
-            Debug.Log("----> ZInput Reset");
+            Logger.LogInfo("----> ZInput Reset");
 #endif
             InputManager.Instance.Load(self);
         }
@@ -136,7 +136,7 @@ namespace JotunnLib.Managers
         private static void ZInput_Initialize(On.ZInput.orig_Initialize orig)
         {
 #if DEBUG
-            Debug.Log("----> ZInput Initialize");
+            Logger.LogInfo("----> ZInput Initialize");
 #endif
             InputManager.Instance.Register();
             

@@ -22,7 +22,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace JotunnLib.Managers
         {
             if (string.IsNullOrEmpty(skillConfig.Identifier))
             {
-                Debug.LogError("Failed to register skill with invalid identifier: " + skillConfig.Identifier);
+                Logger.LogError("Failed to register skill with invalid identifier: " + skillConfig.Identifier);
                 return global::Skills.SkillType.None;
             }
 

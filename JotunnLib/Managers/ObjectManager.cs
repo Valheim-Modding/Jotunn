@@ -37,7 +37,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
                 
                 return;
             }
@@ -47,7 +47,7 @@ namespace JotunnLib.Managers
 
         internal override void Register()
         {
-            Debug.Log("---- Registering custom objects ----");
+            Logger.LogInfo("---- Registering custom objects ----");
 
             // Clear existing items and recipes
             Items.Clear();
@@ -66,20 +66,20 @@ namespace JotunnLib.Managers
 
         internal override void Load()
         {
-            Debug.Log("---- Loading custom objects ----");
+            Logger.LogInfo("---- Loading custom objects ----");
 
             // Load items
             //foreach (CustomItem obj in Items)
             //{
             //    ObjectDB.instance.m_items.Add(obj);
-            //    Debug.Log("Loaded item: " + obj.name);
+            //    Logger.LogInfo("Loaded item: " + obj.name);
             //}
 
             //// Load recipes
             //foreach (Recipe recipe in Recipes)
             //{
             //    ObjectDB.instance.m_recipes.Add(recipe);
-            //    Debug.Log("Loaded item recipe: " + recipe.name);
+            //    Logger.LogInfo("Loaded item recipe: " + recipe.name);
             //}
             
 
@@ -93,7 +93,7 @@ namespace JotunnLib.Managers
 
         //    if (recipe == null)
         //    {
-        //        Debug.LogError("Failed to add recipe for item: " + recipeConfig.Item);
+        //        Logger.LogError("Failed to add recipe for item: " + recipeConfig.Item);
         //        return;
         //    }
 
@@ -131,7 +131,7 @@ namespace JotunnLib.Managers
         {
             if (recipe == null)
             {
-                Debug.LogError("Failed to add null recipe");
+                Logger.LogError("Failed to add null recipe");
                 return;
             }
 
@@ -156,7 +156,7 @@ namespace JotunnLib.Managers
 
         private void AddCustomItems(ObjectDB self)
         {
-            Debug.Log($"Adding custom item........................................");
+            Logger.LogInfo($"Adding custom item........................................");
             foreach (var customItem in Items)
             {
                 var itemDrop = customItem.ItemDrop;
@@ -170,7 +170,7 @@ namespace JotunnLib.Managers
                 }
 
                 self.m_items.Add(customItem.ItemPrefab);
-                JotunnLib.Logger.LogInfo($"Added custom item : Prefab Name : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
+                Logger.LogInfo($"Added custom item : Prefab Name : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
             }
         }
 
@@ -197,7 +197,7 @@ namespace JotunnLib.Managers
                 }
 
                 self.m_recipes.Add(recipe);
-                JotunnLib.Logger.LogInfo($"Added recipe for : {recipe.m_item.TokenName()}");
+                Logger.LogInfo($"Added recipe for : {recipe.m_item.TokenName()}");
             }
         }
 
@@ -213,7 +213,7 @@ namespace JotunnLib.Managers
                 }
 
                 self.m_StatusEffects.Add(statusEffect);
-                JotunnLib.Logger.LogInfo($"Added status effect : {statusEffect.m_name}");
+                Logger.LogInfo($"Added status effect : {statusEffect.m_name}");
             }
         }
 

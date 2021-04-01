@@ -13,44 +13,19 @@ namespace JotunnLib.Managers
     public class PrefabManager : Manager
     {
         public static PrefabManager Instance { get; private set; }
-        private static GameObject PrefabContainer;
+        public static GameObject PrefabContainer;
 
         public event EventHandler PrefabRegister, PrefabsLoaded;
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
         private bool loaded = false;
 
-
-        /// <summary>
-        /// Name of the Root GameObject that have as childs every Modded GameObject done through InstantiateClone.
-        /// </summary>
-        public const string ModdedPrefabsParentName = "ModdedPrefabs";
-
         internal List<WeakReference> NetworkedModdedPrefabs = new List<WeakReference>();
-
-        /// <summary>
-        /// Parent is the Root GameObject that have as childs every Modded GameObject done through InstantiateClone.
-        /// Feel free to add your modded prefabs here too
-        /// </summary>
-        public static GameObject Parent
-        {
-            get
-            {
-                if (!PrefabContainer)
-                {
-                    PrefabContainer = new GameObject(ModdedPrefabsParentName);
-                    UnityObject.DontDestroyOnLoad(PrefabContainer);
-                    PrefabContainer.SetActive(false);
-                }
-
-                return PrefabContainer;
-            }
-        }
 
         private void Awake()
         {
             if (Instance != null)
             {
-                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
                 return;
             }
 
@@ -61,7 +36,7 @@ namespace JotunnLib.Managers
         {
             On.ZNetScene.Awake += AddCustomPrefabsToZNetSceneDictionary;
             PrefabContainer = new GameObject("Prefabs");
-            PrefabContainer.transform.parent = JotunnLib.RootObject.transform;
+            PrefabContainer.transform.parent = JotunnLibMain.RootObject.transform;
             PrefabContainer.SetActive(false);
         }
 
@@ -72,7 +47,7 @@ namespace JotunnLib.Managers
 
         internal override void Load()
         {
-            Debug.Log("---- Registering custom prefabs ----");
+            Logger.LogInfo("---- Registering custom prefabs ----");
 
             // Call event handlers to load prefabs
             if (!loaded)
@@ -90,7 +65,7 @@ namespace JotunnLib.Managers
                 ZNetScene.instance.m_prefabs.Add(prefab);
                 namedPrefabs.Add(prefab.name.GetStableHashCode(), prefab);
 
-                Debug.Log("Registered prefab: " + pair.Key);
+                Logger.LogInfo("Registered prefab: " + pair.Key);
             }
 
             // Send event that all prefabs are loaded
@@ -99,7 +74,7 @@ namespace JotunnLib.Managers
                 PrefabsLoaded?.Invoke(null, EventArgs.Empty);
             }
 
-            Debug.Log("All prefabs loaded");
+            Logger.LogInfo("All prefabs loaded");
             loaded = true;
         }
 
@@ -117,12 +92,12 @@ namespace JotunnLib.Managers
 
             if (GetPrefab(name))
             {
-                Debug.LogError("Prefab already exists: " + name);
+                Logger.LogError("Prefab already exists: " + name);
                 return;
             }
 
             prefab.name = name;
-            prefab.transform.parent = Parent.transform;
+            prefab.transform.parent = PrefabContainer.transform;
             prefab.SetActive(true);
             Prefabs.Add(name, prefab);
         }
@@ -149,13 +124,13 @@ namespace JotunnLib.Managers
         {
             if (string.IsNullOrEmpty(name))
             {
-                Debug.LogError("Failed to create prefab with invalid name: " + name);
+                Logger.LogError("Failed to create prefab with invalid name: " + name);
                 return null;
             }
 
             if (GetPrefab(name))
             {
-                Debug.LogError("Failed to create prefab, name already exists: " + name);
+                Logger.LogError("Failed to create prefab, name already exists: " + name);
                 return null;
             }
 
@@ -181,13 +156,13 @@ namespace JotunnLib.Managers
         {
             if (string.IsNullOrEmpty(name))
             {
-                Debug.LogError("Failed to create prefab with invalid name: " + name);
+                Logger.LogError("Failed to create prefab with invalid name: " + name);
                 return null;
             }
 
             if (GetPrefab(name))
             {
-                Debug.LogError("Failed to create prefab, name already exists: " + name);
+                Logger.LogError("Failed to create prefab, name already exists: " + name);
                 return null;
             }
 
@@ -195,7 +170,7 @@ namespace JotunnLib.Managers
 
             if (!prefabBase)
             {
-                Debug.LogError("Failed to create prefab, base does not exist: " + baseName);
+                Logger.LogError("Failed to create prefab, base does not exist: " + baseName);
                 return null;
             }
 
@@ -226,7 +201,7 @@ namespace JotunnLib.Managers
 
             if (!ZNetScene.instance)
             {
-                Debug.LogError("\t-> ZNetScene instance null for some reason");
+                Logger.LogError("\t-> ZNetScene instance null for some reason");
                 return null;
             }
 
@@ -292,7 +267,7 @@ namespace JotunnLib.Managers
             var methodBase = new System.Diagnostics.StackTrace().GetFrame(1).GetMethod();
             var id = methodBase.DeclaringType.Assembly.GetName().Name + separator + methodBase.DeclaringType.Name + separator + methodBase.Name;
 
-            var prefab = UnityEngine.Object.Instantiate(gameObject, Parent.transform);
+            var prefab = UnityEngine.Object.Instantiate(gameObject, PrefabContainer.transform);
             prefab.name = nameToSet + separator + id;
 
             if (zNetRegister)

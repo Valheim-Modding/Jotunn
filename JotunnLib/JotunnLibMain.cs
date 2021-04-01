@@ -12,13 +12,11 @@ using JotunnLib.Utils;
 namespace JotunnLib
 {
     [BepInPlugin(ModGuid, "JotunnLib", Version)]
-    public class JotunnLib : BaseUnityPlugin
+    public class JotunnLibMain : BaseUnityPlugin
     {
         // Version
         public const string Version = "0.2.0";
         public const string ModGuid = "com.bepinex.plugins.jotunnlib";
-
-        public static new BepInEx.Logging.ManualLogSource Logger;
 
         // Load order for managers
         private readonly List<Type> managerTypes = new List<Type>()
@@ -40,7 +38,8 @@ namespace JotunnLib
 
         private void Awake()
         {
-            Logger = base.Logger;
+            // Initialize Logger
+            JotunnLib.Logger.Init();
 
             // Create and initialize all managers
             RootObject = new GameObject("_JotunnLibRoot");
@@ -72,28 +71,38 @@ namespace JotunnLib
         private void InitializePatches()
         {
             // Reflect through everything
-
             List<Tuple<MethodInfo, int>> types = new List<Tuple<MethodInfo, int>>();
 
             // Check in all assemblies
             foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
             {
-                // and all types
-                foreach (var type in asm.GetTypes())
+                try
                 {
-                    // on methods with the PatchInit attribute
-                    foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(x => x.GetCustomAttributes(typeof(PatchInitAttribute), false).Length == 1))
+                    // And all types
+                    foreach (var type in asm.GetTypes())
                     {
-                        var attribute = method.GetCustomAttributes(typeof(PatchInitAttribute), false).FirstOrDefault() as PatchInitAttribute;
-                        types.Add(new Tuple<MethodInfo, int>(method, attribute.Priority));
+                        try
+                        {
+                            // on methods with the PatchInit attribute
+                            foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                                .Where(x => x.GetCustomAttributes(typeof(PatchInitAttribute), false).Length == 1))
+                            {
+                                var attribute = method.GetCustomAttributes(typeof(PatchInitAttribute), false).FirstOrDefault() as PatchInitAttribute;
+                                types.Add(new Tuple<MethodInfo, int>(method, attribute.Priority));
+                            }
+                        }
+                        catch (Exception ex)
+                        { }
                     }
                 }
+                catch (Exception e)
+                { }
             }
 
             // Invoke the method
             foreach (Tuple<MethodInfo, int> tuple in types.OrderBy(x => x.Item2))
             {
-                Debug.Log($"Applying patches in {tuple.Item1.DeclaringType.Name}.{tuple.Item1.Name}");
+                Logger.LogInfo($"Applying patches in {tuple.Item1.DeclaringType.Name}.{tuple.Item1.Name}");
                 tuple.Item1.Invoke(null, null);
             }
         }

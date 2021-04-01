@@ -15,7 +15,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
                 return;
             }
 
@@ -24,7 +24,7 @@ namespace JotunnLib.Managers
 
         internal override void Register()
         {
-            Debug.Log("---- Registering custom zone data ----");
+            Logger.LogInfo("---- Registering custom zone data ----");
 
             // Call event handlers to load prefabs
             ZoneLoad?.Invoke(null, EventArgs.Empty);
@@ -32,7 +32,7 @@ namespace JotunnLib.Managers
             foreach (var veg in Vegetation)
             {
                 ZoneSystem.instance.m_vegetation.Add(veg);
-                Debug.Log("Added vegetation: " + veg.m_name);
+                Logger.LogInfo("Added vegetation: " + veg.m_name);
             }
         }
 

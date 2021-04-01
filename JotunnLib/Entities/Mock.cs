@@ -14,8 +14,8 @@ namespace JotunnLib.Entities
         public static T Create(string name)
         {
             var g = new GameObject(name + "_" + nameof(Mock<T>));
-            UnityObject.DontDestroyOnLoad(g);
-            g.transform.SetParent(PrefabManager.Parent.transform);
+            //UnityObject.DontDestroyOnLoad(g); not needed, PrefabContainer is in DDOL already
+            g.transform.SetParent(PrefabManager.PrefabContainer.transform);
             g.SetActive(false);
 
             var mock = g.AddComponent<T>();

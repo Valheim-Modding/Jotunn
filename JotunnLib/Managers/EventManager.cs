@@ -18,7 +18,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
                 return;
             }
 

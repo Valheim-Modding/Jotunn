@@ -67,7 +67,7 @@ namespace JotunnLib.Entities
             }
             catch (Exception e)
             {
-                JotunnLib.Logger.LogError(e);
+                Logger.LogError(e);
 
                 return false;
             }

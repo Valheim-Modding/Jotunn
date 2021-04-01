@@ -30,7 +30,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
                 return;
             }
 
@@ -42,14 +42,14 @@ namespace JotunnLib.Managers
             // Cannot override default command
             if (DefaultConsoleCommands.Contains(cmd.Name))
             {
-                Debug.LogError("Cannot override default command: " + cmd.Name);
+                Logger.LogError("Cannot override default command: " + cmd.Name);
                 return;
             }
 
             // Cannot have two commands with same name
             if (ConsoleCommands.Exists(c => c.Name == cmd.Name))
             {
-                Debug.LogError("Cannot have two console commands with same name: " + cmd.Name);
+                Logger.LogError("Cannot have two console commands with same name: " + cmd.Name);
                 return;
             }
 
