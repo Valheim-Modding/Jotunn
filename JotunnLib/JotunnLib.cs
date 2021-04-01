@@ -41,13 +41,10 @@ namespace JotunnLib
         private void Awake()
         {
             Logger = base.Logger;
-            
+
             // Create and initialize all managers
             RootObject = new GameObject("_JotunnLibRoot");
             GameObject.DontDestroyOnLoad(RootObject);
-
-            //Temporarily init VL's localisations until full implementation is merged.
-            Utils.Language.Init();
 
             foreach (Type managerType in managerTypes)
             {
@@ -60,16 +57,14 @@ namespace JotunnLib
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
 
-            //Temporarily init VL's prefabs until full implementation is merged.
-            //PrefabManagerVL.Init();
-
-            
-            
+            // Initialize the patches
+            InitializePatches();
 
             initCommands();
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
         }
+
 
         /// <summary>
         /// Invoke Patch initialization methods
