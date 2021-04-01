@@ -12,18 +12,31 @@ namespace JotunnLib.Utils
     /// </summary>
     public static class AssetUtils
     {
+        public const char AssetBundlePathSeparator = '$';
+
         /// <summary>
         ///     Loads a <see cref="Texture2D"/> from file at runtime.
         /// </summary>
         /// <param name="texturePath">Texture path relative to "plugins" BepInEx folder</param>
         /// <returns>Texture2D loaded, or null if invalid path</returns>
-        public static Texture2D LoadTexture(string texturePath)
+        public static Texture2D LoadTexture(string texturePath, bool relativePath = true)
         {
-            string path = Path.Combine(BepInEx.Paths.PluginPath, texturePath);
+            string path = texturePath;
+
+            if (relativePath)
+            {
+                path = Path.Combine(BepInEx.Paths.PluginPath, texturePath);
+            }
 
             if (!File.Exists(path))
             {
                 return null;
+            }
+
+            // Ensure it's a texture
+            if (!path.EndsWith(".png") && !path.EndsWith(".jpg"))
+            {
+                throw new Exception("LoadTexture can only load png or jpg textures");
             }
 
             byte[] fileData = File.ReadAllBytes(path);
@@ -110,6 +123,38 @@ namespace JotunnLib.Utils
             }
 
             return ret;
+        }
+        
+        internal static Sprite LoadSprite(string assetPath)
+        {
+            string path = Path.Combine(BepInEx.Paths.PluginPath, assetPath);
+
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
+            // Check if asset is from a bundle or from a path
+            if (path.Contains(AssetBundlePathSeparator.ToString()))
+            {
+                string[] parts = path.Split(AssetBundlePathSeparator);
+                string bundlePath = parts[0];
+                string assetName = parts[1];
+
+                // TODO: This is very likely going to need some caching for asset bundles
+                AssetBundle bundle = AssetBundle.LoadFromFile(bundlePath);
+                return bundle.LoadAsset<Sprite>(assetName);
+            }
+
+            // Load texture and create sprite
+            Texture2D texture = LoadTexture(path, false);
+            
+            if (!texture)
+            {
+                return null;
+            }
+
+            return Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
         }
     }
 }

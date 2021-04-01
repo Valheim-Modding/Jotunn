@@ -1,5 +1,7 @@
-﻿using JotunnLib.Configs;
+using JotunnLib.Configs;
 using System.Collections.Generic;
+using System.IO;
+using BepInEx;
 using UnityEngine;
 
 namespace JotunnLib.Managers
@@ -32,7 +34,7 @@ namespace JotunnLib.Managers
         /// <summary>
         ///     DEPRECATED DUE TO POSSIBLE CONFLICT ISSUE, see: <see href="https://github.com/jotunnlib/jotunnlib/issues/18">GitHub Issue</see>.
         ///     <para/>
-        ///     Register a new skill with given parameters, and registers translations for it in the current localization.
+        ///     Add a new skill with given parameters, and adds translations for it in the current localization.
         /// </summary>
         /// <param name="name">Name of the new skill</param>
         /// <param name="description">Description of the new skill</param>
@@ -45,7 +47,7 @@ namespace JotunnLib.Managers
             string description,
             float increaseStep = 1f,
             Sprite icon = null,
-            bool createLocalizations = true)
+            bool autoLocalize = true)
         {
             SkillConfig skillConfig = new SkillConfig()
             {
@@ -56,7 +58,7 @@ namespace JotunnLib.Managers
                 Icon = icon
             };
 
-            if (createLocalizations)
+            if (autoLocalize)
             {
                 LocalizationManager.Instance.AddLocalization("English", new Dictionary<string, string>()
                 {
@@ -72,28 +74,35 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Register a new skill with given SkillConfig object, and registers translations for it in the current localization.
+        ///     Add a new skill with given SkillConfig object, and adds translations for it in the current localization.
         /// </summary>
         /// <param name="skillConfig">SkillConfig object representing new skill to register</param>
-        /// <returns>The SkillType of the newly registered skill</returns>
-        public Skills.SkillType AddSkill(SkillConfig skillConfig, bool registerLocalizations = true)
+        /// <returns>The SkillType of the newly added skill</returns>
+        public Skills.SkillType AddSkill(SkillConfig skillConfig, bool autoLocalize = false)
         {
-            if (string.IsNullOrEmpty(skillConfig.Identifier))
+            if (string.IsNullOrEmpty(skillConfig?.Identifier))
             {
-                Logger.LogError("Failed to register skill with invalid identifier: " + skillConfig.Identifier);
+                Logger.LogError($"Failed to register skill with invalid identifier: {skillConfig.Identifier}");
                 return global::Skills.SkillType.None;
             }
 
             Skills.Add(skillConfig.UID, skillConfig);
 
-            if (registerLocalizations)
+            foreach (var translation in skillConfig.Localizations.Values)
             {
-                foreach (var translation in skillConfig.Localizations.Values)
-                {
-                    LocalizationManager.Instance.AddLocalization(translation);
-                }
+                LocalizationManager.Instance.AddLocalizationConfig(translation);
             }
 
+            if (autoLocalize)
+            {
+                LocalizationManager.Instance.AddLocalization("English", new Dictionary<string, string>()
+                {
+                    { "skill_" + skillConfig.UID, skillConfig.Name },
+                    { "skill_" + skillConfig.UID + "_description", skillConfig.Description }
+                });
+            }
+
+            JotunnLib.Logger.LogInfo($"Registered skill: {skillConfig}");
             return skillConfig.UID;
         }
 
@@ -124,6 +133,25 @@ namespace JotunnLib.Managers
             }, registerLocalizations);
         }
 
+        public void RegisterFromJson(string path)
+        {
+            string absPath = Path.Combine(Paths.PluginPath, path);
+
+            if (!File.Exists(absPath))
+            {
+                JotunnLib.Logger.LogError($"Error, failed to register skill from non-existant path: ${absPath}");
+                return;
+            }
+
+            string json = File.ReadAllText(absPath);
+            List<SkillConfig> skills = SkillConfig.ListFromJson(json);
+
+            foreach (SkillConfig skill in skills)
+            {
+                AddSkill(skill);
+            }
+        }
+
         /// <summary>
         ///     Gets a custom skill with given SkillType.
         /// </summary>
@@ -133,13 +161,7 @@ namespace JotunnLib.Managers
         {
             if (Skills.ContainsKey(skillType))
             {
-                return new Skills.SkillDef()
-                {
-                    m_description = Skills[skillType].Description,
-                    m_icon = Skills[skillType].Icon,
-                    m_increseStep = Skills[skillType].IncreaseStep,
-                    m_skill = Skills[skillType].UID
-                };
+                return Skills[skillType].ToSkillDef();
             }
 
             if (Player.m_localPlayer != null)
