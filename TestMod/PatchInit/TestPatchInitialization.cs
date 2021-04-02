@@ -14,11 +14,11 @@ namespace TestMod.PatchInit
             test1run = true;
             if (test2run == false)
             {
-                Debug.LogError("Test2 did not run before Test1, check priority");
+                JotunnLib.Logger.LogError("Test2 did not run before Test1, check priority");
             }
             else
             {
-                Debug.Log("Test1 passed");
+                JotunnLib.Logger.LogInfo("Test1 passed");
             }
 
         }
@@ -29,11 +29,11 @@ namespace TestMod.PatchInit
             test2run = true;
             if (test1run)
             {
-                Debug.LogError("This patch needs to run before Test1");
+                JotunnLib.Logger.LogError("This patch needs to run before Test1");
             }
             else
             {
-                Debug.Log("Test2 passed");
+                JotunnLib.Logger.LogInfo("Test2 passed");
             }
         }
 

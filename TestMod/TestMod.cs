@@ -2,8 +2,6 @@
 using UnityEngine;
 using BepInEx;
 using TestMod.ConsoleCommands;
-using JotunnLib;
-using JotunnLib.ConsoleCommands;
 using JotunnLib.Entities;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
@@ -35,7 +33,7 @@ namespace TestMod
             registerSkills();
         }
 
-        // Called every second
+        // Called every frame
         private void Update()
         {
             // Since our Update function in our BepInEx mod class will load BEFORE Valheim loads,
@@ -75,16 +73,21 @@ namespace TestMod
 
             // Load asset bundle
             Assets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
-            Debug.Log(Assets);
+            JotunnLib.Logger.LogInfo(Assets);
         }
 
         // Register new prefabs
         private void registerPrefabs(object sender, EventArgs e)
         {
             // Register prefabs using PrefabConfig
-            PrefabManager.Instance.RegisterPrefab(new TestPrefab());
+            /*PrefabManager.Instance.RegisterPrefab(new TestPrefab());
             PrefabManager.Instance.RegisterPrefab(new TestCubePrefab());
-            PrefabManager.Instance.RegisterPrefab(new BundlePrefab());
+            PrefabManager.Instance.RegisterPrefab(new BundlePrefab());*/
+
+            // Register prefabs
+            var testprefab = new TestPrefab();
+            PrefabManager.Instance.AddPrefab(testprefab.Name, testprefab.Prefab);
+            PrefabManager.Instance.AddEmptyPrefab("TestCube");
         }
 
         // Register new pieces

@@ -39,8 +39,6 @@ namespace JotunnLib.Managers
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
-
-            Logger.LogInfo("Initialized PrefabManager");
         }
 
         private string CreateUID()
@@ -138,7 +136,7 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="name">Name of the prefab to search for</param>
         /// <returns></returns>
-        internal GameObject GetPrefab(string name)
+        public GameObject GetPrefab(string name)
         {
             if (Prefabs.ContainsKey(name))
             {
@@ -159,7 +157,7 @@ namespace JotunnLib.Managers
             return null;
         }
 
-        internal void DestroyPrefab(string name)
+        public void DestroyPrefab(string name)
         {
             if (Prefabs.ContainsKey(name))
             {
