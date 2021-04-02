@@ -29,7 +29,7 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            //On.ObjectDB.CopyOtherDB += AddCustomDataFejd;  // very broken, need to come back to that
+            On.ObjectDB.CopyOtherDB += AddCustomDataFejd;  // very broken, need to come back to that
             On.ObjectDB.Awake += AddCustomData;
             On.Player.Load += ReloadKnownRecipes;
         }
@@ -211,7 +211,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        /*private void AddCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void AddCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             orig(self, other);
 
@@ -230,7 +230,7 @@ namespace JotunnLib.Managers
                 OnAfterInit.SafeInvoke();
                 OnAfterInit = null;
             }
-        }*/
+        }
 
         private void AddCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
