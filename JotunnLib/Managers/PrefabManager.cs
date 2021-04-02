@@ -15,7 +15,7 @@ namespace JotunnLib.Managers
         public static GameObject PrefabContainer;
         public static Cache PrefabCache;
 
-        public event EventHandler PrefabRegister, PrefabsLoaded;
+        public event EventHandler PrefabsLoaded;
 
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
         private bool loaded = false;
@@ -196,13 +196,6 @@ namespace JotunnLib.Managers
         public void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);
-
-            // No need for events here i guess. ObjectManager invokes the main Event for registering stuff
-            // Call event handlers to load prefabs
-            if (!loaded)
-            {
-                PrefabRegister?.Invoke(null, EventArgs.Empty);
-            }
 
             Logger.LogInfo("---- Adding custom prefabs to ZNetScene ----");
 

@@ -23,7 +23,6 @@ namespace TestMod
         private void Awake()
         {
             ObjectManager.Instance.ObjectRegister += registerObjects;
-            PrefabManager.Instance.PrefabRegister += registerPrefabs;
             PieceManager.Instance.PieceRegister += registerPieces;
             InputManager.Instance.InputRegister += registerInputs;
             LocalizationManager.Instance.LocalizationRegister += registerLocalization;
@@ -76,8 +75,14 @@ namespace TestMod
             JotunnLib.Logger.LogInfo(Assets);
         }
 
-        // Register new prefabs
-        private void registerPrefabs(object sender, EventArgs e)
+        // Register new pieces
+        private void registerPieces(object sender, EventArgs e)
+        {
+            PieceManager.Instance.RegisterPiece("Hammer", "TestCube");
+        }
+
+        // Register new items and recipes
+        private void registerObjects(object sender, EventArgs e)
         {
             // Register prefabs using PrefabConfig
             /*PrefabManager.Instance.RegisterPrefab(new TestPrefab());
@@ -88,17 +93,7 @@ namespace TestMod
             var testprefab = new TestPrefab();
             PrefabManager.Instance.AddPrefab(testprefab.Prefab);
             PrefabManager.Instance.AddEmptyPrefab("TestCube");
-        }
 
-        // Register new pieces
-        private void registerPieces(object sender, EventArgs e)
-        {
-            PieceManager.Instance.RegisterPiece("Hammer", "TestCube");
-        }
-
-        // Register new items and recipes
-        private void registerObjects(object sender, EventArgs e)
-        {
             /*
             // Items
             ObjectManager.Instance.RegisterItem("TestPrefab");
