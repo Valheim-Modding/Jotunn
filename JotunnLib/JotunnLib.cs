@@ -58,20 +58,21 @@ namespace JotunnLib
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
 
-            StartCoroutine(nameof(InitializePatches));
-
             initCommands();
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
         }
 
+        private void Start()
+        {
+            InitializePatches();
+        }
+
         /// <summary>
         /// Invoke Patch initialization methods
         /// </summary>
-        private IEnumerator InitializePatches()
+        private void InitializePatches()
         {
-            yield return new WaitForEndOfFrame();
-
             // Reflect through everything
 
             List<Tuple<MethodInfo, int>> types = new List<Tuple<MethodInfo, int>>();
