@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using JotunnLib.Entities;
 
@@ -8,15 +9,19 @@ namespace JotunnLib.Managers
     {
         public static CommandManager Instance { get; private set; }
 
-        // TODO: Make these lists immutable
-        public static readonly List<string> DefaultConsoleCommands = new List<string>()
+        public static ReadOnlyCollection<string> DefaultConsoleCommands => _defaultConsoleCommands.AsReadOnly();
+
+        private static List<string> _defaultConsoleCommands = new List<string>()
         {
             // "help" command not included since we want to overwrite it
             
             // Basic commands
             "kick", "ban", "unban", "banned", "ping", "lodbias", "info", "devcommands"
         };
-        public static readonly List<string> DefaultCheatConsoleCommands = new List<string>()
+
+        public static ReadOnlyCollection<string> DefaultCheatConsoleCommands => _defaultCheatConsoleCommands.AsReadOnly();
+
+        private static readonly List<string> _defaultCheatConsoleCommands = new List<string>()
         {
             "genloc", "debugmode", "spawn", "pos", "goto", "exploremap", "resetmap", "killall", "tame",
             "hair", "beard", "location", "raiseskill", "resetskill", "freefly", "ffsmooth", "tod",
@@ -24,7 +29,9 @@ namespace JotunnLib.Managers
             "resetcharacter", "removedrops", "setkey", "resetkeys", "listkeys", "players", "dpsdebug"
         };
 
-        internal List<ConsoleCommand> ConsoleCommands = new List<ConsoleCommand>();
+        public ReadOnlyCollection<ConsoleCommand> ConsoleCommands => _consoleCommands.AsReadOnly();
+
+        private List<ConsoleCommand> _consoleCommands = new List<ConsoleCommand>();
 
         private void Awake()
         {
@@ -40,20 +47,20 @@ namespace JotunnLib.Managers
         public void RegisterConsoleCommand(ConsoleCommand cmd)
         {
             // Cannot override default command
-            if (DefaultConsoleCommands.Contains(cmd.Name))
+            if (_defaultConsoleCommands.Contains(cmd.Name))
             {
                 Logger.LogError("Cannot override default command: " + cmd.Name);
                 return;
             }
 
             // Cannot have two commands with same name
-            if (ConsoleCommands.Exists(c => c.Name == cmd.Name))
+            if (_consoleCommands.Exists(c => c.Name == cmd.Name))
             {
                 Logger.LogError("Cannot have two console commands with same name: " + cmd.Name);
                 return;
             }
 
-            ConsoleCommands.Add(cmd);
+            _consoleCommands.Add(cmd);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -38,7 +39,6 @@ namespace JotunnLib
 
         private void Awake()
         {
-            // Initialize Logger
             JotunnLib.Logger.Init();
 
             // Create and initialize all managers
@@ -55,9 +55,6 @@ namespace JotunnLib
                 manager.Init();
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
-
-            // Initialize the patches
-            InitializePatches();
 
             initCommands();
 
