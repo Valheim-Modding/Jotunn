@@ -20,7 +20,7 @@ namespace JotunnLib.Patches
             orig(self);
 
 #if DEBUG
-            Debug.Log("----> ZNetScene Awake");
+            Logger.LogInfo("----> ZNetScene Awake");
 #endif
             PrefabManager.Instance.Register();
             PrefabManager.Instance.Load();

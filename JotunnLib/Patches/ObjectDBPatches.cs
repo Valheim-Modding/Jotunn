@@ -21,7 +21,7 @@ namespace JotunnLib.Patches
         {
             orig(self);
 #if DEBUG
-            Debug.Log("----> ObjectDB Awake");
+            Logger.LogInfo("----> ObjectDB Awake");
 #endif
 
             if (SceneManager.GetActiveScene().name == "main")

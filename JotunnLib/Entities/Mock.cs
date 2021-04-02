@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using JotunnLib.Managers;
+using JotunnLib.Utils;
+using UnityEngine;
 using UnityObject = UnityEngine.Object;
 
 namespace JotunnLib.Entities
@@ -12,12 +14,12 @@ namespace JotunnLib.Entities
         public static T Create(string name)
         {
             var g = new GameObject(name + "_" + nameof(Mock<T>));
-            UnityObject.DontDestroyOnLoad(g);
-            g.transform.SetParent(Prefab.Parent.transform);
+            //UnityObject.DontDestroyOnLoad(g); not needed, PrefabContainer is in DDOL already
+            g.transform.SetParent(PrefabManager.PrefabContainer.transform);
             g.SetActive(false);
 
             var mock = g.AddComponent<T>();
-            mock.name = Prefab.MockPrefix + name;
+            mock.name = PrefabExtensions.MockPrefix + name;
 
             return mock;
         }

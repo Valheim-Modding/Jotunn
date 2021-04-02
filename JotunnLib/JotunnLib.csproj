@@ -401,12 +401,12 @@
     <Compile Include="Entities\Mock.cs" />
     <Compile Include="Entities\PieceConfig.cs" />
     <Compile Include="Entities\PieceRequirementConfig.cs" />
-    <Compile Include="Entities\prefab.cs" />
     <Compile Include="Entities\PrefabConfig.cs" />
     <Compile Include="Entities\RecipeConfig.cs" />
     <Compile Include="Entities\SkillConfig.cs" />
     <Compile Include="Events\PlayerEventArgs.cs" />
     <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Managers\CommandManager.cs" />
     <Compile Include="Entities\ConsoleCommand.cs" />
@@ -418,6 +418,7 @@
     <Compile Include="Managers\ObjectManager.cs" />
     <Compile Include="Managers\PieceManager.cs" />
     <Compile Include="Managers\PrefabManager.cs" />
+    <Compile Include="Managers\PrefabManagerVL.cs" />
     <Compile Include="Managers\SaveManager.cs" />
     <Compile Include="Managers\ZoneManager.cs" />
     <Compile Include="Patches\ConsoleCommandsPatches.cs" />
@@ -451,23 +452,19 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Target Name="JotunnBuildTask">
-    <Message Text="Running JotunnBuildTask" />  
+    <Message Text="Running JotunnBuildTask" />
     <Exec Command="$(TargetDir)JotunnBuildTask.exe &quot;$(VALHEIM_INSTALL)&quot;" WorkingDirectory="$(TargetDir)" />
   </Target>
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="copy $(TargetDir)$(TargetFileName) &quot;$(VALHEIM_INSTALL)\BepInEx\plugins&quot; /y"/>
-    <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot;"/>
+    <Exec Command="copy $(TargetDir)$(TargetFileName) &quot;$(VALHEIM_INSTALL)\BepInEx\plugins&quot; /y" />
+    <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot;" />
   </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-<PropertyGroup>
-  <BuildDependsOn>
-    JotunnBuildTask;
-    $(BuildDependsOn);
-    JotunnPostBuildTaskWin
-  </BuildDependsOn>
-</PropertyGroup>
-  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-    <PostBuildEvent>copy $(TargetDir)$(TargetFileName) "$(VALHEIM_INSTALL)\BepInEx\plugins" /y
-    powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)publish.ps1" -Target "$(ConfigurationName)" -TargetPath "$(TargetDir.TrimEnd('\'))" -TargetAssembly "$(TargetFileName)" -ValheimPath "$(VALHEIM_INSTALL.TrimEnd('\'))"</PostBuildEvent>
+  <PropertyGroup>
+    <BuildDependsOn>
+      JotunnBuildTask;
+      $(BuildDependsOn);
+      JotunnPostBuildTaskWin
+    </BuildDependsOn>
   </PropertyGroup>
 </Project>

@@ -32,7 +32,7 @@ namespace JotunnLib.Managers
 
             if (self && self.m_inventory != null)
             {
-                Prefab.Cache.InventoryToContainer.Add(self.m_inventory, self);
+                Cache.InventoryToContainer.Add(self.m_inventory, self);
             }
         }
 
@@ -42,7 +42,7 @@ namespace JotunnLib.Managers
 
             if (self && self.m_inventory != null)
             {
-                Prefab.Cache.InventoryToContainer.Remove(self.m_inventory);
+                Cache.InventoryToContainer.Remove(self.m_inventory);
             }
         }
 
@@ -57,7 +57,7 @@ namespace JotunnLib.Managers
             }
             else
             {
-                if (Prefab.Cache.InventoryToContainer.TryGetValue(self, out var container))
+                if (Cache.InventoryToContainer.TryGetValue(self, out var container))
                 {
                     return new string(container.GetContainerUID().Where(c => !InvalidFileNameChars.Contains(c)).ToArray());
                 }

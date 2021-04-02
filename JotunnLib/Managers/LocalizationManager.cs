@@ -56,7 +56,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Debug.LogError("Error, two instances of singleton: " + GetType().Name);
+                Logger.LogError("Error, two instances of singleton: " + GetType().Name);
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace JotunnLib.Managers
         private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
         {
             var result = orig(self, language);
-            Debug.Log($"\t-> SetupLanguage called {language}");
+            Logger.LogInfo($"\t-> SetupLanguage called {language}");
 
             // Register & load localizations for selected language
             Register();
@@ -118,7 +118,7 @@ namespace JotunnLib.Managers
 
             Localizations.Clear();
 
-            Debug.Log("---- Registering custom localizations ----");
+            Logger.LogInfo("---- Registering custom localizations ----");
 
             AddLanguageFilesFromPluginFolder();
 
@@ -139,7 +139,7 @@ namespace JotunnLib.Managers
                 return;
             }
 
-            Debug.Log($"Adding tokens for language {language}");
+            Logger.LogInfo($"Adding tokens for language {language}");
             AddTokens(localization, language);
         }
 
@@ -162,7 +162,7 @@ namespace JotunnLib.Managers
         {
             if (string.IsNullOrEmpty(language))
             {
-                Debug.LogError("Error, localization had null or empty language");
+                Logger.LogError("Error, localization had null or empty language");
                 return;
             }
 
@@ -299,13 +299,13 @@ namespace JotunnLib.Managers
                 var language = Path.GetFileName(Path.GetDirectoryName(path));
                 AddJson(language, fileContent);
 
-                JotunnLib.Logger.LogInfo($"Added json language file {Path.GetFileName(path)}");
+                Logger.LogInfo($"Added json language file {Path.GetFileName(path)}");
             }
             else
             {
                 Add(fileContent);
 
-                JotunnLib.Logger.LogInfo($"Added language file {Path.GetFileName(path)}");
+                Logger.LogInfo($"Added language file {Path.GetFileName(path)}");
             }
         }
 
@@ -419,7 +419,7 @@ namespace JotunnLib.Managers
             {
                 foreach (var pair in tokens)
                 {
-                    Debug.Log("\tAdded translation: " + pair.Key + " -> " + pair.Value);
+                    Logger.LogInfo("\tAdded translation: " + pair.Key + " -> " + pair.Value);
                     self.AddWord(pair.Key, pair.Value);
                 }
             }

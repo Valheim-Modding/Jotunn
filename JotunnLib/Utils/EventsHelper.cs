@@ -26,7 +26,7 @@ namespace JotunnLib.Utils
                 }
                 catch (Exception e)
                 {
-                    JotunnLib.Logger.LogError(e);
+                    Logger.LogError(e);
                 }
             }
         }
@@ -52,7 +52,7 @@ namespace JotunnLib.Utils
                 }
                 catch (Exception e)
                 {
-                    JotunnLib.Logger.LogError(e);
+                    Logger.LogError(e);
                 }
             }
         }

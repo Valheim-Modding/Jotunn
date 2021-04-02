@@ -25,7 +25,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
                 return;
             }
 
@@ -35,7 +35,7 @@ namespace JotunnLib.Managers
         internal override void Init()
         {
             PieceTableContainer = new GameObject("PieceTables");
-            PieceTableContainer.transform.parent = JotunnLib.RootObject.transform;
+            PieceTableContainer.transform.parent = JotunnLibMain.RootObject.transform;
         }
 
         internal override void Register()
@@ -59,7 +59,7 @@ namespace JotunnLib.Managers
             }
 
             List<string> loadedTables = new List<string>();
-            Debug.Log("---- Loading piece tables ----");
+            Logger.LogInfo("---- Loading piece tables ----");
 
             foreach (PieceTable table in Resources.FindObjectsOfTypeAll(typeof(PieceTable)))
             {
@@ -67,7 +67,7 @@ namespace JotunnLib.Managers
                 pieceTables.Add(name, table);
                 loadedTables.Add(name);
 
-                Debug.Log("Loaded existing piece table: " + name);
+                Logger.LogInfo("Loaded existing piece table: " + name);
             }
 
             PieceTableRegister?.Invoke(null, EventArgs.Empty);
@@ -84,10 +84,10 @@ namespace JotunnLib.Managers
 
                 pieceTables.Add(name, table);
 
-                Debug.Log("Registered piece table: " + name);
+                Logger.LogInfo("Registered piece table: " + name);
             }
 
-            Debug.Log("---- Loading pieces ----");
+            Logger.LogInfo("---- Loading pieces ----");
             PieceRegister?.Invoke(null, EventArgs.Empty);
             loaded = true;
         }
@@ -96,7 +96,7 @@ namespace JotunnLib.Managers
         {
             if (pieceTables.ContainsKey(name))
             {
-                Debug.Log("Failed to register piece table with existing name: " + name);
+                Logger.LogInfo("Failed to register piece table with existing name: " + name);
                 return;
             }
 
@@ -113,7 +113,7 @@ namespace JotunnLib.Managers
 
             if (!prefab)
             {
-                Debug.LogError("Failed to register Piece with invalid prefab: " + prefabName);
+                Logger.LogError("Failed to register Piece with invalid prefab: " + prefabName);
                 return;
             }
 
@@ -127,19 +127,19 @@ namespace JotunnLib.Managers
             // Error checking
             if (!table)
             {
-                Debug.LogError("Failed to register piece, Piece table does not exist: " + pieceTable);
+                Logger.LogError("Failed to register piece, Piece table does not exist: " + pieceTable);
                 return;
             }
 
             if (!prefab)
             {
-                Debug.LogError("Failed to register Piece with null prefab");
+                Logger.LogError("Failed to register Piece with null prefab");
                 return;
             }
 
             if (!prefab.GetComponent<Piece>())
             {
-                Debug.LogError("Failed to register piece, Prefab does not have Piece component: " + prefab.name);
+                Logger.LogError("Failed to register piece, Prefab does not have Piece component: " + prefab.name);
                 return;
             }
 
@@ -151,7 +151,7 @@ namespace JotunnLib.Managers
 
             // Add prefab
             table.m_pieces.Add(prefab);
-            Debug.Log("Registered piece: " + prefab.name + " to " + pieceTable);
+            Logger.LogInfo("Registered piece: " + prefab.name + " to " + pieceTable);
         }
 
         private PieceTable getPieceTable(string name)

@@ -13,13 +13,11 @@ using JotunnLib.Utils;
 namespace JotunnLib
 {
     [BepInPlugin(ModGuid, "JotunnLib", Version)]
-    public class JotunnLib : BaseUnityPlugin
+    public class JotunnLibMain : BaseUnityPlugin
     {
         // Version
         public const string Version = "0.2.0";
         public const string ModGuid = "com.bepinex.plugins.jotunnlib";
-
-        public static BepInEx.Logging.ManualLogSource Logger;
 
         // Load order for managers
         private readonly List<Type> managerTypes = new List<Type>()
@@ -41,7 +39,7 @@ namespace JotunnLib
 
         private void Awake()
         {
-            Logger = base.Logger;
+            JotunnLib.Logger.Init();
 
             // Create and initialize all managers
             RootObject = new GameObject("_JotunnLibRoot");
@@ -63,10 +61,6 @@ namespace JotunnLib
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
         }
 
-        private void Start()
-        {
-            InitializePatches();
-        }
 
         /// <summary>
         /// Invoke Patch initialization methods
@@ -74,7 +68,6 @@ namespace JotunnLib
         private void InitializePatches()
         {
             // Reflect through everything
-
             List<Tuple<MethodInfo, int>> types = new List<Tuple<MethodInfo, int>>();
 
             // Check in all assemblies
@@ -82,7 +75,7 @@ namespace JotunnLib
             {
                 try
                 {
-                    // and all types
+                    // And all types
                     foreach (var type in asm.GetTypes())
                     {
                         try
@@ -95,7 +88,7 @@ namespace JotunnLib
                                 types.Add(new Tuple<MethodInfo, int>(method, attribute.Priority));
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception ex)
                         { }
                     }
                 }
@@ -106,7 +99,7 @@ namespace JotunnLib
             // Invoke the method
             foreach (Tuple<MethodInfo, int> tuple in types.OrderBy(x => x.Item2))
             {
-                Debug.Log($"Applying patches in {tuple.Item1.DeclaringType.Name}.{tuple.Item1.Name}");
+                Logger.LogInfo($"Applying patches in {tuple.Item1.DeclaringType.Name}.{tuple.Item1.Name}");
                 tuple.Item1.Invoke(null, null);
             }
         }

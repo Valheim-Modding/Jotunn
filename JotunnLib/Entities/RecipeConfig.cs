@@ -28,7 +28,7 @@ namespace JotunnLib.Entities
             
             if (itemPrefab == null)
             {
-                Debug.LogError("Error, recipe contained null item prefab for item: " + Item);
+                Logger.LogError("Error, recipe contained null item prefab for item: " + Item);
                 return null;
             }
 
@@ -49,7 +49,7 @@ namespace JotunnLib.Entities
 
                 if (craftingStationPrefab == null || craftingStation == null)
                 {
-                    Debug.LogError("Crafting station is not valid: " + CraftingStation);
+                    Logger.LogError("Crafting station is not valid: " + CraftingStation);
                     return null;
                 }
 
@@ -63,7 +63,7 @@ namespace JotunnLib.Entities
 
                 if (repairStationPrefab == null || repairStation == null)
                 {
-                    Debug.LogError("Repair station is not valid: " + RepairStation);
+                    Logger.LogError("Repair station is not valid: " + RepairStation);
                     return null;
                 }
 

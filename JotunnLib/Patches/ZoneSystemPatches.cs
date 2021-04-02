@@ -19,14 +19,14 @@ namespace JotunnLib.Patches
         {
             orig(self);
 #if DEBUG
-            Debug.Log("----> ZoneSystem Awake");
+            Logger.LogInfo("----> ZoneSystem Awake");
 #endif
             // ZoneManager.Instance.Register();
         }
 
         private static bool ZoneSystem_SpawnZone(On.ZoneSystem.orig_SpawnZone orig, ZoneSystem self, Vector2i zoneID, ZoneSystem.SpawnMode mode, out GameObject root)
         {
-            // Debug.Log("-> Spawning zone: " + zoneID);
+            // Logger.LogInfo("-> Spawning zone: " + zoneID);
             return orig(self, zoneID, mode, out root);
         }
     }

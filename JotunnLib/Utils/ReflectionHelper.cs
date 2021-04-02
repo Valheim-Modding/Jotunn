@@ -77,7 +77,7 @@ namespace JotunnLib.Utils
 
             if (method == null)
             {
-                JotunnLib.Logger.LogError("Method " + name + " does not exist on type: " + instance.GetType());
+                Logger.LogError("Method " + name + " does not exist on type: " + instance.GetType());
                 return null;
             }
 
@@ -90,7 +90,7 @@ namespace JotunnLib.Utils
 
             if (var == null)
             {
-                JotunnLib.Logger.LogError("Variable " + name + " does not exist on type: " + instance.GetType());
+                Logger.LogError("Variable " + name + " does not exist on type: " + instance.GetType());
                 return default(T);
             }
 
@@ -103,7 +103,7 @@ namespace JotunnLib.Utils
 
             if (var == null)
             {
-                JotunnLib.Logger.LogError("Variable " + name + " does not exist on type: " + instance.GetType());
+                Logger.LogError("Variable " + name + " does not exist on type: " + instance.GetType());
                 return;
             }
 
