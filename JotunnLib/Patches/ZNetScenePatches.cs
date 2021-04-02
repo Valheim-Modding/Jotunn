@@ -19,9 +19,8 @@ namespace JotunnLib.Patches
         {
             orig(self);
 
-#if DEBUG
-            Logger.LogInfo("----> ZNetScene Awake");
-#endif
+            Logger.LogDebug("----> ZNetScene Awake");
+
             PrefabManager.Instance.Register();
             PrefabManager.Instance.Load();
 

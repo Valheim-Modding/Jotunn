@@ -18,9 +18,9 @@ namespace JotunnLib.Patches
         private static void ZoneSystem_Awake(On.ZoneSystem.orig_Awake orig, ZoneSystem self)
         {
             orig(self);
-#if DEBUG
-            Logger.LogInfo("----> ZoneSystem Awake");
-#endif
+
+            Logger.LogDebug("----> ZoneSystem Awake");
+
             // ZoneManager.Instance.Register();
         }
 
