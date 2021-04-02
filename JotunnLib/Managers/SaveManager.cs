@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JotunnLib.Entities;
 using JotunnLib.Utils;
@@ -14,6 +15,8 @@ namespace JotunnLib.Managers
         internal const string EntrySeparator = ".";
 
         internal static readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
+
+        internal static ConditionalWeakTable<Inventory, Container> InventoryToContainer = new ConditionalWeakTable<Inventory, Container>();
 
         internal static void Init()
         {
@@ -32,7 +35,7 @@ namespace JotunnLib.Managers
 
             if (self && self.m_inventory != null)
             {
-                Cache.InventoryToContainer.Add(self.m_inventory, self);
+                InventoryToContainer.Add(self.m_inventory, self);
             }
         }
 
@@ -42,7 +45,7 @@ namespace JotunnLib.Managers
 
             if (self && self.m_inventory != null)
             {
-                Cache.InventoryToContainer.Remove(self.m_inventory);
+                InventoryToContainer.Remove(self.m_inventory);
             }
         }
 
@@ -57,7 +60,7 @@ namespace JotunnLib.Managers
             }
             else
             {
-                if (Cache.InventoryToContainer.TryGetValue(self, out var container))
+                if (InventoryToContainer.TryGetValue(self, out var container))
                 {
                     return new string(container.GetContainerUID().Where(c => !InvalidFileNameChars.Contains(c)).ToArray());
                 }

@@ -4,6 +4,7 @@ using UnityEngine;
 using JotunnLib.Entities;
 using JotunnLib.Utils;
 using UnityObject = UnityEngine.Object;
+using System.Linq;
 
 namespace JotunnLib.Managers
 {
@@ -14,8 +15,10 @@ namespace JotunnLib.Managers
     {
         public static PrefabManager Instance { get; private set; }
         public static GameObject PrefabContainer;
+        public static Cache PrefabCache;
 
         public event EventHandler PrefabRegister, PrefabsLoaded;
+
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
         private bool loaded = false;
 
@@ -105,7 +108,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Registers a new prefab that's a copy of given base.
+        /// Allows you to clone a given prefab without modifying the original.
         /// </summary>
         /// <param name="name">New prefab name</param>
         /// <param name="baseName">Base prefab name</param>
@@ -118,8 +121,8 @@ namespace JotunnLib.Managers
         /// <summary>
         /// Allows you to clone a given prefab without modifying the original.
         /// </summary>
-        /// <param name="name">name for the new clone</param>
-        /// <param name="gameObject">prefab that you want to clone</param>
+        /// <param name="name">New prefab name</param>
+        /// <param name="gameObject">Base prefab</param>
         /// <returns></returns>
         public GameObject AddClonedPrefab(string name, GameObject gameObject)
         {
@@ -216,6 +219,89 @@ namespace JotunnLib.Managers
                     znet.m_prefabs.Add(gameObject);
                     znet.m_namedPrefabs.Add(name.GetStableHashCode(), gameObject);
                     Logger.LogInfo($"Added prefab {name}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Helper class for caching gameobjects in the current scene.
+        /// </summary>
+        public class Cache
+        {
+            private static readonly Dictionary<Type, Dictionary<string, UnityObject>> DictionaryCache =
+                new Dictionary<Type, Dictionary<string, UnityObject>>();
+
+            private void InitCache(Type type, Dictionary<string, UnityObject> map = null)
+            {
+                map ??= new Dictionary<string, UnityObject>();
+                foreach (var unityObject in Resources.FindObjectsOfTypeAll(type))
+                {
+                    map[unityObject.name] = unityObject;
+                }
+
+                DictionaryCache[type] = map;
+            }
+
+            /// <summary>
+            /// Get an instance of an UnityObject from the current scene with the given name
+            /// </summary>
+            /// <param name="type"></param>
+            /// <param name="name"></param>
+            /// <returns></returns>
+            public UnityObject GetPrefab(Type type, string name)
+            {
+                if (DictionaryCache.TryGetValue(type, out var map))
+                {
+                    if (map.Count == 0 || !map.Values.First())
+                    {
+                        InitCache(type, map);
+                    }
+
+                    if (map.TryGetValue(name, out var unityObject))
+                    {
+                        return unityObject;
+                    }
+                }
+                else
+                {
+                    InitCache(type);
+                    return GetPrefab(type, name);
+                }
+
+                return null;
+            }
+
+            /// <summary>
+            /// Get an instance of an UnityObject from the current scene with the given name
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="name"></param>
+            /// <returns></returns>
+            public T GetPrefab<T>(string name) where T : UnityObject
+            {
+                return (T)GetPrefab(typeof(T), name);
+            }
+
+            /// <summary>
+            /// Get the instances of UnityObjects from the current scene with the given type
+            /// </summary>
+            /// <param name="type"></param>
+            /// <returns></returns>
+            public Dictionary<string, UnityObject> GetPrefabs(Type type)
+            {
+                if (DictionaryCache.TryGetValue(type, out var map))
+                {
+                    if (map.Count == 0 || !map.Values.First())
+                    {
+                        InitCache(type, map);
+                    }
+
+                    return map;
+                }
+                else
+                {
+                    InitCache(type);
+                    return GetPrefabs(type);
                 }
             }
         }
