@@ -86,7 +86,7 @@ namespace TestMod
 
             // Register prefabs
             var testprefab = new TestPrefab();
-            PrefabManager.Instance.AddPrefab(testprefab.Name, testprefab.Prefab);
+            PrefabManager.Instance.AddPrefab(testprefab.Prefab);
             PrefabManager.Instance.AddEmptyPrefab("TestCube");
         }
 

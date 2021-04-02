@@ -430,7 +430,6 @@
     <Compile Include="Patches\ObjectDBPatches.cs" />
     <Compile Include="Patches\ZNetPatches.cs" />
     <Compile Include="Patches\ZoneSystemPatches.cs" />
-    <Compile Include="Patches\ZNetScenePatches.cs" />
     <Compile Include="Patches\PlayerPatches.cs" />
     <Compile Include="Patches\SkillsPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
