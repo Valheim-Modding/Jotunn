@@ -8,15 +8,15 @@ namespace JotunnLib
     ///     A namespace wide Logger class, which automatically creates a <see cref="ManualLogSource" />
     ///     for every namespace from which it is being called
     /// </summary>
-    internal class Logger
+    public class Logger
     {
-        public static Logger Instance;
+        private static Logger Instance;
 
         private readonly Dictionary<string, ManualLogSource> m_logger = new Dictionary<string, ManualLogSource>();
 
         private Logger() { }
 
-        public static void Init()
+        internal static void Init()
         {
             if (Instance == null)
             {
@@ -24,7 +24,7 @@ namespace JotunnLib
             }
         }
 
-        public static void Destroy()
+        internal static void Destroy()
         {
             LogDebug("Destroying Logger");
 
@@ -50,32 +50,32 @@ namespace JotunnLib
             return ret;
         }
 
-        internal static void LogFatal(object data)
+        public static void LogFatal(object data)
         {
             Instance.GetLogger().LogFatal(data);
         }
 
-        internal static void LogError(object data)
+        public static void LogError(object data)
         {
             Instance.GetLogger().LogError(data);
         }
 
-        internal static void LogWarning(object data)
+        public static void LogWarning(object data)
         {
             Instance.GetLogger().LogWarning(data);
         }
 
-        internal static void LogMessage(object data)
+        public static void LogMessage(object data)
         {
             Instance.GetLogger().LogMessage(data);
         }
 
-        internal static void LogInfo(object data)
+        public static void LogInfo(object data)
         {
             Instance.GetLogger().LogInfo(data);
         }
 
-        internal static void LogDebug(object data)
+        public static void LogDebug(object data)
         {
             Instance.GetLogger().LogDebug(data);
         }
