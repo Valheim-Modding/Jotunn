@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -41,7 +42,7 @@ namespace JotunnLib
         private void Awake()
         {
             Logger = base.Logger;
-            
+
             // Create and initialize all managers
             RootObject = new GameObject("_JotunnLibRoot");
             GameObject.DontDestroyOnLoad(RootObject);
@@ -57,12 +58,14 @@ namespace JotunnLib
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
 
-            // Initialize the patches
-            InitializePatches();
-
             initCommands();
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
+        }
+
+        private void Start()
+        {
+            InitializePatches();
         }
 
         /// <summary>
@@ -77,16 +80,27 @@ namespace JotunnLib
             // Check in all assemblies
             foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
             {
-                // and all types
-                foreach (var type in asm.GetTypes())
+                try
                 {
-                    // on methods with the PatchInit attribute
-                    foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(x => x.GetCustomAttributes(typeof(PatchInitAttribute), false).Length == 1))
+                    // and all types
+                    foreach (var type in asm.GetTypes())
                     {
-                        var attribute = method.GetCustomAttributes(typeof(PatchInitAttribute), false).FirstOrDefault() as PatchInitAttribute;
-                        types.Add(new Tuple<MethodInfo, int>(method, attribute.Priority));
+                        try
+                        {
+                            // on methods with the PatchInit attribute
+                            foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                                .Where(x => x.GetCustomAttributes(typeof(PatchInitAttribute), false).Length == 1))
+                            {
+                                var attribute = method.GetCustomAttributes(typeof(PatchInitAttribute), false).FirstOrDefault() as PatchInitAttribute;
+                                types.Add(new Tuple<MethodInfo, int>(method, attribute.Priority));
+                            }
+                        }
+                        catch (Exception e)
+                        { }
                     }
                 }
+                catch (Exception e)
+                { }
             }
 
             // Invoke the method

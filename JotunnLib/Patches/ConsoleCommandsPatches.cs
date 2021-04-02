@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using BepInEx.Logging;
 using JotunnLib.Managers;
 using JotunnLib.Entities;
 using JotunnLib.Utils;
 using Steamworks;
+using Debug = UnityEngine.Debug;
 
 namespace JotunnLib.Patches
 {
