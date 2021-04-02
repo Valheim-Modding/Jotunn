@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using JotunnLib.Managers;
 using JotunnLib.Entities;
@@ -28,7 +29,7 @@ namespace JotunnLib.Patches
                 return;
             }
 
-            ConsoleCommand cmd = CommandManager.Instance.ConsoleCommands.Find(c => c.Name == parts[0]);
+            ConsoleCommand cmd = CommandManager.Instance.ConsoleCommands.FirstOrDefault(c => c.Name == parts[0]);
 
             // If we found a command, execute it
             if (cmd != null)
