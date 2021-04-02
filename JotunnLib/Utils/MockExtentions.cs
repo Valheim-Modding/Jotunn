@@ -102,12 +102,6 @@ namespace JotunnLib.Utils
             return (T)GetRealPrefabFromMock(unityObject, typeof(T));
         }
 
-
-        internal static void AddPrefab(this ZNetScene self, GameObject prefab)
-        {
-            self.m_namedPrefabs.Add(prefab.name.GetStableHashCode(), prefab);
-        }
-
         /// <summary>
         /// Will attempt to fix every field that are mocks gameObjects / Components from the given object.
         /// </summary>

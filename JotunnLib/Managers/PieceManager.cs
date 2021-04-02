@@ -35,7 +35,7 @@ namespace JotunnLib.Managers
         internal override void Init()
         {
             PieceTableContainer = new GameObject("PieceTables");
-            PieceTableContainer.transform.parent = JotunnLibMain.RootObject.transform;
+            PieceTableContainer.transform.parent = Main.RootObject.transform;
         }
 
         internal override void Register()

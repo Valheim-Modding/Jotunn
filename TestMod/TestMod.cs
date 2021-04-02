@@ -12,7 +12,7 @@ using TestMod.Prefabs;
 namespace TestMod
 {
     [BepInPlugin("com.bepinex.plugins.jotunnlib.testmod", "JotunnLib Test Mod", "0.1.0")]
-    [BepInDependency(JotunnLib.JotunnLibMain.ModGuid)]
+    [BepInDependency(JotunnLib.Main.ModGuid)]
     class TestMod : BaseUnityPlugin
     {
         public static AssetBundle Assets;

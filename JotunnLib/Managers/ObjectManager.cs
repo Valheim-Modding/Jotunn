@@ -104,7 +104,7 @@ namespace JotunnLib.Managers
             if (customItem.IsValid())
             {
                 Items.Add(customItem);
-                PrefabManager.Instance.NetworkRegister(customItem.ItemPrefab);
+                //PrefabManager.Instance.NetworkRegister(customItem.ItemPrefab);
                 //customItem.ItemPrefab.NetworkRegister();
 
                 return true;

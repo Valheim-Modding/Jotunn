@@ -17,14 +17,14 @@ namespace JotunnLib.Entities
         public PrefabConfig(string name)
         {
             Name = name;
-            Prefab = PrefabManager.Instance.CreatePrefab(Name);
+            Prefab = PrefabManager.Instance.AddEmptyPrefab(Name);
         }
 
         public PrefabConfig(string name, string baseName)
         {
             Name = name;
             BasePrefabName = baseName;
-            Prefab = PrefabManager.Instance.CreatePrefab(Name, BasePrefabName);
+            Prefab = PrefabManager.Instance.AddClonedPrefab(Name, BasePrefabName);
         }
 
         public PrefabConfig(AssetBundle assetBundle, string assetName)

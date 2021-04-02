@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 namespace JotunnDoc
 {
     [BepInPlugin("com.bepinex.plugins.jotunndoc", "JotunnDoc", "0.1.0")]
-    [BepInDependency(JotunnLib.JotunnLibMain.ModGuid)]
+    [BepInDependency(JotunnLib.Main.ModGuid)]
     public class JotunnDoc : BaseUnityPlugin
     {
         private List<Doc> docs;
