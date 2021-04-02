@@ -387,6 +387,7 @@
     <Compile Include="ConsoleCommands\BetterSpawnCommand.cs" />
     <Compile Include="ConsoleCommands\PrintItemsCommand.cs" />
     <Compile Include="ConsoleCommands\TpCommand.cs" />
+    <Compile Include="PatchInit\TestPatchInitialization.cs" />
     <Compile Include="Prefabs\BundlePrefab.cs" />
     <Compile Include="Prefabs\TestCubePrefab.cs" />
     <Compile Include="TestMod.cs" />
@@ -404,13 +405,9 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT' ">xcopy "$(TargetDir)TestMod.dll" "$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\TestMod.dll" /Y
-xcopy "$(ProjectDir)Assets" "$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\Assets\" /Y</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-    <PostBuildEvent>xcopy "$(TargetDir)TestMod.dll" "$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\" /Y
-xcopy "$(ProjectDir)Assets" "$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\Assets\" /Y</PostBuildEvent>
-  </PropertyGroup>
+  <Target Name="CopyToVM" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT'">
+    <Exec Command="xcopy &quot;$(TargetDir)TestMod.dll&quot; &quot;$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\&quot; /Y" />
+    <Exec Command="xcopy &quot;$(ProjectDir)Assets&quot; &quot;$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\Assets\&quot; /S /Y" />
+  </Target>
   <Import Project="../Environment.props" />
 </Project>
