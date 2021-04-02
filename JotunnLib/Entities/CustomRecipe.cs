@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityObject = UnityEngine.Object;
-using System.Collections.Generic;
-using JotunnLib.Utils;
+﻿using System.Collections.Generic;
 
 namespace JotunnLib.Entities
 {

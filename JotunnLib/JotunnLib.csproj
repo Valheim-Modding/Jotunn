@@ -397,6 +397,9 @@
     <Compile Include="Entities\CustomItem.cs" />
     <Compile Include="Entities\CustomRecipe.cs" />
     <Compile Include="Entities\CustomStatusEffect.cs" />
+    <Compile Include="Extensions\InventoryExtension.cs" />
+    <Compile Include="Extensions\ItemDataExtension.cs" />
+    <Compile Include="Extensions\ItemDropExtension.cs" />
     <Compile Include="Entities\LocalizationConfig.cs" />
     <Compile Include="Entities\Mock.cs" />
     <Compile Include="Entities\PieceConfig.cs" />
@@ -406,6 +409,7 @@
     <Compile Include="Entities\SkillConfig.cs" />
     <Compile Include="Events\PlayerEventArgs.cs" />
     <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
+    <Compile Include="Extensions\ZNetExtension.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Managers\CommandManager.cs" />
@@ -435,7 +439,7 @@
     <Compile Include="Utils\EventsHelper.cs" />
     <Compile Include="Utils\Hashes.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
-    <Compile Include="Utils\MockExtentions.cs" />
+    <Compile Include="Extensions\MockExtentions.cs" />
     <Compile Include="Utils\ObjImporter.cs" />
     <Compile Include="Utils\PatchInitAttribute.cs" />
     <Compile Include="Utils\Paths.cs" />
@@ -451,6 +455,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Target Name="JotunnBuildTask">
     <Message Text="Running JotunnBuildTask" />
     <Exec Command="$(TargetDir)JotunnBuildTask.exe &quot;$(VALHEIM_INSTALL)&quot;" WorkingDirectory="$(TargetDir)" />

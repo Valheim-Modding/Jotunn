@@ -36,9 +36,12 @@ namespace JotunnLib.Managers
         internal override void Init()
         {
             On.ZNetScene.Awake += RegisterAllToZNetScene;
+
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
+
+            PrefabCache = new Cache();
         }
 
         private string CreateUID()
