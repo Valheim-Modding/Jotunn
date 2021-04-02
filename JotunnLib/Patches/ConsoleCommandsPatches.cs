@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using BepInEx.Logging;
 using JotunnLib.Managers;
 using JotunnLib.Entities;
 using JotunnLib.Utils;
 using Steamworks;
+using Debug = UnityEngine.Debug;
 
 namespace JotunnLib.Patches
 {
@@ -34,25 +37,15 @@ namespace JotunnLib.Patches
             // If we found a command, execute it
             if (cmd != null)
             {
-                /*
-
-                TODO: Make arguments split take quotes into account
-
-                string argsStr = "";
-
-                if (text.Contains(' '))
-                {
-                    argsStr = text.Substring(text.IndexOf(' '), text.Length);
-                }
-
-                string[] args = Regex.Matches(argsStr, @",(?=([^\"]*\"[^\"]*\")*[^\"]*$)")
+                // Prioritizing quoted strings, then all strings of non-white chars 
+                string[] args = Regex.Matches(text, @"""[^""]+""|\S+")
                     .Cast<Match>()
-                    .Select(m => m.Value)
+                    // get rid of the quotes around arguments
+                    .Select(x => x.Value.Trim('"'))
+                    // we don't need the command itself here
+                    .Skip(1)
                     .ToArray();
-                */
 
-                string[] args = new string[parts.Length - 1];
-                Array.Copy(parts, 1, args, 0, parts.Length - 1);
                 cmd.Run(args);
                 return;
             }
