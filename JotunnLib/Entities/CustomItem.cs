@@ -16,9 +16,10 @@ namespace JotunnLib.Entities
             FixReference = fixReference;
         }
 
-        public CustomItem(string name)
+        public CustomItem(string name, bool addZNetView = true)
         {
-            ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name);
+            ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
+            // add ItemDrop?
         }
 
         public CustomItem(string name, string baseName)

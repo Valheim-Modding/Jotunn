@@ -394,6 +394,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\ButtonConfig.cs" />
+    <Compile Include="Entities\CustomPiece.cs" />
     <Compile Include="Entities\CustomItem.cs" />
     <Compile Include="Entities\CustomRecipe.cs" />
     <Compile Include="Entities\CustomStatusEffect.cs" />

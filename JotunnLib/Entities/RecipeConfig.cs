@@ -14,7 +14,7 @@ namespace JotunnLib.Entities
         public int MinStationLevel { get; set; }
         public PieceRequirementConfig[] Requirements { get; set; } = new PieceRequirementConfig[0];
 
-        public Recipe GetRecipe()
+        public Piece.Requirement[] GetRequirements()
         {
             Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];
 
@@ -23,6 +23,11 @@ namespace JotunnLib.Entities
                 reqs[i] = Requirements[i].GetPieceRequirement();
             }
 
+            return reqs;
+        }
+
+        public Recipe GetRecipe()
+        {
             Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
             GameObject itemPrefab = PrefabManager.Instance.GetPrefab(Item);
             
@@ -71,7 +76,7 @@ namespace JotunnLib.Entities
             }
 
             recipe.m_minStationLevel = MinStationLevel;
-            recipe.m_resources = reqs;
+            recipe.m_resources = GetRequirements();
                 
             return recipe;
         }

@@ -10,10 +10,10 @@ namespace JotunnLib.Managers
     {
         public static ItemManager Instance { get; private set; }
 
-        public event EventHandler ObjectRegister;
-        internal List<CustomItem> Items = new List<CustomItem>();
-        internal List<CustomRecipe> Recipes = new List<CustomRecipe>();
-        internal List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
+        //public event EventHandler ObjectRegister;
+        internal readonly List<CustomItem> Items = new List<CustomItem>();
+        internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
+        internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
 
         /// <summary>
         /// Event that get fired after the ObjectDB get init and before its filled with custom items.
@@ -46,7 +46,8 @@ namespace JotunnLib.Managers
             On.Player.Load += ReloadKnownRecipes;
         }
 
-        internal override void Register()
+        //TODO: dont know if still needed, please check
+        /*internal override void Register()
         {
             Logger.LogInfo("---- Registering custom objects ----");
 
@@ -54,56 +55,22 @@ namespace JotunnLib.Managers
             Items.Clear();
             Recipes.Clear();
 
-            
-            
-
-            //SaveManager.Init();
-
             ItemDropMockFix.Switch(true);
 
             // Register new items and recipes
             ObjectRegister?.Invoke(null, EventArgs.Empty);
-        }
+        }*/
 
-        internal override void Load()
-        {
-            Logger.LogInfo("---- Loading custom objects ----");
-
-            // Load items
-            //foreach (CustomItem obj in Items)
-            //{
-            //    ObjectDB.instance.m_items.Add(obj);
-            //    Logger.LogInfo("Loaded item: " + obj.name);
-            //}
-
-            //// Load recipes
-            //foreach (Recipe recipe in Recipes)
-            //{
-            //    ObjectDB.instance.m_recipes.Add(recipe);
-            //    Logger.LogInfo("Loaded item recipe: " + recipe.name);
-            //}
-            
-
-            // Update hashes
-            ReflectionHelper.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
-        }
-
-        //public void RegisterRecipe(RecipeConfig recipeConfig)
-        //{
-        //    Recipe recipe = recipeConfig.GetRecipe();
-
-        //    if (recipe == null)
-        //    {
-        //        Logger.LogError("Failed to add recipe for item: " + recipeConfig.Item);
-        //        return;
-        //    }
-
-        //    Recipes.Add(recipe);
-        //}
-        public bool Add(CustomItem customItem)
+        public bool AddItem(CustomItem customItem)
         {
             if (customItem.IsValid())
             {
+                // Add to the right layer
+                if (customItem.ItemPrefab.layer == 0)
+                {
+                    customItem.ItemPrefab.layer = LayerMask.NameToLayer("item");
+                }
+
                 PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
                 Items.Add(customItem);
 
@@ -116,14 +83,14 @@ namespace JotunnLib.Managers
             return false;
         }
 
-        public bool Add(CustomRecipe customRecipe)
+        public bool AddRecipe(CustomRecipe customRecipe)
         {
             Recipes.Add(customRecipe);
 
             return true;
         }
 
-        public bool Add(CustomStatusEffect customStatusEffect)
+        public bool AddStatusEffect(CustomStatusEffect customStatusEffect)
         {
             StatusEffects.Add(customStatusEffect);
 
@@ -150,6 +117,10 @@ namespace JotunnLib.Managers
 
                 Logger.LogInfo($"Added custom item : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
             }
+
+            Logger.LogInfo("Updating item hashes");
+            
+            objectDB.UpdateItemHashes();
         }
 
         private void AddCustomRecipes(ObjectDB objectDB)
@@ -172,7 +143,6 @@ namespace JotunnLib.Managers
                     {
                         requirement.FixReferences();
                     }
-
                     customRecipe.FixRequirementReferences = false;
                 }
 
@@ -196,6 +166,7 @@ namespace JotunnLib.Managers
                 }
 
                 objectDB.m_StatusEffects.Add(statusEffect);
+
                 Logger.LogInfo($"Added status effect : {statusEffect.m_name}");
             }
         }

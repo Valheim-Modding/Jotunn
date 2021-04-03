@@ -57,12 +57,17 @@ namespace JotunnLib
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
 
-            // Initialize the patches
-            InitializePatches();
-
             InitCommands(); // should that be a manager?
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
+        }
+        
+        /// <summary>
+        /// Initialize patches
+        /// </summary>
+        public void Start()
+        {
+            InitializePatches();
         }
 
         private void Update()

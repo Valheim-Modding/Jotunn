@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JotunnLib.Entities;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,13 +14,14 @@ namespace JotunnLib.Managers
         internal GameObject PieceTableContainer;
 
         private bool loaded = false;
-        private Dictionary<string, PieceTable> pieceTables = new Dictionary<string, PieceTable>();
-        private Dictionary<string, string> pieceTableNameMap = new Dictionary<string, string>()
+        private Dictionary<string, PieceTable> PieceTables = new Dictionary<string, PieceTable>();
+        private Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>()
         {
             { "Cultivator", "_CultivatorPieceTable" },
             { "Hammer", "_HammerPieceTable" },
             { "Hoe", "_HoePieceTable" }
         };
+        internal List<CustomPiece> Pieces = new List<CustomPiece>();
 
         private void Awake()
         {
@@ -34,11 +36,28 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
+            // Create PieceTable Container
             PieceTableContainer = new GameObject("PieceTables");
             PieceTableContainer.transform.parent = Main.RootObject.transform;
+
+            // Get all vanilla PieceTables
+            foreach (PieceTable table in Resources.FindObjectsOfTypeAll(typeof(PieceTable)))
+            {
+                string name = table.gameObject.name;
+                PieceTables.Add(name, table);
+
+                //TODO: get the name of the item which has this table attached and add it to the name map so we dont need to hardcode that
+
+                Logger.LogInfo($"Loaded existing piece table {name}");
+            }
+
+            // Setup Hooks
+            On.ObjectDB.Awake += AddCustomData;
+            On.Player.Load += ReloadKnownRecipes;
         }
 
-        internal override void Register()
+        //TODO: Dont know if needed anymore
+        /*internal override void Register()
         {
             // TODO: Split register and load logic
         }
@@ -51,7 +70,7 @@ namespace JotunnLib.Managers
             }
 
             // Clear piece tables and re-load
-            pieceTables.Clear();
+            PieceTables.Clear();
             
             foreach (Transform child in PieceTableContainer.transform)
             {
@@ -64,7 +83,7 @@ namespace JotunnLib.Managers
             foreach (PieceTable table in Resources.FindObjectsOfTypeAll(typeof(PieceTable)))
             {
                 string name = table.gameObject.name;
-                pieceTables.Add(name, table);
+                PieceTables.Add(name, table);
                 loadedTables.Add(name);
 
                 Logger.LogInfo("Loaded existing piece table: " + name);
@@ -72,7 +91,7 @@ namespace JotunnLib.Managers
 
             PieceTableRegister?.Invoke(null, EventArgs.Empty);
 
-            foreach (var pair in pieceTables)
+            foreach (var pair in PieceTables)
             {
                 PieceTable table = pair.Value;
                 string name = table.gameObject.name;
@@ -82,7 +101,7 @@ namespace JotunnLib.Managers
                     continue;
                 }
 
-                pieceTables.Add(name, table);
+                PieceTables.Add(name, table);
 
                 Logger.LogInfo("Registered piece table: " + name);
             }
@@ -90,13 +109,36 @@ namespace JotunnLib.Managers
             Logger.LogInfo("---- Loading pieces ----");
             PieceRegister?.Invoke(null, EventArgs.Empty);
             loaded = true;
+        }*/
+
+        public void AddPieceTable(GameObject prefab)
+        {
+            if (PieceTables.ContainsKey(prefab.name))
+            {
+                Logger.LogWarning($"Piece table {name} already added");
+                return;
+            }
+
+            var table = prefab.GetComponent<PieceTable>();
+
+            if (table == null)
+            {
+                Logger.LogError($"Game object has no PieceTable attached");
+                return;
+            }
+
+            prefab.transform.parent = PieceTableContainer.transform;
+
+            PieceTables.Add(prefab.name, table);
+
+            //TODO: get the name of the item which has this table attached and add it to the name map
         }
 
-        public void RegisterPieceTable(string name)
+        public void AddPieceTable(string name)
         {
-            if (pieceTables.ContainsKey(name))
+            if (PieceTables.ContainsKey(name))
             {
-                Logger.LogInfo("Failed to register piece table with existing name: " + name);
+                Logger.LogWarning($"Piece table {name} already added");
                 return;
             }
 
@@ -104,69 +146,85 @@ namespace JotunnLib.Managers
             obj.transform.parent = PieceTableContainer.transform;
 
             PieceTable table = obj.AddComponent<PieceTable>();
-            pieceTables.Add(name, table);
+            PieceTables.Add(name, table);
+
+            PieceTableNameMap.Add(name, $"_{name}PieceTable");
         }
 
-        public void RegisterPiece(string pieceTable, string prefabName)
+        public PieceTable GetPieceTable(string name)
         {
-            GameObject prefab = PrefabManager.Instance.GetPrefab(prefabName);
-
-            if (!prefab)
+            if (PieceTables.ContainsKey(name))
             {
-                Logger.LogError("Failed to register Piece with invalid prefab: " + prefabName);
-                return;
+                return PieceTables[name];
             }
 
-            RegisterPiece(pieceTable, prefab);
-        }
-
-        internal void RegisterPiece(string pieceTable, GameObject prefab)
-        {
-            PieceTable table = getPieceTable(pieceTable);
-
-            // Error checking
-            if (!table)
+            if (PieceTableNameMap.ContainsKey(name))
             {
-                Logger.LogError("Failed to register piece, Piece table does not exist: " + pieceTable);
-                return;
-            }
-
-            if (!prefab)
-            {
-                Logger.LogError("Failed to register Piece with null prefab");
-                return;
-            }
-
-            if (!prefab.GetComponent<Piece>())
-            {
-                Logger.LogError("Failed to register piece, Prefab does not have Piece component: " + prefab.name);
-                return;
-            }
-
-            // Set layer if not already set
-            if (prefab.layer == 0)
-            {
-                prefab.layer = LayerMask.NameToLayer("piece");
-            }
-
-            // Add prefab
-            table.m_pieces.Add(prefab);
-            Logger.LogInfo("Registered piece: " + prefab.name + " to " + pieceTable);
-        }
-
-        private PieceTable getPieceTable(string name)
-        {
-            if (pieceTables.ContainsKey(name))
-            {
-                return pieceTables[name];
-            }
-
-            if (pieceTableNameMap.ContainsKey(name))
-            {
-                return pieceTables[pieceTableNameMap[name]];
+                return PieceTables[PieceTableNameMap[name]];
             }
 
             return null;
+        }
+
+        public void AddPiece(CustomPiece customPiece)
+        {
+            if (customPiece.IsValid())
+            {
+                // Add to the right layer if necessary
+                if (customPiece.PiecePrefab.layer == 0)
+                {
+                    customPiece.PiecePrefab.layer = LayerMask.NameToLayer("piece");
+                }
+
+                // Add the prefab to the PrefabManager
+                PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab);
+
+                // Add the custom piece to the PieceManager
+                Pieces.Add(customPiece);
+            }
+        }
+
+        private void AddCustomPieces(ObjectDB objectDB)
+        {
+            Logger.LogInfo($"---- Adding custom pieces to {objectDB} ----");
+
+            foreach (var customPiece in Pieces)
+            {
+                if (customPiece.FixReference)
+                {
+                    customPiece.PiecePrefab.FixReferences();
+                    customPiece.FixReference = false;
+                }
+
+                objectDB.m_items.Add(customPiece.PiecePrefab);
+
+                Logger.LogInfo($"Added custom Piece : {customPiece.PiecePrefab.name}");
+            }
+        }
+
+        private void AddCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
+
+            var isValid = self.IsValid();
+            ItemDropMockFix.Switch(!isValid);
+
+            if (isValid)
+            {
+                AddCustomPieces(self);
+            }
+        }
+
+        private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
+        {
+            orig(self, pkg);
+
+            if (Game.instance == null)
+            {
+                return;
+            }
+
+            self.UpdateKnownRecipesList();
         }
     }
 }
