@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnTest", "JotunnTest\JotunnTest.csproj", "{BF1FE878-2FA2-4CAE-9C3B-0966BC7CF8EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF1FE878-2FA2-4CAE-9C3B-0966BC7CF8EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF1FE878-2FA2-4CAE-9C3B-0966BC7CF8EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF1FE878-2FA2-4CAE-9C3B-0966BC7CF8EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF1FE878-2FA2-4CAE-9C3B-0966BC7CF8EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

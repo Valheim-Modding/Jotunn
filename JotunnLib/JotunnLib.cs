@@ -20,7 +20,7 @@ namespace JotunnLib
         public const string ModGuid = "com.bepinex.plugins.jotunnlib";
 
         // Load order for managers
-        private readonly List<Type> managerTypes = new List<Type>()
+        private static readonly List<Type> managerTypes = new List<Type>()
         {
             typeof(LocalizationManager),
             typeof(EventManager),
@@ -45,10 +45,7 @@ namespace JotunnLib
             RootObject = new GameObject("_JotunnLibRoot");
             GameObject.DontDestroyOnLoad(RootObject);
 
-            foreach (Type managerType in managerTypes)
-            {
-                managers.Add((Manager)RootObject.AddComponent(managerType));
-            }
+            CreateAllManagers(managers);
 
             foreach (Manager manager in managers)
             {
@@ -61,6 +58,13 @@ namespace JotunnLib
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
         }
 
+        internal static void CreateAllManagers(List<Manager> managers)
+        {
+            foreach (Type managerType in managerTypes)
+            {
+                managers.Add((Manager) Activator.CreateInstance(managerType));
+            }
+        }
 
         /// <summary>
         /// Invoke Patch initialization methods

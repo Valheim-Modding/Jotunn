@@ -19,12 +19,15 @@ namespace JotunnLib.Entities
         public CustomItem(GameObject itemPrefab, bool fixReference)
         {
             ItemPrefab = itemPrefab;
-            ItemDrop = itemPrefab.GetComponent<ItemDrop>();
+            if (itemPrefab != null)
+            {
+                ItemDrop = itemPrefab.GetComponent<ItemDrop>();
+            }
 
             FixReference = fixReference;
         }
 
-        public bool IsValid()
+        public virtual bool IsValid()
         {
             return ItemPrefab && ItemDrop.IsValid();
         }
