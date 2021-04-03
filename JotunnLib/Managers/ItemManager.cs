@@ -10,7 +10,7 @@ namespace JotunnLib.Managers
     {
         public static ItemManager Instance { get; private set; }
 
-        //public event EventHandler ObjectRegister;
+        public event EventHandler ObjectRegister;
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
@@ -213,6 +213,9 @@ namespace JotunnLib.Managers
                 OnAfterInit.SafeInvoke();
                 OnAfterInit = null;
             }
+
+            // Fire event that everything is added and registered
+            ObjectRegister?.Invoke(null, EventArgs.Empty);
         }
 
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
