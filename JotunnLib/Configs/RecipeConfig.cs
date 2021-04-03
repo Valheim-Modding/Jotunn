@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using JotunnLib.Managers;
 
-namespace JotunnLib.Entities
+namespace JotunnLib.Configs
 {
     public class RecipeConfig
     {
@@ -30,7 +30,7 @@ namespace JotunnLib.Entities
         {
             Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
             GameObject itemPrefab = PrefabManager.Instance.GetPrefab(Item);
-            
+
             if (itemPrefab == null)
             {
                 Logger.LogError("Error, recipe contained null item prefab for item: " + Item);
@@ -77,7 +77,7 @@ namespace JotunnLib.Entities
 
             recipe.m_minStationLevel = MinStationLevel;
             recipe.m_resources = GetRequirements();
-                
+
             return recipe;
         }
     }

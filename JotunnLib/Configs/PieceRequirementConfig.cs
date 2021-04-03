@@ -1,6 +1,6 @@
 ﻿using JotunnLib.Managers;
 
-namespace JotunnLib.Entities
+namespace JotunnLib.Configs
 {
     public class PieceRequirementConfig
     {

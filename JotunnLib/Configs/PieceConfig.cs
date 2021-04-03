@@ -1,8 +1,7 @@
 ﻿using JotunnLib.Managers;
-using System.Linq;
 using UnityEngine;
 
-namespace JotunnLib.Entities
+namespace JotunnLib.Configs
 {
     public class PieceConfig
     {

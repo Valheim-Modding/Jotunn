@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using JotunnLib.Entities;
+using JotunnLib.Configs;
 using JotunnLib.Utils;
 using UnityEngine;
 

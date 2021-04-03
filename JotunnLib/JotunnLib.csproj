@@ -393,18 +393,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\ButtonConfig.cs" />
+    <Compile Include="Configs\ButtonConfig.cs" />
     <Compile Include="Entities\CustomPiece.cs" />
     <Compile Include="Entities\CustomItem.cs" />
     <Compile Include="Entities\CustomRecipe.cs" />
     <Compile Include="Entities\CustomStatusEffect.cs" />
-    <Compile Include="Entities\LocalizationConfig.cs" />
+    <Compile Include="Configs\LocalizationConfig.cs" />
     <Compile Include="Entities\Mock.cs" />
     <Compile Include="Entities\MockRequirement.cs" />
-    <Compile Include="Entities\PieceConfig.cs" />
-    <Compile Include="Entities\PieceRequirementConfig.cs" />
-    <Compile Include="Entities\RecipeConfig.cs" />
-    <Compile Include="Entities\SkillConfig.cs" />
+    <Compile Include="Configs\PieceConfig.cs" />
+    <Compile Include="Configs\PieceRequirementConfig.cs" />
+    <Compile Include="Configs\RecipeConfig.cs" />
+    <Compile Include="Configs\SkillConfig.cs" />
     <Compile Include="Events\PlayerEventArgs.cs" />
     <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
     <Compile Include="Extensions\ItemExtensions.cs" />

@@ -1,4 +1,4 @@
-﻿using JotunnLib.Entities;
+﻿using JotunnLib.Configs;
 using System.Collections.Generic;
 using UnityEngine;
 
