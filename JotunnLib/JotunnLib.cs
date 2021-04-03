@@ -61,6 +61,13 @@ namespace JotunnLib
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
         }
 
+        /// <summary>
+        /// Initialize patches
+        /// </summary>
+        public void Start()
+        {
+            InitializePatches();
+        }
 
         /// <summary>
         /// Invoke Patch initialization methods
