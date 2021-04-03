@@ -20,9 +20,7 @@ namespace JotunnLib.Patches
         private static void ObjectDB_Awake(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
-#if DEBUG
-            Logger.LogInfo("----> ObjectDB Awake");
-#endif
+            Logger.LogDebug("----> ObjectDB Awake");
 
             if (SceneManager.GetActiveScene().name == "main")
             {
