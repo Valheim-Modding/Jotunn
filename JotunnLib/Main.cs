@@ -8,7 +8,6 @@ using BepInEx;
 using JotunnLib.ConsoleCommands;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
-using Veilheim.AssetManagers;
 
 namespace JotunnLib
 {

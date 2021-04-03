@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JotunnLib;
-using JotunnLib.Managers;
-using JotunnLib.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
-using Logger = JotunnLib.Logger;
 using Toggle = UnityEngine.UI.Toggle;
 
-namespace Veilheim.AssetManagers
+namespace JotunnLib.Managers
 {
     public class GUIManager : Manager, IPointerClickHandler
     {
@@ -124,7 +119,7 @@ namespace Veilheim.AssetManagers
         private void OnGUI()
         {
             // Load valheim GUI assets
-            
+
             if (needsLoad && SceneManager.GetActiveScene().name == "start" && SceneManager.GetActiveScene().isLoaded)
             {
                 try
@@ -139,7 +134,7 @@ namespace Veilheim.AssetManagers
                     }
 
                     // Sprites
-                    string[] spriteNames = {"checkbox", "checkbox_marker", "woodpanel_trophys", "button"};
+                    string[] spriteNames = { "checkbox", "checkbox_marker", "woodpanel_trophys", "button" };
                     var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
 
                     var notFound = false;
@@ -177,7 +172,7 @@ namespace Veilheim.AssetManagers
                     {
                         if (obj.name.Equals("IngameGui"))
                         {
-                            ingameGui = (GameObject) obj;
+                            ingameGui = (GameObject)obj;
                             break;
                         }
                     }
@@ -194,7 +189,7 @@ namespace Veilheim.AssetManagers
                     var txt = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Outline));
                     txt.transform.SetParent(button.transform);
                     txt.transform.localScale = new Vector3(1f, 1f, 1f);
-                    
+
                     txt.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
                     txt.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
                     txt.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 140f);
@@ -205,7 +200,7 @@ namespace Veilheim.AssetManagers
                     txt.GetComponent<Text>().fontSize = 16;
                     txt.GetComponent<Text>().color = new Color(1f, 0.631f, 0.235f, 1f);
                     txt.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                    
+
                     txt.GetComponent<Outline>().effectColor = new Color(0f, 0f, 0f, 1f);
                     var sprite2 = GetSprite("button");
                     if (sprite2 == null)
@@ -225,14 +220,14 @@ namespace Veilheim.AssetManagers
                     button.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 38);
                     button.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
 
-                    button.GetComponent<ButtonSfx>().m_sfxPrefab = (GameObject) gameobjects.FirstOrDefault(x => x.name == "sfx_gui_button");
-                    button.GetComponent<ButtonSfx>().m_selectSfxPrefab = (GameObject) gameobjects.FirstOrDefault(x => x.name == "sfx_gui_select");
+                    button.GetComponent<ButtonSfx>().m_sfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_button");
+                    button.GetComponent<ButtonSfx>().m_selectSfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_select");
 
                     var tinter = new ColorBlock()
                     {
                         disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
                         fadeDuration = 0.1f,
-                        normalColor= new Color(0.824f,0.824f,0.824f, 1f),
+                        normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
                         highlightedColor = new Color(1.3f, 1.3f, 1.3f, 1f),
                         pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
                         selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
@@ -240,7 +235,7 @@ namespace Veilheim.AssetManagers
                     };
 
                     button.GetComponent<Button>().colors = tinter;
-                    
+
                     button.SetActive(false);
                     button.layer = UILayer; // UI
 
@@ -304,19 +299,19 @@ namespace Veilheim.AssetManagers
             newButton.GetComponentInChildren<Text>().text = text;
 
             // Set positions and anchors
-            ((RectTransform) newButton.transform).anchoredPosition = position;
-            ((RectTransform) newButton.transform).anchorMin = anchorMin;
-            ((RectTransform) newButton.transform).anchorMax = anchorMax;
+            ((RectTransform)newButton.transform).anchoredPosition = position;
+            ((RectTransform)newButton.transform).anchorMin = anchorMin;
+            ((RectTransform)newButton.transform).anchorMax = anchorMax;
 
             if (width > 0f)
             {
-                ((RectTransform) newButton.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                ((RectTransform)newButton.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
                 newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             }
 
             if (height > 0f)
             {
-                ((RectTransform) newButton.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                ((RectTransform)newButton.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
                 newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
             }
 
@@ -336,18 +331,18 @@ namespace Veilheim.AssetManagers
             newPanel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
 
             // Set positions and anchors
-            ((RectTransform) newPanel.transform).anchoredPosition = position;
-            ((RectTransform) newPanel.transform).anchorMin = anchorMin;
-            ((RectTransform) newPanel.transform).anchorMax = anchorMax;
+            ((RectTransform)newPanel.transform).anchoredPosition = position;
+            ((RectTransform)newPanel.transform).anchorMin = anchorMin;
+            ((RectTransform)newPanel.transform).anchorMax = anchorMax;
 
             if (width > 0f)
             {
-                ((RectTransform) newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                ((RectTransform)newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             }
 
             if (height > 0f)
             {
-                ((RectTransform) newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                ((RectTransform)newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
             }
 
             return newPanel;
