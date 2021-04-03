@@ -28,7 +28,7 @@ namespace JotunnLib
             typeof(SkillManager),
             typeof(PrefabManager),
             typeof(PieceManager),
-            typeof(ObjectManager),
+            typeof(ItemManager),
             typeof(ZoneManager),
             typeof(SaveManager)
         };

@@ -417,7 +417,7 @@
     <Compile Include="Managers\EventManager.cs" />
     <Compile Include="Managers\InputManager.cs" />
     <Compile Include="Managers\LocalizationManager.cs" />
-    <Compile Include="Managers\ObjectManager.cs" />
+    <Compile Include="Managers\ItemManager.cs" />
     <Compile Include="Managers\PieceManager.cs" />
     <Compile Include="Managers\PrefabManager.cs" />
     <Compile Include="Managers\PrefabManagerVL.cs" />

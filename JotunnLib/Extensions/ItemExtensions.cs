@@ -148,7 +148,7 @@ namespace JotunnLib
         {
             foreach (var inventoryItem in self.m_inventory)
             {
-                foreach (var customItem in ObjectManager.Instance.Items)
+                foreach (var customItem in ItemManager.Instance.Items)
                 {
                     if (inventoryItem.TokenName() == customItem.ItemDrop.TokenName())
                     {

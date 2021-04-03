@@ -41,7 +41,7 @@ namespace JotunnLib.Entities
 
         public static bool IsCustomItem(string prefabName)
         {
-            foreach (var customItem in ObjectManager.Instance.Items)
+            foreach (var customItem in ItemManager.Instance.Items)
             {
                 if (customItem.ItemPrefab.name == prefabName)
                 {

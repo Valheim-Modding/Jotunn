@@ -11,7 +11,7 @@ namespace JotunnDoc.Docs
     {
         public RecipeDoc() : base("JotunnDoc/Docs/conceptual/objects/recipe-list.md")
         {
-            ObjectManager.Instance.ObjectRegister += docRecipes;
+            ItemManager.Instance.ObjectRegister += docRecipes;
         }
 
         private void docRecipes(object sender, EventArgs e)

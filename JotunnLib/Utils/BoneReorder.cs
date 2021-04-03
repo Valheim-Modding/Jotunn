@@ -25,7 +25,7 @@ namespace JotunnLib.Utils
         {
             if (!Applied)
             {
-                ObjectManager.OnAfterInit += () =>
+                ItemManager.OnAfterInit += () =>
                 {
                     On.VisEquipment.SetUtilityEquiped += VisEquipmentOnSetUtilityEquiped;
                     On.VisEquipment.SetShoulderEquiped += VisEquipmentOnSetShoulderEquiped;

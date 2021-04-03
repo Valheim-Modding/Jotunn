@@ -22,7 +22,7 @@ namespace TestMod
         // Init handlers
         private void Awake()
         {
-            ObjectManager.Instance.ObjectRegister += registerObjects;
+            ItemManager.Instance.ObjectRegister += registerObjects;
             PieceManager.Instance.PieceRegister += registerPieces;
             InputManager.Instance.InputRegister += registerInputs;
             LocalizationManager.Instance.LocalizationRegister += registerLocalization;

@@ -81,7 +81,7 @@ namespace JotunnLib.Managers
                 {
                     if (itemData.m_dropPrefab)
                     {
-                        foreach (var customItem in ObjectManager.Instance.Items)
+                        foreach (var customItem in ItemManager.Instance.Items)
                         {
                             customItem.ItemDrop.m_itemData.RemoveItemFromFile(inventoryId);
                             if (customItem.ItemDrop.TokenName() == itemData.TokenName())

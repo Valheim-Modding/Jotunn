@@ -11,7 +11,7 @@ namespace JotunnDoc.Docs
     {
         public ItemDoc() : base("JotunnDoc/Docs/conceptual/objects/item-list.md")
         {
-            ObjectManager.Instance.ObjectRegister += docItems;
+            ItemManager.Instance.ObjectRegister += docItems;
         }
 
         private void docItems(object sender, EventArgs e)

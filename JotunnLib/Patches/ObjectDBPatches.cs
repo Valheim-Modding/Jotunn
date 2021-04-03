@@ -26,8 +26,8 @@ namespace JotunnLib.Patches
 
             if (SceneManager.GetActiveScene().name == "main")
             {
-                ObjectManager.Instance.Register();
-                ObjectManager.Instance.Load();
+                ItemManager.Instance.Register();
+                ItemManager.Instance.Load();
 
                 PieceManager.Instance.Register();
                 PieceManager.Instance.Load();

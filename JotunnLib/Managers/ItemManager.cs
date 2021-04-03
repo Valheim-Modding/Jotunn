@@ -6,9 +6,9 @@ using JotunnLib.Entities;
 
 namespace JotunnLib.Managers
 {
-    public class ObjectManager : Manager
+    public class ItemManager : Manager
     {
-        public static ObjectManager Instance { get; private set; }
+        public static ItemManager Instance { get; private set; }
 
         public event EventHandler ObjectRegister;
         internal List<CustomItem> Items = new List<CustomItem>();
