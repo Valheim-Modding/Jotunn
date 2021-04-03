@@ -1,46 +1,53 @@
 ﻿using JotunnLib.Configs;
+using JotunnLib.Managers;
+using UnityEngine;
 
 namespace JotunnLib.Entities
 {
     public class CustomRecipe
     {
-        private RecipeConfig _config;
-        private Recipe _recipe;
+        public Recipe Recipe;
 
-        public Recipe Recipe { 
-            get => GetRecipe();
-            set => _recipe = value;
-        }
         public bool FixReference { get; set; } = false;
         public bool FixRequirementReferences { get; set; } = false;
 
         public CustomRecipe(Recipe recipe, bool fixReference, bool fixRequirementReferences)
         {
-            _recipe = recipe;
+            Recipe = recipe;
             FixReference = fixReference;
             FixRequirementReferences = fixRequirementReferences;
         }
 
         public CustomRecipe(RecipeConfig recipeConfig)
         {
-            _config = recipeConfig;
-            FixReference = false;
-            FixRequirementReferences = false;
-        }
+            Recipe = ScriptableObject.CreateInstance<Recipe>();
 
-        private Recipe GetRecipe()
-        {
-            if (_recipe != null)
+            var name = recipeConfig.Name;
+            if (string.IsNullOrEmpty(name))
             {
-                return _recipe;
+                name = "Recipe_" + recipeConfig.Item;
             }
 
-            if (_config != null)
+            Recipe.name = name;
+            Recipe.m_item = Mock<ItemDrop>.Create(recipeConfig.Name);
+            Recipe.m_amount = recipeConfig.Amount;
+            Recipe.m_enabled = recipeConfig.Enabled;
+
+            if (recipeConfig.CraftingStation != null)
             {
-                return _config.GetRecipe();
+                Recipe.m_craftingStation = Mock<CraftingStation>.Create(recipeConfig.CraftingStation);
             }
 
-            return null;
+            if (recipeConfig.RepairStation != null)
+            {
+                Recipe.m_craftingStation = Mock<CraftingStation>.Create(recipeConfig.RepairStation);
+            }
+
+            Recipe.m_minStationLevel = recipeConfig.MinStationLevel;
+            Recipe.m_resources = recipeConfig.GetRequirements();
+
+            FixReference = true;
+            FixRequirementReferences = true;
         }
     }
 }

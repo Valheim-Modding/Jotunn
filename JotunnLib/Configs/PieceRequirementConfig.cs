@@ -1,4 +1,4 @@
-﻿using JotunnLib.Managers;
+﻿using JotunnLib.Entities;
 
 namespace JotunnLib.Configs
 {
@@ -13,7 +13,7 @@ namespace JotunnLib.Configs
         {
             return new Piece.Requirement()
             {
-                m_resItem = PrefabManager.Instance.GetPrefab(Item).GetComponent<ItemDrop>(),
+                m_resItem = Mock<ItemDrop>.Create(Item),
                 m_amount = Amount,
                 m_amountPerLevel = AmountPerLevel,
                 m_recover = Recover
