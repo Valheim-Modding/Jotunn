@@ -59,11 +59,28 @@ namespace JotunnLib
             // Initialize the patches
             InitializePatches();
 
-            initCommands();
+            InitCommands(); // should that be a manager?
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
         }
 
+        private void Update()
+        {
+#if DEBUG
+            if (Input.GetKeyDown(KeyCode.F6))
+            { // Set a breakpoint here to break on F6 key press
+            }
+#endif
+        }
+
+        private void OnGUI()
+        {
+            // Display version in main menu
+            if (SceneManager.GetActiveScene().name == "start")
+            {
+                GUI.Label(new Rect(Screen.width - 100, 5, 100, 25), "JotunnLib v" + Version);
+            }
+        }
 
         /// <summary>
         /// Invoke Patch initialization methods
@@ -107,16 +124,7 @@ namespace JotunnLib
             }
         }
 
-        private void OnGUI()
-        {
-            // Display version in main menu
-            if (SceneManager.GetActiveScene().name == "start")
-            {
-                GUI.Label(new Rect(Screen.width - 100, 5, 100, 25), "JotunnLib v" + Version);
-            }
-        }
-
-        private void initCommands()
+        private void InitCommands()
         {
             CommandManager.Instance.RegisterConsoleCommand(new HelpCommand());
             CommandManager.Instance.RegisterConsoleCommand(new ClearCommand());
