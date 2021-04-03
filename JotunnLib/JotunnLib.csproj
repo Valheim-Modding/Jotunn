@@ -397,9 +397,6 @@
     <Compile Include="Entities\CustomItem.cs" />
     <Compile Include="Entities\CustomRecipe.cs" />
     <Compile Include="Entities\CustomStatusEffect.cs" />
-    <Compile Include="Extensions\InventoryExtension.cs" />
-    <Compile Include="Extensions\ItemDataExtension.cs" />
-    <Compile Include="Extensions\ItemDropExtension.cs" />
     <Compile Include="Entities\LocalizationConfig.cs" />
     <Compile Include="Entities\Mock.cs" />
     <Compile Include="Entities\PieceConfig.cs" />
@@ -409,6 +406,7 @@
     <Compile Include="Entities\SkillConfig.cs" />
     <Compile Include="Events\PlayerEventArgs.cs" />
     <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
+    <Compile Include="Extensions\ItemExtensions.cs" />
     <Compile Include="Extensions\ZNetExtension.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Manager.cs" />
