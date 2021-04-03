@@ -127,17 +127,13 @@ namespace JotunnLib.Managers
         private static void ZInput_Reset(On.ZInput.orig_Reset orig, ZInput self)
         {
             orig(self);
-#if DEBUG
-            Logger.LogInfo("----> ZInput Reset");
-#endif
+            Logger.LogDebug("----> ZInput Reset");
             InputManager.Instance.Load(self);
         }
 
         private static void ZInput_Initialize(On.ZInput.orig_Initialize orig)
         {
-#if DEBUG
-            Logger.LogInfo("----> ZInput Initialize");
-#endif
+            Logger.LogDebug("----> ZInput Initialize");
             InputManager.Instance.Register();
             
             orig();

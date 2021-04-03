@@ -80,7 +80,7 @@ namespace JotunnLib.Managers
         private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
         {
             var result = orig(self, language);
-            Logger.LogInfo($"\t-> SetupLanguage called {language}");
+            Logger.LogDebug($"\t-> SetupLanguage called {language}");
 
             // Register & load localizations for selected language
             Register();
@@ -139,7 +139,7 @@ namespace JotunnLib.Managers
                 return;
             }
 
-            Logger.LogInfo($"Adding tokens for language {language}");
+            Logger.LogDebug($"Adding tokens for language {language}");
             AddTokens(localization, language);
         }
 
@@ -419,7 +419,7 @@ namespace JotunnLib.Managers
             {
                 foreach (var pair in tokens)
                 {
-                    Logger.LogInfo("\tAdded translation: " + pair.Key + " -> " + pair.Value);
+                    Logger.LogDebug("\tAdded translation: " + pair.Key + " -> " + pair.Value);
                     self.AddWord(pair.Key, pair.Value);
                 }
             }

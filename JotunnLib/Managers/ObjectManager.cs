@@ -156,7 +156,7 @@ namespace JotunnLib.Managers
 
         private void AddCustomItems(ObjectDB self)
         {
-            Logger.LogInfo($"Adding custom item........................................");
+            Logger.LogDebug($"Adding custom items");
             foreach (var customItem in Items)
             {
                 var itemDrop = customItem.ItemDrop;
