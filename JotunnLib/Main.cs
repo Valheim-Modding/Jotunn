@@ -8,6 +8,7 @@ using BepInEx;
 using JotunnLib.ConsoleCommands;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
+using Veilheim.AssetManagers;
 
 namespace JotunnLib
 {
@@ -30,6 +31,7 @@ namespace JotunnLib
             typeof(PieceManager),
             typeof(ObjectManager),
             typeof(ZoneManager),
+            typeof(GUIManager)
         };
 
         private readonly List<Manager> managers = new List<Manager>();
@@ -62,6 +64,11 @@ namespace JotunnLib
             initCommands();
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
+        }
+
+        public void Start()
+        {
+            InitializePatches();
         }
 
 

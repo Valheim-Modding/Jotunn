@@ -417,6 +417,7 @@
     <Compile Include="ConsoleCommands\ClearCommand.cs" />
     <Compile Include="ConsoleCommands\HelpCommand.cs" />
     <Compile Include="Managers\EventManager.cs" />
+    <Compile Include="Managers\GUIManager.cs" />
     <Compile Include="Managers\InputManager.cs" />
     <Compile Include="Managers\LocalizationManager.cs" />
     <Compile Include="Managers\ObjectManager.cs" />
@@ -439,6 +440,7 @@
     <Compile Include="Utils\Hashes.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Extensions\MockExtentions.cs" />
+    <Compile Include="Utils\ObjectExtension.cs" />
     <Compile Include="Utils\ObjImporter.cs" />
     <Compile Include="Utils\PatchInitAttribute.cs" />
     <Compile Include="Utils\Paths.cs" />
