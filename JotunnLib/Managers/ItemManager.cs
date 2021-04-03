@@ -10,7 +10,7 @@ namespace JotunnLib.Managers
     {
         public static ItemManager Instance { get; private set; }
 
-        public event EventHandler ObjectRegister;
+        public event EventHandler OnItemsRegistered;
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
@@ -41,8 +41,8 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            On.ObjectDB.CopyOtherDB += AddCustomDataFejd;
-            On.ObjectDB.Awake += AddCustomData;
+            On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
+            On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
         }
 
@@ -97,7 +97,7 @@ namespace JotunnLib.Managers
             return true;
         }
 
-        private void AddCustomItems(ObjectDB objectDB)
+        private void RegisterCustomItems(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
 
@@ -123,7 +123,7 @@ namespace JotunnLib.Managers
             objectDB.UpdateItemHashes();
         }
 
-        private void AddCustomRecipes(ObjectDB objectDB)
+        private void RegisterCustomRecipes(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom recipes to {objectDB} ----");
 
@@ -152,7 +152,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void AddCustomStatusEffects(ObjectDB objectDB)
+        private void RegisterCustomStatusEffects(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
 
@@ -171,7 +171,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void AddCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             orig(self, other);
 
@@ -183,7 +183,7 @@ namespace JotunnLib.Managers
                 OnBeforeCustomItemsAdded.SafeInvoke();
                 OnBeforeCustomItemsAdded = null;
 
-                AddCustomItems(self);
+                RegisterCustomItems(self);
 
                 self.UpdateItemHashes();
 
@@ -192,7 +192,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void AddCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
 
@@ -204,9 +204,9 @@ namespace JotunnLib.Managers
                 OnBeforeCustomItemsAdded.SafeInvoke();
                 OnBeforeCustomItemsAdded = null;
 
-                AddCustomItems(self);
-                AddCustomRecipes(self);
-                AddCustomStatusEffects(self);
+                RegisterCustomItems(self);
+                RegisterCustomRecipes(self);
+                RegisterCustomStatusEffects(self);
 
                 self.UpdateItemHashes();
 
@@ -215,7 +215,7 @@ namespace JotunnLib.Managers
             }
 
             // Fire event that everything is added and registered
-            ObjectRegister?.Invoke(null, EventArgs.Empty);
+            OnItemsRegistered?.Invoke(null, EventArgs.Empty);
         }
 
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)

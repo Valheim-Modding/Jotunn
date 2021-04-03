@@ -8,11 +8,13 @@ namespace JotunnLib.Managers
     public class PieceManager : Manager
     {
         public static PieceManager Instance { get; private set; }
-        public event EventHandler PieceTableRegister;
-        public event EventHandler PieceRegister;
-        internal GameObject PieceTableContainer;
+        //public event EventHandler PieceTableRegister;
+        //public event EventHandler PieceRegister;
+        //private bool loaded = false;
 
-        private bool loaded = false;
+        public event EventHandler OnPiecesRegistered;
+        public event EventHandler OnPieceTablesRegistered;
+        internal GameObject PieceTableContainer;
         private Dictionary<string, PieceTable> PieceTables = new Dictionary<string, PieceTable>();
         private Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>()
         {
@@ -51,7 +53,7 @@ namespace JotunnLib.Managers
             }
 
             // Setup Hooks
-            On.ObjectDB.Awake += AddCustomData;
+            On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
         }
 
@@ -183,7 +185,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void AddCustomPieces(ObjectDB objectDB)
+        private void RegisterInObjectDB(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom pieces to {objectDB} ----");
 
@@ -201,7 +203,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void AddCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
 
@@ -210,8 +212,12 @@ namespace JotunnLib.Managers
 
             if (isValid)
             {
-                AddCustomPieces(self);
+                RegisterInObjectDB(self);
             }
+
+            // Fire event that everything is added and registered
+            OnPieceTablesRegistered?.Invoke(null, EventArgs.Empty);
+            OnPiecesRegistered?.Invoke(null, EventArgs.Empty);
         }
 
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
