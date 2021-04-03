@@ -65,7 +65,7 @@ namespace JotunnLib.Managers
                 return;
             }
 
-            prefab.transform.parent = PrefabContainer.transform;
+            prefab.transform.SetParent(PrefabContainer.transform, false);
             //prefab.SetActive(true);
             Prefabs.Add(prefab.name, prefab);
         }

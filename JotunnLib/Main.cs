@@ -8,6 +8,7 @@ using BepInEx;
 using JotunnLib.ConsoleCommands;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
+using Veilheim.AssetManagers;
 
 namespace JotunnLib
 {
@@ -30,6 +31,7 @@ namespace JotunnLib
             typeof(PieceManager),
             typeof(ItemManager),
             typeof(ZoneManager),
+            typeof(GUIManager),
             typeof(SaveManager)
         };
 

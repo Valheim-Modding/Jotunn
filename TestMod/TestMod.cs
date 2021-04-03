@@ -6,6 +6,7 @@ using JotunnLib.Entities;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
 using TestMod.Prefabs;
+using Veilheim.AssetManagers;
 
 namespace TestMod
 {
@@ -18,6 +19,10 @@ namespace TestMod
 
         private bool showMenu = false;
         private Sprite testSkillSprite;
+        private bool showGUIButton = false;
+
+        private GameObject TestButton;
+        private GameObject TestPanel;
 
         // Init handlers
         private void Awake()
@@ -45,7 +50,13 @@ namespace TestMod
                 {
                     showMenu = !showMenu;
                 }
+
+                if (ZInput.GetButtonDown("GUIManagerTest"))
+                {
+                    showGUIButton = !showGUIButton;
+                }
             }
+
         }
 
         // Display our GUI if enabled
@@ -55,12 +66,41 @@ namespace TestMod
             {
                 GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
             }
+
+            if (showGUIButton)
+            {
+                if (TestPanel == null)
+                {
+                    if (GUIManager.Instance == null)
+                    {
+                        Logger.LogError("GUIManager instance is null");
+                        return;
+                    }
+
+                    if (GUIManager.PixelFix == null)
+                    {
+                        Logger.LogError("GUIManager pixelfix is null");
+                        return;
+                    }
+                    TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform,new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), new Vector2(0,0), 850, 600);
+
+                    GUIManager.Instance.CreateButton("ATest Button long long text", TestPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                        new Vector2(0, 0), 250, 100).SetActive(true);
+                    if (TestPanel == null)
+                    {
+                        return;
+                    }
+                }
+                TestPanel.SetActive(!TestPanel.activeSelf);
+                showGUIButton = false;
+            }
         }
 
         private void registerInputs(object sender, EventArgs e)
         {
             // Init menu toggle key
             InputManager.Instance.RegisterButton("TestMod_Menu", KeyCode.Insert);
+            InputManager.Instance.RegisterButton("GUIManagerTest", KeyCode.F8);
         }
 
         // Load assets from disk
