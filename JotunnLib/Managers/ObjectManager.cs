@@ -192,6 +192,24 @@ namespace JotunnLib.Managers
                 Logger.LogInfo($"Added recipe for : {recipe.m_item.TokenName()}");
             }
         }
+        private void RegisterRecipes()
+        {
+            foreach (var recipeDef in Recipes)
+            {
+                // Create recipe 
+                var recipe = recipeDef.GetRecipe();
+
+                // Add the Recipe to the ObjectDB, remove one with the same name first
+                var removed = ObjectDB.instance.m_recipes.RemoveAll(x => x.name == recipe.name);
+                if (removed > 0)
+                {
+                    Logger.LogInfo($"Removed recipes ({recipe.name}): {removed}");
+                }
+
+                ObjectDB.instance.m_recipes.Add(recipe);
+                Logger.LogInfo($"Added recipe: {recipe.name}");
+            }
+        }
 
         private void AddCustomStatusEffects(ObjectDB objectDB)
         {

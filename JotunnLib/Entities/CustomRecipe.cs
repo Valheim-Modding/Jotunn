@@ -1,48 +1,47 @@
-﻿using System.Collections.Generic;
+﻿using JotunnLib.Managers;
+using UnityEngine;
 
 namespace JotunnLib.Entities
 {
     public class CustomRecipe
     {
-        public Recipe Recipe;
-        public bool FixReference;
-        public bool FixRequirementReferences;
+        private RecipeConfig _config;
+        private Recipe _recipe;
+
+        public Recipe Recipe { 
+            get => GetRecipe();
+            set => _recipe = value;
+        }
+        public bool FixReference { get; set; } = false;
+        public bool FixRequirementReferences { get; set; } = false;
 
         public CustomRecipe(Recipe recipe, bool fixReference, bool fixRequirementReferences)
         {
-            Recipe = recipe;
+            _recipe = recipe;
             FixReference = fixReference;
             FixRequirementReferences = fixRequirementReferences;
         }
-    }
 
-    public static class MockRequirement
-    {
-        public static Piece.Requirement Create(string name, int amount = 1, bool recover = true)
+        public CustomRecipe(RecipeConfig recipeConfig)
         {
-            var requirement = new Piece.Requirement
-            {
-                m_recover = recover,
-                m_amount = amount
-            };
-
-            requirement.m_resItem = Mock<ItemDrop>.Create(name);
-
-            return requirement;
+            _config = recipeConfig;
+            FixReference = false;
+            FixRequirementReferences = false;
         }
 
-        public static Piece.Requirement[] CreateArray(Dictionary<string, int> requirements, bool recover = true)
+        private Recipe GetRecipe()
         {
-            List<Piece.Requirement> list = new List<Piece.Requirement>();
-
-            foreach (KeyValuePair<string, int> requirement in requirements)
+            if (_recipe != null)
             {
-                Piece.Requirement piece = Create(requirement.Key, requirement.Value, recover);
-                piece.FixReferences();
-                list.Add(piece);
+                return _recipe;
             }
 
-            return list.ToArray();
+            if (_config != null)
+            {
+                return _config.GetRecipe();
+            }
+
+            return null;
         }
     }
 }

@@ -25,7 +25,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError($"Two instances of singleton {GetType()}");
                 return;
             }
 

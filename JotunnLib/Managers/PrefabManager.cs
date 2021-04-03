@@ -57,28 +57,26 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="name"></param>
         /// <param name="prefab"></param>
-        public GameObject AddPrefab(GameObject prefab)
+        public void AddPrefab(GameObject prefab)
         {
             if (Prefabs.ContainsKey(prefab.name))
             {
                 Logger.LogWarning($"Prefab {prefab.name} already exists");
-                return null;
+                return;
             }
 
             prefab.transform.parent = PrefabContainer.transform;
             //prefab.SetActive(true);
             Prefabs.Add(prefab.name, prefab);
-
-            return prefab;
         }
 
         /// <summary>
-        /// Creates and adds a new prefab that's an empty primitive.
+        /// Creates a new prefab that's an empty primitive.
         /// </summary>
         /// <param name="name">The name of the new GameObject</param>
         /// <param name="addZNetView">When true a ZNetView component is added to the new GameObject for ZDO generation and networking. Default: true</param>
         /// <returns></returns>
-        public GameObject AddEmptyPrefab(string name, bool addZNetView = true)
+        public GameObject CreateEmptyPrefab(string name, bool addZNetView = true)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -103,7 +101,6 @@ namespace JotunnLib.Managers
                 newView.m_persistent = true;
             }
 
-            Prefabs.Add(name, prefab);
             return prefab;
         }
 
@@ -113,9 +110,9 @@ namespace JotunnLib.Managers
         /// <param name="name">New prefab name</param>
         /// <param name="baseName">Base prefab name</param>
         /// <returns>New prefab object</returns>
-        public GameObject AddClonedPrefab(string name, string baseName)
+        public GameObject CreateClonedPrefab(string name, string baseName)
         {
-            return AddClonedPrefab(name, GetPrefab(baseName));
+            return CreateClonedPrefab(name, GetPrefab(baseName));
         }
 
         /// <summary>
@@ -124,12 +121,11 @@ namespace JotunnLib.Managers
         /// <param name="name">New prefab name</param>
         /// <param name="prefab">Base prefab</param>
         /// <returns></returns>
-        public GameObject AddClonedPrefab(string name, GameObject prefab)
+        public GameObject CreateClonedPrefab(string name, GameObject prefab)
         {
             var newPrefab = UnityEngine.Object.Instantiate(prefab, PrefabContainer.transform);
             newPrefab.name = name + CreateUID();
 
-            Prefabs.Add(newPrefab.name, newPrefab);
             return newPrefab;
         }
 
