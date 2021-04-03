@@ -21,7 +21,7 @@ namespace JotunnLib.Managers
             { "Hoe", "_HoePieceTable" }
         };
 
-        private void Awake()
+        public PieceManager()
         {
             if (Instance != null)
             {
@@ -30,6 +30,11 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
+        }
+
+        internal override void Clear()
+        {
+            Instance = null;
         }
 
         internal override void Init()

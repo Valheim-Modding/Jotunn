@@ -13,7 +13,7 @@ namespace JotunnLib.Managers
         internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
         private bool inputsRegistered = false;
 
-        private void Awake()
+        public InputManager()
         {
             if (Instance != null)
             {
@@ -22,6 +22,11 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
+        }
+
+        internal override void Clear()
+        {
+            Instance = null;
         }
 
         internal override void Init()

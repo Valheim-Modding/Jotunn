@@ -21,7 +21,7 @@ namespace JotunnLib.Managers
 
         internal List<WeakReference> NetworkedModdedPrefabs = new List<WeakReference>();
 
-        private void Awake()
+        public PrefabManager()
         {
             if (Instance != null)
             {
@@ -30,6 +30,11 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
+        }
+
+        internal override void Clear()
+        {
+            Instance = null;
         }
 
         internal override void Init()

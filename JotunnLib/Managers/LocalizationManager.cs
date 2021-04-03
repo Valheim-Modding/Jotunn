@@ -51,8 +51,7 @@ namespace JotunnLib.Managers
         /// </summary>
         public event EventHandler LocalizationRegister;
 
-
-        private void Awake()
+        public LocalizationManager()
         {
             if (Instance != null)
             {
@@ -61,6 +60,11 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
+        }
+
+        internal override void Clear()
+        {
+            Instance = null;
         }
 
         /// <summary>

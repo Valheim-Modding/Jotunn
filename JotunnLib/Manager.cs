@@ -5,7 +5,7 @@ namespace JotunnLib
     /// <summary>
     /// The base class for all the library's various Managers
     /// </summary>
-    public abstract class Manager : MonoBehaviour
+    public abstract class Manager
     {
         /// <summary>
         /// Initialize manager class after all manager scripts have been added to the root game object
@@ -21,5 +21,10 @@ namespace JotunnLib
         /// Register any data from user mods
         /// </summary>
         internal virtual void Register() { }
+
+        /// <summary>
+        /// Clear the singleton instance
+        /// </summary>
+        internal virtual void Clear() {}
     }
 }

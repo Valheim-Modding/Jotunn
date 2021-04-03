@@ -14,7 +14,7 @@ namespace JotunnLib.Managers
         public static event EventHandler<PlayerEventArgs> PlayerSpawned;
         public static event EventHandler<PlayerPlacedPieceEventArgs> PlayerPlacedPiece;
 
-        private void Awake()
+        public EventManager()
         {
             if (Instance != null)
             {
@@ -23,6 +23,11 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
+        }
+
+        internal override void Clear()
+        {
+            Instance = null;
         }
 
         internal static void OnPlayerSpawned(Player player)

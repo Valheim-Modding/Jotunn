@@ -33,16 +33,20 @@ namespace JotunnLib.Managers
             On.Player.Load += ReloadKnownRecipes;
         }
 
-        private void Awake()
+        public ObjectManager()
         {
             if (Instance != null)
             {
                 Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
-                
                 return;
             }
 
             Instance = this;
+        }
+
+        internal override void Clear()
+        {
+            Instance = null;
         }
 
         internal override void Register()

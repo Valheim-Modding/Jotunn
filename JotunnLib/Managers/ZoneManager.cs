@@ -11,7 +11,7 @@ namespace JotunnLib.Managers
         public event EventHandler ZoneLoad;
         internal List<ZoneSystem.ZoneVegetation> Vegetation = new List<ZoneSystem.ZoneVegetation>();
 
-        private void Awake()
+        public ZoneManager()
         {
             if (Instance != null)
             {
@@ -20,6 +20,11 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
+        }
+
+        internal override void Clear()
+        {
+            Instance = null;
         }
 
         internal override void Register()

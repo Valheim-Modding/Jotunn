@@ -33,7 +33,7 @@ namespace JotunnLib.Managers
 
         private List<ConsoleCommand> _consoleCommands = new List<ConsoleCommand>();
 
-        private void Awake()
+        public CommandManager()
         {
             if (Instance != null)
             {
@@ -42,6 +42,11 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
+        }
+
+        internal override void Clear()
+        {
+            Instance = null;
         }
 
         public void RegisterConsoleCommand(ConsoleCommand cmd)

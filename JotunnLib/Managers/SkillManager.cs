@@ -18,7 +18,8 @@ namespace JotunnLib.Managers
         internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
         // FIXME: Deprecate
         private int nextSkillId = 1000;
-        private void Awake()
+
+        public SkillManager()
         {
             if (Instance != null)
             {
@@ -27,6 +28,11 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
+        }
+
+        internal override void Clear()
+        {
+            Instance = null;
         }
 
         /// <summary>
