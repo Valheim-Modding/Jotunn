@@ -301,6 +301,13 @@ namespace Veilheim.AssetManagers
                 return Sprites[spriteName];
             }
 
+            var sprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault(x => x.name == spriteName);
+            if (sprite != null)
+            {
+                Sprites.Add(spriteName, sprite);
+                return sprite;
+            }
+
             Logger.LogError($"Sprite {spriteName} not found.");
 
             return null;
