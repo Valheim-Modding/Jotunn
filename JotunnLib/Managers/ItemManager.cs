@@ -101,9 +101,6 @@ namespace JotunnLib.Managers
         {
             Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
 
-        private void AddCustomItems(ObjectDB self)
-        {
-            Logger.LogInfo($"Adding custom item........................................");
             foreach (var customItem in Items)
             {
                 var itemDrop = customItem.ItemDrop;
@@ -122,7 +119,7 @@ namespace JotunnLib.Managers
             }
 
             Logger.LogInfo("Updating item hashes");
-            
+
             objectDB.UpdateItemHashes();
         }
 
