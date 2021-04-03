@@ -22,6 +22,7 @@ namespace TestMod
         private bool showGUIButton = false;
 
         private GameObject TestButton;
+        private GameObject TestPanel;
 
         // Init handlers
         private void Awake()
@@ -68,7 +69,7 @@ namespace TestMod
 
             if (showGUIButton)
             {
-                if (TestButton == null)
+                if (TestPanel == null)
                 {
                     if (GUIManager.Instance == null)
                     {
@@ -81,13 +82,16 @@ namespace TestMod
                         Logger.LogError("GUIManager pixelfix is null");
                         return;
                     }
-                    TestButton = GUIManager.Instance.CreateButton("ATest Button long long text", GUIManager.PixelFix.transform,new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), new Vector2(50,0), 250, 100);
-                    if (TestButton == null)
+                    TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform,new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), new Vector2(0,0), 850, 600);
+
+                    GUIManager.Instance.CreateButton("ATest Button long long text", TestPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                        new Vector2(0, 0), 250, 100).SetActive(true);
+                    if (TestPanel == null)
                     {
                         return;
                     }
                 }
-                TestButton.SetActive(!TestButton.activeSelf);
+                TestPanel.SetActive(!TestPanel.activeSelf);
                 showGUIButton = false;
             }
         }

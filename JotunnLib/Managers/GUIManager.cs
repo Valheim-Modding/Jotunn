@@ -8,7 +8,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
+using Image = UnityEngine.UI.Image;
 using Logger = JotunnLib.Logger;
+using Toggle = UnityEngine.UI.Toggle;
 
 namespace Veilheim.AssetManagers
 {
@@ -19,6 +23,7 @@ namespace Veilheim.AssetManagers
         private bool needsLoad = true;
 
         internal Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
+        private bool GUIInStart = true;
         public static GUIManager Instance { get; private set; }
 
         public static GameObject PixelFix { get; private set; }
@@ -30,6 +35,8 @@ namespace Veilheim.AssetManagers
         internal Font AveriaSerif { get; private set; }
 
         internal Font AveriaSerifBold { get; private set; }
+
+        private const int UILayer = 5;
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -52,32 +59,72 @@ namespace Veilheim.AssetManagers
         {
             GUIContainer = new GameObject("GUI");
             GUIContainer.transform.SetParent(Main.RootObject.transform);
+            GUIContainer.layer = UILayer; // UI
             var canvas = GUIContainer.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            GUIContainer.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             GUIContainer.AddComponent<GraphicRaycaster>();
             GUIContainer.AddComponent<CanvasScaler>();
             GUIContainer.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
             GUIContainer.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
             GUIContainer.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
             GUIContainer.AddComponent<GuiScaler>().UpdateScale();
 
-            PixelFix = new GameObject("GUIFix", typeof(RectTransform), typeof(GuiPixelFix));
-            PixelFix.transform.SetParent(GUIContainer.transform);
-            PixelFix.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-            PixelFix.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-            PixelFix.GetComponent<RectTransform>()
-                .SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GUIContainer.GetComponent<RectTransform>().rect.width);
-            PixelFix.GetComponent<RectTransform>()
-                .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, GUIContainer.GetComponent<RectTransform>().rect.height);
-            PixelFix.GetComponent<RectTransform>().anchoredPosition = new Vector2(GUIContainer.GetComponent<RectTransform>().rect.width / 2f,
-                GUIContainer.GetComponent<RectTransform>().rect.height / 2f);
+
+            CreatePixelFix();
 
             Logger.LogInfo("Initialized GUIManager");
+
+            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+        }
+
+        private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
+        {
+            if (scene.name == "start" && !GUIInStart)
+            {
+                GUIContainer.SetActive(true);
+                CreatePixelFix();
+                GUIInStart = true;
+            }
+
+            if (scene.name == "main" && GUIInStart)
+            {
+                GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
+                if (root != null)
+                {
+                    GameObject gui = root.transform.Find("GUI/PixelFix").gameObject;
+                    if (gui != null)
+                    {
+                        Destroy(PixelFix);
+                        PixelFix = new GameObject("GUIFix", typeof(RectTransform));
+                        PixelFix.layer = UILayer; // UI
+                        PixelFix.transform.SetParent(gui.transform, false);
+                        GUIContainer.SetActive(false);
+                        GUIInStart = false;
+                    }
+                }
+            }
+        }
+
+        private static void CreatePixelFix()
+        {
+            PixelFix = new GameObject("GUIFix", typeof(RectTransform), typeof(GuiPixelFix));
+            PixelFix.layer = UILayer; // UI
+            PixelFix.transform.SetParent(GUIContainer.transform);
+            PixelFix.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            PixelFix.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+            PixelFix.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+            PixelFix.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GUIContainer.GetComponent<RectTransform>().rect.width);
+            PixelFix.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, GUIContainer.GetComponent<RectTransform>().rect.height);
+            PixelFix.GetComponent<RectTransform>().anchoredPosition = new Vector2(GUIContainer.GetComponent<RectTransform>().rect.width / 2f,
+                GUIContainer.GetComponent<RectTransform>().rect.height / 2f);
         }
 
         private void OnGUI()
         {
             // Load valheim GUI assets
+            
             if (needsLoad && SceneManager.GetActiveScene().name == "start" && SceneManager.GetActiveScene().isLoaded)
             {
                 try
@@ -163,7 +210,7 @@ namespace Veilheim.AssetManagers
                     var sprite2 = GetSprite("button");
                     if (sprite2 == null)
                     {
-                        Logger.LogError("SPRITE2null");
+                        Logger.LogError("Could not find 'button' sprite");
                     }
                     button.GetComponent<Image>().sprite = sprite2;
                     button.GetComponent<Image>().type = Image.Type.Sliced;
@@ -195,8 +242,26 @@ namespace Veilheim.AssetManagers
                     button.GetComponent<Button>().colors = tinter;
                     
                     button.SetActive(false);
+                    button.layer = UILayer; // UI
 
                     PrefabManager.Instance.AddPrefab(button);
+
+
+                    // Base woodpanel prefab
+
+                    var woodpanel = new GameObject("BaseWoodpanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                    woodpanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+                    woodpanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+                    woodpanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 0f);
+
+                    woodpanel.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
+                    woodpanel.GetComponent<Image>().type = Image.Type.Sliced;
+                    woodpanel.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+
+                    woodpanel.layer = UILayer; // UI
+
+                    PrefabManager.Instance.AddPrefab(woodpanel);
+
                 }
                 catch (Exception ex)
                 {
@@ -233,6 +298,8 @@ namespace Veilheim.AssetManagers
 
             var newButton = Instantiate(baseButton, parent, false);
 
+            newButton.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+
             // Set text
             newButton.GetComponentInChildren<Text>().text = text;
 
@@ -254,6 +321,36 @@ namespace Veilheim.AssetManagers
             }
 
             return newButton;
+        }
+
+        public GameObject CreateWoodpanel(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f, float height = 0f)
+        {
+            var basepanel = PrefabManager.Instance.GetPrefab("BaseWoodpanel");
+
+            if (basepanel == null)
+            {
+                Logger.LogError("BasePanel is null");
+            }
+
+            var newPanel = Instantiate(basepanel, parent, false);
+            newPanel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+
+            // Set positions and anchors
+            ((RectTransform) newPanel.transform).anchoredPosition = position;
+            ((RectTransform) newPanel.transform).anchorMin = anchorMin;
+            ((RectTransform) newPanel.transform).anchorMax = anchorMax;
+
+            if (width > 0f)
+            {
+                ((RectTransform) newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            }
+
+            if (height > 0f)
+            {
+                ((RectTransform) newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            }
+
+            return newPanel;
         }
 
         /// <summary>
