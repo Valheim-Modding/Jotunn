@@ -27,13 +27,6 @@ namespace JotunnLib.Managers
         /// </summary>
         public static Action OnAfterInit;
 
-        internal override void Init()
-        {
-            On.ObjectDB.CopyOtherDB += AddCustomDataFejd;
-            On.ObjectDB.Awake += AddCustomData;
-            On.Player.Load += ReloadKnownRecipes;
-        }
-
         private void Awake()
         {
             if (Instance != null)
@@ -44,6 +37,13 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
+        }
+
+        internal override void Init()
+        {
+            On.ObjectDB.CopyOtherDB += AddCustomDataFejd;
+            On.ObjectDB.Awake += AddCustomData;
+            On.Player.Load += ReloadKnownRecipes;
         }
 
         internal override void Register()
@@ -57,7 +57,7 @@ namespace JotunnLib.Managers
             
             
 
-            SaveCustomData.Init();
+            //SaveManager.Init();
 
             ItemDropMockFix.Switch(true);
 
@@ -130,17 +130,6 @@ namespace JotunnLib.Managers
             return true;
         }
 
-        public void RegisterRecipe(CustomRecipe recipe)
-        {
-            if (recipe == null)
-            {
-                Logger.LogError("Failed to add null recipe");
-                return;
-            }
-
-            Recipes.Add(recipe);
-        }
-
         private void AddCustomItems(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
@@ -190,24 +179,6 @@ namespace JotunnLib.Managers
                 objectDB.m_recipes.Add(recipe);
 
                 Logger.LogInfo($"Added recipe for : {recipe.m_item.TokenName()}");
-            }
-        }
-        private void RegisterRecipes()
-        {
-            foreach (var recipeDef in Recipes)
-            {
-                // Create recipe 
-                var recipe = recipeDef.GetRecipe();
-
-                // Add the Recipe to the ObjectDB, remove one with the same name first
-                var removed = ObjectDB.instance.m_recipes.RemoveAll(x => x.name == recipe.name);
-                if (removed > 0)
-                {
-                    Logger.LogInfo($"Removed recipes ({recipe.name}): {removed}");
-                }
-
-                ObjectDB.instance.m_recipes.Add(recipe);
-                Logger.LogInfo($"Added recipe: {recipe.name}");
             }
         }
 

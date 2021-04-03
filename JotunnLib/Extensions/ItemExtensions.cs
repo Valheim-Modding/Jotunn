@@ -124,6 +124,26 @@ namespace JotunnLib
 
     public static class InventoryExtension
     {
+        private static string GetContainerUID(this Container container) => container.m_nview.GetZDO().m_uid.ToString();
+
+        internal static string GetInventoryUID(this Inventory self)
+        {
+            var localPlayer = Player.m_localPlayer;
+            if (localPlayer && localPlayer.m_inventory == self)
+            {
+                return SaveManager.PlayerPrefix + Game.instance.m_playerProfile.m_filename;
+            }
+            else
+            {
+                if (SaveManager.Instance.InventoryToContainer.TryGetValue(self, out var container))
+                {
+                    return new string(container.GetContainerUID().Where(c => !SaveManager.Instance.InvalidFileNameChars.Contains(c)).ToArray());
+                }
+            }
+
+            return null;
+        }
+
         public static bool HasAnyCustomItem(this Inventory self)
         {
             foreach (var inventoryItem in self.m_inventory)

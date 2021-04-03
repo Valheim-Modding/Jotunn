@@ -30,6 +30,7 @@ namespace JotunnLib
             typeof(PieceManager),
             typeof(ObjectManager),
             typeof(ZoneManager),
+            typeof(SaveManager)
         };
 
         private readonly List<Manager> managers = new List<Manager>();
