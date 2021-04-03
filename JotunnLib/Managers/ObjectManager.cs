@@ -29,7 +29,7 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            On.ObjectDB.CopyOtherDB += AddCustomDataFejd;  // very broken, need to come back to that
+            On.ObjectDB.CopyOtherDB += AddCustomDataFejd;
             On.ObjectDB.Awake += AddCustomData;
             On.Player.Load += ReloadKnownRecipes;
         }
@@ -38,8 +38,8 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
-                
+                Logger.LogError($"Two instances of singleton {GetType()}");
+
                 return;
             }
 
@@ -143,7 +143,7 @@ namespace JotunnLib.Managers
 
         private void AddCustomItems(ObjectDB objectDB)
         {
-            Logger.LogInfo("---- Adding custom items to ObjectDB ----");
+            Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
 
             foreach (var customItem in Items)
             {
@@ -165,7 +165,7 @@ namespace JotunnLib.Managers
 
         private void AddCustomRecipes(ObjectDB objectDB)
         {
-            Logger.LogInfo("---- Adding custom recipes to ObjectDB ----");
+            Logger.LogInfo($"---- Adding custom recipes to {objectDB} ----");
 
             foreach (var customRecipe in Recipes)
             {
@@ -195,7 +195,7 @@ namespace JotunnLib.Managers
 
         private void AddCustomStatusEffects(ObjectDB objectDB)
         {
-            Logger.LogInfo("---- Adding custom status effects to ObjectDB ----");
+            Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
 
             foreach (var customStatusEffect in StatusEffects)
             {
@@ -234,10 +234,10 @@ namespace JotunnLib.Managers
 
         private void AddCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
+            orig(self);
+
             var isValid = self.IsValid();
             ItemDropMockFix.Switch(!isValid);
-
-            orig(self);
 
             if (isValid)
             {

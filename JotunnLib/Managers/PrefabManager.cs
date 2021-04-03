@@ -33,7 +33,7 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            //On.ZNetScene.Awake += RegisterAllToZNetScene;
+            On.ZNetScene.Awake += RegisterAllToZNetScene;
 
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
@@ -197,7 +197,7 @@ namespace JotunnLib.Managers
         {
             orig(self);
 
-            Logger.LogInfo("---- Adding custom prefabs to ZNetScene ----");
+            Logger.LogInfo($"---- Adding custom prefabs to {self} ----");
 
             if (self && Instance.Prefabs.Count > 0)
             {
