@@ -68,10 +68,8 @@ namespace TestMod
 
             if (showGUIButton)
             {
-                Logger.LogInfo("Enabling 'Test Button'");
                 if (TestButton == null)
                 {
-                    Logger.LogWarning("Test1 ??");
                     if (GUIManager.Instance == null)
                     {
                         Logger.LogError("GUIManager instance is null");
@@ -86,10 +84,8 @@ namespace TestMod
                     TestButton = GUIManager.Instance.CreateButton("ATest Button long long text", GUIManager.PixelFix.transform,new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), new Vector2(50,0), 250, 100);
                     if (TestButton == null)
                     {
-                        Logger.LogError("Testbutton was null..........S");
                         return;
                     }
-                    Logger.LogError("Added canvas to button?");
                 }
                 TestButton.SetActive(!TestButton.activeSelf);
                 showGUIButton = false;
