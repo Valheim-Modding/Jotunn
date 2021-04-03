@@ -3,7 +3,7 @@ using JotunnLib.Entities;
 
 namespace TestMod.Prefabs
 {
-    public class BundlePrefab : PrefabConfig
+    /*public class BundlePrefab : PrefabConfig
     {
         public BundlePrefab() : base(TestMod.Assets, "BundlePrefab")
         {
@@ -16,5 +16,5 @@ namespace TestMod.Prefabs
             ZNetView netView = Prefab.AddComponent<ZNetView>();
             netView.m_persistent = true;
         }
-    }
+    }*/
 }

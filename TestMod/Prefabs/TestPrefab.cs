@@ -6,7 +6,7 @@ using JotunnLib.Entities;
 
 namespace TestMod.Prefabs
 {
-    public class TestPrefab : PrefabConfig
+    /*public class TestPrefab : PrefabConfig
     {
         public TestPrefab() : base("TestPrefab", "Wood")
         {
@@ -24,5 +24,5 @@ namespace TestMod.Prefabs
             item.m_itemData.m_shared.m_maxStackSize = 1;
             item.m_itemData.m_shared.m_variants = 1;
         }
-    }
+    }*/
 }

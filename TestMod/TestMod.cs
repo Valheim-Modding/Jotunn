@@ -2,10 +2,9 @@
 using UnityEngine;
 using BepInEx;
 using TestMod.ConsoleCommands;
-using JotunnLib.Entities;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
-using TestMod.Prefabs;
+using JotunnLib.Configs;
 
 namespace TestMod
 {
@@ -27,7 +26,7 @@ namespace TestMod
         private void Awake()
         {
             ItemManager.Instance.OnItemsRegistered += registerObjects;
-            PieceManager.Instance.PieceRegister += registerPieces;
+            //PieceManager.Instance.PieceRegister += registerPieces;
             InputManager.Instance.InputRegister += registerInputs;
             LocalizationManager.Instance.LocalizationRegister += registerLocalization;
 
@@ -117,7 +116,7 @@ namespace TestMod
         // Register new pieces
         private void registerPieces(object sender, EventArgs e)
         {
-            PieceManager.Instance.RegisterPiece("Hammer", "TestCube");
+            //PieceManager.Instance.RegisterPiece("Hammer", "TestCube");
         }
 
         // Register new items and recipes
@@ -129,9 +128,9 @@ namespace TestMod
             PrefabManager.Instance.RegisterPrefab(new BundlePrefab());*/
 
             // Register prefabs
-            var testprefab = new TestPrefab();
+            /*var testprefab = new TestPrefab();
             PrefabManager.Instance.AddPrefab(testprefab.Prefab);
-            PrefabManager.Instance.AddEmptyPrefab("TestCube");
+            PrefabManager.Instance.AddEmptyPrefab("TestCube");*/
 
             /*
             // Items
