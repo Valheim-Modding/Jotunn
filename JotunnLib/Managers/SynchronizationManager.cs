@@ -152,7 +152,8 @@ namespace JotunnLib.Managers
                     ApplyConfigZPackage(configPkg);
                 }
             }
-            else
+
+            if (ZNet.instance.IsServerInstance())
             {
                 // Is package not empty and is sender admin?
                 if (configPkg != null && configPkg.Size() > 0 && ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
@@ -226,6 +227,11 @@ namespace JotunnLib.Managers
             }
         }
 
+        /// <summary>
+        /// Send initial configuration data to client (full set)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="configPkg"></param>
         public static void RPC_JotunnLib_ConfigSync(long sender, ZPackage configPkg)
         {
             if (ZNet.instance.IsClientInstance())
