@@ -115,7 +115,8 @@ namespace JotunnLib.Managers
                 return;
             }
 
-            Localizations.Clear();
+            //why?
+            //Localizations.Clear();
 
             Logger.LogInfo("---- Registering custom localizations ----");
 
