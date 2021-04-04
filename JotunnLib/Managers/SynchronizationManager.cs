@@ -30,7 +30,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Main Init
+        ///     Main Init
         /// </summary>
         internal override void Init()
         {
@@ -131,7 +131,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        // Register RPC's
+        // Register RPCs
         private static void Game_Start(On.Game.orig_Start orig, Game self)
         {
             orig(self);
@@ -231,7 +231,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Send initial configuration data to client (full set)
+        ///     Send initial configuration data to client (full set)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="configPkg"></param>
@@ -265,7 +265,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Apply received configuration values locally
+        ///     Apply received configuration values locally
         /// </summary>
         /// <param name="configPkg"></param>
         private static void ApplyConfigZPackage(ZPackage configPkg)
