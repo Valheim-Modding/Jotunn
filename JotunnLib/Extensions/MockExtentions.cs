@@ -80,7 +80,6 @@ namespace JotunnLib
                         if (unityObjectName.EndsWith(materialInstance))
                         {
                             unityObjectName = unityObjectName.Substring(0, unityObjectName.Length - materialInstance.Length);
-                            Logger.LogError(unityObjectName);
                         }
                     }
 
