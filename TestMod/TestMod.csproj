@@ -396,6 +396,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="capeironbackpack" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">
@@ -403,6 +404,7 @@
       <Name>JotunnLib</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="CopyToPluginFolder" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="xcopy &quot;$(TargetDir)TestMod.dll&quot; &quot;$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\&quot; /Y" />

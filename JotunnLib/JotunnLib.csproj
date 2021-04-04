@@ -460,6 +460,8 @@
   </Target>
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="copy $(TargetDir)$(TargetFileName) &quot;$(VALHEIM_INSTALL)\BepInEx\plugins&quot; /y" />
+    <Exec Command="$(SolutionDir)pdb2mdb.exe $(TargetPath)" />
+    <Exec Command="copy $(TargetDir)$(TargetFileName).mdb &quot;$(VALHEIM_INSTALL)\BepInEx\plugins&quot; /y" />
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot;" />
   </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
