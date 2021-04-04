@@ -103,19 +103,26 @@ namespace JotunnLib.Managers
 
             foreach (var customItem in Items)
             {
-                var itemDrop = customItem.ItemDrop;
-                if (customItem.FixReference)
+                try
                 {
-                    customItem.ItemPrefab.FixReferences();
+                    var itemDrop = customItem.ItemDrop;
+                    if (customItem.FixReference)
+                    {
+                        customItem.ItemPrefab.FixReferences();
 
-                    itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
-                    itemDrop.m_itemData.m_shared.FixReferences();
-                    customItem.FixReference = false;
+                        itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
+                        itemDrop.m_itemData.m_shared.FixReferences();
+                        customItem.FixReference = false;
+                    }
+
+                    objectDB.m_items.Add(customItem.ItemPrefab);
+
+                    Logger.LogInfo($"Added custom item : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
+                } 
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error while adding custom item {customItem.ItemPrefab.name}: {ex.Message}");
                 }
-
-                objectDB.m_items.Add(customItem.ItemPrefab);
-
-                Logger.LogInfo($"Added custom item : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
             }
 
             Logger.LogInfo("Updating item hashes");
@@ -129,26 +136,33 @@ namespace JotunnLib.Managers
 
             foreach (var customRecipe in Recipes)
             {
-                var recipe = customRecipe.Recipe;
-
-                if (customRecipe.FixReference)
+                try
                 {
-                    recipe.FixReferences();
-                    customRecipe.FixReference = false;
-                }
+                    var recipe = customRecipe.Recipe;
 
-                if (customRecipe.FixRequirementReferences)
-                {
-                    foreach (var requirement in recipe.m_resources)
+                    if (customRecipe.FixReference)
                     {
-                        requirement.FixReferences();
+                        recipe.FixReferences();
+                        customRecipe.FixReference = false;
                     }
-                    customRecipe.FixRequirementReferences = false;
+
+                    if (customRecipe.FixRequirementReferences)
+                    {
+                        foreach (var requirement in recipe.m_resources)
+                        {
+                            requirement.FixReferences();
+                        }
+                        customRecipe.FixRequirementReferences = false;
+                    }
+                    objectDB.m_recipes.Add(recipe);
+
+                    Logger.LogInfo($"Added recipe for : {recipe.m_item.TokenName()}");
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error while adding custom recipe {customRecipe.Recipe.name}: {ex.Message}");
                 }
 
-                objectDB.m_recipes.Add(recipe);
-
-                Logger.LogInfo($"Added recipe for : {recipe.m_item.TokenName()}");
             }
         }
 
@@ -158,16 +172,24 @@ namespace JotunnLib.Managers
 
             foreach (var customStatusEffect in StatusEffects)
             {
-                var statusEffect = customStatusEffect.StatusEffect;
-                if (customStatusEffect.FixReference)
-                {
-                    statusEffect.FixReferences();
-                    customStatusEffect.FixReference = false;
+                try 
+                { 
+                    var statusEffect = customStatusEffect.StatusEffect;
+                    if (customStatusEffect.FixReference)
+                    {
+                        statusEffect.FixReferences();
+                        customStatusEffect.FixReference = false;
+                    }
+
+                    objectDB.m_StatusEffects.Add(statusEffect);
+
+                    Logger.LogInfo($"Added status effect : {statusEffect.m_name}");
+
                 }
-
-                objectDB.m_StatusEffects.Add(statusEffect);
-
-                Logger.LogInfo($"Added status effect : {statusEffect.m_name}");
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error while adding custom status effect {customStatusEffect.StatusEffect.name}: {ex.Message}");
+                }
             }
         }
 

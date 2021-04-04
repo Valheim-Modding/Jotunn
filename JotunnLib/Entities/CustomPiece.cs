@@ -49,7 +49,7 @@ namespace JotunnLib.Entities
 
         public bool IsValid()
         {
-            return PiecePrefab && Piece; // && Piece.IsValid(); implement that?
+            return PiecePrefab && Piece && Piece.IsValid();
         }
 
         public static bool IsCustomPiece(string prefabName)

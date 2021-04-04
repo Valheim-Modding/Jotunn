@@ -20,11 +20,6 @@ namespace JotunnLib.Configs
 
         public Piece.Requirement[] GetRequirements()
         {
-            if (Requirements.Count() == 0)
-            {
-                return null;
-            }
-
             Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];
 
             for (int i = 0; i < reqs.Length; i++)
