@@ -396,7 +396,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <EmbeddedResource Include="Assets\blueprints" />
+    <None Include="Assets\blueprints" />
     <None Include="Assets\jotunnlibtest" />
   </ItemGroup>
   <ItemGroup>

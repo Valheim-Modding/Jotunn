@@ -6,6 +6,9 @@ using JotunnLib.Managers;
 using JotunnLib.Utils;
 using JotunnLib.Configs;
 using JotunnLib.Entities;
+using System.Reflection;
+using System.IO;
+using System.Threading;
 
 namespace TestMod
 {
@@ -114,27 +117,51 @@ namespace TestMod
             JotunnLib.Logger.LogInfo(TestAssets);
 
             // Load asset bundle from dll
-            BlueprintRuneBundle = AssetUtils.LoadAssetBundleFromResources("blueprints");
+            BlueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/blueprints");
             JotunnLib.Logger.LogInfo(BlueprintRuneBundle);
         }
 
         // Add new Items with item Configs
         private void addItemsWithConfigs()
         {
+
             // Add a custom piece table
             PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
 
             // Create and add a custom item and custom recipe for it
-            CustomItem rune = new CustomItem(BlueprintRuneBundle, "Blueprintrune", false);
+            CustomItem rune = new CustomItem(BlueprintRuneBundle, "BlueprintRune", false);
             CustomRecipe runeRecipe = new CustomRecipe(new RecipeConfig()
             {
+                Item = "BlueprintRune",
                 Amount = 1,
-                Requirements = new PieceRequirementConfig[] {
-                        new PieceRequirementConfig {Item = "Stone", Amount = 1}
-                    }
+                Requirements = new PieceRequirementConfig[]
+                {
+                    new PieceRequirementConfig {Item = "Stone", Amount = 1}
+                }
             });
             ItemManager.Instance.AddItem(rune);
             ItemManager.Instance.AddRecipe(runeRecipe);
+
+            // Create and add custom pieces
+            GameObject makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
+            CustomPiece makebp = new CustomPiece(makebp_prefab, new PieceConfig
+            {
+                PieceTable = "_BlueprintPieceTable"
+            });
+            PieceManager.Instance.AddPiece(makebp);
+            GameObject placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
+            CustomPiece placebp = new CustomPiece(placebp_prefab, new PieceConfig
+            {
+                PieceTable = "_BlueprintPieceTable",
+                AllowedInDungeons = true,
+                Requirements = new PieceRequirementConfig[]
+                {
+                    new PieceRequirementConfig {Item = "Wood", Amount = 2}
+                }
+            });
+            PieceManager.Instance.AddPiece(placebp);
+
+            BlueprintRuneBundle.Unload(false);
         }
 
         // Register new pieces
