@@ -2,6 +2,8 @@
 Jötunn (_/ˈjɔːtʊn/, "giant"_) Lib is a modding library for Valheim, with the goal of making the lives of mod developers easier.  
 Get the mod on [NexusMods](https://www.nexusmods.com/valheim/mods/507)!
 
+# MERGER IS IN PROGRESS! Forking is not recommended. Please wait for v1 release Soon™
+
 ## Installation
 Instructions for installing and using JotunnLib as a user:
 
