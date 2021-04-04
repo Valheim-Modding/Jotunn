@@ -422,7 +422,6 @@
     <Compile Include="Managers\ItemManager.cs" />
     <Compile Include="Managers\PieceManager.cs" />
     <Compile Include="Managers\PrefabManager.cs" />
-    <Compile Include="Managers\PrefabManagerVL.cs" />
     <Compile Include="Managers\SaveManager.cs" />
     <Compile Include="Managers\SynchronizationManager.cs" />
     <Compile Include="Managers\ZoneManager.cs" />
@@ -462,7 +461,6 @@
     <Exec Command="$(TargetDir)JotunnBuildTask.exe &quot;$(VALHEIM_INSTALL)&quot;" WorkingDirectory="$(TargetDir)" />
   </Target>
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="copy $(TargetDir)$(TargetFileName) &quot;$(VALHEIM_INSTALL)\BepInEx\plugins&quot; /y" />
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot;" />
   </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

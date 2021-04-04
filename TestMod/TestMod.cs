@@ -1,13 +1,15 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using BepInEx;
-using BepInEx.Configuration;
 using TestMod.ConsoleCommands;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
 using JotunnLib.Configs;
+using JotunnLib.Entities;
+using System.Collections.Generic;
+using BepInEx.Configuration;
 
 namespace TestMod
 {
@@ -15,8 +17,9 @@ namespace TestMod
     [BepInDependency(JotunnLib.Main.ModGuid)]
     class TestMod : BaseUnityPlugin
     {
-        public static AssetBundle Assets;
-        public static Skills.SkillType TestSkillType = 0;
+        public AssetBundle TestAssets;
+        public AssetBundle BlueprintRuneBundle;
+        public Skills.SkillType TestSkillType = 0;
 
         private bool showMenu = false;
         private Sprite testSkillSprite;
@@ -25,21 +28,23 @@ namespace TestMod
         private GameObject TestButton;
         private GameObject TestPanel;
 
-
         // Init handlers
         private void Awake()
         {
-            ItemManager.Instance.OnItemsRegistered += registerObjects;
-            //PieceManager.Instance.PieceRegister += registerPieces;
             InputManager.Instance.InputRegister += registerInputs;
             LocalizationManager.Instance.LocalizationRegister += registerLocalization;
 
             loadAssets();
+            LoadVLAssets();
+            addItemsWithConfigs();
             registerCommands();
             registerSkills();
+            createConfigValues();
 
-            Logger.LogError(CultureInfo.CurrentCulture.Name);
+        }
 
+        private void createConfigValues()
+        {
             Config.SaveOnConfigSet = true;
 
             Config.Bind("JotunnLibTest", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
@@ -93,9 +98,9 @@ namespace TestMod
                         Logger.LogError("GUIManager pixelfix is null");
                         return;
                     }
-                    TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 850, 600);
+                    TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform,new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), new Vector2(0,0), 850, 600);
 
-                    GUIManager.Instance.CreateButton("ATest Button long long text", TestPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                         new Vector2(0, 0), 250, 100).SetActive(true);
                     if (TestPanel == null)
                     {
@@ -114,16 +119,70 @@ namespace TestMod
             InputManager.Instance.RegisterButton("GUIManagerTest", KeyCode.F8);
         }
 
-        // Load assets from disk
+        // Load assets
         private void loadAssets()
         {
             // Load texture
             Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");
             testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
 
-            // Load asset bundle
-            Assets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
-            JotunnLib.Logger.LogInfo(Assets);
+            // Load asset bundle from filesystem
+            TestAssets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
+            JotunnLib.Logger.LogInfo(TestAssets);
+
+            // Load asset bundle from filesystem
+            BlueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/blueprints");
+            JotunnLib.Logger.LogInfo(BlueprintRuneBundle);
+        }
+
+        // Add new Items with item Configs
+        private void addItemsWithConfigs()
+        {
+            // Add a custom piece table
+            PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
+
+            // Create and add a custom item and custom recipe for it
+            CustomItem rune = new CustomItem(BlueprintRuneBundle, "BlueprintRune", false);
+            CustomRecipe runeRecipe = new CustomRecipe(new RecipeConfig()
+            {
+                Item = "BlueprintRune",
+                Amount = 1,
+                Requirements = new PieceRequirementConfig[]
+                {
+                    new PieceRequirementConfig {Item = "Stone", Amount = 1}
+                }
+            });
+            ItemManager.Instance.AddItem(rune);
+            ItemManager.Instance.AddRecipe(runeRecipe);
+
+            // Create and add custom pieces
+            GameObject makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
+            CustomPiece makebp = new CustomPiece(makebp_prefab, new PieceConfig
+            {
+                PieceTable = "_BlueprintPieceTable"
+            });
+            PieceManager.Instance.AddPiece(makebp);
+            GameObject placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
+            CustomPiece placebp = new CustomPiece(placebp_prefab, new PieceConfig
+            {
+                PieceTable = "_BlueprintPieceTable",
+                AllowedInDungeons = true,
+                Requirements = new PieceRequirementConfig[]
+                {
+                    new PieceRequirementConfig {Item = "Wood", Amount = 2}
+                }
+            });
+            PieceManager.Instance.AddPiece(placebp);
+
+            // Add localizations
+            var textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
+            foreach (var textAsset in textAssets)
+            {
+                var lang = textAsset.name.Replace(".json", null);
+                LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
+            }
+
+            BlueprintRuneBundle.Unload(false);
         }
 
         // Register new pieces
@@ -220,6 +279,41 @@ namespace TestMod
             Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");
             Sprite testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
             TestSkillType = SkillManager.Instance.RegisterSkill("com.jotunnlib.testmod.testskill", "TestingSkill", "A nice testing skill!", 1f, testSkillSprite);
+        }
+
+        private void LoadVLAssets()
+        {
+            JotunnLib.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
+            var asset = Assembly.GetExecutingAssembly().GetManifestResourceStream("TestMod.capeironbackpack");
+            if (asset == null) JotunnLib.Logger.LogWarning($"Requested asset stream could not be found.");
+            else
+            {
+                var ab = AssetBundle.LoadFromStream(asset);
+                var go = ab.LoadAsset<GameObject>("Assets/Evie/CapeIronBackpack.prefab");
+                if (!go) JotunnLib.Logger.LogWarning($"Failed to load asset from bundle: {ab}");
+                LoadCraftedItem(go, new List<Piece.Requirement>
+                {
+                    MockRequirement.Create("LeatherScraps", 10),
+                    MockRequirement.Create("DeerHide", 2),
+                    MockRequirement.Create("Iron", 4),
+                });
+            }
+        }
+
+        private void LoadCraftedItem(GameObject prefab, List<Piece.Requirement> ingredients, string craftingStation = "piece_workbench")
+        {
+            if (prefab)
+            {
+                var CI = new CustomItem(prefab, true);
+                var recipe = ScriptableObject.CreateInstance<Recipe>();
+                recipe.m_item = prefab.GetComponent<ItemDrop>();
+                recipe.m_craftingStation = Mock<CraftingStation>.Create(craftingStation);
+                recipe.m_resources = ingredients.ToArray();
+                var CR = new CustomRecipe(recipe, true, true);
+                JotunnLib.Managers.ItemManager.Instance.AddItem(CI);
+                JotunnLib.Managers.ItemManager.Instance.AddRecipe(CR);
+                JotunnLib.Logger.LogDebug($"Successfully loaded new CraftedItem {prefab.name} for {craftingStation}.");
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using JotunnLib.Entities;
 using JotunnLib.Managers;
+using System;
+using System.Linq;
 using UnityEngine;
 
 namespace JotunnLib.Configs
@@ -7,13 +9,13 @@ namespace JotunnLib.Configs
     public class PieceConfig
     {
         public string Name { get; set; }
-        public string Description { get; set; } = "";
+        public string Description { get; set; } = string.Empty;
         public bool Enabled { get; set; } = true;
         public bool AllowedInDungeons { get; set; } = false;
         public string PieceTable { get; set; } = string.Empty;
         public string CraftingStation { get; set; } = string.Empty;
         public string ExtendStation { get; set; } = string.Empty;
-        public Sprite Icon { get; set; }
+        public Sprite Icon { get; set; } = null;
         public PieceRequirementConfig[] Requirements { get; set; } = new PieceRequirementConfig[0];
 
         public Piece.Requirement[] GetRequirements()
@@ -28,25 +30,35 @@ namespace JotunnLib.Configs
             return reqs;
         }
 
-        public Piece GetPiece()
+        public void Apply(GameObject prefab)
         {
-            var prefab = new GameObject(Name);
-            var piece = prefab.AddComponent<Piece>();
+            var piece = prefab.GetComponent<Piece>();
+            if (piece == null)
+            {
+                Logger.LogWarning($"GameObject has no Piece attached");
+                return;
+            }
+
             piece.enabled = Enabled;
             piece.m_allowedInDungeons = AllowedInDungeons;
-            piece.m_icon = Icon;
+            
+            // Set icon if overriden
+            if (Icon != null)
+            {
+                piece.m_icon = Icon;
+            }
 
             // Assign the piece to the actual PieceTable if not already in there
             var pieceTable = PieceManager.Instance.GetPieceTable(PieceTable);
             if (pieceTable == null)
             {
                 Logger.LogWarning($"Could not find piecetable: {PieceTable}");
-                return null;
+                return;
             }
             if (pieceTable.m_pieces.Contains(prefab))
             {
                 Logger.LogInfo($"Piece already added to PieceTable {PieceTable}");
-                return null;
+                return;
             }
             pieceTable.m_pieces.Add(prefab);
 
@@ -87,8 +99,6 @@ namespace JotunnLib.Configs
                 var otherPiece = pieceTable.m_pieces.Find(x => x.GetComponent<Piece>() != null).GetComponent<Piece>();
                 piece.m_placeEffect.m_effectPrefabs.AddRangeToArray(otherPiece.m_placeEffect.m_effectPrefabs);
             }*/
-
-            return piece;
         }
     }
 }

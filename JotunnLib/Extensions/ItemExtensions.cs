@@ -21,7 +21,7 @@ namespace JotunnLib
                 var tokenName = self.TokenName();
                 if (tokenName[0] != LocalizationManager.TokenFirstChar)
                 {
-                    throw new Exception($"Item name first char should be $ for token lookup ! (current item name : {tokenName})");
+                    throw new Exception($"Item name first char should be {LocalizationManager.TokenFirstChar} for token lookup ! (current item name : {tokenName})");
                 }
 
                 var hasIcon = self.m_itemData.m_shared.m_icons.Length > 0;
@@ -119,6 +119,37 @@ namespace JotunnLib
 
             var inventoryFilePath = Path.Combine(Paths.CustomItemDataFolder, inventoryId);
             File.AppendAllText(inventoryFilePath, stringBuilder.ToString());
+        }
+    }
+
+    public static class PieceExtension
+    {
+        public static string TokenName(this Piece self) => self.m_name;
+
+        public static bool IsValid(this Piece self)
+        {
+            try
+            {
+                var tokenName = self.TokenName();
+                if (tokenName[0] != LocalizationManager.TokenFirstChar)
+                {
+                    throw new Exception($"Piece name first char should be {LocalizationManager.TokenFirstChar} for token lookup ! (current piece name : {tokenName})");
+                }
+
+                var hasIcon = self.m_icon != null;
+                if (!hasIcon)
+                {
+                    throw new Exception($"Piece should have an icon !");
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e);
+
+                return false;
+            }
         }
     }
 

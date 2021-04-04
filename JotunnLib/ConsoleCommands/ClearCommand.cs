@@ -12,7 +12,7 @@ namespace JotunnLib.ConsoleCommands
 
         public override void Run(string[] args)
         {
-            ReflectionHelper.GetPrivateField<List<string>>(Console.instance, "m_chatBuffer").Clear();
+            Console.instance.m_chatBuffer.Clear();
             Console.instance.m_output.text = "";
         }
     }

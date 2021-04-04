@@ -396,6 +396,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Assets\blueprints" />
+    <None Include="Assets\jotunnlibtest" />
+    <None Include="capeironbackpack" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">
@@ -403,9 +406,12 @@
       <Name>JotunnLib</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\test_skill.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="CopyToPluginFolder" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="xcopy &quot;$(TargetDir)TestMod.dll&quot; &quot;$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\&quot; /Y" />
+    <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot;" />
     <Exec Command="xcopy &quot;$(ProjectDir)Assets&quot; &quot;$(VALHEIM_INSTALL)\BepInEx\plugins\TestMod\Assets\&quot; /S /Y" />
   </Target>
   <Import Project="../Environment.props" />
