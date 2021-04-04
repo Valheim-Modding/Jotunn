@@ -151,7 +151,7 @@ namespace JotunnLib.Managers
         [Obsolete("Use either `RegisterLocalization(string language, Dictionary<string, string> localization)` or `RegisterLocalizationConfig(LocalizationConfig config)` instead", true)]
         public void RegisterTranslation(string key, string text)
         {
-            ReflectionHelper.InvokePrivate(Localization.instance, "AddWord", new object[] {key, text});
+            Localization.instance.AddWord(key, text);
         }
 
         /// <summary>

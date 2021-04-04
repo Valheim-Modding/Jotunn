@@ -15,8 +15,8 @@ namespace JotunnLib.Managers
         public event EventHandler OnPiecesRegistered;
         public event EventHandler OnPieceTablesRegistered;
         internal GameObject PieceTableContainer;
-        private Dictionary<string, PieceTable> PieceTables = new Dictionary<string, PieceTable>();
-        private Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>()
+        internal readonly Dictionary<string, PieceTable> PieceTables = new Dictionary<string, PieceTable>();
+        internal readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>()
         {
             { "Cultivator", "_CultivatorPieceTable" },
             { "Hammer", "_HammerPieceTable" },
@@ -42,10 +42,11 @@ namespace JotunnLib.Managers
             PieceTableContainer.transform.parent = Main.RootObject.transform;
 
             // Get all vanilla PieceTables
-            foreach (PieceTable table in Resources.FindObjectsOfTypeAll(typeof(PieceTable)))
+            //foreach (PieceTable table in Resources.FindObjectsOfTypeAll(typeof(PieceTable)))
+            foreach (var entry in PrefabManager.PrefabCache.GetPrefabs(typeof(PieceTable)))
             {
-                string name = table.gameObject.name;
-                PieceTables.Add(name, table);
+                string name = entry.Key;
+                PieceTables.Add(name, (PieceTable)entry.Value);
 
                 //TODO: get the name of the item which has this table attached and add it to the name map so we dont need to hardcode that
 
