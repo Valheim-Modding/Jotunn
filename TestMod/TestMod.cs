@@ -45,6 +45,7 @@ namespace TestMod
 
         private void createConfigValues()
         {
+            // Createing some sample configuration values to check server sync
             Config.SaveOnConfigSet = true;
 
             Config.Bind("JotunnLibTest", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
