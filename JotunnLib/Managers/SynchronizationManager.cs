@@ -16,8 +16,6 @@ namespace JotunnLib.Managers
 
         public bool PlayerIsAdmin { get; private set; }
 
-        public ConfigFile Config { get; set; }
-
         public void Awake()
         {
             if (Instance != null)
