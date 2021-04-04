@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.CompilerServices;
 using JotunnLib.Utils;
+using MonoMod.Cil;
 
 namespace JotunnLib.Managers
 {
@@ -34,8 +35,39 @@ namespace JotunnLib.Managers
             On.Container.Awake += AddToCache;
             On.Container.OnDestroyed += RemoveFromCache;
 
+            IL.Inventory.MoveAll += FixMoveAllPerformance;
             On.Inventory.Save += SaveModdedItems;
             On.Inventory.Load += AddBackCustomItems;
+        }
+
+        private static bool OptimizedRemoveItem(Inventory fromInventory, ItemDrop.ItemData item)
+        {
+            return fromInventory.m_inventory.Remove(item);
+        }
+
+        private static void FixMoveAllPerformance(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            var optimizedRemoveItemMethodReference = il.Import(typeof(SaveManager).GetMethod(nameof(SaveManager.OptimizedRemoveItem), ReflectionHelper.AllBindingFlags));
+
+            if (cursor.TryGotoNext(i => i.MatchCallOrCallvirt<Inventory>(nameof(Inventory.RemoveItem))))
+            {
+                cursor.Next.Operand = optimizedRemoveItemMethodReference;
+
+                if (cursor.TryGotoNext(i => i.MatchCallOrCallvirt<Inventory>(nameof(Inventory.RemoveItem))))
+                {
+                    cursor.Next.Operand = optimizedRemoveItemMethodReference;
+                }
+                else
+                {
+                    Logger.LogError($"Failed ILHook {nameof(Inventory.MoveAll)} 2.");
+                }
+            }
+            else
+            {
+                Logger.LogError($"Failed ILHook {nameof(Inventory.MoveAll)} 1.");
+            }
         }
 
         private void AddToCache(On.Container.orig_Awake orig, Container self)
