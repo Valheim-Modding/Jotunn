@@ -5,6 +5,7 @@ using TestMod.ConsoleCommands;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
 using JotunnLib.Configs;
+using JotunnLib.Entities;
 
 namespace TestMod
 {
@@ -12,8 +13,9 @@ namespace TestMod
     [BepInDependency(JotunnLib.Main.ModGuid)]
     class TestMod : BaseUnityPlugin
     {
-        public static AssetBundle Assets;
-        public static Skills.SkillType TestSkillType = 0;
+        public AssetBundle TestAssets;
+        public AssetBundle BlueprintRuneBundle;
+        public Skills.SkillType TestSkillType = 0;
 
         private bool showMenu = false;
         private Sprite testSkillSprite;
@@ -25,12 +27,11 @@ namespace TestMod
         // Init handlers
         private void Awake()
         {
-            ItemManager.Instance.OnItemsRegistered += registerObjects;
-            //PieceManager.Instance.PieceRegister += registerPieces;
             InputManager.Instance.InputRegister += registerInputs;
             LocalizationManager.Instance.LocalizationRegister += registerLocalization;
 
             loadAssets();
+            addItemsWithConfigs();
             registerCommands();
             registerSkills();
         }
@@ -82,7 +83,7 @@ namespace TestMod
                     }
                     TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform,new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), new Vector2(0,0), 850, 600);
 
-                    GUIManager.Instance.CreateButton("ATest Button long long text", TestPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                         new Vector2(0, 0), 250, 100).SetActive(true);
                     if (TestPanel == null)
                     {
@@ -101,16 +102,39 @@ namespace TestMod
             InputManager.Instance.RegisterButton("GUIManagerTest", KeyCode.F8);
         }
 
-        // Load assets from disk
+        // Load assets
         private void loadAssets()
         {
             // Load texture
             Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");
             testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
 
-            // Load asset bundle
-            Assets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
-            JotunnLib.Logger.LogInfo(Assets);
+            // Load asset bundle from filesystem
+            TestAssets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
+            JotunnLib.Logger.LogInfo(TestAssets);
+
+            // Load asset bundle from dll
+            BlueprintRuneBundle = AssetUtils.LoadAssetBundleFromResources("blueprints");
+            JotunnLib.Logger.LogInfo(BlueprintRuneBundle);
+        }
+
+        // Add new Items with item Configs
+        private void addItemsWithConfigs()
+        {
+            // Add a custom piece table
+            PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
+
+            // Create and add a custom item and custom recipe for it
+            CustomItem rune = new CustomItem(BlueprintRuneBundle, "Blueprintrune", false);
+            CustomRecipe runeRecipe = new CustomRecipe(new RecipeConfig()
+            {
+                Amount = 1,
+                Requirements = new PieceRequirementConfig[] {
+                        new PieceRequirementConfig {Item = "Stone", Amount = 1}
+                    }
+            });
+            ItemManager.Instance.AddItem(rune);
+            ItemManager.Instance.AddRecipe(runeRecipe);
         }
 
         // Register new pieces
