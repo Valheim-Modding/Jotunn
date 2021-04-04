@@ -1,4 +1,5 @@
-﻿using JotunnLib.Managers;
+﻿using JotunnLib.Entities;
+using JotunnLib.Managers;
 using UnityEngine;
 
 namespace JotunnLib.Configs
@@ -8,10 +9,10 @@ namespace JotunnLib.Configs
         public string Name { get; set; }
         public string Description { get; set; } = "";
         public bool Enabled { get; set; } = true;
+        public bool AllowedInDungeons { get; set; } = false;
         public string PieceTable { get; set; } = string.Empty;
         public string CraftingStation { get; set; } = string.Empty;
         public string ExtendStation { get; set; } = string.Empty;
-        public bool AllowedInDungeons { get; set; } = false;
         public Sprite Icon { get; set; }
         public PieceRequirementConfig[] Requirements { get; set; } = new PieceRequirementConfig[0];
 
@@ -31,6 +32,9 @@ namespace JotunnLib.Configs
         {
             var prefab = new GameObject(Name);
             var piece = prefab.AddComponent<Piece>();
+            piece.enabled = Enabled;
+            piece.m_allowedInDungeons = AllowedInDungeons;
+            piece.m_icon = Icon;
 
             // Assign the piece to the actual PieceTable if not already in there
             var pieceTable = PieceManager.Instance.GetPieceTable(PieceTable);
@@ -39,28 +43,17 @@ namespace JotunnLib.Configs
                 Logger.LogWarning($"Could not find piecetable: {PieceTable}");
                 return null;
             }
-
             if (pieceTable.m_pieces.Contains(prefab))
             {
                 Logger.LogInfo($"Piece already added to PieceTable {PieceTable}");
                 return null;
             }
-
             pieceTable.m_pieces.Add(prefab);
 
             // Assign the CraftingStation for this piece, if needed
             if (!string.IsNullOrEmpty(CraftingStation))
             {
-                GameObject craftingStationPrefab = PrefabManager.Instance.GetPrefab(CraftingStation);
-                CraftingStation craftingStation = craftingStationPrefab.GetComponent<CraftingStation>();
-                if (craftingStation == null)
-                {
-                    Logger.LogWarning($"Could not find crafting station: {CraftingStation}");
-                }
-                else
-                {
-                    piece.m_craftingStation = craftingStation;
-                }
+                piece.m_craftingStation = Mock<CraftingStation>.Create(CraftingStation);
             }
 
             // Assign all needed resources for this piece

@@ -20,32 +20,7 @@ namespace JotunnLib.Entities
 
         public CustomRecipe(RecipeConfig recipeConfig)
         {
-            Recipe = ScriptableObject.CreateInstance<Recipe>();
-
-            var name = recipeConfig.Name;
-            if (string.IsNullOrEmpty(name))
-            {
-                name = "Recipe_" + recipeConfig.Item;
-            }
-
-            Recipe.name = name;
-            Recipe.m_item = Mock<ItemDrop>.Create(recipeConfig.Name);
-            Recipe.m_amount = recipeConfig.Amount;
-            Recipe.m_enabled = recipeConfig.Enabled;
-
-            if (recipeConfig.CraftingStation != null)
-            {
-                Recipe.m_craftingStation = Mock<CraftingStation>.Create(recipeConfig.CraftingStation);
-            }
-
-            if (recipeConfig.RepairStation != null)
-            {
-                Recipe.m_craftingStation = Mock<CraftingStation>.Create(recipeConfig.RepairStation);
-            }
-
-            Recipe.m_minStationLevel = recipeConfig.MinStationLevel;
-            Recipe.m_resources = recipeConfig.GetRequirements();
-
+            Recipe = recipeConfig.GetRecipe();
             FixReference = true;
             FixRequirementReferences = true;
         }

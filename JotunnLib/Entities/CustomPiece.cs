@@ -7,28 +7,21 @@ namespace JotunnLib.Entities
     public class CustomPiece
     {
         public GameObject PiecePrefab { get; private set; }
-        
-        private PieceConfig _config;
-        private Piece _piece;
-        public Piece Piece
-        {
-            get => GetPiece();
-            set => _piece = value;
-        }
-
+        public Piece Piece { get; private set; }
         public bool FixReference { get; set; } = false;
 
         public CustomPiece(GameObject piecePrefab, bool fixReference)
         {
             PiecePrefab = piecePrefab;
-            _piece = piecePrefab.GetComponent<Piece>();
+            Piece = piecePrefab.GetComponent<Piece>();
             FixReference = fixReference;
         }
 
         public CustomPiece(GameObject piecePrefab, PieceConfig pieceConfig)
         {
             PiecePrefab = piecePrefab;
-            _config = pieceConfig;
+            Piece = pieceConfig.GetPiece();
+            FixReference = true;
         }
 
         public CustomPiece(string name, bool addZNetView = true)
@@ -40,29 +33,14 @@ namespace JotunnLib.Entities
         public CustomPiece(string name, string baseName)
         {
             PiecePrefab = PrefabManager.Instance.CreateClonedPrefab(name, baseName);
-            _piece = PiecePrefab.GetComponent<Piece>();
+            Piece = PiecePrefab.GetComponent<Piece>();
         }
 
         public CustomPiece(AssetBundle assetBundle, string assetName, bool fixReference)
         {
             PiecePrefab = (GameObject)assetBundle.LoadAsset(assetName);
-            _piece = PiecePrefab.GetComponent<Piece>();
+            Piece = PiecePrefab.GetComponent<Piece>();
             FixReference = fixReference;
-        }
-
-        private Piece GetPiece()
-        {
-            if (_piece != null)
-            {
-                return _piece;
-            }
-
-            if (_config != null)
-            {
-                return _config.GetPiece();
-            }
-
-            return null;
         }
 
         public bool IsValid()

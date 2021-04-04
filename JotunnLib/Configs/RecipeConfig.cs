@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using JotunnLib.Managers;
+using JotunnLib.Entities;
 
 namespace JotunnLib.Configs
 {
@@ -24,6 +25,37 @@ namespace JotunnLib.Configs
             }
 
             return reqs;
+        }
+
+        public Recipe GetRecipe()
+        {
+            var recipe = ScriptableObject.CreateInstance<Recipe>();
+
+            var name = Name;
+            if (string.IsNullOrEmpty(name))
+            {
+                name = "Recipe_" + Item;
+            }
+
+            recipe.name = name;
+            recipe.m_item = Mock<ItemDrop>.Create(Name);
+            recipe.m_amount = Amount;
+            recipe.m_enabled = Enabled;
+
+            if (CraftingStation != null)
+            {
+                recipe.m_craftingStation = Mock<CraftingStation>.Create(CraftingStation);
+            }
+
+            if (RepairStation != null)
+            {
+                recipe.m_craftingStation = Mock<CraftingStation>.Create(RepairStation);
+            }
+
+            recipe.m_minStationLevel = MinStationLevel;
+            recipe.m_resources = GetRequirements();
+
+            return recipe;
         }
     }
 }
