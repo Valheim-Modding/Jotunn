@@ -124,7 +124,6 @@ namespace TestMod
         // Add new Items with item Configs
         private void addItemsWithConfigs()
         {
-
             // Add a custom piece table
             PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
 
@@ -160,6 +159,14 @@ namespace TestMod
                 }
             });
             PieceManager.Instance.AddPiece(placebp);
+
+            // Add localizations
+            var textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
+            foreach (var textAsset in textAssets)
+            {
+                var lang = textAsset.name.Replace(".json", null);
+                LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
+            }
 
             BlueprintRuneBundle.Unload(false);
         }
