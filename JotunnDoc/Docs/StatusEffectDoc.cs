@@ -13,7 +13,7 @@ namespace JotunnDoc.Docs
     {
         public StatusEffectDoc() : base("JotunnDoc/Docs/conceptual/status-effects/status-effect-list.md")
         {
-            ObjectManager.Instance.ObjectRegister += docStatusEffects;
+            ItemManager.Instance.OnItemsRegistered += docStatusEffects;
         }
 
         private void docStatusEffects(object sender, EventArgs e)

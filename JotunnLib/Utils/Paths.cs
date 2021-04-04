@@ -10,7 +10,7 @@ namespace JotunnLib.Utils
             get
             {
                 var saveDataPath = global::Utils.GetSaveDataPath();
-                const string jotunnLibFolder = nameof(JotunnLibMain);
+                const string jotunnLibFolder = nameof(Main);
 
                 return Path.Combine(saveDataPath, jotunnLibFolder);
             }

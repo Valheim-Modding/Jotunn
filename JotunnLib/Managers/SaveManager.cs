@@ -1,21 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using JotunnLib.Entities;
+﻿using System.IO;
+using System.Runtime.CompilerServices;
 using JotunnLib.Utils;
 
 namespace JotunnLib.Managers
 {
-    internal static class SaveCustomData
+    internal class SaveManager : Manager
     {
+        internal static SaveManager Instance { get; private set; }
+
         internal const string PlayerPrefix = "player_";
         internal const string EntrySeparator = ".";
 
-        internal static readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
+        internal readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
 
-        internal static void Init()
+        internal ConditionalWeakTable<Inventory, Container> InventoryToContainer = new ConditionalWeakTable<Inventory, Container>();
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Logger.LogError($"Two instances of singleton {GetType()}");
+
+                return;
+            }
+
+            Instance = this;
+        }
+
+        internal override void Init()
         {
             Directory.CreateDirectory(Paths.CustomItemDataFolder);
 
@@ -26,47 +38,27 @@ namespace JotunnLib.Managers
             On.Inventory.Load += AddBackCustomItems;
         }
 
-        private static void AddToCache(On.Container.orig_Awake orig, Container self)
+        private void AddToCache(On.Container.orig_Awake orig, Container self)
         {
             orig(self);
 
             if (self && self.m_inventory != null)
             {
-                Cache.InventoryToContainer.Add(self.m_inventory, self);
+                InventoryToContainer.Add(self.m_inventory, self);
             }
         }
 
-        private static void RemoveFromCache(On.Container.orig_OnDestroyed orig, Container self)
+        private void RemoveFromCache(On.Container.orig_OnDestroyed orig, Container self)
         {
             orig(self);
 
             if (self && self.m_inventory != null)
             {
-                Cache.InventoryToContainer.Remove(self.m_inventory);
+                InventoryToContainer.Remove(self.m_inventory);
             }
         }
 
-        private static string GetContainerUID(this Container container) => container.m_nview.GetZDO().m_uid.ToString();
-
-        internal static string GetInventoryUID(this Inventory self)
-        {
-            var localPlayer = Player.m_localPlayer;
-            if (localPlayer && localPlayer.m_inventory == self)
-            {
-                return PlayerPrefix + Game.instance.m_playerProfile.m_filename;
-            }
-            else
-            {
-                if (Cache.InventoryToContainer.TryGetValue(self, out var container))
-                {
-                    return new string(container.GetContainerUID().Where(c => !InvalidFileNameChars.Contains(c)).ToArray());
-                }
-            }
-
-            return null;
-        }
-
-        private static void SaveModdedItems(On.Inventory.orig_Save orig, Inventory self, ZPackage pkg)
+        private void SaveModdedItems(On.Inventory.orig_Save orig, Inventory self, ZPackage pkg)
         {
             orig(self, pkg);
 
@@ -84,7 +76,7 @@ namespace JotunnLib.Managers
                 {
                     if (itemData.m_dropPrefab)
                     {
-                        foreach (var customItem in ObjectManager.Instance.Items)
+                        foreach (var customItem in ItemManager.Instance.Items)
                         {
                             customItem.ItemDrop.m_itemData.RemoveItemFromFile(inventoryId);
                             if (customItem.ItemDrop.TokenName() == itemData.TokenName())
@@ -99,7 +91,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private static void AddBackCustomItems(On.Inventory.orig_Load orig, Inventory self, ZPackage pkg)
+        private void AddBackCustomItems(On.Inventory.orig_Load orig, Inventory self, ZPackage pkg)
         {
             orig(self, pkg);
 

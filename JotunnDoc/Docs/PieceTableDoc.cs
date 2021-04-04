@@ -12,7 +12,7 @@ namespace JotunnDoc.Docs
     {
         public PieceTableDoc() : base("JotunnDoc/Docs/conceptual/pieces/piece-table-list.md")
         {
-            PieceManager.Instance.PieceTableRegister += docPieceTables;
+            PieceManager.Instance.OnPieceTablesRegistered += docPieceTables;
         }
 
         public void docPieceTables(object sender, EventArgs e)

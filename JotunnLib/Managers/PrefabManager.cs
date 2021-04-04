@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using JotunnLib.Entities;
-using JotunnLib.Utils;
-using UnityObject = UnityEngine.Object;
+using Object = UnityEngine.Object;
+using System.Linq;
 
 namespace JotunnLib.Managers
 {
@@ -14,18 +13,18 @@ namespace JotunnLib.Managers
     {
         public static PrefabManager Instance { get; private set; }
         public static GameObject PrefabContainer;
+        public static Cache PrefabCache;
 
-        public event EventHandler PrefabRegister, PrefabsLoaded;
+        public event EventHandler PrefabsLoaded;
+
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
         private bool loaded = false;
-
-        internal List<WeakReference> NetworkedModdedPrefabs = new List<WeakReference>();
 
         private void Awake()
         {
             if (Instance != null)
             {
-                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError($"Two instances of singleton {GetType()}");
                 return;
             }
 
@@ -34,93 +33,50 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            On.ZNetScene.Awake += AddCustomPrefabsToZNetSceneDictionary;
+            On.ZNetScene.Awake += RegisterAllToZNetScene;
+
             PrefabContainer = new GameObject("Prefabs");
-            PrefabContainer.transform.parent = JotunnLibMain.RootObject.transform;
+            PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
+
+            PrefabCache = new Cache();
         }
 
-        internal override void Register()
+        private string CreateUID()
         {
-            // TODO: Split register and load logic
-        }
+            const char separator = '_';
 
-        internal override void Load()
-        {
-            Logger.LogInfo("---- Registering custom prefabs ----");
+            var methodBase = new System.Diagnostics.StackFrame(2).GetMethod();
+            var id = methodBase.DeclaringType.Assembly.GetName().Name + separator + methodBase.DeclaringType.Name + separator + methodBase.Name;
 
-            // Call event handlers to load prefabs
-            if (!loaded)
-            {
-                PrefabRegister?.Invoke(null, EventArgs.Empty);
-            }
-
-            // Load prefabs into game
-            var namedPrefabs = ZNetScene.instance.m_namedPrefabs;
-
-            foreach (var pair in Prefabs)
-            {
-                GameObject prefab = pair.Value;
-
-                ZNetScene.instance.m_prefabs.Add(prefab);
-                namedPrefabs.Add(prefab.name.GetStableHashCode(), prefab);
-
-                Logger.LogInfo("Registered prefab: " + pair.Key);
-            }
-
-            // Send event that all prefabs are loaded
-            if (!loaded)
-            {
-                PrefabsLoaded?.Invoke(null, EventArgs.Empty);
-            }
-
-            Logger.LogInfo("All prefabs loaded");
-            loaded = true;
+            return separator + id;
         }
 
         /// <summary>
-        /// Register an existing GameObject as a prefab
+        /// Adds a prefab to the manager. Added prefabs get registered to the <see cref="ZNetScene"/> on Awake().
         /// </summary>
-        /// <param name="prefab">The GameObject to register as a prefab</param>
-        /// <param name="name">The name for the prefab. If not provided, will use name of GameObject</param>
-        public void RegisterPrefab(GameObject prefab, string name = null)
+        /// <param name="name"></param>
+        /// <param name="prefab"></param>
+        public void AddPrefab(GameObject prefab)
         {
-            if (name == null)
+            if (Prefabs.ContainsKey(prefab.name))
             {
-                name = prefab.name;
-            }
-
-            if (GetPrefab(name))
-            {
-                Logger.LogError("Prefab already exists: " + name);
+                Logger.LogWarning($"Prefab {prefab.name} already exists");
                 return;
             }
 
-            prefab.name = name;
-            prefab.transform.parent = PrefabContainer.transform;
-            prefab.SetActive(true);
-            Prefabs.Add(name, prefab);
+            prefab.transform.SetParent(PrefabContainer.transform, false);
+            //prefab.SetActive(true);
+            Prefabs.Add(prefab.name, prefab);
         }
 
         /// <summary>
-        /// Registers a new prefab from given PrefabConfig instance
+        /// Creates a new prefab that's an empty primitive.
         /// </summary>
-        /// <param name="prefabConfig">Prefab configuration instance</param>
-        public void RegisterPrefab(PrefabConfig prefabConfig)
-        {
-            // If no error occured, register prefab
-            if (prefabConfig.Prefab != null)
-            {
-                prefabConfig.Register();
-            }
-        }
-
-        /// <summary>
-        /// Registers a new prefab that's an empty primitive, with just a ZNetView component
-        /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">The name of the new GameObject</param>
+        /// <param name="addZNetView">When true a ZNetView component is added to the new GameObject for ZDO generation and networking. Default: true</param>
         /// <returns></returns>
-        public GameObject CreatePrefab(string name)
+        public GameObject CreateEmptyPrefab(string name, bool addZNetView = true)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -135,51 +91,42 @@ namespace JotunnLib.Managers
             }
 
             GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            prefab.name = name;
+            prefab.name = name + CreateUID();
             prefab.transform.parent = PrefabContainer.transform;
 
-            // Add ZNetView and make prefabs persistent by default
-            ZNetView newView = prefab.AddComponent<ZNetView>();
-            newView.m_persistent = true;
+            if (addZNetView)
+            {
+                // Add ZNetView and make prefabs persistent by default
+                ZNetView newView = prefab.AddComponent<ZNetView>();
+                newView.m_persistent = true;
+            }
 
-            Prefabs.Add(name, prefab);
             return prefab;
         }
 
         /// <summary>
-        /// Registers a new prefab that's a copy of given base.
+        /// Allows you to clone a given prefab without modifying the original.
         /// </summary>
         /// <param name="name">New prefab name</param>
         /// <param name="baseName">Base prefab name</param>
         /// <returns>New prefab object</returns>
-        public GameObject CreatePrefab(string name, string baseName)
+        public GameObject CreateClonedPrefab(string name, string baseName)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                Logger.LogError("Failed to create prefab with invalid name: " + name);
-                return null;
-            }
+            return CreateClonedPrefab(name, GetPrefab(baseName));
+        }
 
-            if (GetPrefab(name))
-            {
-                Logger.LogError("Failed to create prefab, name already exists: " + name);
-                return null;
-            }
+        /// <summary>
+        /// Allows you to clone a given prefab without modifying the original.
+        /// </summary>
+        /// <param name="name">New prefab name</param>
+        /// <param name="prefab">Base prefab</param>
+        /// <returns></returns>
+        public GameObject CreateClonedPrefab(string name, GameObject prefab)
+        {
+            var newPrefab = UnityEngine.Object.Instantiate(prefab, PrefabContainer.transform);
+            newPrefab.name = name + CreateUID();
 
-            GameObject prefabBase = GetPrefab(baseName);
-
-            if (!prefabBase)
-            {
-                Logger.LogError("Failed to create prefab, base does not exist: " + baseName);
-                return null;
-            }
-
-            GameObject prefab = UnityEngine.Object.Instantiate(prefabBase, PrefabContainer.transform);
-            prefab.name = name;
-            prefab.SetActive(true);
-            Prefabs.Add(name, prefab);
-
-            return prefab;
+            return newPrefab;
         }
 
         /// <summary>
@@ -189,94 +136,191 @@ namespace JotunnLib.Managers
         /// <returns></returns>
         public GameObject GetPrefab(string name)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                return null;
-            }
-
             if (Prefabs.ContainsKey(name))
             {
                 return Prefabs[name];
             }
 
-            if (!ZNetScene.instance)
+            if (ZNetScene.instance)
             {
-                Logger.LogError("\t-> ZNetScene instance null for some reason");
-                return null;
-            }
-
-            var namedPrefabs = ZNetScene.instance.m_namedPrefabs;
-            int key = name.GetStableHashCode();
-
-            if (namedPrefabs.ContainsKey(key))
-            {
-                return namedPrefabs[key];
+                foreach (GameObject obj in ZNetScene.instance.m_prefabs)
+                {
+                    if (obj.name == name)
+                    {
+                        return obj;
+                    }
+                }
             }
 
             return null;
         }
 
-
-
-        private void AddCustomPrefabsToZNetSceneDictionary(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        /// <summary>
+        /// Destroy a known custom prefab. Removes it from the manager and if found also on the <see cref="ZNetScene"/>
+        /// </summary>
+        /// <param name="name"></param>
+        public void DestroyPrefab(string name)
         {
-            orig(self);
-
-            if (self)
+            if (Prefabs.ContainsKey(name))
             {
-                foreach (var weakReference in NetworkedModdedPrefabs)
+                Prefabs.Remove(name);
+            }
+
+            if (ZNetScene.instance)
+            {
+                GameObject del = null;
+                foreach (GameObject obj in ZNetScene.instance.m_prefabs)
                 {
-                    if (weakReference.IsAlive)
+                    if (obj.name == name)
                     {
-                        var prefab = (GameObject)weakReference.Target;
-                        if (prefab)
-                        {
-                            self.AddPrefab(prefab);
-                        }
+                        break;
                     }
+                }
+
+                if (del != null)
+                {
+                    ZNetScene.instance.m_prefabs.Remove(del);
+                    ZNetScene.instance.Destroy(del);
                 }
             }
         }
 
         /// <summary>
-        /// Allow you to register to the ZNetScene list so that its correctly networked by the game.
+        /// Add all registered prefabs to the namedPrefabs in <see cref="ZNetScene" />.
         /// </summary>
-        /// <param name="prefab">Prefab to register to the ZNetScene list</param>
-        public void NetworkRegister(GameObject prefab)
+        /// <param name="instance"></param>
+        public void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
-            NetworkedModdedPrefabs.Add(new WeakReference(prefab));
+            orig(self);
 
-            var zNetScene = ZNetScene.instance;
-            if (zNetScene)
+            Logger.LogInfo($"---- Adding custom prefabs to {self} ----");
+
+            if (self && Instance.Prefabs.Count > 0)
             {
-                zNetScene.AddPrefab(prefab);
+                foreach (var prefab in Instance.Prefabs)
+                {
+                    var name = prefab.Key;
+
+                    Logger.LogInfo($"GameObject: {name}");
+
+                    RegisterToZNetScene(name, prefab.Value);
+                }
+            }
+
+            // Send event that all prefabs are loaded
+            if (!loaded)
+            {
+                PrefabsLoaded?.Invoke(null, EventArgs.Empty);
+            }
+
+            loaded = true;
+        }
+
+        /// <summary>
+        /// Add a single prefab to the <see cref="ZNetScene"/>.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="gameObject"></param>
+        public void RegisterToZNetScene(string name, GameObject gameObject)
+        {
+            var znet = ZNetScene.instance;
+
+            if (znet)
+            {
+                if (znet.m_namedPrefabs.ContainsKey(name.GetStableHashCode()))
+                {
+                    Logger.LogWarning($"Prefab {name} already in ZNetScene");
+                }
+                else
+                { 
+                    znet.m_prefabs.Add(gameObject);
+                    znet.m_namedPrefabs.Add(name.GetStableHashCode(), gameObject);
+                    Logger.LogInfo($"Added prefab {name}");
+                }
             }
         }
 
         /// <summary>
-        /// Allow you to clone a given prefab without modifying the original. Also handle the networking and unique naming.
+        /// Helper class for caching gameobjects in the current scene.
         /// </summary>
-        /// <param name="gameObject">prefab that you want to clone</param>
-        /// <param name="nameToSet">name for the new clone</param>
-        /// <param name="zNetRegister">Must be true if you want to have the prefab correctly networked and handled by the ZDO system. True by default</param>
-        /// <returns></returns>
-        public GameObject InstantiateClone(GameObject gameObject, string nameToSet, bool zNetRegister = true)
+        public class Cache
         {
-            const char separator = '_';
+            private static readonly Dictionary<Type, Dictionary<string, Object>> DictionaryCache =
+                new Dictionary<Type, Dictionary<string, Object>>();
 
-            var methodBase = new System.Diagnostics.StackTrace().GetFrame(1).GetMethod();
-            var id = methodBase.DeclaringType.Assembly.GetName().Name + separator + methodBase.DeclaringType.Name + separator + methodBase.Name;
-
-            var prefab = UnityEngine.Object.Instantiate(gameObject, PrefabContainer.transform);
-            prefab.name = nameToSet + separator + id;
-
-            if (zNetRegister)
+            private void InitCache(Type type, Dictionary<string, Object> map = null)
             {
-                NetworkRegister(prefab);
+                map ??= new Dictionary<string, Object>();
+                foreach (var unityObject in Resources.FindObjectsOfTypeAll(type))
+                {
+                    map[unityObject.name] = unityObject;
+                }
+
+                DictionaryCache[type] = map;
             }
 
-            return prefab;
-        }
+            /// <summary>
+            /// Get an instance of an Unity Object from the current scene with the given name
+            /// </summary>
+            /// <param name="type"></param>
+            /// <param name="name"></param>
+            /// <returns></returns>
+            public Object GetPrefab(Type type, string name)
+            {
+                if (DictionaryCache.TryGetValue(type, out var map))
+                {
+                    if (map.Count == 0 || !map.Values.First())
+                    {
+                        InitCache(type, map);
+                    }
 
+                    if (map.TryGetValue(name, out var unityObject))
+                    {
+                        return unityObject;
+                    }
+                }
+                else
+                {
+                    InitCache(type);
+                    return GetPrefab(type, name);
+                }
+
+                return null;
+            }
+
+            /// <summary>
+            /// Get an instance of an Unity Object from the current scene with the given name
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="name"></param>
+            /// <returns></returns>
+            public T GetPrefab<T>(string name) where T : Object
+            {
+                return (T)GetPrefab(typeof(T), name);
+            }
+
+            /// <summary>
+            /// Get the instances of UnityObjects from the current scene with the given type
+            /// </summary>
+            /// <param name="type"></param>
+            /// <returns></returns>
+            public Dictionary<string, Object> GetPrefabs(Type type)
+            {
+                if (DictionaryCache.TryGetValue(type, out var map))
+                {
+                    if (map.Count == 0 || !map.Values.First())
+                    {
+                        InitCache(type, map);
+                    }
+
+                    return map;
+                }
+                else
+                {
+                    InitCache(type);
+                    return GetPrefabs(type);
+                }
+            }
+        }
     }
 }

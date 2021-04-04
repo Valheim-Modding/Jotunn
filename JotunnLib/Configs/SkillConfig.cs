@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace JotunnLib.Entities
+namespace JotunnLib.Configs
 {
     /// <summary>
     /// Configuration class for custom skills
@@ -11,10 +11,10 @@ namespace JotunnLib.Entities
         private string _identifier;
         public string Identifier
         {
-            get { return this._identifier; }
+            get { return _identifier; }
             set
             {
-                this._identifier = value;
+                _identifier = value;
                 if (value.GetStableHashCode() > 1000)
                 {
                     UID = (Skills.SkillType)value.GetStableHashCode();

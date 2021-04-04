@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using JotunnLib.Entities;
+using JotunnLib.Configs;
 
 namespace TestMod.Prefabs
 {
-    public class TestCubePrefab : PrefabConfig
+    /*public class TestCubePrefab : PrefabConfig
     {
         // Create a prefab called "TestCube" with no base
         public TestCubePrefab() : base("TestCube")
@@ -42,5 +42,5 @@ namespace TestMod.Prefabs
 
             // Additional piece config if you need here...
         }
-    }
+    }*/
 }

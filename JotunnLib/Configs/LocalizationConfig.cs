@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JotunnLib.Entities
+namespace JotunnLib.Configs
 {
     public class LocalizationConfig
     {

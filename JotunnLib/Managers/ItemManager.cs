@@ -6,14 +6,14 @@ using JotunnLib.Entities;
 
 namespace JotunnLib.Managers
 {
-    public class ObjectManager : Manager
+    public class ItemManager : Manager
     {
-        public static ObjectManager Instance { get; private set; }
+        public static ItemManager Instance { get; private set; }
 
-        public event EventHandler ObjectRegister;
-        internal List<CustomItem> Items = new List<CustomItem>();
-        internal List<CustomRecipe> Recipes = new List<CustomRecipe>();
-        internal List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
+        public event EventHandler OnItemsRegistered;
+        internal readonly List<CustomItem> Items = new List<CustomItem>();
+        internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
+        internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
 
         /// <summary>
         /// Event that get fired after the ObjectDB get init and before its filled with custom items.
@@ -27,25 +27,27 @@ namespace JotunnLib.Managers
         /// </summary>
         public static Action OnAfterInit;
 
-        internal override void Init()
-        {
-            On.ObjectDB.Awake += AddCustomData;
-            On.Player.Load += ReloadKnownRecipes;
-        }
-
         private void Awake()
         {
             if (Instance != null)
             {
-                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
-                
+                Logger.LogError($"Two instances of singleton {GetType()}");
+
                 return;
             }
 
             Instance = this;
         }
 
-        internal override void Register()
+        internal override void Init()
+        {
+            On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
+            On.ObjectDB.Awake += RegisterCustomData;
+            On.Player.Load += ReloadKnownRecipes;
+        }
+
+        //TODO: dont know if still needed, please check
+        /*internal override void Register()
         {
             Logger.LogInfo("---- Registering custom objects ----");
 
@@ -53,58 +55,26 @@ namespace JotunnLib.Managers
             Items.Clear();
             Recipes.Clear();
 
-            
-            
-
-            SaveCustomData.Init();
-
             ItemDropMockFix.Switch(true);
 
             // Register new items and recipes
             ObjectRegister?.Invoke(null, EventArgs.Empty);
-        }
+        }*/
 
-        internal override void Load()
-        {
-            Logger.LogInfo("---- Loading custom objects ----");
-
-            // Load items
-            //foreach (CustomItem obj in Items)
-            //{
-            //    ObjectDB.instance.m_items.Add(obj);
-            //    Logger.LogInfo("Loaded item: " + obj.name);
-            //}
-
-            //// Load recipes
-            //foreach (Recipe recipe in Recipes)
-            //{
-            //    ObjectDB.instance.m_recipes.Add(recipe);
-            //    Logger.LogInfo("Loaded item recipe: " + recipe.name);
-            //}
-            
-
-            // Update hashes
-            ReflectionHelper.InvokePrivate(ObjectDB.instance, "UpdateItemHashes");
-        }
-
-        //public void RegisterRecipe(RecipeConfig recipeConfig)
-        //{
-        //    Recipe recipe = recipeConfig.GetRecipe();
-
-        //    if (recipe == null)
-        //    {
-        //        Logger.LogError("Failed to add recipe for item: " + recipeConfig.Item);
-        //        return;
-        //    }
-
-        //    Recipes.Add(recipe);
-        //}
-        public bool Add(CustomItem customItem)
+        public bool AddItem(CustomItem customItem)
         {
             if (customItem.IsValid())
             {
+                // Add to the right layer
+                if (customItem.ItemPrefab.layer == 0)
+                {
+                    customItem.ItemPrefab.layer = LayerMask.NameToLayer("item");
+                }
+
+                PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
                 Items.Add(customItem);
-                PrefabManager.Instance.NetworkRegister(customItem.ItemPrefab);
+
+                //PrefabManager.Instance.NetworkRegister(customItem.ItemPrefab);
                 //customItem.ItemPrefab.NetworkRegister();
 
                 return true;
@@ -113,50 +83,24 @@ namespace JotunnLib.Managers
             return false;
         }
 
-        public bool Add(CustomRecipe customRecipe)
+        public bool AddRecipe(CustomRecipe customRecipe)
         {
             Recipes.Add(customRecipe);
 
             return true;
         }
 
-        public bool Add(CustomStatusEffect customStatusEffect)
+        public bool AddStatusEffect(CustomStatusEffect customStatusEffect)
         {
             StatusEffects.Add(customStatusEffect);
 
             return true;
         }
 
-        public void RegisterRecipe(CustomRecipe recipe)
+        private void RegisterCustomItems(ObjectDB objectDB)
         {
-            if (recipe == null)
-            {
-                Logger.LogError("Failed to add null recipe");
-                return;
-            }
+            Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
 
-            Recipes.Add(recipe);
-        }
-
-        public GameObject GetItemPrefab(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                return null;
-            }
-
-            return ObjectDB.instance.GetItemPrefab(name);
-        }
-
-        public ItemDrop GetItemDrop(string name)
-        {
-            return GetItemPrefab(name)?.GetComponent<ItemDrop>();
-        }
-
-
-        private void AddCustomItems(ObjectDB self)
-        {
-            Logger.LogDebug($"Adding custom items");
             foreach (var customItem in Items)
             {
                 var itemDrop = customItem.ItemDrop;
@@ -169,13 +113,20 @@ namespace JotunnLib.Managers
                     customItem.FixReference = false;
                 }
 
-                self.m_items.Add(customItem.ItemPrefab);
-                Logger.LogInfo($"Added custom item : Prefab Name : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
+                objectDB.m_items.Add(customItem.ItemPrefab);
+
+                Logger.LogInfo($"Added custom item : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
             }
+
+            Logger.LogInfo("Updating item hashes");
+
+            objectDB.UpdateItemHashes();
         }
 
-        private void AddCustomRecipes(ObjectDB self)
+        private void RegisterCustomRecipes(ObjectDB objectDB)
         {
+            Logger.LogInfo($"---- Adding custom recipes to {objectDB} ----");
+
             foreach (var customRecipe in Recipes)
             {
                 var recipe = customRecipe.Recipe;
@@ -192,17 +143,19 @@ namespace JotunnLib.Managers
                     {
                         requirement.FixReferences();
                     }
-
                     customRecipe.FixRequirementReferences = false;
                 }
 
-                self.m_recipes.Add(recipe);
+                objectDB.m_recipes.Add(recipe);
+
                 Logger.LogInfo($"Added recipe for : {recipe.m_item.TokenName()}");
             }
         }
 
-        private void AddCustomStatusEffects(ObjectDB self)
+        private void RegisterCustomStatusEffects(ObjectDB objectDB)
         {
+            Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
+
             foreach (var customStatusEffect in StatusEffects)
             {
                 var statusEffect = customStatusEffect.StatusEffect;
@@ -212,31 +165,57 @@ namespace JotunnLib.Managers
                     customStatusEffect.FixReference = false;
                 }
 
-                self.m_StatusEffects.Add(statusEffect);
+                objectDB.m_StatusEffects.Add(statusEffect);
+
                 Logger.LogInfo($"Added status effect : {statusEffect.m_name}");
             }
         }
 
-        private void AddCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
+            orig(self, other);
+
             var isValid = self.IsValid();
             ItemDropMockFix.Switch(!isValid);
-
-            orig(self);
 
             if (isValid)
             {
                 OnBeforeCustomItemsAdded.SafeInvoke();
                 OnBeforeCustomItemsAdded = null;
-                AddCustomItems(self);
-                AddCustomRecipes(self);
-                AddCustomStatusEffects(self);
+
+                RegisterCustomItems(self);
 
                 self.UpdateItemHashes();
 
                 OnAfterInit.SafeInvoke();
                 OnAfterInit = null;
             }
+        }
+
+        private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
+
+            var isValid = self.IsValid();
+            ItemDropMockFix.Switch(!isValid);
+
+            if (isValid)
+            {
+                OnBeforeCustomItemsAdded.SafeInvoke();
+                OnBeforeCustomItemsAdded = null;
+
+                RegisterCustomItems(self);
+                RegisterCustomRecipes(self);
+                RegisterCustomStatusEffects(self);
+
+                self.UpdateItemHashes();
+
+                OnAfterInit.SafeInvoke();
+                OnAfterInit = null;
+            }
+
+            // Fire event that everything is added and registered
+            OnItemsRegistered?.Invoke(null, EventArgs.Empty);
         }
 
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)

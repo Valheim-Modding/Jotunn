@@ -2,17 +2,14 @@
 using UnityEngine;
 using BepInEx;
 using TestMod.ConsoleCommands;
-using JotunnLib;
-using JotunnLib.ConsoleCommands;
-using JotunnLib.Entities;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
-using TestMod.Prefabs;
+using JotunnLib.Configs;
 
 namespace TestMod
 {
     [BepInPlugin("com.bepinex.plugins.jotunnlib.testmod", "JotunnLib Test Mod", "0.1.0")]
-    [BepInDependency(JotunnLib.JotunnLibMain.ModGuid)]
+    [BepInDependency(JotunnLib.Main.ModGuid)]
     class TestMod : BaseUnityPlugin
     {
         public static AssetBundle Assets;
@@ -20,13 +17,16 @@ namespace TestMod
 
         private bool showMenu = false;
         private Sprite testSkillSprite;
+        private bool showGUIButton = false;
+
+        private GameObject TestButton;
+        private GameObject TestPanel;
 
         // Init handlers
         private void Awake()
         {
-            ObjectManager.Instance.ObjectRegister += registerObjects;
-            PrefabManager.Instance.PrefabRegister += registerPrefabs;
-            PieceManager.Instance.PieceRegister += registerPieces;
+            ItemManager.Instance.OnItemsRegistered += registerObjects;
+            //PieceManager.Instance.PieceRegister += registerPieces;
             InputManager.Instance.InputRegister += registerInputs;
             LocalizationManager.Instance.LocalizationRegister += registerLocalization;
 
@@ -35,7 +35,7 @@ namespace TestMod
             registerSkills();
         }
 
-        // Called every second
+        // Called every frame
         private void Update()
         {
             // Since our Update function in our BepInEx mod class will load BEFORE Valheim loads,
@@ -48,7 +48,13 @@ namespace TestMod
                 {
                     showMenu = !showMenu;
                 }
+
+                if (ZInput.GetButtonDown("GUIManagerTest"))
+                {
+                    showGUIButton = !showGUIButton;
+                }
             }
+
         }
 
         // Display our GUI if enabled
@@ -58,12 +64,41 @@ namespace TestMod
             {
                 GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
             }
+
+            if (showGUIButton)
+            {
+                if (TestPanel == null)
+                {
+                    if (GUIManager.Instance == null)
+                    {
+                        Logger.LogError("GUIManager instance is null");
+                        return;
+                    }
+
+                    if (GUIManager.PixelFix == null)
+                    {
+                        Logger.LogError("GUIManager pixelfix is null");
+                        return;
+                    }
+                    TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform,new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), new Vector2(0,0), 850, 600);
+
+                    GUIManager.Instance.CreateButton("ATest Button long long text", TestPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                        new Vector2(0, 0), 250, 100).SetActive(true);
+                    if (TestPanel == null)
+                    {
+                        return;
+                    }
+                }
+                TestPanel.SetActive(!TestPanel.activeSelf);
+                showGUIButton = false;
+            }
         }
 
         private void registerInputs(object sender, EventArgs e)
         {
             // Init menu toggle key
             InputManager.Instance.RegisterButton("TestMod_Menu", KeyCode.Insert);
+            InputManager.Instance.RegisterButton("GUIManagerTest", KeyCode.F8);
         }
 
         // Load assets from disk
@@ -75,27 +110,28 @@ namespace TestMod
 
             // Load asset bundle
             Assets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
-            Debug.Log(Assets);
-        }
-
-        // Register new prefabs
-        private void registerPrefabs(object sender, EventArgs e)
-        {
-            // Register prefabs using PrefabConfig
-            PrefabManager.Instance.RegisterPrefab(new TestPrefab());
-            PrefabManager.Instance.RegisterPrefab(new TestCubePrefab());
-            PrefabManager.Instance.RegisterPrefab(new BundlePrefab());
+            JotunnLib.Logger.LogInfo(Assets);
         }
 
         // Register new pieces
         private void registerPieces(object sender, EventArgs e)
         {
-            PieceManager.Instance.RegisterPiece("Hammer", "TestCube");
+            //PieceManager.Instance.RegisterPiece("Hammer", "TestCube");
         }
 
         // Register new items and recipes
         private void registerObjects(object sender, EventArgs e)
         {
+            // Register prefabs using PrefabConfig
+            /*PrefabManager.Instance.RegisterPrefab(new TestPrefab());
+            PrefabManager.Instance.RegisterPrefab(new TestCubePrefab());
+            PrefabManager.Instance.RegisterPrefab(new BundlePrefab());*/
+
+            // Register prefabs
+            /*var testprefab = new TestPrefab();
+            PrefabManager.Instance.AddPrefab(testprefab.Prefab);
+            PrefabManager.Instance.AddEmptyPrefab("TestCube");*/
+
             /*
             // Items
             ObjectManager.Instance.RegisterItem("TestPrefab");

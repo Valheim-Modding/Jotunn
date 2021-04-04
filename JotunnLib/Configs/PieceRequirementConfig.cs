@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using JotunnLib.Managers;
+﻿using JotunnLib.Entities;
 
-namespace JotunnLib.Entities
+namespace JotunnLib.Configs
 {
     public class PieceRequirementConfig
     {
@@ -17,7 +13,7 @@ namespace JotunnLib.Entities
         {
             return new Piece.Requirement()
             {
-                m_resItem = PrefabManager.Instance.GetPrefab(Item).GetComponent<ItemDrop>(),
+                m_resItem = Mock<ItemDrop>.Create(Item),
                 m_amount = Amount,
                 m_amountPerLevel = AmountPerLevel,
                 m_recover = Recover

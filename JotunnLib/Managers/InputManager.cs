@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using JotunnLib.Entities;
+using JotunnLib.Configs;
 
 namespace JotunnLib.Managers
 {

@@ -29,7 +29,7 @@ Write-Host "Publishing for $Target from $TargetPath"
 
 if ($Target.Equals("Debug")) {
     Write-Host "Updating local installation in $ValheimPath"
-
+    
     Write-Host "Copy mono-2.0-bdwgc.dll to $ValheimPath\MonoBleedingEdge\EmbedRuntime"
     if (!(Test-Path -Path "$ValheimPath\MonoBleedingEdge\EmbedRuntime\mono-2.0-bdwgc.dll.orig")) {
         Copy-Item -Path "$ValheimPath\MonoBleedingEdge\EmbedRuntime\mono-2.0-bdwgc.dll" -Destination "$ValheimPath\MonoBleedingEdge\EmbedRuntime\mono-2.0-bdwgc.dll.orig" -Force

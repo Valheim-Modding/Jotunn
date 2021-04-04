@@ -1,13 +1,13 @@
-﻿using System;
+﻿using JotunnLib.Managers;
+using JotunnLib.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace JotunnLib.Utils
+namespace JotunnLib
 {
     internal static class ItemDropMockFix
     {
@@ -84,7 +84,7 @@ namespace JotunnLib.Utils
                         }
                     }
 
-                    return Cache.GetPrefab(mockObjectType, unityObjectName);
+                    return PrefabManager.PrefabCache.GetPrefab(mockObjectType, unityObjectName);
                 }
             }
 
@@ -100,12 +100,6 @@ namespace JotunnLib.Utils
         public static T GetRealPrefabFromMock<T>(Object unityObject) where T : Object
         {
             return (T)GetRealPrefabFromMock(unityObject, typeof(T));
-        }
-
-
-        internal static void AddPrefab(this ZNetScene self, GameObject prefab)
-        {
-            self.m_namedPrefabs.Add(prefab.name.GetStableHashCode(), prefab);
         }
 
         /// <summary>
@@ -338,91 +332,6 @@ namespace JotunnLib.Utils
                         fieldInfo.SetValue(clonedComponent, fieldValue);
                     }
                 }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Helper class for caching gameobjects in the current scene.
-    /// </summary>
-    public static class Cache
-    {
-        private static readonly Dictionary<Type, Dictionary<string, Object>> DictionaryCache =
-            new Dictionary<Type, Dictionary<string, Object>>();
-
-        internal static ConditionalWeakTable<Inventory, Container> InventoryToContainer = new ConditionalWeakTable<Inventory, Container>();
-
-        private static void InitCache(Type type, Dictionary<string, Object> map = null)
-        {
-            map ??= new Dictionary<string, Object>();
-            foreach (var unityObject in Resources.FindObjectsOfTypeAll(type))
-            {
-                map[unityObject.name] = unityObject;
-            }
-
-            DictionaryCache[type] = map;
-        }
-
-        /// <summary>
-        /// Get an instance of an UnityObject from the current scene with the given name
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static Object GetPrefab(Type type, string name)
-        {
-            if (DictionaryCache.TryGetValue(type, out var map))
-            {
-                if (map.Count == 0 || !map.Values.First())
-                {
-                    InitCache(type, map);
-                }
-
-                if (map.TryGetValue(name, out var unityObject))
-                {
-                    return unityObject;
-                }
-            }
-            else
-            {
-                InitCache(type);
-                return GetPrefab(type, name);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Get an instance of an UnityObject from the current scene with the given name
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static T GetPrefab<T>(string name) where T : Object
-        {
-            return (T)GetPrefab(typeof(T), name);
-        }
-
-        /// <summary>
-        /// Get the instances of UnityObjects from the current scene with the given type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static Dictionary<string, Object> GetPrefabs(Type type)
-        {
-            if (DictionaryCache.TryGetValue(type, out var map))
-            {
-                if (map.Count == 0 || !map.Values.First())
-                {
-                    InitCache(type, map);
-                }
-
-                return map;
-            }
-            else
-            {
-                InitCache(type);
-                return GetPrefabs(type);
             }
         }
     }

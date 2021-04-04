@@ -393,19 +393,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\ButtonConfig.cs" />
+    <Compile Include="Configs\ButtonConfig.cs" />
+    <Compile Include="Entities\CustomPiece.cs" />
     <Compile Include="Entities\CustomItem.cs" />
     <Compile Include="Entities\CustomRecipe.cs" />
     <Compile Include="Entities\CustomStatusEffect.cs" />
-    <Compile Include="Entities\LocalizationConfig.cs" />
+    <Compile Include="Configs\LocalizationConfig.cs" />
     <Compile Include="Entities\Mock.cs" />
-    <Compile Include="Entities\PieceConfig.cs" />
-    <Compile Include="Entities\PieceRequirementConfig.cs" />
-    <Compile Include="Entities\PrefabConfig.cs" />
-    <Compile Include="Entities\RecipeConfig.cs" />
-    <Compile Include="Entities\SkillConfig.cs" />
+    <Compile Include="Entities\MockRequirement.cs" />
+    <Compile Include="Configs\PieceConfig.cs" />
+    <Compile Include="Configs\PieceRequirementConfig.cs" />
+    <Compile Include="Configs\RecipeConfig.cs" />
+    <Compile Include="Configs\SkillConfig.cs" />
     <Compile Include="Events\PlayerEventArgs.cs" />
     <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
+    <Compile Include="Extensions\ItemExtensions.cs" />
+    <Compile Include="Extensions\ZNetExtension.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Managers\CommandManager.cs" />
@@ -413,20 +416,18 @@
     <Compile Include="ConsoleCommands\ClearCommand.cs" />
     <Compile Include="ConsoleCommands\HelpCommand.cs" />
     <Compile Include="Managers\EventManager.cs" />
+    <Compile Include="Managers\GUIManager.cs" />
     <Compile Include="Managers\InputManager.cs" />
     <Compile Include="Managers\LocalizationManager.cs" />
-    <Compile Include="Managers\ObjectManager.cs" />
+    <Compile Include="Managers\ItemManager.cs" />
     <Compile Include="Managers\PieceManager.cs" />
     <Compile Include="Managers\PrefabManager.cs" />
-    <Compile Include="Managers\PrefabManagerVL.cs" />
     <Compile Include="Managers\SaveManager.cs" />
     <Compile Include="Managers\ZoneManager.cs" />
     <Compile Include="Patches\ConsoleCommandsPatches.cs" />
-    <Compile Include="JotunnLib.cs" />
-    <Compile Include="Patches\ObjectDBPatches.cs" />
+    <Compile Include="Main.cs" />
     <Compile Include="Patches\ZNetPatches.cs" />
     <Compile Include="Patches\ZoneSystemPatches.cs" />
-    <Compile Include="Patches\ZNetScenePatches.cs" />
     <Compile Include="Patches\PlayerPatches.cs" />
     <Compile Include="Patches\SkillsPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -435,7 +436,8 @@
     <Compile Include="Utils\EventsHelper.cs" />
     <Compile Include="Utils\Hashes.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
-    <Compile Include="Utils\MockExtentions.cs" />
+    <Compile Include="Extensions\MockExtentions.cs" />
+    <Compile Include="Extensions\ObjectExtension.cs" />
     <Compile Include="Utils\ObjImporter.cs" />
     <Compile Include="Utils\PatchInitAttribute.cs" />
     <Compile Include="Utils\Paths.cs" />
@@ -451,6 +453,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Target Name="JotunnBuildTask">
     <Message Text="Running JotunnBuildTask" />
     <Exec Command="$(TargetDir)JotunnBuildTask.exe &quot;$(VALHEIM_INSTALL)&quot;" WorkingDirectory="$(TargetDir)" />
