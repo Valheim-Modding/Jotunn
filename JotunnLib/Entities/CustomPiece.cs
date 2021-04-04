@@ -6,8 +6,8 @@ namespace JotunnLib.Entities
 {
     public class CustomPiece
     {
-        public GameObject PiecePrefab { get; private set; }
-        public Piece Piece { get; private set; }
+        public GameObject PiecePrefab { get; set; }
+        public Piece Piece { get; set; } = null;
         public bool FixReference { get; set; } = false;
 
         public CustomPiece(GameObject piecePrefab, bool fixReference)

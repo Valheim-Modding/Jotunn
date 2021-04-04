@@ -5,7 +5,7 @@ namespace JotunnLib.Entities
 {
     public class CustomItem
     {
-        public GameObject ItemPrefab { get; private set; }
+        public GameObject ItemPrefab { get; set; }
         public ItemDrop ItemDrop { get; set; } = null;
         public bool FixReference { get; set; } = false;
 
@@ -19,7 +19,7 @@ namespace JotunnLib.Entities
         public CustomItem(string name, bool addZNetView = true)
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
-            // add ItemDrop?
+            //TODO: add ItemDrop?
         }
 
         public CustomItem(string name, string baseName)
