@@ -20,7 +20,8 @@ namespace JotunnLib.Entities
         public CustomPiece(GameObject piecePrefab, PieceConfig pieceConfig)
         {
             PiecePrefab = piecePrefab;
-            Piece = pieceConfig.GetPiece();
+            Piece = piecePrefab.GetComponent<Piece>();
+            pieceConfig.Apply(piecePrefab);
             FixReference = true;
         }
 
