@@ -24,6 +24,9 @@ namespace JotunnLib.Entities
             FixReference = true;
         }
 
+        //TODO: constructors for cloned / empty prefabs with configs.
+        //TODO: cloning must use cache. everything must be usable before znetscene
+
         public CustomPiece(string name, bool addZNetView = true)
         {
             PiecePrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
