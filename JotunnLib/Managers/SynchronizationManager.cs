@@ -29,6 +29,9 @@ namespace JotunnLib.Managers
             Instance = this;
         }
 
+        /// <summary>
+        /// Main Init
+        /// </summary>
         internal override void Init()
         {
             // Register RPCs in Game.Start
@@ -40,7 +43,7 @@ namespace JotunnLib.Managers
             On.Menu.IsVisible += Menu_IsVisible;
         }
 
-        // Hack Menu.IsVisible to unlock cursor properly and disable camera rotation
+        // Hook Menu.IsVisible to unlock cursor properly and disable camera rotation
         private bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
         {
             return orig() | configurationManagerWindowShown;
