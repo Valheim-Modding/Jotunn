@@ -2,6 +2,8 @@
 using System.IO;
 using UnityEngine;
 using BepInEx;
+using System.Reflection;
+using System.Linq;
 
 namespace JotunnLib.Utils
 {
@@ -11,7 +13,7 @@ namespace JotunnLib.Utils
     public static class AssetUtils
     {
         /// <summary>
-        /// Loads a 2D texture from file at runtime.
+        /// Loads a <see cref="Texture2D"/> from file at runtime.
         /// </summary>
         /// <param name="texturePath">Texture path relative to "plugins" BepInEx folder</param>
         /// <returns>Texture2D loaded, or null if invalid path</returns>
@@ -28,6 +30,23 @@ namespace JotunnLib.Utils
             Texture2D tex = new Texture2D(2, 2);
             tex.LoadImage(fileData);
             return tex;
+        }
+
+        /// <summary>
+        /// Loads a <see cref="Sprite"/> from file at runtime.
+        /// </summary>
+        /// <param name="texturePath">Texture path relative to "plugins" BepInEx folder</param>
+        /// <returns>Texture2D loaded, or null if invalid path</returns>
+        public static Sprite LoadSpriteFromFile(string spritePath)
+        {
+            var tex = LoadTexture(spritePath);
+
+            if (tex != null)
+            {
+                return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(), 100);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -62,6 +81,31 @@ namespace JotunnLib.Utils
             }
 
             return AssetBundle.LoadFromFile(path);
+        }
+
+        /// <summary>
+        ///  Load an assembly-embedded <see cref="AssetBundle" />
+        /// </summary>
+        /// <param name="bundleName">Name of the bundle</param>
+        /// <returns></returns>
+        public static AssetBundle LoadAssetBundleFromResources(string bundleName)
+        {
+            var execAssembly = Assembly.GetExecutingAssembly();
+            var resourceName = execAssembly.GetManifestResourceNames().Single(str => str.EndsWith(bundleName));
+
+            if (resourceName == null)
+            {
+                Logger.LogError($"AssetBundle {bundleName} not found in assembly manifest");
+                return null;
+            }
+
+            AssetBundle ret;
+            using (var stream = execAssembly.GetManifestResourceStream(resourceName))
+            {
+                ret = AssetBundle.LoadFromStream(stream);
+            }
+
+            return ret;
         }
     }
 }
