@@ -191,15 +191,23 @@ namespace JotunnLib.Managers
 
             foreach (var customPiece in Pieces)
             {
-                if (customPiece.FixReference)
+                try
+                { 
+                    if (customPiece.FixReference)
+                    {
+                        customPiece.PiecePrefab.FixReferences();
+                        customPiece.FixReference = false;
+                    }
+
+                    objectDB.m_items.Add(customPiece.PiecePrefab);
+
+                    Logger.LogInfo($"Added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
+                }
+                catch (Exception ex)
                 {
-                    customPiece.PiecePrefab.FixReferences();
-                    customPiece.FixReference = false;
+                    Logger.LogError($"Error while adding custom item {customPiece.PiecePrefab.name}: {ex.Message}");
                 }
 
-                objectDB.m_items.Add(customPiece.PiecePrefab);
-
-                Logger.LogInfo($"Added custom Piece : {customPiece.PiecePrefab.name}");
             }
         }
 

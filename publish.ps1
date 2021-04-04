@@ -30,19 +30,24 @@ Write-Host "Publishing for $Target from $TargetPath"
 if ($Target.Equals("Debug")) {
     Write-Host "Updating local installation in $ValheimPath"
     
-    Write-Host "Copy mono-2.0-bdwgc.dll to $ValheimPath\MonoBleedingEdge\EmbedRuntime"
-    if (!(Test-Path -Path "$ValheimPath\MonoBleedingEdge\EmbedRuntime\mono-2.0-bdwgc.dll.orig")) {
-        Copy-Item -Path "$ValheimPath\MonoBleedingEdge\EmbedRuntime\mono-2.0-bdwgc.dll" -Destination "$ValheimPath\MonoBleedingEdge\EmbedRuntime\mono-2.0-bdwgc.dll.orig" -Force
-    }
-    Copy-Item -Path "$(Get-Location)\libraries\Debug\mono-2.0-bdwgc.dll" -Destination "$ValheimPath\MonoBleedingEdge\EmbedRuntime" -Force
+    $name = "$TargetAssembly" -Replace('.dll')
 
-    foreach($asm in $TargetAssembly.Split(',')){
-        $pdb = "$TargetPath\" + ($asm -Replace('.dll','.pdb'))
-        if (Test-Path -Path "$pdb") {
-            Write-Host "Copy Debug files for plugin $asm"
-            Copy-Item -Path "$pdb" -Destination "$ValheimPath\BepInEx\plugins" -Force
-            start "$(Get-Location)\libraries\Debug\pdb2mdb.exe" "$ValheimPath\BepInEx\plugins\$asm"
-        }
+    $plug = New-Item -Type Directory -Path "$ValheimPath\BepInEx\plugins\$name" -Force
+    Write-Host "Copy $TargetAssembly to $plug"
+    Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$plug" -Force
+    
+    $mono = "$ValheimPath\MonoBleedingEdge\EmbedRuntime";
+    Write-Host "Copy mono-2.0-bdwgc.dll to $mono"
+    if (!(Test-Path -Path "$mono\mono-2.0-bdwgc.dll.orig")) {
+        Copy-Item -Path "$mono\mono-2.0-bdwgc.dll" -Destination "$mono\mono-2.0-bdwgc.dll.orig" -Force
+    }
+    Copy-Item -Path "$(Get-Location)\libraries\Debug\mono-2.0-bdwgc.dll" -Destination "$mono" -Force
+
+    $pdb = "$TargetPath\$name.pdb"
+    if (Test-Path -Path "$pdb") {
+        Write-Host "Copy Debug files for plugin $asm"
+        Copy-Item -Path "$pdb" -Destination "$plug" -Force
+        start "$(Get-Location)\libraries\Debug\pdb2mdb.exe" "$plug\$TargetAssembly"
     }
         
     # set dnspy debugger env

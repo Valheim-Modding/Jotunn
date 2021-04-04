@@ -29,6 +29,12 @@ namespace JotunnLib.Configs
 
         public Recipe GetRecipe()
         {
+            if (Item == null)
+            {
+                Logger.LogError($"No item set in recipe config");
+                return null;
+            }
+
             var recipe = ScriptableObject.CreateInstance<Recipe>();
 
             var name = Name;
@@ -38,7 +44,8 @@ namespace JotunnLib.Configs
             }
 
             recipe.name = name;
-            recipe.m_item = Mock<ItemDrop>.Create(Name);
+
+            recipe.m_item = Mock<ItemDrop>.Create(Item);
             recipe.m_amount = Amount;
             recipe.m_enabled = Enabled;
 

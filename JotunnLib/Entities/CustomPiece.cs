@@ -20,7 +20,8 @@ namespace JotunnLib.Entities
         public CustomPiece(GameObject piecePrefab, PieceConfig pieceConfig)
         {
             PiecePrefab = piecePrefab;
-            Piece = pieceConfig.GetPiece();
+            Piece = piecePrefab.GetComponent<Piece>();
+            pieceConfig.Apply(piecePrefab);
             FixReference = true;
         }
 
@@ -48,7 +49,7 @@ namespace JotunnLib.Entities
 
         public bool IsValid()
         {
-            return PiecePrefab && Piece; // && Piece.IsValid(); implement that?
+            return PiecePrefab && Piece && Piece.IsValid();
         }
 
         public static bool IsCustomPiece(string prefabName)

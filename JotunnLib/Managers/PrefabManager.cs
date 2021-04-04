@@ -201,8 +201,6 @@ namespace JotunnLib.Managers
                 {
                     var name = prefab.Key;
 
-                    Logger.LogInfo($"GameObject: {name}");
-
                     RegisterToZNetScene(name, prefab.Value);
                 }
             }
