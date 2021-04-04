@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Globalization;
+using System.Linq;
 using UnityEngine;
 using BepInEx;
+using BepInEx.Configuration;
 using TestMod.ConsoleCommands;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
@@ -22,6 +25,7 @@ namespace TestMod
         private GameObject TestButton;
         private GameObject TestPanel;
 
+
         // Init handlers
         private void Awake()
         {
@@ -33,6 +37,15 @@ namespace TestMod
             loadAssets();
             registerCommands();
             registerSkills();
+
+            Logger.LogError(CultureInfo.CurrentCulture.Name);
+
+            Config.SaveOnConfigSet = true;
+
+            Config.Bind("JotunnLibTest", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "FloatValue1", 750f, new ConfigDescription("Server side float", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "IntegerValue1", 200, new ConfigDescription("Server side integer", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
         }
 
         // Called every frame
@@ -80,7 +93,7 @@ namespace TestMod
                         Logger.LogError("GUIManager pixelfix is null");
                         return;
                     }
-                    TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform,new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), new Vector2(0,0), 850, 600);
+                    TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 850, 600);
 
                     GUIManager.Instance.CreateButton("ATest Button long long text", TestPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                         new Vector2(0, 0), 250, 100).SetActive(true);

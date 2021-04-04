@@ -424,6 +424,7 @@
     <Compile Include="Managers\PrefabManager.cs" />
     <Compile Include="Managers\PrefabManagerVL.cs" />
     <Compile Include="Managers\SaveManager.cs" />
+    <Compile Include="Managers\SynchronizationManager.cs" />
     <Compile Include="Managers\ZoneManager.cs" />
     <Compile Include="Patches\ConsoleCommandsPatches.cs" />
     <Compile Include="Main.cs" />
@@ -434,6 +435,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Managers\SkillManager.cs" />
     <Compile Include="Utils\BoneReorder.cs" />
+    <Compile Include="Utils\ConfigurationManagerAttributes.cs" />
     <Compile Include="Utils\EventsHelper.cs" />
     <Compile Include="Utils\Hashes.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
