@@ -129,7 +129,7 @@ namespace JotunnLib.Managers
         }
 
         // Register RPC's
-        public static void Game_Start(On.Game.orig_Start orig, Game self)
+        private static void Game_Start(On.Game.orig_Start orig, Game self)
         {
             orig(self);
             ZRoutedRpc.instance.Register(nameof(RPC_JotunnLib_IsAdmin), new Action<long, bool>(RPC_JotunnLib_IsAdmin));
