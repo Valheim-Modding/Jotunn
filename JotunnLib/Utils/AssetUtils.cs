@@ -91,7 +91,11 @@ namespace JotunnLib.Utils
         public static AssetBundle LoadAssetBundleFromResources(string bundleName)
         {
             var execAssembly = Assembly.GetExecutingAssembly();
-            var resourceName = execAssembly.GetManifestResourceNames().Single(str => str.EndsWith(bundleName));
+            string resourceName = null;
+            try
+            {
+                resourceName = execAssembly.GetManifestResourceNames().Single(str => str.EndsWith(bundleName));
+            } catch (Exception) { }
 
             if (resourceName == null)
             {
