@@ -5,6 +5,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using BepInEx;
+using BepInEx.Configuration;
 using JotunnLib.ConsoleCommands;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
@@ -12,6 +13,7 @@ using JotunnLib.Utils;
 namespace JotunnLib
 {
     [BepInPlugin(ModGuid, "JotunnLib", Version)]
+    [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class Main : BaseUnityPlugin
     {
         // Version
@@ -63,8 +65,15 @@ namespace JotunnLib
             InitCommands(); // should that be a manager?
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
+
+#if DEBUG
+            Config.Bind("ModCompatibilityTest", "Enable", true, new ConfigDescription("Enable to test Mod compatibility testing", null));
+            Config.SettingChanged += ModCompatibility.Config_SettingChanged;
+            ModCompatibility.enableTestCase = (bool)Config["ModCompatibilityTest", "Enable"].BoxedValue;
+#endif
         }
-        
+
+
         /// <summary>
         /// Initialize patches
         /// </summary>

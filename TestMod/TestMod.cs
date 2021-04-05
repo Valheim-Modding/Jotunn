@@ -15,6 +15,7 @@ namespace TestMod
 {
     [BepInPlugin("com.bepinex.plugins.jotunnlib.testmod", "JotunnLib Test Mod", "0.1.0")]
     [BepInDependency(JotunnLib.Main.ModGuid)]
+    [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     class TestMod : BaseUnityPlugin
     {
         public AssetBundle TestAssets;

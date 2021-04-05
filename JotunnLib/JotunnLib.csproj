@@ -438,6 +438,8 @@
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Extensions\MockExtentions.cs" />
     <Compile Include="Extensions\ObjectExtension.cs" />
+    <Compile Include="Utils\ModCompatibility.cs" />
+    <Compile Include="Utils\NetworkCompatibiltyAttribute.cs" />
     <Compile Include="Utils\ObjImporter.cs" />
     <Compile Include="Utils\PatchInitAttribute.cs" />
     <Compile Include="Utils\Paths.cs" />
