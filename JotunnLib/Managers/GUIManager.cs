@@ -35,7 +35,9 @@ namespace JotunnLib.Managers
 
         public void OnPointerClick(PointerEventData eventData)
         {
+#if DEBUG
             Logger.LogMessage(eventData.GetObjectString());
+#endif
         }
 
         private void Awake()
