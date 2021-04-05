@@ -173,7 +173,7 @@ namespace JotunnLib.Managers
                 }
             }
 
-            if (ZNet.instance.IsServerInstance())
+            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
             {
                 // Is package not empty and is sender admin?
                 if (configPkg != null && configPkg.Size() > 0 && ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
@@ -210,7 +210,7 @@ namespace JotunnLib.Managers
             }
 
             // Server Receive
-            if (ZNet.instance.IsServerInstance())
+            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
             {
                 var peer = ZNet.instance.m_peers.FirstOrDefault(x => x.m_uid == sender);
                 if (peer != null)
@@ -264,7 +264,7 @@ namespace JotunnLib.Managers
                 }
             }
 
-            if (ZNet.instance.IsServerInstance())
+            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
             {
                 var peer = ZNet.instance.m_peers.FirstOrDefault(x => x.m_uid == sender);
                 if (peer != null)
