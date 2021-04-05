@@ -19,6 +19,10 @@ namespace JotunnLib.Utils
 
         private static int getVersionTrigger = 0;
 
+#if DEBUG
+        internal static bool enableTestCase = false;
+#endif
+
         [PatchInit(-1000)]
         public static void InitPatch()
         {
@@ -138,14 +142,13 @@ namespace JotunnLib.Utils
                 }
             }
 
-#if TESTCASE
-            // To check this part, remove the #if TESTCASE and 
-            if (ZNet.instance != null && (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance()))
+#if DEBUG
+            if (enableTestCase)
             {
                 valheimVersion += "!";
             }
-
 #endif
+
             return valheimVersion;
         }
 
@@ -220,5 +223,16 @@ namespace JotunnLib.Utils
                 return sb.ToString();
             }
         }
+
+
+#if DEBUG
+        internal static void Config_SettingChanged(object sender, BepInEx.Configuration.SettingChangedEventArgs e)
+        {
+            if (e.ChangedSetting.Definition.Section == "ModCompatibilityTest" && e.ChangedSetting.Definition.Key == "Enable")
+            {
+                enableTestCase = (bool)e.ChangedSetting.BoxedValue;
+            }
+        }
+#endif
     }
 }
