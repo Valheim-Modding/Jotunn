@@ -27,8 +27,9 @@ namespace JotunnLib
             typeof(InputManager),
             typeof(SkillManager),
             typeof(PrefabManager),
-            typeof(PieceManager),
             typeof(ItemManager),
+            typeof(PieceManager),
+            typeof(MockManager),
             typeof(ZoneManager),
             typeof(GUIManager),
             //typeof(SaveManager)
