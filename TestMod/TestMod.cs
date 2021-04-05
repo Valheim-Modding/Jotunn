@@ -35,25 +35,12 @@ namespace TestMod
             LocalizationManager.Instance.LocalizationRegister += registerLocalization;
 
             loadAssets();
-            addMockedItems();
             addItemsWithConfigs();
-            registerCommands();
-            registerSkills();
+            addMockedItems();
+            addCommands();
+            addSkills();
             createConfigValues();
 
-        }
-
-        private void createConfigValues()
-        {
-            // Createing some sample configuration values to check server sync
-            Config.SaveOnConfigSet = true;
-
-            Config.Bind("JotunnLibTest", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind("JotunnLibTest", "FloatValue1", 750f, new ConfigDescription("Server side float", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind("JotunnLibTest", "IntegerValue1", 200, new ConfigDescription("Server side integer", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind("JotunnLibTest", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind("JotunnLibTest", "KeycodeValue", KeyCode.F10,
-                new ConfigDescription("Server side Keycode", null, new ConfigurationManagerAttributes() {IsAdminOnly = true}));
         }
 
         // Called every frame
@@ -115,9 +102,9 @@ namespace TestMod
             }
         }
 
+        // Add custom key bindings
         private void registerInputs(object sender, EventArgs e)
         {
-            // Init menu toggle key
             InputManager.Instance.RegisterButton("TestMod_Menu", KeyCode.Insert);
             InputManager.Instance.RegisterButton("GUIManagerTest", KeyCode.F8);
         }
@@ -221,6 +208,9 @@ namespace TestMod
                     recipe.m_resources = ingredients.ToArray();
                     var CR = new CustomRecipe(recipe, true, true);
                     ItemManager.Instance.AddRecipe(CR);
+
+                    // Enable BoneReorder
+                    BoneReorder.ApplyOnEquipmentChanged();
                 }
                 assetBundle.Unload(false);
             }
@@ -303,7 +293,7 @@ namespace TestMod
         }
 
         // Register new console commands
-        private void registerCommands()
+        private void addCommands()
         {
             CommandManager.Instance.RegisterConsoleCommand(new PrintItemsCommand());
             CommandManager.Instance.RegisterConsoleCommand(new TpCommand());
@@ -314,12 +304,25 @@ namespace TestMod
         }
 
         // Register new skills
-        void registerSkills()
+        void addSkills()
         {
             // Test adding a skill with a texture
             Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");
             Sprite testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
             TestSkillType = SkillManager.Instance.RegisterSkill("com.jotunnlib.testmod.testskill", "TestingSkill", "A nice testing skill!", 1f, testSkillSprite);
+        }
+
+        // Create some sample configuration values to check server sync
+        private void createConfigValues()
+        {
+            Config.SaveOnConfigSet = true;
+
+            Config.Bind("JotunnLibTest", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "FloatValue1", 750f, new ConfigDescription("Server side float", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "IntegerValue1", 200, new ConfigDescription("Server side integer", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "KeycodeValue", KeyCode.F10,
+                new ConfigDescription("Server side Keycode", null, new ConfigurationManagerAttributes() { IsAdminOnly = true }));
         }
     }
 }
