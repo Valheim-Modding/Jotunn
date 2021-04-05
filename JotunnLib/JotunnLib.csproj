@@ -416,6 +416,7 @@
     <Compile Include="Managers\InputManager.cs" />
     <Compile Include="Managers\LocalizationManager.cs" />
     <Compile Include="Managers\ItemManager.cs" />
+    <Compile Include="Managers\MockManager.cs" />
     <Compile Include="Managers\PieceManager.cs" />
     <Compile Include="Managers\PrefabManager.cs" />
     <Compile Include="Managers\SaveManager.cs" />

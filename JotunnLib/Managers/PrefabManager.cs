@@ -12,11 +12,11 @@ namespace JotunnLib.Managers
     public class PrefabManager : Manager
     {
         public static PrefabManager Instance { get; private set; }
-        public static GameObject PrefabContainer;
         public static Cache PrefabCache;
 
         public event EventHandler PrefabsLoaded;
 
+        internal GameObject PrefabContainer;
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
         private bool loaded = false;
 
