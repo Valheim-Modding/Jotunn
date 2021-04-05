@@ -17,6 +17,8 @@ namespace JotunnLib.Utils
         /// </summary>
         private static string LastServerMessage = "";
 
+        private static int getVersionTrigger = 0;
+
         [PatchInit(-1000)]
         public static void InitPatch()
         {
@@ -36,7 +38,7 @@ namespace JotunnLib.Utils
                 panel.SetActive(true);
 
                 var remote = new MessageData(LastServerMessage);
-                var local = new MessageData(Version.GetVersionString());
+                var local = new MessageData(AddModuleVersions(Version.GetVersionString()));
 
                 var text = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline));
 
@@ -70,29 +72,34 @@ namespace JotunnLib.Utils
         private static void ZNet_SendPeerInfo(On.ZNet.orig_SendPeerInfo orig, ZNet self, ZRpc rpc, string password)
         {
             rpc.Register(nameof(RPC_JotunnLib_StoreServerMessage), new Action<ZRpc, string>(RPC_JotunnLib_StoreServerMessage));
+            getVersionTrigger = 1;
             orig(self, rpc, password);
         }
 
-        
+        // Hook RPC_PeerInfo to check in front of the original method
         private static void ZNet_RPC_PeerInfo(On.ZNet.orig_RPC_PeerInfo orig, ZNet self, ZRpc rpc, ZPackage pkg)
         {
-            if (ZNet.instance.IsServerInstance())
+            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
             {
                 // Check if version is correct
-                var xx = pkg.ReadLong();
+                pkg.ReadLong();
                 var vers = pkg.ReadString();
 
                 // Reset package reader position
                 pkg.m_reader.BaseStream.Position = 0;
 
+
                 // Check version ourselves to be able to send back some data
                 var serverVersion = Version.GetVersionString();
+                serverVersion = AddModuleVersions(serverVersion);
                 if (serverVersion != vers)
                 {
                     rpc.Invoke(nameof(RPC_JotunnLib_StoreServerMessage), serverVersion);
                 }
             }
 
+            // Add module strings 2 times
+            getVersionTrigger = 2;
             // call original method
             orig(self, rpc, pkg);
         }
@@ -102,6 +109,23 @@ namespace JotunnLib.Utils
         {
             var valheimVersion = orig();
 
+            if (getVersionTrigger > 0)
+            {
+                valheimVersion = AddModuleVersions(valheimVersion);
+                getVersionTrigger--;
+            }
+
+            return valheimVersion;
+        }
+
+
+        /// <summary>
+        /// Add module versions to string
+        /// </summary>
+        /// <param name="valheimVersion"></param>
+        /// <returns></returns>
+        private static string AddModuleVersions(string valheimVersion)
+        {
             foreach (var mod in GetEnforcedMods())
             {
                 if (mod.Item3 == CompatibilityLevel.EveryoneMustHaveMod)
@@ -115,13 +139,13 @@ namespace JotunnLib.Utils
             }
 
 #if TESTCASE
-            // TODO: Remove test case
-            if (ZNet.instance != null && ZNet.instance.IsServerInstance())
+            // To check this part, remove the #if TESTCASE and 
+            if (ZNet.instance != null && (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance()))
             {
                 valheimVersion += "!";
             }
-#endif
 
+#endif
             return valheimVersion;
         }
 
@@ -131,7 +155,7 @@ namespace JotunnLib.Utils
         /// <returns></returns>
         internal static IEnumerable<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> GetEnforcedMods()
         {
-            foreach (var plugin in BepInExUtils.GetDependentPlugins())
+            foreach (var plugin in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Key))
             {
                 var nca = plugin.Value.GetType().GetCustomAttributes(typeof(NetworkCompatibiltyAttribute), true).Cast<NetworkCompatibiltyAttribute>()
                     .FirstOrDefault();
@@ -163,13 +187,20 @@ namespace JotunnLib.Utils
         {
             public MessageData(string input)
             {
-                ValheimVersion = input.Split('@')[0];
-                var remaining = input.Substring(ValheimVersion.Length + 1);
-
-                var modules = remaining.Split('@');
-                foreach (var module in modules)
+                try
                 {
-                    Modules.Add(module);
+                    ValheimVersion = input.Split('@')[0];
+                    var remaining = input.Substring(ValheimVersion.Length + 1);
+
+                    var modules = remaining.Split('@');
+                    foreach (var module in modules)
+                    {
+                        Modules.Add(module);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Could not deserialize version string '{input}'");
                 }
             }
 
