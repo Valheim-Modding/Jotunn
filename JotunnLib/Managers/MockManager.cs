@@ -13,9 +13,9 @@ namespace JotunnLib.Managers
     class MockManager : Manager
     {
         public static MockManager Instance { get; private set; }
-        internal static GameObject MockPrefabContainer;
 
-        
+        internal GameObject MockPrefabContainer;
+
         private void Awake()
         {
             if (Instance != null)
@@ -75,7 +75,7 @@ namespace JotunnLib.Managers
 
                 foreach (var transform in MockPrefabContainer.transform)
                 {
-                    DestroyImmediate(((Transform)transform).gameObject);
+                    Destroy(((Transform)transform).gameObject);
                 }
             }
         }
