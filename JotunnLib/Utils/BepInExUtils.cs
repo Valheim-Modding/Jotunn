@@ -14,13 +14,13 @@ namespace JotunnLib.Utils
         {
             var result = new Dictionary<string, BaseUnityPlugin>();
 
-            var plugins = UnityEngine.Object.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray();
+            var plugins = BepInEx.Bootstrap.Chainloader.PluginInfos.Select(x=>x.Value.Instance).ToArray();
 
             foreach (var plugin in plugins)
             {
-                foreach (var attrib in plugin.GetType().GetCustomAttributes(typeof(BepInDependency), false).Cast<BepInDependency>())
+                foreach (var dependencyAttribute in plugin.GetType().GetCustomAttributes(typeof(BepInDependency), false).Cast<BepInDependency>())
                 {
-                    if (attrib.DependencyGUID == Main.ModGuid)
+                    if (dependencyAttribute.DependencyGUID == Main.ModGuid)
                     {
                         result.Add(plugin.Info.Metadata.GUID, plugin);
                     }
