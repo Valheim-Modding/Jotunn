@@ -35,7 +35,7 @@ namespace TestMod
             LocalizationManager.Instance.LocalizationRegister += registerLocalization;
 
             loadAssets();
-            LoadVLAssets();
+            addMockedItems();
             addItemsWithConfigs();
             registerCommands();
             registerSkills();
@@ -136,6 +136,9 @@ namespace TestMod
             // Load asset bundle from filesystem
             BlueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/blueprints");
             JotunnLib.Logger.LogInfo(BlueprintRuneBundle);
+
+            // Embedded Resources
+            JotunnLib.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
         }
 
         // Add new Items with item Configs
@@ -186,6 +189,41 @@ namespace TestMod
             }
 
             BlueprintRuneBundle.Unload(false);
+        }
+
+        // Add new items with mocked prefabs
+        private void addMockedItems()
+        {
+            // Load assets from resources
+            var asset = Assembly.GetExecutingAssembly().GetManifestResourceStream("TestMod.AssetsEmbedded.capeironbackpack");
+            if (asset == null) JotunnLib.Logger.LogWarning($"Requested asset stream could not be found.");
+            else
+            {
+                var assetBundle = AssetBundle.LoadFromStream(asset);
+                var prefab = assetBundle.LoadAsset<GameObject>("Assets/Evie/CapeIronBackpack.prefab");
+                if (!prefab) JotunnLib.Logger.LogWarning($"Failed to load asset from bundle: {assetBundle}");
+                else
+                {
+                    // Create and add a custom item
+                    var CI = new CustomItem(prefab, true);
+                    ItemManager.Instance.AddItem(CI);
+
+                    // Create and add a custom recipe
+                    var recipe = ScriptableObject.CreateInstance<Recipe>();
+                    recipe.m_item = prefab.GetComponent<ItemDrop>();
+                    recipe.m_craftingStation = Mock<CraftingStation>.Create("piece_workbench");
+                    var ingredients = new List<Piece.Requirement>
+                    {
+                        MockRequirement.Create("LeatherScraps", 10),
+                        MockRequirement.Create("DeerHide", 2),
+                        MockRequirement.Create("Iron", 4),
+                    };
+                    recipe.m_resources = ingredients.ToArray();
+                    var CR = new CustomRecipe(recipe, true, true);
+                    ItemManager.Instance.AddRecipe(CR);
+                }
+                assetBundle.Unload(false);
+            }
         }
 
         // Register new pieces
@@ -248,7 +286,7 @@ namespace TestMod
             */
         }
 
-        // Registers localizations
+        // Registers localizations with configs
         void registerLocalization(object sender, EventArgs e)
         {
             LocalizationManager.Instance.RegisterLocalizationConfig(new LocalizationConfig("English")
@@ -282,41 +320,6 @@ namespace TestMod
             Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");
             Sprite testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
             TestSkillType = SkillManager.Instance.RegisterSkill("com.jotunnlib.testmod.testskill", "TestingSkill", "A nice testing skill!", 1f, testSkillSprite);
-        }
-
-        private void LoadVLAssets()
-        {
-            JotunnLib.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
-            var asset = Assembly.GetExecutingAssembly().GetManifestResourceStream("TestMod.capeironbackpack");
-            if (asset == null) JotunnLib.Logger.LogWarning($"Requested asset stream could not be found.");
-            else
-            {
-                var ab = AssetBundle.LoadFromStream(asset);
-                var go = ab.LoadAsset<GameObject>("Assets/Evie/CapeIronBackpack.prefab");
-                if (!go) JotunnLib.Logger.LogWarning($"Failed to load asset from bundle: {ab}");
-                LoadCraftedItem(go, new List<Piece.Requirement>
-                {
-                    MockRequirement.Create("LeatherScraps", 10),
-                    MockRequirement.Create("DeerHide", 2),
-                    MockRequirement.Create("Iron", 4),
-                });
-            }
-        }
-
-        private void LoadCraftedItem(GameObject prefab, List<Piece.Requirement> ingredients, string craftingStation = "piece_workbench")
-        {
-            if (prefab)
-            {
-                var CI = new CustomItem(prefab, true);
-                var recipe = ScriptableObject.CreateInstance<Recipe>();
-                recipe.m_item = prefab.GetComponent<ItemDrop>();
-                recipe.m_craftingStation = Mock<CraftingStation>.Create(craftingStation);
-                recipe.m_resources = ingredients.ToArray();
-                var CR = new CustomRecipe(recipe, true, true);
-                JotunnLib.Managers.ItemManager.Instance.AddItem(CI);
-                JotunnLib.Managers.ItemManager.Instance.AddRecipe(CR);
-                JotunnLib.Logger.LogDebug($"Successfully loaded new CraftedItem {prefab.name} for {craftingStation}.");
-            }
         }
     }
 }

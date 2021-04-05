@@ -398,7 +398,8 @@
     <None Include="app.config" />
     <None Include="Assets\blueprints" />
     <None Include="Assets\jotunnlibtest" />
-    <None Include="capeironbackpack" />
+    <EmbeddedResource Include="AssetsEmbedded\capeironbackpack" />
+    <None Include="Assets\Translations\English\backpack.english.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">
