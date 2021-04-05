@@ -106,11 +106,15 @@ namespace JotunnLib.Managers
                 try
                 {
                     var itemDrop = customItem.ItemDrop;
+                    
+                    if (customItem.FixReference || itemDrop.m_itemData.m_dropPrefab == null)
+                    {
+                        itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
+                    }
+
                     if (customItem.FixReference)
                     {
                         customItem.ItemPrefab.FixReferences();
-
-                        itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
                         itemDrop.m_itemData.m_shared.FixReferences();
                         customItem.FixReference = false;
                     }
