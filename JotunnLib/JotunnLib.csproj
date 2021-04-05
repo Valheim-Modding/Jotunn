@@ -433,6 +433,7 @@
     <Compile Include="Patches\SkillsPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Managers\SkillManager.cs" />
+    <Compile Include="Utils\BepInExUtils.cs" />
     <Compile Include="Utils\BoneReorder.cs" />
     <Compile Include="Utils\ConfigurationManagerAttributes.cs" />
     <Compile Include="Utils\EventsHelper.cs" />

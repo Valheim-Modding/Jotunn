@@ -230,7 +230,7 @@ namespace JotunnLib.Managers
         /// </summary>
         private static void UnlockConfigurationEntries()
         {
-            var loadedPlugins = GetDependentPlugins();
+            var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
 
             foreach (var plugin in loadedPlugins)
             {
@@ -289,7 +289,7 @@ namespace JotunnLib.Managers
         {
             Logger.LogMessage("Received configuration data from server");
 
-            var loadedPlugins = GetDependentPlugins();
+            var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
 
             var numberOfEntries = configPkg.ReadInt();
             while (numberOfEntries > 0)
@@ -351,7 +351,7 @@ namespace JotunnLib.Managers
         internal static List<Tuple<string, string, string, string>> GetSyncConfigValues()
         {
             Logger.LogDebug("Gathering config values");
-            var loadedPlugins = GetDependentPlugins();
+            var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
 
             var values = new List<Tuple<string, string, string, string>>();
             foreach (var plugin in loadedPlugins)
@@ -368,30 +368,6 @@ namespace JotunnLib.Managers
             }
 
             return values;
-        }
-
-        /// <summary>
-        ///     Get a dictionary of loaded plugins which depend on JotunnLib
-        /// </summary>
-        /// <returns></returns>
-        private static Dictionary<string, BaseUnityPlugin> GetDependentPlugins()
-        {
-            var result = new Dictionary<string, BaseUnityPlugin>();
-
-            var plugins = FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray();
-
-            foreach (var plugin in plugins)
-            {
-                foreach (var attrib in plugin.GetType().GetCustomAttributes(typeof(BepInDependency), false).Cast<BepInDependency>())
-                {
-                    if (attrib.DependencyGUID == Main.ModGuid)
-                    {
-                        result.Add(plugin.Info.Metadata.GUID, plugin);
-                    }
-                }
-            }
-
-            return result;
         }
     }
 }
