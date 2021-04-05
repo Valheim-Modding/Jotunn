@@ -32,7 +32,8 @@ namespace JotunnLib
             typeof(MockManager),
             typeof(ZoneManager),
             typeof(GUIManager),
-            typeof(SaveManager)
+            typeof(SaveManager),
+            typeof(SynchronizationManager)
         };
 
         private readonly List<Manager> managers = new List<Manager>();

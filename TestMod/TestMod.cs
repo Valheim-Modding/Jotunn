@@ -9,6 +9,7 @@ using JotunnLib.Utils;
 using JotunnLib.Configs;
 using JotunnLib.Entities;
 using System.Collections.Generic;
+using BepInEx.Configuration;
 
 namespace TestMod
 {
@@ -38,6 +39,21 @@ namespace TestMod
             addItemsWithConfigs();
             registerCommands();
             registerSkills();
+            createConfigValues();
+
+        }
+
+        private void createConfigValues()
+        {
+            // Createing some sample configuration values to check server sync
+            Config.SaveOnConfigSet = true;
+
+            Config.Bind("JotunnLibTest", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "FloatValue1", 750f, new ConfigDescription("Server side float", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "IntegerValue1", 200, new ConfigDescription("Server side integer", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "KeycodeValue", KeyCode.F10,
+                new ConfigDescription("Server side Keycode", null, new ConfigurationManagerAttributes() {IsAdminOnly = true}));
         }
 
         // Called every frame
