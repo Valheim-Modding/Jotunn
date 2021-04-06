@@ -33,6 +33,19 @@ namespace JotunnLib.Managers
 
         private const int UILayer = 5;
 
+        public Color ValheimOrange = new Color(1f, 0.631f, 0.235f, 1f);
+
+        public ColorBlock ValheimScrollbarHandleColorBlock = new ColorBlock()
+        {
+            colorMultiplier = 1f,
+            disabledColor = new Color(0.783f, 0.783f, 0.783f, 0.502f),
+            fadeDuration = 0.1f,
+            highlightedColor = new Color(1, 0.786f, 0.088f, 1f),
+            normalColor = new Color(0.926f, 0.646f, 0.341f, 1f),
+            pressedColor = new Color(0.838f, 0.647f, 0.031f, 1f),
+            selectedColor = new Color(1, 0.786f, 0.088f, 1f),
+        };
+
         public void OnPointerClick(PointerEventData eventData)
         {
 #if DEBUG
@@ -57,6 +70,7 @@ namespace JotunnLib.Managers
             GUIContainer.layer = UILayer; // UI
             var canvas = GUIContainer.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 1;
             GUIContainer.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             GUIContainer.AddComponent<GraphicRaycaster>();
             GUIContainer.AddComponent<CanvasScaler>();
@@ -443,6 +457,240 @@ namespace JotunnLib.Managers
 
             toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().sprite = GetSprite("checkbox_marker");
             toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().maskable = true;
+        }
+
+        /// <summary>
+        /// Create a Gameobject with a Text (and optional Outline and ContentSizeFitter) component
+        /// </summary>
+        /// <param name="text">Text to show</param>
+        /// <param name="parent">Parent transform</param>
+        /// <param name="anchorMin">Anchor min</param>
+        /// <param name="anchorMax">Anchor max</param>
+        /// <param name="position">Anchored position</param>
+        /// <param name="font">Font</param>
+        /// <param name="fontSize">Font size</param>
+        /// <param name="color">Font color</param>
+        /// <param name="outline">Add outline component</param>
+        /// <param name="outlineColor">Outline color</param>
+        /// <param name="width">Width</param>
+        /// <param name="height">Height</param>
+        /// <param name="addContentSizeFitter">Add ContentSizeFitter</param>
+        /// <returns></returns>
+        public GameObject CreateText(string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Font font, int fontSize, Color color, bool outline, Color outlineColor, float width, float height, bool addContentSizeFitter)
+        {
+            GameObject go = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            if (outline)
+            {
+                go.AddComponent<Outline>().effectColor = outlineColor;
+            }
+
+            go.GetComponent<RectTransform>().anchorMin = anchorMin;
+            go.GetComponent<RectTransform>().anchorMax = anchorMax;
+            go.GetComponent<RectTransform>().anchoredPosition = position;
+            if (!addContentSizeFitter)
+            {
+                go.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                go.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            }
+            else
+            {
+                go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            }
+            go.GetComponent<Text>().font = font;
+            go.GetComponent<Text>().color = color;
+            go.GetComponent<Text>().fontSize = fontSize;
+            go.GetComponent<Text>().text = text;
+
+            go.transform.SetParent(parent, false);
+
+            return go;
+        }
+
+
+        /// <summary>
+        /// Create a complete scroll view
+        /// </summary>
+        /// <param name="parent">parent transform</param>
+        /// <param name="showHorizontalScrollbar">show horizontal scrollbar</param>
+        /// <param name="showVerticalScrollbar">show vertical scrollbar</param>
+        /// <param name="handleSize">size of the handle</param>
+        /// <param name="handleDistanceToBorder"></param>
+        /// <param name="handleColors">Colorblock for the handle</param>
+        /// <param name="slidingAreaBackgroundColor">Background color for the sliding area</param>
+        /// <param name="width">rect width</param>
+        /// <param name="height">rect height</param>
+        /// <returns></returns>
+        public GameObject CreateScrollView(Transform parent, bool showHorizontalScrollbar, bool showVerticalScrollbar, float handleSize, float handleDistanceToBorder, ColorBlock handleColors, Color slidingAreaBackgroundColor, float width, float height)
+        {
+            
+            GameObject canvas = new GameObject("Canvas", typeof(RectTransform), typeof(Canvas));
+            canvas.GetComponent<Canvas>().sortingOrder = 0;
+            canvas.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+            canvas.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+            canvas.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            canvas.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            canvas.GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
+            canvas.GetComponent<RectTransform>().anchoredPosition= new Vector2(0, 0);
+
+            //canvas.transform.localScale = new Vector3(2,2,2);
+            canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            
+
+            canvas.transform.SetParent(parent, false);
+
+            // Create scrollView
+            GameObject scrollView = new GameObject("Scroll View", typeof(Image), typeof(ScrollRect), typeof(Mask));
+            scrollView.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+            scrollView.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+            scrollView.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
+            scrollView.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, +handleDistanceToBorder + handleSize);
+            scrollView.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            scrollView.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+
+            scrollView.GetComponent<Image>().color = new Color(0, 0, 0, 1f);
+
+            scrollView.GetComponent<ScrollRect>().horizontal = showHorizontalScrollbar;
+            scrollView.GetComponent<ScrollRect>().vertical = showVerticalScrollbar;
+            scrollView.GetComponent<ScrollRect>().horizontalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+            scrollView.GetComponent<ScrollRect>().verticalScrollbarVisibility= ScrollRect.ScrollbarVisibility.AutoHide;
+            scrollView.GetComponent<ScrollRect>().scrollSensitivity = 35f;
+
+            scrollView.GetComponent<Mask>().showMaskGraphic = false;
+
+            scrollView.transform.SetParent(canvas.transform, false);
+
+            // Create viewport
+            GameObject viewPort = new GameObject("Viewport", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            viewPort.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
+            viewPort.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+            viewPort.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+            viewPort.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
+            viewPort.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            viewPort.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            viewPort.GetComponent<Image>().color = new Color(0, 0, 0, 0);
+            
+            viewPort.transform.SetParent(scrollView.transform, false);
+
+            scrollView.GetComponent<ScrollRect>().viewport = viewPort.GetComponent<RectTransform>();
+
+            if (showHorizontalScrollbar)
+            {
+                // Create Horizontal scroll bar
+                GameObject horizontalScrollbar = new GameObject("Scrollbar horizontal", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image),
+                    typeof(Scrollbar));
+
+                horizontalScrollbar.transform.SetParent(scrollView.transform, false);
+                scrollView.GetComponent<ScrollRect>().horizontalScrollbar = horizontalScrollbar.GetComponent<Scrollbar>();
+
+                horizontalScrollbar.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1f);
+                horizontalScrollbar.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1f);
+                horizontalScrollbar.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
+                horizontalScrollbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-handleSize / 2f, -height+handleSize);
+                horizontalScrollbar.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 2f * handleDistanceToBorder - handleSize);
+                horizontalScrollbar.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, handleSize);
+
+                horizontalScrollbar.GetComponent<Image>().color = slidingAreaBackgroundColor;
+
+                horizontalScrollbar.GetComponent<Scrollbar>().colors = handleColors;
+
+                
+                GameObject slidingArea = new GameObject("Sliding Area", typeof(RectTransform));
+                slidingArea.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+                slidingArea.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+                slidingArea.GetComponent<RectTransform>().pivot = new Vector2(0, 0.5f);
+                slidingArea.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,0);
+                slidingArea.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 2f * handleDistanceToBorder - handleSize);
+                slidingArea.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, handleSize);
+
+                slidingArea.transform.SetParent(horizontalScrollbar.transform, false);
+
+                GameObject handle = new GameObject("Handle", typeof(RectTransform), typeof(Image));
+                handle.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -handleSize/2f);
+                handle.transform.SetParent(slidingArea.transform, false);
+                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, handleSize/2f);
+                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, handleSize/2f);
+                handle.GetComponent<Image>().sprite = GetSprite("UISprite");
+                handle.GetComponent<Image>().type = Image.Type.Sliced;
+
+
+                horizontalScrollbar.GetComponent<Scrollbar>().size = 0.4f;
+                horizontalScrollbar.GetComponent<Scrollbar>().handleRect = handle.GetComponent<RectTransform>();
+                horizontalScrollbar.GetComponent<Scrollbar>().targetGraphic = handle.GetComponent<Image>();
+                horizontalScrollbar.GetComponent<Scrollbar>().direction = Scrollbar.Direction.LeftToRight;
+            }
+
+            if (showVerticalScrollbar)
+            {
+                // Create Vertical scroll bar
+                GameObject verticalScrollbar = new GameObject("Scrollbar Vertical", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image),
+                    typeof(Scrollbar));
+
+                verticalScrollbar.transform.SetParent(scrollView.transform, false);
+                scrollView.GetComponent<ScrollRect>().verticalScrollbar = verticalScrollbar.GetComponent<Scrollbar>();
+
+                verticalScrollbar.GetComponent<RectTransform>().anchorMin = new Vector2(1f, 0.5f);
+                verticalScrollbar.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 0.5f);
+                verticalScrollbar.GetComponent<RectTransform>().pivot = new Vector2(1f, 0.5f);
+                verticalScrollbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -handleSize / 2f);
+                verticalScrollbar.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, handleSize);
+                verticalScrollbar.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 2f * handleDistanceToBorder - handleSize);
+
+                verticalScrollbar.GetComponent<Image>().color = slidingAreaBackgroundColor;
+
+                verticalScrollbar.GetComponent<Scrollbar>().colors = handleColors;
+
+                GameObject slidingArea = new GameObject("Sliding Area", typeof(RectTransform));
+                slidingArea.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+                slidingArea.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+                slidingArea.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
+                slidingArea.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,0);
+                slidingArea.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, handleSize);
+                slidingArea.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 2f * handleDistanceToBorder - handleSize);
+
+                slidingArea.transform.SetParent(verticalScrollbar.transform, false);
+
+                GameObject handle = new GameObject("Handle", typeof(RectTransform), typeof(Image));
+                handle.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+                handle.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+                handle.GetComponent<RectTransform>().anchoredPosition = new Vector2(handleSize/2f, 0);
+                handle.transform.SetParent(slidingArea.transform, false);
+                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, handleSize/2f);
+                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, handleSize/2f);
+                handle.GetComponent<Image>().sprite = GetSprite("UISprite");
+                handle.GetComponent<Image>().type = Image.Type.Sliced;
+                verticalScrollbar.GetComponent<Scrollbar>().size = 0.4f;
+                
+
+                verticalScrollbar.GetComponent<Scrollbar>().handleRect = handle.GetComponent<RectTransform>();
+                verticalScrollbar.GetComponent<Scrollbar>().targetGraphic = handle.GetComponent<Image>();
+                verticalScrollbar.GetComponent<Scrollbar>().size = handleSize;
+                verticalScrollbar.GetComponent<Scrollbar>().direction = Scrollbar.Direction.BottomToTop;
+                verticalScrollbar.GetComponent<Scrollbar>().SetValueWithoutNotify(1f);
+            }
+
+            GameObject content = new GameObject("Content", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(Canvas), typeof(GraphicRaycaster), typeof(ContentSizeFitter));
+
+            content.GetComponent<Canvas>().planeDistance = 5.2f;
+            content.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+            content.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+            content.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
+            content.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 2 * handleDistanceToBorder - handleSize);
+            content.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 2 * handleDistanceToBorder - handleSize);
+
+            content.GetComponent<VerticalLayoutGroup>().childAlignment = TextAnchor.UpperLeft;
+            content.GetComponent<VerticalLayoutGroup>().childForceExpandWidth = true;
+            content.GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
+            content.GetComponent<VerticalLayoutGroup>().childControlHeight= true;
+            content.GetComponent<VerticalLayoutGroup>().childControlWidth= showHorizontalScrollbar;
+            
+            content.transform.SetParent(viewPort.transform, false);
+
+            content.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            scrollView.GetComponent<ScrollRect>().content = content.GetComponent<RectTransform>();
+
+            return canvas;
         }
     }
 }
