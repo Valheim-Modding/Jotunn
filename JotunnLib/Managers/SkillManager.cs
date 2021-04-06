@@ -5,23 +5,24 @@ using UnityEngine;
 namespace JotunnLib.Managers
 {
     /// <summary>
-    /// Handles all logic that has to do with skills, and registering custom skills
+    ///     Handles all logic that has to do with skills, and adding custom skills.
     /// </summary>
     public class SkillManager : Manager
     {
         /// <summary>
-        /// Global singleton instance of the manager
+        ///     Global singleton instance of the manager.
         /// </summary>
         public static SkillManager Instance { get; private set; }
 
         internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
+        
         // FIXME: Deprecate
         private int nextSkillId = 1000;
         private void Awake()
         {
             if (Instance != null)
             {
-                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType().Name}");
                 return;
             }
 
@@ -29,9 +30,9 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// DEPRECATED DUE TO POSSIBLE CONFLICT ISSUE, see: <see href="https://github.com/jotunnlib/jotunnlib/issues/18">GitHub Issue</see>
-        /// <para/>
-        /// Register a new skill with given parameters, and registers translations for it in the current localization
+        ///     DEPRECATED DUE TO POSSIBLE CONFLICT ISSUE, see: <see href="https://github.com/jotunnlib/jotunnlib/issues/18">GitHub Issue</see>.
+        ///     <para/>
+        ///     Register a new skill with given parameters, and registers translations for it in the current localization.
         /// </summary>
         /// <param name="name">Name of the new skill</param>
         /// <param name="description">Description of the new skill</param>
@@ -71,7 +72,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Register a new skill with given SkillConfig object, and registers translations for it in the current localization
+        ///     Register a new skill with given SkillConfig object, and registers translations for it in the current localization.
         /// </summary>
         /// <param name="skillConfig">SkillConfig object representing new skill to register</param>
         /// <returns>The SkillType of the newly registered skill</returns>
@@ -97,7 +98,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Register a new skill with given parameters, and registers translations for it in the current localization
+        ///     Register a new skill with given parameters, and registers translations for it in the current localization.
         /// </summary>
         /// <param name="identifer">Unique identifier of the new skill, ex: "com.jotunnlib.testmod.testskill"</param>
         /// <param name="name">Name of the new skill</param>
@@ -124,7 +125,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Gets a custom skill with given SkillType
+        ///     Gets a custom skill with given SkillType.
         /// </summary>
         /// <param name="skillType">SkillType to look for</param>
         /// <returns>Custom skill with given SkillType</returns>
@@ -159,7 +160,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Gets a custom skill with given skill identifier
+        ///     Gets a custom skill with given skill identifier.
         /// </summary>
         /// <param name="identifier">String indentifer of SkillType to look for</param>
         /// <returns>Custom skill with given SkillType</returns>

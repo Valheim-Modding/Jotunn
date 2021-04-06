@@ -7,10 +7,10 @@ namespace JotunnLib.Managers
 {
     internal class SaveManager : Manager
     {
-        internal static SaveManager Instance { get; private set; }
-
         internal const string PlayerPrefix = "player_";
         internal const string EntrySeparator = ".";
+
+        internal static SaveManager Instance { get; private set; }
 
         internal readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
 
@@ -32,24 +32,24 @@ namespace JotunnLib.Managers
         {
             Directory.CreateDirectory(Paths.CustomItemDataFolder);
 
-            On.Container.Awake += AddToCache;
-            On.Container.OnDestroyed += RemoveFromCache;
+            On.Container.Awake += addToCache;
+            On.Container.OnDestroyed += removeFromCache;
 
-            IL.Inventory.MoveAll += FixMoveAllPerformance;
-            On.Inventory.Save += SaveModdedItems;
-            On.Inventory.Load += AddBackCustomItems;
+            IL.Inventory.MoveAll += fixMoveAllPerformance;
+            On.Inventory.Save += saveModdedItems;
+            On.Inventory.Load += addBackCustomItems;
         }
 
-        private static bool OptimizedRemoveItem(Inventory fromInventory, ItemDrop.ItemData item)
+        private static bool optimizedRemoveItem(Inventory fromInventory, ItemDrop.ItemData item)
         {
             return fromInventory.m_inventory.Remove(item);
         }
 
-        private static void FixMoveAllPerformance(ILContext il)
+        private static void fixMoveAllPerformance(ILContext il)
         {
             var cursor = new ILCursor(il);
 
-            var optimizedRemoveItemMethodReference = il.Import(typeof(SaveManager).GetMethod(nameof(SaveManager.OptimizedRemoveItem), ReflectionHelper.AllBindingFlags));
+            var optimizedRemoveItemMethodReference = il.Import(typeof(SaveManager).GetMethod(nameof(SaveManager.optimizedRemoveItem), ReflectionHelper.AllBindingFlags));
 
             if (cursor.TryGotoNext(i => i.MatchCallOrCallvirt<Inventory>(nameof(Inventory.RemoveItem))))
             {
@@ -70,7 +70,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void AddToCache(On.Container.orig_Awake orig, Container self)
+        private void addToCache(On.Container.orig_Awake orig, Container self)
         {
             orig(self);
 
@@ -80,7 +80,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void RemoveFromCache(On.Container.orig_OnDestroyed orig, Container self)
+        private void removeFromCache(On.Container.orig_OnDestroyed orig, Container self)
         {
             orig(self);
 
@@ -90,7 +90,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void SaveModdedItems(On.Inventory.orig_Save orig, Inventory self, ZPackage pkg)
+        private void saveModdedItems(On.Inventory.orig_Save orig, Inventory self, ZPackage pkg)
         {
             orig(self, pkg);
 
@@ -123,7 +123,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void AddBackCustomItems(On.Inventory.orig_Load orig, Inventory self, ZPackage pkg)
+        private void addBackCustomItems(On.Inventory.orig_Load orig, Inventory self, ZPackage pkg)
         {
             orig(self, pkg);
 

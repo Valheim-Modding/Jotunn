@@ -4,7 +4,7 @@ using JotunnLib.Entities;
 
 namespace JotunnLib.ConsoleCommands
 {
-    class ClearCommand : ConsoleCommand
+    internal class ClearCommand : ConsoleCommand
     {
         public override string Name => "clear";
 

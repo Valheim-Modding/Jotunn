@@ -5,16 +5,16 @@ using UnityEngine;
 
 namespace JotunnLib.Managers
 {
+    /// <summary>
+    ///     Handles all logic to do with adding custom Pieces and PieceTables to the game.
+    /// </summary>
     public class PieceManager : Manager
     {
+        /// <summary>
+        ///     The singleton instance of this manager.
+        /// </summary>
         public static PieceManager Instance { get; private set; }
-        //public event EventHandler PieceTableRegister;
-        //public event EventHandler PieceRegister;
-        //private bool loaded = false;
 
-        public event EventHandler OnPiecesRegistered;
-        public event EventHandler OnPieceTablesRegistered;
-        internal GameObject PieceTableContainer;
         internal readonly Dictionary<string, PieceTable> PieceTables = new Dictionary<string, PieceTable>();
         internal readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>()
         {
@@ -22,13 +22,17 @@ namespace JotunnLib.Managers
             { "Hammer", "_HammerPieceTable" },
             { "Hoe", "_HoePieceTable" }
         };
+
+        public event EventHandler OnPiecesRegistered;
+        public event EventHandler OnPieceTablesRegistered;
+        internal GameObject PieceTableContainer;
         internal List<CustomPiece> Pieces = new List<CustomPiece>();
 
         private void Awake()
         {
             if (Instance != null)
             {
-                Logger.LogError($"Two instances of singleton {GetType()}");
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
                 return;
             }
 
@@ -54,8 +58,8 @@ namespace JotunnLib.Managers
             }
 
             // Setup Hooks
-            On.ObjectDB.Awake += RegisterCustomData;
-            On.Player.Load += ReloadKnownRecipes;
+            On.ObjectDB.Awake += registerCustomData;
+            On.Player.Load += reloadKnownRecipes;
         }
 
         //TODO: Dont know if needed anymore
@@ -186,7 +190,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void RegisterInObjectDB(ObjectDB objectDB)
+        private void registerInObjectDB(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom pieces to {objectDB} ----");
 
@@ -212,7 +216,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void registerCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
 
@@ -221,7 +225,7 @@ namespace JotunnLib.Managers
 
             if (isValid)
             {
-                RegisterInObjectDB(self);
+                registerInObjectDB(self);
             }
 
             // Fire event that everything is added and registered
@@ -229,7 +233,7 @@ namespace JotunnLib.Managers
             OnPiecesRegistered?.Invoke(null, EventArgs.Empty);
         }
 
-        private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
+        private void reloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
         {
             orig(self, pkg);
 

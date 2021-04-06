@@ -13,9 +13,9 @@ namespace JotunnLib.Utils
     public class ModCompatibility
     {
         /// <summary>
-        /// Stores the last server message
+        ///     Stores the last server message.
         /// </summary>
-        private static string LastServerMessage = "";
+        private static string lastServerMessage = "";
 
         private static int getVersionTrigger = 0;
 
@@ -35,13 +35,13 @@ namespace JotunnLib.Utils
         private static void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
             // Show message box if there is a message to show
-            if (!string.IsNullOrEmpty(LastServerMessage) && scene.name == "start")
+            if (!string.IsNullOrEmpty(lastServerMessage) && scene.name == "start")
             {
                 var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     new Vector2(0f, 0f), 500, 500);
                 panel.SetActive(true);
 
-                var remote = new MessageData(LastServerMessage);
+                var remote = new MessageData(lastServerMessage);
                 var local = new MessageData(AddModuleVersions(Version.GetVersionString()));
 
                 var text = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline));
@@ -68,7 +68,7 @@ namespace JotunnLib.Utils
                     Object.Destroy(panel);
                 });
 
-                LastServerMessage = "";
+                lastServerMessage = "";
             }
         }
 
@@ -124,7 +124,7 @@ namespace JotunnLib.Utils
 
 
         /// <summary>
-        /// Add module versions to string
+        ///     Add module versions to string.
         /// </summary>
         /// <param name="valheimVersion"></param>
         /// <returns></returns>
@@ -153,7 +153,7 @@ namespace JotunnLib.Utils
         }
 
         /// <summary>
-        /// Get module 
+        ///     Get module.
         /// </summary>
         /// <returns></returns>
         internal static IEnumerable<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> GetEnforcedMods()
@@ -171,7 +171,7 @@ namespace JotunnLib.Utils
         }
 
         /// <summary>
-        /// Store server's message
+        ///     Store server's message.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="data"></param>
@@ -179,12 +179,12 @@ namespace JotunnLib.Utils
         {
             if (ZNet.instance.IsClientInstance())
             {
-                LastServerMessage = data;
+                lastServerMessage = data;
             }
         }
 
         /// <summary>
-        /// Deserialize version string into a usable format
+        ///     Deserialize version string into a usable format.
         /// </summary>
         private class MessageData
         {

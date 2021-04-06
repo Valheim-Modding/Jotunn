@@ -4,10 +4,10 @@ using BepInEx;
 
 namespace JotunnLib.Utils
 {
-    public class BepInExUtils
+    internal class BepInExUtils
     {
         /// <summary>
-        ///     Get a dictionary of loaded plugins which depend on JotunnLib
+        ///     Get a dictionary of loaded plugins which depend on JotunnLib.
         /// </summary>
         /// <returns></returns>
         internal static Dictionary<string, BaseUnityPlugin> GetDependentPlugins(bool includeJotunnLib = false)

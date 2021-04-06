@@ -13,7 +13,7 @@ using BepInEx.Configuration;
 
 namespace TestMod
 {
-    [BepInPlugin("com.bepinex.plugins.jotunnlib.testmod", "JotunnLib Test Mod", "0.1.0")]
+    [BepInPlugin("com.jotunn.testmod", "JotunnLib Test Mod", "0.1.0")]
     [BepInDependency(JotunnLib.Main.ModGuid)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     class TestMod : BaseUnityPlugin
@@ -23,11 +23,9 @@ namespace TestMod
         public Skills.SkillType TestSkillType = 0;
 
         private bool showMenu = false;
-        private Sprite testSkillSprite;
         private bool showGUIButton = false;
-
-        private GameObject TestButton;
-        private GameObject TestPanel;
+        private Sprite testSkillSprite;
+        private GameObject testButton, testPanel;
 
         // Init handlers
         private void Awake()
@@ -76,7 +74,7 @@ namespace TestMod
 
             if (showGUIButton)
             {
-                if (TestPanel == null)
+                if (testPanel == null)
                 {
                     if (GUIManager.Instance == null)
                     {
@@ -89,16 +87,16 @@ namespace TestMod
                         Logger.LogError("GUIManager pixelfix is null");
                         return;
                     }
-                    TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform,new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), new Vector2(0,0), 850, 600);
+                    testPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform,new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), new Vector2(0,0), 850, 600);
 
-                    GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", testPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                         new Vector2(0, 0), 250, 100).SetActive(true);
-                    if (TestPanel == null)
+                    if (testPanel == null)
                     {
                         return;
                     }
                 }
-                TestPanel.SetActive(!TestPanel.activeSelf);
+                testPanel.SetActive(!testPanel.activeSelf);
                 showGUIButton = false;
             }
         }

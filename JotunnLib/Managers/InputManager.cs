@@ -8,16 +8,16 @@ namespace JotunnLib.Managers
     public class InputManager : Manager
     {
         public static InputManager Instance { get; private set; }
+        internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
 
         public EventHandler InputRegister;
-        internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
         private bool inputsRegistered = false;
 
         private void Awake()
         {
             if (Instance != null)
             {
-                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType().Name}");
                 return;
             }
 

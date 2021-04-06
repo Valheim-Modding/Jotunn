@@ -7,24 +7,31 @@ using System.Linq;
 namespace JotunnLib.Managers
 {
     /// <summary>
-    /// Handles all logic to do with managing custom prefabs added into the game.
+    ///     Handles all logic to do with managing custom prefabs added into the game.
     /// </summary>
     public class PrefabManager : Manager
     {
+        /// <summary>
+        ///     The singleton instance of this manager.
+        /// </summary>
         public static PrefabManager Instance { get; private set; }
+
+        /// <summary>
+        ///     The global cache of prefabs.
+        /// </summary>
         public static Cache PrefabCache;
 
         public event EventHandler PrefabsLoaded;
-
         internal GameObject PrefabContainer;
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
+
         private bool loaded = false;
 
         private void Awake()
         {
             if (Instance != null)
             {
-                Logger.LogError($"Two instances of singleton {GetType()}");
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
                 return;
             }
 
@@ -33,7 +40,7 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            On.ZNetScene.Awake += RegisterAllToZNetScene;
+            On.ZNetScene.Awake += registerAllToZNetScene;
 
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
@@ -42,7 +49,7 @@ namespace JotunnLib.Managers
             PrefabCache = new Cache();
         }
 
-        private string CreateUID()
+        private string createUID()
         {
             const char separator = '_';
 
@@ -53,7 +60,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Adds a prefab to the manager. Added prefabs get registered to the <see cref="ZNetScene"/> on Awake().
+        ///     Adds a prefab to the manager. Added prefabs get registered to the <see cref="ZNetScene"/> on Awake().
         /// </summary>
         /// <param name="name"></param>
         /// <param name="prefab"></param>
@@ -61,7 +68,7 @@ namespace JotunnLib.Managers
         {
             if (Prefabs.ContainsKey(prefab.name))
             {
-                Logger.LogWarning($"Prefab {prefab.name} already exists");
+                Logger.LogWarning($"Prefab '{prefab.name}' already exists");
                 return;
             }
 
@@ -71,27 +78,29 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Creates a new prefab that's an empty primitive.
+        ///     Creates a new prefab that's an empty primitive.
         /// </summary>
         /// <param name="name">The name of the new GameObject</param>
-        /// <param name="addZNetView">When true a ZNetView component is added to the new GameObject for ZDO generation and networking. Default: true</param>
-        /// <returns></returns>
+        /// <param name="addZNetView" >
+        ///     When true a ZNetView component is added to the new GameObject for ZDO generation and networking. Default: true
+        /// </param>
+        /// <returns>The newly created empty prefab</returns>
         public GameObject CreateEmptyPrefab(string name, bool addZNetView = true)
         {
             if (string.IsNullOrEmpty(name))
             {
-                Logger.LogError("Failed to create prefab with invalid name: " + name);
+                Logger.LogError($"Failed to create prefab with invalid name: {name}");
                 return null;
             }
 
             if (GetPrefab(name))
             {
-                Logger.LogError("Failed to create prefab, name already exists: " + name);
+                Logger.LogError($"Failed to create prefab, name already exists: {name}");
                 return null;
             }
 
             GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            prefab.name = name + CreateUID();
+            prefab.name = name + createUID();
             prefab.transform.parent = PrefabContainer.transform;
 
             if (addZNetView)
@@ -105,35 +114,35 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Allows you to clone a given prefab without modifying the original.
+        ///     Allows you to clone a given prefab without modifying the original.
         /// </summary>
         /// <param name="name">New prefab name</param>
         /// <param name="baseName">Base prefab name</param>
-        /// <returns>New prefab object</returns>
+        /// <returns>Newly created prefab object</returns>
         public GameObject CreateClonedPrefab(string name, string baseName)
         {
             return CreateClonedPrefab(name, GetPrefab(baseName));
         }
 
         /// <summary>
-        /// Allows you to clone a given prefab without modifying the original.
+        ///     Allows you to clone a given prefab without modifying the original.
         /// </summary>
         /// <param name="name">New prefab name</param>
         /// <param name="prefab">Base prefab</param>
-        /// <returns></returns>
+        /// <returns>Newly created cloned prefab object</returns>
         public GameObject CreateClonedPrefab(string name, GameObject prefab)
         {
             var newPrefab = UnityEngine.Object.Instantiate(prefab, PrefabContainer.transform);
-            newPrefab.name = name + CreateUID();
+            newPrefab.name = name + createUID();
 
             return newPrefab;
         }
 
         /// <summary>
-        /// Returns an existing prefab with given name, or null if none exist.
+        ///     Returns an existing prefab with given name, or null if none exist.
         /// </summary>
         /// <param name="name">Name of the prefab to search for</param>
-        /// <returns></returns>
+        /// <returns>The existing prefab, or null if none exists with given name</returns>
         public GameObject GetPrefab(string name)
         {
             if (Prefabs.ContainsKey(name))
@@ -156,9 +165,9 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Destroy a known custom prefab. Removes it from the manager and if found also on the <see cref="ZNetScene"/>
+        ///     Destroy a known custom prefab. Removes it from the manager and if found also on the <see cref="ZNetScene"/>.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">The name of the prefab to destroy</param>
         public void DestroyPrefab(string name)
         {
             if (Prefabs.ContainsKey(name))
@@ -186,10 +195,10 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Add all registered prefabs to the namedPrefabs in <see cref="ZNetScene" />.
+        ///     Add all registered prefabs to the namedPrefabs in <see cref="ZNetScene" />.
         /// </summary>
         /// <param name="instance"></param>
-        public void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        private void registerAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);
 
@@ -215,7 +224,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Add a single prefab to the <see cref="ZNetScene"/>.
+        ///     Add a single prefab to the <see cref="ZNetScene"/>.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="gameObject"></param>
@@ -239,11 +248,11 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Helper class for caching gameobjects in the current scene.
+        ///     Helper class for caching gameobjects in the current scene.
         /// </summary>
         public class Cache
         {
-            private static readonly Dictionary<Type, Dictionary<string, Object>> DictionaryCache =
+            private static readonly Dictionary<Type, Dictionary<string, Object>> dictionaryCache =
                 new Dictionary<Type, Dictionary<string, Object>>();
 
             private void InitCache(Type type, Dictionary<string, Object> map = null)
@@ -254,18 +263,18 @@ namespace JotunnLib.Managers
                     map[unityObject.name] = unityObject;
                 }
 
-                DictionaryCache[type] = map;
+                dictionaryCache[type] = map;
             }
 
             /// <summary>
-            /// Get an instance of an Unity Object from the current scene with the given name
+            ///     Get an instance of an Unity Object from the current scene with the given name.
             /// </summary>
             /// <param name="type"></param>
             /// <param name="name"></param>
             /// <returns></returns>
             public Object GetPrefab(Type type, string name)
             {
-                if (DictionaryCache.TryGetValue(type, out var map))
+                if (dictionaryCache.TryGetValue(type, out var map))
                 {
                     if (map.Count == 0 || !map.Values.First())
                     {
@@ -287,7 +296,7 @@ namespace JotunnLib.Managers
             }
 
             /// <summary>
-            /// Get an instance of an Unity Object from the current scene with the given name
+            ///     Get an instance of an Unity Object from the current scene with the given name.
             /// </summary>
             /// <typeparam name="T"></typeparam>
             /// <param name="name"></param>
@@ -298,13 +307,13 @@ namespace JotunnLib.Managers
             }
 
             /// <summary>
-            /// Get the instances of UnityObjects from the current scene with the given type
+            ///     Get the instances of UnityObjects from the current scene with the given type.
             /// </summary>
             /// <param name="type"></param>
             /// <returns></returns>
             public Dictionary<string, Object> GetPrefabs(Type type)
             {
-                if (DictionaryCache.TryGetValue(type, out var map))
+                if (dictionaryCache.TryGetValue(type, out var map))
                 {
                     if (map.Count == 0 || !map.Values.First())
                     {

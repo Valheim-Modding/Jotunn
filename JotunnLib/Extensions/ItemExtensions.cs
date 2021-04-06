@@ -60,7 +60,7 @@ namespace JotunnLib
             stringBuilder.AppendLine(self.m_crafterID.ToString(CultureInfo.InvariantCulture));
             stringBuilder.AppendLine(self.m_crafterName);
 
-            return Hashes.ComputeSha256Hash(stringBuilder.ToString());
+            return HashUtils.ComputeSha256Hash(stringBuilder.ToString());
         }
 
         internal static bool RemoveItemFromFile(this ItemDrop.ItemData self, string inventoryId)

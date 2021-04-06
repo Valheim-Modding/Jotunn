@@ -44,7 +44,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Logger.LogError($"Two instances of singleton {GetType()}");
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
                 return;
             }
 
@@ -272,7 +272,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Create a new button (Valheim style)
+        ///     Create a new button (Valheim style).
         /// </summary>
         /// <param name="text"></param>
         /// <param name="parent"></param>
@@ -351,7 +351,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas-a5f4e704_0 atlas
+        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas-a5f4e704_0 atlas.
         /// </summary>
         /// <param name="rect">Rect on atlas texture</param>
         /// <param name="pivot">pivot</param>
@@ -359,7 +359,7 @@ namespace JotunnLib.Managers
         /// <param name="extrude"></param>
         /// <param name="meshType"></param>
         /// <param name="slice"></param>
-        /// <returns></returns>
+        /// <returns>The newly created sprite</returns>
         public Sprite CreateSpriteFromAtlas(Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
             SpriteMeshType meshType = SpriteMeshType.FullRect, Vector4 slice = new Vector4())
         {
@@ -368,7 +368,7 @@ namespace JotunnLib.Managers
 
         /// <summary>
         ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas-a5f4e704 atlas (not much used ingame or old
-        ///     textures)
+        ///     textures).
         /// </summary>
         /// <param name="rect">Rect on atlas texture</param>
         /// <param name="pivot">pivot</param>
@@ -376,7 +376,7 @@ namespace JotunnLib.Managers
         /// <param name="extrude"></param>
         /// <param name="meshType"></param>
         /// <param name="slice"></param>
-        /// <returns></returns>
+        /// <returns>The newly created sprite</returns>
         public Sprite CreateSpriteFromAtlas2(Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
             SpriteMeshType meshType = SpriteMeshType.FullRect, Vector4 slice = new Vector4())
         {
@@ -384,10 +384,10 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Get a sprite by name
+        ///     Get a sprite by name.
         /// </summary>
         /// <param name="spriteName"></param>
-        /// <returns></returns>
+        /// <returns>The sprite with given name</returns>
         public Sprite GetSprite(string spriteName)
         {
             if (Sprites.ContainsKey(spriteName))
@@ -408,7 +408,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Apply Valheim style to an inputfield component
+        ///     Apply Valheim style to an inputfield component.
         /// </summary>
         /// <param name="field"></param>
         public void ApplyInputFieldStyle(InputField field)
@@ -423,7 +423,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Apply Valheim style to a toggle
+        ///     Apply Valheim style to a toggle.
         /// </summary>
         /// <param name="toggle"></param>
         public void ApplyToogleStyle(Toggle toggle)

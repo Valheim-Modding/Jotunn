@@ -6,6 +6,9 @@ using BepInEx.Configuration;
 
 namespace JotunnLib.Managers
 {
+    /// <summary>
+    ///     Handles all logic to do with synchronization between the client and server.
+    /// </summary>
     public class SynchronizationManager : Manager
     {
         private List<Tuple<string, string, string, string>> cachedConfigValues = new List<Tuple<string, string, string, string>>();
@@ -16,11 +19,11 @@ namespace JotunnLib.Managers
 
         public bool PlayerIsAdmin { get; private set; }
 
-        public void Awake()
+        internal void Awake()
         {
             if (Instance != null)
             {
-                Logger.LogError("Error, two instances of singleton: " + GetType().Name);
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType().Name}");
                 return;
             }
 
@@ -28,7 +31,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Main Init
+        ///     Manager's main init
         /// </summary>
         internal override void Init()
         {
@@ -47,16 +50,16 @@ namespace JotunnLib.Managers
             return orig() | configurationManagerWindowShown;
         }
 
-        public void Start()
+        internal void Start()
         {
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
-            HookConfigurationManager();
+            hookConfigurationManager();
         }
 
         /// <summary>
-        ///     Hook ConfigurationManager's DisplayingWindowChanged to be able to react on window open/close
+        ///     Hook ConfigurationManager's DisplayingWindowChanged to be able to react on window open/close.
         /// </summary>
-        private void HookConfigurationManager()
+        private void hookConfigurationManager()
         {
             Logger.LogDebug("Trying to hook config manager");
 
@@ -79,7 +82,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Window display state changed event
+        ///     Window display state changed event.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -93,12 +96,12 @@ namespace JotunnLib.Managers
             if (configurationManagerWindowShown)
             {
                 // If window just opened, cache the config values for comparison later
-                cachedConfigValues = GetSyncConfigValues();
+                cachedConfigValues = getSyncConfigValues();
             }
             else
             {
                 // Window closed, lets compare and send to server, if applicable
-                var valuesToSend = GetSyncConfigValues();
+                var valuesToSend = getSyncConfigValues();
 
                 // We need only changed values
                 valuesToSend = valuesToSend.Where(x => !cachedConfigValues.Contains(x)).ToList();
@@ -106,7 +109,7 @@ namespace JotunnLib.Managers
                 // Send to server
                 if (valuesToSend.Count > 0)
                 {
-                    var zPackage = GenerateConfigZPackage(valuesToSend);
+                    var zPackage = generateConfigZPackage(valuesToSend);
                     // Send values to server if it isn't a local instance
                     if (!ZNet.instance.IsLocalInstance())
                     {
@@ -125,7 +128,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     On RPC_PeerInfo on client, also ask server for admin status
+        ///     On RPC_PeerInfo on client, also ask server for admin status.
         /// </summary>
         /// <param name="orig"></param>
         /// <param name="self"></param>
@@ -142,7 +145,7 @@ namespace JotunnLib.Managers
         }
 
         // Register RPCs
-        private static void Game_Start(On.Game.orig_Start orig, Game self)
+        internal void Game_Start(On.Game.orig_Start orig, Game self)
         {
             orig(self);
             ZRoutedRpc.instance.Register(nameof(RPC_JotunnLib_IsAdmin), new Action<long, bool>(RPC_JotunnLib_IsAdmin));
@@ -153,17 +156,17 @@ namespace JotunnLib.Managers
             {
                 Logger.LogDebug("Player is in local instance, lets make him admin");
                 Instance.PlayerIsAdmin = true;
-                UnlockConfigurationEntries();
+                unlockConfigurationEntries();
             }
         }
 
 
         /// <summary>
-        ///     Apply a partial config to server and send to other clients
+        ///     Apply a partial config to server and send to other clients.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="configPkg"></param>
-        private static void RPC_JotunnLib_ApplyConfig(long sender, ZPackage configPkg)
+        internal void RPC_JotunnLib_ApplyConfig(long sender, ZPackage configPkg)
         {
             if (ZNet.instance.IsClientInstance())
             {
@@ -191,11 +194,11 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Determine Player's admin status
+        ///     Determine Player's admin status.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="isAdmin"></param>
-        private static void RPC_JotunnLib_IsAdmin(long sender, bool isAdmin)
+        internal void RPC_JotunnLib_IsAdmin(long sender, bool isAdmin)
         {
             // Client Receive
             if (ZNet.instance.IsClientInstance())
@@ -205,7 +208,7 @@ namespace JotunnLib.Managers
                 // If player is admin, unlock the configuration values
                 if (isAdmin)
                 {
-                    UnlockConfigurationEntries();
+                    unlockConfigurationEntries();
                 }
             }
 
@@ -226,9 +229,9 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Unlock configuration entries
+        ///     Unlock configuration entries.
         /// </summary>
-        private static void UnlockConfigurationEntries()
+        private void unlockConfigurationEntries()
         {
             var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
 
@@ -248,11 +251,11 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Send initial configuration data to client (full set)
+        ///     Send initial configuration data to client (full set).
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="configPkg"></param>
-        public static void RPC_JotunnLib_ConfigSync(long sender, ZPackage configPkg)
+        internal void RPC_JotunnLib_ConfigSync(long sender, ZPackage configPkg)
         {
             if (ZNet.instance.IsClientInstance())
             {
@@ -271,9 +274,9 @@ namespace JotunnLib.Managers
                 {
                     Logger.LogMessage($"Sending configuration data to peer #{sender}");
 
-                    var values = GetSyncConfigValues();
+                    var values = getSyncConfigValues();
 
-                    var pkg = GenerateConfigZPackage(values);
+                    var pkg = generateConfigZPackage(values);
 
                     Logger.LogDebug($"Sending {values.Count} configuration values to client {sender}");
                     ZRoutedRpc.instance.InvokeRoutedRPC(sender, nameof(RPC_JotunnLib_ConfigSync), pkg);
@@ -285,7 +288,7 @@ namespace JotunnLib.Managers
         ///     Apply received configuration values locally
         /// </summary>
         /// <param name="configPkg"></param>
-        private static void ApplyConfigZPackage(ZPackage configPkg)
+        internal void ApplyConfigZPackage(ZPackage configPkg)
         {
             Logger.LogMessage("Received configuration data from server");
 
@@ -327,7 +330,7 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        private static ZPackage GenerateConfigZPackage(List<Tuple<string, string, string, string>> values)
+        private ZPackage generateConfigZPackage(List<Tuple<string, string, string, string>> values)
         {
             var pkg = new ZPackage();
             var num = values.Count;
@@ -348,7 +351,7 @@ namespace JotunnLib.Managers
         ///     Get syncable configuration values as tuples
         /// </summary>
         /// <returns></returns>
-        internal static List<Tuple<string, string, string, string>> GetSyncConfigValues()
+        private List<Tuple<string, string, string, string>> getSyncConfigValues()
         {
             Logger.LogDebug("Gathering config values");
             var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();

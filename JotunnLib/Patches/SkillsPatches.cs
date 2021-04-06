@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace JotunnLib.Patches
 {
-    class SkillsPatches 
+    internal class SkillsPatches 
     {
         [PatchInit(0)]
         public static void Init()
