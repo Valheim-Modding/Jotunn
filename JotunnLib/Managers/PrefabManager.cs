@@ -49,7 +49,7 @@ namespace JotunnLib.Managers
             PrefabCache = new Cache();
         }
 
-        private string createUID()
+        /*private string createUID()
         {
             const char separator = '_';
 
@@ -57,7 +57,7 @@ namespace JotunnLib.Managers
             var id = methodBase.DeclaringType.Assembly.GetName().Name + separator + methodBase.DeclaringType.Name + separator + methodBase.Name;
 
             return separator + id;
-        }
+        }*/
 
         /// <summary>
         ///     Adds a prefab to the manager. Added prefabs get registered to the <see cref="ZNetScene"/> on Awake().
@@ -100,7 +100,8 @@ namespace JotunnLib.Managers
             }
 
             GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            prefab.name = name + createUID();
+            //prefab.name = name + createUID();
+            prefab.name = name;
             prefab.transform.parent = PrefabContainer.transform;
 
             if (addZNetView)
@@ -132,8 +133,25 @@ namespace JotunnLib.Managers
         /// <returns>Newly created cloned prefab object</returns>
         public GameObject CreateClonedPrefab(string name, GameObject prefab)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                Logger.LogError($"Failed to clone prefab with invalid name: {name}");
+                return null;
+            }
+            if (!prefab)
+            {
+                Logger.LogError($"Failed to clone prefab, base prefab is not valid");
+                return null;
+            }
+            if (GetPrefab(name))
+            {
+                Logger.LogError($"Failed to clone prefab, name already exists: {name}");
+                return null;
+            }
+
             var newPrefab = UnityEngine.Object.Instantiate(prefab, PrefabContainer.transform);
-            newPrefab.name = name + createUID();
+            //newPrefab.name = name + createUID();
+            newPrefab.name = name;
 
             return newPrefab;
         }
@@ -186,7 +204,7 @@ namespace JotunnLib.Managers
                     }
                 }
 
-                if (del != null)
+                if (del)
                 {
                     ZNetScene.instance.m_prefabs.Remove(del);
                     ZNetScene.instance.Destroy(del);
