@@ -16,23 +16,29 @@ namespace JotunnLib.Entities
             FixReference = fixReference;
         }
 
+        public CustomItem(AssetBundle assetBundle, string assetName, bool fixReference)
+        {
+            ItemPrefab = (GameObject)assetBundle.LoadAsset(assetName);
+            if (ItemPrefab)
+            {
+                ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
+            }
+            FixReference = fixReference;
+        }
+
         public CustomItem(string name, bool addZNetView = true)
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             //TODO: add ItemDrop?
         }
 
-        public CustomItem(string name, string baseName)
+        public CustomItem(string name, string basePrefabName)
         {
-            ItemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, baseName);
-            ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
-        }
-
-        public CustomItem(AssetBundle assetBundle, string assetName, bool fixReference)
-        {
-            ItemPrefab = (GameObject)assetBundle.LoadAsset(assetName);
-            ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
-            FixReference = fixReference;
+            ItemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
+            if (ItemPrefab)
+            {
+                ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
+            }
         }
 
         public bool IsValid()

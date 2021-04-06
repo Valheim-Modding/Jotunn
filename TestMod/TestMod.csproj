@@ -388,11 +388,8 @@
     <Compile Include="ConsoleCommands\PrintItemsCommand.cs" />
     <Compile Include="ConsoleCommands\TpCommand.cs" />
     <Compile Include="PatchInit\TestPatchInitialization.cs" />
-    <Compile Include="Prefabs\BundlePrefab.cs" />
-    <Compile Include="Prefabs\TestCubePrefab.cs" />
     <Compile Include="TestMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Prefabs\TestPrefab.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

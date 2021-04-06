@@ -122,7 +122,27 @@ namespace JotunnLib.Managers
         /// <returns>Newly created prefab object</returns>
         public GameObject CreateClonedPrefab(string name, string baseName)
         {
-            return CreateClonedPrefab(name, GetPrefab(baseName));
+            if (string.IsNullOrEmpty(baseName))
+            {
+                Logger.LogError($"Failed to clone prefab with invalid baseName: {baseName}");
+                return null;
+            }
+
+            // Try to get the prefab in local Dictionary or ZNetScene (if available)
+            GameObject prefab = GetPrefab(baseName);
+
+            // Try to get the prefab from the PrefabCache
+            if (!prefab)
+            {
+                prefab = PrefabCache.GetPrefab<GameObject>(baseName);
+            }
+            if (!prefab)
+            {
+                Logger.LogError($"Failed to clone prefab, can not find base prefab with name: {baseName}");
+                return null;
+            }
+
+            return CreateClonedPrefab(name, prefab);
         }
 
         /// <summary>
@@ -145,7 +165,7 @@ namespace JotunnLib.Managers
             }
             if (GetPrefab(name))
             {
-                Logger.LogError($"Failed to clone prefab, name already exists: {name}");
+                Logger.LogWarning($"Failed to clone prefab, name already exists: {name}");
                 return null;
             }
 

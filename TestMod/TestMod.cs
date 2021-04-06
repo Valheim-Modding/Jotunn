@@ -10,6 +10,7 @@ using JotunnLib.Configs;
 using JotunnLib.Entities;
 using System.Collections.Generic;
 using BepInEx.Configuration;
+using System.IO;
 
 namespace TestMod
 {
@@ -27,6 +28,7 @@ namespace TestMod
         private Sprite testSkillSprite;
         private GameObject testButton, testPanel;
         private bool forceVersionMismatch = false;
+        private bool clonedItemsAdded = false;
 
         // Init handlers
         private void Awake()
@@ -41,7 +43,10 @@ namespace TestMod
             addSkills();
             createConfigValues();
 
-            // Hook version string for a ModCompatibility test
+            // Hook ZNetScene.Awake() to add custom items cloned from vanilla items
+            On.ZNetScene.Awake += addClonedItems;
+
+            // Hook version string for the ModCompatibility test
             On.Version.GetVersionString += Version_GetVersionString;
         }
 
@@ -136,8 +141,12 @@ namespace TestMod
             // Add a custom piece table
             PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
 
-            // Create and add a custom item and custom recipe for it
+            // Create and add a custom item
+            // CustomItem can be instantiated with an AssetBundle and will load the prefab from there
             CustomItem rune = new CustomItem(BlueprintRuneBundle, "BlueprintRune", false);
+            ItemManager.Instance.AddItem(rune);
+            
+            // Create and add a recipe for the custom item
             CustomRecipe runeRecipe = new CustomRecipe(new RecipeConfig()
             {
                 Item = "BlueprintRune",
@@ -147,7 +156,6 @@ namespace TestMod
                     new PieceRequirementConfig {Item = "Stone", Amount = 1}
                 }
             });
-            ItemManager.Instance.AddItem(rune);
             ItemManager.Instance.AddRecipe(runeRecipe);
 
             // Create and add custom pieces
@@ -170,13 +178,14 @@ namespace TestMod
             PieceManager.Instance.AddPiece(placebp);
 
             // Add localizations
-            var textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
+            TextAsset[] textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
             foreach (var textAsset in textAssets)
             {
                 var lang = textAsset.name.Replace(".json", null);
                 LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
             }
 
+            // Don't forget to unload the bundle to free the resources
             BlueprintRuneBundle.Unload(false);
         }
 
@@ -184,21 +193,21 @@ namespace TestMod
         private void addMockedItems()
         {
             // Load assets from resources
-            var asset = Assembly.GetExecutingAssembly().GetManifestResourceStream("TestMod.AssetsEmbedded.capeironbackpack");
-            if (asset == null) JotunnLib.Logger.LogWarning($"Requested asset stream could not be found.");
+            Stream assetstream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TestMod.AssetsEmbedded.capeironbackpack");
+            if (assetstream == null) JotunnLib.Logger.LogWarning($"Requested asset stream could not be found.");
             else
             {
-                var assetBundle = AssetBundle.LoadFromStream(asset);
-                var prefab = assetBundle.LoadAsset<GameObject>("Assets/Evie/CapeIronBackpack.prefab");
+                AssetBundle assetBundle = AssetBundle.LoadFromStream(assetstream);
+                GameObject prefab = assetBundle.LoadAsset<GameObject>("Assets/Evie/CapeIronBackpack.prefab");
                 if (!prefab) JotunnLib.Logger.LogWarning($"Failed to load asset from bundle: {assetBundle}");
                 else
                 {
                     // Create and add a custom item
-                    var CI = new CustomItem(prefab, true);
+                    CustomItem CI = new CustomItem(prefab, true);
                     ItemManager.Instance.AddItem(CI);
 
                     // Create and add a custom recipe
-                    var recipe = ScriptableObject.CreateInstance<Recipe>();
+                    Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
                     recipe.m_item = prefab.GetComponent<ItemDrop>();
                     recipe.m_craftingStation = Mock<CraftingStation>.Create("piece_workbench");
                     var ingredients = new List<Piece.Requirement>
@@ -208,7 +217,7 @@ namespace TestMod
                         MockRequirement.Create("Iron", 4),
                     };
                     recipe.m_resources = ingredients.ToArray();
-                    var CR = new CustomRecipe(recipe, true, true);
+                    CustomRecipe CR = new CustomRecipe(recipe, true, true);
                     ItemManager.Instance.AddRecipe(CR);
 
                     // Enable BoneReorder
@@ -218,80 +227,61 @@ namespace TestMod
             }
         }
 
-        // Register new pieces
-        private void registerPieces(object sender, EventArgs e)
+        // Add new items as copies of vanilla items - just works when the base item is loaded so use a ZNetScene hook
+        private void addClonedItems(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
-            //PieceManager.Instance.RegisterPiece("Hammer", "TestCube");
-        }
+            orig(self);
 
-        // Register new items and recipes
-        private void registerObjects(object sender, EventArgs e)
-        {
-            // Register prefabs using PrefabConfig
-            /*PrefabManager.Instance.RegisterPrefab(new TestPrefab());
-            PrefabManager.Instance.RegisterPrefab(new TestCubePrefab());
-            PrefabManager.Instance.RegisterPrefab(new BundlePrefab());*/
-
-            // Register prefabs
-            /*var testprefab = new TestPrefab();
-            PrefabManager.Instance.AddPrefab(testprefab.Prefab);
-            PrefabManager.Instance.AddEmptyPrefab("TestCube");*/
-
-            /*
-            // Items
-            ObjectManager.Instance.RegisterItem("TestPrefab");
-
-            // Recipes
-            ObjectManager.Instance.RegisterRecipe(new RecipeConfig()
+            // You want that to run only once, JotunnLib has the item cached for the game session
+            if (!clonedItemsAdded)
             {
-                // Name of the recipe (defaults to "Recipe_YourItem" if null)
-                Name = "Recipe_TestPrefab",
+                // Create and add a custom item based on SwordBlackmetal
+                CustomItem CI = new CustomItem("EvilSword", "SwordBlackmetal");
+                ItemManager.Instance.AddItem(CI);
 
-                // Name of the prefab for the crafted item
-                Item = "TestPrefab",
+                // Replace vanilla properties of the custom item
+                var itemDrop = CI.ItemDrop;
+                itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
+                itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
 
-                // Name of the prefab for the crafting station we wish to use
-                // Can set this to null or leave out if you want your recipe to be craftable in your inventory
-                CraftingStation = "forge",
-
-                // List of requirements to craft your item
-                Requirements = new PieceRequirementConfig[]
+                // Create and add a recipe for the copied item
+                // PrefabManager can get Prefabs from ZNetScene, when it is initialized
+                Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
+                recipe.m_item = itemDrop;
+                recipe.m_craftingStation = PrefabManager.Instance.GetPrefab("piece_workbench").GetComponent<CraftingStation>();
+                recipe.m_resources = new Piece.Requirement[]
                 {
-                    new PieceRequirementConfig()
+                    new Piece.Requirement()
                     {
-                        // Prefab name of requirement
-                        Item = "Blueberries",
-
-                        // Amount required
-                        Amount = 2
+                        m_resItem = PrefabManager.Instance.GetPrefab("Stone").GetComponent<ItemDrop>(),
+                        m_amount = 1
                     },
-                    new PieceRequirementConfig()
+                    new Piece.Requirement()
                     {
-                        // Prefab name of requirement
-                        Item = "DeerHide",
-
-                        // Amount required
-                        Amount = 1
+                        m_resItem = PrefabManager.Instance.GetPrefab("Wood").GetComponent<ItemDrop>(),
+                        m_amount = 1
                     }
-                }
-            });
-            */
+                };
+                CustomRecipe CR = new CustomRecipe(recipe, true, true);
+                ItemManager.Instance.AddRecipe(CR);
+
+                clonedItemsAdded = true;
+            }
         }
 
         // Registers localizations with configs
         void registerLocalization(object sender, EventArgs e)
         {
+            // Add translations for the custom item in addClonedItems
             LocalizationManager.Instance.RegisterLocalizationConfig(new LocalizationConfig("English")
             {
                 Translations =
                 {
-                    { "test_prefab_name", "Test Prefab" },
-                    { "test_prefab_desc", "We're using this as a test" },
-
-                    { "test_cube_name", "Test Cube" },
-                    { "test_cube_desc", "A nice test cube!" },
+                    { "item_evilsword", "Sword of Darkness" },
+                    { "item_evilsword_desc", "Bringing the light" }
                 }
             });
+
         }
 
         // Register new console commands
