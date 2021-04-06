@@ -26,6 +26,7 @@ namespace TestMod
         private bool showGUIButton = false;
         private Sprite testSkillSprite;
         private GameObject testButton, testPanel;
+        private bool forceVersionMismatch = false;
 
         // Init handlers
         private void Awake()
@@ -40,6 +41,8 @@ namespace TestMod
             addSkills();
             createConfigValues();
 
+            // Hook version string for a ModCompatibility test
+            On.Version.GetVersionString += Version_GetVersionString;
         }
 
         // Called every frame
@@ -322,6 +325,34 @@ namespace TestMod
             Config.Bind("JotunnLibTest", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind("JotunnLibTest", "KeycodeValue", KeyCode.F10,
                 new ConfigDescription("Server side Keycode", null, new ConfigurationManagerAttributes() { IsAdminOnly = true }));
+            
+            // Add client config to test ModCompatibility
+            Config.Bind("JotunnLibTest", "EnableVersionMismatch", false, new ConfigDescription("Enable to test ModCompatibility module", null));
+            forceVersionMismatch = (bool)Config["JotunnLibTest", "EnableVersionMismatch"].BoxedValue;
+            Config.SettingChanged += Config_SettingChanged;
         }
+
+        // React on changed settings
+        private void Config_SettingChanged(object sender, BepInEx.Configuration.SettingChangedEventArgs e)
+        {
+            if (e.ChangedSetting.Definition.Section == "JotunnLibTest" && e.ChangedSetting.Definition.Key == "EnableVersionMismatch")
+            {
+                forceVersionMismatch = (bool)e.ChangedSetting.BoxedValue;
+            }
+        }
+
+        // Our own implementation of the GetVersionString for testing the ModCompatibility
+        private string Version_GetVersionString(On.Version.orig_GetVersionString orig)
+        {
+            var valheimVersion = orig();
+
+            if (forceVersionMismatch)
+            {
+                valheimVersion += "NOT";
+            }
+
+            return valheimVersion;
+        }
+
     }
 }
