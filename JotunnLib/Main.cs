@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using BepInEx;
 using BepInEx.Configuration;
-using JotunnLib.ConsoleCommands;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
 
@@ -16,9 +15,17 @@ namespace JotunnLib
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class Main : BaseUnityPlugin
     {
-        // Version
+        /// <summary>
+        ///     The current version of the Jotunn library.
+        /// </summary>
         public const string Version = "0.2.0";
+
+        /// <summary>
+        ///     The BepInEx plugin Mod GUID being used.
+        /// </summary>
         public const string ModGuid = "com.bepinex.plugins.jotunnlib";
+
+        internal static GameObject RootObject;
 
         // Load order for managers
         private readonly List<Type> managerTypes = new List<Type>()
@@ -37,12 +44,9 @@ namespace JotunnLib
             typeof(SaveManager),
             typeof(SynchronizationManager)
         };
-
         private readonly List<Manager> managers = new List<Manager>();
 
-        internal static GameObject RootObject;
-
-        private void Awake()
+        internal void Awake()
         {
             // Initialize Logger
             JotunnLib.Logger.Init();
@@ -62,8 +66,6 @@ namespace JotunnLib
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
 
-            InitCommands(); // should that be a manager?
-
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
 
 #if DEBUG
@@ -75,14 +77,14 @@ namespace JotunnLib
 
 
         /// <summary>
-        /// Initialize patches
+        ///     Initialize patches
         /// </summary>
-        public void Start()
+        internal void Start()
         {
-            InitializePatches();
+            initializePatches();
         }
 
-        private void Update()
+        internal void Update()
         {
 #if DEBUG
             if (Input.GetKeyDown(KeyCode.F6))
@@ -101,9 +103,9 @@ namespace JotunnLib
         }
 
         /// <summary>
-        /// Invoke Patch initialization methods
+        ///     Invoke patch initialization methods for all loaded mods.
         /// </summary>
-        private void InitializePatches()
+        private void initializePatches()
         {
             // Reflect through everything
             List<Tuple<MethodInfo, int>> types = new List<Tuple<MethodInfo, int>>();
@@ -140,12 +142,6 @@ namespace JotunnLib
                 Logger.LogInfo($"Applying patches in {tuple.Item1.DeclaringType.Name}.{tuple.Item1.Name}");
                 tuple.Item1.Invoke(null, null);
             }
-        }
-
-        private void InitCommands()
-        {
-            CommandManager.Instance.RegisterConsoleCommand(new HelpCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new ClearCommand());
         }
     }
 }

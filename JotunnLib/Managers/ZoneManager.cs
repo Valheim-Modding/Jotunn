@@ -12,21 +12,21 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            On.ZNetScene.Awake += RegisterAllToZNetScene;
+            On.ZNetScene.Awake += registerAllToZNetScene;
         }
 
         private void Awake()
         {
             if (Instance != null)
             {
-                Logger.LogError($"Two instances of singleton {GetType()}");
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
                 return;
             }
 
             Instance = this;
         }
 
-        public void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        public void registerAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);
             

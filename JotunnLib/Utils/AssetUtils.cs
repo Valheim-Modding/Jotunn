@@ -8,12 +8,12 @@ using System.Linq;
 namespace JotunnLib.Utils
 {
     /// <summary>
-    /// Util functions related to loading assets at runtime.
+    ///     Util functions related to loading assets at runtime.
     /// </summary>
     public static class AssetUtils
     {
         /// <summary>
-        /// Loads a <see cref="Texture2D"/> from file at runtime.
+        ///     Loads a <see cref="Texture2D"/> from file at runtime.
         /// </summary>
         /// <param name="texturePath">Texture path relative to "plugins" BepInEx folder</param>
         /// <returns>Texture2D loaded, or null if invalid path</returns>
@@ -33,7 +33,7 @@ namespace JotunnLib.Utils
         }
 
         /// <summary>
-        /// Loads a <see cref="Sprite"/> from file at runtime.
+        ///     Loads a <see cref="Sprite"/> from file at runtime.
         /// </summary>
         /// <param name="texturePath">Texture path relative to "plugins" BepInEx folder</param>
         /// <returns>Texture2D loaded, or null if invalid path</returns>
@@ -50,7 +50,7 @@ namespace JotunnLib.Utils
         }
 
         /// <summary>
-        /// Loads a mesh from a .obj file at runtime.
+        ///     Loads a mesh from a .obj file at runtime.
         /// </summary>
         /// <param name="meshPath">Mesh path relative to "plugins" BepInEx folder</param>
         /// <returns>Texture2D loaded, or null if invalid path</returns>
@@ -67,7 +67,7 @@ namespace JotunnLib.Utils
         }
 
         /// <summary>
-        /// Loads an asset bundle at runtime.
+        ///     Loads an asset bundle at runtime.
         /// </summary>
         /// <param name="bundlePath">Asset bundle path relative to "plugins" BepInEx folder</param>
         /// <returns>AssetBundle loaded, or null if invalid path</returns>
@@ -84,7 +84,7 @@ namespace JotunnLib.Utils
         }
 
         /// <summary>
-        ///  Load an assembly-embedded <see cref="AssetBundle" />
+        ///     Load an assembly-embedded <see cref="AssetBundle" />
         /// </summary>
         /// <param name="bundleName">Name of the bundle</param>
         /// <returns></returns>

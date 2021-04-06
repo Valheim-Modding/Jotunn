@@ -8,10 +8,13 @@ using UnityEngine;
 namespace JotunnLib.Managers
 {
     /// <summary>
-    /// Handles all logic to do with managing mocked prefabs added into the game.
+    ///     Handles all logic to do with managing mocked prefabs added into the game.
     /// </summary>
     class MockManager : Manager
     {
+        /// <summary>
+        ///     The singleton instance of this manager.
+        /// </summary>
         public static MockManager Instance { get; private set; }
 
         internal GameObject MockPrefabContainer;
@@ -20,7 +23,7 @@ namespace JotunnLib.Managers
         {
             if (Instance != null)
             {
-                Logger.LogError($"Two instances of singleton {GetType()}");
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
                 return;
             }
 
@@ -33,7 +36,7 @@ namespace JotunnLib.Managers
             MockPrefabContainer.transform.parent = Main.RootObject.transform;
             MockPrefabContainer.SetActive(false);
 
-            On.ObjectDB.Awake += RemoveMockPrefabs;
+            On.ObjectDB.Awake += removeMockPrefabs;
         }
 
         internal T CreateMockedPrefab<T>(string prefabName) where T : Component
@@ -64,7 +67,7 @@ namespace JotunnLib.Managers
 
         }
 
-        private void RemoveMockPrefabs(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void removeMockPrefabs(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
             var isValid = self.IsValid();

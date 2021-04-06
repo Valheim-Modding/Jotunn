@@ -48,17 +48,17 @@ namespace JotunnLib
         }
     }
     /// <summary>
-    /// Extension class to facilitate prefab manipulations
+    ///     Extension class to facilitate prefab manipulations
     /// </summary>
     public static class PrefabExtensions
     {
         /// <summary>
-        /// Prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
+        ///     Prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
         /// </summary>
         public const string MockPrefix = "VLmock_";
 
         /// <summary>
-        /// Will try to find the real vanilla prefab from the given mock
+        ///     Will try to find the real vanilla prefab from the given mock
         /// </summary>
         /// <param name="unityObject"></param>
         /// <param name="mockObjectType"></param>
@@ -76,7 +76,7 @@ namespace JotunnLib
                     // Cut off the suffix in the name to correctly query the original material
                     if (unityObject is Material)
                     {
-                        const string materialInstance = " (Instance)";
+                        const string materialInstance = " (instance)";
                         if (unityObjectName.EndsWith(materialInstance))
                         {
                             unityObjectName = unityObjectName.Substring(0, unityObjectName.Length - materialInstance.Length);
@@ -91,7 +91,7 @@ namespace JotunnLib
         }
 
         /// <summary>
-        /// Will try to find the real vanilla prefab from the given mock
+        ///     Will try to find the real vanilla prefab from the given mock
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="unityObject"></param>
@@ -102,7 +102,7 @@ namespace JotunnLib
         }
 
         /// <summary>
-        /// Will attempt to fix every field that are mocks gameObjects / Components from the given object.
+        ///     Will attempt to fix every field that are mocks gameObjects / Components from the given object.
         /// </summary>
         /// <param name="objectToFix"></param>
         public static void FixReferences(this object objectToFix)
@@ -290,7 +290,7 @@ namespace JotunnLib
         }
 
         /// <summary>
-        /// Fix the components fields of a given gameObject
+        ///     Fix the components fields of a given gameObject
         /// </summary>
         /// <param name="gameObject"></param>
         public static void FixReferences(this GameObject gameObject)
@@ -302,7 +302,7 @@ namespace JotunnLib
         }
 
         /// <summary>
-        /// Will clone all fields from gameObject to objectToClone
+        ///     Will clone all fields from gameObject to objectToClone
         /// </summary>
         /// <param name="gameObject"></param>
         /// <param name="objectToClone"></param>

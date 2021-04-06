@@ -6,7 +6,7 @@ using JotunnLib.Utils;
 
 namespace JotunnLib.Patches
 {
-    class ZoneSystemPatches
+    internal class ZoneSystemPatches
     {
         [PatchInit(0)]
         public static void Init()
@@ -21,7 +21,7 @@ namespace JotunnLib.Patches
 
             Logger.LogDebug("----> ZoneSystem Awake");
 
-            // ZoneManager.Instance.Register();
+            // ZoneManager.instance.Register();
         }
 
         private static bool ZoneSystem_SpawnZone(On.ZoneSystem.orig_SpawnZone orig, ZoneSystem self, Vector2i zoneID, ZoneSystem.SpawnMode mode, out GameObject root)

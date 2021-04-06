@@ -3,12 +3,12 @@
 namespace JotunnLib.Utils
 {
     /// <summary>
-    /// Helper class for C# Events
+    ///     Helper class for C# Events.
     /// </summary>
     public static class EventsHelper
     {
         /// <summary>
-        /// Try catch the delegate chain so that it doesnt break on the first failing Delegate
+        ///     Try catch the delegate chain so that it doesnt break on the first failing Delegate.
         /// </summary>
         /// <param name="events"></param>
         public static void SafeInvoke(this Action events)
@@ -32,7 +32,7 @@ namespace JotunnLib.Utils
         }
 
         /// <summary>
-        /// Try catch the delegate chain so that it doesnt break on the first failing Delegate
+        ///     Try catch the delegate chain so that it doesnt break on the first failing Delegate.
         /// </summary>
         /// <typeparam name="TArg1"></typeparam>
         /// <param name="events"></param>

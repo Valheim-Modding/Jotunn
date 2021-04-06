@@ -4,7 +4,7 @@ using JotunnLib.Utils;
 
 namespace JotunnLib.Patches
 {
-    public class ZNetPatches
+    internal class ZNetPatches
     {
         [PatchInit(0)]
         public static void Init()

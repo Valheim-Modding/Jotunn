@@ -4,7 +4,7 @@ using UnityEngine;
 namespace JotunnLib.Entities
 {
     /// <summary>
-    /// Helper class for creating Mock for a given vanilla Component
+    ///     Helper class for creating Mock for a given vanilla Component
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public static class Mock<T> where T : Component

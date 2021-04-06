@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 using JotunnLib.Events;
 
 namespace JotunnLib.Managers
@@ -14,11 +13,11 @@ namespace JotunnLib.Managers
         public static event EventHandler<PlayerEventArgs> PlayerSpawned;
         public static event EventHandler<PlayerPlacedPieceEventArgs> PlayerPlacedPiece;
 
-        private void Awake()
+        internal void Awake()
         {
             if (Instance != null)
             {
-                Logger.LogError("Error, two instances of singleton: " + this.GetType().Name);
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType().Name}");
                 return;
             }
 

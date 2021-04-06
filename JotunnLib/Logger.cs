@@ -6,21 +6,21 @@ namespace JotunnLib
 {
     /// <summary>
     ///     A namespace wide Logger class, which automatically creates a <see cref="ManualLogSource" />
-    ///     for every namespace from which it is being called
+    ///     for every namespace from which it is being called.
     /// </summary>
     public class Logger
     {
-        private static Logger Instance;
-
-        private readonly Dictionary<string, ManualLogSource> m_logger = new Dictionary<string, ManualLogSource>();
+        private static Logger instance;
+        
+        private readonly Dictionary<string, ManualLogSource> logger = new Dictionary<string, ManualLogSource>();
 
         private Logger() { }
 
         internal static void Init()
         {
-            if (Instance == null)
+            if (instance == null)
             {
-                Instance = new Logger();
+                instance = new Logger();
             }
         }
 
@@ -28,23 +28,23 @@ namespace JotunnLib
         {
             LogDebug("Destroying Logger");
 
-            foreach (var entry in Instance.m_logger)
+            foreach (var entry in instance.logger)
             {
                 BepInEx.Logging.Logger.Sources.Remove(entry.Value);
             }
 
-            Instance.m_logger.Clear();
+            instance.logger.Clear();
         }
 
-        private ManualLogSource GetLogger()
+        private ManualLogSource getLogger()
         {
             var type = new StackFrame(2).GetMethod().DeclaringType;
 
             ManualLogSource ret;
-            if (!m_logger.TryGetValue(type.Namespace, out ret))
+            if (!logger.TryGetValue(type.Namespace, out ret))
             {
                 ret = BepInEx.Logging.Logger.CreateLogSource(type.Namespace);
-                m_logger.Add(type.Namespace, ret);
+                logger.Add(type.Namespace, ret);
             }
 
             return ret;
@@ -52,32 +52,32 @@ namespace JotunnLib
 
         public static void LogFatal(object data)
         {
-            Instance.GetLogger().LogFatal(data);
+            instance.getLogger().LogFatal(data);
         }
 
         public static void LogError(object data)
         {
-            Instance.GetLogger().LogError(data);
+            instance.getLogger().LogError(data);
         }
 
         public static void LogWarning(object data)
         {
-            Instance.GetLogger().LogWarning(data);
+            instance.getLogger().LogWarning(data);
         }
 
         public static void LogMessage(object data)
         {
-            Instance.GetLogger().LogMessage(data);
+            instance.getLogger().LogMessage(data);
         }
 
         public static void LogInfo(object data)
         {
-            Instance.GetLogger().LogInfo(data);
+            instance.getLogger().LogInfo(data);
         }
 
         public static void LogDebug(object data)
         {
-            Instance.GetLogger().LogDebug(data);
+            instance.getLogger().LogDebug(data);
         }
     }
 }

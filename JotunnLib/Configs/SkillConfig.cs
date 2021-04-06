@@ -4,11 +4,10 @@ using UnityEngine;
 namespace JotunnLib.Configs
 {
     /// <summary>
-    /// Configuration class for custom skills
+    ///     Configuration class for adding custom skills.
     /// </summary>
     public class SkillConfig
     {
-        private string _identifier;
         public string Identifier
         {
             get { return _identifier; }
@@ -32,8 +31,10 @@ namespace JotunnLib.Configs
         public float IncreaseStep { get; set; }
         public Dictionary<string, LocalizationConfig> Localizations { get; private set; } = new Dictionary<string, LocalizationConfig>();
 
+        private string _identifier;
+
         /// <summary>
-        /// Creates a SkillConfig object for mods that previously used SkillInjector
+        ///     Creates a SkillConfig object for mods that previously used SkillInjector
         /// </summary>
         /// <param name="identifier">Unique identifier of the new skill, ex: "com.jotunnlib.testmod.testskill"</param>
         /// <param name="uid">"id" from SkillInjector</param>

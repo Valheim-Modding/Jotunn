@@ -434,7 +434,7 @@
     <Compile Include="Utils\BoneReorder.cs" />
     <Compile Include="Utils\ConfigurationManagerAttributes.cs" />
     <Compile Include="Utils\EventsHelper.cs" />
-    <Compile Include="Utils\Hashes.cs" />
+    <Compile Include="Utils\HashUtils.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Extensions\MockExtentions.cs" />
     <Compile Include="Extensions\ObjectExtension.cs" />

@@ -3,7 +3,10 @@ using System.Text;
 
 namespace JotunnLib.Utils
 {
-    public static class Hashes
+    /// <summary>
+    ///     A util class for computing various hashes
+    /// </summary>
+    public static class HashUtils
     {
         public static string ComputeSha256Hash(string rawData)
         {

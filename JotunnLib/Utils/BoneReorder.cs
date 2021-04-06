@@ -5,25 +5,25 @@ using JotunnLib.Managers;
 namespace JotunnLib.Utils
 {
     /// <summary>
-    /// Original code from https://github.com/GoldenJude
+    ///     Original code from https://github.com/GoldenJude.
     /// </summary>
     public static class BoneReorder
     {
-        private static bool UtilityChanged = false,
-            ChestChanged = false,
-            HelmetChanged = false,
-            LegChanged = false,
-            ShoulderChanged = false;
-
-        private static bool Applied = false;
+        private static bool utilityChanged = false,
+            chestChanged = false,
+            helmetChanged = false,
+            legChanged = false,
+            shoulderChanged = false,
+            applied = false;
         
         /// <summary>
-        /// Corrects any bone disorder caused by unity incorrectly importing ripped assets.
-        /// Once enabled, bone reordering will occur whenever the equipment changes. If one plug-in requests application of reordering, it will be applied globally for all EquipmentChanged events.
+        ///     Corrects any bone disorder caused by unity incorrectly importing ripped assets.
+        ///     Once enabled, bone reordering will occur whenever the equipment changes.
+        ///     If one plug-in requests application of reordering, it will be applied globally for all EquipmentChanged events.
         /// </summary>
         public static void ApplyOnEquipmentChanged()
         {
-            if (!Applied)
+            if (!applied)
             {
                 ItemManager.OnAfterInit += () =>
                 {
@@ -34,36 +34,36 @@ namespace JotunnLib.Utils
                     On.VisEquipment.SetLegEquiped += VisEquipmentOnSetLegEquiped;
                 };
 
-                Applied = true;
+                applied = true;
             }
         }
 
         /// <summary>
-        /// The state of reordering bones OnEquipmentChanged.
+        ///     The state of reordering bones OnEquipmentChanged.
         /// </summary>
         /// <returns>Returns true when bone reordering is enabled.</returns>
         public static bool IsReorderingEnabled()
         {
-            return Applied;
+            return applied;
         }
 
         private static bool VisEquipmentOnSetLegEquiped(On.VisEquipment.orig_SetLegEquiped orig, VisEquipment self, int hash)
         {
             var changed = self.m_currentLegItemHash == hash;
-            if (changed) LegChanged = false;
-            else LegChanged = true;
+            if (changed) legChanged = false;
+            else legChanged = true;
             var ret = orig(self, hash);
-            if (LegChanged && self.m_legItemInstances != null) ReorderBones(self, hash, self.m_legItemInstances);
+            if (legChanged && self.m_legItemInstances != null) ReorderBones(self, hash, self.m_legItemInstances);
             return ret;
         }
 
         private static bool VisEquipmentOnSetHelmetEquiped(On.VisEquipment.orig_SetHelmetEquiped orig, VisEquipment self, int hash, int hairhash)
         {
             var changed = self.m_currentHelmetItemHash == hash;
-            if (changed) HelmetChanged = false;
-            else HelmetChanged = true;
+            if (changed) helmetChanged = false;
+            else helmetChanged = true;
             var ret = orig(self, hash, hairhash);
-            if (HelmetChanged && self.m_helmetItemInstance != null)
+            if (helmetChanged && self.m_helmetItemInstance != null)
                 ReorderBones(self, hash, new List<GameObject>{self.m_helmetItemInstance}); //This is a single object instead of a collection, because reasons?
             return ret;
         }
@@ -71,36 +71,36 @@ namespace JotunnLib.Utils
         private static bool VisEquipmentOnSetChestEquiped(On.VisEquipment.orig_SetChestEquiped orig, VisEquipment self, int hash)
         {
             var changed = self.m_currentChestItemHash == hash;
-            if (changed) ChestChanged = false;
-            else ChestChanged = true;
+            if (changed) chestChanged = false;
+            else chestChanged = true;
             var ret = orig(self, hash);
-            if (ChestChanged && self.m_chestItemInstances != null) ReorderBones(self, hash, self.m_chestItemInstances);
+            if (chestChanged && self.m_chestItemInstances != null) ReorderBones(self, hash, self.m_chestItemInstances);
             return ret;
         }
 
         private static bool VisEquipmentOnSetShoulderEquiped(On.VisEquipment.orig_SetShoulderEquiped orig, VisEquipment self, int hash, int variant)
         {
             var changed = self.m_currentShoulderItemHash == hash;
-            if (changed) ShoulderChanged = false;
-            else ShoulderChanged = true;
+            if (changed) shoulderChanged = false;
+            else shoulderChanged = true;
             var ret = orig(self, hash, variant);
-            if(ShoulderChanged && self.m_shoulderItemInstances != null) ReorderBones(self, hash, self.m_shoulderItemInstances);
+            if(shoulderChanged && self.m_shoulderItemInstances != null) ReorderBones(self, hash, self.m_shoulderItemInstances);
             return ret;
         }
         
         private static bool VisEquipmentOnSetUtilityEquiped(On.VisEquipment.orig_SetUtilityEquiped orig, VisEquipment self, int hash)
         {
             var changed = self.m_currentUtilityItemHash == hash;
-            if (changed) UtilityChanged = false;
-            else UtilityChanged = true;
+            if (changed) utilityChanged = false;
+            else utilityChanged = true;
             var ret = orig(self, hash);
-            if(UtilityChanged && self.m_utilityItemInstances != null) ReorderBones(self, hash, self.m_utilityItemInstances);
+            if(utilityChanged && self.m_utilityItemInstances != null) ReorderBones(self, hash, self.m_utilityItemInstances);
             return ret;
         }
 
         /// <summary>
-        /// Reorders bone ordering caused by importing ripped assets into unity.
-        /// It effectively matches the bone ordering from the ItemPrefab (itemPrefabHash parameter)
+        ///     Reorders bone ordering caused by importing ripped assets into unity.
+        ///     It effectively matches the bone ordering from the ItemPrefab (itemPrefabHash parameter).
         /// </summary>
         /// <param name="visEquipment"></param>
         /// <param name="itemPrefabHash"></param>
@@ -110,8 +110,8 @@ namespace JotunnLib.Utils
             Logger.LogInfo($"Reordering bones...");
             Transform skeletonRoot = visEquipment.transform.Find("Visual").Find("Armature").Find("Hips");
             GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabHash);
-            if(!skeletonRoot) Logger.LogInfo($"{skeletonRoot} is null.");
-            if(!itemPrefab) Logger.LogInfo($"{itemPrefab} is null.");
+            if (!skeletonRoot) Logger.LogInfo($"{skeletonRoot} is null.");
+            if (!itemPrefab) Logger.LogInfo($"{itemPrefab} is null.");
             int childCount = itemPrefab.transform.childCount;
             int num = 0;
             for (var i = 0; i < childCount; i++)
@@ -152,7 +152,7 @@ namespace JotunnLib.Utils
         }
 
         /// <summary>
-        /// Returns a list of bone names, given a SkinnedMeshRenderer
+        ///     Returns a list of bone names, given a SkinnedMeshRenderer.
         /// </summary>
         /// <param name="skinnedMeshRenderer"></param>
         /// <returns></returns>
@@ -168,7 +168,7 @@ namespace JotunnLib.Utils
         }
 
         /// <summary>
-        /// Returns a transform matching the given name within the transforms children.
+        ///     Returns a transform matching the given name within the transforms children.
         /// </summary>
         /// <param name="transform"></param>
         /// <param name="name"></param>

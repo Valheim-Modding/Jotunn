@@ -18,12 +18,12 @@ namespace JotunnLib.Managers
         public const char TokenFirstChar = '$';
 
         /// <summary>
-        ///     Default language of the game
+        ///     Default language of the game.
         /// </summary>
         public const string DefaultLanguage = "English";
 
         /// <summary>
-        ///     Name of the folder that will hold the custom .json translations files
+        ///     Name of the folder that will hold the custom .json translations files.
         /// </summary>
         public const string TranslationsFolderName = "Translations";
 
@@ -33,29 +33,32 @@ namespace JotunnLib.Managers
         public const string CommunityTranslationFileName = "community_translation.json";
 
         /// <summary>
-        ///     Call into unity's DoQuoteLineSplit
+        ///     The singleton instance of this manager.
+        /// </summary>
+        public static LocalizationManager Instance { get; private set; }
+
+        /// <summary>
+        ///     Call into unity's DoQuoteLineSplit.
         /// </summary>
         internal static Func<StringReader, List<List<string>>> DoQuoteLineSplit;
 
         /// <summary>
-        ///     Dictionary holding all localizations
+        ///     Dictionary holding all localizations.
         /// </summary>
         internal Dictionary<string, Dictionary<string, string>> Localizations = new Dictionary<string, Dictionary<string, string>>();
 
-        private bool registered;
-        public static LocalizationManager Instance { get; private set; }
-
         /// <summary>
-        ///     Event for plugins to register their localizations via code
+        ///     Event for plugins to register their localizations via code.
         /// </summary>
         public event EventHandler LocalizationRegister;
 
+        private bool registered;
 
         private void Awake()
         {
             if (Instance != null)
             {
-                Logger.LogError("Error, two instances of singleton: " + GetType().Name);
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType().Name}");
                 return;
             }
 
@@ -63,7 +66,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Initialize localization manager
+        ///     Initialize localization manager.
         /// </summary>
         internal override void Init()
         {
@@ -106,7 +109,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Register all plugin's localizations
+        ///     Register all plugin's localizations.
         /// </summary>
         internal override void Register()
         {
@@ -120,14 +123,14 @@ namespace JotunnLib.Managers
 
             Logger.LogInfo("---- Registering custom localizations ----");
 
-            AddLanguageFilesFromPluginFolder();
+            addLanguageFilesFromPluginFolder();
 
             LocalizationRegister?.Invoke(null, EventArgs.Empty);
             registered = true;
         }
 
         /// <summary>
-        ///     Load the localization into Valheim's buffers
+        ///     Load the localization into Valheim's buffers.
         /// </summary>
         /// <param name="localization"></param>
         /// <param name="language"></param>
@@ -140,11 +143,11 @@ namespace JotunnLib.Managers
             }
 
             Logger.LogDebug($"Adding tokens for language {language}");
-            AddTokens(localization, language);
+            addTokens(localization, language);
         }
 
         /// <summary>
-        ///     Registers a new translation for a word for the current language
+        ///     Registers a new translation for a word for the current language.
         /// </summary>
         /// <param name="key">Key to translate</param>
         /// <param name="text">Translation</param>
@@ -155,7 +158,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Registers a new Localization for a language
+        ///     Registers a new Localization for a language.
         /// </summary>
         /// <param name="localization">The localization for a language</param>
         public void RegisterLocalization(string language, Dictionary<string, string> localization)
@@ -191,9 +194,9 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Search for and add localization files
+        ///     Search for and add localization files.
         /// </summary>
-        private void AddLanguageFilesFromPluginFolder()
+        private void addLanguageFilesFromPluginFolder()
         {
             // First search for the community translation
             var communityTranslationsFilePaths = new List<string>();
@@ -230,9 +233,8 @@ namespace JotunnLib.Managers
             }
         }
 
-
         /// <summary>
-        ///     Add a token and its value to the specified language (default to English)
+        ///     Add a token and its value to the specified language (default to "English").
         /// </summary>
         /// <param name="token">token / key</param>
         /// <param name="value">value that will be printed in the game</param>
@@ -242,7 +244,7 @@ namespace JotunnLib.Managers
         {
             if (token[0] != TokenFirstChar)
             {
-                throw new Exception($"Token first char should be {TokenFirstChar} ! (token : {token})");
+                throw new Exception($"Token first char should be '{TokenFirstChar}'! (token found: '{token}')");
             }
 
             Dictionary<string, string> languageDict = null;
@@ -255,13 +257,13 @@ namespace JotunnLib.Managers
                     {
                         if (pair.Key == token)
                         {
-                            throw new Exception($"Token named {token} already exist !");
+                            throw new Exception($"Token named {token} already exist!");
                         }
                     }
                 }
             }
 
-            languageDict ??= GetLanguageDict(language);
+            languageDict ??= getLanguageDict(language);
 
             var tokenWithoutFirstChar = token.Substring(1);
             languageDict.Remove(tokenWithoutFirstChar);
@@ -270,7 +272,7 @@ namespace JotunnLib.Managers
 
 
         /// <summary>
-        ///     Add a token and its value to the English language
+        ///     Add a token and its value to the "English" language.
         /// </summary>
         /// <param name="token">token / key</param>
         /// <param name="value">value that will be printed in the game</param>
@@ -282,7 +284,7 @@ namespace JotunnLib.Managers
 
 
         /// <summary>
-        ///     Add a file via absolute path
+        ///     Add a file via absolute path.
         /// </summary>
         /// <param name="path">Absolute path to file</param>
         /// <param name="isJson">Is the language file a json file</param>
@@ -310,7 +312,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Add a language file (that match the game format)
+        ///     Add a language file (that match the game format).
         /// </summary>
         /// <param name="fileContent">Entire file as string</param>
         public void Add(string fileContent)
@@ -320,13 +322,13 @@ namespace JotunnLib.Managers
                 throw new NullReferenceException($"param {nameof(fileContent)} is null");
             }
 
-            LoadLanguageFile(fileContent);
+            loadLanguageFile(fileContent);
         }
 
         /// <summary>
-        ///     Add a json language file (match crowdin format)
+        ///     Add a json language file (match crowdin format).
         /// </summary>
-        /// <param name="language">Language for the json file, example : "English"</param>
+        /// <param name="language">Language for the json file, for example, "English"</param>
         /// <param name="fileContent">Entire file as string</param>
         public void AddJson(string language, string fileContent)
         {
@@ -335,14 +337,14 @@ namespace JotunnLib.Managers
                 throw new NullReferenceException($"param {nameof(fileContent)} is null");
             }
 
-            LoadJsonLanguageFile(language, fileContent);
+            loadJsonLanguageFile(language, fileContent);
         }
 
         /// <summary>
-        ///     Load unity style language file
+        ///     Load Unity style language file.
         /// </summary>
         /// <param name="fileContent"></param>
-        private void LoadLanguageFile(string fileContent)
+        private void loadLanguageFile(string fileContent)
         {
             var stringReader = new StringReader(fileContent);
             var languages = stringReader.ReadLine().Split(',');
@@ -364,7 +366,7 @@ namespace JotunnLib.Managers
                                 tokenValue = keyAndValues[1];
                             }
 
-                            var languageDict = GetLanguageDict(language);
+                            var languageDict = getLanguageDict(language);
                             languageDict[token]= tokenValue;
                         }
                     }
@@ -373,11 +375,11 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Get the dictionary for a specific language
+        ///     Get the dictionary for a specific language.
         /// </summary>
         /// <param name="language"></param>
         /// <returns></returns>
-        private Dictionary<string, string> GetLanguageDict(string language)
+        private Dictionary<string, string> getLanguageDict(string language)
         {
             if (!Localizations.ContainsKey(language))
             {
@@ -388,13 +390,13 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Load community translation file
+        ///     Load community translation file.
         /// </summary>
         /// <param name="language"></param>
         /// <param name="fileContent"></param>
-        private void LoadJsonLanguageFile(string language, string fileContent)
+        private void loadJsonLanguageFile(string language, string fileContent)
         {
-            var languageDict = GetLanguageDict(language);
+            var languageDict = getLanguageDict(language);
 
             var json = (IDictionary<string, object>) SimpleJson.SimpleJson.DeserializeObject(fileContent);
 
@@ -409,11 +411,11 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Add tokens to the respective localization
+        ///     Add tokens to the respective localization.
         /// </summary>
         /// <param name="self"></param>
         /// <param name="language"></param>
-        private void AddTokens(Localization self, string language)
+        private void addTokens(Localization self, string language)
         {
             if (Localizations.TryGetValue(language, out var tokens))
             {

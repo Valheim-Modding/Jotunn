@@ -9,14 +9,21 @@ using System;
 namespace JotunnLib.Utils
 {
     /// <summary>
-    /// Priority attribute for PatchInitalizer
-    /// negative - early
-    /// zero - neutral
-    /// positive - late
+    ///     Priority attribute for PatchInitalizer.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    public class PatchInitAttribute: Attribute
+    public class PatchInitAttribute : Attribute
     {
+        /// <summary>
+        ///     The patch priority.
+        ///     <para>
+        ///         negative - early
+        ///         <br />
+        ///         zero - neutral
+        ///         <br />
+        ///         positive - late
+        ///     </para>
+        /// </summary>
         public int Priority { get; set; }
 
         public PatchInitAttribute(int priority)
