@@ -23,7 +23,7 @@ namespace JotunnLib
         /// <summary>
         ///     The BepInEx plugin Mod GUID being used.
         /// </summary>
-        public const string ModGuid = "com.bepinex.plugins.jotunnlib";
+        public const string ModGuid = "com.jotunn.jotunnlib";
 
         internal static GameObject RootObject;
 
@@ -67,12 +67,6 @@ namespace JotunnLib
             }
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
-
-#if DEBUG
-            Config.Bind("ModCompatibilityTest", "Enable", true, new ConfigDescription("Enable to test Mod compatibility testing", null));
-            Config.SettingChanged += ModCompatibility.Config_SettingChanged;
-            ModCompatibility.enableTestCase = (bool)Config["ModCompatibilityTest", "Enable"].BoxedValue;
-#endif
         }
 
 

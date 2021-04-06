@@ -47,8 +47,6 @@ namespace JotunnLib.Managers
                 Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
                 return;
             }
-
-            Logger.LogWarning("GUIManager instance is set!");
             Instance = this;
         }
 
@@ -70,8 +68,6 @@ namespace JotunnLib.Managers
 
 
             CreatePixelFix();
-
-            Logger.LogInfo("Initialized GUIManager");
 
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
