@@ -15,7 +15,7 @@ namespace JotunnBuildTask
         /// <returns></returns>
         public static bool PublicizeDll(string file, string ValheimPath)
         {
-            var outputPath = Path.Combine(Path.GetDirectoryName(file), Program._publicized_assemblies);
+            var outputPath = Path.Combine(Path.GetDirectoryName(file), Program.PublicizedAssemblies);
 
             if (!File.Exists(file))
             {
@@ -33,20 +33,20 @@ namespace JotunnBuildTask
             try
             {
                 assemblyDefinition = AssemblyDefinition.ReadAssembly(file);
-                if (Directory.Exists(Path.Combine(ValheimPath, Program._valheimData,
-                    Program._managed)))
+                if (Directory.Exists(Path.Combine(ValheimPath, Program.ValheimData,
+                    Program.Managed)))
                 {
-                    ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, Program._valheimData,
-                      Program._managed));
+                    ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, Program.ValheimData,
+                      Program.Managed));
                 }
-                if (Directory.Exists(Path.Combine(ValheimPath, Program._valheimServerData,
-                    Program._managed)))
+                if (Directory.Exists(Path.Combine(ValheimPath, Program.ValheimServerData,
+                    Program.Managed)))
                 {
-                    ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, Program._valheimServerData,
-                        Program._managed));
+                    ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, Program.ValheimServerData,
+                        Program.Managed));
                 }
 
-                ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, Program._unstripped_corlib));
+                ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, Program.UnstrippedCorlib));
             }
             catch (Exception exception)
             {
@@ -87,7 +87,7 @@ namespace JotunnBuildTask
             }
 
 
-            var outputFilename = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}_{Program._publicized}{Path.GetExtension(file)}");
+            var outputFilename = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}_{Program.Publicized}{Path.GetExtension(file)}");
 
             try
             {

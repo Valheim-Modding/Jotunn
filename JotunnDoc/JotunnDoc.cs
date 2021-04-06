@@ -1,12 +1,8 @@
-﻿using System;
+﻿using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using BepInEx;
 using UnityEngine;
-using JotunnLib.Managers;
 using JotunnDoc.Docs;
-using System.Text.RegularExpressions;
 
 namespace JotunnDoc
 {
@@ -18,9 +14,6 @@ namespace JotunnDoc
 
         private void Awake()
         {
-            // Harmony harmony = new Harmony("jotunndoc");
-            // harmony.PatchAll();
-
             docs = new List<Doc>()
             {
                 new PrefabDoc(),
