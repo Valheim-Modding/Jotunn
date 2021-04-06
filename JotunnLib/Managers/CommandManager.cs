@@ -50,6 +50,16 @@ namespace JotunnLib.Managers
 
         private List<ConsoleCommand> _consoleCommands = new List<ConsoleCommand>();
 
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
+                return;
+            }
+            Instance = this;
+        }
+
         /// <summary>
         ///     Initialize console commands that come with Jotunn.
         /// </summary>
