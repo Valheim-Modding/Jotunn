@@ -47,10 +47,15 @@ namespace TestMod
             PrefabManager.Cache.GetPrefab<GameObject>("GUI");
 
             // Hook ZNetScene.Awake() to add custom items cloned from vanilla items
-            On.ZNetScene.Awake += addClonedItems;
+            On.ObjectDB.CopyOtherDB += addClonedItems;
 
             // Hook version string for the ModCompatibility test
             On.Version.GetVersionString += Version_GetVersionString;
+        }
+
+        private void ObjectDB_CopyOtherDB(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        {
+            throw new NotImplementedException();
         }
 
         // Called every frame
@@ -239,11 +244,10 @@ namespace TestMod
             PieceManager.Instance.AddPiece(CP);
         }
 
-        // Add new items as copies of vanilla items - just works when the base item is loaded so use a ZNetScene hook
-        private void addClonedItems(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        // Add new items as copies of vanilla items - just works when vanilla prefabs are already loaded (ObjectDB.CopyOtherDB for example)
+        // You can use the Cache of the PrefabManager in here
+        private void addClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
-            orig(self);
-
             // You want that to run only once, JotunnLib has the item cached for the game session
             if (!clonedItemsAdded)
             {
@@ -257,20 +261,19 @@ namespace TestMod
                 itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
 
                 // Create and add a recipe for the copied item
-                // PrefabManager can get Prefabs from ZNetScene, when it is initialized
                 Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
                 recipe.m_item = itemDrop;
-                recipe.m_craftingStation = PrefabManager.Instance.GetPrefab("piece_workbench").GetComponent<CraftingStation>();
+                recipe.m_craftingStation = PrefabManager.Cache.GetPrefab<CraftingStation>("piece_workbench");
                 recipe.m_resources = new Piece.Requirement[]
                 {
                     new Piece.Requirement()
                     {
-                        m_resItem = PrefabManager.Instance.GetPrefab("Stone").GetComponent<ItemDrop>(),
+                        m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Stone"),
                         m_amount = 1
                     },
                     new Piece.Requirement()
                     {
-                        m_resItem = PrefabManager.Instance.GetPrefab("Wood").GetComponent<ItemDrop>(),
+                        m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Wood"),
                         m_amount = 1
                     }
                 };
@@ -279,6 +282,9 @@ namespace TestMod
 
                 clonedItemsAdded = true;
             }
+
+            // Hook is prefix, we just need to be able to get the vanilla prefabs, JotunnLib registers them in ObjectDB
+            orig(self, other);
         }
 
         // Registers localizations with configs
