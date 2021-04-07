@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace JotunnLib.Managers
 {
@@ -44,18 +45,6 @@ namespace JotunnLib.Managers
             // Create PieceTable Container
             PieceTableContainer = new GameObject("PieceTables");
             PieceTableContainer.transform.parent = Main.RootObject.transform;
-
-            // Get all vanilla PieceTables
-            //foreach (PieceTable table in Resources.FindObjectsOfTypeAll(typeof(PieceTable)))
-            foreach (var entry in PrefabManager.PrefabCache.GetPrefabs(typeof(PieceTable)))
-            {
-                string name = entry.Key;
-                PieceTables.Add(name, (PieceTable)entry.Value);
-
-                //TODO: get the name of the item which has this table attached and add it to the name map so we dont need to hardcode that
-
-                Logger.LogInfo($"Loaded existing piece table {name}");
-            }
 
             // Setup Hooks
             On.ObjectDB.Awake += registerCustomData;
@@ -166,7 +155,7 @@ namespace JotunnLib.Managers
 
             if (PieceTableNameMap.ContainsKey(name))
             {
-                return PieceTables[PieceTableNameMap[name]];
+                return PrefabManager.Cache.GetPrefab<PieceTable>(PieceTableNameMap[name]);
             }
 
             return null;
@@ -190,23 +179,37 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void registerInObjectDB(ObjectDB objectDB)
+        private void registerInPieceTables(ObjectDB objectDB)
         {
-            Logger.LogInfo($"---- Adding custom pieces to {objectDB} ----");
+            Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
 
             foreach (var customPiece in Pieces)
             {
                 try
                 { 
+                    // Fix references if needed
                     if (customPiece.FixReference)
                     {
                         customPiece.PiecePrefab.FixReferences();
                         customPiece.FixReference = false;
                     }
 
-                    objectDB.m_items.Add(customPiece.PiecePrefab);
-
-                    Logger.LogInfo($"Added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
+                    // Assign the piece to the actual PieceTable if not already in there
+                    var pieceTable = GetPieceTable(customPiece.PieceTable);
+                    if (pieceTable == null)
+                    {
+                        throw new Exception($"Could not find piecetable: {customPiece.PieceTable}");
+                    }
+                    if (pieceTable.m_pieces.Contains(customPiece.PiecePrefab))
+                    {
+                        Logger.LogInfo($"Already added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
+                    }
+                    else
+                    {
+                        pieceTable.m_pieces.Add(customPiece.PiecePrefab);
+                        Logger.LogInfo($"Added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
+                    }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -225,7 +228,7 @@ namespace JotunnLib.Managers
 
             if (isValid)
             {
-                registerInObjectDB(self);
+                registerInPieceTables(self);
             }
 
             // Fire event that everything is added and registered

@@ -83,7 +83,7 @@ namespace JotunnLib
                         }
                     }
 
-                    return PrefabManager.PrefabCache.GetPrefab(mockObjectType, unityObjectName);
+                    return PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);
                 }
             }
 

@@ -1,7 +1,4 @@
 ﻿using JotunnLib.Entities;
-using JotunnLib.Managers;
-using System;
-using System.Linq;
 using UnityEngine;
 
 namespace JotunnLib.Configs
@@ -47,20 +44,6 @@ namespace JotunnLib.Configs
             {
                 piece.m_icon = Icon;
             }
-
-            // Assign the piece to the actual PieceTable if not already in there
-            var pieceTable = PieceManager.Instance.GetPieceTable(PieceTable);
-            if (pieceTable == null)
-            {
-                Logger.LogWarning($"Could not find piecetable: {PieceTable}");
-                return;
-            }
-            if (pieceTable.m_pieces.Contains(prefab))
-            {
-                Logger.LogInfo($"Piece already added to PieceTable {PieceTable}");
-                return;
-            }
-            pieceTable.m_pieces.Add(prefab);
 
             // Assign the CraftingStation for this piece, if needed
             if (!string.IsNullOrEmpty(CraftingStation))
