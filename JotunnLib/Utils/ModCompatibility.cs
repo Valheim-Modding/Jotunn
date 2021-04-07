@@ -46,15 +46,20 @@ namespace JotunnLib.Utils
             var remote = new ModuleVersionData(lastServerVersion);
             var local = new ModuleVersionData(GetEnforcableMods().ToList());
 
-            var showText = "Remote version: " + Environment.NewLine + remote + Environment.NewLine + "Local version: " + Environment.NewLine + local;
 
             var scroll = GUIManager.Instance.CreateScrollView(panel.transform, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
                 new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f), 650f, 400f);
 
             scroll.SetActive(true);
 
-            GUIManager.Instance.CreateText(showText, scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            GUIManager.Instance.CreateText("Remote version:", scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true, new Color(0, 0, 0, 1), 600f, 40f, false);
+            GUIManager.Instance.CreateText(remote.ToString(false), scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, Color.white, true, new Color(0, 0, 0, 1), 600f, 40f, false);
+            GUIManager.Instance.CreateText("Local version:", scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true, new Color(0, 0, 0, 1), 600f, 40f, false);
+            GUIManager.Instance.CreateText(local.ToString(false), scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, Color.white, true, new Color(0, 0, 0, 1), 600f, 40f, false);
 
             foreach (var part in CreateErrorMessage(remote, local))
             {
@@ -99,9 +104,9 @@ namespace JotunnLib.Utils
 
                 if (server.ValheimVersion < client.ValheimVersion)
                 {
-                    yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
+                    yield return new Tuple<Color, string>(Color.white,
                         $"The server you tried to connect runs v{server.ValheimVersion}, which is lower than your version (v{client.ValheimVersion})");
-                    yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
+                    yield return new Tuple<Color, string>(Color.white,
                         "Please contact the server admin for a server update." + Environment.NewLine);
                 }
             }
@@ -204,7 +209,7 @@ namespace JotunnLib.Utils
                     yield return new Tuple<Color, string>(red, "Additional mod detected:");
                     yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
                         $"Mod {module.Item1} v{module.Item2} is not installed on the server.");
-                    yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, "Please consider uninstalling this mod." + Environment.NewLine);
+                    yield return new Tuple<Color, string>(Color.white, "Please consider uninstalling this mod." + Environment.NewLine);
                 }
             }
         }
@@ -213,17 +218,18 @@ namespace JotunnLib.Utils
             Tuple<string, System.Version, CompatibilityLevel, VersionStrictness> module)
         {
             yield return new Tuple<Color, string>(red, "Mod update needed:");
-            yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
+            yield return new Tuple<Color, string>(Color.white,
                 $"Please update mod {module.Item1} to version v{module.Item2}." + Environment.NewLine);
         }
 
         private static IEnumerable<Tuple<Color, string>> ServerVersionLowerMessage(Tuple<string, System.Version, CompatibilityLevel, VersionStrictness> module,
             Tuple<string, System.Version, CompatibilityLevel, VersionStrictness> clientModule)
         {
+            yield return new Tuple<Color, string>(Color.red, "Module version mismatch:");
             yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, $"Server has mod {module.Item1} v{module.Item2} installed.");
             yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
                 $"You have a higher version (v{clientModule.Item2}) of this mod installed.");
-            yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
+            yield return new Tuple<Color, string>(Color.white,
                 "Please contact the server admin to update or downgrade the mod on your client." + Environment.NewLine);
         }
 
@@ -240,7 +246,7 @@ namespace JotunnLib.Utils
 
         private static void AppendPackage(On.ZRpc.orig_Invoke orig, ZRpc self, string method, object[] parameters)
         {
-            var pkg = (ZPackage) parameters[0];
+            var pkg = (ZPackage)parameters[0];
             pkg.Write(new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
             orig(self, method, parameters);
         }
@@ -347,20 +353,19 @@ namespace JotunnLib.Utils
                     while (numberOfModules > 0)
                     {
                         Modules.Add(new Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>(pkg.ReadString(),
-                            new System.Version(pkg.ReadInt(), pkg.ReadInt(), pkg.ReadInt()), (CompatibilityLevel) pkg.ReadInt(),
-                            (VersionStrictness) pkg.ReadInt()));
+                            new System.Version(pkg.ReadInt(), pkg.ReadInt(), pkg.ReadInt()), (CompatibilityLevel)pkg.ReadInt(),
+                            (VersionStrictness)pkg.ReadInt()));
                         numberOfModules--;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("Could not deserialize version message data");
+                    Logger.LogError("Could not deserialize version message data from zPackage");
                 }
             }
 
             public ModuleVersionData(List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> versionData)
             {
-                var valheimVersion = new System.Version(Version.m_major, Version.m_minor, Version.m_patch);
                 ValheimVersion = new System.Version(Version.m_major, Version.m_minor, Version.m_patch);
                 Modules = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
                 Modules.AddRange(versionData);
@@ -433,8 +438,8 @@ namespace JotunnLib.Utils
                     pkg.Write(module.Item2.Major);
                     pkg.Write(module.Item2.Minor);
                     pkg.Write(module.Item2.Build);
-                    pkg.Write((int) module.Item3);
-                    pkg.Write((int) module.Item4);
+                    pkg.Write((int)module.Item3);
+                    pkg.Write((int)module.Item4);
                 }
 
                 return pkg;
@@ -457,7 +462,7 @@ namespace JotunnLib.Utils
                     return false;
                 }
 
-                return Equals((ModuleVersionData) obj);
+                return Equals((ModuleVersionData)obj);
             }
 
             public override int GetHashCode()
@@ -476,6 +481,19 @@ namespace JotunnLib.Utils
                 foreach (var mod in Modules)
                 {
                     sb.AppendLine($"{mod.Item1} {mod.Item2.Major}.{mod.Item2.Minor}.{mod.Item2.Build} {mod.Item3} {mod.Item4}");
+                }
+
+                return sb.ToString();
+            }
+
+            public string ToString(bool showEnforce)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine($"Valheim {ValheimVersion.Major}.{ValheimVersion.Minor}.{ValheimVersion.Build}");
+
+                foreach (var mod in Modules)
+                {
+                    sb.AppendLine($"{mod.Item1} {mod.Item2.Major}.{mod.Item2.Minor}.{mod.Item2.Build}" + (showEnforce ? " {mod.Item3} {mod.Item4}" : ""));
                 }
 
                 return sb.ToString();

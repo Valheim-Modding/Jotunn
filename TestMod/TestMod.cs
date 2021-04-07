@@ -10,12 +10,13 @@ using JotunnLib.Configs;
 using JotunnLib.Entities;
 using System.Collections.Generic;
 using BepInEx.Configuration;
+using Version = System.Version;
 
 namespace TestMod
 {
     [BepInPlugin("com.jotunn.testmod", "JotunnLib Test Mod", "0.1.0")]
     [BepInDependency(JotunnLib.Main.ModGuid)]
-    [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
+    [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Build)]
     class TestMod : BaseUnityPlugin
     {
         public AssetBundle TestAssets;
@@ -41,8 +42,20 @@ namespace TestMod
             addSkills();
             createConfigValues();
 
-            // Hook version string for a ModCompatibility test
-            On.Version.GetVersionString += Version_GetVersionString;
+            // Change version number of this module if test is enabled
+            if (forceVersionMismatch)
+            {
+                var propinfo = this.Info.Metadata.GetType().GetProperty("Version",BindingFlags.Public|BindingFlags.FlattenHierarchy|BindingFlags.Instance);
+                if (propinfo == null)
+                {
+                    Logger.LogError("_Minor null");
+                }
+                else
+                {
+                    System.Version v = new System.Version(0, 4, 1);
+                    propinfo.SetValue(this.Info.Metadata, v, null);
+                }
+            }
         }
 
         // Called every frame
