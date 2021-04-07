@@ -179,7 +179,25 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void registerInPieceTables(ObjectDB objectDB)
+        public CustomPiece GetPiece(string pieceName)
+        {
+            var piece = Pieces.Find(x => x.PiecePrefab.name.Equals(pieceName));
+            return piece;
+        }
+
+        public void RemovePiece(string pieceName)
+        {
+            var piece = GetPiece(pieceName);
+            if (piece == null)
+            {
+                Logger.LogWarning($"Could not remove piece {pieceName}: Not found");
+                return;
+            }
+
+            Pieces.Remove(piece);
+        }
+
+        private void registerInPieceTables()
         {
             Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
 
@@ -228,7 +246,7 @@ namespace JotunnLib.Managers
 
             if (isValid)
             {
-                registerInPieceTables(self);
+                registerInPieceTables();
             }
 
             // Fire event that everything is added and registered
