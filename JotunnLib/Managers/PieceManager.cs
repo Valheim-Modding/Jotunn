@@ -179,7 +179,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void registerInObjectDB(ObjectDB objectDB)
+        private void registerInPieceTables(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
 
@@ -228,7 +228,7 @@ namespace JotunnLib.Managers
 
             if (isValid)
             {
-                registerInObjectDB(self);
+                registerInPieceTables(self);
             }
 
             // Fire event that everything is added and registered
