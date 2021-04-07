@@ -405,7 +405,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\test_skill.jpg" />
+    <Content Include="Assets\test_tex.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="CopyToPluginFolder" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT'">

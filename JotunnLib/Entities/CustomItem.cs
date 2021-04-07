@@ -29,7 +29,10 @@ namespace JotunnLib.Entities
         public CustomItem(string name, bool addZNetView = true)
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
-            //TODO: add ItemDrop?
+            if (ItemPrefab)
+            {
+                ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
+            }
         }
 
         public CustomItem(string name, string basePrefabName)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 namespace JotunnLib.Managers
 {
@@ -15,11 +16,6 @@ namespace JotunnLib.Managers
         ///     The singleton instance of this manager.
         /// </summary>
         public static PrefabManager Instance { get; private set; }
-
-        /// <summary>
-        ///     The global cache of prefabs.
-        /// </summary>
-        public static Cache PrefabCache;
 
         public event EventHandler PrefabsLoaded;
         internal GameObject PrefabContainer;
@@ -46,7 +42,7 @@ namespace JotunnLib.Managers
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
 
-            PrefabCache = new Cache();
+            SceneManager.sceneUnloaded += (Scene current) => Cache.clearCache();
         }
 
         /*private string createUID()
@@ -134,7 +130,7 @@ namespace JotunnLib.Managers
             // Try to get the prefab from the PrefabCache
             if (!prefab)
             {
-                prefab = PrefabCache.GetPrefab<GameObject>(baseName);
+                prefab = Cache.GetPrefab<GameObject>(baseName);
             }
             if (!prefab)
             {
@@ -169,7 +165,7 @@ namespace JotunnLib.Managers
                 return null;
             }
 
-            var newPrefab = UnityEngine.Object.Instantiate(prefab, PrefabContainer.transform);
+            var newPrefab = Instantiate(prefab, PrefabContainer.transform);
             //newPrefab.name = name + createUID();
             newPrefab.name = name;
 
@@ -286,23 +282,12 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Helper class for caching gameobjects in the current scene.
+        ///     The global cache of prefabs per scene.
         /// </summary>
-        public class Cache
+        public static class Cache
         {
             private static readonly Dictionary<Type, Dictionary<string, Object>> dictionaryCache =
                 new Dictionary<Type, Dictionary<string, Object>>();
-
-            private void InitCache(Type type, Dictionary<string, Object> map = null)
-            {
-                map ??= new Dictionary<string, Object>();
-                foreach (var unityObject in Resources.FindObjectsOfTypeAll(type))
-                {
-                    map[unityObject.name] = unityObject;
-                }
-
-                dictionaryCache[type] = map;
-            }
 
             /// <summary>
             ///     Get an instance of an Unity Object from the current scene with the given name.
@@ -310,15 +295,10 @@ namespace JotunnLib.Managers
             /// <param name="type"></param>
             /// <param name="name"></param>
             /// <returns></returns>
-            public Object GetPrefab(Type type, string name)
+            public static Object GetPrefab(Type type, string name)
             {
                 if (dictionaryCache.TryGetValue(type, out var map))
                 {
-                    if (map.Count == 0 || !map.Values.First())
-                    {
-                        InitCache(type, map);
-                    }
-
                     if (map.TryGetValue(name, out var unityObject))
                     {
                         return unityObject;
@@ -326,7 +306,7 @@ namespace JotunnLib.Managers
                 }
                 else
                 {
-                    InitCache(type);
+                    initCache(type);
                     return GetPrefab(type, name);
                 }
 
@@ -339,7 +319,7 @@ namespace JotunnLib.Managers
             /// <typeparam name="T"></typeparam>
             /// <param name="name"></param>
             /// <returns></returns>
-            public T GetPrefab<T>(string name) where T : Object
+            public static T GetPrefab<T>(string name) where T : Object
             {
                 return (T)GetPrefab(typeof(T), name);
             }
@@ -349,22 +329,33 @@ namespace JotunnLib.Managers
             /// </summary>
             /// <param name="type"></param>
             /// <returns></returns>
-            public Dictionary<string, Object> GetPrefabs(Type type)
+            public static Dictionary<string, Object> GetPrefabs(Type type)
             {
                 if (dictionaryCache.TryGetValue(type, out var map))
                 {
-                    if (map.Count == 0 || !map.Values.First())
-                    {
-                        InitCache(type, map);
-                    }
-
                     return map;
                 }
                 else
                 {
-                    InitCache(type);
+                    initCache(type);
                     return GetPrefabs(type);
                 }
+            }
+
+            private static void initCache(Type type, Dictionary<string, Object> map = null)
+            {
+                map ??= new Dictionary<string, Object>();
+                foreach (var unityObject in Resources.FindObjectsOfTypeAll(type))
+                {
+                    map[unityObject.name] = unityObject;
+                }
+
+                dictionaryCache[type] = map;
+            }
+
+            internal static void clearCache()
+            {
+                dictionaryCache.Clear();
             }
         }
     }

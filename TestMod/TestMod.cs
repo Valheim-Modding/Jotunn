@@ -25,8 +25,8 @@ namespace TestMod
 
         private bool showMenu = false;
         private bool showGUIButton = false;
-        private Sprite testSkillSprite;
-        private GameObject testButton, testPanel;
+        private Sprite testSprite;
+        private GameObject testPanel;
         private bool forceVersionMismatch = false;
         private bool clonedItemsAdded = false;
 
@@ -39,9 +39,12 @@ namespace TestMod
             loadAssets();
             addItemsWithConfigs();
             addMockedItems();
+            addEmptyItems();
             addCommands();
             addSkills();
             createConfigValues();
+
+            PrefabManager.Cache.GetPrefab<GameObject>("GUI");
 
             // Hook ZNetScene.Awake() to add custom items cloned from vanilla items
             On.ZNetScene.Awake += addClonedItems;
@@ -120,8 +123,8 @@ namespace TestMod
         private void loadAssets()
         {
             // Load texture
-            Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");
-            testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
+            Texture2D testTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
+            testSprite = Sprite.Create(testTex, new Rect(0f, 0f, testTex.width, testTex.height), Vector2.zero);
 
             // Load asset bundle from filesystem
             TestAssets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
@@ -227,6 +230,15 @@ namespace TestMod
             }
         }
 
+        // Add a custom item from an "empty" prefab
+        private void addEmptyItems()
+        {
+            CustomPiece CP = new CustomPiece("$piece_lul", "Hammer");
+            var piece = CP.Piece;
+            piece.m_icon = testSprite;
+            PieceManager.Instance.AddPiece(CP);
+        }
+
         // Add new items as copies of vanilla items - just works when the base item is loaded so use a ZNetScene hook
         private void addClonedItems(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
@@ -262,7 +274,7 @@ namespace TestMod
                         m_amount = 1
                     }
                 };
-                CustomRecipe CR = new CustomRecipe(recipe, true, true);
+                CustomRecipe CR = new CustomRecipe(recipe, false, false);
                 ItemManager.Instance.AddRecipe(CR);
 
                 clonedItemsAdded = true;
@@ -282,6 +294,14 @@ namespace TestMod
                 }
             });
 
+            // Add translations for the custom piece in addEmptyItems
+            LocalizationManager.Instance.RegisterLocalizationConfig(new LocalizationConfig("English")
+            {
+                Translations =
+                {
+                    { "piece_lul", "Lulz" }
+                }
+            });
         }
 
         // Register new console commands
