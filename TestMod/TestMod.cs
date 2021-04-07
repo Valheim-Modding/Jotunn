@@ -29,6 +29,7 @@ namespace TestMod
         private Sprite testSprite;
         private GameObject testPanel;
         private bool forceVersionMismatch = false;
+        private System.Version currentVersion;
         private bool clonedItemsAdded = false;
 
         // Init handlers
@@ -47,21 +48,10 @@ namespace TestMod
 
             // Hook ObjectDB.CopyOtherDB to add custom items cloned from vanilla items
             On.ObjectDB.CopyOtherDB += addClonedItems;
-
-            // Change version number of this module if test is enabled
-            if (forceVersionMismatch)
-            {
-                var propinfo = this.Info.Metadata.GetType().GetProperty("Version",BindingFlags.Public|BindingFlags.FlattenHierarchy|BindingFlags.Instance);
-                if (propinfo == null)
-                {
-                    Logger.LogError("_Minor null");
-                }
-                else
-                {
-                    System.Version v = new System.Version(0, 4, 1);
-                    propinfo.SetValue(this.Info.Metadata, v, null);
-                }
-            }
+            
+            // Get current version for the mod compatibility test
+            currentVersion = new System.Version(Info.Metadata.Version.ToString());
+            setVersion();
         }
 
         // Called every frame
@@ -363,18 +353,21 @@ namespace TestMod
             }
         }
 
-        // Our own implementation of the GetVersionString for testing the ModCompatibility
-        private string Version_GetVersionString(On.Version.orig_GetVersionString orig)
+        // Set version of the plugin for the mod compatibility test
+        private void setVersion()
         {
-            var valheimVersion = orig();
+            var propinfo = Info.Metadata.GetType().GetProperty("Version", BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
 
+            // Change version number of this module if test is enabled
             if (forceVersionMismatch)
             {
-                valheimVersion += "NOT";
+                System.Version v = new System.Version(0, 0, 0);
+                propinfo.SetValue(this.Info.Metadata, v, null);
             }
-
-            return valheimVersion;
+            else
+            {
+                propinfo.SetValue(Info.Metadata, currentVersion, null);
+            }
         }
-
     }
 }
