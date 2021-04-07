@@ -8,12 +8,14 @@ namespace JotunnLib.Entities
     {
         public GameObject PiecePrefab { get; set; }
         public Piece Piece { get; set; } = null;
+        public string PieceTable { get; set; } = string.Empty;
         public bool FixReference { get; set; } = false;
 
-        public CustomPiece(GameObject piecePrefab, bool fixReference)
+        public CustomPiece(GameObject piecePrefab, string pieceTable, bool fixReference)
         {
             PiecePrefab = piecePrefab;
             Piece = piecePrefab.GetComponent<Piece>();
+            PieceTable = pieceTable;
             FixReference = fixReference;
         }
 
@@ -21,35 +23,70 @@ namespace JotunnLib.Entities
         {
             PiecePrefab = piecePrefab;
             Piece = piecePrefab.GetComponent<Piece>();
+            PieceTable = pieceConfig.PieceTable;
+            FixReference = true;
+
             pieceConfig.Apply(piecePrefab);
+        }
+
+        public CustomPiece(AssetBundle assetBundle, string assetName, string pieceTable, bool fixReference)
+        {
+            PiecePrefab = (GameObject)assetBundle.LoadAsset(assetName);
+            if (PiecePrefab)
+            {
+                Piece = PiecePrefab.GetComponent<Piece>();
+            }
+            PieceTable = pieceTable;
+            FixReference = fixReference;
+        }
+
+        public CustomPiece(AssetBundle assetBundle, string assetName, PieceConfig pieceConfig)
+        {
+            var piecePrefab = (GameObject)assetBundle.LoadAsset(assetName);
+            if (piecePrefab)
+            {
+                PiecePrefab = piecePrefab;
+                Piece = piecePrefab.GetComponent<Piece>();
+                PieceTable = pieceConfig.PieceTable;
+
+                pieceConfig.Apply(piecePrefab);
+            }
             FixReference = true;
         }
 
         //TODO: constructors for cloned / empty prefabs with configs.
-        //TODO: cloning must use cache. everything must be usable before znetscene
 
-        public CustomPiece(string name, bool addZNetView = true)
+        public CustomPiece(string name, string pieceTable, bool addZNetView = true)
         {
             PiecePrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
-            // add Piece?
+            if (PiecePrefab)
+            {
+                Piece = PiecePrefab.AddComponent<Piece>();
+                if (name[0] != LocalizationManager.TokenFirstChar)
+                {
+                    Piece.m_name = LocalizationManager.TokenFirstChar + name;
+                }
+                else
+                {
+                    Piece.m_name = name;
+                }
+            }
+            PieceTable = pieceTable;
         }
 
-        public CustomPiece(string name, string baseName)
+        public CustomPiece(string name, string baseName, string pieceTable)
         {
             PiecePrefab = PrefabManager.Instance.CreateClonedPrefab(name, baseName);
-            Piece = PiecePrefab.GetComponent<Piece>();
-        }
-
-        public CustomPiece(AssetBundle assetBundle, string assetName, bool fixReference)
-        {
-            PiecePrefab = (GameObject)assetBundle.LoadAsset(assetName);
-            Piece = PiecePrefab.GetComponent<Piece>();
-            FixReference = fixReference;
+            if (PiecePrefab)
+            {
+                Piece = PiecePrefab.GetComponent<Piece>();
+            }
+            PieceTable = pieceTable;
         }
 
         public bool IsValid()
         {
-            return PiecePrefab && Piece && Piece.IsValid();
+            return PiecePrefab && Piece && Piece.IsValid() && !string.IsNullOrEmpty(PieceTable);
         }
 
         public static bool IsCustomPiece(string prefabName)
