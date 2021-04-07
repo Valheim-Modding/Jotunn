@@ -181,7 +181,7 @@ namespace JotunnLib.Managers
 
         private void registerInObjectDB(ObjectDB objectDB)
         {
-            Logger.LogInfo($"---- Adding custom pieces to {objectDB} ----");
+            Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
 
             foreach (var customPiece in Pieces)
             {
@@ -200,15 +200,16 @@ namespace JotunnLib.Managers
                     {
                         throw new Exception($"Could not find piecetable: {customPiece.PieceTable}");
                     }
-                    if (!pieceTable.m_pieces.Contains(customPiece.PiecePrefab))
+                    if (pieceTable.m_pieces.Contains(customPiece.PiecePrefab))
+                    {
+                        Logger.LogInfo($"Already added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
+                    }
+                    else
                     {
                         pieceTable.m_pieces.Add(customPiece.PiecePrefab);
+                        Logger.LogInfo($"Added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
                     }
-
-                    // Add to ObjectDB
-                    objectDB.m_items.Add(customPiece.PiecePrefab);
-
-                    Logger.LogInfo($"Added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
+                    
                 }
                 catch (Exception ex)
                 {
