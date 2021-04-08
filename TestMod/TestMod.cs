@@ -10,13 +10,14 @@ using JotunnLib.Configs;
 using JotunnLib.Entities;
 using System.Collections.Generic;
 using BepInEx.Configuration;
+using Version = System.Version;
 using System.IO;
 
 namespace TestMod
 {
     [BepInPlugin("com.jotunn.testmod", "JotunnLib Test Mod", "0.1.0")]
     [BepInDependency(JotunnLib.Main.ModGuid)]
-    [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
+    [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Build)]
     class TestMod : BaseUnityPlugin
     {
         public AssetBundle TestAssets;
@@ -25,9 +26,11 @@ namespace TestMod
 
         private bool showMenu = false;
         private bool showGUIButton = false;
+        private Texture2D testTex;
         private Sprite testSprite;
         private GameObject testPanel;
         private bool forceVersionMismatch = false;
+        private System.Version currentVersion;
         private bool clonedItemsAdded = false;
 
         // Init handlers
@@ -46,14 +49,10 @@ namespace TestMod
 
             // Hook ObjectDB.CopyOtherDB to add custom items cloned from vanilla items
             On.ObjectDB.CopyOtherDB += addClonedItems;
-
-            // Hook version string for the ModCompatibility test
-            On.Version.GetVersionString += Version_GetVersionString;
-        }
-
-        private void ObjectDB_CopyOtherDB(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
-        {
-            throw new NotImplementedException();
+            
+            // Get current version for the mod compatibility test
+            currentVersion = new System.Version(Info.Metadata.Version.ToString());
+            setVersion();
         }
 
         // Called every frame
@@ -126,7 +125,7 @@ namespace TestMod
         private void loadAssets()
         {
             // Load texture
-            Texture2D testTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
+            testTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
             testSprite = Sprite.Create(testTex, new Rect(0f, 0f, testTex.width, testTex.height), Vector2.zero);
 
             // Load asset bundle from filesystem
@@ -239,6 +238,8 @@ namespace TestMod
             CustomPiece CP = new CustomPiece("$piece_lul", "Hammer");
             var piece = CP.Piece;
             piece.m_icon = testSprite;
+            var prefab = CP.PiecePrefab;
+            prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
             PieceManager.Instance.AddPiece(CP);
         }
 
@@ -355,18 +356,21 @@ namespace TestMod
             }
         }
 
-        // Our own implementation of the GetVersionString for testing the ModCompatibility
-        private string Version_GetVersionString(On.Version.orig_GetVersionString orig)
+        // Set version of the plugin for the mod compatibility test
+        private void setVersion()
         {
-            var valheimVersion = orig();
+            var propinfo = Info.Metadata.GetType().GetProperty("Version", BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
 
+            // Change version number of this module if test is enabled
             if (forceVersionMismatch)
             {
-                valheimVersion += "NOT";
+                System.Version v = new System.Version(0, 0, 0);
+                propinfo.SetValue(this.Info.Metadata, v, null);
             }
-
-            return valheimVersion;
+            else
+            {
+                propinfo.SetValue(Info.Metadata, currentVersion, null);
+            }
         }
-
     }
 }

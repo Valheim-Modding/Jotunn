@@ -101,5 +101,20 @@ namespace JotunnLib.Entities
 
             return false;
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj.GetHashCode() == GetHashCode();
+        }
+
+        public override int GetHashCode()
+        {
+            return PiecePrefab.name.GetStableHashCode();
+        }
+
+        public override string ToString()
+        {
+            return PiecePrefab.ToString();
+        }
     }
 }

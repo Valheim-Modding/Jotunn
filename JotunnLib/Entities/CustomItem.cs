@@ -1,4 +1,5 @@
 ﻿using JotunnLib.Managers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace JotunnLib.Entities
@@ -60,6 +61,21 @@ namespace JotunnLib.Entities
             }
 
             return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj.GetHashCode() == GetHashCode();
+        }
+
+        public override int GetHashCode()
+        {
+            return ItemPrefab.name.GetStableHashCode();
+        }
+
+        public override string ToString()
+        {
+            return ItemPrefab.ToString();
         }
     }
 }
