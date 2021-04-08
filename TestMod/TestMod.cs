@@ -118,8 +118,8 @@ namespace TestMod
         // Add custom key bindings
         private void registerInputs(object sender, EventArgs e)
         {
-            InputManager.Instance.RegisterButton("TestMod_Menu", KeyCode.Insert);
-            InputManager.Instance.RegisterButton("GUIManagerTest", KeyCode.F8);
+            InputManager.Instance.AddButton("TestMod_Menu", KeyCode.Insert);
+            InputManager.Instance.AddButton("GUIManagerTest", KeyCode.F8);
         }
 
         // Load assets
@@ -289,7 +289,7 @@ namespace TestMod
         void registerLocalization(object sender, EventArgs e)
         {
             // Add translations for the custom item in addClonedItems
-            LocalizationManager.Instance.RegisterLocalizationConfig(new LocalizationConfig("English")
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
             {
                 Translations =
                 {
@@ -299,7 +299,7 @@ namespace TestMod
             });
 
             // Add translations for the custom piece in addEmptyItems
-            LocalizationManager.Instance.RegisterLocalizationConfig(new LocalizationConfig("English")
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
             {
                 Translations =
                 {
@@ -325,7 +325,7 @@ namespace TestMod
             // Test adding a skill with a texture
             Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
             Sprite testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
-            TestSkillType = SkillManager.Instance.RegisterSkill("com.jotunnlib.testmod.testskill", "TestingSkill", "A nice testing skill!", 1f, testSkillSprite);
+            TestSkillType = SkillManager.Instance.AddSkill("com.jotunnlib.testmod.testskill", "TestingSkill", "A nice testing skill!", 1f, testSkillSprite);
         }
 
         // Create some sample configuration values to check server sync

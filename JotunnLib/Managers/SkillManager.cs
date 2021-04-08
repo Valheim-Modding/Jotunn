@@ -39,20 +39,14 @@ namespace JotunnLib.Managers
         /// <param name="increaseStep"></param>
         /// <param name="icon">Icon for the skill</param>
         /// <returns>The SkillType of the newly registered skill</returns>
-        [System.Obsolete("Use `RegisterSkill(SkillConfig config)` instead. This method could potentially break user saves.", true)]
-        public Skills.SkillType RegisterSkill(
+        [System.Obsolete("Use `AddSkill(SkillConfig config)` instead. This method could potentially break user saves.", true)]
+        public Skills.SkillType AddSkill(
             string name,
             string description,
             float increaseStep = 1f,
             Sprite icon = null,
             bool createLocalizations = true)
         {
-            if (createLocalizations)
-            {
-                LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId, name);
-                LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId + "_description", description);
-            }
-
             SkillConfig skillConfig = new SkillConfig()
             {
                 Identifier = name + nextSkillId.ToString(),
@@ -62,8 +56,14 @@ namespace JotunnLib.Managers
                 Icon = icon
             };
 
-            LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID, skillConfig.Name);
-            LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID + "_description", skillConfig.Description);
+            if (createLocalizations)
+            {
+                LocalizationManager.Instance.RegisterLocalization("English", new Dictionary<string, string>()
+                {
+                    { "skill_" + skillConfig.UID, skillConfig.Name },
+                    { "skill_" + skillConfig.UID + "_description", skillConfig.Description }
+                });
+            }
 
             Skills.Add(skillConfig.UID, skillConfig);
             nextSkillId++;
@@ -76,7 +76,7 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="skillConfig">SkillConfig object representing new skill to register</param>
         /// <returns>The SkillType of the newly registered skill</returns>
-        public Skills.SkillType RegisterSkill(SkillConfig skillConfig, bool registerLocalizations = true)
+        public Skills.SkillType AddSkill(SkillConfig skillConfig, bool registerLocalizations = true)
         {
             if (string.IsNullOrEmpty(skillConfig.Identifier))
             {
@@ -90,7 +90,7 @@ namespace JotunnLib.Managers
             {
                 foreach (var translation in skillConfig.Localizations.Values)
                 {
-                    LocalizationManager.Instance.RegisterLocalizationConfig(translation);
+                    LocalizationManager.Instance.AddLocalization(translation);
                 }
             }
 
@@ -106,7 +106,7 @@ namespace JotunnLib.Managers
         /// <param name="increaseStep"></param>
         /// <param name="icon">Icon for the skill</param>
         /// <returns>The SkillType of the newly registered skill</returns>
-        public Skills.SkillType RegisterSkill(
+        public Skills.SkillType AddSkill(
             string identifer,
             string name,
             string description,
@@ -114,7 +114,7 @@ namespace JotunnLib.Managers
             Sprite icon = null,
             bool registerLocalizations = true)
         {
-            return RegisterSkill(new SkillConfig()
+            return AddSkill(new SkillConfig()
             {
                 Identifier = identifer,
                 Name = name,
