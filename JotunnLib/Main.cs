@@ -11,7 +11,7 @@ using JotunnLib.Utils;
 
 namespace JotunnLib
 {
-    [BepInPlugin(ModGuid, "JotunnLib", Version)]
+    [BepInPlugin(ModGuid, ModName, Version)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
@@ -19,6 +19,11 @@ namespace JotunnLib
         ///     The current version of the Jotunn library.
         /// </summary>
         public const string Version = "0.2.0";
+
+        /// <summary>
+        ///     The name of the library.
+        /// </summary>
+        public const string ModName = "JotunnLib";
 
         /// <summary>
         ///     The BepInEx plugin Mod GUID being used.
