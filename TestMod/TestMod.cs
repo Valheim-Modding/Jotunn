@@ -261,6 +261,7 @@ namespace TestMod
 
                 // Create and add a recipe for the copied item
                 Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
+                recipe.name = "Recipe_EvilSword";
                 recipe.m_item = itemDrop;
                 recipe.m_craftingStation = PrefabManager.Cache.GetPrefab<CraftingStation>("piece_workbench");
                 recipe.m_resources = new Piece.Requirement[]
