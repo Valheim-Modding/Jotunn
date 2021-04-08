@@ -12,7 +12,7 @@ using JotunnLib.Utils;
 namespace JotunnLib
 {
     [BepInPlugin(ModGuid, "JotunnLib", Version)]
-    [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Build)]
+    [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
         /// <summary>
