@@ -122,11 +122,11 @@ namespace JotunnLib
                                 types.Add(new Tuple<MethodInfo, int>(method, attribute.Priority));
                             }
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         { }
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 { }
             }
 
