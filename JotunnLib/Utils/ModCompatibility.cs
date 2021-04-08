@@ -38,201 +38,6 @@ namespace JotunnLib.Utils
             }
         }
 
-        private static void ShowModCompatibilityErrorMessage()
-        {
-            var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0f, 0f), 700, 500);
-            panel.SetActive(true);
-            var remote = new ModuleVersionData(lastServerVersion);
-            var local = new ModuleVersionData(GetEnforcableMods().ToList());
-
-
-            var scroll = GUIManager.Instance.CreateScrollView(panel.transform, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
-                new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f), 650f, 400f);
-
-            scroll.SetActive(true);
-
-            GUIManager.Instance.CreateText("Remote version:", scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true, new Color(0, 0, 0, 1), 600f, 40f, false);
-            GUIManager.Instance.CreateText(remote.ToString(false), scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, Color.white, true, new Color(0, 0, 0, 1), 600f, 40f, false);
-            GUIManager.Instance.CreateText("Local version:", scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true, new Color(0, 0, 0, 1), 600f, 40f, false);
-            GUIManager.Instance.CreateText(local.ToString(false), scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, Color.white, true, new Color(0, 0, 0, 1), 600f, 40f, false);
-
-            foreach (var part in CreateErrorMessage(remote, local))
-            {
-                GUIManager.Instance.CreateText(part.Item2, scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
-                    new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, part.Item1, true, new Color(0, 0, 0, 1), 600f, 40f,
-                    false);
-            }
-
-
-            scroll.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
-
-            var button = GUIManager.Instance.CreateButton("OK", panel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -215f));
-            button.SetActive(true);
-            button.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                panel.SetActive(false);
-                Object.Destroy(panel);
-            });
-
-            // Reset the last server version
-            lastServerVersion = null;
-        }
-
-        /// <summary>
-        ///     Create the error message(s) from the server and client message data
-        /// </summary>
-        /// <param name="server">server data</param>
-        /// <param name="client">client data</param>
-        /// <returns></returns>
-        private static IEnumerable<Tuple<Color, string>> CreateErrorMessage(ModuleVersionData server, ModuleVersionData client)
-        {
-            var red = new Color(1, 0, 0, 1);
-
-            // Check Valheim version first
-            if (server.ValheimVersion != client.ValheimVersion)
-            {
-                yield return new Tuple<Color, string>(red, "Valheim version error:");
-                if (server.ValheimVersion > client.ValheimVersion)
-                {
-                    yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, $"Please update your client to version {server.ValheimVersion}");
-                }
-
-                if (server.ValheimVersion < client.ValheimVersion)
-                {
-                    yield return new Tuple<Color, string>(Color.white,
-                        $"The server you tried to connect runs v{server.ValheimVersion}, which is lower than your version (v{client.ValheimVersion})");
-                    yield return new Tuple<Color, string>(Color.white,
-                        "Please contact the server admin for a server update." + Environment.NewLine);
-                }
-            }
-
-            // And then each module
-            foreach (var module in server.Modules)
-            {
-                // Check first for missing modules on the client side
-                if (module.Item3 == CompatibilityLevel.EveryoneMustHaveMod)
-                {
-                    if (client.Modules.All(x => x.Item1 != module.Item1))
-                    {
-                        // client is missing needed module
-                        yield return new Tuple<Color, string>(red, "Missing mod:");
-                        yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
-                            $"Please install mod {module.Item1} v{module.Item2}" + Environment.NewLine);
-                        continue;
-                    }
-                }
-
-                // Then all version checks
-                var clientModule = client.Modules.First(x => x.Item1 == module.Item1);
-
-                // Major
-                if (module.Item4 >= VersionStrictness.Major || clientModule.Item4 >= VersionStrictness.Major)
-                {
-                    if (module.Item2.Major > clientModule.Item2.Major)
-                    {
-                        foreach (var messageLine in ClientVersionLowerMessage(red, module))
-                        {
-                            yield return messageLine;
-                        }
-
-                        continue;
-                    }
-
-                    if (module.Item2.Major < clientModule.Item2.Major)
-                    {
-                        foreach (var messageLine in ServerVersionLowerMessage(module, clientModule))
-                        {
-                            yield return messageLine;
-                        }
-
-                        continue;
-                    }
-
-                    // Minor
-                    if (module.Item4 >= VersionStrictness.Minor || clientModule.Item4 >= VersionStrictness.Minor)
-                    {
-                        if (module.Item2.Minor > clientModule.Item2.Minor)
-                        {
-                            foreach (var messageLine in ClientVersionLowerMessage(red, module))
-                            {
-                                yield return messageLine;
-                            }
-
-                            continue;
-                        }
-
-                        if (module.Item2.Minor < clientModule.Item2.Minor)
-                        {
-                            foreach (var messageLine in ServerVersionLowerMessage(module, clientModule))
-                            {
-                                yield return messageLine;
-                            }
-
-                            continue;
-                        }
-                    }
-
-                    // Build
-                    if (module.Item4 >= VersionStrictness.Build || clientModule.Item4 >= VersionStrictness.Build)
-                    {
-                        if (module.Item2.Build > clientModule.Item2.Build)
-                        {
-                            foreach (var messageLine in ClientVersionLowerMessage(red, module))
-                            {
-                                yield return messageLine;
-                            }
-
-                            continue;
-                        }
-
-                        if (module.Item2.Build < clientModule.Item2.Build)
-                        {
-                            foreach (var messageLine in ServerVersionLowerMessage(module, clientModule))
-                            {
-                                yield return messageLine;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Now lets find additional modules on the client side
-            foreach (var module in client.Modules)
-            {
-                if (server.Modules.All(x => x.Item1 != module.Item1))
-                {
-                    yield return new Tuple<Color, string>(red, "Additional mod detected:");
-                    yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
-                        $"Mod {module.Item1} v{module.Item2} is not installed on the server.");
-                    yield return new Tuple<Color, string>(Color.white, "Please consider uninstalling this mod." + Environment.NewLine);
-                }
-            }
-        }
-
-        private static IEnumerable<Tuple<Color, string>> ClientVersionLowerMessage(Color red,
-            Tuple<string, System.Version, CompatibilityLevel, VersionStrictness> module)
-        {
-            yield return new Tuple<Color, string>(red, "Mod update needed:");
-            yield return new Tuple<Color, string>(Color.white,
-                $"Please update mod {module.Item1} to version v{module.Item2}." + Environment.NewLine);
-        }
-
-        private static IEnumerable<Tuple<Color, string>> ServerVersionLowerMessage(Tuple<string, System.Version, CompatibilityLevel, VersionStrictness> module,
-            Tuple<string, System.Version, CompatibilityLevel, VersionStrictness> clientModule)
-        {
-            yield return new Tuple<Color, string>(Color.red, "Module version mismatch:");
-            yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, $"Server has mod {module.Item1} v{module.Item2} installed.");
-            yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
-                $"You have a higher version (v{clientModule.Item2}) of this mod installed.");
-            yield return new Tuple<Color, string>(Color.white,
-                "Please contact the server admin to update or downgrade the mod on your client." + Environment.NewLine);
-        }
-
         // Hook SendPeerInfo on client to add our method to the rpc
         private static void ZNet_SendPeerInfo(On.ZNet.orig_SendPeerInfo orig, ZNet self, ZRpc rpc, string password)
         {
@@ -244,9 +49,10 @@ namespace JotunnLib.Utils
             On.ZRpc.Invoke -= AppendPackage;
         }
 
+        // Append our version data package to the existing zPackage
         private static void AppendPackage(On.ZRpc.orig_Invoke orig, ZRpc self, string method, object[] parameters)
         {
-            var pkg = (ZPackage)parameters[0];
+            var pkg = (ZPackage) parameters[0];
             pkg.Write(new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
             orig(self, method, parameters);
         }
@@ -278,9 +84,9 @@ namespace JotunnLib.Utils
                         return;
                     }
                 }
-                catch (EndOfStreamException ex)
+                catch (EndOfStreamException)
                 {
-                    Logger.LogError("Reading beyond end of stream. Probably a 'clean client'");
+                    Logger.LogError("Reading beyond end of stream. Probably client without JotunnLib tried to connect.");
 
                     // Client did not send appended package, just disconnect with the incompatible version error
                     rpc.Invoke("Error", 3);
@@ -293,6 +99,213 @@ namespace JotunnLib.Utils
 
             // call original method
             orig(self, rpc, pkg);
+        }
+
+        /// <summary>
+        ///     Create and show mod compatibility error message
+        /// </summary>
+        private static void ShowModCompatibilityErrorMessage()
+        {
+            var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0f, 0f), 700, 500);
+            panel.SetActive(true);
+            var remote = new ModuleVersionData(lastServerVersion);
+            var local = new ModuleVersionData(GetEnforcableMods().ToList());
+
+
+            var scroll = GUIManager.Instance.CreateScrollView(panel.transform, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
+                new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f), 650f, 400f);
+
+            scroll.SetActive(true);
+
+            GUIManager.Instance.CreateText("Remote version:", scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
+                new Color(0, 0, 0, 1), 600f, 40f, false);
+            GUIManager.Instance.CreateText(remote.ToString(false), scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, Color.white, true, new Color(0, 0, 0, 1), 600f, 40f,
+                false);
+            GUIManager.Instance.CreateText("Local version:", scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
+                new Color(0, 0, 0, 1), 600f, 40f, false);
+            GUIManager.Instance.CreateText(local.ToString(false), scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, Color.white, true, new Color(0, 0, 0, 1), 600f, 40f,
+                false);
+
+            foreach (var part in CreateErrorMessage(remote, local))
+            {
+                GUIManager.Instance.CreateText(part.Item2, scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, part.Item1, true, new Color(0, 0, 0, 1), 600f, 40f,
+                    false);
+            }
+
+
+            scroll.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
+
+            var button = GUIManager.Instance.CreateButton("OK", panel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -215f));
+            button.SetActive(true);
+            button.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                panel.SetActive(false);
+                Object.Destroy(panel);
+            });
+
+            // Reset the last server version
+            lastServerVersion = null;
+        }
+
+        /// <summary>
+        ///     Create the error message(s) from the server and client message data
+        /// </summary>
+        /// <param name="server">server data</param>
+        /// <param name="client">client data</param>
+        /// <returns></returns>
+        private static IEnumerable<Tuple<Color, string>> CreateErrorMessage(ModuleVersionData server, ModuleVersionData client)
+        {
+            // Check Valheim version first
+            if (server.ValheimVersion != client.ValheimVersion)
+            {
+                yield return new Tuple<Color, string>(Color.red, "Valheim version error:");
+                if (server.ValheimVersion > client.ValheimVersion)
+                {
+                    yield return new Tuple<Color, string>(Color.white, $"Please update your client to version {server.ValheimVersion}");
+                }
+
+                if (server.ValheimVersion < client.ValheimVersion)
+                {
+                    yield return new Tuple<Color, string>(Color.white,
+                        $"The server you tried to connect runs {server.ValheimVersion}, which is lower than your version ({client.ValheimVersion})");
+                    yield return new Tuple<Color, string>(Color.white, "Please contact the server admin for a server update." + Environment.NewLine);
+                }
+            }
+
+            // And then each module
+            foreach (var module in server.Modules)
+            {
+                // Check first for missing modules on the client side
+                if (module.Item3 == CompatibilityLevel.EveryoneMustHaveMod)
+                {
+                    if (client.Modules.All(x => x.Item1 != module.Item1))
+                    {
+                        // client is missing needed module
+                        yield return new Tuple<Color, string>(Color.red, "Missing mod:");
+                        yield return new Tuple<Color, string>(Color.white, $"Please install mod {module.Item1} v{module.Item2}" + Environment.NewLine);
+                        continue;
+                    }
+                }
+
+                // Then all version checks
+                var clientModule = client.Modules.First(x => x.Item1 == module.Item1);
+
+                // Major
+                if (module.Item4 >= VersionStrictness.Major || clientModule.Item4 >= VersionStrictness.Major)
+                {
+                    if (module.Item2.Major > clientModule.Item2.Major)
+                    {
+                        foreach (var messageLine in ClientVersionLowerMessage(module))
+                        {
+                            yield return messageLine;
+                        }
+
+                        continue;
+                    }
+
+                    if (module.Item2.Major < clientModule.Item2.Major)
+                    {
+                        foreach (var messageLine in ServerVersionLowerMessage(module, clientModule))
+                        {
+                            yield return messageLine;
+                        }
+
+                        continue;
+                    }
+
+                    // Minor
+                    if (module.Item4 >= VersionStrictness.Minor || clientModule.Item4 >= VersionStrictness.Minor)
+                    {
+                        if (module.Item2.Minor > clientModule.Item2.Minor)
+                        {
+                            foreach (var messageLine in ClientVersionLowerMessage(module))
+                            {
+                                yield return messageLine;
+                            }
+
+                            continue;
+                        }
+
+                        if (module.Item2.Minor < clientModule.Item2.Minor)
+                        {
+                            foreach (var messageLine in ServerVersionLowerMessage(module, clientModule))
+                            {
+                                yield return messageLine;
+                            }
+
+                            continue;
+                        }
+                    }
+
+                    // Build
+                    if (module.Item4 >= VersionStrictness.Build || clientModule.Item4 >= VersionStrictness.Build)
+                    {
+                        if (module.Item2.Build > clientModule.Item2.Build)
+                        {
+                            foreach (var messageLine in ClientVersionLowerMessage(module))
+                            {
+                                yield return messageLine;
+                            }
+
+                            continue;
+                        }
+
+                        if (module.Item2.Build < clientModule.Item2.Build)
+                        {
+                            foreach (var messageLine in ServerVersionLowerMessage(module, clientModule))
+                            {
+                                yield return messageLine;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Now lets find additional modules with NetworkCompatibility attribute in the client's list
+            foreach (var module in client.Modules)
+            {
+                if (server.Modules.All(x => x.Item1 != module.Item1))
+                {
+                    yield return new Tuple<Color, string>(Color.red, "Additional mod detected:");
+                    yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
+                        $"Mod {module.Item1} v{module.Item2} is not installed on the server.");
+                    yield return new Tuple<Color, string>(Color.white, "Please consider uninstalling this mod." + Environment.NewLine);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Generate message for client's mod version lower than server's version
+        /// </summary>
+        /// <param name="module">Module version data</param>
+        /// <returns></returns>
+        private static IEnumerable<Tuple<Color, string>> ClientVersionLowerMessage(Tuple<string, System.Version, CompatibilityLevel, VersionStrictness> module)
+        {
+            yield return new Tuple<Color, string>(Color.red, "Mod update needed:");
+            yield return new Tuple<Color, string>(Color.white, $"Please update mod {module.Item1} to version v{module.Item2}." + Environment.NewLine);
+        }
+
+        /// <summary>
+        ///     Generate message for server's mod version lower than client's version
+        /// </summary>
+        /// <param name="module">server module data</param>
+        /// <param name="clientModule">client module data</param>
+        /// <returns></returns>
+        private static IEnumerable<Tuple<Color, string>> ServerVersionLowerMessage(Tuple<string, System.Version, CompatibilityLevel, VersionStrictness> module,
+            Tuple<string, System.Version, CompatibilityLevel, VersionStrictness> clientModule)
+        {
+            yield return new Tuple<Color, string>(Color.red, "Module version mismatch:");
+            yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, $"Server has mod {module.Item1} v{module.Item2} installed.");
+            yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
+                $"You have a higher version (v{clientModule.Item2}) of this mod installed.");
+            yield return new Tuple<Color, string>(Color.white,
+                "Please contact the server admin to update or downgrade the mod on your client." + Environment.NewLine);
         }
 
         /// <summary>
@@ -342,6 +355,21 @@ namespace JotunnLib.Utils
         /// </summary>
         private class ModuleVersionData : IEquatable<ModuleVersionData>
         {
+            /// <summary>
+            ///     Create from module data
+            /// </summary>
+            /// <param name="versionData"></param>
+            public ModuleVersionData(List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> versionData)
+            {
+                ValheimVersion = new System.Version(Version.m_major, Version.m_minor, Version.m_patch);
+                Modules = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
+                Modules.AddRange(versionData);
+            }
+
+            /// <summary>
+            ///     Create from ZPackage
+            /// </summary>
+            /// <param name="pkg"></param>
             public ModuleVersionData(ZPackage pkg)
             {
                 try
@@ -353,29 +381,30 @@ namespace JotunnLib.Utils
                     while (numberOfModules > 0)
                     {
                         Modules.Add(new Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>(pkg.ReadString(),
-                            new System.Version(pkg.ReadInt(), pkg.ReadInt(), pkg.ReadInt()), (CompatibilityLevel)pkg.ReadInt(),
-                            (VersionStrictness)pkg.ReadInt()));
+                            new System.Version(pkg.ReadInt(), pkg.ReadInt(), pkg.ReadInt()), (CompatibilityLevel) pkg.ReadInt(),
+                            (VersionStrictness) pkg.ReadInt()));
                         numberOfModules--;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     Logger.LogError("Could not deserialize version message data from zPackage");
                 }
             }
 
-            public ModuleVersionData(List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> versionData)
-            {
-                ValheimVersion = new System.Version(Version.m_major, Version.m_minor, Version.m_patch);
-                Modules = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
-                Modules.AddRange(versionData);
-            }
-
+            /// <summary>
+            ///     Valheim version
+            /// </summary>
             public System.Version ValheimVersion { get; }
 
+            /// <summary>
+            ///     Module data
+            /// </summary>
             public List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> Modules { get; } =
                 new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
 
+
+            /// <inheritdoc />
             public bool Equals(ModuleVersionData other)
             {
                 if (ReferenceEquals(null, other))
@@ -393,6 +422,7 @@ namespace JotunnLib.Utils
                     return false;
                 }
 
+                // Add data for each module
                 foreach (var module in Modules)
                 {
                     var otherModule = other.Modules.FirstOrDefault(x => x.Item1 == module.Item1);
@@ -423,6 +453,10 @@ namespace JotunnLib.Utils
                 return true;
             }
 
+            /// <summary>
+            ///     Create ZPackage
+            /// </summary>
+            /// <returns>ZPackage</returns>
             public ZPackage ToZPackage()
             {
                 var pkg = new ZPackage();
@@ -438,13 +472,15 @@ namespace JotunnLib.Utils
                     pkg.Write(module.Item2.Major);
                     pkg.Write(module.Item2.Minor);
                     pkg.Write(module.Item2.Build);
-                    pkg.Write((int)module.Item3);
-                    pkg.Write((int)module.Item4);
+                    pkg.Write((int) module.Item3);
+                    pkg.Write((int) module.Item4);
                 }
 
                 return pkg;
             }
 
+
+            /// <inheritdoc />
             public override bool Equals(object obj)
             {
                 if (ReferenceEquals(null, obj))
@@ -462,9 +498,10 @@ namespace JotunnLib.Utils
                     return false;
                 }
 
-                return Equals((ModuleVersionData)obj);
+                return Equals((ModuleVersionData) obj);
             }
 
+            /// <inheritdoc />
             public override int GetHashCode()
             {
                 unchecked
@@ -473,6 +510,7 @@ namespace JotunnLib.Utils
                 }
             }
 
+            // Default ToString override
             public override string ToString()
             {
                 var sb = new StringBuilder();
@@ -486,6 +524,7 @@ namespace JotunnLib.Utils
                 return sb.ToString();
             }
 
+            // Additional ToString method to show data without NetworkCompatibility attribute
             public string ToString(bool showEnforce)
             {
                 var sb = new StringBuilder();
