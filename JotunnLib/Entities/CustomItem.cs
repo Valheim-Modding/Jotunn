@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace JotunnLib.Entities
 {
+    /// <summary>
+    ///     Main interface for adding custom items to the game.<br />
+    ///     All custom items have to be wrapped inside this class to add it to Jötunns <see cref="ItemManager"/>.
+    /// </summary>
     public class CustomItem
     {
         /// <summary>

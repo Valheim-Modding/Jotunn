@@ -7,7 +7,7 @@ using JotunnLib.Entities;
 namespace JotunnLib.Managers
 {
     /// <summary>
-    ///     Handles all logic to do with managing items, recipes, and status effects in the game.
+    ///    Manager for handling items, recipes, and status effects added to the game.
     /// </summary>
     public class ItemManager : Manager
     {
@@ -53,21 +53,14 @@ namespace JotunnLib.Managers
             On.Player.Load += ReloadKnownRecipes;
         }
 
-        //TODO: dont know if still needed, please check
-        /*internal override void Register()
-        {
-            Logger.LogInfo("---- Registering custom objects ----");
-
-            // Clear existing items and recipes
-            Items.Clear();
-            Recipes.Clear();
-
-            ItemDropMockFix.Switch(true);
-
-            // Register new items and recipes
-            ObjectRegister?.Invoke(null, EventArgs.Empty);
-        }*/
-
+        /// <summary>
+        ///     Add a <see cref="CustomItem"/> to the game.<br />
+        ///     Checks if the custom item is valid and unique and adds it to the list of custom items.<br />
+        ///     Also adds the prefab of the custom item to the <see cref="PrefabManager"/>.<br />
+        ///     Custom items are added to the current <see cref="ObjectDB"/> on every Awake().
+        /// </summary>
+        /// <param name="customItem">The custom item to add.</param>
+        /// <returns>true if the custom item was added to the manager.</returns>
         public bool AddItem(CustomItem customItem)
         {
             if (customItem.IsValid())
@@ -87,9 +80,6 @@ namespace JotunnLib.Managers
                     PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
                     Items.Add(customItem);
 
-                    //PrefabManager.instance.NetworkRegister(customItem.ItemPrefab);
-                    //customItem.ItemPrefab.NetworkRegister();
-
                     return true;
                 }
             }
@@ -97,6 +87,13 @@ namespace JotunnLib.Managers
             return false;
         }
 
+        /// <summary>
+        ///     Add a <see cref="CustomRecipe"/> to the game.<br />
+        ///     Checks if the custom recipe is unique and adds it to the list of custom recipes.<br />
+        ///     Custom recipes are added to the current <see cref="ObjectDB"/> on every Awake().
+        /// </summary>
+        /// <param name="customRecipe">The custom recipe to add.</param>
+        /// <returns>true if the custom recipe was added to the manager.</returns>
         public bool AddRecipe(CustomRecipe customRecipe)
         {
             if (!Recipes.Contains(customRecipe))
@@ -109,6 +106,13 @@ namespace JotunnLib.Managers
             return false;
         }
 
+        /// <summary>
+        ///     Add a <see cref="CustomStatusEffect"/> to the game.<br />
+        ///     Checks if the custom status effect is unique and adds it to the list of custom status effects.<br />
+        ///     Custom status effects are added to the current <see cref="ObjectDB"/> on every Awake().
+        /// </summary>
+        /// <param name="customStatusEffect">The custom status effect to add.</param>
+        /// <returns>true if the custom status effect was added to the manager.</returns>
         public bool AddStatusEffect(CustomStatusEffect customStatusEffect)
         {
             if (!StatusEffects.Contains(customStatusEffect))

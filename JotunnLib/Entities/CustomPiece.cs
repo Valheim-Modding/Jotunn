@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace JotunnLib.Entities
 {
+    /// <summary>
+    ///     Main interface for adding custom pieces to the game.<br />
+    ///     All custom pieces have to be wrapped inside this class to add it to Jötunns <see cref="PieceManager"/>.
+    /// </summary>
     public class CustomPiece
     {
         /// <summary>

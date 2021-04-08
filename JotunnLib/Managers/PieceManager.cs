@@ -6,7 +6,7 @@ using UnityEngine;
 namespace JotunnLib.Managers
 {
     /// <summary>
-    ///     Handles all logic to do with adding custom Pieces and PieceTables to the game.
+    ///     Manager for handling custom pieces added to the game.
     /// </summary>
     public class PieceManager : Manager
     {
@@ -14,6 +14,12 @@ namespace JotunnLib.Managers
         ///     The singleton instance of this manager.
         /// </summary>
         public static PieceManager Instance { get; private set; }
+        
+        public event EventHandler OnPiecesRegistered;
+        public event EventHandler OnPieceTablesRegistered;
+
+        internal GameObject PieceTableContainer;
+        internal List<CustomPiece> Pieces = new List<CustomPiece>();
 
         internal readonly Dictionary<string, PieceTable> PieceTables = new Dictionary<string, PieceTable>();
         internal readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>()
@@ -22,11 +28,6 @@ namespace JotunnLib.Managers
             { "Hammer", "_HammerPieceTable" },
             { "Hoe", "_HoePieceTable" }
         };
-
-        public event EventHandler OnPiecesRegistered;
-        public event EventHandler OnPieceTablesRegistered;
-        internal GameObject PieceTableContainer;
-        internal List<CustomPiece> Pieces = new List<CustomPiece>();
 
         private void Awake()
         {
@@ -50,6 +51,10 @@ namespace JotunnLib.Managers
             On.Player.Load += ReloadKnownRecipes;
         }
 
+        /// <summary>
+        ///     Add a new <see cref="PieceTable"/> from <see cref="GameObject"/>.
+        /// </summary>
+        /// <param name="prefab">The prefab of the <see cref="PieceTable"/></param>
         public void AddPieceTable(GameObject prefab)
         {
             if (PieceTables.ContainsKey(prefab.name))
@@ -73,6 +78,11 @@ namespace JotunnLib.Managers
             //TODO: get the name of the item which has this table attached and add it to the name map
         }
 
+        /// <summary>
+        ///     Add a new <see cref="PieceTable"/> from string.<br />
+        ///     Creates a <see cref="GameObject"/> with a <see cref="PieceTable"/> component and adds it to the manager.
+        /// </summary>
+        /// <param name="name">Name of the new piece table.</param>
         public void AddPieceTable(string name)
         {
             if (PieceTables.ContainsKey(name))
@@ -90,6 +100,17 @@ namespace JotunnLib.Managers
             PieceTableNameMap.Add(name, $"_{name}PieceTable");
         }
 
+        /// <summary>
+        ///     Get a <see cref="PieceTable"/> by name.<br /><br />
+        ///     Search hierarchy:<br />
+        ///     <list type="number">
+        ///         <item>Custom table with the exact name</item>
+        ///         <item>Vanilla table via "item" name (e.g. "Hammer")</item>
+        ///         <item>Vanilla table with the exact name (e.g. "_HammerPieceTable")</item>
+        ///     </list>
+        /// </summary>
+        /// <param name="name">Name of the PieceTable.</param>
+        /// <returns></returns>
         public PieceTable GetPieceTable(string name)
         {
             if (PieceTables.ContainsKey(name))
@@ -105,6 +126,13 @@ namespace JotunnLib.Managers
             return PrefabManager.Cache.GetPrefab<PieceTable>(name);
         }
 
+        /// <summary>
+        ///     Add a <see cref="CustomPiece"/> to the game.<br />
+        ///     Checks if the custom piece is valid and unique and adds it to the list of custom pieces.<br />
+        ///     Custom pieces are added to their respective <see cref="PieceTable"/>s after <see cref="ObjectDB.Awake"/>.
+        /// </summary>
+        /// <param name="customPiece">The custom piece to add.</param>
+        /// <returns>true if the custom piece was added to the manager.</returns>
         public bool AddPiece(CustomPiece customPiece)
         {
             if (customPiece.IsValid())
@@ -134,12 +162,21 @@ namespace JotunnLib.Managers
             return false;
         }
 
+        /// <summary>
+        ///     Get a custom piece by its name.
+        /// </summary>
+        /// <param name="pieceName">Name of the piece to search.</param>
+        /// <returns></returns>
         public CustomPiece GetPiece(string pieceName)
         {
             var piece = Pieces.Find(x => x.PiecePrefab.name.Equals(pieceName));
             return piece;
         }
 
+        /// <summary>
+        ///     Remove a custom piece by its name.
+        /// </summary>
+        /// <param name="pieceName">Name of the piece to remove.</param>
         public void RemovePiece(string pieceName)
         {
             var piece = GetPiece(pieceName);
@@ -182,7 +219,6 @@ namespace JotunnLib.Managers
                         pieceTable.m_pieces.Add(customPiece.PiecePrefab);
                         Logger.LogInfo($"Added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
                     }
-                    
                 }
                 catch (Exception ex)
                 {

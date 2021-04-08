@@ -1,9 +1,15 @@
-﻿namespace JotunnLib.Entities
+﻿using JotunnLib.Managers;
+
+namespace JotunnLib.Entities
 {
+    /// <summary>
+    ///     Main interface for adding custom status effects to the game.<br />
+    ///     All custom status effects have to be wrapped inside this class to add it to Jötunns <see cref="ItemManager"/>.
+    /// </summary>
     public class CustomStatusEffect
     {
         /// <summary>
-        ///     The <see cref="StatusEffect"/> for this custom status effect.
+        ///     The <see cref="global::StatusEffect"/> for this custom status effect.
         /// </summary>
         public StatusEffect StatusEffect { get; set; }
 
