@@ -65,15 +65,15 @@ namespace JotunnLib.Managers
         /// </summary>
         internal override void Init()
         {
-            RegisterConsoleCommand(new HelpCommand());
-            RegisterConsoleCommand(new ClearCommand());
+            AddConsoleCommand(new HelpCommand());
+            AddConsoleCommand(new ClearCommand());
         }
 
         /// <summary>
         ///     Adds a new console command to Valheim.
         /// </summary>
         /// <param name="cmd">The console command to add</param>
-        public void RegisterConsoleCommand(ConsoleCommand cmd)
+        public void AddConsoleCommand(ConsoleCommand cmd)
         {
             // Cannot override default command
             if (_defaultConsoleCommands.Contains(cmd.Name))

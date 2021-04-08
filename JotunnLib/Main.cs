@@ -46,7 +46,7 @@ namespace JotunnLib
         };
         private readonly List<Manager> managers = new List<Manager>();
 
-        internal void Awake()
+        private void Awake()
         {
             // Initialize Logger
             JotunnLib.Logger.Init();
@@ -73,12 +73,12 @@ namespace JotunnLib
         /// <summary>
         ///     Initialize patches
         /// </summary>
-        internal void Start()
+        private void Start()
         {
-            initializePatches();
+            InitializePatches();
         }
 
-        internal void Update()
+        private void Update()
         {
 #if DEBUG
             if (Input.GetKeyDown(KeyCode.F6))
@@ -99,7 +99,7 @@ namespace JotunnLib
         /// <summary>
         ///     Invoke patch initialization methods for all loaded mods.
         /// </summary>
-        private void initializePatches()
+        private void InitializePatches()
         {
             // Reflect through everything
             List<Tuple<MethodInfo, int>> types = new List<Tuple<MethodInfo, int>>();

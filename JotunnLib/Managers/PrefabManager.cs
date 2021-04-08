@@ -36,13 +36,13 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            On.ZNetScene.Awake += registerAllToZNetScene;
+            On.ZNetScene.Awake += RegisterAllToZNetScene;
 
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
 
-            SceneManager.sceneUnloaded += (Scene current) => Cache.clearCache();
+            SceneManager.sceneUnloaded += (Scene current) => Cache.ClearCache();
         }
 
         /*private string createUID()
@@ -232,7 +232,7 @@ namespace JotunnLib.Managers
         ///     Add all registered prefabs to the namedPrefabs in <see cref="ZNetScene" />.
         /// </summary>
         /// <param name="instance"></param>
-        private void registerAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        private void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);
 
@@ -306,7 +306,7 @@ namespace JotunnLib.Managers
                 }
                 else
                 {
-                    initCache(type);
+                    InitCache(type);
                     return GetPrefab(type, name);
                 }
 
@@ -337,12 +337,12 @@ namespace JotunnLib.Managers
                 }
                 else
                 {
-                    initCache(type);
+                    InitCache(type);
                     return GetPrefabs(type);
                 }
             }
 
-            private static void initCache(Type type, Dictionary<string, Object> map = null)
+            private static void InitCache(Type type, Dictionary<string, Object> map = null)
             {
                 map ??= new Dictionary<string, Object>();
                 foreach (var unityObject in Resources.FindObjectsOfTypeAll(type))
@@ -353,7 +353,7 @@ namespace JotunnLib.Managers
                 dictionaryCache[type] = map;
             }
 
-            internal static void clearCache()
+            internal static void ClearCache()
             {
                 dictionaryCache.Clear();
             }

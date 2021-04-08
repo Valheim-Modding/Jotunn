@@ -53,13 +53,13 @@ namespace JotunnLib.Managers
         internal void Start()
         {
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
-            hookConfigurationManager();
+            HookConfigurationManager();
         }
 
         /// <summary>
         ///     Hook ConfigurationManager's DisplayingWindowChanged to be able to react on window open/close.
         /// </summary>
-        private void hookConfigurationManager()
+        private void HookConfigurationManager()
         {
             Logger.LogDebug("Trying to hook config manager");
 
@@ -96,12 +96,12 @@ namespace JotunnLib.Managers
             if (configurationManagerWindowShown)
             {
                 // If window just opened, cache the config values for comparison later
-                cachedConfigValues = getSyncConfigValues();
+                cachedConfigValues = GetSyncConfigValues();
             }
             else
             {
                 // Window closed, lets compare and send to server, if applicable
-                var valuesToSend = getSyncConfigValues();
+                var valuesToSend = GetSyncConfigValues();
 
                 // We need only changed values
                 valuesToSend = valuesToSend.Where(x => !cachedConfigValues.Contains(x)).ToList();
@@ -109,7 +109,7 @@ namespace JotunnLib.Managers
                 // Send to server
                 if (valuesToSend.Count > 0)
                 {
-                    var zPackage = generateConfigZPackage(valuesToSend);
+                    var zPackage = GenerateConfigZPackage(valuesToSend);
                     // Send values to server if it isn't a local instance
                     if (!ZNet.instance.IsLocalInstance())
                     {
@@ -156,7 +156,7 @@ namespace JotunnLib.Managers
             {
                 Logger.LogDebug("Player is in local instance, lets make him admin");
                 Instance.PlayerIsAdmin = true;
-                unlockConfigurationEntries();
+                UnlockConfigurationEntries();
             }
         }
 
@@ -208,7 +208,7 @@ namespace JotunnLib.Managers
                 // If player is admin, unlock the configuration values
                 if (isAdmin)
                 {
-                    unlockConfigurationEntries();
+                    UnlockConfigurationEntries();
                 }
             }
 
@@ -231,7 +231,7 @@ namespace JotunnLib.Managers
         /// <summary>
         ///     Unlock configuration entries.
         /// </summary>
-        private void unlockConfigurationEntries()
+        private void UnlockConfigurationEntries()
         {
             var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
 
@@ -274,9 +274,9 @@ namespace JotunnLib.Managers
                 {
                     Logger.LogMessage($"Sending configuration data to peer #{sender}");
 
-                    var values = getSyncConfigValues();
+                    var values = GetSyncConfigValues();
 
-                    var pkg = generateConfigZPackage(values);
+                    var pkg = GenerateConfigZPackage(values);
 
                     Logger.LogDebug($"Sending {values.Count} configuration values to client {sender}");
                     ZRoutedRpc.instance.InvokeRoutedRPC(sender, nameof(RPC_JotunnLib_ConfigSync), pkg);
@@ -330,7 +330,7 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        private ZPackage generateConfigZPackage(List<Tuple<string, string, string, string>> values)
+        private ZPackage GenerateConfigZPackage(List<Tuple<string, string, string, string>> values)
         {
             var pkg = new ZPackage();
             var num = values.Count;
@@ -351,7 +351,7 @@ namespace JotunnLib.Managers
         ///     Get syncable configuration values as tuples
         /// </summary>
         /// <returns></returns>
-        private List<Tuple<string, string, string, string>> getSyncConfigValues()
+        private List<Tuple<string, string, string, string>> GetSyncConfigValues()
         {
             Logger.LogDebug("Gathering config values");
             var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
