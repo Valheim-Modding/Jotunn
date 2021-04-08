@@ -389,6 +389,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrap\AssemblyPublicizer.cs" />
+    <Compile Include="Bootstrap\Bootstrapper.cs" />
     <Compile Include="Configs\ButtonConfig.cs" />
     <Compile Include="Entities\CustomPiece.cs" />
     <Compile Include="Entities\CustomItem.cs" />
@@ -438,6 +440,7 @@
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Extensions\MockExtentions.cs" />
     <Compile Include="Extensions\ObjectExtension.cs" />
+    <Compile Include="Utils\HookGenerator.cs" />
     <Compile Include="Utils\ModCompatibility.cs" />
     <Compile Include="Utils\NetworkCompatibiltyAttribute.cs" />
     <Compile Include="Utils\ObjImporter.cs" />

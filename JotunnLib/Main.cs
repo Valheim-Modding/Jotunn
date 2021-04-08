@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using BepInEx;
 using BepInEx.Configuration;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
+using JotunnLib.Bootstrap;
 
 namespace JotunnLib
 {
@@ -48,6 +50,9 @@ namespace JotunnLib
 
         internal void Awake()
         {
+            // First, generate MMHOOK Dlls
+            Bootstrapper.GenerateDlls(Environment.CurrentDirectory);
+
             // Initialize Logger
             JotunnLib.Logger.Init();
 
