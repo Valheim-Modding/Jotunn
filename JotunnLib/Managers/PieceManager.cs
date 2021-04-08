@@ -54,7 +54,7 @@ namespace JotunnLib.Managers
         {
             if (PieceTables.ContainsKey(prefab.name))
             {
-                Logger.LogWarning($"Piece table {name} already added");
+                Logger.LogWarning($"Piece table {prefab.name} already added");
                 return;
             }
 
