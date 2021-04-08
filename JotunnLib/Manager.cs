@@ -11,15 +11,5 @@ namespace JotunnLib
         ///     Initialize manager class after all manager scripts have been added to the root game object
         /// </summary>
         internal virtual void Init() { }
-
-        /// <summary>
-        ///     Load any data registered by mods into the game
-        /// </summary>
-        internal virtual void Load() { }
-
-        /// <summary>
-        ///     Register any data from user mods
-        /// </summary>
-        internal virtual void Register() { }
     }
 }

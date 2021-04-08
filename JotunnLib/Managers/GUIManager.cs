@@ -67,7 +67,7 @@ namespace JotunnLib.Managers
             GUIContainer.AddComponent<GuiScaler>().UpdateScale();
 
 
-            CreatePixelFix();
+            createPixelFix();
 
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
@@ -77,7 +77,7 @@ namespace JotunnLib.Managers
             if (scene.name == "start" && !GUIInStart)
             {
                 GUIContainer.SetActive(true);
-                CreatePixelFix();
+                createPixelFix();
                 GUIInStart = true;
             }
 
@@ -100,7 +100,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private static void CreatePixelFix()
+        private void createPixelFix()
         {
             PixelFix = new GameObject("GUIFix", typeof(RectTransform), typeof(GuiPixelFix));
             PixelFix.layer = UILayer; // UI

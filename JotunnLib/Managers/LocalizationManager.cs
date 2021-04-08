@@ -111,15 +111,12 @@ namespace JotunnLib.Managers
         /// <summary>
         ///     Register all plugin's localizations.
         /// </summary>
-        internal override void Register()
+        internal void Register()
         {
             if (registered)
             {
                 return;
             }
-
-            //why?
-            //Localizations.Clear();
 
             Logger.LogInfo("---- Registering custom localizations ----");
 
@@ -144,17 +141,6 @@ namespace JotunnLib.Managers
 
             Logger.LogDebug($"Adding tokens for language {language}");
             addTokens(localization, language);
-        }
-
-        /// <summary>
-        ///     Registers a new translation for a word for the current language.
-        /// </summary>
-        /// <param name="key">Key to translate</param>
-        /// <param name="text">Translation</param>
-        [Obsolete("Use either `RegisterLocalization(string language, Dictionary<string, string> localization)` or `RegisterLocalizationConfig(LocalizationConfig config)` instead", true)]
-        public void RegisterTranslation(string key, string text)
-        {
-            Localization.instance.AddWord(key, text);
         }
 
         /// <summary>
@@ -188,7 +174,7 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="self"></param>
         /// <param name="config"></param>
-        public void RegisterLocalizationConfig(LocalizationConfig config)
+        public void AddLocalization(LocalizationConfig config)
         {
             RegisterLocalization(config.Language, config.Translations);
         }
@@ -270,7 +256,6 @@ namespace JotunnLib.Managers
             languageDict.Add(tokenWithoutFirstChar, value);
         }
 
-
         /// <summary>
         ///     Add a token and its value to the "English" language.
         /// </summary>
@@ -281,7 +266,6 @@ namespace JotunnLib.Managers
         {
             AddToken(token, value, DefaultLanguage, forceReplace);
         }
-
 
         /// <summary>
         ///     Add a file via absolute path.
@@ -301,21 +285,20 @@ namespace JotunnLib.Managers
                 var language = Path.GetFileName(Path.GetDirectoryName(path));
                 AddJson(language, fileContent);
 
-                Logger.LogInfo($"Added json language file {Path.GetFileName(path)}");
+                Logger.LogInfo($"Added json language file: {Path.GetFileName(path)}");
             }
             else
             {
-                Add(fileContent);
-
-                Logger.LogInfo($"Added language file {Path.GetFileName(path)}");
+                AddLanguageFile(fileContent);
+                Logger.LogInfo($"Added language file: {Path.GetFileName(path)}");
             }
         }
 
         /// <summary>
-        ///     Add a language file (that match the game format).
+        ///     Add a language file that matches Valheim's language format.
         /// </summary>
         /// <param name="fileContent">Entire file as string</param>
-        public void Add(string fileContent)
+        public void AddLanguageFile(string fileContent)
         {
             if (fileContent == null)
             {

@@ -57,7 +57,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        internal override void Register()
+        internal void Register()
         {
             if (inputsRegistered)
             {
@@ -68,7 +68,7 @@ namespace JotunnLib.Managers
             inputsRegistered = true;
         }
 
-        public void RegisterButton(string name, ButtonConfig button)
+        public void AddButton(string name, ButtonConfig button)
         {
             if (Buttons.ContainsKey(name))
             {
@@ -79,7 +79,7 @@ namespace JotunnLib.Managers
             Buttons.Add(name, button);
         }
 
-        public void RegisterButton(
+        public void AddButton(
             string name,
             KeyCode key,
             float repeatDelay = 0.0f,
@@ -100,7 +100,7 @@ namespace JotunnLib.Managers
             });
         }
 
-        public void RegisterButton(
+        public void AddButton(
             string name,
             string axis,
             bool inverted = false,
@@ -124,18 +124,17 @@ namespace JotunnLib.Managers
         }
 
 
-        private static void ZInput_Reset(On.ZInput.orig_Reset orig, ZInput self)
+        private void ZInput_Reset(On.ZInput.orig_Reset orig, ZInput self)
         {
             orig(self);
             Logger.LogDebug("----> ZInput Reset");
-            InputManager.Instance.Load(self);
+            Load(self);
         }
 
-        private static void ZInput_Initialize(On.ZInput.orig_Initialize orig)
+        private void ZInput_Initialize(On.ZInput.orig_Initialize orig)
         {
             Logger.LogDebug("----> ZInput Initialize");
-            InputManager.Instance.Register();
-            
+            Register();
             orig();
         }
 
