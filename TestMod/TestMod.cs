@@ -26,6 +26,7 @@ namespace TestMod
 
         private bool showMenu = false;
         private bool showGUIButton = false;
+        private Texture2D testTex;
         private Sprite testSprite;
         private GameObject testPanel;
         private bool forceVersionMismatch = false;
@@ -124,7 +125,7 @@ namespace TestMod
         private void loadAssets()
         {
             // Load texture
-            Texture2D testTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
+            testTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
             testSprite = Sprite.Create(testTex, new Rect(0f, 0f, testTex.width, testTex.height), Vector2.zero);
 
             // Load asset bundle from filesystem
@@ -237,6 +238,8 @@ namespace TestMod
             CustomPiece CP = new CustomPiece("$piece_lul", "Hammer");
             var piece = CP.Piece;
             piece.m_icon = testSprite;
+            var prefab = CP.PiecePrefab;
+            prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
             PieceManager.Instance.AddPiece(CP);
         }
 
