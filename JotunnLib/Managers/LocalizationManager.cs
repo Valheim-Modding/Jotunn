@@ -120,7 +120,7 @@ namespace JotunnLib.Managers
 
             Logger.LogInfo("---- Registering custom localizations ----");
 
-            addLanguageFilesFromPluginFolder();
+            AddLanguageFilesFromPluginFolder();
 
             LocalizationRegister?.Invoke(null, EventArgs.Empty);
             registered = true;
@@ -140,14 +140,14 @@ namespace JotunnLib.Managers
             }
 
             Logger.LogDebug($"Adding tokens for language {language}");
-            addTokens(localization, language);
+            AddTokens(localization, language);
         }
 
         /// <summary>
         ///     Registers a new Localization for a language.
         /// </summary>
         /// <param name="localization">The localization for a language</param>
-        public void RegisterLocalization(string language, Dictionary<string, string> localization)
+        public void AddLocalization(string language, Dictionary<string, string> localization)
         {
             if (string.IsNullOrEmpty(language))
             {
@@ -176,13 +176,13 @@ namespace JotunnLib.Managers
         /// <param name="config"></param>
         public void AddLocalization(LocalizationConfig config)
         {
-            RegisterLocalization(config.Language, config.Translations);
+            AddLocalization(config.Language, config.Translations);
         }
 
         /// <summary>
         ///     Search for and add localization files.
         /// </summary>
-        private void addLanguageFilesFromPluginFolder()
+        private void AddLanguageFilesFromPluginFolder()
         {
             // First search for the community translation
             var communityTranslationsFilePaths = new List<string>();
@@ -249,7 +249,7 @@ namespace JotunnLib.Managers
                 }
             }
 
-            languageDict ??= getLanguageDict(language);
+            languageDict ??= GetLanguageDict(language);
 
             var tokenWithoutFirstChar = token.Substring(1);
             languageDict.Remove(tokenWithoutFirstChar);
@@ -305,7 +305,7 @@ namespace JotunnLib.Managers
                 throw new NullReferenceException($"param {nameof(fileContent)} is null");
             }
 
-            loadLanguageFile(fileContent);
+            LoadLanguageFile(fileContent);
         }
 
         /// <summary>
@@ -320,14 +320,14 @@ namespace JotunnLib.Managers
                 throw new NullReferenceException($"param {nameof(fileContent)} is null");
             }
 
-            loadJsonLanguageFile(language, fileContent);
+            LoadJsonLanguageFile(language, fileContent);
         }
 
         /// <summary>
         ///     Load Unity style language file.
         /// </summary>
         /// <param name="fileContent"></param>
-        private void loadLanguageFile(string fileContent)
+        private void LoadLanguageFile(string fileContent)
         {
             var stringReader = new StringReader(fileContent);
             var languages = stringReader.ReadLine().Split(',');
@@ -349,7 +349,7 @@ namespace JotunnLib.Managers
                                 tokenValue = keyAndValues[1];
                             }
 
-                            var languageDict = getLanguageDict(language);
+                            var languageDict = GetLanguageDict(language);
                             languageDict[token]= tokenValue;
                         }
                     }
@@ -362,7 +362,7 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="language"></param>
         /// <returns></returns>
-        private Dictionary<string, string> getLanguageDict(string language)
+        private Dictionary<string, string> GetLanguageDict(string language)
         {
             if (!Localizations.ContainsKey(language))
             {
@@ -377,9 +377,9 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="language"></param>
         /// <param name="fileContent"></param>
-        private void loadJsonLanguageFile(string language, string fileContent)
+        private void LoadJsonLanguageFile(string language, string fileContent)
         {
-            var languageDict = getLanguageDict(language);
+            var languageDict = GetLanguageDict(language);
 
             var json = (IDictionary<string, object>) SimpleJson.SimpleJson.DeserializeObject(fileContent);
 
@@ -398,7 +398,7 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="self"></param>
         /// <param name="language"></param>
-        private void addTokens(Localization self, string language)
+        private void AddTokens(Localization self, string language)
         {
             if (Localizations.TryGetValue(language, out var tokens))
             {

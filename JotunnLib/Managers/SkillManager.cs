@@ -58,7 +58,7 @@ namespace JotunnLib.Managers
 
             if (createLocalizations)
             {
-                LocalizationManager.Instance.RegisterLocalization("English", new Dictionary<string, string>()
+                LocalizationManager.Instance.AddLocalization("English", new Dictionary<string, string>()
                 {
                     { "skill_" + skillConfig.UID, skillConfig.Name },
                     { "skill_" + skillConfig.UID + "_description", skillConfig.Description }
