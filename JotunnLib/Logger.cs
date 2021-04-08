@@ -36,7 +36,7 @@ namespace JotunnLib
             instance.logger.Clear();
         }
 
-        private ManualLogSource getLogger()
+        private ManualLogSource GetLogger()
         {
             var type = new StackFrame(2).GetMethod().DeclaringType;
 
@@ -52,32 +52,32 @@ namespace JotunnLib
 
         public static void LogFatal(object data)
         {
-            instance.getLogger().LogFatal(data);
+            instance.GetLogger().LogFatal(data);
         }
 
         public static void LogError(object data)
         {
-            instance.getLogger().LogError(data);
+            instance.GetLogger().LogError(data);
         }
 
         public static void LogWarning(object data)
         {
-            instance.getLogger().LogWarning(data);
+            instance.GetLogger().LogWarning(data);
         }
 
         public static void LogMessage(object data)
         {
-            instance.getLogger().LogMessage(data);
+            instance.GetLogger().LogMessage(data);
         }
 
         public static void LogInfo(object data)
         {
-            instance.getLogger().LogInfo(data);
+            instance.GetLogger().LogInfo(data);
         }
 
         public static void LogDebug(object data)
         {
-            instance.getLogger().LogDebug(data);
+            instance.GetLogger().LogDebug(data);
         }
     }
 }

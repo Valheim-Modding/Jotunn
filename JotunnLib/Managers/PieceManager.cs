@@ -46,8 +46,8 @@ namespace JotunnLib.Managers
             PieceTableContainer.transform.parent = Main.RootObject.transform;
 
             // Setup Hooks
-            On.ObjectDB.Awake += registerCustomData;
-            On.Player.Load += reloadKnownRecipes;
+            On.ObjectDB.Awake += RegisterCustomData;
+            On.Player.Load += ReloadKnownRecipes;
         }
 
         public void AddPieceTable(GameObject prefab)
@@ -152,7 +152,7 @@ namespace JotunnLib.Managers
             Pieces.Remove(piece);
         }
 
-        private void registerInPieceTables()
+        private void RegisterInPieceTables()
         {
             Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
 
@@ -192,7 +192,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void registerCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
 
@@ -201,7 +201,7 @@ namespace JotunnLib.Managers
 
             if (isValid)
             {
-                registerInPieceTables();
+                RegisterInPieceTables();
             }
 
             // Fire event that everything is added and registered
@@ -209,7 +209,7 @@ namespace JotunnLib.Managers
             OnPiecesRegistered?.Invoke(null, EventArgs.Empty);
         }
 
-        private void reloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
+        private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
         {
             orig(self, pkg);
 

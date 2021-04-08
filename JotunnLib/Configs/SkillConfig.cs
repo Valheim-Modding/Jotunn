@@ -56,12 +56,5 @@ namespace JotunnLib.Configs
                 IncreaseStep = increaseStep
             };
         }
-
-        // BaseSkill and JSON support targets v0.2.0
-        //private Skills.SkillType BaseSkill { get; set; }
-        //private static SkillConfig FromJson(string json)
-        //{
-        //    return null; // TODO: Make this work
-        //}
     }
 }

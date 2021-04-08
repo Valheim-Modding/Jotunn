@@ -12,8 +12,7 @@ namespace JotunnLib.Utils
 
         public static bool IsSameOrSubclass(this Type type, Type @base)
         {
-            return type.IsSubclassOf(@base)
-                   || type == @base;
+            return type.IsSubclassOf(@base) || type == @base;
         }
 
         public static bool IsEnumerable(this Type self)
@@ -41,39 +40,15 @@ namespace JotunnLib.Utils
             type?.GetElementType() ?? 
             (typeof(IEnumerable).IsAssignableFrom(type) ? type.GetGenericArguments().FirstOrDefault() : null);
 
-        public static class Cache
-        {
-            private static MethodInfo _enumerableToArray;
-            public static MethodInfo EnumerableToArray
-            {
-                get
-                {
-                    if (_enumerableToArray == null)
-                    {
-                        _enumerableToArray = typeof(Enumerable).GetMethod("ToArray", AllBindingFlags);
-                    }
-
-                    return _enumerableToArray;
-                }
-            }
-
-            private static MethodInfo _enumerableCast;
-            public static MethodInfo EnumerableCast
-            {
-                get
-                {
-                    if (_enumerableCast == null)
-                    {
-                        _enumerableCast = typeof(Enumerable).GetMethod("Cast", AllBindingFlags);
-                    }
-
-                    return _enumerableCast;
-                }
-            }
-        }
         public static object InvokePrivate(object instance, string name, object[] args = null)
         {
             MethodInfo method = instance.GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (method == null)
+            {
+                Type[] types = args == null ? new Type[0] : args.Select(arg => arg.GetType()).ToArray();
+                method = instance.GetType().GetMethod(name, types);
+            }
 
             if (method == null)
             {
@@ -108,6 +83,37 @@ namespace JotunnLib.Utils
             }
 
             var.SetValue(instance, value);
+        }
+
+        public static class Cache
+        {
+            private static MethodInfo _enumerableToArray;
+            public static MethodInfo EnumerableToArray
+            {
+                get
+                {
+                    if (_enumerableToArray == null)
+                    {
+                        _enumerableToArray = typeof(Enumerable).GetMethod("ToArray", AllBindingFlags);
+                    }
+
+                    return _enumerableToArray;
+                }
+            }
+
+            private static MethodInfo _enumerableCast;
+            public static MethodInfo EnumerableCast
+            {
+                get
+                {
+                    if (_enumerableCast == null)
+                    {
+                        _enumerableCast = typeof(Enumerable).GetMethod("Cast", AllBindingFlags);
+                    }
+
+                    return _enumerableCast;
+                }
+            }
         }
     }
 }

@@ -312,12 +312,12 @@ namespace TestMod
         // Register new console commands
         private void addCommands()
         {
-            CommandManager.Instance.RegisterConsoleCommand(new PrintItemsCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new TpCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new ListPlayersCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new SkinColorCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new RaiseSkillCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new BetterSpawnCommand());
+            CommandManager.Instance.AddConsoleCommand(new PrintItemsCommand());
+            CommandManager.Instance.AddConsoleCommand(new TpCommand());
+            CommandManager.Instance.AddConsoleCommand(new ListPlayersCommand());
+            CommandManager.Instance.AddConsoleCommand(new SkinColorCommand());
+            CommandManager.Instance.AddConsoleCommand(new RaiseSkillCommand());
+            CommandManager.Instance.AddConsoleCommand(new BetterSpawnCommand());
         }
 
         // Register new skills
