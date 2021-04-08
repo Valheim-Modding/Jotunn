@@ -6,7 +6,7 @@ namespace JotunnLib
 {
     /// <summary>
     ///     A namespace wide Logger class, which automatically creates a <see cref="ManualLogSource" />
-    ///     for every namespace from which it is being called.
+    ///     for every Class from which it is being called.
     /// </summary>
     public class Logger
     {
@@ -41,10 +41,11 @@ namespace JotunnLib
             var type = new StackFrame(2).GetMethod().DeclaringType;
 
             ManualLogSource ret;
-            if (!logger.TryGetValue(type.Namespace, out ret))
+            if (!logger.TryGetValue(type.FullName, out ret))
             {
-                ret = BepInEx.Logging.Logger.CreateLogSource(type.Namespace);
-                logger.Add(type.Namespace, ret);
+                //ret = BepInEx.Logging.Logger.CreateLogSource(type.Namespace);
+                ret = BepInEx.Logging.Logger.CreateLogSource(type.FullName);
+                logger.Add(type.FullName, ret);
             }
 
             return ret;
