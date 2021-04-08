@@ -65,19 +65,26 @@ namespace JotunnLib.Managers
         {
             if (customItem.IsValid())
             {
-                // Add to the right layer
-                if (customItem.ItemPrefab.layer == 0)
+                if (Items.Contains(customItem))
                 {
-                    customItem.ItemPrefab.layer = LayerMask.NameToLayer("item");
+                    Logger.LogWarning($"Custom item {customItem} already added");
                 }
+                else
+                {
+                    // Add to the right layer
+                    if (customItem.ItemPrefab.layer == 0)
+                    {
+                        customItem.ItemPrefab.layer = LayerMask.NameToLayer("item");
+                    }
 
-                PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
-                Items.Add(customItem);
+                    PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
+                    Items.Add(customItem);
 
-                //PrefabManager.instance.NetworkRegister(customItem.ItemPrefab);
-                //customItem.ItemPrefab.NetworkRegister();
+                    //PrefabManager.instance.NetworkRegister(customItem.ItemPrefab);
+                    //customItem.ItemPrefab.NetworkRegister();
 
-                return true;
+                    return true;
+                }
             }
 
             return false;
@@ -85,16 +92,26 @@ namespace JotunnLib.Managers
 
         public bool AddRecipe(CustomRecipe customRecipe)
         {
-            Recipes.Add(customRecipe);
+            if (!Recipes.Contains(customRecipe))
+            {
+                Recipes.Add(customRecipe);
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         public bool AddStatusEffect(CustomStatusEffect customStatusEffect)
         {
-            StatusEffects.Add(customStatusEffect);
+            if (!StatusEffects.Contains(customStatusEffect))
+            {
+                StatusEffects.Add(customStatusEffect);
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         private void registerCustomItems(ObjectDB objectDB)

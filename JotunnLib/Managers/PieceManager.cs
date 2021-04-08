@@ -161,22 +161,33 @@ namespace JotunnLib.Managers
             return null;
         }
 
-        public void AddPiece(CustomPiece customPiece)
+        public bool AddPiece(CustomPiece customPiece)
         {
             if (customPiece.IsValid())
             {
-                // Add to the right layer if necessary
-                if (customPiece.PiecePrefab.layer == 0)
+                if (Pieces.Contains(customPiece))
                 {
-                    customPiece.PiecePrefab.layer = LayerMask.NameToLayer("piece");
+                    Logger.LogWarning($"Custom item {customPiece} already added");
                 }
+                else
+                {
+                    // Add to the right layer if necessary
+                    if (customPiece.PiecePrefab.layer == 0)
+                    {
+                        customPiece.PiecePrefab.layer = LayerMask.NameToLayer("piece");
+                    }
 
-                // Add the prefab to the PrefabManager
-                PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab);
+                    // Add the prefab to the PrefabManager
+                    PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab);
 
-                // Add the custom piece to the PieceManager
-                Pieces.Add(customPiece);
+                    // Add the custom piece to the PieceManager
+                    Pieces.Add(customPiece);
+
+                    return true;
+                }
             }
+
+            return false;
         }
 
         public CustomPiece GetPiece(string pieceName)
