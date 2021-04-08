@@ -12,7 +12,7 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            On.ZNetScene.Awake += registerAllToZNetScene;
+            On.ZNetScene.Awake += RegisterAllToZNetScene;
         }
 
         private void Awake()
@@ -26,7 +26,7 @@ namespace JotunnLib.Managers
             Instance = this;
         }
 
-        public void registerAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        private void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);
             

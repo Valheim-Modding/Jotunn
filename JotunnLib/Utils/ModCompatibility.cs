@@ -331,7 +331,7 @@ namespace JotunnLib.Utils
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="data"></param>
-        public static void RPC_JotunnLib_ReceiveServerVersionData(ZRpc sender, ZPackage data)
+        private static void RPC_JotunnLib_ReceiveServerVersionData(ZRpc sender, ZPackage data)
         {
             Logger.LogDebug("Received version data from server");
             if (ZNet.instance.IsClientInstance())
