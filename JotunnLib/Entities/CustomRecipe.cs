@@ -1,7 +1,12 @@
 ﻿using JotunnLib.Configs;
+using JotunnLib.Managers;
 
 namespace JotunnLib.Entities
 {
+    /// <summary>
+    ///     Main interface for adding custom recipes to the game.<br />
+    ///     All custom recipes have to be wrapped inside this class to add it to Jötunns <see cref="ItemManager"/>.
+    /// </summary>
     public class CustomRecipe
     {
         /// <summary>

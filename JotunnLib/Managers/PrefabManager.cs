@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
-using System.Linq;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace JotunnLib.Managers
 {
     /// <summary>
-    ///     Handles all logic to do with managing custom prefabs added into the game.
+    ///     Manager for handling custom prefabs added to the game.
     /// </summary>
     public class PrefabManager : Manager
     {
@@ -17,8 +16,19 @@ namespace JotunnLib.Managers
         /// </summary>
         public static PrefabManager Instance { get; private set; }
 
+        /// <summary>
+        ///     One time event called after adding the prefabs to <see cref="ZNetScene"/> for the first time.
+        /// </summary>
         public event EventHandler PrefabsLoaded;
+
+        /// <summary>
+        ///     Container for custom prefabs in the DontDestroyOnLoad scene.
+        /// </summary>
         internal GameObject PrefabContainer;
+
+        /// <summary>
+        /// Dictionary of all added custom prefabs by name.
+        /// </summary>
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
 
         private bool loaded = false;
@@ -45,21 +55,12 @@ namespace JotunnLib.Managers
             SceneManager.sceneUnloaded += (Scene current) => Cache.ClearCache();
         }
 
-        /*private string createUID()
-        {
-            const char separator = '_';
-
-            var methodBase = new System.Diagnostics.StackFrame(2).GetMethod();
-            var id = methodBase.DeclaringType.Assembly.GetName().Name + separator + methodBase.DeclaringType.Name + separator + methodBase.Name;
-
-            return separator + id;
-        }*/
-
         /// <summary>
-        ///     Adds a prefab to the manager. Added prefabs get registered to the <see cref="ZNetScene"/> on Awake().
+        ///     Add a custom prefab to the manager.<br />
+        ///     Checks if a prefab with the same name is already added.<br />
+        ///     Added prefabs get registered to the <see cref="ZNetScene"/> on <see cref="ZNetScene.Awake"/>.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="prefab"></param>
+        /// <param name="prefab">Prefab to add.</param>
         public void AddPrefab(GameObject prefab)
         {
             if (Prefabs.ContainsKey(prefab.name))
@@ -69,12 +70,11 @@ namespace JotunnLib.Managers
             }
 
             prefab.transform.SetParent(PrefabContainer.transform, false);
-            //prefab.SetActive(true);
             Prefabs.Add(prefab.name, prefab);
         }
 
         /// <summary>
-        ///     Creates a new prefab that's an empty primitive.
+        ///     Create a new prefab from an empty primitive.
         /// </summary>
         /// <param name="name">The name of the new GameObject</param>
         /// <param name="addZNetView" >
@@ -96,7 +96,6 @@ namespace JotunnLib.Managers
             }
 
             GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //prefab.name = name + createUID();
             prefab.name = name;
             prefab.transform.parent = PrefabContainer.transform;
 
@@ -111,11 +110,11 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Allows you to clone a given prefab without modifying the original.
+        ///     Create a copy of a given prefab without modifying the original.
         /// </summary>
-        /// <param name="name">New prefab name</param>
-        /// <param name="baseName">Base prefab name</param>
-        /// <returns>Newly created prefab object</returns>
+        /// <param name="name">Name of the new prefab.</param>
+        /// <param name="baseName">Name of the vanilla prefab to copy from.</param>
+        /// <returns>Newly created prefab object.</returns>
         public GameObject CreateClonedPrefab(string name, string baseName)
         {
             if (string.IsNullOrEmpty(baseName))
@@ -142,11 +141,11 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Allows you to clone a given prefab without modifying the original.
+        ///     Create a copy of a given prefab without modifying the original.
         /// </summary>
-        /// <param name="name">New prefab name</param>
-        /// <param name="prefab">Base prefab</param>
-        /// <returns>Newly created cloned prefab object</returns>
+        /// <param name="name">Name of the new prefab.</param>
+        /// <param name="prefab">Prefab instance to copy.</param>
+        /// <returns>Newly created prefab object.</returns>
         public GameObject CreateClonedPrefab(string name, GameObject prefab)
         {
             if (string.IsNullOrEmpty(name))
@@ -166,17 +165,21 @@ namespace JotunnLib.Managers
             }
 
             var newPrefab = Instantiate(prefab, PrefabContainer.transform);
-            //newPrefab.name = name + createUID();
             newPrefab.name = name;
 
             return newPrefab;
         }
 
         /// <summary>
-        ///     Returns an existing prefab with given name, or null if none exist.
+        ///     Get a prefab by its name.<br /><br />
+        ///     Search hierarchy:
+        ///     <list type="number">
+        ///         <item>Custom prefab with the exact name</item>
+        ///         <item>Vanilla prefab with the exact name if <see cref="ZNetScene"/> is already instantiated</item>
+        ///     </list>
         /// </summary>
-        /// <param name="name">Name of the prefab to search for</param>
-        /// <returns>The existing prefab, or null if none exists with given name</returns>
+        /// <param name="name">Name of the prefab to search for.</param>
+        /// <returns>The existing prefab, or null if none exists with given name.</returns>
         public GameObject GetPrefab(string name)
         {
             if (Prefabs.ContainsKey(name))
@@ -199,18 +202,30 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Destroy a known custom prefab. Removes it from the manager and if found also on the <see cref="ZNetScene"/>.
+        ///     Remove a custom prefab from the manager.
         /// </summary>
-        /// <param name="name">The name of the prefab to destroy</param>
-        public void DestroyPrefab(string name)
+        /// <param name="name">Name of the prefab to remove.</param>
+        public void RemovePrefab(string name)
         {
             if (Prefabs.ContainsKey(name))
             {
                 Prefabs.Remove(name);
             }
+        }
+
+        /// <summary>
+        ///     Destroy a custom prefab.<br />
+        ///     Removes it from the manager and if instantiated also from the <see cref="ZNetScene"/>.
+        /// </summary>
+        /// <param name="name">The name of the prefab to destroy.</param>
+        public void DestroyPrefab(string name)
+        {
+            RemovePrefab(name);
 
             if (ZNetScene.instance)
             {
+                //TODO: remove all clones, too
+
                 GameObject del = null;
                 foreach (GameObject obj in ZNetScene.instance.m_prefabs)
                 {
@@ -229,9 +244,8 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Add all registered prefabs to the namedPrefabs in <see cref="ZNetScene" />.
+        ///     Register all custom prefabs to m_prefabs/m_namedPrefabs in <see cref="ZNetScene" />.
         /// </summary>
-        /// <param name="instance"></param>
         private void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);
@@ -242,9 +256,7 @@ namespace JotunnLib.Managers
             {
                 foreach (var prefab in Instance.Prefabs)
                 {
-                    var name = prefab.Key;
-
-                    RegisterToZNetScene(name, prefab.Value);
+                    RegisterToZNetScene(prefab.Value);
                 }
             }
 
@@ -258,24 +270,27 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Add a single prefab to the <see cref="ZNetScene"/>.
+        ///     Register a single prefab to the current <see cref="ZNetScene"/>.<br />
+        ///     Checks for existance of the object via GetStableHashCode() and adds the prefab if it is not already added.
         /// </summary>
-        /// <param name="name"></param>
         /// <param name="gameObject"></param>
-        public void RegisterToZNetScene(string name, GameObject gameObject)
+        public void RegisterToZNetScene(GameObject gameObject)
         {
-            var znet = ZNetScene.instance;
+            ZNetScene znet = ZNetScene.instance;
 
             if (znet)
             {
-                if (znet.m_namedPrefabs.ContainsKey(name.GetStableHashCode()))
+                string name = gameObject.name;
+                int hash = name.GetStableHashCode();
+
+                if (znet.m_namedPrefabs.ContainsKey(hash))
                 {
                     Logger.LogWarning($"Prefab {name} already in ZNetScene");
                 }
                 else
-                { 
+                {
                     znet.m_prefabs.Add(gameObject);
-                    znet.m_namedPrefabs.Add(name.GetStableHashCode(), gameObject);
+                    znet.m_namedPrefabs.Add(hash, gameObject);
                     Logger.LogInfo($"Added prefab {name}");
                 }
             }
@@ -292,8 +307,8 @@ namespace JotunnLib.Managers
             /// <summary>
             ///     Get an instance of an Unity Object from the current scene with the given name.
             /// </summary>
-            /// <param name="type"></param>
-            /// <param name="name"></param>
+            /// <param name="type"><see cref="Type"/> to search for.</param>
+            /// <param name="name">Name of the actual object to search for.</param>
             /// <returns></returns>
             public static Object GetPrefab(Type type, string name)
             {
@@ -314,7 +329,7 @@ namespace JotunnLib.Managers
             }
 
             /// <summary>
-            ///     Get an instance of an Unity Object from the current scene with the given name.
+            ///     Get an instance of an Unity Object from the current scene by name.
             /// </summary>
             /// <typeparam name="T"></typeparam>
             /// <param name="name"></param>
@@ -325,9 +340,9 @@ namespace JotunnLib.Managers
             }
 
             /// <summary>
-            ///     Get the instances of UnityObjects from the current scene with the given type.
+            ///     Get all instances of an Unity Object from the current scene by type.
             /// </summary>
-            /// <param name="type"></param>
+            /// <param name="type"><see cref="Type"/> to search for.</param>
             /// <returns></returns>
             public static Dictionary<string, Object> GetPrefabs(Type type)
             {
