@@ -4,7 +4,7 @@
 ## Setting up development environment
 Setting up development environment to create a mod using JotunnLib and Visual studio:
 
-1. Download [BepInEx for Valheim](https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.701/) and extract the zip file into your root Valheim directory.
+1. Download [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) and extract the zip file into your root Valheim directory.
 2. Create a new Visual Studio project of type `Class Library (.NET Framework)`. Make sure that you select `.NET Framework 4` as the target framework. **Do not** select any higher version, as it will be incompatible with Valheim, since it's compiled using .NET Framework 4.
 ![Creating a new project](../images/getting-started/vs-create-proj.png "Creating a new project")
 3. Adding references to the project:

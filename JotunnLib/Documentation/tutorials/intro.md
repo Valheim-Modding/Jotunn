@@ -2,6 +2,7 @@
 This section will contain tutorials on how to use the various parts of the framework to do things such as:
 - Creating custom prefabs
 - Creating custom items
+- Using mocks in custom items.
 - Creating custom recipes
 - Creating custom skills
 - Creating custom pieces (buildable items)
