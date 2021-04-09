@@ -57,7 +57,7 @@ namespace JotunnLib.Managers
         ///     Add a <see cref="CustomItem"/> to the game.<br />
         ///     Checks if the custom item is valid and unique and adds it to the list of custom items.<br />
         ///     Also adds the prefab of the custom item to the <see cref="PrefabManager"/>.<br />
-        ///     Custom items are added to the current <see cref="ObjectDB"/> on every Awake().
+        ///     Custom items are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
         /// </summary>
         /// <param name="customItem">The custom item to add.</param>
         /// <returns>true if the custom item was added to the manager.</returns>
@@ -90,7 +90,7 @@ namespace JotunnLib.Managers
         /// <summary>
         ///     Add a <see cref="CustomRecipe"/> to the game.<br />
         ///     Checks if the custom recipe is unique and adds it to the list of custom recipes.<br />
-        ///     Custom recipes are added to the current <see cref="ObjectDB"/> on every Awake().
+        ///     Custom recipes are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
         /// </summary>
         /// <param name="customRecipe">The custom recipe to add.</param>
         /// <returns>true if the custom recipe was added to the manager.</returns>
@@ -109,7 +109,7 @@ namespace JotunnLib.Managers
         /// <summary>
         ///     Add a <see cref="CustomStatusEffect"/> to the game.<br />
         ///     Checks if the custom status effect is unique and adds it to the list of custom status effects.<br />
-        ///     Custom status effects are added to the current <see cref="ObjectDB"/> on every Awake().
+        ///     Custom status effects are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
         /// </summary>
         /// <param name="customStatusEffect">The custom status effect to add.</param>
         /// <returns>true if the custom status effect was added to the manager.</returns>

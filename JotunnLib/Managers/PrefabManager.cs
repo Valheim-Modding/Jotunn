@@ -58,7 +58,7 @@ namespace JotunnLib.Managers
         /// <summary>
         ///     Add a custom prefab to the manager.<br />
         ///     Checks if a prefab with the same name is already added.<br />
-        ///     Added prefabs get registered to the <see cref="ZNetScene"/> on Awake().
+        ///     Added prefabs get registered to the <see cref="ZNetScene"/> on <see cref="ZNetScene.Awake"/>.
         /// </summary>
         /// <param name="prefab">Prefab to add.</param>
         public void AddPrefab(GameObject prefab)
@@ -74,7 +74,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Create a new prefab that's an empty primitive.
+        ///     Create a new prefab from an empty primitive.
         /// </summary>
         /// <param name="name">The name of the new GameObject</param>
         /// <param name="addZNetView" >
