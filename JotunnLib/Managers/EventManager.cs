@@ -13,7 +13,7 @@ namespace JotunnLib.Managers
         public static event EventHandler<PlayerEventArgs> PlayerSpawned;
         public static event EventHandler<PlayerPlacedPieceEventArgs> PlayerPlacedPiece;
 
-        internal void Awake()
+        private void Awake()
         {
             if (Instance != null)
             {

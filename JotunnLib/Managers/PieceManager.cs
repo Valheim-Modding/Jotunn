@@ -2,12 +2,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace JotunnLib.Managers
 {
     /// <summary>
-    ///     Handles all logic to do with adding custom Pieces and PieceTables to the game.
+    ///     Manager for handling custom pieces added to the game.
     /// </summary>
     public class PieceManager : Manager
     {
@@ -15,6 +14,12 @@ namespace JotunnLib.Managers
         ///     The singleton instance of this manager.
         /// </summary>
         public static PieceManager Instance { get; private set; }
+        
+        public event EventHandler OnPiecesRegistered;
+        public event EventHandler OnPieceTablesRegistered;
+
+        internal GameObject PieceTableContainer;
+        internal List<CustomPiece> Pieces = new List<CustomPiece>();
 
         internal readonly Dictionary<string, PieceTable> PieceTables = new Dictionary<string, PieceTable>();
         internal readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>()
@@ -23,11 +28,6 @@ namespace JotunnLib.Managers
             { "Hammer", "_HammerPieceTable" },
             { "Hoe", "_HoePieceTable" }
         };
-
-        public event EventHandler OnPiecesRegistered;
-        public event EventHandler OnPieceTablesRegistered;
-        internal GameObject PieceTableContainer;
-        internal List<CustomPiece> Pieces = new List<CustomPiece>();
 
         private void Awake()
         {
@@ -47,70 +47,19 @@ namespace JotunnLib.Managers
             PieceTableContainer.transform.parent = Main.RootObject.transform;
 
             // Setup Hooks
-            On.ObjectDB.Awake += registerCustomData;
-            On.Player.Load += reloadKnownRecipes;
+            On.ObjectDB.Awake += RegisterCustomData;
+            On.Player.Load += ReloadKnownRecipes;
         }
 
-        //TODO: Dont know if needed anymore
-        /*internal override void Register()
-        {
-            // TODO: Split register and load logic
-        }
-
-        internal override void Load()
-        {
-            if (loaded)
-            {
-                return;
-            }
-
-            // Clear piece tables and re-load
-            PieceTables.Clear();
-            
-            foreach (Transform child in PieceTableContainer.transform)
-            {
-                GameObject.Destroy(child.gameObject);
-            }
-
-            List<string> loadedTables = new List<string>();
-            Logger.LogInfo("---- Loading piece tables ----");
-
-            foreach (PieceTable table in Resources.FindObjectsOfTypeAll(typeof(PieceTable)))
-            {
-                string name = table.gameObject.name;
-                PieceTables.Add(name, table);
-                loadedTables.Add(name);
-
-                Logger.LogInfo("Loaded existing piece table: " + name);
-            }
-
-            PieceTableRegister?.Invoke(null, EventArgs.Empty);
-
-            foreach (var pair in PieceTables)
-            {
-                PieceTable table = pair.Value;
-                string name = table.gameObject.name;
-
-                if (loadedTables.Contains(name))
-                {
-                    continue;
-                }
-
-                PieceTables.Add(name, table);
-
-                Logger.LogInfo("Registered piece table: " + name);
-            }
-
-            Logger.LogInfo("---- Loading pieces ----");
-            PieceRegister?.Invoke(null, EventArgs.Empty);
-            loaded = true;
-        }*/
-
+        /// <summary>
+        ///     Add a new <see cref="PieceTable"/> from <see cref="GameObject"/>.
+        /// </summary>
+        /// <param name="prefab">The prefab of the <see cref="PieceTable"/></param>
         public void AddPieceTable(GameObject prefab)
         {
             if (PieceTables.ContainsKey(prefab.name))
             {
-                Logger.LogWarning($"Piece table {name} already added");
+                Logger.LogWarning($"Piece table {prefab.name} already added");
                 return;
             }
 
@@ -129,6 +78,11 @@ namespace JotunnLib.Managers
             //TODO: get the name of the item which has this table attached and add it to the name map
         }
 
+        /// <summary>
+        ///     Add a new <see cref="PieceTable"/> from string.<br />
+        ///     Creates a <see cref="GameObject"/> with a <see cref="PieceTable"/> component and adds it to the manager.
+        /// </summary>
+        /// <param name="name">Name of the new piece table.</param>
         public void AddPieceTable(string name)
         {
             if (PieceTables.ContainsKey(name))
@@ -146,6 +100,17 @@ namespace JotunnLib.Managers
             PieceTableNameMap.Add(name, $"_{name}PieceTable");
         }
 
+        /// <summary>
+        ///     Get a <see cref="PieceTable"/> by name.<br /><br />
+        ///     Search hierarchy:<br />
+        ///     <list type="number">
+        ///         <item>Custom table with the exact name</item>
+        ///         <item>Vanilla table via "item" name (e.g. "Hammer")</item>
+        ///         <item>Vanilla table with the exact name (e.g. "_HammerPieceTable")</item>
+        ///     </list>
+        /// </summary>
+        /// <param name="name">Name of the PieceTable.</param>
+        /// <returns></returns>
         public PieceTable GetPieceTable(string name)
         {
             if (PieceTables.ContainsKey(name))
@@ -158,16 +123,23 @@ namespace JotunnLib.Managers
                 return PrefabManager.Cache.GetPrefab<PieceTable>(PieceTableNameMap[name]);
             }
 
-            return null;
+            return PrefabManager.Cache.GetPrefab<PieceTable>(name);
         }
 
+        /// <summary>
+        ///     Add a <see cref="CustomPiece"/> to the game.<br />
+        ///     Checks if the custom piece is valid and unique and adds it to the list of custom pieces.<br />
+        ///     Custom pieces are added to their respective <see cref="PieceTable"/>s after <see cref="ObjectDB.Awake"/>.
+        /// </summary>
+        /// <param name="customPiece">The custom piece to add.</param>
+        /// <returns>true if the custom piece was added to the manager.</returns>
         public bool AddPiece(CustomPiece customPiece)
         {
             if (customPiece.IsValid())
             {
                 if (Pieces.Contains(customPiece))
                 {
-                    Logger.LogWarning($"Custom item {customPiece} already added");
+                    Logger.LogWarning($"Custom piece {customPiece} already added");
                 }
                 else
                 {
@@ -190,12 +162,21 @@ namespace JotunnLib.Managers
             return false;
         }
 
+        /// <summary>
+        ///     Get a custom piece by its name.
+        /// </summary>
+        /// <param name="pieceName">Name of the piece to search.</param>
+        /// <returns></returns>
         public CustomPiece GetPiece(string pieceName)
         {
             var piece = Pieces.Find(x => x.PiecePrefab.name.Equals(pieceName));
             return piece;
         }
 
+        /// <summary>
+        ///     Remove a custom piece by its name.
+        /// </summary>
+        /// <param name="pieceName">Name of the piece to remove.</param>
         public void RemovePiece(string pieceName)
         {
             var piece = GetPiece(pieceName);
@@ -208,7 +189,7 @@ namespace JotunnLib.Managers
             Pieces.Remove(piece);
         }
 
-        private void registerInPieceTables()
+        private void RegisterInPieceTables()
         {
             Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
 
@@ -238,7 +219,6 @@ namespace JotunnLib.Managers
                         pieceTable.m_pieces.Add(customPiece.PiecePrefab);
                         Logger.LogInfo($"Added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
                     }
-                    
                 }
                 catch (Exception ex)
                 {
@@ -248,7 +228,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void registerCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
 
@@ -257,7 +237,7 @@ namespace JotunnLib.Managers
 
             if (isValid)
             {
-                registerInPieceTables();
+                RegisterInPieceTables();
             }
 
             // Fire event that everything is added and registered
@@ -265,7 +245,7 @@ namespace JotunnLib.Managers
             OnPiecesRegistered?.Invoke(null, EventArgs.Empty);
         }
 
-        private void reloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
+        private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
         {
             orig(self, pkg);
 

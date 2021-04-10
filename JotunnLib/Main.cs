@@ -11,7 +11,7 @@ using JotunnLib.Utils;
 
 namespace JotunnLib
 {
-    [BepInPlugin(ModGuid, "JotunnLib", Version)]
+    [BepInPlugin(ModGuid, ModName, Version)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
@@ -19,6 +19,11 @@ namespace JotunnLib
         ///     The current version of the Jotunn library.
         /// </summary>
         public const string Version = "0.2.0";
+
+        /// <summary>
+        ///     The name of the library.
+        /// </summary>
+        public const string ModName = "JotunnLib";
 
         /// <summary>
         ///     The BepInEx plugin Mod GUID being used.
@@ -46,7 +51,7 @@ namespace JotunnLib
         };
         private readonly List<Manager> managers = new List<Manager>();
 
-        internal void Awake()
+        private void Awake()
         {
             // Initialize Logger
             JotunnLib.Logger.Init();
@@ -73,12 +78,12 @@ namespace JotunnLib
         /// <summary>
         ///     Initialize patches
         /// </summary>
-        internal void Start()
+        private void Start()
         {
-            initializePatches();
+            InitializePatches();
         }
 
-        internal void Update()
+        private void Update()
         {
 #if DEBUG
             if (Input.GetKeyDown(KeyCode.F6))
@@ -99,7 +104,7 @@ namespace JotunnLib
         /// <summary>
         ///     Invoke patch initialization methods for all loaded mods.
         /// </summary>
-        private void initializePatches()
+        private void InitializePatches()
         {
             // Reflect through everything
             List<Tuple<MethodInfo, int>> types = new List<Tuple<MethodInfo, int>>();

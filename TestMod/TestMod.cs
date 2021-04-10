@@ -261,6 +261,7 @@ namespace TestMod
 
                 // Create and add a recipe for the copied item
                 Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
+                recipe.name = "Recipe_EvilSword";
                 recipe.m_item = itemDrop;
                 recipe.m_craftingStation = PrefabManager.Cache.GetPrefab<CraftingStation>("piece_workbench");
                 recipe.m_resources = new Piece.Requirement[]
@@ -312,12 +313,12 @@ namespace TestMod
         // Register new console commands
         private void addCommands()
         {
-            CommandManager.Instance.RegisterConsoleCommand(new PrintItemsCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new TpCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new ListPlayersCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new SkinColorCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new RaiseSkillCommand());
-            CommandManager.Instance.RegisterConsoleCommand(new BetterSpawnCommand());
+            CommandManager.Instance.AddConsoleCommand(new PrintItemsCommand());
+            CommandManager.Instance.AddConsoleCommand(new TpCommand());
+            CommandManager.Instance.AddConsoleCommand(new ListPlayersCommand());
+            CommandManager.Instance.AddConsoleCommand(new SkinColorCommand());
+            CommandManager.Instance.AddConsoleCommand(new RaiseSkillCommand());
+            CommandManager.Instance.AddConsoleCommand(new BetterSpawnCommand());
         }
 
         // Register new skills

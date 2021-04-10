@@ -53,13 +53,13 @@ namespace JotunnLib.Managers
         internal void Start()
         {
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
-            hookConfigurationManager();
+            HookConfigurationManager();
         }
 
         /// <summary>
         ///     Hook ConfigurationManager's DisplayingWindowChanged to be able to react on window open/close.
         /// </summary>
-        private void hookConfigurationManager()
+        private void HookConfigurationManager()
         {
             Logger.LogDebug("Trying to hook config manager");
 
@@ -184,7 +184,7 @@ namespace JotunnLib.Managers
             {
                 Logger.LogDebug("Player is in local instance, lets make him admin");
                 Instance.PlayerIsAdmin = true;
-                unlockConfigurationEntries();
+                UnlockConfigurationEntries();
             }
         }
 
@@ -238,7 +238,7 @@ namespace JotunnLib.Managers
                 // If player is admin, unlock the configuration values
                 if (isAdmin)
                 {
-                    unlockConfigurationEntries();
+                    UnlockConfigurationEntries();
                 }
             }
 
@@ -261,7 +261,7 @@ namespace JotunnLib.Managers
         /// <summary>
         ///     Unlock configuration entries.
         /// </summary>
-        private void unlockConfigurationEntries()
+        private void UnlockConfigurationEntries()
         {
             var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
 

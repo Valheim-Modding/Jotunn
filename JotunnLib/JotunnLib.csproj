@@ -446,7 +446,6 @@
     <Compile Include="Utils\PatchInitAttribute.cs" />
     <Compile Include="Utils\Paths.cs" />
     <Compile Include="Utils\ReflectionHelper.cs" />
-    <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Utils\AssetUtils.cs" />
     <Compile Include="Utils\SimpleJson.cs" />
     <Compile Include="Utils\WeightedList.cs" />

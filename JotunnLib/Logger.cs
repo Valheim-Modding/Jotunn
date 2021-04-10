@@ -6,7 +6,7 @@ namespace JotunnLib
 {
     /// <summary>
     ///     A namespace wide Logger class, which automatically creates a <see cref="ManualLogSource" />
-    ///     for every namespace from which it is being called.
+    ///     for every Class from which it is being called.
     /// </summary>
     public class Logger
     {
@@ -36,15 +36,16 @@ namespace JotunnLib
             instance.logger.Clear();
         }
 
-        private ManualLogSource getLogger()
+        private ManualLogSource GetLogger()
         {
             var type = new StackFrame(2).GetMethod().DeclaringType;
 
             ManualLogSource ret;
-            if (!logger.TryGetValue(type.Namespace, out ret))
+            if (!logger.TryGetValue(type.FullName, out ret))
             {
-                ret = BepInEx.Logging.Logger.CreateLogSource(type.Namespace);
-                logger.Add(type.Namespace, ret);
+                //ret = BepInEx.Logging.Logger.CreateLogSource(type.Namespace);
+                ret = BepInEx.Logging.Logger.CreateLogSource(type.FullName);
+                logger.Add(type.FullName, ret);
             }
 
             return ret;
@@ -52,32 +53,32 @@ namespace JotunnLib
 
         public static void LogFatal(object data)
         {
-            instance.getLogger().LogFatal(data);
+            instance.GetLogger().LogFatal(data);
         }
 
         public static void LogError(object data)
         {
-            instance.getLogger().LogError(data);
+            instance.GetLogger().LogError(data);
         }
 
         public static void LogWarning(object data)
         {
-            instance.getLogger().LogWarning(data);
+            instance.GetLogger().LogWarning(data);
         }
 
         public static void LogMessage(object data)
         {
-            instance.getLogger().LogMessage(data);
+            instance.GetLogger().LogMessage(data);
         }
 
         public static void LogInfo(object data)
         {
-            instance.getLogger().LogInfo(data);
+            instance.GetLogger().LogInfo(data);
         }
 
         public static void LogDebug(object data)
         {
-            instance.getLogger().LogDebug(data);
+            instance.GetLogger().LogDebug(data);
         }
     }
 }

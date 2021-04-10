@@ -6,14 +6,15 @@ using JotunnLib.Entities;
 
 namespace JotunnLib.Managers
 {
+    /// <summary>
+    ///    Manager for handling items, recipes, and status effects added to the game.
+    /// </summary>
     public class ItemManager : Manager
     {
+        /// <summary>
+        ///     The singleton instance of this manager.
+        /// </summary>
         public static ItemManager Instance { get; private set; }
-
-        public event EventHandler OnItemsRegistered;
-        internal readonly List<CustomItem> Items = new List<CustomItem>();
-        internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
-        internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
 
         /// <summary>
         ///     Event that get fired after the ObjectDB get init and before its filled with custom items.
@@ -26,6 +27,12 @@ namespace JotunnLib.Managers
         ///     Your code will execute once unless you resub, the event get cleared after each fire.
         /// </summary>
         public static Action OnAfterInit;
+
+        internal readonly List<CustomItem> Items = new List<CustomItem>();
+        internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
+        internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
+
+        public event EventHandler OnItemsRegistered;
 
         private void Awake()
         {
@@ -41,26 +48,19 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            On.ObjectDB.CopyOtherDB += registerCustomDataFejd;
-            On.ObjectDB.Awake += registerCustomData;
-            On.Player.Load += reloadKnownRecipes;
+            On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
+            On.ObjectDB.Awake += RegisterCustomData;
+            On.Player.Load += ReloadKnownRecipes;
         }
 
-        //TODO: dont know if still needed, please check
-        /*internal override void Register()
-        {
-            Logger.LogInfo("---- Registering custom objects ----");
-
-            // Clear existing items and recipes
-            Items.Clear();
-            Recipes.Clear();
-
-            ItemDropMockFix.Switch(true);
-
-            // Register new items and recipes
-            ObjectRegister?.Invoke(null, EventArgs.Empty);
-        }*/
-
+        /// <summary>
+        ///     Add a <see cref="CustomItem"/> to the game.<br />
+        ///     Checks if the custom item is valid and unique and adds it to the list of custom items.<br />
+        ///     Also adds the prefab of the custom item to the <see cref="PrefabManager"/>.<br />
+        ///     Custom items are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
+        /// </summary>
+        /// <param name="customItem">The custom item to add.</param>
+        /// <returns>true if the custom item was added to the manager.</returns>
         public bool AddItem(CustomItem customItem)
         {
             if (customItem.IsValid())
@@ -80,9 +80,6 @@ namespace JotunnLib.Managers
                     PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
                     Items.Add(customItem);
 
-                    //PrefabManager.instance.NetworkRegister(customItem.ItemPrefab);
-                    //customItem.ItemPrefab.NetworkRegister();
-
                     return true;
                 }
             }
@@ -90,6 +87,13 @@ namespace JotunnLib.Managers
             return false;
         }
 
+        /// <summary>
+        ///     Add a <see cref="CustomRecipe"/> to the game.<br />
+        ///     Checks if the custom recipe is unique and adds it to the list of custom recipes.<br />
+        ///     Custom recipes are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
+        /// </summary>
+        /// <param name="customRecipe">The custom recipe to add.</param>
+        /// <returns>true if the custom recipe was added to the manager.</returns>
         public bool AddRecipe(CustomRecipe customRecipe)
         {
             if (!Recipes.Contains(customRecipe))
@@ -102,6 +106,13 @@ namespace JotunnLib.Managers
             return false;
         }
 
+        /// <summary>
+        ///     Add a <see cref="CustomStatusEffect"/> to the game.<br />
+        ///     Checks if the custom status effect is unique and adds it to the list of custom status effects.<br />
+        ///     Custom status effects are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
+        /// </summary>
+        /// <param name="customStatusEffect">The custom status effect to add.</param>
+        /// <returns>true if the custom status effect was added to the manager.</returns>
         public bool AddStatusEffect(CustomStatusEffect customStatusEffect)
         {
             if (!StatusEffects.Contains(customStatusEffect))
@@ -151,7 +162,7 @@ namespace JotunnLib.Managers
             objectDB.UpdateItemHashes();
         }
 
-        private void registerCustomRecipes(ObjectDB objectDB)
+        private void RegisterCustomRecipes(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom recipes to {objectDB} ----");
 
@@ -214,7 +225,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void registerCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             orig(self, other);
 
@@ -235,7 +246,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void registerCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
 
@@ -248,7 +259,7 @@ namespace JotunnLib.Managers
                 OnBeforeCustomItemsAdded = null;
 
                 registerCustomItems(self);
-                registerCustomRecipes(self);
+                RegisterCustomRecipes(self);
                 registerCustomStatusEffects(self);
 
                 self.UpdateItemHashes();
@@ -261,7 +272,7 @@ namespace JotunnLib.Managers
             OnItemsRegistered?.Invoke(null, EventArgs.Empty);
         }
 
-        private void reloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
+        private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
         {
             orig(self, pkg);
 
