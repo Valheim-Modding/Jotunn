@@ -52,7 +52,7 @@ namespace TestMod
             
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
-            setVersion();
+            SetVersion();
         }
 
         // Called every frame
