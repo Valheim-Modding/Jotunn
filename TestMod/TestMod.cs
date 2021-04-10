@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using BepInEx;
@@ -10,7 +9,6 @@ using JotunnLib.Configs;
 using JotunnLib.Entities;
 using System.Collections.Generic;
 using BepInEx.Configuration;
-using Version = System.Version;
 using System.IO;
 
 namespace TestMod
@@ -39,13 +37,13 @@ namespace TestMod
             InputManager.Instance.InputRegister += registerInputs;
             LocalizationManager.Instance.LocalizationRegister += registerLocalization;
 
-            loadAssets();
-            addItemsWithConfigs();
-            addMockedItems();
-            addEmptyItems();
-            addCommands();
-            addSkills();
-            createConfigValues();
+            LoadAssets();
+            AddItemsWithConfigs();
+            AddMockedItems();
+            AddEmptyItems();
+            AddCommands();
+            AddSkills();
+            CreateConfigValues();
 
             // Hook ObjectDB.CopyOtherDB to add custom items cloned from vanilla items
             On.ObjectDB.CopyOtherDB += addClonedItems;
@@ -122,7 +120,7 @@ namespace TestMod
         }
 
         // Load assets
-        private void loadAssets()
+        private void LoadAssets()
         {
             // Load texture
             testTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
@@ -141,7 +139,7 @@ namespace TestMod
         }
 
         // Add new Items with item Configs
-        private void addItemsWithConfigs()
+        private void AddItemsWithConfigs()
         {
             // Add a custom piece table
             PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
@@ -195,7 +193,7 @@ namespace TestMod
         }
 
         // Add new items with mocked prefabs
-        private void addMockedItems()
+        private void AddMockedItems()
         {
             // Load assets from resources
             Stream assetstream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TestMod.AssetsEmbedded.capeironbackpack");
@@ -233,7 +231,7 @@ namespace TestMod
         }
 
         // Add a custom item from an "empty" prefab
-        private void addEmptyItems()
+        private void AddEmptyItems()
         {
             CustomPiece CP = new CustomPiece("$piece_lul", "Hammer");
             var piece = CP.Piece;
@@ -300,7 +298,7 @@ namespace TestMod
                 }
             });
 
-            // Add translations for the custom piece in addEmptyItems
+            // Add translations for the custom piece in AddEmptyItems
             LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
             {
                 Translations =
@@ -311,7 +309,7 @@ namespace TestMod
         }
 
         // Register new console commands
-        private void addCommands()
+        private void AddCommands()
         {
             CommandManager.Instance.AddConsoleCommand(new PrintItemsCommand());
             CommandManager.Instance.AddConsoleCommand(new TpCommand());
@@ -322,7 +320,7 @@ namespace TestMod
         }
 
         // Register new skills
-        void addSkills()
+        void AddSkills()
         {
             // Test adding a skill with a texture
             Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
@@ -331,13 +329,13 @@ namespace TestMod
         }
 
         // Create some sample configuration values to check server sync
-        private void createConfigValues()
+        private void CreateConfigValues()
         {
             Config.SaveOnConfigSet = true;
 
             Config.Bind("JotunnLibTest", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind("JotunnLibTest", "FloatValue1", 750f, new ConfigDescription("Server side float", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind("JotunnLibTest", "IntegerValue1", 200, new ConfigDescription("Server side integer", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "FloatValue1", 750f, new ConfigDescription("Server side float", new AcceptableValueRange<float>(500, 1000), new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "IntegerValue1", 200, new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind("JotunnLibTest", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind("JotunnLibTest", "KeycodeValue", KeyCode.F10,
                 new ConfigDescription("Server side Keycode", null, new ConfigurationManagerAttributes() { IsAdminOnly = true }));

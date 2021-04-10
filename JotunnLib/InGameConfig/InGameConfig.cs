@@ -204,21 +204,43 @@ namespace JotunnLib.InGameConfig
                         }
                         else if (entry.Value.SettingType == typeof(int))
                         {
+                            string description = entry.Value.Description.Description;
+                            if (entry.Value.Description.AcceptableValues != null)
+                            {
+                                description += Environment.NewLine + "("+entry.Value.Description.AcceptableValues.ToDescriptionString().TrimStart('#').Trim()+")";
+                            }
+
                             // Create input field int
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entry.Value.Description.Description, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                                description, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundInt>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Integer;
                             SetProperties(go.GetComponent<ConfigBoundInt>(), entry);
+                            go.transform.Find("Input").GetComponent<InputField>().onValueChanged.AddListener((x) =>
+                            {
+                                go.transform.Find("Input").GetComponent<InputField>().textComponent.color =
+                                    go.GetComponent<ConfigBoundInt>().IsValid() ? Color.white : Color.red;
+                            });
+
                         }
                         else if (entry.Value.SettingType == typeof(float))
                         {
+                            string description = entry.Value.Description.Description;
+                            if (entry.Value.Description.AcceptableValues != null)
+                            {
+                                description += Environment.NewLine + "("+entry.Value.Description.AcceptableValues.ToDescriptionString().TrimStart('#').Trim()+")";
+                            }
                             // Create input field float
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entry.Value.Description.Description, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                                description, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundFloat>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Decimal;
                             SetProperties(go.GetComponent<ConfigBoundFloat>(), entry);
+                            go.transform.Find("Input").GetComponent<InputField>().onValueChanged.AddListener((x) =>
+                            {
+                                go.transform.Find("Input").GetComponent<InputField>().textComponent.color =
+                                    go.GetComponent<ConfigBoundFloat>().IsValid() ? Color.white : Color.red;
+                            });
                         }
                         else if (entry.Value.SettingType == typeof(KeyCode))
                         {
@@ -326,6 +348,9 @@ namespace JotunnLib.InGameConfig
                 // and set it's default value
                 binding.Default = (T) entry.Value.DefaultValue;
             }
+
+            // Set clamp
+            binding.Clamp = entry.Value.Description.AcceptableValues;
 
             // set the value from the configuration
             binding.Value = binding.GetValueFromConfig();
@@ -504,7 +529,6 @@ namespace JotunnLib.InGameConfig
 
 
         // Helper classes 
-        // TODO: Add clamps where available
 
         /// <summary>
         /// Generic abstract version of the config binding class
@@ -515,6 +539,8 @@ namespace JotunnLib.InGameConfig
             public string ModGUID { get; set; }
             public string Section { get; set; }
             public string Key { get; set; }
+
+            public AcceptableValueBase Clamp { get; set; }
 
             public T Default { get; set; }
 
@@ -554,6 +580,18 @@ namespace JotunnLib.InGameConfig
             public void Reset()
             {
                 SetValue(Default);
+            }
+
+            // Wrap AcceptableValueBase's IsValid
+            public bool IsValid()
+            {
+                if (Clamp != null)
+                {
+                    T value = GetValue();
+                    return Clamp.IsValid(value);
+                }
+
+                return true;
             }
         }
 
