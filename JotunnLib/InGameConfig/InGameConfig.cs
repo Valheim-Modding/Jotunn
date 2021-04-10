@@ -16,7 +16,11 @@ using JotunnLib.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
+using Image = UnityEngine.UI.Image;
 using Object = UnityEngine.Object;
+using Toggle = UnityEngine.UI.Toggle;
 
 namespace JotunnLib.InGameConfig
 {
@@ -207,7 +211,7 @@ namespace JotunnLib.InGameConfig
                             string description = entry.Value.Description.Description;
                             if (entry.Value.Description.AcceptableValues != null)
                             {
-                                description += Environment.NewLine + "("+entry.Value.Description.AcceptableValues.ToDescriptionString().TrimStart('#').Trim()+")";
+                                description += Environment.NewLine + "(" + entry.Value.Description.AcceptableValues.ToDescriptionString().TrimStart('#').Trim() + ")";
                             }
 
                             // Create input field int
@@ -228,7 +232,7 @@ namespace JotunnLib.InGameConfig
                             string description = entry.Value.Description.Description;
                             if (entry.Value.Description.AcceptableValues != null)
                             {
-                                description += Environment.NewLine + "("+entry.Value.Description.AcceptableValues.ToDescriptionString().TrimStart('#').Trim()+")";
+                                description += Environment.NewLine + "(" + entry.Value.Description.AcceptableValues.ToDescriptionString().TrimStart('#').Trim() + ")";
                             }
                             // Create input field float
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
@@ -328,7 +332,7 @@ namespace JotunnLib.InGameConfig
         private static void SetProperties<T>(ConfigBound<T> binding, KeyValuePair<ConfigDefinition, ConfigEntryBase> entry)
         {
             var configurationManagerAttribute =
-                (ConfigurationManagerAttributes) entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes);
+                (ConfigurationManagerAttributes)entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes);
 
             // Only act, if we have a valid ConfigurationManagerAttributes tag
             if (configurationManagerAttribute != null)
@@ -346,7 +350,7 @@ namespace JotunnLib.InGameConfig
                 }
 
                 // and set it's default value
-                binding.Default = (T) entry.Value.DefaultValue;
+                binding.Default = (T)entry.Value.DefaultValue;
             }
 
             // Set clamp
@@ -508,7 +512,7 @@ namespace JotunnLib.InGameConfig
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
 
             // Add this keybinding to the list in Settings to utilize valheim's keybind dialog
-            Settings.instance.m_keys.Add(new Settings.KeySetting {m_keyName = key, m_keyTransform = result.GetComponent<RectTransform>()});
+            Settings.instance.m_keys.Add(new Settings.KeySetting { m_keyName = key, m_keyTransform = result.GetComponent<RectTransform>() });
 
             // Create description text
             var desc = GUIManager.Instance.CreateText(description, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
@@ -604,7 +608,7 @@ namespace JotunnLib.InGameConfig
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
-                return (bool) entry.BoxedValue;
+                return (bool)entry.BoxedValue;
             }
 
             public override void SetValueInConfig(bool value)
@@ -644,7 +648,7 @@ namespace JotunnLib.InGameConfig
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
-                return (int) entry.BoxedValue;
+                return (int)entry.BoxedValue;
             }
 
             public override void SetValueInConfig(int value)
@@ -679,6 +683,7 @@ namespace JotunnLib.InGameConfig
             public override void SetReadOnly(bool readOnly)
             {
                 gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
+                gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -691,7 +696,7 @@ namespace JotunnLib.InGameConfig
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
-                return (float) entry.BoxedValue;
+                return (float)entry.BoxedValue;
             }
 
             public override void SetValueInConfig(float value)
@@ -726,6 +731,7 @@ namespace JotunnLib.InGameConfig
             public override void SetReadOnly(bool readOnly)
             {
                 gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
+                gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -738,7 +744,7 @@ namespace JotunnLib.InGameConfig
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
-                return (KeyCode) entry.BoxedValue;
+                return (KeyCode)entry.BoxedValue;
             }
 
             public override void SetValueInConfig(KeyCode value)
@@ -781,6 +787,7 @@ namespace JotunnLib.InGameConfig
             public override void SetReadOnly(bool readOnly)
             {
                 gameObject.transform.Find("Button").GetComponent<Button>().enabled &= readOnly;
+                gameObject.transform.Find("Button/Text").GetComponent<Text>().color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -793,7 +800,7 @@ namespace JotunnLib.InGameConfig
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
-                return (string) entry.BoxedValue;
+                return (string)entry.BoxedValue;
             }
 
             public override void SetValueInConfig(string value)
@@ -821,6 +828,7 @@ namespace JotunnLib.InGameConfig
             public override void SetReadOnly(bool readOnly)
             {
                 gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
+                gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
     }
