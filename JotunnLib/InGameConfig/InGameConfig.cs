@@ -5,6 +5,7 @@
 // Project: JotunnLib
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -148,6 +149,7 @@ namespace JotunnLib.InGameConfig
             {
                 configTab.GetComponent<UIGroupHandler>().SetActive(true);
                 configTab.SetActive(true);
+                configTab.transform.Find("Scroll View").GetComponent<ScrollRect>().normalizedPosition = new Vector2(0, 1);
             });
 
             // Add the onClick of the tabhandler to the tab button
@@ -238,10 +240,8 @@ namespace JotunnLib.InGameConfig
                     }
                 }
             }
-
-            // Lastly, scroll to the top
-            configTab.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
         }
+
 
         /// <summary>
         ///     SaveSettings Hook
