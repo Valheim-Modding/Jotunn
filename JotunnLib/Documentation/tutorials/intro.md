@@ -1,11 +1,12 @@
 # Introduction
 This section will contain tutorials on how to use the various parts of the framework to do things such as:
-- Creating custom prefabs
-- Creating custom items
-- Using mocks in custom items.
-- Creating custom recipes
-- Creating custom skills
-- Creating custom pieces (buildable items)
+- Using the [ModStub]() template to create the [ExampleMod]()
+- Creating [custom prefabs]()
+- Creating [custom items]()
+- Creating [custom recipes]()
+- Creating [custom skills]()
+- Creating [custom pieces]() (buildable items)
+- Using [mocks]() inside of AssetBundles to reference native assets
 - etc.
 
 Everything that you interact with will be through the various [managers](xref:JotunnLib.Managers), most of which will be Singletons that can be accessed through their `Instance` property.
