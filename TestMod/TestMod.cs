@@ -353,11 +353,12 @@ namespace TestMod
             if (e.ChangedSetting.Definition.Section == "JotunnLibTest" && e.ChangedSetting.Definition.Key == "EnableVersionMismatch")
             {
                 forceVersionMismatch = (bool)e.ChangedSetting.BoxedValue;
+                SetVersion();
             }
         }
 
         // Set version of the plugin for the mod compatibility test
-        private void setVersion()
+        private void SetVersion()
         {
             var propinfo = Info.Metadata.GetType().GetProperty("Version", BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
 

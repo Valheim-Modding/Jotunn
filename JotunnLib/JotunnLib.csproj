@@ -405,6 +405,7 @@
     <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
     <Compile Include="Extensions\ItemExtensions.cs" />
     <Compile Include="Extensions\ZNetExtension.cs" />
+    <Compile Include="InGameConfig\InGameConfig.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Managers\CommandManager.cs" />
@@ -434,6 +435,7 @@
     <Compile Include="Utils\BoneReorder.cs" />
     <Compile Include="Utils\ConfigurationManagerAttributes.cs" />
     <Compile Include="Utils\EventsHelper.cs" />
+    <Compile Include="Utils\GameObjectExtensions.cs" />
     <Compile Include="Utils\HashUtils.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="Extensions\MockExtentions.cs" />

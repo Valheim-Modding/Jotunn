@@ -96,32 +96,60 @@ namespace JotunnLib.Managers
             if (configurationManagerWindowShown)
             {
                 // If window just opened, cache the config values for comparison later
-                cachedConfigValues = getSyncConfigValues();
+                CacheConfigurationValues();
             }
             else
             {
-                // Window closed, lets compare and send to server, if applicable
-                var valuesToSend = getSyncConfigValues();
+                SynchronizeToServer();
+            }
+        }
 
-                // We need only changed values
-                valuesToSend = valuesToSend.Where(x => !cachedConfigValues.Contains(x)).ToList();
+        /// <summary>
+        /// Cache the synchronizable configuration values
+        /// </summary>
+        internal void CacheConfigurationValues()
+        {
+            cachedConfigValues = GetSyncConfigValues();
+        }
 
-                // Send to server
-                if (valuesToSend.Count > 0)
+        internal void SynchronizeToServer()
+        {
+            // Lets compare and send to server, if applicable
+            var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
+
+            var valuesToSend = new List<Tuple<string, string, string, string>>();
+            foreach (var plugin in loadedPlugins)
+            {
+                foreach (var cd in plugin.Value.Config.Keys)
                 {
-                    var zPackage = generateConfigZPackage(valuesToSend);
-                    // Send values to server if it isn't a local instance
-                    if (!ZNet.instance.IsLocalInstance())
+                    var cx = plugin.Value.Config[cd.Section, cd.Key];
+                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly && ((ConfigurationManagerAttributes)x).UnlockSetting))
                     {
-                        ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_JotunnLib_ApplyConfig), zPackage);
+                        var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
+                        valuesToSend.Add(value);
                     }
-                    else
+                }
+            }
+
+            // We need only changed values
+            valuesToSend = valuesToSend.Where(x => !cachedConfigValues.Contains(x)).ToList();
+
+            // Send to server
+            if (valuesToSend.Count > 0)
+            {
+                var zPackage = GenerateConfigZPackage(valuesToSend);
+
+                // Send values to server if it isn't a local instance
+                if (!ZNet.instance.IsLocalInstance())
+                {
+                    ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_JotunnLib_ApplyConfig), zPackage);
+                }
+                else
+                {
+                    // If it is a local instance, send it to all connected peers
+                    foreach (var peer in ZNet.instance.m_peers)
                     {
-                        // If it is a local instance, send it to all connected peers
-                        foreach (var peer in ZNet.instance.m_peers)
-                        {
-                            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_JotunnLib_ApplyConfig), zPackage);
-                        }
+                        ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_JotunnLib_ApplyConfig), zPackage);
                     }
                 }
             }
@@ -172,6 +200,7 @@ namespace JotunnLib.Managers
             {
                 if (configPkg != null && configPkg.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
                 {
+                    Logger.LogDebug("Received configuration data from server");
                     ApplyConfigZPackage(configPkg);
                 }
             }
@@ -181,6 +210,7 @@ namespace JotunnLib.Managers
                 // Is package not empty and is sender admin?
                 if (configPkg != null && configPkg.Size() > 0 && ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
                 {
+                    Logger.LogDebug($"Received configuration data from client {sender}");
                     // Send to all other clients
                     foreach (var peer in ZNet.instance.m_peers.Where(x => x.m_uid != sender))
                     {
@@ -274,9 +304,9 @@ namespace JotunnLib.Managers
                 {
                     Logger.LogMessage($"Sending configuration data to peer #{sender}");
 
-                    var values = getSyncConfigValues();
+                    var values = GetSyncConfigValues();
 
-                    var pkg = generateConfigZPackage(values);
+                    var pkg = GenerateConfigZPackage(values);
 
                     Logger.LogDebug($"Sending {values.Count} configuration values to client {sender}");
                     ZRoutedRpc.instance.InvokeRoutedRPC(sender, nameof(RPC_JotunnLib_ConfigSync), pkg);
@@ -290,7 +320,7 @@ namespace JotunnLib.Managers
         /// <param name="configPkg"></param>
         internal void ApplyConfigZPackage(ZPackage configPkg)
         {
-            Logger.LogMessage("Received configuration data from server");
+            Logger.LogMessage("Applying configuration data package");
 
             var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
 
@@ -330,7 +360,7 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        private ZPackage generateConfigZPackage(List<Tuple<string, string, string, string>> values)
+        private ZPackage GenerateConfigZPackage(List<Tuple<string, string, string, string>> values)
         {
             var pkg = new ZPackage();
             var num = values.Count;
@@ -351,7 +381,7 @@ namespace JotunnLib.Managers
         ///     Get syncable configuration values as tuples
         /// </summary>
         /// <returns></returns>
-        private List<Tuple<string, string, string, string>> getSyncConfigValues()
+        private List<Tuple<string, string, string, string>> GetSyncConfigValues()
         {
             Logger.LogDebug("Gathering config values");
             var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
