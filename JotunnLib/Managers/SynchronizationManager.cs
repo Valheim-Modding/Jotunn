@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
+using JotunnLib.Utils;
+using UnityEngine.SceneManagement;
 
 namespace JotunnLib.Managers
 {
@@ -42,6 +44,23 @@ namespace JotunnLib.Managers
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
 
             On.Menu.IsVisible += Menu_IsVisible;
+        }
+
+        /// <summary>
+        ///     Reset configuration unlock state
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <param name="loadMode"></param>
+        private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
+        {
+            if (scene.name == "start")
+            {
+                PlayerIsAdmin = false;
+                LockConfigurationEntries();
+            }
+
+            // Remove from handler
+            SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
         }
 
         // Hook Menu.IsVisible to unlock cursor properly and disable camera rotation
@@ -90,38 +109,68 @@ namespace JotunnLib.Managers
         {
             // Read configuration manager's DisplayingWindow property
             var pi = configurationManager.GetType().GetProperty("DisplayingWindow");
-            configurationManagerWindowShown = (bool)pi.GetValue(configurationManager, null);
+            configurationManagerWindowShown = (bool) pi.GetValue(configurationManager, null);
 
             // Did window open or close?
             if (configurationManagerWindowShown)
             {
                 // If window just opened, cache the config values for comparison later
-                cachedConfigValues = GetSyncConfigValues();
+                CacheConfigurationValues();
             }
             else
             {
-                // Window closed, lets compare and send to server, if applicable
-                var valuesToSend = GetSyncConfigValues();
+                SynchronizeToServer();
+            }
+        }
 
-                // We need only changed values
-                valuesToSend = valuesToSend.Where(x => !cachedConfigValues.Contains(x)).ToList();
+        /// <summary>
+        ///     Cache the synchronizable configuration values
+        /// </summary>
+        internal void CacheConfigurationValues()
+        {
+            cachedConfigValues = GetSyncConfigValues();
+        }
 
-                // Send to server
-                if (valuesToSend.Count > 0)
+        internal void SynchronizeToServer()
+        {
+            // Lets compare and send to server, if applicable
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+
+            var valuesToSend = new List<Tuple<string, string, string, string>>();
+            foreach (var plugin in loadedPlugins)
+            {
+                foreach (var cd in plugin.Value.Config.Keys)
                 {
-                    var zPackage = GenerateConfigZPackage(valuesToSend);
-                    // Send values to server if it isn't a local instance
-                    if (!ZNet.instance.IsLocalInstance())
+                    var cx = plugin.Value.Config[cd.Section, cd.Key];
+                    if (cx.Description.Tags.Any(x =>
+                        x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes) x).IsAdminOnly &&
+                        ((ConfigurationManagerAttributes) x).UnlockSetting))
                     {
-                        ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_JotunnLib_ApplyConfig), zPackage);
+                        var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
+                        valuesToSend.Add(value);
                     }
-                    else
+                }
+            }
+
+            // We need only changed values
+            valuesToSend = valuesToSend.Where(x => !cachedConfigValues.Contains(x)).ToList();
+
+            // Send to server
+            if (valuesToSend.Count > 0)
+            {
+                var zPackage = GenerateConfigZPackage(valuesToSend);
+
+                // Send values to server if it isn't a local instance
+                if (!ZNet.instance.IsLocalInstance())
+                {
+                    ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_JotunnLib_ApplyConfig), zPackage);
+                }
+                else
+                {
+                    // If it is a local instance, send it to all connected peers
+                    foreach (var peer in ZNet.instance.m_peers)
                     {
-                        // If it is a local instance, send it to all connected peers
-                        foreach (var peer in ZNet.instance.m_peers)
-                        {
-                            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_JotunnLib_ApplyConfig), zPackage);
-                        }
+                        ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_JotunnLib_ApplyConfig), zPackage);
                     }
                 }
             }
@@ -158,6 +207,9 @@ namespace JotunnLib.Managers
                 Instance.PlayerIsAdmin = true;
                 UnlockConfigurationEntries();
             }
+
+            // Add event to be notified on logout
+            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
 
 
@@ -172,6 +224,7 @@ namespace JotunnLib.Managers
             {
                 if (configPkg != null && configPkg.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
                 {
+                    Logger.LogDebug("Received configuration data from server");
                     ApplyConfigZPackage(configPkg);
                 }
             }
@@ -181,6 +234,8 @@ namespace JotunnLib.Managers
                 // Is package not empty and is sender admin?
                 if (configPkg != null && configPkg.Size() > 0 && ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
                 {
+                    Logger.LogDebug($"Received configuration data from client {sender}");
+
                     // Send to all other clients
                     foreach (var peer in ZNet.instance.m_peers.Where(x => x.m_uid != sender))
                     {
@@ -233,18 +288,40 @@ namespace JotunnLib.Managers
         /// </summary>
         private void UnlockConfigurationEntries()
         {
-            var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
 
             foreach (var plugin in loadedPlugins)
             {
                 foreach (var configDefinition in plugin.Value.Config.Keys)
                 {
                     var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
-                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags.FirstOrDefault(x =>
-                       x is ConfigurationManagerAttributes { IsAdminOnly: true });
+                    var configAttribute = (ConfigurationManagerAttributes) configEntry.Description.Tags.FirstOrDefault(x =>
+                        x is ConfigurationManagerAttributes {IsAdminOnly: true});
                     if (configAttribute != null)
                     {
                         configAttribute.UnlockSetting = true;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Lock configuration entries (on logout).
+        /// </summary>
+        private void LockConfigurationEntries()
+        {
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+
+            foreach (var plugin in loadedPlugins)
+            {
+                foreach (var configDefinition in plugin.Value.Config.Keys)
+                {
+                    var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
+                    var configAttribute = (ConfigurationManagerAttributes) configEntry.Description.Tags.FirstOrDefault(x =>
+                        x is ConfigurationManagerAttributes {IsAdminOnly: true});
+                    if (configAttribute != null)
+                    {
+                        configAttribute.IsAdminOnly = true;
                     }
                 }
             }
@@ -290,9 +367,9 @@ namespace JotunnLib.Managers
         /// <param name="configPkg"></param>
         internal void ApplyConfigZPackage(ZPackage configPkg)
         {
-            Logger.LogMessage("Received configuration data from server");
+            Logger.LogMessage("Applying configuration data package");
 
-            var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
 
             var numberOfEntries = configPkg.ReadInt();
             while (numberOfEntries > 0)
@@ -354,7 +431,7 @@ namespace JotunnLib.Managers
         private List<Tuple<string, string, string, string>> GetSyncConfigValues()
         {
             Logger.LogDebug("Gathering config values");
-            var loadedPlugins = Utils.BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
 
             var values = new List<Tuple<string, string, string, string>>();
             foreach (var plugin in loadedPlugins)
@@ -362,7 +439,7 @@ namespace JotunnLib.Managers
                 foreach (var cd in plugin.Value.Config.Keys)
                 {
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
-                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly))
+                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes) x).IsAdminOnly))
                     {
                         var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
                         values.Add(value);
