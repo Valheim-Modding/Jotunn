@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		CONTRIBUTING.md = CONTRIBUTING.md
+		resources\JVL_Banner.png = resources\JVL_Banner.png
+		resources\JVL_Logo.gif = resources\JVL_Logo.gif
 		publish.ps1 = publish.ps1
 		README.md = README.md
 	EndProjectSection
