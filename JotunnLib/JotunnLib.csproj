@@ -5,8 +5,11 @@
     <Product>JotunnLib</Product>
     <Id>JotunnLib</Id>
     <PackageId>JotunnLib</PackageId>
-    <Authors>JotunnLib developer team</Authors>
+    <Authors>Valheim-Modding team</Authors>
     <Description>Jotunn, the Valheim Lib</Description>
+    <projectUrl>https://github.com/Valheim-Modding/</projectUrl>
+    <icon>images\JSL_Logo_128x128.png</icon>
+    <iconUrl>https://github.com/Valheim-Modding/Jotunn/raw/dev/resources/JVL_Logo.gif</iconUrl>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>preview</LangVersion>
@@ -381,6 +384,10 @@
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\JotunnBuildTask.dll">
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
+    </Content>
+    <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png">
+      <Pack>true</Pack>
+      <PackagePath>images</PackagePath>
     </Content>
   </ItemGroup>
 </Project>
