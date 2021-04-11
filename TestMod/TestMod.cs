@@ -143,6 +143,9 @@ namespace TestMod
         // Add new Items with item Configs
         private void AddItemsWithConfigs()
         {
+            // Load recipes from JSON file
+            ItemManager.Instance.AddRecipesFromJson("TestMod/Assets/recipes.json");
+
             // Add a custom piece table
             PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
 

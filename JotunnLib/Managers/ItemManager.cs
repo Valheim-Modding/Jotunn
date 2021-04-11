@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using JotunnLib.Utils;
 using JotunnLib.Entities;
+using JotunnLib.Configs;
 
 namespace JotunnLib.Managers
 {
@@ -104,6 +105,28 @@ namespace JotunnLib.Managers
             }
 
             return false;
+        }
+
+        /// <summary>
+        ///     Adds recipes defined in a JSON file at given path, relative to BepInEx/plugins
+        /// </summary>
+        /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
+        public void AddRecipesFromJson(string path)
+        {
+            string json = AssetUtils.LoadText(path);
+
+            if (string.IsNullOrEmpty(json))
+            {
+                Logger.LogError($"Failed to load recipes from json: {path}");
+                return;
+            }
+
+            List<RecipeConfig> recipes = RecipeConfig.ListFromJson(json);
+
+            foreach (RecipeConfig recipe in recipes)
+            {
+                AddRecipe(new CustomRecipe(recipe));
+            }
         }
 
         /// <summary>
