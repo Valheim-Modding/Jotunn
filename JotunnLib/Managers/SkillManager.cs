@@ -78,7 +78,7 @@ namespace JotunnLib.Managers
         /// </summary>
         /// <param name="skillConfig">SkillConfig object representing new skill to register</param>
         /// <returns>The SkillType of the newly added skill</returns>
-        public Skills.SkillType AddSkill(SkillConfig skillConfig, bool autoLocalize = false)
+        public Skills.SkillType AddSkill(SkillConfig skillConfig)
         {
             if (string.IsNullOrEmpty(skillConfig?.Identifier))
             {
@@ -87,28 +87,8 @@ namespace JotunnLib.Managers
             }
 
             Skills.Add(skillConfig.UID, skillConfig);
-
-            // TODO: Localizations need to be fixed, since they currently have no way of getting the randomly generated skill UID
-            foreach (var pair in skillConfig.Localizations)
-            {
-                if (pair.Value.Language != pair.Key)
-                {
-                    pair.Value.Language = pair.Key;
-                }
-
-                LocalizationManager.Instance.AddLocalization(pair.Value);
-            }
-
-            if (autoLocalize)
-            {
-                LocalizationManager.Instance.AddLocalization("English", new Dictionary<string, string>()
-                {
-                    { "skill_" + skillConfig.UID, skillConfig.Name },
-                    { "skill_" + skillConfig.UID + "_description", skillConfig.Description }
-                });
-            }
-
-            JotunnLib.Logger.LogInfo($"Registered skill: {skillConfig}");
+            Logger.LogInfo($"Added skill: {skillConfig}");
+            
             return skillConfig.UID;
         }
 
@@ -127,8 +107,7 @@ namespace JotunnLib.Managers
             string name,
             string description,
             float increaseStep = 1f,
-            Sprite icon = null,
-            bool autoLocalize = true)
+            Sprite icon = null)
         {
             return AddSkill(new SkillConfig()
             {
@@ -137,20 +116,20 @@ namespace JotunnLib.Managers
                 Description = description,
                 IncreaseStep = increaseStep,
                 Icon = icon
-            }, autoLocalize);
+            });
         }
 
         /// <summary>
-        ///     Register skills defined in a JSON file at given path, relative to BepInEx/plugins
+        ///     Adds skills defined in a JSON file at given path, relative to BepInEx/plugins
         /// </summary>
         /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
-        public void RegisterFromJson(string path)
+        public void AddSkillFromJson(string path)
         {
             string absPath = Path.Combine(Paths.PluginPath, path);
 
             if (!File.Exists(absPath))
             {
-                JotunnLib.Logger.LogError($"Error, failed to register skill from non-existant path: ${absPath}");
+                Logger.LogError($"Error, failed to register skill from non-existant path: ${absPath}");
                 return;
             }
 
@@ -159,7 +138,7 @@ namespace JotunnLib.Managers
 
             foreach (SkillConfig skill in skills)
             {
-                AddSkill(skill, skill.Localizations.Count != 0);
+                AddSkill(skill);
             }
         }
 

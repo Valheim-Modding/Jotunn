@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using JotunnLib.Utils;
+using JotunnLib.Managers;
 
 namespace JotunnLib.Configs
 {
@@ -10,6 +11,8 @@ namespace JotunnLib.Configs
     /// </summary>
     public class SkillConfig
     {
+        public Skills.SkillType UID { get; private set; }
+
         public string Identifier
         {
             get { return _identifier; }
@@ -27,12 +30,12 @@ namespace JotunnLib.Configs
                 }
             }
         }
-        public Skills.SkillType UID { get; private set; }
+
         public string Name { get; set; }
+
         public string Description { get; set; }
         public Sprite Icon { get; set; }
         public float IncreaseStep { get; set; }
-        public Dictionary<string, LocalizationConfig> Localizations { get; private set; } = new Dictionary<string, LocalizationConfig>();
 
         public string IconPath
         {
@@ -40,7 +43,7 @@ namespace JotunnLib.Configs
             {
                 if (Icon != null)
                 {
-                    JotunnLib.Logger.LogWarning($"Icon and IconPath both set for skill {Identifier}, ignoring IconPath");
+                    Logger.LogWarning($"Icon and IconPath both set for skill {Identifier}, ignoring IconPath");
                     return;
                 }
 
@@ -99,7 +102,7 @@ namespace JotunnLib.Configs
         ///     Loads a single SkillConfig from a JSON string
         /// </summary>
         /// <param name="json">JSON text</param>
-        /// <returns>Loaded SkillConfigs</returns>
+        /// <returns>Loaded SkillConfig</returns>
         public static SkillConfig FromJson(string json)
         {
             return SimpleJson.SimpleJson.DeserializeObject<SkillConfig>(json);

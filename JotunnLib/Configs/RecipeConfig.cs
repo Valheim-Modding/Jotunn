@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using JotunnLib.Managers;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using JotunnLib.Entities;
 
 namespace JotunnLib.Configs
@@ -63,6 +63,26 @@ namespace JotunnLib.Configs
             recipe.m_resources = GetRequirements();
 
             return recipe;
+        }
+
+        // <summary>
+        ///     Loads a single RecipeConfig from a JSON string
+        /// </summary>
+        /// <param name="json">JSON text</param>
+        /// <returns>Loaded RecipeConfig</returns>
+        public static RecipeConfig FromJson(string json)
+        {
+            return SimpleJson.SimpleJson.DeserializeObject<RecipeConfig>(json);
+        }
+
+        /// <summary>
+        ///     Loads a list of RecipeConfigs from a JSON string
+        /// </summary>
+        /// <param name="json">JSON text</param>
+        /// <returns>Loaded list of RecipeConfigs</returns>
+        public static List<RecipeConfig> ListFromJson(string json)
+        {
+            return SimpleJson.SimpleJson.DeserializeObject<List<RecipeConfig>>(json);
         }
     }
 }
