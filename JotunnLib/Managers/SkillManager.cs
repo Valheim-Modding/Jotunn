@@ -82,7 +82,7 @@ namespace JotunnLib.Managers
         ///     Adds skills defined in a JSON file at given path, relative to BepInEx/plugins
         /// </summary>
         /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
-        public void AddSkillFromJson(string path)
+        public void AddSkillsFromJson(string path)
         {
             string json = AssetUtils.LoadText(path);
 

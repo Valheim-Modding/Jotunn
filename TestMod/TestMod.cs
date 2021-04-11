@@ -316,7 +316,7 @@ namespace TestMod
             });
 
             // Test adding skills from JSON
-            SkillManager.Instance.AddSkillFromJson("TestMod/Assets/skills.json");
+            SkillManager.Instance.AddSkillsFromJson("TestMod/Assets/skills.json");
         }
 
         // Create some sample configuration values to check server sync
