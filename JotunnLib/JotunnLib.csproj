@@ -362,7 +362,6 @@
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.XRModule.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <GenerateResourceMSBuildArchitecture>CurrentArchitecture</GenerateResourceMSBuildArchitecture>
   <Import Project="..\Environment.props" />
   <Import Project="JotunnBuildTask.props" />
   <Target Name="JotunnBuildTask" BeforeTargets="BeforeBuild">
