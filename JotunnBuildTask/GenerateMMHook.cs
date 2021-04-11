@@ -80,10 +80,8 @@ namespace JotunnBuildTask
             modder.ReadingMode = ReadingMode.Deferred;
 
             ((BaseAssemblyResolver) modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(Environment.CurrentDirectory, "bin", "Debug"));
-            
-            string currentPath = Environment.CurrentDirectory;
+            ((BaseAssemblyResolver) modder.AssemblyResolver)?.AddSearchDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase.Replace("file:///", "")));
 
-            Log.LogMessage(currentPath);
             if (Directory.Exists(Path.Combine(ValheimPath, ValheimData, Managed)))
             {
                 ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, ValheimData, Managed));
@@ -94,13 +92,12 @@ namespace JotunnBuildTask
                 ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, ValheimServerData, Managed));
             }
             ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, UnstrippedCorlib));
-
-
-            foreach (var directory in Directory.GetDirectories(Path.Combine(System.IO.Path.GetTempPath(), "Costura"),"*.*",SearchOption.AllDirectories))
+            /*
+            foreach (var dir in ((BaseAssemblyResolver) modder.AssemblyResolver)?.GetSearchDirectories())
             {
-                ((BaseAssemblyResolver) modder.AssemblyResolver)?.AddSearchDirectory(directory);
+                Log.LogMessage(MessageImportance.High,$"Searching in {dir}");
             }
-
+            */
             modder.Read();
 
             modder.MapDependencies();

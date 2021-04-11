@@ -381,10 +381,16 @@
     <None Remove="JotunnLib.0.2.0.nupkg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\JotunnBuildTask.dll">
-      <Pack>true</Pack>
-      <PackagePath>build</PackagePath>
-    </Content>
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\JotunnBuildTask.dll" Pack="true" PackagePath="build"/>
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.dll" Pack="true" PackagePath="build"/>
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.Mdb.dll" Pack="true" PackagePath="build"/>
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.Pdb.dll" Pack="true" PackagePath="build"/>
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.Rocks.dll" Pack="true" PackagePath="build"/>
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.exe" Pack="true" PackagePath="build"/>
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.RuntimeDetour.dll" Pack="true" PackagePath="build"/>
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.RuntimeDetour.HookGen.exe" Pack="true" PackagePath="build"/>
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.Utils.dll" Pack="true" PackagePath="build"/>
+    <Content Include="$(SolutionDir)JotunnLib\JotunnLib.props" Pack="true" PackagePath="build"/>
     <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png">
       <Pack>true</Pack>
       <PackagePath>images</PackagePath>
