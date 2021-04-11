@@ -1,15 +1,22 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using Mono.Cecil;
 using MonoMod;
 using MonoMod.RuntimeDetour.HookGen;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+using MonoMod.RuntimeDetour;
+using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 namespace JotunnBuildTask
 {
-    internal class Program
+    public class GenerateMMHook : Microsoft.Build.Utilities.Task
     {
-        internal static string ValheimPath = "";
+        [Required]
+        public string ValheimPath { get; set; }
+
         internal const string ValheimServerData = "valheim_server_Data";
         internal const string ValheimData= "valheim_Data";
         internal const string Managed = "Managed";
@@ -21,68 +28,12 @@ namespace JotunnBuildTask
         internal const string Publicized = "publicized";
 
         /// <summary>
-        ///     Create new MMHOOK dll's if they don't exist or have changed.
-        /// </summary>
-        /// <param name="args">Valheim folder</param>
-        /// <returns>0 if successful</returns>
-        internal static int Main(string[] args)
-        {
-            try
-            {
-                if (args.Length != 1)
-                {
-                    Console.WriteLine("Only one argument: Path to Valheim");
-                    return -2;
-                }
-
-                if (!Directory.Exists(Path.Combine(args[0], Bepinex, Plugins, Mmhook)))
-                {
-                    Directory.CreateDirectory(Path.Combine(args[0], Bepinex, Plugins, Mmhook));
-                }
-
-                var outputFolder = Path.Combine(args[0], Bepinex, Plugins, Mmhook);
-
-                ValheimPath = args[0];
-                if (Directory.Exists(Path.Combine(args[0], ValheimData, Managed)))
-                {
-                    foreach (var file in Directory.GetFiles(Path.Combine(args[0], ValheimData, Managed), "assembly_*.dll"))
-                    {
-                        if (!HashAndCompare(file, outputFolder))
-                        {
-                            Console.WriteLine($"Error occured on {file}");
-                            return -3;
-                        }
-                    }
-                }
-
-                if (Directory.Exists(Path.Combine(args[0], ValheimServerData, Managed)))
-                {
-                    foreach (var file in Directory.GetFiles(Path.Combine(args[0], ValheimServerData, Managed), "assembly_*.dll"))
-                    {
-                        if (!HashAndCompare(file, outputFolder))
-                        {
-                            Console.WriteLine($"Error occured on {file}");
-                            return -3;
-                        }
-                    }
-                }
-
-                return 0;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return -1;
-            }
-        }
-
-        /// <summary>
         ///     Hash file and compare with old hash.
         ///     Create new MMHOOK dll if not equal.
         /// </summary>
         /// <param name="file">dll to monomod</param>
         /// <param name="outputFolder">output file name</param>
-        internal static bool HashAndCompare(string file, string outputFolder)
+        private bool HashAndCompare(string file, string outputFolder)
         {
             var hash = MD5HashFile(file);
 
@@ -121,13 +72,18 @@ namespace JotunnBuildTask
         /// <param name="file">input dll</param>
         /// <param name="output">output dll</param>
         /// <returns></returns>
-        internal static bool InvokeHookgen(string file, string output, string md5)
+        private bool InvokeHookgen(string file, string output, string md5)
         {
             MonoModder modder = new MonoModder();
             modder.InputPath = file;
             modder.OutputPath = output;
             modder.ReadingMode = ReadingMode.Deferred;
 
+            ((BaseAssemblyResolver) modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(Environment.CurrentDirectory, "bin", "Debug"));
+            
+            string currentPath = Environment.CurrentDirectory;
+
+            Log.LogMessage(currentPath);
             if (Directory.Exists(Path.Combine(ValheimPath, ValheimData, Managed)))
             {
                 ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, ValheimData, Managed));
@@ -138,6 +94,12 @@ namespace JotunnBuildTask
                 ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, ValheimServerData, Managed));
             }
             ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, UnstrippedCorlib));
+
+
+            foreach (var directory in Directory.GetDirectories(Path.Combine(System.IO.Path.GetTempPath(), "Costura"),"*.*",SearchOption.AllDirectories))
+            {
+                ((BaseAssemblyResolver) modder.AssemblyResolver)?.AddSearchDirectory(directory);
+            }
 
             modder.Read();
 
@@ -172,6 +134,55 @@ namespace JotunnBuildTask
         {
             var hash = MD5.Create().ComputeHash(File.ReadAllBytes(filename));
             return BitConverter.ToString(hash).Replace("-", "");
+        }
+
+        public override bool Execute()
+        {
+
+            Log.LogMessage(MessageImportance.High, "Current folder:  "+Environment.CurrentDirectory);
+            Log.LogMessage(MessageImportance.High, "DLL Folder: "+ Assembly.GetExecutingAssembly().CodeBase);
+
+            try
+            {
+                if (!Directory.Exists(Path.Combine(ValheimPath, Bepinex, Plugins, Mmhook)))
+                {
+                    Directory.CreateDirectory(Path.Combine(ValheimPath, Bepinex, Plugins, Mmhook));
+                }
+
+                var outputFolder = Path.Combine(ValheimPath, Bepinex, Plugins, Mmhook);
+
+                
+                if (Directory.Exists(Path.Combine(ValheimPath, ValheimData, Managed)))
+                {
+                    foreach (var file in Directory.GetFiles(Path.Combine(ValheimPath, ValheimData, Managed), "assembly_*.dll"))
+                    {
+                        if (!HashAndCompare(file, outputFolder))
+                        {
+                            Log.LogError($"Error occured on {file}");
+                            return false;
+                        }
+                    }
+                }
+
+                if (Directory.Exists(Path.Combine(ValheimPath, ValheimServerData, Managed)))
+                {
+                    foreach (var file in Directory.GetFiles(Path.Combine(ValheimPath, ValheimServerData, Managed), "assembly_*.dll"))
+                    {
+                        if (!HashAndCompare(file, outputFolder))
+                        {
+                            Log.LogError($"Error occured on {file}");
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Log.LogError(e.Message);
+                return false;
+            }
         }
     }
 }
