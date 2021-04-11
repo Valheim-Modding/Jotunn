@@ -1,7 +1,7 @@
 name: Create DLL on PR
 "on": pull_request
 jobs:
-  build:
+  build_pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -14,17 +14,17 @@ jobs:
       - uses: nuget/setup-nuget@v1
         name: Install NuGet
 
-      # Install NuGet dependencies
-      - name: Install NuGet dependencies
-        run: nuget restore JotunnLib.sln
-
       # Get build commands
       - name: Get build commands
         run: |
           sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
           echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
           sudo apt-get update
-          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip
+          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr
+
+      # Install NuGet dependencies
+      - name: Install NuGet dependencies
+        run: nuget restore JotunnLib.sln
 
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
