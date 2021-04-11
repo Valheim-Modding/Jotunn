@@ -8,7 +8,7 @@
     <Authors>Valheim-Modding team</Authors>
     <Description>Jotunn, the Valheim Lib</Description>
     <projectUrl>https://github.com/Valheim-Modding/</projectUrl>
-    <icon>images\JSL_Logo_128x128.png</icon>
+    <PackageIcon>images\JVL_Logo_128x128.png</PackageIcon>
     <iconUrl>https://github.com/Valheim-Modding/Jotunn/raw/dev/resources/JVL_Logo.gif</iconUrl>
   </PropertyGroup>
   <PropertyGroup>
@@ -391,9 +391,6 @@
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.RuntimeDetour.HookGen.exe" Pack="true" PackagePath="build"/>
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.Utils.dll" Pack="true" PackagePath="build"/>
     <Content Include="$(SolutionDir)JotunnLib\JotunnLib.props" Pack="true" PackagePath="build"/>
-    <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png">
-      <Pack>true</Pack>
-      <PackagePath>images</PackagePath>
-    </Content>
+    <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png" Pack="true" PackagePath="images" />
   </ItemGroup>
 </Project>
