@@ -80,7 +80,7 @@ namespace JotunnBuildTask
             modder.ReadingMode = ReadingMode.Deferred;
 
             ((BaseAssemblyResolver) modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(Environment.CurrentDirectory, "bin", "Debug"));
-            ((BaseAssemblyResolver) modder.AssemblyResolver)?.AddSearchDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase.Replace("file:///", "")));
+            ((BaseAssemblyResolver) modder.AssemblyResolver)?.AddSearchDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase.Replace("file:///home","/home").Replace("file:///", "")));
 
             if (Directory.Exists(Path.Combine(ValheimPath, ValheimData, Managed)))
             {
