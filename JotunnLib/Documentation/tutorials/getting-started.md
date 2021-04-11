@@ -4,26 +4,31 @@
 ## Setting up development environment
 Setting up development environment to create a mod using JotunnLib and Visual studio:
 
-.) Download [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) and extract the zip file into your root Valheim directory.
+* Download [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) and extract the zip file into your root Valheim directory.
 
-.) Download the [JotunnModStub]() and install the template into visual studio by using the search to find the project template location: ![Project Templates Location](..images/getting-started/vs-ProjectTemplateLocationpng.png "Template location"), and then place the zip into aforementioned location. Restart VS for the project import to take effect.
+* Inside the visual studio installer, ensure that `.NET Desktop Development` and `.NET Core Cross-Platform Development` are installed, then click on the `Individual Components` tab and select `.NET Framework 4.6.2`: ![Components](..\images\getting-started\vs-InstallerComponents.png)
 
-.) Create a new empty solution, but do not select the template yet.
+* Fork our [ModStub](https://github.com/Valheim-Modding/JotunnModStub) from github, and copy the link to the git ![github forked project link](..\images\getting-started\gh-ForkedStub.png)
 
-.) Browse to your solution directory. Download this [Environment.props]() and place it inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory.
+* In visual studio, in the right hand toobar, select `Git Changes`, and then `Clone Repository`, and paste the URL provided by the previous step. Name your project and place it accordingly.
+![VS Clone forked stub](..\images\getting-started\vs-CloneForkedStub.png)
 
-.) Right click on your solution and add a new project
+* Browse to your solution directory. Download this [Environment.props](Environment.props) and place it inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. Right click on your project in the solution explorer, and select reload project.
 
-.) Select the project template we have imported. ![Create a new project, using a template](..images\getting-started\vs-CreateNewProjectTemplate.png) and name your new project accordingly.
+* Build your solution. Check your `BepInEx/plugins/yourtestmod/` folder for the `yourtestmod.dll.mdb` monodebug symbols file.
+
+* You may now proceed to one of the [Tutorials]()
+
+## Customising your project
+
+* Grab the [Project Template]() which you can use to add new projects to your current solution, based on the mod stub boilerplate.
+
+* Place the project template into your ![VS Project Template Location](..\images\getting-started\vs-ProjectTemplateLocationpng.png)
+
+* Once you have your base project, select the solution in the solution explorer, hit F2 to rename the solution as required.
+
+* Rename the `PluginGUID` `PluginName`, and `PluginVersion` to match your intended base release metadata. Your PluginGUID should contain your github username/organisation.
 
 
 
-.) Build the solution, and double check that your `BepInEx/plugins/YourProjectName/` directory contains both `YourProjectName.dll` and `YourProjectName.dll.mdb`
-
-.) Proceed to 
-
-.) Once you have your base project, use the F2 key to rename JotunnModStub.cs to some "main plugin name", which may be as simple as "Main", or the name of your plugin itself.
-
-.) Rename the `PluginGUID` `PluginName`, and `PluginVersion` to match your intended base release metadata
-
-.) Your project base is now ready for use! You can proceed to []() or select a specific section to learn about from our [Tutorials]()
+* Your project base is now ready for use! You can proceed to []() or select a specific section to learn about from our [Tutorials]()
