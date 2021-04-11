@@ -1,7 +1,7 @@
 name: Create DLL on PR
 "on": pull_request
 jobs:
-  build_pr:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
