@@ -92,7 +92,7 @@ namespace JotunnLib.Utils
         {
             if (resourceAssembly == null)
             {
-                throw new ArgumentNullException("Parameter resourceAssembly can not be null.")
+                throw new ArgumentNullException("Parameter resourceAssembly can not be null.");
             }
 
             string resourceName = null;
