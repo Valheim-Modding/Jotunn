@@ -13,7 +13,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>preview</LangVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild> 
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="HarmonyX" Version="2.4.0" />
@@ -362,6 +362,7 @@
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.XRModule.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <GenerateResourceMSBuildArchitecture>CurrentArchitecture</GenerateResourceMSBuildArchitecture>
   <Import Project="..\Environment.props" />
   <Import Project="JotunnBuildTask.props" />
   <Target Name="JotunnBuildTask" BeforeTargets="BeforeBuild">
