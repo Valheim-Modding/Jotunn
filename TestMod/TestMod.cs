@@ -302,13 +302,13 @@ namespace TestMod
         private void AddSkills()
         {
             // Test adding a skill with a texture
-            Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_skill.jpg");
+            Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
             Sprite testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
             TestSkillType = SkillManager.Instance.AddSkill(new SkillConfig()
             {
-                Identifier = "com.testmod.testskill_code",
-                Name = "TestingCodeSkill",
-                Description = "A nice testing skill!",
+                Identifier = "com.jotunn.testmod.testskill_code",
+                Name = "Testing Skill From Code",
+                Description = "A testing skill (but from code)!",
                 Icon = testSkillSprite
             });
 

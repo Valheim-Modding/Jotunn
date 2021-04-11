@@ -124,6 +124,19 @@ namespace JotunnLib.Utils
 
             return ret;
         }
+
+        public static string LoadText(string path)
+        {
+            string absPath = Path.Combine(BepInEx.Paths.PluginPath, path);
+
+            if (!File.Exists(absPath))
+            {
+                Logger.LogError($"Error, failed to register skill from non-existant path: ${absPath}");
+                return null;
+            }
+
+            return File.ReadAllText(absPath);
+        }
         
         internal static Sprite LoadSprite(string assetPath)
         {

@@ -22,7 +22,7 @@ namespace JotunnLib.Patches
         {
             foreach (var config in SkillManager.Instance.Skills.Values)
             {
-                if (config.Name.ToLower() == name.ToLower() || config.Identifier == name)
+                if (config.IsFromName(name))
                 {
                     self.m_player.GetSkills().ResetSkill(config.UID);
                     return;
@@ -36,12 +36,14 @@ namespace JotunnLib.Patches
         {
             foreach (var config in SkillManager.Instance.Skills.Values)
             {
-                if (config.Name.ToLower() == name.ToLower() || config.Identifier == name)
+                if (config.IsFromName(name))
                 {
                     Skills.Skill skill = self.GetSkill(config.UID);
+                    var localizedName = config.Name.StartsWith("$") ? Localization.instance.Translate(config.Name) : config.Name;
+
                     skill.m_level += value;
                     skill.m_level = Mathf.Clamp(skill.m_level, 0f, 100f);
-                    self.m_player.Message(MessageHud.MessageType.TopLeft, "Skill increased " + config.Name + ": " + (int)skill.m_level, 0, skill.m_info.m_icon);
+                    self.m_player.Message(MessageHud.MessageType.TopLeft, "Skill increased " + localizedName + ": " + (int)skill.m_level, 0, skill.m_info.m_icon);
                     Console.instance.Print("Skill " + config.Name + " = " + skill.m_level);
 
                     return;
@@ -93,7 +95,8 @@ namespace JotunnLib.Patches
                 }
 
                 var skillConfig = SkillManager.Instance.Skills[skill.m_info.m_skill];
-                var name = skillConfig.Name.StartsWith("$") ? Localization.instance.Translate(skillConfig.Name) : skillConfig.Name;
+                var name = skillConfig.Name.StartsWith("$") ? Localization.instance.Localize(skillConfig.Name) : skillConfig.Name;
+                Logger.LogInfo($"Updated skill: {skillConfig.Name} -> {name}");
                 global::Utils.FindChild(elem.transform, "name").GetComponent<Text>().text = name;
             }
         }

@@ -73,6 +73,13 @@ namespace JotunnLib.Configs
             };
         }
 
+        internal bool IsFromName(string name)
+        {
+            return Name.ToLower() == name.ToLower() ||
+                Identifier == name ||
+                Localization.instance.Localize(Name).ToLower() == name.ToLower();
+        }
+
         /// <summary>
         ///     Creates a SkillConfig object for mods that previously used SkillInjector
         /// </summary>

@@ -1,8 +1,10 @@
-using JotunnLib.Configs;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using BepInEx;
 using UnityEngine;
+using JotunnLib.Utils;
+using JotunnLib.Configs;
 
 namespace JotunnLib.Managers
 {
@@ -58,6 +60,7 @@ namespace JotunnLib.Managers
         /// <param name="icon">Icon for the skill</param>
         /// <param name="autoLocalize">Automatically generate English localizations for the given name and description</param>
         /// <returns>The SkillType of the newly registered skill</returns>
+        [Obsolete("Use AddSkill(SkillConfig) instead")]
         public Skills.SkillType AddSkill(
             string identifer,
             string name,
@@ -81,15 +84,14 @@ namespace JotunnLib.Managers
         /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
         public void AddSkillFromJson(string path)
         {
-            string absPath = Path.Combine(Paths.PluginPath, path);
+            string json = AssetUtils.LoadText(path);
 
-            if (!File.Exists(absPath))
+            if (string.IsNullOrEmpty(json))
             {
-                Logger.LogError($"Error, failed to register skill from non-existant path: ${absPath}");
+                Logger.LogError($"Failed to load skills from json: {path}");
                 return;
             }
 
-            string json = File.ReadAllText(absPath);
             List<SkillConfig> skills = SkillConfig.ListFromJson(json);
 
             foreach (SkillConfig skill in skills)
