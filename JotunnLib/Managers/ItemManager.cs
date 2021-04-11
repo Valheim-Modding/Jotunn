@@ -125,7 +125,7 @@ namespace JotunnLib.Managers
             return false;
         }
 
-        private void registerCustomItems(ObjectDB objectDB)
+        private void RegisterCustomItems(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
 
@@ -198,7 +198,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void registerCustomStatusEffects(ObjectDB objectDB)
+        private void RegisterCustomStatusEffects(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
 
@@ -237,7 +237,7 @@ namespace JotunnLib.Managers
                 OnBeforeCustomItemsAdded.SafeInvoke();
                 OnBeforeCustomItemsAdded = null;
 
-                registerCustomItems(self);
+                RegisterCustomItems(self);
 
                 self.UpdateItemHashes();
 
@@ -258,9 +258,9 @@ namespace JotunnLib.Managers
                 OnBeforeCustomItemsAdded.SafeInvoke();
                 OnBeforeCustomItemsAdded = null;
 
-                registerCustomItems(self);
+                RegisterCustomItems(self);
                 RegisterCustomRecipes(self);
-                registerCustomStatusEffects(self);
+                RegisterCustomStatusEffects(self);
 
                 self.UpdateItemHashes();
 

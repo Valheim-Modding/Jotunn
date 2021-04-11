@@ -17,9 +17,7 @@ namespace JotunnLib.Managers
         public static SkillManager Instance { get; private set; }
 
         internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
-        
-        // FIXME: Deprecate
-        private int nextSkillId = 1000;
+
         private void Awake()
         {
             if (Instance != null)
@@ -29,48 +27,6 @@ namespace JotunnLib.Managers
             }
 
             Instance = this;
-        }
-
-        /// <summary>
-        ///     DEPRECATED DUE TO POSSIBLE CONFLICT ISSUE, see: <see href="https://github.com/jotunnlib/jotunnlib/issues/18">GitHub Issue</see>.
-        ///     <para/>
-        ///     Add a new skill with given parameters, and adds translations for it in the current localization.
-        /// </summary>
-        /// <param name="name">Name of the new skill</param>
-        /// <param name="description">Description of the new skill</param>
-        /// <param name="increaseStep"></param>
-        /// <param name="icon">Icon for the skill</param>
-        /// <returns>The SkillType of the newly registered skill</returns>
-        [System.Obsolete("Use `AddSkill(SkillConfig config)` instead. This method could potentially break user saves.", true)]
-        public Skills.SkillType AddSkill(
-            string name,
-            string description,
-            float increaseStep = 1f,
-            Sprite icon = null,
-            bool autoLocalize = true)
-        {
-            SkillConfig skillConfig = new SkillConfig()
-            {
-                Identifier = name + nextSkillId.ToString(),
-                Name = name,
-                Description = description,
-                IncreaseStep = increaseStep,
-                Icon = icon
-            };
-
-            if (autoLocalize)
-            {
-                LocalizationManager.Instance.AddLocalization("English", new Dictionary<string, string>()
-                {
-                    { "skill_" + skillConfig.UID, skillConfig.Name },
-                    { "skill_" + skillConfig.UID + "_description", skillConfig.Description }
-                });
-            }
-
-            Skills.Add(skillConfig.UID, skillConfig);
-            nextSkillId++;
-
-            return skillConfig.UID;
         }
 
         /// <summary>
@@ -95,7 +51,7 @@ namespace JotunnLib.Managers
         /// <summary>
         ///     Register a new skill with given parameters, and registers translations for it in the current localization.
         /// </summary>
-        /// <param name="identifer">Unique identifier of the new skill, ex: "com.jotunnlib.testmod.testskill"</param>
+        /// <param name="identifer">Unique identifier of the new skill, ex: "com.jotunn.testmod.testskill"</param>
         /// <param name="name">Name of the new skill</param>
         /// <param name="description">Description of the new skill</param>
         /// <param name="increaseStep"></param>
