@@ -13,8 +13,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild> 
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HarmonyX" Version="2.4.1" />
-    <PackageReference Include="MonoMod" Version="21.4.2.3" />
+    <PackageReference Include="HarmonyX" Version="2.4.0" />
+    <PackageReference Include="MonoMod" Version="21.3.1.1" />
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="5.9.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -94,18 +94,6 @@
     </Reference>
     <Reference Include="MMHOOK_assembly_valheim_publicized">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_valheim_publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\Mono.Security.dll</HintPath>
@@ -390,13 +378,9 @@
     <None Remove="JotunnLib.0.2.0.nupkg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\Debug\JotunnBuildTask.dll">
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\JotunnBuildTask.dll">
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
-    </Content>
-    <Content Include="$(SolutionDir)publish.ps1">
-      <Pack>true</Pack>
-      <PackagePath>content</PackagePath>
     </Content>
   </ItemGroup>
 </Project>

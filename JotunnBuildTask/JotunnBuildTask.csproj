@@ -40,10 +40,10 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
-    <PropertyGroup>
+  <PropertyGroup>
     <GenerateResourceNeverLockTypeAssemblies>true</GenerateResourceNeverLockTypeAssemblies>
   </PropertyGroup>
-<ItemGroup>
+  <ItemGroup>
     <Reference Include="Costura, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.5.1.0\lib\netstandard1.0\Costura.dll</HintPath>
     </Reference>
@@ -73,17 +73,17 @@
     <Reference Include="Mono.Cecil.Rocks, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
-    <Reference Include="MonoMod, Version=21.3.28.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.21.3.28.2\lib\net40\MonoMod.exe</HintPath>
+    <Reference Include="MonoMod, Version=21.3.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.21.3.1.1\lib\net40\MonoMod.exe</HintPath>
     </Reference>
-    <Reference Include="MonoMod.RuntimeDetour, Version=21.3.28.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.RuntimeDetour.21.3.28.2\lib\net40\MonoMod.RuntimeDetour.dll</HintPath>
+    <Reference Include="MonoMod.RuntimeDetour, Version=21.3.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.RuntimeDetour.21.3.1.1\lib\net40\MonoMod.RuntimeDetour.dll</HintPath>
     </Reference>
-    <Reference Include="MonoMod.RuntimeDetour.HookGen, Version=21.3.28.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.RuntimeDetour.HookGen.21.3.28.2\lib\net40\MonoMod.RuntimeDetour.HookGen.exe</HintPath>
+    <Reference Include="MonoMod.RuntimeDetour.HookGen, Version=21.3.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.RuntimeDetour.HookGen.21.3.1.1\lib\net40\MonoMod.RuntimeDetour.HookGen.exe</HintPath>
     </Reference>
-    <Reference Include="MonoMod.Utils, Version=21.3.28.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.Utils.21.3.28.2\lib\net40\MonoMod.Utils.dll</HintPath>
+    <Reference Include="MonoMod.Utils, Version=21.3.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.Utils.21.3.1.1\lib\net40\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -253,9 +253,6 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild" Condition="'$(OS)' == 'Windows_NT'">
-    <!--<Exec Command="xcopy &quot;$(TargetDir)*.*&quot; &quot;$(ProjectDir)..\JotunnLib\bin\Debug\&quot; /S /Y" />-->
-  </Target>
   <Import Project="..\packages\Fody.6.4.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.4.0\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
