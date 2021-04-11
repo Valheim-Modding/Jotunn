@@ -14,7 +14,10 @@ private GameObject backpackPrefab;
 private AssetBundle embeddedResourceBundle;
 ```
 
+To acquire the references we will be using here you may [download](JotunnModExample.zip) them and place inside your project root: ![Assets Extraction](../../images/data/AssetsExtraction.png)
+
 Next, we must import our assets into our project, and ensure they are packed into, or with our plugin. There are a number of ways to do this, such as:
+
 
 ### Side loading
 
@@ -25,6 +28,8 @@ You may have noticed that we include a postbuild command to copy the `Assets` di
 `<Exec Command="xcopy &quot;$(ProjectDir)Assets&quot; &quot;$(VALHEIM_INSTALL)\BepInEx\plugins\JotunnModExample\Assets\&quot; /S /Y" />`
 
 ### Embedded resource
+
+Right click our solution, then add a new directory named `AssetsEmbedded`. Right click the directory and select `Add existing` and select the files we placed inside from the download link provided.
 
 Another option is to embed our resources inside the binary itself. You may do this by right clicking a folder inside of your project, and add an existing item. Once it has been added, right click the item, select properties, and set the build action to embedded resource: ![Assets.Embedded Resource](Assets.EmbeddedResource.png)
 

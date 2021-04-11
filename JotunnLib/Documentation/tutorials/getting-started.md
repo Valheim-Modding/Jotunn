@@ -25,7 +25,7 @@ Setting up development environment to create a mod using JotunnLib and Visual st
 
 * Place the project template into your ![VS Project Template Location](..\images\getting-started\vs-ProjectTemplateLocationpng.png)
 
-* Once you have your base project, select the solution in the solution explorer, hit F2 to rename the solution as required.
+* Once you have your base project, select the solution in the solution explorer, hit F2 to rename the solution as required. Rename your plugin project, an all namespace references, then right click your project settings and ensure the assembly name has also been changed.
 
 * Rename the `PluginGUID` `PluginName`, and `PluginVersion` to match your intended base release metadata. Your PluginGUID should contain your github username/organisation.
 
