@@ -1,7 +1,7 @@
 # Registering custom skills
 Creation of custom skills is done through the [SkillManager](xref:JotunnLib.Managers.SkillManager) singleton.
 This will automatically take care of incrementing the skill's SkillType (unique numerical ID), so there will be no conflicts between skills added by various mods.
-
+One of the requirements for adding skills is an icon to associate with the skill. In order to reference these assets, please make sure you have followed [the assets tutorial](assets.md) before proceeding.
 ## Example
 To create a new skill, you must call the AddSkill function.
 
