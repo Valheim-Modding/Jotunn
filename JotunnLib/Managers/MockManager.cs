@@ -42,7 +42,7 @@ namespace JotunnLib.Managers
         internal T CreateMockedPrefab<T>(string prefabName) where T : Component
         {
             //string name = prefabName + "_" + nameof(Mock<T>);
-            string name = PrefabExtensions.MockPrefix + prefabName;
+            string name = PrefabExtensions.JVLMockPrefix + prefabName;
             Transform transform = MockPrefabContainer.transform.Find(name);
 
             if (transform)
@@ -60,7 +60,7 @@ namespace JotunnLib.Managers
                 g.SetActive(false);
 
                 var mock = g.AddComponent<T>();
-                mock.name = PrefabExtensions.MockPrefix + prefabName;
+                mock.name = PrefabExtensions.JVLMockPrefix + prefabName;
                 
                 return mock;
             }
