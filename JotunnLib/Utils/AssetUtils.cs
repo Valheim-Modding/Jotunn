@@ -101,13 +101,17 @@ namespace JotunnLib.Utils
         /// </summary>
         /// <param name="bundleName">Name of the bundle</param>
         /// <returns></returns>
-        public static AssetBundle LoadAssetBundleFromResources(string bundleName)
+        public static AssetBundle LoadAssetBundleFromResources(string bundleName, Assembly resourceAssembly)
         {
-            var execAssembly = Assembly.GetExecutingAssembly();
+            if (resourceAssembly == null)
+            {
+                throw new ArgumentNullException("Parameter resourceAssembly can not be null.");
+            }
+
             string resourceName = null;
             try
             {
-                resourceName = execAssembly.GetManifestResourceNames().Single(str => str.EndsWith(bundleName));
+                resourceName = resourceAssembly.GetManifestResourceNames().Single(str => str.EndsWith(bundleName));
             } catch (Exception) { }
 
             if (resourceName == null)
@@ -117,7 +121,7 @@ namespace JotunnLib.Utils
             }
 
             AssetBundle ret;
-            using (var stream = execAssembly.GetManifestResourceStream(resourceName))
+            using (var stream = resourceAssembly.GetManifestResourceStream(resourceName))
             {
                 ret = AssetBundle.LoadFromStream(stream);
             }

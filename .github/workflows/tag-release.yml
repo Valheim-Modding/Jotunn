@@ -6,7 +6,7 @@ on:
 name: Create Release
 
 jobs:
-  build:
+  build_release:
     name: Create Release
     runs-on: ubuntu-latest
     steps:

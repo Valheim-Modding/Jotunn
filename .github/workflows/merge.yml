@@ -5,7 +5,7 @@ name: Create DLL on merge to main
       - main
       - dev
 jobs:
-  build:
+  build_merge:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
