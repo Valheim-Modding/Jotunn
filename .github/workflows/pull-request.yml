@@ -70,4 +70,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: JotunnLib-dev-pr-${{ github.event.number }}.dll
-          path: JotunnLib/bin/Debug/net462/JotunnLib.dll
+          path: |
+            JotunnLib/bin/Debug/net462/JotunnLib.dll
+            JotunnLib/bin/Debug/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg
+

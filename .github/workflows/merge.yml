@@ -52,6 +52,23 @@ jobs:
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
+      # Gitversion
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id:   gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        with:
+          useConfigFile: true
+          configFilePath: JotunnLib/GitVersion.yml
+
+      - name: Set JotunnLib version
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><Version>${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}</Version></PropertyGroup></Project>" > JotunnLib/version.props
+
       # Build DLLs
       - name: Build solution
         run: |
@@ -61,4 +78,6 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: JotunnLib-${{ steps.date.outputs.date }}.dll
-          path: JotunnLib/bin/Release/net462/JotunnLib.dll
+          path: |
+            JotunnLib/bin/Release/net462/JotunnLib.dll
+            JotunnLib/bin/Debug/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}.nupkg            
