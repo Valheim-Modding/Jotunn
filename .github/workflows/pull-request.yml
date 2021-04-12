@@ -56,6 +56,10 @@ jobs:
           useConfigFile: true
           configFilePath: JotunnLib/GitVersion.yml
 
+      - name: Set JotunnLib version
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><Version>${{ steps.gitversion.outputs.semVer }}</Version></PropertyGroup></Project>" > JotunnLib/version.props
+
       # Build DLLs
       - name: Build solution
         run: |

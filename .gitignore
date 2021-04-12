@@ -366,3 +366,4 @@ Environment.props
 
 # not the root libraries folder
 !libraries/*
+JotunnLib/version.props

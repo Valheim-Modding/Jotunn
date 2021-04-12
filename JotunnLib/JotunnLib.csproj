@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <Version>0.2.0</Version>
     <Product>JotunnLib</Product>
     <Id>JotunnLib</Id>
     <PackageId>JotunnLib</PackageId>
@@ -445,6 +444,7 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+  <Import Project="version.props" Condition="Exists('version.props')" />
   <Import Project="..\Environment.props" />
   <Import Project="JotunnBuildTask.props" />
   <Target Name="JotunnBuildTask" BeforeTargets="BeforeBuild">
