@@ -32,6 +32,7 @@ namespace JotunnLib.Managers
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
+        internal readonly List<CustomKeyHint> KeyHints = new List<CustomKeyHint>();
 
         public event EventHandler OnItemsRegistered;
 
@@ -141,6 +142,26 @@ namespace JotunnLib.Managers
             if (!StatusEffects.Contains(customStatusEffect))
             {
                 StatusEffects.Add(customStatusEffect);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     Add a <see cref="CustomKeyHint"/> to the game.<br />
+        ///     Checks if the custom key hint is unique (i.e. the first one registered for an item).<br />
+        ///     Custom status effects are displayed in the game instead of the default 
+        ///     KeyHints for equipped tools or weapons they are registered for.
+        /// </summary>
+        /// <param name="customKeyHint">The custom key hint to add.</param>
+        /// <returns>true if the custom key hint was added to the manager.</returns>
+        public bool AddKeyHint(CustomKeyHint customKeyHint)
+        {
+            if (!KeyHints.Contains(customKeyHint))
+            {
+                KeyHints.Add(customKeyHint);
 
                 return true;
             }
