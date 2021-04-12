@@ -82,5 +82,5 @@ jobs:
             
       - uses: actions/upload-artifact@v2
         with:
-          name: JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}.nupkg
-          path: JotunnLib/bin/Debug/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}.nupkg            
+          name: JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg
+          path: JotunnLib/bin/Release/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg            
