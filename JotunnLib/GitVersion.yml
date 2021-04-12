@@ -1,18 +1,28 @@
-next-version: 0.2.0
-mode: Mainline
+assembly-versioning-scheme: MajorMinorPatch
+mode: ContinuousDeployment
 tag-prefix: '[vV]'
+next-version: 0.2.1
 commit-message-incrementing: MergeMessageOnly
 branches:
   feat:
-    regex: ^feat?[/-]
-    source-branches: ['dev']
     increment: Patch
+    regex: ^feat.*$
+    source-branches:
+    - dev
   prod:
+    mode: ContinuousDeployment
     increment: Minor
-    source-branches: ['main']
-    regex: ^prod?[/-]
+    regex: ^prod$
+    source-branches:
+    - main
   dev:
-    is-mainline: true
+    mode: ContinuousDeployment
     increment: Patch
-    source-branches: ['prod']
     regex: ^dev$
+    source-branches:
+    - prod
+    is-mainline: true
+  main: {}
+ignore:
+  sha: []
+merge-message-formats: {}
