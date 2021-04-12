@@ -46,12 +46,11 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            On.ZNetScene.Awake += RegisterAllToZNetScene;
-
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
 
+            On.ZNetScene.Awake += RegisterAllToZNetScene;
             SceneManager.sceneUnloaded += (Scene current) => Cache.ClearCache();
         }
 
@@ -88,7 +87,6 @@ namespace JotunnLib.Managers
                 Logger.LogError($"Failed to create prefab with invalid name: {name}");
                 return null;
             }
-
             if (GetPrefab(name))
             {
                 Logger.LogError($"Failed to create prefab, name already exists: {name}");

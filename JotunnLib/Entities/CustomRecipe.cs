@@ -49,6 +49,15 @@ namespace JotunnLib.Entities
             FixRequirementReferences = true;
         }
 
+        /// <summary>
+        ///     Checks if a custom status effect is valid (i.e. has a <see cref="global::Recipe"/>).
+        /// </summary>
+        /// <returns>true if all criteria is met</returns>
+        public bool IsValid()
+        {
+            return Recipe != null;
+        }
+
         public override bool Equals(object obj)
         {
             return obj.GetHashCode() == GetHashCode();

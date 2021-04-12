@@ -29,12 +29,17 @@ namespace JotunnLib.Managers
         /// </summary>
         public static Action OnAfterInit;
 
+        public event EventHandler OnItemsRegistered;
+
+        /// <summary>
+        ///     Container for custom key hints in the DontDestroyOnLoad scene.
+        /// </summary>
+        internal GameObject KeyHintContainer;
+
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
         internal readonly List<CustomKeyHint> KeyHints = new List<CustomKeyHint>();
-
-        public event EventHandler OnItemsRegistered;
 
         private void Awake()
         {
@@ -50,9 +55,14 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
+            KeyHintContainer = new GameObject("KeyHints");
+            KeyHintContainer.transform.parent = Main.RootObject.transform;
+            KeyHintContainer.SetActive(false);
+
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
+            On.KeyHints.UpdateHints += ShowCustomKeyHint;
         }
 
         /// <summary>
@@ -65,28 +75,27 @@ namespace JotunnLib.Managers
         /// <returns>true if the custom item was added to the manager.</returns>
         public bool AddItem(CustomItem customItem)
         {
-            if (customItem.IsValid())
+            if (!customItem.IsValid())
             {
-                if (Items.Contains(customItem))
-                {
-                    Logger.LogWarning($"Custom item {customItem} already added");
-                }
-                else
-                {
-                    // Add to the right layer
-                    if (customItem.ItemPrefab.layer == 0)
-                    {
-                        customItem.ItemPrefab.layer = LayerMask.NameToLayer("item");
-                    }
-
-                    PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
-                    Items.Add(customItem);
-
-                    return true;
-                }
+                Logger.LogWarning($"Custom item {customItem} is not valid");
+                return false;
+            }
+            if (Items.Contains(customItem))
+            {
+                Logger.LogWarning($"Custom item {customItem} already added");
+                return false;
             }
 
-            return false;
+            // Add to the right layer
+            if (customItem.ItemPrefab.layer == 0)
+            {
+                customItem.ItemPrefab.layer = LayerMask.NameToLayer("item");
+            }
+
+            PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
+            Items.Add(customItem);
+
+            return true;
         }
 
         /// <summary>
@@ -98,14 +107,19 @@ namespace JotunnLib.Managers
         /// <returns>true if the custom recipe was added to the manager.</returns>
         public bool AddRecipe(CustomRecipe customRecipe)
         {
-            if (!Recipes.Contains(customRecipe))
+            if (!customRecipe.IsValid())
             {
-                Recipes.Add(customRecipe);
-
-                return true;
+                Logger.LogWarning($"Custom recipe {customRecipe} is not valid");
+                return false;
+            }
+            if (Recipes.Contains(customRecipe))
+            {
+                Logger.LogWarning($"Custom recipe {customRecipe} already added");
+                return false;
             }
 
-            return false;
+            Recipes.Add(customRecipe);
+            return true;
         }
 
         /// <summary>
@@ -139,14 +153,19 @@ namespace JotunnLib.Managers
         /// <returns>true if the custom status effect was added to the manager.</returns>
         public bool AddStatusEffect(CustomStatusEffect customStatusEffect)
         {
-            if (!StatusEffects.Contains(customStatusEffect))
+            if (!customStatusEffect.IsValid())
             {
-                StatusEffects.Add(customStatusEffect);
-
-                return true;
+                Logger.LogWarning($"Custom status effect {customStatusEffect} is not valid");
+                return false;
+            }
+            if (StatusEffects.Contains(customStatusEffect))
+            {
+                Logger.LogWarning($"Custom status effect {customStatusEffect} already added");
+                return false;
             }
 
-            return false;
+            StatusEffects.Add(customStatusEffect);
+            return true;
         }
 
         /// <summary>
@@ -159,14 +178,20 @@ namespace JotunnLib.Managers
         /// <returns>true if the custom key hint was added to the manager.</returns>
         public bool AddKeyHint(CustomKeyHint customKeyHint)
         {
-            if (!KeyHints.Contains(customKeyHint))
+            if (!customKeyHint.IsValid())
             {
-                KeyHints.Add(customKeyHint);
-
-                return true;
+                Logger.LogWarning($"Custom key hint {customKeyHint} is not valid");
+                return false;
+            }
+            if (KeyHints.Contains(customKeyHint))
+            {
+                Logger.LogWarning($"Custom key hint {customKeyHint} already added");
+                return false;
             }
 
-            return false;
+            customKeyHint.KeyHint.transform.SetParent(KeyHintContainer.transform);
+            KeyHints.Add(customKeyHint);
+            return true;
         }
 
         private void RegisterCustomItems(ObjectDB objectDB)
@@ -326,6 +351,18 @@ namespace JotunnLib.Managers
             }
 
             self.UpdateKnownRecipesList();
+        }
+
+        private void ShowCustomKeyHint(On.KeyHints.orig_UpdateHints orig, KeyHints self)
+        {
+            orig(self);
+
+            if (Player.m_localPlayer == null)
+            {
+                return;
+            }
+
+            // check if a custom item has a custom key hint registered and show it instead the vanilla one
         }
     }
 }

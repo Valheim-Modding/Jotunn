@@ -135,31 +135,30 @@ namespace JotunnLib.Managers
         /// <returns>true if the custom piece was added to the manager.</returns>
         public bool AddPiece(CustomPiece customPiece)
         {
-            if (customPiece.IsValid())
+            if (!customPiece.IsValid())
             {
-                if (Pieces.Contains(customPiece))
-                {
-                    Logger.LogWarning($"Custom piece {customPiece} already added");
-                }
-                else
-                {
-                    // Add to the right layer if necessary
-                    if (customPiece.PiecePrefab.layer == 0)
-                    {
-                        customPiece.PiecePrefab.layer = LayerMask.NameToLayer("piece");
-                    }
-
-                    // Add the prefab to the PrefabManager
-                    PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab);
-
-                    // Add the custom piece to the PieceManager
-                    Pieces.Add(customPiece);
-
-                    return true;
-                }
+                Logger.LogWarning($"Custom piece {customPiece} is not valid");
+                return false;
+            }
+            if (Pieces.Contains(customPiece))
+            {
+                Logger.LogWarning($"Custom piece {customPiece} already added");
+                return false;
             }
 
-            return false;
+            // Add to the right layer if necessary
+            if (customPiece.PiecePrefab.layer == 0)
+            {
+                customPiece.PiecePrefab.layer = LayerMask.NameToLayer("piece");
+            }
+
+            // Add the prefab to the PrefabManager
+            PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab);
+
+            // Add the custom piece to the PieceManager
+            Pieces.Add(customPiece);
+
+            return true;
         }
 
         /// <summary>
