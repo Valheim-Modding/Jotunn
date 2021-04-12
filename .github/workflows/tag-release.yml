@@ -57,9 +57,9 @@ jobs:
       - name: Build solution
         run: |
           msbuild JotunnLib.sln /p:Configuration=Release
-          mv JotunnLib/obj/Release/net462/JotunnLib.dll JotunnLib.dll
+          mv JotunnLib/bin/Release/net462/JotunnLib.dll JotunnLib.dll
           msbuild JotunnLib.sln /p:Configuration=Debug
-          mv JotunnLib/obj/Debug/net462/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
+          mv JotunnLib/bin/Debug/net462/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
       - name: Release
         uses: softprops/action-gh-release@v1
