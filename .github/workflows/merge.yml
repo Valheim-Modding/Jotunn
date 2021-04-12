@@ -77,7 +77,8 @@ jobs:
       # Upload artifact
       - uses: actions/upload-artifact@v2
         with:
-          name: JotunnLib-${{ steps.date.outputs.date }}.dll
-          path: |
-            JotunnLib/bin/Release/net462/JotunnLib.dll
-            JotunnLib/bin/Debug/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}.nupkg            
+          path: JotunnLib/bin/Release/net462/JotunnLib.dll
+            
+      - uses: actions/upload-artifact@v2
+        with:
+          path: JotunnLib/bin/Debug/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}.nupkg            
