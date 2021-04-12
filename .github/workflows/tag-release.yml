@@ -26,15 +26,19 @@ jobs:
 
       # Install NuGet dependencies
       - name: Install NuGet dependencies
-        run: nuget restore JotunnLib.sln
+        run: |
+          nuget restore JotunnLib.sln
+          dotnet restore JotunnLib/JotunnLib.csproj
 
       # Get build commands
       - name: Get build commands
         run: |
           sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
           echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+          wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
           sudo apt-get update
-          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip
+          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-5.0 dotnet-runtime-5.0
 
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
@@ -53,9 +57,9 @@ jobs:
       - name: Build solution
         run: |
           msbuild JotunnLib.sln /p:Configuration=Release
-          mv JotunnLib/obj/Release/JotunnLib.dll JotunnLib.dll
+          mv JotunnLib/bin/Release/net462/JotunnLib.dll JotunnLib.dll
           msbuild JotunnLib.sln /p:Configuration=Debug
-          mv JotunnLib/obj/Debug/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
+          mv JotunnLib/bin/Debug/net462/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
       - name: Release
         uses: softprops/action-gh-release@v1

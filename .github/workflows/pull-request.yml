@@ -52,4 +52,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: JotunnLib-dev-pr-${{ github.event.number }}.dll
-          path: JotunnLib/obj/Debug/JotunnLib.dll
+          path: JotunnLib/bin/Debug/net462/JotunnLib.dll
