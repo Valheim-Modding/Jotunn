@@ -12,7 +12,7 @@ jobs:
       # Get Valheim version id
       - name: Get Valheim verion id
         id: valheimversion
-        run: echo 'VALHEIMVERSION=$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid") >> $GITHUB_ENV
+        run: echo '::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")'
 
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
