@@ -162,6 +162,7 @@ namespace TestMod
             var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
             var makebp = new CustomPiece(makebp_prefab, new PieceConfig {PieceTable = "_BlueprintPieceTable"});
             PieceManager.Instance.AddPiece(makebp);
+            
             var placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
             var placebp = new CustomPiece(placebp_prefab,
                 new PieceConfig
