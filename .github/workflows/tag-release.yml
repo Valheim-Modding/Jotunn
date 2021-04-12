@@ -13,6 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Get Valheim version id
+      - name: Get Valheim version id
+        id: valheimversion
+        run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
+
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
@@ -39,6 +44,14 @@ jobs:
           sudo dpkg -i packages-microsoft-prod.deb
           sudo apt-get update
           sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-5.0 dotnet-runtime-5.0
+
+      # Cache the results
+      - name: Cache Valheim
+        id: cachevalheim
+        uses: actions/cache@v2
+        with:
+          path: ~/VHINSTALL
+          key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}
 
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
