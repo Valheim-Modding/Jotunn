@@ -143,6 +143,9 @@ namespace TestMod
         // Add new Items with item Configs
         private void AddItemsWithConfigs()
         {
+            // Load recipes from JSON file
+            ItemManager.Instance.AddRecipesFromJson("TestMod/Assets/recipes.json");
+
             // Add a custom piece table
             PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
 
@@ -302,9 +305,18 @@ namespace TestMod
         private void AddSkills()
         {
             // Test adding a skill with a texture
-            var testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
-            var testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
-            TestSkillType = SkillManager.Instance.AddSkill("com.jotunnlib.testmod.testskill", "TestingSkill", "A nice testing skill!", 1f, testSkillSprite);
+            Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
+            Sprite testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
+            TestSkillType = SkillManager.Instance.AddSkill(new SkillConfig()
+            {
+                Identifier = "com.jotunn.testmod.testskill_code",
+                Name = "Testing Skill From Code",
+                Description = "A testing skill (but from code)!",
+                Icon = testSkillSprite
+            });
+
+            // Test adding skills from JSON
+            SkillManager.Instance.AddSkillsFromJson("TestMod/Assets/skills.json");
         }
 
         // Create some sample configuration values to check server sync

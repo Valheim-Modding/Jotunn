@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using JotunnLib.Utils;
 using JotunnLib.Entities;
+using JotunnLib.Configs;
 
 namespace JotunnLib.Managers
 {
@@ -107,6 +108,28 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
+        ///     Adds recipes defined in a JSON file at given path, relative to BepInEx/plugins
+        /// </summary>
+        /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
+        public void AddRecipesFromJson(string path)
+        {
+            string json = AssetUtils.LoadText(path);
+
+            if (string.IsNullOrEmpty(json))
+            {
+                Logger.LogError($"Failed to load recipes from json: {path}");
+                return;
+            }
+
+            List<RecipeConfig> recipes = RecipeConfig.ListFromJson(json);
+
+            foreach (RecipeConfig recipe in recipes)
+            {
+                AddRecipe(new CustomRecipe(recipe));
+            }
+        }
+
+        /// <summary>
         ///     Add a <see cref="CustomStatusEffect"/> to the game.<br />
         ///     Checks if the custom status effect is unique and adds it to the list of custom status effects.<br />
         ///     Custom status effects are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
@@ -125,7 +148,7 @@ namespace JotunnLib.Managers
             return false;
         }
 
-        private void registerCustomItems(ObjectDB objectDB)
+        private void RegisterCustomItems(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
 
@@ -198,7 +221,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void registerCustomStatusEffects(ObjectDB objectDB)
+        private void RegisterCustomStatusEffects(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
 
@@ -237,7 +260,7 @@ namespace JotunnLib.Managers
                 OnBeforeCustomItemsAdded.SafeInvoke();
                 OnBeforeCustomItemsAdded = null;
 
-                registerCustomItems(self);
+                RegisterCustomItems(self);
 
                 self.UpdateItemHashes();
 
@@ -258,9 +281,9 @@ namespace JotunnLib.Managers
                 OnBeforeCustomItemsAdded.SafeInvoke();
                 OnBeforeCustomItemsAdded = null;
 
-                registerCustomItems(self);
+                RegisterCustomItems(self);
                 RegisterCustomRecipes(self);
-                registerCustomStatusEffects(self);
+                RegisterCustomStatusEffects(self);
 
                 self.UpdateItemHashes();
 

@@ -61,7 +61,7 @@ namespace JotunnLib.Patches
             {
                 if (!Console.instance.IsCheatsEnabled())
                 {
-                    self.Print("Cannot use this command without cheats enabled. Use 'imacheater' to enable cheats");
+                    self.Print("Cannot use this command without cheats enabled. Use 'devcommands' to enable cheats");
                 }
 
                 return;

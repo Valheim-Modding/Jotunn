@@ -1,0 +1,13 @@
+[
+  {
+      "Identifier": "com.jotunn.testmod.testskill",
+      "Name": "$skill_test",
+      "Description": "$skill_test_desc",
+      "IconPath": "TestMod/Assets/test_tex.jpg"
+  },
+  {
+    "Identifier": "com.jotunn.testmod.anotherskill",
+    "Name": "Another Test Skill",
+    "Description": "A test skill that does not use localization"
+  }
+]

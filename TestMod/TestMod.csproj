@@ -399,7 +399,10 @@
     <None Include="Assets\blueprints" />
     <None Include="Assets\jotunnlibtest" />
     <EmbeddedResource Include="AssetsEmbedded\capeironbackpack" />
+    <None Include="Assets\recipes.json" />
+    <None Include="Assets\skills.json" />
     <None Include="Assets\Translations\English\backpack.english.json" />
+    <None Include="Assets\Translations\English\translations.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">
