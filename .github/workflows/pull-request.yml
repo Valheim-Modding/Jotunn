@@ -9,6 +9,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Get Valheim version id
+      - name: Get Valheim verion id
+        id: valheimversion
+        run: |
+          echo 'VALHEIMVERSION<<EOF' >> $GITHUB_ENV
+          curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid" >> $GITHUB_ENV
+          echo 'EOF' >> GITHUB_ENV
+
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
 
@@ -31,6 +39,13 @@ jobs:
         run: |
           nuget restore JotunnLib.sln
           dotnet restore JotunnLib/JotunnLib.csproj
+
+      # Cache the results
+      - name: Cache Valheim
+        uses: actions/cache@v2
+        with:
+          path: ~/VHINSTALL
+          key: ${{ env.VALHEIMVERSION }}-${{ hashFiles('**/lockfiles') }}
 
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies

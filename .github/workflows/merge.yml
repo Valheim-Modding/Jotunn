@@ -16,6 +16,14 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
+      # Get Valheim version id
+      - name: Get Valheim verion id
+        id: valheimversion
+        run: |
+          echo 'VALHEIMVERSION<<EOF' >> $GITHUB_ENV
+          curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid" >> $GITHUB_ENV
+          echo 'EOF' >> GITHUB_ENV
+
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
 
@@ -38,6 +46,13 @@ jobs:
           sudo dpkg -i packages-microsoft-prod.deb
           sudo apt-get update
           sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-5.0 dotnet-runtime-5.0
+
+      # Cache the results
+      - name: Cache Valheim
+        uses: actions/cache@v2
+        with:
+          path: ~/VHINSTALL
+          key: ${{ env.VALHEIMVERSION }}-${{ hashFiles('**/lockfiles') }}
 
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
