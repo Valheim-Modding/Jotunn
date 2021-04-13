@@ -6,8 +6,6 @@ using Mono.Cecil;
 using MonoMod;
 using MonoMod.RuntimeDetour.HookGen;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-using MonoMod.RuntimeDetour;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 namespace JotunnBuildTask

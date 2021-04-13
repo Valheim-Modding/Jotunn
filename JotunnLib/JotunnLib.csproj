@@ -444,13 +444,9 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-  <Import Project="version.props" Condition="Exists('version.props')" />
+  <Import Project="BuildProps\version.props" Condition="Exists('BuildProps\version.props')" />
   <Import Project="..\Environment.props" />
-  <Import Project="JotunnBuildTask.props" />
-  <Target Name="JotunnBuildTask" BeforeTargets="BeforeBuild">
-    <Message Text="Generating MMHook assemblies" Importance="high" />
-    <GenerateMMHook ValheimPath="$(VALHEIM_INSTALL)" />
-  </Target>
+  <Import Project="BuildProps\JotunnBuildTask.props" />
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'" AfterTargets="Build">
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot;" />
   </Target>
@@ -487,7 +483,7 @@
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.RuntimeDetour.dll" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.RuntimeDetour.HookGen.exe" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.Utils.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnLib\JotunnLib.props" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png" Pack="true" PackagePath="images" />
   </ItemGroup>
 </Project>
