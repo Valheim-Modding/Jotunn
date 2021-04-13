@@ -38,21 +38,16 @@ namespace JotunnLib.Entities
         public bool FixRecipeReference { get; set; } = false;
 
         /// <summary>
-        ///     Custom item from a prefab with a prebuild <see cref="global::Recipe"/>.<br />
+        ///     Custom item from a prefab.<br />
         ///     Can fix references for <see cref="Mock"/>s and the <see cref="global::Recipe"/>.
         /// </summary>
         /// <param name="itemPrefab">The prefab for this custom item.</param>
         /// <param name="fixReference">If true references for <see cref="Mock"/> objects get resolved at runtime by Jötunn.</param>
-        /// <param name="recipe">The recipe for this custom item.</param>
-        /// <param name="fixRecipeReference">If true references for <see cref="Mock"/> objects on the <see cref="global::Recipe"/> get resolved at runtime by Jötunn.</param>
-        public CustomItem(GameObject itemPrefab, bool fixReference, Recipe recipe, bool fixRecipeReference)
+        public CustomItem(GameObject itemPrefab, bool fixReference)
         {
             ItemPrefab = itemPrefab;
             ItemDrop = itemPrefab.GetComponent<ItemDrop>();
             FixReference = fixReference;
-
-            Recipe = recipe;
-            FixRecipeReference = fixRecipeReference;
         }
 
         /// <summary>
@@ -73,6 +68,21 @@ namespace JotunnLib.Entities
         }
 
         /// <summary>
+        ///     Custom item created as an "empty" primitive.<br />
+        ///     At least the name and the Icon of the <see cref="global::ItemDrop"/> must be edited after creation.
+        /// </summary>
+        /// <param name="name">Name of the new prefab. Must be unique.</param>
+        /// <param name="addZNetView">If true a ZNetView component will be added to the prefab for network sync.</param>
+        public CustomItem(string name, bool addZNetView)
+        {
+            ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
+            if (ItemPrefab)
+            {
+                ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
+            }
+        }
+
+        /// <summary>
         ///     Custom item created as an "empty" primitive with a <see cref="global::Recipe"/> made from a <see cref="RecipeConfig"/>.<br />
         ///     At least the name and the Icon of the <see cref="global::ItemDrop"/> must be edited after creation.
         /// </summary>
@@ -85,11 +95,24 @@ namespace JotunnLib.Entities
             if (ItemPrefab)
             {
                 ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
-                FixReference = true;
 
                 recipeConfig.Item = name;
                 Recipe = recipeConfig.GetRecipe();
                 FixRecipeReference = true;
+            }
+        }
+
+        /// <summary>
+        ///     Custom item created as a copy of a vanilla Valheim prefab.
+        /// </summary>
+        /// <param name="name">The new name of the prefab after cloning.</param>
+        /// <param name="basePrefabName">The name of the base prefab the custom item is cloned from.</param>
+        public CustomItem(string name, string basePrefabName)
+        {
+            ItemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
+            if (ItemPrefab)
+            {
+                ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
             }
         }
 
@@ -105,7 +128,6 @@ namespace JotunnLib.Entities
             if (ItemPrefab)
             {
                 ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
-                FixReference = false;
 
                 recipeConfig.Item = name;
                 Recipe = recipeConfig.GetRecipe();
@@ -115,12 +137,12 @@ namespace JotunnLib.Entities
 
         /// <summary>
         ///     Checks if a custom item is valid (i.e. has a prefab, has an <see cref="ItemDrop"/> 
-        ///     component with at least one icon and has a <see cref="global::Recipe"/> ).
+        ///     component with at least one icon).
         /// </summary>
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return ItemPrefab && ItemDrop && ItemDrop.IsValid() && Recipe;
+            return ItemPrefab && ItemDrop && ItemDrop.IsValid();
         }
 
         /// <summary>
