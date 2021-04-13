@@ -3,6 +3,8 @@ Localizations are string conversions for language tokens that are bound to in-ga
 
 JVL provides a number of different methods to interface with our localization system, to allow both developers as well as the community at large to provide localizations for both custom items, as well as non supported languages.
 
+**Note**: This example requires [assets](assets.md) to be loaded.
+
 ## Preparing your assets
 In order to facilitate our localizations, we must prepare our assets to ensure they are able to accept our localization strings. The game follows the convention that language tokens are prefixed with a `$` to signify the string is a token due for replacement. Common properties which accept tokens are things such as names, descriptions, and flavourtext. The following name thereafter must be unique, but can follow any format the user desires.
 
@@ -46,7 +48,7 @@ LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
 
 
 ## Prefabs
-It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime. In this example, we use our filenames to provide the language which we wish to add the translations for:
+It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime via [AddJson](xref:JotunnLib.Instance.AddJson).. In this example, we use our filenames to provide the language which we wish to add the translations for:
 
 ```cs
  TextAsset[] textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();

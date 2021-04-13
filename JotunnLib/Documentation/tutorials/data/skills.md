@@ -8,7 +8,7 @@ Creation of custom skills is done through the [SkillManager](xref:JotunnLib.Mana
 This will automatically take care of incrementing the skill's SkillType (unique numerical ID), so there will be no conflicts between skills added by various mods.
 
 ## Example
-To create a new skill, you must call the AddSkill function.
+To create a new skill, you must call the [AddSkill](xref:JotunnLib.SkillManager.AddSkill) method.
 
 This should be called from within your mod's `Awake` method, and it will return a randomly generated SkillType for your new skill.
 ```cs

@@ -1,5 +1,5 @@
 # Pieces, Tables, and Tabs
-This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
+**Note**: This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
 
 ## Tables & Tabs
 
@@ -23,7 +23,7 @@ In order for a prefab to be a _piece_, it must have the `Piece` component attach
 
 ### "Empty piece" example
 
-In this example we will create a stubbed piece to act as a demonstration for the minimal implementation for pieces, which will allow a piece to be selected and placed into the environment as a networked object.
+In this example we will create a stubbed piece to act as a demonstration for the minimal implementation for pieces, which will allow a piece to be selected and placed into the environment as a networked object. We add the [CustomPiece](xref:JotunnLib.Entities.CustomPiece) via the [PieceManager](xref:JotunnLib.PieceManager.AddPiece).
 
 ```cs
 private void addEmptyItems()
@@ -43,7 +43,7 @@ private void addEmptyItems()
 
 The Blueprint rune, a custom item one of our developers has been working on, is intended to duplicate existing structures. In order to keep this example simple, we are not including this functionality, but are utilising these assets to provide an example of loading pieces via prefabs, so please bear in mind that while the code bellow is perfectly functional, there is no mesh/model associated with the following pieces due to the nature of their intended function.
 
-With that said, we will load two new pieces into the previously created blueprint piecetable via [PieceConfig's](xref:JotunnLib.Configs.PieceConfig). As with RecipeConfigs, PieceConfig's provide an abstraction to simplify access to properties required to setup piece build requirements. The basic idea is similar. We load our asset, define our PieceConfig, and then add the resultant config via the manager's [AddPiece](xref:JotunnLib.Managers.PieceManager.AddPiece):
+With that said, we will load two new pieces into the previously created blueprint piecetable via [PieceConfig's](xref:JotunnLib.Configs.PieceConfig). As with `RecipeConfigs`, `PieceConfig`'s provide an abstraction to simplify access to properties required to setup piece build requirements. The basic idea is similar. We load our asset, define our `PieceConfig`, and then add the resultant config via the manager's [AddPiece](xref:JotunnLib.Managers.PieceManager.AddPiece):
 
 ```cs
 private void CreateRunePieces()
