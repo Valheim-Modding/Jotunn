@@ -181,7 +181,7 @@ namespace TestMod
             // Create and add a custom item
             var rune_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintRune");
             var rune = new CustomItem(rune_prefab, fixReference: false, 
-                new RecipeConfig
+                new ItemConfig
                 {
                     Amount = 1,
                     Requirements = new[] 
@@ -244,20 +244,23 @@ namespace TestMod
                 }
                 else
                 {
-                    // Create and add a custom item with Mocked references
-                    var CI = new CustomItem(prefab, fixReference: true,
-                        new RecipeConfig
-                        {
-                            Amount = 1,
-                            CraftingStation = "piece_workbench",
-                            Requirements = new[]
-                            {
-                                new RequirementConfig { Item = "LeatherScraps", Amount = 10 },
-                                new RequirementConfig { Item = "DeerHide", Amount = 2 },
-                                new RequirementConfig { Item = "Iron", Amount = 4 }
-                            }
-                        });
+                    // Create and add a custom item
+                    var CI = new CustomItem(prefab, true);
                     ItemManager.Instance.AddItem(CI);
+
+                    // Create and add a custom recipe
+                    var recipe = ScriptableObject.CreateInstance<Recipe>();
+                    recipe.m_item = prefab.GetComponent<ItemDrop>();
+                    recipe.m_craftingStation = Mock<CraftingStation>.Create("piece_workbench");
+                    var ingredients = new List<Piece.Requirement>
+                    {
+                        MockRequirement.Create("LeatherScraps", 10), 
+                        MockRequirement.Create("DeerHide", 2), 
+                        MockRequirement.Create("Iron", 4)
+                    };
+                    recipe.m_resources = ingredients.ToArray();
+                    var CR = new CustomRecipe(recipe, true, true);
+                    ItemManager.Instance.AddRecipe(CR);
 
                     // Enable BoneReorder
                     BoneReorder.ApplyOnEquipmentChanged();
