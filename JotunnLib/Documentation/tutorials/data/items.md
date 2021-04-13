@@ -3,7 +3,7 @@ Valheim items can be equipment, resources, or building pieces. In this tutorial 
 
 ## Cloning existing prefabs
 
-This example requires a method from [custom recipe's](recipes.md) and [localisations](localisation.md).
+This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
 
 In this example, we will clone a resource and a weapon which the use may equip. In order to do this, we will need to reference already instantiated game assets. One method of doing so is by subscribing to the `CopyOtherDB` method of the ObjectDB, which instantiates game assets at runtime:
 

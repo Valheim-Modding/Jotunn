@@ -1,4 +1,6 @@
 # Pieces, Tables, and Tabs
+This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
+
 ## Tables & Tabs
 
 PieceTables can be associated with items such as Hammer, Cultivator, and Hoe. Each have their own set of [categories](piececategories.md) which can act as tabs to organise content within a certain PieceTable. 
