@@ -2,7 +2,7 @@
 
 namespace JotunnLib.Configs
 {
-    public class PieceRequirementConfig
+    public class RequirementConfig
     {
         public string Item { get; set; }
         public int Amount { get; set; }

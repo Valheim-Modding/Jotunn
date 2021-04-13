@@ -1,4 +1,5 @@
-﻿using JotunnLib.Managers;
+﻿using JotunnLib.Configs;
+using JotunnLib.Managers;
 using UnityEngine;
 
 namespace JotunnLib.Entities
@@ -21,77 +22,105 @@ namespace JotunnLib.Entities
         public ItemDrop ItemDrop { get; set; } = null;
 
         /// <summary>
+        ///     The <see cref="global::Recipe"/> associated with this custom item. Is needed to craft
+        ///     this item on a workbench or from the players crafting menu.
+        /// </summary>
+        public Recipe Recipe { get; set; } = null;
+
+        /// <summary>
         ///     Indicator if references from <see cref="Mock"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; } = false;
 
         /// <summary>
-        ///     Custom item from a prefab.<br />
-        ///     Can fix references for <see cref="Mock"/>s.
+        ///     Indicator if references from the <see cref="global::Recipe"/>s will be replaced at runtime.
+        /// </summary>
+        public bool FixRecipeReference { get; set; } = false;
+
+        /// <summary>
+        ///     Custom item from a prefab with a prebuild <see cref="global::Recipe"/>.<br />
+        ///     Can fix references for <see cref="Mock"/>s and the <see cref="global::Recipe"/>.
         /// </summary>
         /// <param name="itemPrefab">The prefab for this custom item.</param>
         /// <param name="fixReference">If true references for <see cref="Mock"/> objects get resolved at runtime by Jötunn.</param>
-        public CustomItem(GameObject itemPrefab, bool fixReference)
+        /// <param name="recipe">The recipe for this custom item.</param>
+        /// <param name="fixRecipeReference">If true references for <see cref="Mock"/> objects on the <see cref="global::Recipe"/> get resolved at runtime by Jötunn.</param>
+        public CustomItem(GameObject itemPrefab, bool fixReference, Recipe recipe, bool fixRecipeReference)
         {
             ItemPrefab = itemPrefab;
             ItemDrop = itemPrefab.GetComponent<ItemDrop>();
             FixReference = fixReference;
+
+            Recipe = recipe;
+            FixRecipeReference = fixRecipeReference;
         }
 
         /// <summary>
-        ///     Custom item from a prefab loaded from an asset bundle.<br />
+        ///     Custom item from a prefab with a <see cref="global::Recipe"/> made from a <see cref="RecipeConfig"/>.<br />
         ///     Can fix references for <see cref="Mock"/>s.
         /// </summary>
-        /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
-        /// <param name="assetName">Name of the prefab in the bundle.</param>
-        /// <param name="fixReference">If true references for <see cref="Mock"/> objects get resolved at runtime by Jötunn.</param>
-        public CustomItem(AssetBundle assetBundle, string assetName, bool fixReference)
+        /// <param name="itemPrefab">The prefab for this custom item.</param>
+        /// <param name="recipeConfig">The recipe config for this custom item.</param>
+        public CustomItem(GameObject itemPrefab, bool fixReference, RecipeConfig recipeConfig)
         {
-            ItemPrefab = (GameObject)assetBundle.LoadAsset(assetName);
-            if (ItemPrefab)
-            {
-                ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
-            }
+            ItemPrefab = itemPrefab;
+            ItemDrop = itemPrefab.GetComponent<ItemDrop>();
             FixReference = fixReference;
+
+            recipeConfig.Item = ItemPrefab.name;
+            Recipe = recipeConfig.GetRecipe();
+            FixRecipeReference = true;
         }
 
         /// <summary>
-        ///     Custom item created as an "empty" primitive.<br />
-        ///     At least the name and the icon of the ItemDrop must be edited after creation.
+        ///     Custom item created as an "empty" primitive with a <see cref="global::Recipe"/> made from a <see cref="RecipeConfig"/>.<br />
+        ///     At least the name and the Icon of the <see cref="global::ItemDrop"/> must be edited after creation.
         /// </summary>
         /// <param name="name">Name of the new prefab. Must be unique.</param>
         /// <param name="addZNetView">If true a ZNetView component will be added to the prefab for network sync.</param>
-        public CustomItem(string name, bool addZNetView = true)
+        /// <param name="recipeConfig">The recipe config for this custom item.</param>
+        public CustomItem(string name, bool addZNetView, RecipeConfig recipeConfig)
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             if (ItemPrefab)
             {
                 ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
+                FixReference = true;
+
+                recipeConfig.Item = name;
+                Recipe = recipeConfig.GetRecipe();
+                FixRecipeReference = true;
             }
         }
 
         /// <summary>
-        ///     Custom item created as a copy of a vanilla Valheim prefab.
+        ///     Custom item created as a copy of a vanilla Valheim prefab with a <see cref="global::Recipe"/> made from a <see cref="RecipeConfig"/>.
         /// </summary>
         /// <param name="name">The new name of the prefab after cloning.</param>
         /// <param name="basePrefabName">The name of the base prefab the custom item is cloned from.</param>
-        public CustomItem(string name, string basePrefabName)
+        /// <param name="recipeConfig">The recipe config for this custom item.</param>
+        public CustomItem(string name, string basePrefabName, RecipeConfig recipeConfig)
         {
             ItemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
             if (ItemPrefab)
             {
                 ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
+                FixReference = false;
+
+                recipeConfig.Item = name;
+                Recipe = recipeConfig.GetRecipe();
+                FixRecipeReference = true;
             }
         }
 
         /// <summary>
         ///     Checks if a custom item is valid (i.e. has a prefab, has an <see cref="ItemDrop"/> 
-        ///     component and that component has at least one icon).
+        ///     component with at least one icon and has a <see cref="global::Recipe"/> ).
         /// </summary>
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return ItemPrefab && ItemDrop && ItemDrop.IsValid();
+            return ItemPrefab && ItemDrop && ItemDrop.IsValid() && Recipe;
         }
 
         /// <summary>

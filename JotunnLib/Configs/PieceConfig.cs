@@ -13,7 +13,7 @@ namespace JotunnLib.Configs
         public string CraftingStation { get; set; } = string.Empty;
         public string ExtendStation { get; set; } = string.Empty;
         public Sprite Icon { get; set; } = null;
-        public PieceRequirementConfig[] Requirements { get; set; } = new PieceRequirementConfig[0];
+        public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
 
         public Piece.Requirement[] GetRequirements()
         {
