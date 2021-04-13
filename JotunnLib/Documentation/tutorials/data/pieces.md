@@ -7,7 +7,7 @@ PieceTables can be associated with items such as Hammer, Cultivator, and Hoe. Ea
 
 TODO: prefab component requirement description
 
-see: [AddPieceTable](xref:JotunnLib.Managers.PieceManager.AddPieceTable)
+see: [AddPieceTable](xref:JotunnLib.Managers.PieceTables.AddPieceTable)
 ```cs
 PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
 ```

@@ -20,7 +20,7 @@ Localizations can be provide through loading side by side with your plugin. The 
 An example of a path which will be read for localization at run time may be: `BepInEx/plugins/JotunnModExample/Assets/Translations/English/backpack.json`. All .json files within such a directory will be iterated through and localizations added for each of those languages.
 
 ## Hardcoding
-Localizations may also be hardcoded into your plugin by invoking the [AddLocalization](xref:JotunnLib.Managers.LocalizationManager.AddLocalization) method.
+Localizations may also be hardcoded into your plugin by invoking the [AddLocalization](xref:JotunnLib.) method.
 
 ```cs
 // Add translations for the custom item in addClonedItems

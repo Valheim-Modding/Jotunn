@@ -14,7 +14,8 @@ private GameObject backpackPrefab;
 private AssetBundle embeddedResourceBundle;
 ```
 
-To acquire the references we will be using here you may [download](JotunnModExample.zip) them and place inside your project root: ![Assets Extraction](../../images/data/AssetsExtraction.png)
+To acquire the references we will be using here you may [download](JotunnModExample.zip) them and place inside your project root: 
+![Assets Extraction](../../images/data/AssetsExtraction.png)
 
 Next, we must import our assets into our project, and ensure they are packed into, or with our plugin. There are a number of ways to do this, such as:
 
@@ -23,7 +24,7 @@ Next, we must import our assets into our project, and ensure they are packed int
 
 Side loading would be where the assets are packaged alongside your plugin.dll. 
 
-You may have noticed that we include a postbuild command to copy the `Assets` directory into the games plugin directory. Although this allows for easy development iteration though being able to change assets without recompilation, it is not so easily distributable to users, and must be packaged side by side with your released plugin also.
+You may have noticed that we include a postbuild command to copy the `Assets` directory into the games plugin directory. Although this allows for easy development iteration though being able to change assets without recompilation, it is not so easily distributable to users, and must be packaged side by side with your released plugin, and exposes your assets to being directly modified by the user.
 
 `<Exec Command="xcopy &quot;$(ProjectDir)Assets&quot; &quot;$(VALHEIM_INSTALL)\BepInEx\plugins\JotunnModExample\Assets\&quot; /S /Y" />`
 
@@ -31,11 +32,12 @@ You may have noticed that we include a postbuild command to copy the `Assets` di
 
 Right click our solution, then add a new directory named `AssetsEmbedded`. Right click the directory and select `Add existing` and select the files we placed inside from the download link provided.
 
-Another option is to embed our resources inside the binary itself. You may do this by right clicking a folder inside of your project, and add an existing item. Once it has been added, right click the item, select properties, and set the build action to embedded resource: ![Assets.Embedded Resource](Assets.EmbeddedResource.png)
+Another option is to embed our resources inside the binary itself. You may do this by right clicking a folder inside of your project, and add an existing item. Once it has been added, right click the item, select properties, and set the build action to embedded resource: 
+![Assets.Embedded Resource](../../images/data/Assets.EmbeddedResource.png)
 
 
 ### Referencing our assets
-In order to load our resources, we can utilise Jotunn's `AssetUtils` helper class. The method bellow showcases a number of ways to load your assets into various forms of objects.
+In order to load our resources, we can utilise Jotunn's [AssetUtils](xref:JotunnLib.AssetUtils) helper methods, such as [LoadTexture](xref:JotunnLib.AssetUtils.LoadTexture), [LoadAssetBundle](xref:JotunnLib.AssetUtils.LoadAssetBundle), [LoadAssetBundleFromResources](xref:JotunnLib.AssetUtils.LoadAssetBundleFromResources). The method bellow showcases a number of ways to load your assets into various forms of objects.
 
 ```cs
 private void loadAssets()
