@@ -222,6 +222,10 @@ namespace JotunnLib.Managers
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding custom item {customPiece.PiecePrefab.name}: {ex.Message}");
+
+                    // Remove piece again
+                    PrefabManager.Instance.RemovePrefab(customPiece.PiecePrefab.name);
+                    Pieces.Remove(customPiece);
                 }
 
             }
