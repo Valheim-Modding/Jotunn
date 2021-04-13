@@ -178,16 +178,16 @@ namespace TestMod
             PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
 
             // Create and add a custom item
-            // CustomItem can be instantiated with an AssetBundle and will load the prefab from there
-            var rune = new CustomItem(BlueprintRuneBundle, "BlueprintRune", false);
-            ItemManager.Instance.AddItem(rune);
-
-            // Create and add a recipe for the custom item
-            var runeRecipe = new CustomRecipe(new RecipeConfig
+            var prefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintRune");
+            var rune = new CustomItem(prefab, false, new RecipeConfig
             {
-                Item = "BlueprintRune", Amount = 1, Requirements = new[] {new RequirementConfig {Item = "Stone", Amount = 1}}
+                Amount = 1,
+                Requirements = new[] 
+                { 
+                    new RequirementConfig { Item = "Stone", Amount = 1 } 
+                }
             });
-            ItemManager.Instance.AddRecipe(runeRecipe);
+            ItemManager.Instance.AddItem(rune);
 
             // Create and add custom pieces
             var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");

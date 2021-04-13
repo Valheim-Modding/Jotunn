@@ -109,7 +109,7 @@ namespace JotunnLib.Managers
                 {
                     var itemDrop = customItem.ItemDrop;
 
-                    if (customItem.FixReference || itemDrop.m_itemData.m_dropPrefab == null)
+                    if (!itemDrop.m_itemData.m_dropPrefab)
                     {
                         itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
                     }
@@ -120,8 +120,14 @@ namespace JotunnLib.Managers
                         itemDrop.m_itemData.m_shared.FixReferences();
                         customItem.FixReference = false;
                     }
+                    if (customItem.FixRecipeReference)
+                    {
+                        customItem.Recipe.FixReferences();
+                        customItem.FixRecipeReference = false;
+                    }
 
                     objectDB.m_items.Add(customItem.ItemPrefab);
+                    objectDB.m_recipes.Add(customItem.Recipe);
 
                     Logger.LogInfo($"Added custom item : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
                 }
