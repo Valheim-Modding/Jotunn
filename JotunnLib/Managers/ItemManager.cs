@@ -358,7 +358,7 @@ namespace JotunnLib.Managers
 
             foreach (var customKeyHint in KeyHints)
             {
-                var hint = customKeyHint.KeyHint;
+                /*var hint = customKeyHint.KeyHint;
                 hint.name = customKeyHint.KeyHint.name;
 
                 var tf = (RectTransform)hint.transform;
@@ -367,7 +367,7 @@ namespace JotunnLib.Managers
                 tf.anchorMax = buildTransform.anchorMax;
                 tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 410f);
                 tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 203f);
-                tf.anchoredPosition = buildTransform.anchoredPosition;
+                tf.anchoredPosition = buildTransform.anchoredPosition;*/
 
 
                 /*var uihint = hint.AddComponent<UIInputHint>();
@@ -381,10 +381,10 @@ namespace JotunnLib.Managers
                 Logger.LogInfo($"Added key hint : {customKeyHint.KeyHint} | Item : {customKeyHint.Item}");
             }
 
-            var btn = GUIManager.Instance.CreateButton("Blarks", self.transform, buildTransform.anchorMin, buildTransform.anchorMax, buildTransform.anchoredPosition, 100f, 30f);
+            /*var btn = GUIManager.Instance.CreateButton("Blarks", self.transform, buildTransform.anchorMin, buildTransform.anchorMax, buildTransform.anchoredPosition, 100f, 30f);
             btn.name = "BtnHint";
 
-            Logger.LogInfo($"Added key hint : {btn}");
+            Logger.LogInfo($"Added key hint : {btn}");*/
         }
 
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
@@ -408,22 +408,22 @@ namespace JotunnLib.Managers
                 return;
             }
 
-            // check if a custom item has a custom key hint registered and show it instead the vanilla one
+            /*// check if a custom item has a custom key hint registered and show it instead the vanilla one
             if (self.m_buildHints.activeSelf)
             {
                 self.m_buildHints.SetActive(false);
 
                 //var name = KeyHints[0].KeyHint.name;
                 //var name = "CopyHint";
-                /*var name = "BtnHint";
+                *//*var name = "BtnHint";
                 var tf = self.transform.Find(name);
                 var hint = tf.gameObject;
-                hint.SetActive(true);*/
+                hint.SetActive(true);*//*
             }
             if (self.m_combatHints.activeSelf)
             {
 
-            }
+            }*/
         }
     }
 }
