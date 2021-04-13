@@ -107,21 +107,31 @@ namespace JotunnLib.Managers
             {
                 try
                 {
+                    // ItemPrefab and ItemDrop
                     var itemDrop = customItem.ItemDrop;
 
-                    if (customItem.FixReference || itemDrop.m_itemData.m_dropPrefab == null)
+                    if (!itemDrop.m_itemData.m_dropPrefab)
                     {
                         itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
                     }
-
                     if (customItem.FixReference)
                     {
                         customItem.ItemPrefab.FixReferences();
                         itemDrop.m_itemData.m_shared.FixReferences();
                         customItem.FixReference = false;
                     }
-
                     objectDB.m_items.Add(customItem.ItemPrefab);
+
+                    // Optional Recipe
+                    if (customItem.Recipe)
+                    {
+                        if (customItem.FixRecipeReference)
+                        {
+                            customItem.Recipe.FixReferences();
+                            customItem.FixRecipeReference = false;
+                        }
+                        objectDB.m_recipes.Add(customItem.Recipe);
+                    }
 
                     Logger.LogInfo($"Added custom item : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
                 }

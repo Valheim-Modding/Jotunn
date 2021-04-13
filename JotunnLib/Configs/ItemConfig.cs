@@ -4,7 +4,7 @@ using JotunnLib.Entities;
 
 namespace JotunnLib.Configs
 {
-    public class RecipeConfig
+    public class ItemConfig
     {
         public string Name { get; set; } = null;
         public string Item { get; set; }
@@ -66,23 +66,23 @@ namespace JotunnLib.Configs
         }
 
         // <summary>
-        ///     Loads a single RecipeConfig from a JSON string
+        ///     Loads a single ItemConfig from a JSON string
         /// </summary>
         /// <param name="json">JSON text</param>
-        /// <returns>Loaded RecipeConfig</returns>
-        public static RecipeConfig FromJson(string json)
+        /// <returns>Loaded ItemConfig</returns>
+        public static ItemConfig FromJson(string json)
         {
-            return SimpleJson.SimpleJson.DeserializeObject<RecipeConfig>(json);
+            return SimpleJson.SimpleJson.DeserializeObject<ItemConfig>(json);
         }
 
         /// <summary>
-        ///     Loads a list of RecipeConfigs from a JSON string
+        ///     Loads a list of ItemConfigs from a JSON string
         /// </summary>
         /// <param name="json">JSON text</param>
-        /// <returns>Loaded list of RecipeConfigs</returns>
-        public static List<RecipeConfig> ListFromJson(string json)
+        /// <returns>Loaded list of ItemConfigs</returns>
+        public static List<ItemConfig> ListFromJson(string json)
         {
-            return SimpleJson.SimpleJson.DeserializeObject<List<RecipeConfig>>(json);
+            return SimpleJson.SimpleJson.DeserializeObject<List<ItemConfig>>(json);
         }
     }
 }

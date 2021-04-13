@@ -175,31 +175,41 @@ namespace TestMod
             ItemManager.Instance.AddRecipesFromJson("TestMod/Assets/recipes.json");
 
             // Add a custom piece table
-            PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
+            var table_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable");
+            PieceManager.Instance.AddPieceTable(table_prefab);
 
             // Create and add a custom item
-            // CustomItem can be instantiated with an AssetBundle and will load the prefab from there
-            var rune = new CustomItem(BlueprintRuneBundle, "BlueprintRune", false);
+            var rune_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintRune");
+            var rune = new CustomItem(rune_prefab, fixReference: false, 
+                new ItemConfig
+                {
+                    Amount = 1,
+                    Requirements = new[] 
+                    { 
+                        new RequirementConfig { Item = "Stone", Amount = 1 } 
+                    }
+                });
             ItemManager.Instance.AddItem(rune);
-
-            // Create and add a recipe for the custom item
-            var runeRecipe = new CustomRecipe(new RecipeConfig
-            {
-                Item = "BlueprintRune", Amount = 1, Requirements = new[] {new PieceRequirementConfig {Item = "Stone", Amount = 1}}
-            });
-            ItemManager.Instance.AddRecipe(runeRecipe);
 
             // Create and add custom pieces
             var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
-            var makebp = new CustomPiece(makebp_prefab, new PieceConfig {PieceTable = "_BlueprintPieceTable"});
+            var makebp = new CustomPiece(makebp_prefab, 
+                new PieceConfig 
+                {
+                    PieceTable = "_BlueprintPieceTable"
+                });
             PieceManager.Instance.AddPiece(makebp);
+
             var placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
             var placebp = new CustomPiece(placebp_prefab,
                 new PieceConfig
                 {
                     PieceTable = "_BlueprintPieceTable",
                     AllowedInDungeons = true,
-                    Requirements = new[] {new PieceRequirementConfig {Item = "Wood", Amount = 2}}
+                    Requirements = new[] 
+                    {
+                        new RequirementConfig { Item = "Wood", Amount = 2 }
+                    }
                 });
             PieceManager.Instance.AddPiece(placebp);
 
@@ -244,7 +254,9 @@ namespace TestMod
                     recipe.m_craftingStation = Mock<CraftingStation>.Create("piece_workbench");
                     var ingredients = new List<Piece.Requirement>
                     {
-                        MockRequirement.Create("LeatherScraps", 10), MockRequirement.Create("DeerHide", 2), MockRequirement.Create("Iron", 4)
+                        MockRequirement.Create("LeatherScraps", 10), 
+                        MockRequirement.Create("DeerHide", 2), 
+                        MockRequirement.Create("Iron", 4)
                     };
                     recipe.m_resources = ingredients.ToArray();
                     var CR = new CustomRecipe(recipe, true, true);

@@ -2,14 +2,14 @@
 
 namespace JotunnLib.Configs
 {
-    public class PieceRequirementConfig
+    public class RequirementConfig
     {
         public string Item { get; set; }
         public int Amount { get; set; }
         public int AmountPerLevel { get; set; }
         public bool Recover { get; set; }
 
-        public Piece.Requirement GetPieceRequirement()
+        public Piece.Requirement GetRequirement()
         {
             return new Piece.Requirement()
             {
