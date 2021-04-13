@@ -366,4 +366,9 @@ Environment.props
 
 # not the root libraries folder
 !libraries/*
+
+# version props
 JotunnLib/version.props
+
+# local launch Settings
+JotunnLib/Properties/launchSettings.json

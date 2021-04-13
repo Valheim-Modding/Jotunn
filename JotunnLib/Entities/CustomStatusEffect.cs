@@ -30,6 +30,15 @@ namespace JotunnLib.Entities
             FixReference = fixReference;
         }
 
+        /// <summary>
+        ///     Checks if a custom status effect is valid (i.e. has a <see cref="global::StatusEffect"/>).
+        /// </summary>
+        /// <returns>true if all criteria is met</returns>
+        public bool IsValid()
+        {
+            return StatusEffect != null;
+        }
+
         public override bool Equals(object obj)
         {
             return obj.GetHashCode() == GetHashCode();

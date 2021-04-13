@@ -15,27 +15,13 @@ namespace JotunnLib.Managers
 {
     public class GUIManager : Manager, IPointerClickHandler
     {
-        internal static GameObject GUIContainer;
-
-        private bool needsLoad = true;
-
-        internal Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
-        private bool GUIInStart = true;
         public static GUIManager Instance { get; private set; }
 
         public static GameObject PixelFix { get; private set; }
 
-        private static GameObject settingsGameObject;
+        internal static GameObject GUIContainer;
 
-        internal Texture2D TextureAtlas { get; private set; }
-
-        internal Texture2D TextureAtlas2 { get; private set; }
-
-        internal Font AveriaSerif { get; private set; }
-
-        internal Font AveriaSerifBold { get; private set; }
-
-        private const int UILayer = 5;
+        public const int UILayer = 5;
 
         public Color ValheimOrange = new Color(1f, 0.631f, 0.235f, 1f);
 
@@ -49,6 +35,20 @@ namespace JotunnLib.Managers
             pressedColor = new Color(0.838f, 0.647f, 0.031f, 1f),
             selectedColor = new Color(1, 0.786f, 0.088f, 1f),
         };
+
+        public Font AveriaSerif { get; private set; }
+
+        public Font AveriaSerifBold { get; private set; }
+
+        internal Texture2D TextureAtlas { get; private set; }
+
+        internal Texture2D TextureAtlas2 { get; private set; }
+
+        internal Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
+
+        private bool needsLoad = true;
+
+        private bool GUIInStart = true;
 
         public void OnPointerClick(PointerEventData eventData)
         {
