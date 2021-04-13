@@ -408,7 +408,11 @@
   </ItemGroup>
   <UsingTask TaskName="GenerateMMHook" AssemblyFile="JotunnBuildTask.dll" />
 
-	<Target Name="JotunnBuildTask" AfterTargets="BeforeBuild">
-		<GenerateMMHook ValheimPath="$(VALHEIM_INSTALL)" />
-	</Target>
+  <Target Name="JotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true'" >
+    <Message Importance="High" Text="Executing JotunnLib Prebuild Task creating MMHOOK dlls"/> 
+    <GenerateMMHook ValheimPath="$(VALHEIM_INSTALL)" />
+  </Target>
+  <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'false'" >
+    <Message Importance="High" Text="Skipping MMHOOK dll generation"/>
+  </Target>
 </Project>
