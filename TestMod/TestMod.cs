@@ -185,7 +185,7 @@ namespace TestMod
             // Create and add a recipe for the custom item
             var runeRecipe = new CustomRecipe(new RecipeConfig
             {
-                Item = "BlueprintRune", Amount = 1, Requirements = new[] {new PieceRequirementConfig {Item = "Stone", Amount = 1}}
+                Item = "BlueprintRune", Amount = 1, Requirements = new[] {new RequirementConfig {Item = "Stone", Amount = 1}}
             });
             ItemManager.Instance.AddRecipe(runeRecipe);
 
@@ -199,7 +199,7 @@ namespace TestMod
                 {
                     PieceTable = "_BlueprintPieceTable",
                     AllowedInDungeons = true,
-                    Requirements = new[] {new PieceRequirementConfig {Item = "Wood", Amount = 2}}
+                    Requirements = new[] {new RequirementConfig {Item = "Wood", Amount = 2}}
                 });
             PieceManager.Instance.AddPiece(placebp);
 
