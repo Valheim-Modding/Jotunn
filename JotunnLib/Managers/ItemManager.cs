@@ -87,14 +87,23 @@ namespace JotunnLib.Managers
                 return false;
             }
 
-            // Add to the right layer
+            // Add prefab to the right layer
             if (customItem.ItemPrefab.layer == 0)
             {
                 customItem.ItemPrefab.layer = LayerMask.NameToLayer("item");
             }
 
+            // Add prefab to PrefabManager
             PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
+
+            // Add custom item to ItemManager
             Items.Add(customItem);
+
+            // Create CustomRecipe if provided
+            if (customItem.Recipe != null)
+            {
+                AddRecipe(customItem.Recipe);
+            }
 
             return true;
         }
@@ -107,7 +116,6 @@ namespace JotunnLib.Managers
             {
                 try
                 {
-                    // ItemPrefab and ItemDrop
                     var itemDrop = customItem.ItemDrop;
 
                     if (!itemDrop.m_itemData.m_dropPrefab)
@@ -122,22 +130,19 @@ namespace JotunnLib.Managers
                     }
                     objectDB.m_items.Add(customItem.ItemPrefab);
 
-                    // Optional Recipe
-                    if (customItem.Recipe)
-                    {
-                        if (customItem.FixRecipeReference)
-                        {
-                            customItem.Recipe.FixReferences();
-                            customItem.FixRecipeReference = false;
-                        }
-                        objectDB.m_recipes.Add(customItem.Recipe);
-                    }
-
                     Logger.LogInfo($"Added custom item : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
                 }
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding custom item {customItem.ItemPrefab.name}: {ex.Message}");
+
+                    // Remove prefab, item and recipe from the managers again
+                    PrefabManager.Instance.RemovePrefab(customItem.ItemPrefab.name);
+                    Items.Remove(customItem);
+                    if (customItem.Recipe != null)
+                    {
+                        Recipes.Remove(customItem.Recipe);
+                    }
                 }
             }
 
@@ -223,6 +228,9 @@ namespace JotunnLib.Managers
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding custom recipe {customRecipe.Recipe.name}: {ex.Message}");
+
+                    // Remove recipe from the manager again
+                    Recipes.Remove(customRecipe);
                 }
 
             }
@@ -275,6 +283,9 @@ namespace JotunnLib.Managers
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding custom status effect {customStatusEffect.StatusEffect.name}: {ex.Message}");
+
+                    // Remove status effect
+                    StatusEffects.Remove(customStatusEffect);
                 }
             }
         }
