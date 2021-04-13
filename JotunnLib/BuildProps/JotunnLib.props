@@ -1,5 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(SolutionDir)Environment.props" Condition="'$(VALHEIM_INSTALL)' == ''"/>
+  <Import Project="$(SolutionDir)DoPrebuild.props" Condition="'$(ExecutePrebuild)' == ''" />
   <PropertyGroup>
     <GenerateResourceNeverLockTypeAssemblies>true</GenerateResourceNeverLockTypeAssemblies>
   </PropertyGroup>
