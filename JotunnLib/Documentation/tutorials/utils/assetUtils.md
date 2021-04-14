@@ -1,11 +1,6 @@
 # Asset Utils
-Util functions related to loading assets at runtime.
+Definition of side loading: Assets placed side by side with plugin
 
-## Loading 2D textures
-Loading 2D textures at runtime can be done through the [AssetUtils.LoadTexture](xref:JotunnLib.Utils.AssetUtils.LoadTexture(System.String)) static function.
-
-### Example
-For the following folder structure
 ```
 BepInEx\
     plugins\
@@ -13,20 +8,33 @@ BepInEx\
         MyTexture.jpg
 ```
 
+Definition of embedded resource: Assets are packaged inside of the plugin.dll:
+![](../../images/data/Assets.EmbeddedResource.png)
+
+### Textures & Sprites
+
+Loading 2D textures at runtime can be achieved through the [AssetUtils.LoadTexture](xref:JotunnLib.Utils.AssetUtils.LoadTexture(System.String)) method.
 we can load a 2D texture dynamically by doing the following anywhere in our codebase
 
 ```cs
 Texture2D texture = AssetUtils.LoadTexture("MyTexture.jpg");
 ```
 
-this `texture` object can now be used as a sprite for an item, or anything else. For example, creating a sprite
+Similarly, we can also load a sprite by using the [AssetUtils.LoadTextureFromSprite](xref:JotunnLib.Utils.AssetUtils.LoadTextureFromSprite(System.String)) method like so:
 
 ```cs
-Texture2D texture = AssetUtils.LoadTexture("MyTexture.jpg");
-Sprite sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+var sprite = LoadSpriteFromFile("MyTexture.jpg");
+```
+This will invoke the LoadTexture method and then generate and return a `Sprite` using the texture, wrapping to fit the textures size.
+
+### AssetBundles
+JVL Facilitates side loaded asset bundles through the [LoadAssetBundle](xref:JotunnLib.Utils.AssetUtils.LoadAssetBundle) method:
+```cs
+AssetUtils.LoadAssetBundle("JotunnModExample/Assets/blueprints");
 ```
 
-## Loading models
-Loading `.obj` models at runtime can be done through the [AssetUtils.LoadMesh](xref:JotunnLib.Utils.AssetUtils.LoadMesh(System.String)) static function.
-
-_Example WIP_
+We also provide a utility to load embedded assets:
+```cs
+AssetUtils.LoadAssetBundleFromResources("eviesbackpacks", Assembly.GetExecutingAssembly());
+```
+This method requires that we also pass our assembly to the asset loader so that we may reference the embedded resources which we packaged.

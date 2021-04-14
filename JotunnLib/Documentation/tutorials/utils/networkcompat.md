@@ -7,6 +7,10 @@ In order to quote *"enforce"* network compatibility, a version check is initiate
 ### CompatibilityLevel & Version Strictness
 The [NetworkCompatibility](xref:JotunnLib.Utils.NetworkCompastibilityAttribute) privdes two parameters, one for [[CompatibilityLevel](xref:JotunnLib.Utils.NetworkCompastibilityAttribute.CompatibilityLevel)] (`NoNeedForSync`,`EveryoneMustHaveMod`), and one for [VersionStrictness]([NetworkCompatibility](xref:JotunnLib.Utils.NetworkCompastibilityAttribute).VersionStrictness) (`None`,`Major`,`Minor`,`Build`).
 
+```cs
+[NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+```
+
 These options for the most part are self explanatory, however version strictness is a little complex, so lets take a further look at how this interacts over two devices, a dedicated server and a client:
 
 **No NetworkCompatibility in any plugin, client or server**: Vanilla version checking.
