@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using JotunnLib.Configs;
 
@@ -28,6 +29,42 @@ namespace JotunnLib.Managers
         {
             On.ZInput.Initialize += ZInput_Initialize;
             On.ZInput.Reset += ZInput_Reset;
+            On.ZInput.GetButtonDown += ZInput_GetButtonDown;
+            On.ZInput.GetButtonUp += ZInput_GetButtonUp;
+        }
+
+        private bool ZInput_GetButtonUp(On.ZInput.orig_GetButtonUp orig, string name)
+        {
+            var result = orig(name);
+            if (!result)
+            {
+                foreach (var buttonDef in ZInput.instance.m_buttons.Where(x => x.Key.StartsWith(name + "!")))
+                {
+                    if (Time.inFixedTimeStep ? buttonDef.Value.m_upFixed : buttonDef.Value.m_up)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
+        {
+            var result = orig(name);
+            if (!result)
+            {
+                foreach (var def in ZInput.instance.m_buttons.Where(x => x.Key.StartsWith(name + "!")))
+                {
+                    if (Time.inFixedTimeStep ? def.Value.m_downFixed : def.Value.m_down)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return result;
         }
 
         internal void Load(ZInput zinput)
@@ -80,20 +117,22 @@ namespace JotunnLib.Managers
         }
 
         public void AddButton(
+            string modguid,
             string name,
             KeyCode key,
             float repeatDelay = 0.0f,
             float repeatInterval = 0.0f)
         {
-            if (Buttons.ContainsKey(name))
+
+            if (Buttons.ContainsKey(name + "!" + modguid))
             {
                 Logger.LogError("Cannot have duplicate button: " + name);
                 return;
             }
 
-            Buttons.Add(name, new ButtonConfig()
+            Buttons.Add(name + "!" + modguid, new ButtonConfig()
             {
-                Name = name,
+                Name = name + "!" + modguid,
                 Key = key,
                 RepeatDelay = repeatDelay,
                 RepeatInterval = repeatInterval
@@ -101,21 +140,22 @@ namespace JotunnLib.Managers
         }
 
         public void AddButton(
+            string modguid,
             string name,
             string axis,
             bool inverted = false,
             float repeatDelay = 0.0f,
             float repeatInterval = 0.0f)
         {
-            if (Buttons.ContainsKey(name))
+            if (Buttons.ContainsKey(name + "!" + modguid))
             {
                 Logger.LogError("Cannot have duplicate button: " + name);
                 return;
             }
 
-            Buttons.Add(name, new ButtonConfig()
+            Buttons.Add(name + "!" + modguid, new ButtonConfig()
             {
-                Name = name,
+                Name = name + "!" + modguid,
                 Axis = axis,
                 Inverted = inverted,
                 RepeatDelay = repeatDelay,

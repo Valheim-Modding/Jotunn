@@ -14,11 +14,13 @@ using UnityEngine.UI;
 
 namespace TestMod
 {
-    [BepInPlugin("com.jotunn.testmod", "JotunnLib Test Mod", "0.1.0")]
+    [BepInPlugin(ModGUID, "JotunnLib Test Mod", "0.1.0")]
     [BepInDependency(Main.ModGuid)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Build)]
     internal class TestMod : BaseUnityPlugin
     {
+        private const string ModGUID = "com.jotunn.testmod";
+
         public AssetBundle BlueprintRuneBundle;
         private bool clonedItemsAdded;
         private System.Version currentVersion;
@@ -52,33 +54,6 @@ namespace TestMod
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
-
-            /*// POC: add key hint
-            GameObject hint = new GameObject("TestHint", typeof(RectTransform), typeof(CanvasRenderer), typeof(VerticalLayoutGroup));
-            hint.GetComponent<VerticalLayoutGroup>().childScaleHeight = true;
-            hint.GetComponent<VerticalLayoutGroup>().childScaleWidth = true;
-
-            var action1 = new GameObject("TestAction1", typeof(RectTransform), typeof(CanvasRenderer), typeof(HorizontalLayoutGroup));
-            action1.transform.SetParent(hint.transform, false);
-            action1.GetComponent<HorizontalLayoutGroup>().childScaleHeight = true;
-            action1.GetComponent<HorizontalLayoutGroup>().childScaleWidth = true;
-
-            var key_bkg1 = new GameObject("TestBkg1", typeof(RectTransform), typeof(CanvasRenderer), typeof(ContentSizeFitter));
-            key_bkg1.transform.SetParent(action1.transform, false);
-            var key1 = new GameObject("TextKey1", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Outline));
-            key1.transform.SetParent(key_bkg1.transform, false);
-            key1.GetComponent<Text>().text = "$KEY_Attack1";
-
-            var text1 = new GameObject("TestText1", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Outline));
-            text1.transform.SetParent(action1.transform, false);
-            text1.GetComponent<Text>().text = "HARHAR";
-
-            *//*var kb = new GameObject("Keyboard", typeof(RectTransform), typeof(CanvasRenderer));
-            kb.transform.SetParent(hint.transform);
-            var text = GUIManager.Instance.CreateText("TestBörks", kb.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black, 150f, 50f, true);*//*
-            CustomKeyHint CKH = new CustomKeyHint("Hammer", hint);
-            ItemManager.Instance.AddKeyHint(CKH);*/
         }
 
         // Called every frame
@@ -145,8 +120,8 @@ namespace TestMod
         // Add custom key bindings
         private void registerInputs(object sender, EventArgs e)
         {
-            InputManager.Instance.AddButton("TestMod_Menu", KeyCode.Insert);
-            InputManager.Instance.AddButton("GUIManagerTest", KeyCode.F8);
+            InputManager.Instance.AddButton(ModGUID, "TestMod_Menu", KeyCode.Insert);
+            InputManager.Instance.AddButton(ModGUID, "GUIManagerTest", KeyCode.F8);
         }
 
         // Load assets
@@ -384,7 +359,7 @@ namespace TestMod
             forceVersionMismatch = (bool) Config["JotunnLibTest", "EnableVersionMismatch"].BoxedValue;
             Config.SettingChanged += Config_SettingChanged;
 
-            InputManager.Instance.AddButton("KeycodeValue", (KeyCode) Config["JotunnLibTest", "KeycodeValue"].BoxedValue);
+            InputManager.Instance.AddButton(ModGUID, "KeycodeValue", (KeyCode) Config["JotunnLibTest", "KeycodeValue"].BoxedValue);
         }
 
         // React on changed settings
