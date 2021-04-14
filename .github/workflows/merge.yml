@@ -5,16 +5,23 @@ name: Create DLL on merge to main
       - main
       - dev
 jobs:
-  build:
+  build_merge:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       # Get date
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      # Get Valheim version id
+      - name: Get Valheim version id
+        id: valheimversion
+        run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
 
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
@@ -25,18 +32,31 @@ jobs:
 
       # Install NuGet dependencies
       - name: Install NuGet dependencies
-        run: nuget restore JotunnLib.sln
+        run: |
+          nuget restore JotunnLib.sln
+          dotnet restore JotunnLib/JotunnLib.csproj
 
       # Get build commands
       - name: Get build commands
         run: |
           sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
           echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+          wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
           sudo apt-get update
-          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip
+          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-5.0 dotnet-runtime-5.0
+
+      # Cache the results
+      - name: Cache Valheim
+        id: cachevalheim
+        uses: actions/cache@v2
+        with:
+          path: ~/VHINSTALL
+          key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}
 
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
+        if: steps.cachevalheim.outputs.cache-hit != 'true'
         run: |
           wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.800/"
           unzip bepinex.zip -d ~/BepInExRaw
@@ -48,6 +68,27 @@ jobs:
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
+      # Gitversion
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id:   gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        with:
+          useConfigFile: true
+          configFilePath: JotunnLib/GitVersion.yml
+
+      - name: Set JotunnLib version
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><Version>${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}</Version></PropertyGroup></Project>" > JotunnLib/BuildProps/version.props
+
+      - name: Reset DoPrebuild.props
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><ExecutePrebuild>true</ExecutePrebuild></PropertyGroup></Project>" > JotunnLib/BuildProps/DoPrebuild.props
+
       # Build DLLs
       - name: Build solution
         run: |
@@ -57,4 +98,9 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: JotunnLib-${{ steps.date.outputs.date }}.dll
-          path: JotunnLib/obj/Release/JotunnLib.dll
+          path: JotunnLib/bin/Release/net462/JotunnLib.dll
+            
+      - uses: actions/upload-artifact@v2
+        with:
+          name: JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg
+          path: JotunnLib/bin/Release/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg            

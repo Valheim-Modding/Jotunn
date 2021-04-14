@@ -53,9 +53,15 @@ namespace JotunnLib
     public static class PrefabExtensions
     {
         /// <summary>
+        ///     Legacy ValheimLib prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
+        /// </summary>
+        [Obsolete("Legacy ValheimLib mock prefix. Use JVLMockPrefix \"JVLmock_\" instead.")]
+        public const string MockPrefix = "VLmock_";
+
+        /// <summary>
         ///     Prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
         /// </summary>
-        public const string MockPrefix = "VLmock_";
+        public const string JVLMockPrefix = "JVLmock_";
 
         /// <summary>
         ///     Will try to find the real vanilla prefab from the given mock
@@ -68,10 +74,12 @@ namespace JotunnLib
             if (unityObject)
             {
                 var unityObjectName = unityObject.name;
-                var isMock = unityObjectName.StartsWith(MockPrefix);
-                if (isMock)
+                var isVLMock = unityObjectName.StartsWith(MockPrefix);
+                var isJVLMock = unityObjectName.StartsWith(JVLMockPrefix);
+                if (isVLMock || isJVLMock)
                 {
-                    unityObjectName = unityObjectName.Substring(MockPrefix.Length);
+                    if (isVLMock) unityObjectName = unityObjectName.Substring(MockPrefix.Length);
+                    if (isJVLMock) unityObjectName = unityObjectName.Substring(JVLMockPrefix.Length);
 
                     // Cut off the suffix in the name to correctly query the original material
                     if (unityObject is Material)

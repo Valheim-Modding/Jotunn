@@ -1,37 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JotunnLib.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
+using Object = UnityEngine.Object;
 using Toggle = UnityEngine.UI.Toggle;
 
 namespace JotunnLib.Managers
 {
     public class GUIManager : Manager, IPointerClickHandler
     {
-        internal static GameObject GUIContainer;
-
-        private bool needsLoad = true;
-
-        internal Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
-        private bool GUIInStart = true;
         public static GUIManager Instance { get; private set; }
 
         public static GameObject PixelFix { get; private set; }
 
-        internal Texture2D TextureAtlas { get; private set; }
+        internal static GameObject GUIContainer;
 
-        internal Texture2D TextureAtlas2 { get; private set; }
-
-        internal Font AveriaSerif { get; private set; }
-
-        internal Font AveriaSerifBold { get; private set; }
-
-        private const int UILayer = 5;
+        public const int UILayer = 5;
 
         public Color ValheimOrange = new Color(1f, 0.631f, 0.235f, 1f);
 
@@ -45,6 +35,20 @@ namespace JotunnLib.Managers
             pressedColor = new Color(0.838f, 0.647f, 0.031f, 1f),
             selectedColor = new Color(1, 0.786f, 0.088f, 1f),
         };
+
+        public Font AveriaSerif { get; private set; }
+
+        public Font AveriaSerifBold { get; private set; }
+
+        internal Texture2D TextureAtlas { get; private set; }
+
+        internal Texture2D TextureAtlas2 { get; private set; }
+
+        internal Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
+
+        private bool needsLoad = true;
+
+        private bool GUIInStart = true;
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -281,6 +285,8 @@ namespace JotunnLib.Managers
             }
         }
 
+
+
         /// <summary>
         ///     Create a new button (Valheim style).
         /// </summary>
@@ -327,8 +333,16 @@ namespace JotunnLib.Managers
                 newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
             }
 
+            FixPixelMultiplier(newButton.GetComponent<Image>());
+
             return newButton;
         }
+
+        public void FixPixelMultiplier(Image img)
+        {
+            img.pixelsPerUnitMultiplier = SceneManager.GetActiveScene().name == "start" ? 1.0f : 2f;
+        }
+
 
         public GameObject CreateWoodpanel(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f, float height = 0f)
         {
@@ -522,29 +536,31 @@ namespace JotunnLib.Managers
         /// <returns></returns>
         public GameObject CreateScrollView(Transform parent, bool showHorizontalScrollbar, bool showVerticalScrollbar, float handleSize, float handleDistanceToBorder, ColorBlock handleColors, Color slidingAreaBackgroundColor, float width, float height)
         {
-            
-            GameObject canvas = new GameObject("Canvas", typeof(RectTransform), typeof(Canvas));
+
+            GameObject canvas = new GameObject("Canvas", typeof(RectTransform), /*typeof(Canvas), */typeof(CanvasGroup), typeof(GraphicRaycaster));
             canvas.GetComponent<Canvas>().sortingOrder = 0;
             canvas.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
             canvas.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
             canvas.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
             canvas.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
             canvas.GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
-            canvas.GetComponent<RectTransform>().anchoredPosition= new Vector2(0, 0);
+            canvas.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+
+            canvas.GetComponent<CanvasGroup>().interactable = true;
+            canvas.GetComponent<CanvasGroup>().ignoreParentGroups = true;
+            canvas.GetComponent<CanvasGroup>().blocksRaycasts = false;
+            canvas.GetComponent<CanvasGroup>().alpha = 1f;
 
             //canvas.transform.localScale = new Vector3(2,2,2);
             canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-            
+
 
             canvas.transform.SetParent(parent, false);
 
             // Create scrollView
-            GameObject scrollView = new GameObject("Scroll View", typeof(Image), typeof(ScrollRect), typeof(Mask));
-            scrollView.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
-            scrollView.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-            scrollView.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-            scrollView.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, +handleDistanceToBorder + handleSize);
+            GameObject scrollView = new GameObject("Scroll View", typeof(Image), typeof(ScrollRect), typeof(Mask)).SetUpperRight();
+            //scrollView.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 0);
             scrollView.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             scrollView.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
 
@@ -553,7 +569,7 @@ namespace JotunnLib.Managers
             scrollView.GetComponent<ScrollRect>().horizontal = showHorizontalScrollbar;
             scrollView.GetComponent<ScrollRect>().vertical = showVerticalScrollbar;
             scrollView.GetComponent<ScrollRect>().horizontalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
-            scrollView.GetComponent<ScrollRect>().verticalScrollbarVisibility= ScrollRect.ScrollbarVisibility.AutoHide;
+            scrollView.GetComponent<ScrollRect>().verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
             scrollView.GetComponent<ScrollRect>().scrollSensitivity = 35f;
 
             scrollView.GetComponent<Mask>().showMaskGraphic = false;
@@ -569,7 +585,7 @@ namespace JotunnLib.Managers
             viewPort.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             viewPort.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
             viewPort.GetComponent<Image>().color = new Color(0, 0, 0, 0);
-            
+
             viewPort.transform.SetParent(scrollView.transform, false);
 
             scrollView.GetComponent<ScrollRect>().viewport = viewPort.GetComponent<RectTransform>();
@@ -586,7 +602,7 @@ namespace JotunnLib.Managers
                 horizontalScrollbar.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1f);
                 horizontalScrollbar.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1f);
                 horizontalScrollbar.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
-                horizontalScrollbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-handleSize / 2f, -height+handleSize);
+                horizontalScrollbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-handleSize / 2f, -height + handleSize);
                 horizontalScrollbar.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 2f * handleDistanceToBorder - handleSize);
                 horizontalScrollbar.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, handleSize);
 
@@ -594,22 +610,22 @@ namespace JotunnLib.Managers
 
                 horizontalScrollbar.GetComponent<Scrollbar>().colors = handleColors;
 
-                
+
                 GameObject slidingArea = new GameObject("Sliding Area", typeof(RectTransform));
                 slidingArea.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
                 slidingArea.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
                 slidingArea.GetComponent<RectTransform>().pivot = new Vector2(0, 0.5f);
-                slidingArea.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,0);
+                slidingArea.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
                 slidingArea.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 2f * handleDistanceToBorder - handleSize);
                 slidingArea.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, handleSize);
 
                 slidingArea.transform.SetParent(horizontalScrollbar.transform, false);
 
                 GameObject handle = new GameObject("Handle", typeof(RectTransform), typeof(Image));
-                handle.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -handleSize/2f);
+                handle.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -handleSize / 2f);
                 handle.transform.SetParent(slidingArea.transform, false);
-                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, handleSize/2f);
-                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, handleSize/2f);
+                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, handleSize / 2f);
+                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, handleSize / 2f);
                 handle.GetComponent<Image>().sprite = GetSprite("UISprite");
                 handle.GetComponent<Image>().type = Image.Type.Sliced;
 
@@ -644,7 +660,7 @@ namespace JotunnLib.Managers
                 slidingArea.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
                 slidingArea.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
                 slidingArea.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
-                slidingArea.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,0);
+                slidingArea.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
                 slidingArea.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, handleSize);
                 slidingArea.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 2f * handleDistanceToBorder - handleSize);
 
@@ -653,14 +669,14 @@ namespace JotunnLib.Managers
                 GameObject handle = new GameObject("Handle", typeof(RectTransform), typeof(Image));
                 handle.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
                 handle.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-                handle.GetComponent<RectTransform>().anchoredPosition = new Vector2(handleSize/2f, 0);
+                handle.GetComponent<RectTransform>().anchoredPosition = new Vector2(handleSize / 2f, 0);
                 handle.transform.SetParent(slidingArea.transform, false);
-                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, handleSize/2f);
-                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, handleSize/2f);
+                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, handleSize / 2f);
+                handle.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, handleSize / 2f);
                 handle.GetComponent<Image>().sprite = GetSprite("UISprite");
                 handle.GetComponent<Image>().type = Image.Type.Sliced;
                 verticalScrollbar.GetComponent<Scrollbar>().size = 0.4f;
-                
+
 
                 verticalScrollbar.GetComponent<Scrollbar>().handleRect = handle.GetComponent<RectTransform>();
                 verticalScrollbar.GetComponent<Scrollbar>().targetGraphic = handle.GetComponent<Image>();
@@ -681,9 +697,9 @@ namespace JotunnLib.Managers
             content.GetComponent<VerticalLayoutGroup>().childAlignment = TextAnchor.UpperLeft;
             content.GetComponent<VerticalLayoutGroup>().childForceExpandWidth = true;
             content.GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
-            content.GetComponent<VerticalLayoutGroup>().childControlHeight= true;
-            content.GetComponent<VerticalLayoutGroup>().childControlWidth= showHorizontalScrollbar;
-            
+            content.GetComponent<VerticalLayoutGroup>().childControlHeight = true;
+            content.GetComponent<VerticalLayoutGroup>().childControlWidth = showHorizontalScrollbar;
+
             content.transform.SetParent(viewPort.transform, false);
 
             content.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -691,6 +707,95 @@ namespace JotunnLib.Managers
             scrollView.GetComponent<ScrollRect>().content = content.GetComponent<RectTransform>();
 
             return canvas;
+        }
+
+        /// <summary>
+        /// Create toggle field
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="parent"></param>
+        /// <param name="anchorMin"></param>
+        /// <param name="anchorMax"></param>
+        /// <param name="position"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public GameObject CreateToggle(string text, Transform parent, Vector2 position, float width, float height)
+        {
+            GameObject toggle = new GameObject("Toggle", typeof(RectTransform), typeof(Toggle), typeof(LayoutElement)).SetUpperLeft().SetSize(width, height);
+            toggle.GetComponent<LayoutElement>().preferredWidth = width;
+            toggle.transform.SetParent(parent, false);
+
+
+            GameObject background = new GameObject("Background", typeof(RectTransform), typeof(Image)).SetUpperRight().SetSize(28f, 28f);
+            background.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+            background.transform.SetParent(toggle.transform, false);
+
+
+            Sprite checkBoxSprite = GetSprite("checkbox");
+            background.GetComponent<Image>().sprite = checkBoxSprite;
+            background.GetComponent<Image>().type = Image.Type.Simple;
+
+            toggle.GetComponent<Toggle>().toggleTransition = Toggle.ToggleTransition.Fade;
+
+            GameObject checkMark = new GameObject("Checkmark", typeof(RectTransform), typeof(Image));
+            checkMark.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            checkMark.SetSize(28f, 28f);
+            checkMark.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+            checkMark.transform.SetParent(background.transform, false);
+
+            toggle.GetComponent<Toggle>().graphic = checkMark.GetComponent<Image>();
+            toggle.GetComponent<Toggle>().targetGraphic = background.GetComponent<Image>();
+
+
+            ApplyToogleStyle(toggle.GetComponent<Toggle>());
+            checkMark.GetComponent<Image>().type = Image.Type.Simple;
+
+            return toggle;
+        }
+
+        /// <summary>
+        /// Create key binding field
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="parent"></param>
+        /// <param name="position"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public GameObject CreateKeyBindField(string text, Transform parent, float width, float height)
+        {
+            GameObject input = new GameObject("KeyBinding", typeof(RectTransform), typeof(LayoutElement)).SetUpperLeft().SetSize(width, height);
+            input.GetComponent<LayoutElement>().preferredWidth = width;
+
+
+            GameObject label = CreateText(text, input.transform, new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), AveriaSerifBold, 16, ValheimOrange, true,
+                Color.black, width - 150f, 0f, false);
+            label.SetUpperLeft().SetToTextHeight();
+            input.SetHeight(label.GetHeight());
+
+            input.transform.SetParent(parent, false);
+
+            GameObject button = new GameObject("Button", typeof(RectTransform), typeof(Image), typeof(Button)).SetUpperRight().SetSize(100f, label.GetHeight());
+
+            button.transform.SetParent(input.transform, false);
+            button.GetComponent<Button>().image = button.GetComponent<Image>();
+            button.GetComponent<Image>().sprite = CreateSpriteFromAtlas(new Rect(0, 2048 - 156, 139, 36), new Vector2(0.5f, 0.5f), 50f, 0, SpriteMeshType.FullRect,
+                new Vector4(5, 5, 5, 5));
+
+            var bindString = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleCenter();
+            bindString.GetComponent<Text>().text = "";
+            bindString.GetComponent<Text>().font = AveriaSerifBold;
+            bindString.GetComponent<Text>().color = new Color(1, 1, 1, 1);
+
+            bindString.SetToTextHeight().SetWidth(button.GetComponent<RectTransform>().rect.width);
+            bindString.SetMiddleLeft().GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+
+            button.SetHeight(bindString.GetHeight() + 4f);
+
+            bindString.transform.SetParent(button.transform, false);
+
+            return input;
         }
     }
 }

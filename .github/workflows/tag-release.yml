@@ -6,12 +6,19 @@ on:
 name: Create Release
 
 jobs:
-  build:
+  build_release:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # Get Valheim version id
+      - name: Get Valheim version id
+        id: valheimversion
+        run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
 
       - name: Get the version
         id: get_version
@@ -26,15 +33,27 @@ jobs:
 
       # Install NuGet dependencies
       - name: Install NuGet dependencies
-        run: nuget restore JotunnLib.sln
+        run: |
+          nuget restore JotunnLib.sln
+          dotnet restore JotunnLib/JotunnLib.csproj
 
       # Get build commands
       - name: Get build commands
         run: |
           sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
           echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+          wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
           sudo apt-get update
-          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip
+          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-5.0 dotnet-runtime-5.0
+
+      # Cache the results
+      - name: Cache Valheim
+        id: cachevalheim
+        uses: actions/cache@v2
+        with:
+          path: ~/VHINSTALL
+          key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}
 
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
@@ -53,9 +72,9 @@ jobs:
       - name: Build solution
         run: |
           msbuild JotunnLib.sln /p:Configuration=Release
-          mv JotunnLib/obj/Release/JotunnLib.dll JotunnLib.dll
+          mv JotunnLib/bin/Release/net462/JotunnLib.dll JotunnLib.dll
           msbuild JotunnLib.sln /p:Configuration=Debug
-          mv JotunnLib/obj/Debug/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
+          mv JotunnLib/bin/Debug/net462/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
       - name: Release
         uses: softprops/action-gh-release@v1

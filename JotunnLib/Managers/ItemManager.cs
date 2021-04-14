@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using JotunnLib.Utils;
 using JotunnLib.Entities;
+using JotunnLib.Configs;
 
 namespace JotunnLib.Managers
 {
@@ -28,11 +29,17 @@ namespace JotunnLib.Managers
         /// </summary>
         public static Action OnAfterInit;
 
+        public event EventHandler OnItemsRegistered;
+
+        /// <summary>
+        ///     Container for custom key hints in the DontDestroyOnLoad scene.
+        /// </summary>
+        internal GameObject KeyHintContainer;
+
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
-
-        public event EventHandler OnItemsRegistered;
+        internal readonly List<CustomKeyHint> KeyHints = new List<CustomKeyHint>();
 
         private void Awake()
         {
@@ -48,9 +55,15 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
+            KeyHintContainer = new GameObject("KeyHints");
+            KeyHintContainer.transform.parent = Main.RootObject.transform;
+            KeyHintContainer.SetActive(false);
+
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
+            On.KeyHints.Awake += RegisterCustomKeyHints;
+            On.KeyHints.UpdateHints += ShowCustomKeyHint;
         }
 
         /// <summary>
@@ -63,28 +76,79 @@ namespace JotunnLib.Managers
         /// <returns>true if the custom item was added to the manager.</returns>
         public bool AddItem(CustomItem customItem)
         {
-            if (customItem.IsValid())
+            if (!customItem.IsValid())
             {
-                if (Items.Contains(customItem))
+                Logger.LogWarning($"Custom item {customItem} is not valid");
+                return false;
+            }
+            if (Items.Contains(customItem))
+            {
+                Logger.LogWarning($"Custom item {customItem} already added");
+                return false;
+            }
+
+            // Add prefab to the right layer
+            if (customItem.ItemPrefab.layer == 0)
+            {
+                customItem.ItemPrefab.layer = LayerMask.NameToLayer("item");
+            }
+
+            // Add prefab to PrefabManager
+            PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
+
+            // Add custom item to ItemManager
+            Items.Add(customItem);
+
+            // Create CustomRecipe if provided
+            if (customItem.Recipe != null)
+            {
+                AddRecipe(customItem.Recipe);
+            }
+
+            return true;
+        }
+
+        private void RegisterCustomItems(ObjectDB objectDB)
+        {
+            Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
+
+            foreach (var customItem in Items)
+            {
+                try
                 {
-                    Logger.LogWarning($"Custom item {customItem} already added");
-                }
-                else
-                {
-                    // Add to the right layer
-                    if (customItem.ItemPrefab.layer == 0)
+                    var itemDrop = customItem.ItemDrop;
+
+                    if (!itemDrop.m_itemData.m_dropPrefab)
                     {
-                        customItem.ItemPrefab.layer = LayerMask.NameToLayer("item");
+                        itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
                     }
+                    if (customItem.FixReference)
+                    {
+                        customItem.ItemPrefab.FixReferences();
+                        itemDrop.m_itemData.m_shared.FixReferences();
+                        customItem.FixReference = false;
+                    }
+                    objectDB.m_items.Add(customItem.ItemPrefab);
 
-                    PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
-                    Items.Add(customItem);
+                    Logger.LogInfo($"Added custom item : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error while adding custom item {customItem.ItemPrefab.name}: {ex.Message}");
 
-                    return true;
+                    // Remove prefab, item and recipe from the managers again
+                    PrefabManager.Instance.RemovePrefab(customItem.ItemPrefab.name);
+                    Items.Remove(customItem);
+                    if (customItem.Recipe != null)
+                    {
+                        Recipes.Remove(customItem.Recipe);
+                    }
                 }
             }
 
-            return false;
+            Logger.LogInfo("Updating item hashes");
+
+            objectDB.UpdateItemHashes();
         }
 
         /// <summary>
@@ -96,70 +160,41 @@ namespace JotunnLib.Managers
         /// <returns>true if the custom recipe was added to the manager.</returns>
         public bool AddRecipe(CustomRecipe customRecipe)
         {
-            if (!Recipes.Contains(customRecipe))
+            if (!customRecipe.IsValid())
             {
-                Recipes.Add(customRecipe);
-
-                return true;
+                Logger.LogWarning($"Custom recipe {customRecipe} is not valid");
+                return false;
+            }
+            if (Recipes.Contains(customRecipe))
+            {
+                Logger.LogWarning($"Custom recipe {customRecipe} already added");
+                return false;
             }
 
-            return false;
+            Recipes.Add(customRecipe);
+            return true;
         }
 
         /// <summary>
-        ///     Add a <see cref="CustomStatusEffect"/> to the game.<br />
-        ///     Checks if the custom status effect is unique and adds it to the list of custom status effects.<br />
-        ///     Custom status effects are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
+        ///     Adds recipes defined in a JSON file at given path, relative to BepInEx/plugins
         /// </summary>
-        /// <param name="customStatusEffect">The custom status effect to add.</param>
-        /// <returns>true if the custom status effect was added to the manager.</returns>
-        public bool AddStatusEffect(CustomStatusEffect customStatusEffect)
+        /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
+        public void AddRecipesFromJson(string path)
         {
-            if (!StatusEffects.Contains(customStatusEffect))
-            {
-                StatusEffects.Add(customStatusEffect);
+            string json = AssetUtils.LoadText(path);
 
-                return true;
+            if (string.IsNullOrEmpty(json))
+            {
+                Logger.LogError($"Failed to load recipes from json: {path}");
+                return;
             }
 
-            return false;
-        }
+            List<RecipeConfig> recipes = RecipeConfig.ListFromJson(json);
 
-        private void registerCustomItems(ObjectDB objectDB)
-        {
-            Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
-
-            foreach (var customItem in Items)
+            foreach (RecipeConfig recipe in recipes)
             {
-                try
-                {
-                    var itemDrop = customItem.ItemDrop;
-                    
-                    if (customItem.FixReference || itemDrop.m_itemData.m_dropPrefab == null)
-                    {
-                        itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
-                    }
-
-                    if (customItem.FixReference)
-                    {
-                        customItem.ItemPrefab.FixReferences();
-                        itemDrop.m_itemData.m_shared.FixReferences();
-                        customItem.FixReference = false;
-                    }
-
-                    objectDB.m_items.Add(customItem.ItemPrefab);
-
-                    Logger.LogInfo($"Added custom item : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
-                } 
-                catch (Exception ex)
-                {
-                    Logger.LogError($"Error while adding custom item {customItem.ItemPrefab.name}: {ex.Message}");
-                }
+                AddRecipe(new CustomRecipe(recipe));
             }
-
-            Logger.LogInfo("Updating item hashes");
-
-            objectDB.UpdateItemHashes();
         }
 
         private void RegisterCustomRecipes(ObjectDB objectDB)
@@ -193,19 +228,46 @@ namespace JotunnLib.Managers
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding custom recipe {customRecipe.Recipe.name}: {ex.Message}");
+
+                    // Remove recipe from the manager again
+                    Recipes.Remove(customRecipe);
                 }
 
             }
         }
 
-        private void registerCustomStatusEffects(ObjectDB objectDB)
+        /// <summary>
+        ///     Add a <see cref="CustomStatusEffect"/> to the game.<br />
+        ///     Checks if the custom status effect is unique and adds it to the list of custom status effects.<br />
+        ///     Custom status effects are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
+        /// </summary>
+        /// <param name="customStatusEffect">The custom status effect to add.</param>
+        /// <returns>true if the custom status effect was added to the manager.</returns>
+        public bool AddStatusEffect(CustomStatusEffect customStatusEffect)
+        {
+            if (!customStatusEffect.IsValid())
+            {
+                Logger.LogWarning($"Custom status effect {customStatusEffect} is not valid");
+                return false;
+            }
+            if (StatusEffects.Contains(customStatusEffect))
+            {
+                Logger.LogWarning($"Custom status effect {customStatusEffect} already added");
+                return false;
+            }
+
+            StatusEffects.Add(customStatusEffect);
+            return true;
+        }
+
+        private void RegisterCustomStatusEffects(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
 
             foreach (var customStatusEffect in StatusEffects)
             {
-                try 
-                { 
+                try
+                {
                     var statusEffect = customStatusEffect.StatusEffect;
                     if (customStatusEffect.FixReference)
                     {
@@ -221,10 +283,90 @@ namespace JotunnLib.Managers
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding custom status effect {customStatusEffect.StatusEffect.name}: {ex.Message}");
+
+                    // Remove status effect
+                    StatusEffects.Remove(customStatusEffect);
                 }
             }
         }
 
+        /// <summary>
+        ///     Add a <see cref="CustomKeyHint"/> to the game.<br />
+        ///     Checks if the custom key hint is unique (i.e. the first one registered for an item).<br />
+        ///     Custom status effects are displayed in the game instead of the default 
+        ///     KeyHints for equipped tools or weapons they are registered for.
+        /// </summary>
+        /// <param name="customKeyHint">The custom key hint to add.</param>
+        /// <returns>true if the custom key hint was added to the manager.</returns>
+        public bool AddKeyHint(CustomKeyHint customKeyHint)
+        {
+            if (!customKeyHint.IsValid())
+            {
+                Logger.LogWarning($"Custom key hint {customKeyHint} is not valid");
+                return false;
+            }
+            if (KeyHints.Contains(customKeyHint))
+            {
+                Logger.LogWarning($"Custom key hint {customKeyHint} already added");
+                return false;
+            }
+
+            // Add correct layer and add to the KeyHintContainer
+            var hint = customKeyHint.KeyHint;
+            hint.layer = GUIManager.UILayer;
+            //customKeyHint.KeyHint.transform.SetParent(GUIManager.GUIContainer.transform);
+            hint.transform.SetParent(KeyHintContainer.transform);
+            hint.SetActive(false);
+            KeyHints.Add(customKeyHint);
+            return true;
+        }
+
+        private void RegisterCustomKeyHints(On.KeyHints.orig_Awake orig, KeyHints self)
+        {
+            orig(self);
+
+            Logger.LogInfo($"---- Adding custom key hints ----");
+
+            // Get current RectTransform from BuildHints
+            var buildTransform = (RectTransform)self.m_buildHints.transform;
+
+            foreach (var customKeyHint in KeyHints)
+            {
+                /*var hint = customKeyHint.KeyHint;
+                hint.name = customKeyHint.KeyHint.name;
+
+                var tf = (RectTransform)hint.transform;
+                tf.SetParent(self.transform, false);
+                tf.anchorMin = buildTransform.anchorMin;
+                tf.anchorMax = buildTransform.anchorMax;
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 410f);
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 203f);
+                tf.anchoredPosition = buildTransform.anchoredPosition;*/
+
+
+                /*var uihint = hint.AddComponent<UIInputHint>();
+                uihint.m_group = hint.GetComponentInParent<UIGroupHandler>();
+                var kb = hint.transform.Find("Keyboard").gameObject;
+                if (kb)
+                {
+                    uihint.m_mouseKeyboardHint = kb;
+                }*/
+
+                Logger.LogInfo($"Added key hint : {customKeyHint.KeyHint} | Item : {customKeyHint.Item}");
+            }
+
+            /*var btn = GUIManager.Instance.CreateButton("Blarks", self.transform, buildTransform.anchorMin, buildTransform.anchorMax, buildTransform.anchoredPosition, 100f, 30f);
+            btn.name = "BtnHint";
+
+            Logger.LogInfo($"Added key hint : {btn}");*/
+        }
+
+        /// <summary>
+        ///     Hook on <see cref="ObjectDB.CopyOtherDB"/> to add custom items to FejdStartup screen (aka main menu)
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
         private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             orig(self, other);
@@ -237,7 +379,7 @@ namespace JotunnLib.Managers
                 OnBeforeCustomItemsAdded.SafeInvoke();
                 OnBeforeCustomItemsAdded = null;
 
-                registerCustomItems(self);
+                RegisterCustomItems(self);
 
                 self.UpdateItemHashes();
 
@@ -246,6 +388,11 @@ namespace JotunnLib.Managers
             }
         }
 
+        /// <summary>
+        ///     Hook on <see cref="ObjectDB.Awake"/> to register all custom entities from this manager to the <see cref="ObjectDB"/>.
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
         private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
@@ -258,9 +405,9 @@ namespace JotunnLib.Managers
                 OnBeforeCustomItemsAdded.SafeInvoke();
                 OnBeforeCustomItemsAdded = null;
 
-                registerCustomItems(self);
+                RegisterCustomItems(self);
                 RegisterCustomRecipes(self);
-                registerCustomStatusEffects(self);
+                RegisterCustomStatusEffects(self);
 
                 self.UpdateItemHashes();
 
@@ -272,6 +419,12 @@ namespace JotunnLib.Managers
             OnItemsRegistered?.Invoke(null, EventArgs.Empty);
         }
 
+        /// <summary>
+        ///     Hook on <see cref="Player.Load"/> to refresh recipes for the custom items.
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="pkg"></param>
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
         {
             orig(self, pkg);
@@ -282,6 +435,38 @@ namespace JotunnLib.Managers
             }
 
             self.UpdateKnownRecipesList();
+        }
+
+        /// <summary>
+        ///     Hook on <see cref="KeyHints.UpdateHints" /> to show custom key hints instead of the vanilla ones.
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        private void ShowCustomKeyHint(On.KeyHints.orig_UpdateHints orig, KeyHints self)
+        {
+            orig(self);
+
+            if (Player.m_localPlayer == null)
+            {
+                return;
+            }
+
+            /*// check if a custom item has a custom key hint registered and show it instead the vanilla one
+            if (self.m_buildHints.activeSelf)
+            {
+                self.m_buildHints.SetActive(false);
+
+                //var name = KeyHints[0].KeyHint.name;
+                //var name = "CopyHint";
+                *//*var name = "BtnHint";
+                var tf = self.transform.Find(name);
+                var hint = tf.gameObject;
+                hint.SetActive(true);*//*
+            }
+            if (self.m_combatHints.activeSelf)
+            {
+
+            }*/
         }
     }
 }

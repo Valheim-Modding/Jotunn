@@ -1,131 +1,126 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A6082A59-38BE-4CAB-9078-2C8FCDA65B8F}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>JotunnLib</RootNamespace>
-    <AssemblyName>JotunnLib</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFramework>net462</TargetFramework>
+    <Product>JotunnLib</Product>
+    <Id>JotunnLib</Id>
+    <PackageId>JotunnLib</PackageId>
+    <Authors>Valheim-Modding team</Authors>
+    <Description>Jotunn, the Valheim Lib</Description>
+    <projectUrl>https://github.com/Valheim-Modding/</projectUrl>
+    <PackageIcon>images\JVL_Logo_128x128.png</PackageIcon>
+    <iconUrl>https://github.com/Valheim-Modding/Jotunn/raw/dev/resources/JVL_Logo.gif</iconUrl>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>preview</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="HarmonyX" Version="2.4.0" />
+    <PackageReference Include="MonoMod" Version="21.3.1.1" />
+    <PackageReference Include="NuGet.Build.Tasks.Pack" Version="5.9.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <GenerateResourceNeverLockTypeAssemblies>true</GenerateResourceNeverLockTypeAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="assembly_googleanalytics_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_googleanalytics_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="assembly_guiutils_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="assembly_lux_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_lux_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="assembly_postprocessing_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_postprocessing_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="assembly_simplemeshcombine_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_simplemeshcombine_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="assembly_steamworks_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_steamworks_publicized.dll</HintPath>
-      <Private>True</Private>
+      <Private>false</Private>
     </Reference>
     <Reference Include="assembly_sunshafts_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_sunshafts_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="assembly_utils_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="assembly_valheim_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx, Version=5.4.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx.Harmony, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\BepInEx.Harmony.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx.Preloader, Version=5.4.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\BepInEx.Preloader.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="HarmonyXInterop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\HarmonyXInterop.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="MMHOOK_assembly_googleanalytics_publicized">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_googleanalytics_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="MMHOOK_assembly_guiutils_publicized">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_guiutils_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="MMHOOK_assembly_lux_publicized">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_lux_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="MMHOOK_assembly_postprocessing_publicized">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_postprocessing_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="MMHOOK_assembly_simplemeshcombine_publicized">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_simplemeshcombine_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="MMHOOK_assembly_steamworks_publicized">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_steamworks_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="MMHOOK_assembly_sunshafts_publicized">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_sunshafts_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="MMHOOK_assembly_utils_publicized">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_utils_publicized.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="MMHOOK_assembly_valheim_publicized">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_valheim_publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\Mono.Security.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="MonoMod, Version=21.3.28.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MonoMod.21.3.28.2\lib\net40\MonoMod.exe</HintPath>
@@ -146,328 +141,349 @@
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AccessibilityModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.AccessibilityModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.AIModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AndroidJNIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.AndroidJNIModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.AnimationModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ARModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.ARModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.AudioModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ClothModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.ClothModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ClusterInputModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.ClusterInputModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ClusterRendererModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.ClusterRendererModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CrashReportingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.CrashReportingModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.DirectorModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.DirectorModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.DSPGraphModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.DSPGraphModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.GameCenterModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.GameCenterModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.GridModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.GridModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.HotReloadModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.HotReloadModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.InputModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.InputModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.JSONSerializeModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.LocalizationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.LocalizationModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.PerformanceReportingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.PerformanceReportingModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.Physics2DModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ProfilerModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.ProfilerModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.ScreenCaptureModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.ScreenCaptureModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.SharedInternalsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.SharedInternalsModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.SpriteMaskModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.SpriteMaskModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.SpriteShapeModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.SpriteShapeModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.StreamingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.StreamingModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.SubstanceModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.SubstanceModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.SubsystemsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.SubsystemsModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.TerrainModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.TerrainModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.TerrainPhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.TextCoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.TextCoreModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.TilemapModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.TilemapModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.TLSModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.TLSModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UIElementsModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UmbraModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UmbraModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UNETModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UNETModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityAnalyticsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityConnectModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UnityConnectModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityTestProtocolModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestTextureModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestWWWModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.VehiclesModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.VehiclesModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.VFXModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.VFXModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.VideoModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.VideoModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.VRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.VRModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.WindModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.WindModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.XRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.XRModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Configs\ButtonConfig.cs" />
-    <Compile Include="Entities\CustomPiece.cs" />
-    <Compile Include="Entities\CustomItem.cs" />
-    <Compile Include="Entities\CustomRecipe.cs" />
-    <Compile Include="Entities\CustomStatusEffect.cs" />
-    <Compile Include="Configs\LocalizationConfig.cs" />
-    <Compile Include="Entities\Mock.cs" />
-    <Compile Include="Entities\MockRequirement.cs" />
-    <Compile Include="Configs\PieceConfig.cs" />
-    <Compile Include="Configs\PieceRequirementConfig.cs" />
-    <Compile Include="Configs\RecipeConfig.cs" />
-    <Compile Include="Configs\SkillConfig.cs" />
-    <Compile Include="Events\PlayerEventArgs.cs" />
-    <Compile Include="Events\PlayerPlacedPieceEventArgs.cs" />
-    <Compile Include="Extensions\ItemExtensions.cs" />
-    <Compile Include="Extensions\ZNetExtension.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Manager.cs" />
-    <Compile Include="Managers\CommandManager.cs" />
-    <Compile Include="Entities\ConsoleCommand.cs" />
-    <Compile Include="ConsoleCommands\ClearCommand.cs" />
-    <Compile Include="ConsoleCommands\HelpCommand.cs" />
-    <Compile Include="Managers\EventManager.cs" />
-    <Compile Include="Managers\GUIManager.cs" />
-    <Compile Include="Managers\InputManager.cs" />
-    <Compile Include="Managers\LocalizationManager.cs" />
-    <Compile Include="Managers\ItemManager.cs" />
-    <Compile Include="Managers\MockManager.cs" />
-    <Compile Include="Managers\PieceManager.cs" />
-    <Compile Include="Managers\PrefabManager.cs" />
-    <Compile Include="Managers\SaveManager.cs" />
-    <Compile Include="Managers\SynchronizationManager.cs" />
-    <Compile Include="Managers\ZoneManager.cs" />
-    <Compile Include="Patches\ConsoleCommandsPatches.cs" />
-    <Compile Include="Main.cs" />
-    <Compile Include="Patches\ZNetPatches.cs" />
-    <Compile Include="Patches\ZoneSystemPatches.cs" />
-    <Compile Include="Patches\PlayerPatches.cs" />
-    <Compile Include="Patches\SkillsPatches.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Managers\SkillManager.cs" />
-    <Compile Include="Utils\BepInExUtils.cs" />
-    <Compile Include="Utils\BoneReorder.cs" />
-    <Compile Include="Utils\ConfigurationManagerAttributes.cs" />
-    <Compile Include="Utils\EventsHelper.cs" />
-    <Compile Include="Utils\HashUtils.cs" />
-    <Compile Include="Properties\IgnoreAccessModifiers.cs" />
-    <Compile Include="Extensions\MockExtentions.cs" />
-    <Compile Include="Extensions\ObjectExtension.cs" />
-    <Compile Include="Utils\ModCompatibility.cs" />
-    <Compile Include="Utils\NetworkCompatibiltyAttribute.cs" />
-    <Compile Include="Utils\ObjImporter.cs" />
-    <Compile Include="Utils\PatchInitAttribute.cs" />
-    <Compile Include="Utils\Paths.cs" />
-    <Compile Include="Utils\ReflectionHelper.cs" />
-    <Compile Include="Utils\AssetUtils.cs" />
-    <Compile Include="Utils\SimpleJson.cs" />
-    <Compile Include="Utils\WeightedList.cs" />
-  </ItemGroup>
-  <Import Project="../Environment.props" />
-  <ItemGroup>
-    <None Include="Documentation\*.md" />
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
-  <Target Name="JotunnBuildTask">
-    <Message Text="Running JotunnBuildTask" />
-    <Exec Command="$(TargetDir)JotunnBuildTask.exe &quot;$(VALHEIM_INSTALL)&quot;" WorkingDirectory="$(TargetDir)" />
-  </Target>
-  <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'">
+  <Import Project="BuildProps\version.props" Condition="Exists('BuildProps\version.props')" />
+  <Import Project="..\Environment.props" />
+  <Import Project="BuildProps\JotunnBuildTask.props" />
+  <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'" AfterTargets="Build">
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot;" />
   </Target>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  
   <PropertyGroup>
-    <BuildDependsOn>
-      JotunnBuildTask;
-      $(BuildDependsOn);
-      JotunnPostBuildTaskWin
-    </BuildDependsOn>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Valheim-Modding</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Valheim-Modding/Jotunn</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Valheim Modding Library</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="JotunnLib.0.2.0.nupkg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\JotunnBuildTask.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.Mdb.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.Pdb.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.Rocks.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.exe" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.RuntimeDetour.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.RuntimeDetour.HookGen.exe" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.Utils.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLib.props" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png" Pack="true" PackagePath="images" />
+  </ItemGroup>
 </Project>

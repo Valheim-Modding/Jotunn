@@ -228,32 +228,28 @@ namespace JotunnLib.Managers
         /// <param name="forceReplace">replace the token if it already exists</param>
         public void AddToken(string token, string value, string language = DefaultLanguage, bool forceReplace = false)
         {
-            if (token[0] != TokenFirstChar)
-            {
-                throw new Exception($"Token first char should be '{TokenFirstChar}'! (token found: '{token}')");
-            }
-
             Dictionary<string, string> languageDict = null;
+
+            if (token.Any(x => Localization.instance.m_endChars.Contains(x)))
+            {
+                throw new Exception($"Token has an end char in it ({Localization.instance.m_endChars}).");
+            }
 
             if (!forceReplace)
             {
                 if (Localizations.TryGetValue(language, out languageDict))
                 {
-                    foreach (var pair in languageDict)
+                    if (languageDict.Keys.Contains(token))
                     {
-                        if (pair.Key == token)
-                        {
-                            throw new Exception($"Token named {token} already exist!");
-                        }
+                        throw new Exception($"Token named {token} already exist!");
                     }
                 }
             }
 
             languageDict ??= GetLanguageDict(language);
 
-            var tokenWithoutFirstChar = token.Substring(1);
-            languageDict.Remove(tokenWithoutFirstChar);
-            languageDict.Add(tokenWithoutFirstChar, value);
+            languageDict.Remove(token.TrimStart(TokenFirstChar));
+            languageDict.Add(token.TrimStart(TokenFirstChar), value);
         }
 
         /// <summary>

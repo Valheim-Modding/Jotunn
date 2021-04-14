@@ -42,7 +42,7 @@ Currently, JotunnLib lets you create & add all of the following custom things in
 - [ ] Listening to game events
     - [x] (Currently very few event listeners implemented)
     - [ ] All game events
-- [ ] Custom tabs for in-game settings menu
+- [x] Custom tabs for in-game settings menu
 
 ## Developing mods
 Visit our [documentation site](https://jotunnlib.github.io/jotunnlib) for more info.
