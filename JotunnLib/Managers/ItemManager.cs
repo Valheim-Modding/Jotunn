@@ -4,6 +4,7 @@ using UnityEngine;
 using JotunnLib.Utils;
 using JotunnLib.Entities;
 using JotunnLib.Configs;
+using System.Linq;
 
 namespace JotunnLib.Managers
 {
@@ -99,7 +100,7 @@ namespace JotunnLib.Managers
             // Add custom item to ItemManager
             Items.Add(customItem);
 
-            // Create CustomRecipe if provided
+            // Add custom recipe if provided
             if (customItem.Recipe != null)
             {
                 AddRecipe(customItem.Recipe);
@@ -355,10 +356,10 @@ namespace JotunnLib.Managers
                 Logger.LogInfo($"Added key hint : {customKeyHint.KeyHint} | Item : {customKeyHint.Item}");
             }
 
-            /*var btn = GUIManager.Instance.CreateButton("Blarks", self.transform, buildTransform.anchorMin, buildTransform.anchorMax, buildTransform.anchoredPosition, 100f, 30f);
+            var btn = GUIManager.Instance.CreateButton("Blarks", self.transform, buildTransform.anchorMin, buildTransform.anchorMax, buildTransform.anchoredPosition, 100f, 30f);
             btn.name = "BtnHint";
 
-            Logger.LogInfo($"Added key hint : {btn}");*/
+            Logger.LogInfo($"Added key hint : {btn}");
         }
 
         /// <summary>
@@ -451,14 +452,22 @@ namespace JotunnLib.Managers
                 return;
             }
 
-            /*// check if a custom item has a custom key hint registered and show it instead the vanilla one
+            var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
+            if (item == null)
+            {
+                return;
+            }
+
+            var name = Localization.instance.Translate(item.m_shared.m_name);
+
+            // check if a custom item has a custom key hint registered and show it instead the vanilla one
             if (self.m_buildHints.activeSelf)
             {
                 self.m_buildHints.SetActive(false);
 
                 //var name = KeyHints[0].KeyHint.name;
                 //var name = "CopyHint";
-                *//*var name = "BtnHint";
+                //var name = "BtnHint";
                 var tf = self.transform.Find(name);
                 var hint = tf.gameObject;
                 hint.SetActive(true);*//*
@@ -466,7 +475,7 @@ namespace JotunnLib.Managers
             if (self.m_combatHints.activeSelf)
             {
 
-            }*/
+            }
         }
     }
 }

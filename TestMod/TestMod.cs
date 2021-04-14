@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using JotunnLib;
@@ -10,6 +11,7 @@ using JotunnLib.Managers;
 using JotunnLib.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace TestMod
@@ -102,9 +104,9 @@ namespace TestMod
             }
         }
 
-        // Display our GUI if enabled
         private void OnGUI()
         {
+            // Display our GUI if enabled
             if (showMenu)
             {
                 GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
@@ -139,6 +141,20 @@ namespace TestMod
 
                 testPanel.SetActive(!testPanel.activeSelf);
                 showGUIButton = false;
+            }
+
+            // Displays the current equiped tool/weapon
+            if (SceneManager.GetActiveScene().name == "main" && SceneManager.GetActiveScene().isLoaded)
+            {
+                var bez = "nothing";
+
+                var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
+                if (item != null)
+                {
+                    bez = item.m_shared.m_name;
+                }
+
+                GUI.Label(new Rect(10, 10, 100, 25), bez);
             }
         }
 
