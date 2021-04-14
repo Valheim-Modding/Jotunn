@@ -422,7 +422,7 @@ namespace JotunnLib.Utils
                     return false;
                 }
 
-                // Add data for each module
+                // Check if server modules exist on client side 
                 foreach (var module in Modules)
                 {
                     var otherModule = other.Modules.FirstOrDefault(x => x.Item1 == module.Item1);
@@ -450,6 +450,7 @@ namespace JotunnLib.Utils
                     }
                 }
 
+                // Check the other way around too
                 foreach (var module in other.Modules)
                 {
                     var serverModule = Modules.FirstOrDefault(x => x.Item1 == module.Item1);
