@@ -1,9 +1,9 @@
 # Items
 Valheim items can be equipment, resources, or building pieces. In this tutorial you will learn how to set up custom items within the game, either based upon existing assets, or through the creation of entirely custom assets.
 
-## Cloning existing prefabs
+**Note**: This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
 
-This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
+## Cloning existing prefabs
 
 In this example, we will clone a resource and a weapon which the use may equip. In order to do this, we will need to reference already instantiated game assets. One method of doing so is by subscribing to the `CopyOtherDB` method of the ObjectDB, which instantiates game assets at runtime:
 

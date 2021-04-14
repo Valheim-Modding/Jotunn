@@ -15,6 +15,7 @@ private AssetBundle embeddedResourceBundle;
 ```
 
 To acquire the references we will be using here you may [download](JotunnModExample.zip) them and place inside your project root: 
+
 ![Assets Extraction](../../images/data/AssetsExtraction.png)
 
 Next, we must import our assets into our project, and ensure they are packed into, or with our plugin. There are a number of ways to do this, such as:

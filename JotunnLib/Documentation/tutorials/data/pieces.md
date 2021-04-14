@@ -39,34 +39,37 @@ private void addEmptyItems()
 ![Piece Stub](../../images/data/pieceStub.png) ![Piece Stub Placed](../../images/data/pieceStubPlaced.png)
 
 
-### `Blueprint Rune` pieces.
+### `Blueprint Rune` from prefabs using PieceConfigs
 
 The Blueprint rune, a custom item one of our developers has been working on, is intended to duplicate existing structures. In order to keep this example simple, we are not including this functionality, but are utilising these assets to provide an example of loading pieces via prefabs, so please bear in mind that while the code bellow is perfectly functional, there is no mesh/model associated with the following pieces due to the nature of their intended function.
 
-With that said, we will load two new pieces into the previously created blueprint piecetable via [PieceConfig's](xref:JotunnLib.Configs.PieceConfig). As with `RecipeConfigs`, `PieceConfig`'s provide an abstraction to simplify access to properties required to setup piece build requirements. The basic idea is similar. We load our asset, define our `PieceConfig`, and then add the resultant config via the manager's [AddPiece](xref:JotunnLib.Managers.PieceManager.AddPiece):
+With that said, we will load two new pieces into the previously created blueprint piecetable. In order to better facilitate creation of pieces we have introduced the abstractions of [PieceConfig's](xref:JotunnLib.Configs.PieceConfig) and [RequirementConfig](JotunnLib.Config.RequirementConfig). These allow us to quickly and easily define common properties for pieces, such as the table they belong too, any restrictions or resources required.
 
 ```cs
 private void CreateRunePieces()
 {
     // Create and add custom pieces
-    GameObject makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
-    CustomPiece makebp = new CustomPiece(makebp_prefab, new PieceConfig
-    {
-        PieceTable = "_BlueprintPieceTable",
-        AllowedInDungeons = false
-    });
-    PieceManager.Instance.AddPiece(makebp);
-    GameObject placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
-    CustomPiece placebp = new CustomPiece(placebp_prefab, new PieceConfig
-    {
-        PieceTable = "_BlueprintPieceTable",
-        AllowedInDungeons = true,
-        Requirements = new PieceRequirementConfig[]
+    var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
+    var makebp = new CustomPiece(makebp_prefab,
+        new PieceConfig
         {
-            new PieceRequirementConfig {Item = "Wood", Amount = 2}
-        }
-    });
+            PieceTable = "_BlueprintPieceTable"
+        });
+    PieceManager.Instance.AddPiece(makebp);
+
+    var placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
+    var placebp = new CustomPiece(placebp_prefab,
+        new PieceConfig
+        {
+            PieceTable = "_BlueprintPieceTable",
+            AllowedInDungeons = true,
+            Requirements = new[]
+            {
+                new RequirementConfig { Item = "Wood", Amount = 2 }
+            }
+        });
     PieceManager.Instance.AddPiece(placebp);
+    blueprintRuneLocalizations();
 }
 ```
 
