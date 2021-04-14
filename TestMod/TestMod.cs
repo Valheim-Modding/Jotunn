@@ -180,7 +180,7 @@ namespace TestMod
 
             // Create and add a custom item
             var rune_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintRune");
-            var rune = new CustomItem(rune_prefab, fixReference: false, 
+            var rune = new CustomItem(rune_prefab, fixReference: false,  // Prefab did not use mocked refs so no need to fix them
                 new ItemConfig
                 {
                     Amount = 1,
@@ -245,7 +245,7 @@ namespace TestMod
                 else
                 {
                     // Create and add a custom item
-                    var CI = new CustomItem(prefab, true);
+                    var CI = new CustomItem(prefab, fixReference: true);  // Mocked refs in prefabs need to be fixed
                     ItemManager.Instance.AddItem(CI);
 
                     // Create and add a custom recipe
@@ -259,7 +259,7 @@ namespace TestMod
                         MockRequirement.Create("Iron", 4)
                     };
                     recipe.m_resources = ingredients.ToArray();
-                    var CR = new CustomRecipe(recipe, true, true);
+                    var CR = new CustomRecipe(recipe, fixReference: true, fixRequirementReferences: true);  // Mocked main and requirement refs need to be fixed
                     ItemManager.Instance.AddRecipe(CR);
 
                     // Enable BoneReorder
@@ -307,7 +307,7 @@ namespace TestMod
                     new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Stone"), m_amount = 1},
                     new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Wood"), m_amount = 1}
                 };
-                var CR = new CustomRecipe(recipe, false, false);
+                var CR = new CustomRecipe(recipe, fixReference: false, fixRequirementReferences: false);  // no need to fix because the refs from the cache are valid
                 ItemManager.Instance.AddRecipe(CR);
 
                 clonedItemsAdded = true;

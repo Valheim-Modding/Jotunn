@@ -22,20 +22,15 @@ namespace JotunnLib.Entities
         public ItemDrop ItemDrop { get; set; }
 
         /// <summary>
-        ///     The <see cref="global::Recipe"/> associated with this custom item. Is needed to craft
+        ///     The <see cref="CustomRecipe"/> associated with this custom item. Is needed to craft
         ///     this item on a workbench or from the players crafting menu.
         /// </summary>
-        public Recipe Recipe { get; set; }
+        public CustomRecipe Recipe { get; set; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Mock"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; } = false;
-
-        /// <summary>
-        ///     Indicator if references from the <see cref="global::Recipe"/>s will be replaced at runtime.
-        /// </summary>
-        public bool FixRecipeReference { get; set; } = false;
 
         /// <summary>
         ///     Custom item from a prefab.<br />
@@ -63,8 +58,7 @@ namespace JotunnLib.Entities
             FixReference = fixReference;
 
             itemConfig.Item = ItemPrefab.name;
-            Recipe = itemConfig.GetRecipe();
-            FixRecipeReference = true;
+            Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
         }
 
         /// <summary>
@@ -97,8 +91,7 @@ namespace JotunnLib.Entities
                 ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
 
                 itemConfig.Item = name;
-                Recipe = itemConfig.GetRecipe();
-                FixRecipeReference = true;
+                Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
             }
         }
 
@@ -130,8 +123,7 @@ namespace JotunnLib.Entities
                 ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
 
                 itemConfig.Item = name;
-                Recipe = itemConfig.GetRecipe();
-                FixRecipeReference = true;
+                Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
             }
         }
 
