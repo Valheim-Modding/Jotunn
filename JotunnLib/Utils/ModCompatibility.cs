@@ -52,7 +52,7 @@ namespace JotunnLib.Utils
         // Append our version data package to the existing zPackage
         private static void AppendPackage(On.ZRpc.orig_Invoke orig, ZRpc self, string method, object[] parameters)
         {
-            var pkg = (ZPackage) parameters[0];
+            var pkg = (ZPackage)parameters[0];
             pkg.Write(new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
             orig(self, method, parameters);
         }
@@ -381,8 +381,8 @@ namespace JotunnLib.Utils
                     while (numberOfModules > 0)
                     {
                         Modules.Add(new Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>(pkg.ReadString(),
-                            new System.Version(pkg.ReadInt(), pkg.ReadInt(), pkg.ReadInt()), (CompatibilityLevel) pkg.ReadInt(),
-                            (VersionStrictness) pkg.ReadInt()));
+                            new System.Version(pkg.ReadInt(), pkg.ReadInt(), pkg.ReadInt()), (CompatibilityLevel)pkg.ReadInt(),
+                            (VersionStrictness)pkg.ReadInt()));
                         numberOfModules--;
                     }
                 }
@@ -450,6 +450,33 @@ namespace JotunnLib.Utils
                     }
                 }
 
+                foreach (var module in other.Modules)
+                {
+                    var serverModule = Modules.FirstOrDefault(x => x.Item1 == module.Item1);
+                    if (serverModule == null)
+                    {
+                        return false;
+                    }
+
+                    if (module.Item2.Major != serverModule.Item2.Major &&
+                        (module.Item4 >= VersionStrictness.Major || serverModule.Item4 >= VersionStrictness.Major))
+                    {
+                        return false;
+                    }
+
+                    if (module.Item2.Minor != serverModule.Item2.Minor &&
+                        (module.Item4 >= VersionStrictness.Minor || serverModule.Item4 >= VersionStrictness.Minor))
+                    {
+                        return false;
+                    }
+
+                    if (module.Item2.Build != serverModule.Item2.Build &&
+                        (module.Item4 >= VersionStrictness.Build || serverModule.Item4 >= VersionStrictness.Build))
+                    {
+                        return false;
+                    }
+                }
+
                 return true;
             }
 
@@ -472,8 +499,8 @@ namespace JotunnLib.Utils
                     pkg.Write(module.Item2.Major);
                     pkg.Write(module.Item2.Minor);
                     pkg.Write(module.Item2.Build);
-                    pkg.Write((int) module.Item3);
-                    pkg.Write((int) module.Item4);
+                    pkg.Write((int)module.Item3);
+                    pkg.Write((int)module.Item4);
                 }
 
                 return pkg;
@@ -498,7 +525,7 @@ namespace JotunnLib.Utils
                     return false;
                 }
 
-                return Equals((ModuleVersionData) obj);
+                return Equals((ModuleVersionData)obj);
             }
 
             /// <inheritdoc />
