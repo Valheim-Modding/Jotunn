@@ -236,11 +236,14 @@ namespace TestMod
         private void addEmptyItems()
         {
             CustomPiece CP = new CustomPiece("$piece_lul", "Hammer");
-            var piece = CP.Piece;
-            piece.m_icon = testSprite;
-            var prefab = CP.PiecePrefab;
-            prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
-            PieceManager.Instance.AddPiece(CP);
+            if (CP != null)
+            {
+                var piece = CP.Piece;
+                piece.m_icon = testSprite;
+                var prefab = CP.PiecePrefab;
+                prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
+                PieceManager.Instance.AddPiece(CP);
+            }
         }
 
         // Add new items as copies of vanilla items - just works when vanilla prefabs are already loaded (ObjectDB.CopyOtherDB for example)

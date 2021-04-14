@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace JotunnLib.Util
+namespace JotunnLib.Utils
 {
     public class WeightedList<T, ItemType> where T : WeightedItem<ItemType>
     {
