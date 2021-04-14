@@ -55,7 +55,7 @@ namespace TestMod
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
 
-            /*// POC: add key hint
+            // POC: add key hint
             GameObject hint = new GameObject("TestHint", typeof(RectTransform), typeof(CanvasRenderer), typeof(VerticalLayoutGroup));
             hint.GetComponent<VerticalLayoutGroup>().childScaleHeight = true;
             hint.GetComponent<VerticalLayoutGroup>().childScaleWidth = true;
@@ -75,12 +75,12 @@ namespace TestMod
             text1.transform.SetParent(action1.transform, false);
             text1.GetComponent<Text>().text = "HARHAR";
 
-            *//*var kb = new GameObject("Keyboard", typeof(RectTransform), typeof(CanvasRenderer));
+            var kb = new GameObject("Keyboard", typeof(RectTransform), typeof(CanvasRenderer));
             kb.transform.SetParent(hint.transform);
             var text = GUIManager.Instance.CreateText("TestBörks", kb.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black, 150f, 50f, true);*//*
+                GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black, 150f, 50f, true);
             CustomKeyHint CKH = new CustomKeyHint("Hammer", hint);
-            ItemManager.Instance.AddKeyHint(CKH);*/
+            GUIManager.Instance.AddKeyHint(CKH);
         }
 
         // Called every frame
@@ -144,14 +144,21 @@ namespace TestMod
             }
 
             // Displays the current equiped tool/weapon
-            if (SceneManager.GetActiveScene().name == "main" && SceneManager.GetActiveScene().isLoaded)
+            if (Player.m_localPlayer)
             {
                 var bez = "nothing";
 
                 var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
                 if (item != null)
                 {
-                    bez = item.m_shared.m_name;
+                    if (item.m_dropPrefab)
+                    {
+                        bez = item.m_dropPrefab.name;
+                    }
+                    else
+                    {
+                        bez = item.m_shared.m_name;
+                    }
                 }
 
                 GUI.Label(new Rect(10, 10, 100, 25), bez);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JotunnLib.Entities;
 using JotunnLib.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -43,8 +44,10 @@ namespace JotunnLib.Managers
         internal Texture2D TextureAtlas { get; private set; }
 
         internal Texture2D TextureAtlas2 { get; private set; }
-
+        
         internal Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
+
+        internal readonly List<CustomKeyHint> KeyHints = new List<CustomKeyHint>();
 
         private bool needsLoad = true;
 
@@ -84,52 +87,10 @@ namespace JotunnLib.Managers
             GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
             GUIContainer.AddComponent<GuiScaler>().UpdateScale();
 
-
             createPixelFix();
 
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-        }
-
-        private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
-        {
-            if (scene.name == "start" && !GUIInStart)
-            {
-                GUIContainer.SetActive(true);
-                createPixelFix();
-                GUIInStart = true;
-            }
-
-            if (scene.name == "main" && GUIInStart)
-            {
-                GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
-                if (root != null)
-                {
-                    GameObject gui = root.transform.Find("GUI/PixelFix").gameObject;
-                    if (gui != null)
-                    {
-                        Destroy(PixelFix);
-                        PixelFix = new GameObject("GUIFix", typeof(RectTransform));
-                        PixelFix.layer = UILayer; // UI
-                        PixelFix.transform.SetParent(gui.transform, false);
-                        GUIContainer.SetActive(false);
-                        GUIInStart = false;
-                    }
-                }
-            }
-        }
-
-        private void createPixelFix()
-        {
-            PixelFix = new GameObject("GUIFix", typeof(RectTransform), typeof(GuiPixelFix));
-            PixelFix.layer = UILayer; // UI
-            PixelFix.transform.SetParent(GUIContainer.transform);
-            PixelFix.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            PixelFix.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-            PixelFix.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-            PixelFix.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GUIContainer.GetComponent<RectTransform>().rect.width);
-            PixelFix.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, GUIContainer.GetComponent<RectTransform>().rect.height);
-            PixelFix.GetComponent<RectTransform>().anchoredPosition = new Vector2(GUIContainer.GetComponent<RectTransform>().rect.width / 2f,
-                GUIContainer.GetComponent<RectTransform>().rect.height / 2f);
+            On.KeyHints.UpdateHints += ShowCustomKeyHint;
         }
 
         private void OnGUI()
@@ -285,7 +246,161 @@ namespace JotunnLib.Managers
             }
         }
 
+        private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
+        {
+            if (scene.name == "start" && !GUIInStart)
+            {
+                // Create a new PixelFix for start scene
+                GUIContainer.SetActive(true);
+                createPixelFix();
+                GUIInStart = true;
+            }
+            if (scene.name == "main" && GUIInStart)
+            {
+                // Create a new PixelFix for main scene
+                GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
+                if (root != null)
+                {
+                    GameObject gui = root.transform.Find("GUI/PixelFix").gameObject;
+                    if (gui != null)
+                    {
+                        Destroy(PixelFix);
+                        PixelFix = new GameObject("GUIFix", typeof(RectTransform));
+                        PixelFix.layer = UILayer; // UI
+                        PixelFix.transform.SetParent(gui.transform, false);
+                        GUIContainer.SetActive(false);
+                        GUIInStart = false;
+                    }
+                }
 
+                // Create custom key hints
+                Logger.LogInfo($"---- Adding custom key hints ----");
+
+                var buildTransform = (RectTransform)root.transform.Find("GUI/PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints/BuildHints");
+
+                foreach (var customKeyHint in KeyHints)
+                {
+                    var hint = Instantiate(customKeyHint.KeyHint);
+
+                    var tf = (RectTransform)hint.transform;
+                    tf.SetParent(PixelFix.transform, false);
+                    tf.anchorMin = buildTransform.anchorMin;
+                    tf.anchorMax = buildTransform.anchorMax;
+                    tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 410f);
+                    tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 203f);
+                    tf.anchoredPosition = buildTransform.anchoredPosition;
+
+
+                    var uihint = hint.AddComponent<UIInputHint>();
+                    uihint.m_group = hint.GetComponentInParent<UIGroupHandler>();
+                    var kb = hint.transform.Find("Keyboard").gameObject;
+                    if (kb)
+                    {
+                        uihint.m_mouseKeyboardHint = kb;
+                    }
+
+                    Logger.LogInfo($"Added key hint : {customKeyHint.KeyHint} | Item : {customKeyHint.Item}");
+                }
+
+                // ugly test hint
+                var btn = CreateButton("Blarks", PixelFix.transform, buildTransform.anchorMin, buildTransform.anchorMax, buildTransform.anchoredPosition, 100f, 30f);
+                btn.name = "EvilSwordKeyHint";
+                var testhint = new CustomKeyHint("EvilSword", btn);
+                KeyHints.Add(testhint);
+
+                Logger.LogInfo($"Added key hint : {testhint.KeyHint} | Item : {testhint.Item}");
+            }
+        }
+
+        private void createPixelFix()
+        {
+            PixelFix = new GameObject("GUIFix", typeof(RectTransform), typeof(GuiPixelFix));
+            PixelFix.layer = UILayer; // UI
+            PixelFix.transform.SetParent(GUIContainer.transform);
+            PixelFix.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            PixelFix.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+            PixelFix.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+            PixelFix.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GUIContainer.GetComponent<RectTransform>().rect.width);
+            PixelFix.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, GUIContainer.GetComponent<RectTransform>().rect.height);
+            PixelFix.GetComponent<RectTransform>().anchoredPosition = new Vector2(GUIContainer.GetComponent<RectTransform>().rect.width / 2f,
+                GUIContainer.GetComponent<RectTransform>().rect.height / 2f);
+        }
+
+        /// <summary>
+        ///     Add a <see cref="CustomKeyHint"/> to the game.<br />
+        ///     Checks if the custom key hint is unique (i.e. the first one registered for an item).<br />
+        ///     Custom status effects are displayed in the game instead of the default 
+        ///     KeyHints for equipped tools or weapons they are registered for.
+        /// </summary>
+        /// <param name="customKeyHint">The custom key hint to add.</param>
+        /// <returns>true if the custom key hint was added to the manager.</returns>
+        public bool AddKeyHint(CustomKeyHint customKeyHint)
+        {
+            if (!customKeyHint.IsValid())
+            {
+                Logger.LogWarning($"Custom key hint {customKeyHint} is not valid");
+                return false;
+            }
+            if (KeyHints.Contains(customKeyHint))
+            {
+                Logger.LogWarning($"Custom key hint {customKeyHint} already added");
+                return false;
+            }
+
+            // Add correct layer and add to the KeyHintContainer
+            var hint = customKeyHint.KeyHint;
+            hint.layer = UILayer;
+            //customKeyHint.KeyHint.transform.SetParent(GUIManager.GUIContainer.transform);
+            hint.transform.SetParent(GUIContainer.transform);
+            hint.SetActive(false);
+            KeyHints.Add(customKeyHint);
+            return true;
+        }
+
+        /// <summary>
+        ///     Hook on <see cref="KeyHints.UpdateHints" /> to show custom key hints instead of the vanilla ones.
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        private void ShowCustomKeyHint(On.KeyHints.orig_UpdateHints orig, KeyHints self)
+        {
+            orig(self);
+
+            if (Player.m_localPlayer == null)
+            {
+                return;
+            }
+
+            var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
+            if (item == null)
+            {
+                return;
+            }
+
+            var name = item.m_dropPrefab.name;
+
+            // check if a custom item has a custom key hint registered and show it instead the vanilla one
+            if (self.m_buildHints.activeSelf || self.m_combatHints.activeSelf)
+            {
+                var hint = KeyHints.FirstOrDefault(x => x.Item.Equals(name));
+
+                if (hint != null)
+                {
+                    self.m_buildHints.SetActive(false);
+                    self.m_combatHints.SetActive(false);
+
+
+                    hint.KeyHint.SetActive(true);
+                }
+            }
+            else
+            {
+                foreach (var oldhint in KeyHints)
+                {
+                    oldhint.KeyHint.SetActive(false);
+                }
+            }
+        }
 
         /// <summary>
         ///     Create a new button (Valheim style).

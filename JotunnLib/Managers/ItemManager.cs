@@ -5,6 +5,7 @@ using JotunnLib.Utils;
 using JotunnLib.Entities;
 using JotunnLib.Configs;
 using System.Linq;
+using UnityEngine.UI;
 
 namespace JotunnLib.Managers
 {
@@ -32,15 +33,9 @@ namespace JotunnLib.Managers
 
         public event EventHandler OnItemsRegistered;
 
-        /// <summary>
-        ///     Container for custom key hints in the DontDestroyOnLoad scene.
-        /// </summary>
-        internal GameObject KeyHintContainer;
-
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
-        internal readonly List<CustomKeyHint> KeyHints = new List<CustomKeyHint>();
 
         private void Awake()
         {
@@ -56,15 +51,9 @@ namespace JotunnLib.Managers
 
         internal override void Init()
         {
-            KeyHintContainer = new GameObject("KeyHints");
-            KeyHintContainer.transform.parent = Main.RootObject.transform;
-            KeyHintContainer.SetActive(false);
-
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
-            On.KeyHints.Awake += RegisterCustomKeyHints;
-            On.KeyHints.UpdateHints += ShowCustomKeyHint;
         }
 
         /// <summary>
@@ -292,77 +281,6 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Add a <see cref="CustomKeyHint"/> to the game.<br />
-        ///     Checks if the custom key hint is unique (i.e. the first one registered for an item).<br />
-        ///     Custom status effects are displayed in the game instead of the default 
-        ///     KeyHints for equipped tools or weapons they are registered for.
-        /// </summary>
-        /// <param name="customKeyHint">The custom key hint to add.</param>
-        /// <returns>true if the custom key hint was added to the manager.</returns>
-        public bool AddKeyHint(CustomKeyHint customKeyHint)
-        {
-            if (!customKeyHint.IsValid())
-            {
-                Logger.LogWarning($"Custom key hint {customKeyHint} is not valid");
-                return false;
-            }
-            if (KeyHints.Contains(customKeyHint))
-            {
-                Logger.LogWarning($"Custom key hint {customKeyHint} already added");
-                return false;
-            }
-
-            // Add correct layer and add to the KeyHintContainer
-            var hint = customKeyHint.KeyHint;
-            hint.layer = GUIManager.UILayer;
-            //customKeyHint.KeyHint.transform.SetParent(GUIManager.GUIContainer.transform);
-            hint.transform.SetParent(KeyHintContainer.transform);
-            hint.SetActive(false);
-            KeyHints.Add(customKeyHint);
-            return true;
-        }
-
-        private void RegisterCustomKeyHints(On.KeyHints.orig_Awake orig, KeyHints self)
-        {
-            orig(self);
-
-            Logger.LogInfo($"---- Adding custom key hints ----");
-
-            // Get current RectTransform from BuildHints
-            var buildTransform = (RectTransform)self.m_buildHints.transform;
-
-            foreach (var customKeyHint in KeyHints)
-            {
-                /*var hint = customKeyHint.KeyHint;
-                hint.name = customKeyHint.KeyHint.name;
-
-                var tf = (RectTransform)hint.transform;
-                tf.SetParent(self.transform, false);
-                tf.anchorMin = buildTransform.anchorMin;
-                tf.anchorMax = buildTransform.anchorMax;
-                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 410f);
-                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 203f);
-                tf.anchoredPosition = buildTransform.anchoredPosition;*/
-
-
-                /*var uihint = hint.AddComponent<UIInputHint>();
-                uihint.m_group = hint.GetComponentInParent<UIGroupHandler>();
-                var kb = hint.transform.Find("Keyboard").gameObject;
-                if (kb)
-                {
-                    uihint.m_mouseKeyboardHint = kb;
-                }*/
-
-                Logger.LogInfo($"Added key hint : {customKeyHint.KeyHint} | Item : {customKeyHint.Item}");
-            }
-
-            var btn = GUIManager.Instance.CreateButton("Blarks", self.transform, buildTransform.anchorMin, buildTransform.anchorMax, buildTransform.anchoredPosition, 100f, 30f);
-            btn.name = "BtnHint";
-
-            Logger.LogInfo($"Added key hint : {btn}");
-        }
-
-        /// <summary>
         ///     Hook on <see cref="ObjectDB.CopyOtherDB"/> to add custom items to FejdStartup screen (aka main menu)
         /// </summary>
         /// <param name="orig"></param>
@@ -436,46 +354,6 @@ namespace JotunnLib.Managers
             }
 
             self.UpdateKnownRecipesList();
-        }
-
-        /// <summary>
-        ///     Hook on <see cref="KeyHints.UpdateHints" /> to show custom key hints instead of the vanilla ones.
-        /// </summary>
-        /// <param name="orig"></param>
-        /// <param name="self"></param>
-        private void ShowCustomKeyHint(On.KeyHints.orig_UpdateHints orig, KeyHints self)
-        {
-            orig(self);
-
-            if (Player.m_localPlayer == null)
-            {
-                return;
-            }
-
-            var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
-            if (item == null)
-            {
-                return;
-            }
-
-            var name = Localization.instance.Translate(item.m_shared.m_name);
-
-            // check if a custom item has a custom key hint registered and show it instead the vanilla one
-            if (self.m_buildHints.activeSelf)
-            {
-                self.m_buildHints.SetActive(false);
-
-                //var name = KeyHints[0].KeyHint.name;
-                //var name = "CopyHint";
-                //var name = "BtnHint";
-                var tf = self.transform.Find(name);
-                var hint = tf.gameObject;
-                hint.SetActive(true);*//*
-            }
-            if (self.m_combatHints.activeSelf)
-            {
-
-            }
         }
     }
 }
