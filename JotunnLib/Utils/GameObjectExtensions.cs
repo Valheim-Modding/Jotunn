@@ -107,5 +107,15 @@ namespace JotunnLib.Utils
             go.GetComponent<Text>().text = text;
             return go;
         }
+
+        /// <summary>
+        /// Facilitates use of Null Propogation operator for unity GameObjects
+        /// </summary>
+        /// <param name="this">this</param>
+        /// <returns>Returns null when GameObject.op_equality returns false.</returns>
+        public static GameObject OrNull(this GameObject @this)
+        {
+            return @this ? @this : null;
+        }
     }
 }
