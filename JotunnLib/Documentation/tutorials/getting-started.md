@@ -1,10 +1,9 @@
 # Getting started
 
 
-## Setting up development environment
-Setting up development environment to create a mod using JotunnLib and Visual studio:
+## Development Environment
 
-* Download [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) and extract the zip file into your root Valheim directory.
+* We begin by downloading [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) and extract the zip file into your root Valheim directory.
 
 * Inside the visual studio installer, ensure that `.NET Desktop Development` and `.NET Core Cross-Platform Development` are installed, then click on the `Individual Components` tab and select `.NET Framework 4.6.2`: 
 ![Components](..\images\getting-started\vs-InstallerComponents.png)
@@ -15,7 +14,19 @@ Setting up development environment to create a mod using JotunnLib and Visual st
 * In visual studio, in the right hand toobar, select `Git Changes`, and then `Clone Repository`, and paste the URL provided by the previous step. Name your project and place it accordingly.
 ![VS Clone forked stub](..\images\getting-started\vs-CloneForkedStub.png)
 
-* Browse to your solution directory. Download this [Environment.props](Environment.props) and place it inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. Right click on your project in the solution explorer, and select reload project.
+* Download this [DoPrebuild.props](DoPrebuild.props), and place it into the solution directory. Set Execute prebuild to true. If you opt not to utilise this automation, it is suggested that you generate your method detours and publicised assemblies, and add them to your projects references manually.
+**WARNING:** *This prebuild task will automate the generation of monomod method detours and publicising of game assemblies. By enabling this, you understand that you will be generating new publicised assemblies and method detours upon PreBuild **IF** the game has updated since the last time the PreBuild has run.*
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ExecutePrebuild>false</ExecutePrebuild>
+  </PropertyGroup>
+</Project>
+```
+
+* Browse to your solution directory. Download this [Environment.props](Environment.props) and place it inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory.  Right click on your project in the solution explorer, and select reload project.
 
 * Build your solution. Check your `BepInEx/plugins/yourtestmod/` folder for the `yourtestmod.dll.mdb` monodebug symbols file.
 
@@ -35,3 +46,24 @@ Setting up development environment to create a mod using JotunnLib and Visual st
 ![Create new project template](..\images\getting-started\vs-CreateNewProjectTemplate.png)
 
 * Your project base is now ready for use! You can proceed to []() or select a specific section to learn about from our [Tutorials]()
+
+
+# Build automations
+
+Included in this repo are a PowerShell script `publish.ps1`. The script is referenced in the project file as a build event. Depending on the chosen configuration in Visual Studio the script executes the following actions.
+
+## Building Debug
+
+* The compiled dll file for this project is copied to `<ValheimDir>\BepInEx\plugins`.
+* A .mdb file is generated for the compiled project dll and copied to `<ValheimDir>\BepInEx\plugins`.
+* `<ValheimModStub>\libraries\Debug\mono-2.0-bdwgc.dll` is copied to `<ValheimDir>\MonoBleedingEdge\EmbedRuntime` replacing the original file (a backup is created before).
+
+## Building Release
+
+* The README.md in `SolutionDir/ProjectDir/package/README.md` is copied to `SolutionDir/ProjectDir/README.md` so that it is present and readable in single-solution-multi-project githubs to give an overview of the project.
+* The compiled binary is placed inside of `SolutionDir/ProjectDir/package/plugins`
+* The contents of `SolutionDir/ProjectDir/package/*` is archived into a zip, ready for thunderstore upload.
+
+## Debugging with Visual Studio
+
+Please see: [this article](https://github.com/Valheim-Modding/Wiki/wiki/Debugging-Plugins-via-IDE)
