@@ -1,3 +1,5 @@
+# DEPRECATED, moved to v1.1 with complete overhaul
+
 # Custom inputs
 Custom inputs can be registered through the [InputManager](xref:JotunnLib.Managers.InputManager) singleton. You must hook into the [InputRegister](xref:JotunnLib.Managers.InputManager.InputRegister) event, and create all your inputs within your event handler.
 

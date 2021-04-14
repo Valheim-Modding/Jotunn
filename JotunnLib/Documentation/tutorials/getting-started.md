@@ -4,38 +4,34 @@
 ## Setting up development environment
 Setting up development environment to create a mod using JotunnLib and Visual studio:
 
-1. Download [BepInEx for Valheim](https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.701/) and extract the zip file into your root Valheim directory.
-2. Create a new Visual Studio project of type `Class Library (.NET Framework)`. Make sure that you select `.NET Framework 4` as the target framework. **Do not** select any higher version, as it will be incompatible with Valheim, since it's compiled using .NET Framework 4.
-![Creating a new project](../images/getting-started/vs-create-proj.png "Creating a new project")
-3. Adding references to the project:
-    - Click `References > Add reference`
+* Download [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) and extract the zip file into your root Valheim directory.
 
-    - Navigate to your Valheim folder (should be `<Steam path>/steamapps/common/Valheim/unstripped_corlib`). Add all of the DLLs there _except_ for `Mono.security.dll`, `mscorlib.dll`, `System.configuration.dll`, `System.dll`, and `System.xml.dll`.
-    ![Adding Valheim Assemblies](../images/getting-started/vs-valheim-assemblies.png "Adding Valheim Assemblies")
-    
-    - Navigate to your BepInEx core folder in Valheim (should be `<Steam path>/steamapps/common/Valheim/BepInEx/core`). Add all of the DLLs there _except_ for `0Harmony20.dll`.
-    ![Adding BepInEx Assemblies](../images/getting-started/vs-bepinex-assemblies.png "Adding BepInEx Assemblies")
+* Inside the visual studio installer, ensure that `.NET Desktop Development` and `.NET Core Cross-Platform Development` are installed, then click on the `Individual Components` tab and select `.NET Framework 4.6.2`: 
+![Components](..\images\getting-started\vs-InstallerComponents.png)
 
-    - Lastly, navigate to your BepInEx plugins folder, and add `JotunnLib.dll` as an assembly.
-4. Using the `NuGet Packge Manager`, download and install `HarmonyX` as a dependency.
+* Fork our [ModStub](https://github.com/Valheim-Modding/JotunnModStub) from github, and copy the link to the git 
+![github forked project link](..\images\getting-started\gh-ForkedStub.png)
 
-## Creating your mod
-To use JotunnLib, you must add it as a BepInEx dependency. If possible, please use our `JotunnLib.JotunnLib.ModGuid` variable to reference our mod, to prevent against any issues if this changes in the future.
+* In visual studio, in the right hand toobar, select `Git Changes`, and then `Clone Repository`, and paste the URL provided by the previous step. Name your project and place it accordingly.
+![VS Clone forked stub](..\images\getting-started\vs-CloneForkedStub.png)
 
-```cs
-namespace TestMod
-{
-    [BepInPlugin("com.bepinex.plugins.testmod", "JotunnLib Test Mod", "0.0.1")]
-    [BepInDependency(JotunnLib.JotunnLib.ModGuid)]
-    public class TestMod : BaseUnityPlugin
-    {
-        // ...
-    }
-}
-```
+* Browse to your solution directory. Download this [Environment.props](Environment.props) and place it inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. Right click on your project in the solution explorer, and select reload project.
 
-That's it! Now you can go about creating your mod as normal, using any HarmonyX or JotunnLib functionality as you wish.  
-Refer to the following sections for guides on how to use JotunnLib to add custom data to the game.
+* Build your solution. Check your `BepInEx/plugins/yourtestmod/` folder for the `yourtestmod.dll.mdb` monodebug symbols file.
 
-## Installing your mod
-Just like any other BepInEx mod, you can install it by just putting the mod DLL file in `BepInEx/plugins`, along with any other assets it may need.
+* You may now proceed to one of the [Tutorials](intro.md)
+
+## Customising your project
+
+* Once you have your base project, select the solution in the solution explorer, hit F2 to rename the solution as required. Rename your plugin project, an all namespace references, then right click your project settings and ensure the assembly name has also been changed.
+
+* Rename the `PluginGUID` `PluginName`, and `PluginVersion` to match your intended base release metadata. Your PluginGUID should contain your github username/organisation.
+
+* Grab the [Project Template]() which you can use to add new projects to your current solution, based on the mod stub boilerplate.
+
+* Place the project template into your ![VS Project Template Location](..\images\getting-started\vs-ProjectTemplateLocationpng.png)
+
+* Restart visual studio. You can now create a new project using the imported templated. Right click your solution, add, new project, then scroll to the bottom where you will find the template:
+![Create new project template](..\images\getting-started\vs-CreateNewProjectTemplate.png)
+
+* Your project base is now ready for use! You can proceed to []() or select a specific section to learn about from our [Tutorials]()
