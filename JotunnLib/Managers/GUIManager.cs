@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JotunnLib.Configs;
 using JotunnLib.Entities;
 using JotunnLib.Utils;
 using UnityEngine;
@@ -45,9 +46,11 @@ namespace JotunnLib.Managers
 
         internal Texture2D TextureAtlas2 { get; private set; }
         
-        internal Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
+        internal readonly Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
 
-        internal readonly List<CustomKeyHint> KeyHints = new List<CustomKeyHint>();
+        internal readonly Dictionary<string, KeyHintConfig> KeyHints = new Dictionary<string, KeyHintConfig>();
+
+        private RectTransform KeyHintContainer;
 
         private bool needsLoad = true;
 
@@ -276,39 +279,63 @@ namespace JotunnLib.Managers
                 // Create custom key hints
                 Logger.LogInfo($"---- Adding custom key hints ----");
 
-                var buildTransform = (RectTransform)root.transform.Find("GUI/PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints/BuildHints");
-
-                foreach (var customKeyHint in KeyHints)
+                // Get the KeyHints transform for this scene
+                KeyHintContainer = (RectTransform)root.transform.Find("GUI/PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints");
+                
+                foreach (var entry in KeyHints)
                 {
-                    var hint = Instantiate(customKeyHint.KeyHint);
+                    // Clone BuildHints and add it under KeyHints to get the position right
+                    var keyHintObject = Instantiate(KeyHintContainer.Find("BuildHints").gameObject);
+                    keyHintObject.name = entry.Key;
+                    keyHintObject.SetActive(false);
 
-                    var tf = (RectTransform)hint.transform;
-                    tf.SetParent(PixelFix.transform, false);
-                    tf.anchorMin = buildTransform.anchorMin;
-                    tf.anchorMax = buildTransform.anchorMax;
-                    tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 410f);
-                    tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 203f);
-                    tf.anchoredPosition = buildTransform.anchoredPosition;
+                    var keyHintTransform = keyHintObject.GetComponent<RectTransform>();
+                    keyHintTransform.SetParent(KeyHintContainer, false);
 
+                    // Clone Place object and use it as the base for custom keys
+                    var baseKey = Instantiate(keyHintObject.transform.Find("Keyboard/Place").gameObject);
+                    var baseRotate = Instantiate(keyHintObject.transform.Find("Keyboard/rotate").gameObject);
 
-                    var uihint = hint.AddComponent<UIInputHint>();
-                    uihint.m_group = hint.GetComponentInParent<UIGroupHandler>();
-                    var kb = hint.transform.Find("Keyboard").gameObject;
-                    if (kb)
+                    // Destroy all child objects
+                    foreach (RectTransform child in keyHintTransform)
                     {
-                        uihint.m_mouseKeyboardHint = kb;
+                        Destroy(child.gameObject);
                     }
 
-                    Logger.LogInfo($"Added key hint : {customKeyHint.KeyHint} | Item : {customKeyHint.Item}");
+                    // Add every ButtonConfig as a child to the custom key hints object
+                    foreach (var buttonConfig in entry.Value.ButtonConfigs)
+                    {
+                        if (string.IsNullOrEmpty(buttonConfig.Axis))
+                        {
+                            var customObject = Instantiate(baseKey, keyHintTransform, false);
+                            customObject.name = buttonConfig.Name;
+                            customObject.transform.Find("key_bkg/Key").gameObject.SetText(buttonConfig.KeyToken);
+                            customObject.transform.Find("Text").gameObject.SetText(buttonConfig.HintToken);
+                            customObject.SetActive(true);
+                        }
+                        else
+                        {
+                            var customObject = Instantiate(baseRotate, keyHintTransform, false);
+                            customObject.transform.Find("Text").gameObject.SetText(buttonConfig.HintToken);
+                            customObject.SetActive(true);
+                        }
+                    }
+
+                    // Add UIInputHint to automatically switch between Keyboard and Gamepad objects
+                    /*var uihint = hint.AddComponent<UIInputHint>();
+                    var kb = hint.transform.Find("Keyboard");
+                    if (kb != null)
+                    {
+                        uihint.m_mouseKeyboardHint = kb.gameObject;
+                    }
+                    var gp = hint.transform.Find("GamePad");
+                    if (gp != null)
+                    {
+                        uihint.m_gamepadHint = gp.gameObject;
+                    }*/
+
+                    Logger.LogInfo($"Added key hints for Item : {entry.Key}");
                 }
-
-                // ugly test hint
-                var btn = CreateButton("Blarks", PixelFix.transform, buildTransform.anchorMin, buildTransform.anchorMax, buildTransform.anchoredPosition, 100f, 30f);
-                btn.name = "EvilSwordKeyHint";
-                var testhint = new CustomKeyHint("EvilSword", btn);
-                KeyHints.Add(testhint);
-
-                Logger.LogInfo($"Added key hint : {testhint.KeyHint} | Item : {testhint.Item}");
             }
         }
 
@@ -327,33 +354,27 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        ///     Add a <see cref="CustomKeyHint"/> to the game.<br />
+        ///     Add a <see cref="KeyHintConfig"/> to the game.<br />
         ///     Checks if the custom key hint is unique (i.e. the first one registered for an item).<br />
         ///     Custom status effects are displayed in the game instead of the default 
         ///     KeyHints for equipped tools or weapons they are registered for.
         /// </summary>
-        /// <param name="customKeyHint">The custom key hint to add.</param>
-        /// <returns>true if the custom key hint was added to the manager.</returns>
-        public bool AddKeyHint(CustomKeyHint customKeyHint)
+        /// <param name="hintConfig">The custom key hint config to add.</param>
+        /// <returns>true if the custom key hint config was added to the manager.</returns>
+        public bool AddKeyHint(KeyHintConfig hintConfig)
         {
-            if (!customKeyHint.IsValid())
+            if (hintConfig.Item == null || hintConfig.ButtonConfigs.Length == 0)
             {
-                Logger.LogWarning($"Custom key hint {customKeyHint} is not valid");
+                Logger.LogWarning($"Key hint config {hintConfig} is not valid");
                 return false;
             }
-            if (KeyHints.Contains(customKeyHint))
+            if (KeyHints.ContainsKey(hintConfig.Item))
             {
-                Logger.LogWarning($"Custom key hint {customKeyHint} already added");
+                Logger.LogWarning($"Key hint config for item {hintConfig.Item} already added");
                 return false;
             }
 
-            // Add correct layer and add to the KeyHintContainer
-            var hint = customKeyHint.KeyHint;
-            hint.layer = UILayer;
-            //customKeyHint.KeyHint.transform.SetParent(GUIManager.GUIContainer.transform);
-            hint.transform.SetParent(GUIContainer.transform);
-            hint.SetActive(false);
-            KeyHints.Add(customKeyHint);
+            KeyHints.Add(hintConfig.Item, hintConfig);
             return true;
         }
 
@@ -371,33 +392,32 @@ namespace JotunnLib.Managers
                 return;
             }
 
-            var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
-            if (item == null)
+            // First disable all custom key hints
+            foreach (RectTransform transform in KeyHintContainer)
             {
-                return;
+                if (KeyHints.ContainsKey(transform.name))
+                {
+                    transform.gameObject.SetActive(false);
+                }
             }
 
-            var name = item.m_dropPrefab.name;
-
-            // check if a custom item has a custom key hint registered and show it instead the vanilla one
+            // Check if a custom item has a custom key hint registered and show it instead the vanilla one
             if (self.m_buildHints.activeSelf || self.m_combatHints.activeSelf)
             {
-                var hint = KeyHints.FirstOrDefault(x => x.Item.Equals(name));
+                var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
+                if (item == null)
+                {
+                    return;
+                }
+                var prefabName = item.m_dropPrefab.name;
 
-                if (hint != null)
+                if (KeyHints.TryGetValue(prefabName, out var keyHints))
                 {
                     self.m_buildHints.SetActive(false);
                     self.m_combatHints.SetActive(false);
 
-
-                    hint.KeyHint.SetActive(true);
-                }
-            }
-            else
-            {
-                foreach (var oldhint in KeyHints)
-                {
-                    oldhint.KeyHint.SetActive(false);
+                    var hint = KeyHintContainer.Find(keyHints.Item).gameObject;
+                    hint.SetActive(true);
                 }
             }
         }

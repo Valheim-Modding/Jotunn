@@ -57,32 +57,17 @@ namespace TestMod
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
 
-            // POC: add key hint
-            GameObject hint = new GameObject("TestHint", typeof(RectTransform), typeof(CanvasRenderer), typeof(VerticalLayoutGroup));
-            hint.GetComponent<VerticalLayoutGroup>().childScaleHeight = true;
-            hint.GetComponent<VerticalLayoutGroup>().childScaleWidth = true;
-
-            var action1 = new GameObject("TestAction1", typeof(RectTransform), typeof(CanvasRenderer), typeof(HorizontalLayoutGroup));
-            action1.transform.SetParent(hint.transform, false);
-            action1.GetComponent<HorizontalLayoutGroup>().childScaleHeight = true;
-            action1.GetComponent<HorizontalLayoutGroup>().childScaleWidth = true;
-
-            var key_bkg1 = new GameObject("TestBkg1", typeof(RectTransform), typeof(CanvasRenderer), typeof(ContentSizeFitter));
-            key_bkg1.transform.SetParent(action1.transform, false);
-            var key1 = new GameObject("TextKey1", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Outline));
-            key1.transform.SetParent(key_bkg1.transform, false);
-            key1.GetComponent<Text>().text = "$KEY_Attack1";
-
-            var text1 = new GameObject("TestText1", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Outline));
-            text1.transform.SetParent(action1.transform, false);
-            text1.GetComponent<Text>().text = "HARHAR";
-
-            var kb = new GameObject("Keyboard", typeof(RectTransform), typeof(CanvasRenderer));
-            kb.transform.SetParent(hint.transform);
-            var text = GUIManager.Instance.CreateText("TestBörks", kb.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black, 150f, 50f, true);
-            CustomKeyHint CKH = new CustomKeyHint("Hammer", hint);
-            GUIManager.Instance.AddKeyHint(CKH);
+            // POC: Key hints
+            KeyHintConfig KHC = new KeyHintConfig
+            {
+                Item = "Hammer",
+                ButtonConfigs = new[]
+                {
+                    new ButtonConfig { Name = "Shwing", KeyToken = "$KEY_Attack1", HintToken = "$doit" },
+                    new ButtonConfig { Name = "Shcroll", Axis = "Up", HintToken = "$upndown" }
+                }
+            };
+            GUIManager.Instance.AddKeyHint(KHC);
         }
 
         // Called every frame
