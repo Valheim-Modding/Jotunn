@@ -16,11 +16,13 @@ using UnityEngine.UI;
 
 namespace TestMod
 {
-    [BepInPlugin("com.jotunn.testmod", "JotunnLib Test Mod", "0.1.0")]
+    [BepInPlugin(ModGUID, "JotunnLib Test Mod", "0.1.0")]
     [BepInDependency(Main.ModGuid)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Build)]
     internal class TestMod : BaseUnityPlugin
     {
+        private const string ModGUID = "com.jotunn.testmod";
+
         public AssetBundle BlueprintRuneBundle;
         private bool clonedItemsAdded;
         private System.Version currentVersion;
@@ -168,8 +170,8 @@ namespace TestMod
         // Add custom key bindings
         private void registerInputs(object sender, EventArgs e)
         {
-            InputManager.Instance.AddButton("TestMod_Menu", KeyCode.Insert);
-            InputManager.Instance.AddButton("GUIManagerTest", KeyCode.F8);
+            InputManager.Instance.AddButton(ModGUID, "TestMod_Menu", KeyCode.Insert);
+            InputManager.Instance.AddButton(ModGUID, "GUIManagerTest", KeyCode.F8);
         }
 
         // Load assets
@@ -296,12 +298,15 @@ namespace TestMod
         // Add a custom item from an "empty" prefab
         private void AddEmptyItems()
         {
-            var CP = new CustomPiece("$piece_lul", "Hammer");
-            var piece = CP.Piece;
-            piece.m_icon = testSprite;
-            var prefab = CP.PiecePrefab;
-            prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
-            PieceManager.Instance.AddPiece(CP);
+            CustomPiece CP = new CustomPiece("$piece_lul", "Hammer");
+            if (CP != null)
+            {
+                var piece = CP.Piece;
+                piece.m_icon = testSprite;
+                var prefab = CP.PiecePrefab;
+                prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
+                PieceManager.Instance.AddPiece(CP);
+            }
         }
 
         // Add new items as copies of vanilla items - just works when vanilla prefabs are already loaded (ObjectDB.CopyOtherDB for example)
@@ -404,7 +409,7 @@ namespace TestMod
             forceVersionMismatch = (bool) Config["JotunnLibTest", "EnableVersionMismatch"].BoxedValue;
             Config.SettingChanged += Config_SettingChanged;
 
-            InputManager.Instance.AddButton("KeycodeValue", (KeyCode) Config["JotunnLibTest", "KeycodeValue"].BoxedValue);
+            InputManager.Instance.AddButton(ModGUID, "KeycodeValue", (KeyCode) Config["JotunnLibTest", "KeycodeValue"].BoxedValue);
         }
 
         // React on changed settings

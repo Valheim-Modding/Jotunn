@@ -1,12 +1,17 @@
 # Introduction
-This section will contain tutorials on how to use the various parts of the framework to do things such as:
-- Creating custom prefabs
-- Creating custom items
-- Creating custom recipes
-- Creating custom skills
-- Creating custom pieces (buildable items)
-- etc.
+These tutorials cover the following.
 
-Everything that you interact with will be through the various [managers](xref:JotunnLib.Managers), most of which will be Singletons that can be accessed through their `Instance` property.
+- Using the [ModStub](https://github.com/Valheim-Modding/JotunnModStub) template to create the [ExampleMod](https://github.com/Valheim-Modding/JotunnExampleMod)
+- Importing unity [assets](data/assets.md)
+- Creating [custom items](data/items.md)
+- Creating [custom pieces/tables](data/pieces.md) (buildable items)
+- Creating [custom Status Effects](data/statuseffects.md)
+- Creating [custom skills](data/skills.md)
+- Using [mocks](data/mocks.md) inside of AssetBundles to reference native assets
+- Adding [localisations](data/localisations.md)
+- Implementing [mod synchronisation](utils/networkcompatibility.md)
 
-For information on how to setup a mod with JotunnLib, see [Getting started](getting-started.md). To start creating custom items, take a look at [Custom data](data/overview.md).
+
+Everything that you interact with will be through the various [managers](xref:JotunnLib.Managers), most of which will be Singletons that can be accessed through their `Instance` property. There are also various [utility](xref:JotunnLib.utils) which can be assist in common tasks.
+
+For information on how to setup a mod with JotunnLib, see [Getting started](getting-started.md).

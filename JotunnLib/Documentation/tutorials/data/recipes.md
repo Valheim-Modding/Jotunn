@@ -1,3 +1,4 @@
+# DEPRECATED
 # Registering custom recipes
 _Recipes_ in Valheim are anything that the player is able to hold in their inventory.  
 Creation of custom recipes is done through the [ObjectManager](xref:JotunnLib.Managers.ObjectManager) singleton class.
@@ -61,3 +62,36 @@ private void initObjects(object sender, EventArgs e)
 That's it! Now, we can visit a forge with some blueberries and deer hide in our inventory, and we can craft our item!
 
 ![Our Recipe in Game](../../images/data/test-recipe.png "Our Recipe in Game")
+
+
+
+## EvilSword recipe
+
+
+
+```cs
+private static void recipeEvilSword(ItemDrop itemDrop)
+{
+    Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
+    recipe.name = "Recipe_EvilSword";
+    recipe.m_item = itemDrop;
+    recipe.m_craftingStation = PrefabManager.Cache.GetPrefab<CraftingStation>("piece_workbench");
+    recipe.m_resources = new Piece.Requirement[]
+    {
+            new Piece.Requirement()
+            {
+                m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Stone"),
+                m_amount = 1
+            },
+            new Piece.Requirement()
+            {
+                m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("CustomWood"),
+                m_amount = 1
+            }
+    };
+    CustomRecipe CR = new CustomRecipe(recipe, false, false);
+    ItemManager.Instance.AddRecipe(CR);
+}
+```
+
+![Custom Resource Recipe](../../images/data/customResourceRecipe.png)
