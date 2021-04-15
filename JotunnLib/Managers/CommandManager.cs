@@ -8,7 +8,7 @@ namespace JotunnLib.Managers
     /// <summary>
     ///     Handles loading of all custom console and chat commands.
     /// </summary>
-    public class CommandManager : Manager
+    public class CommandManager : IManager
     {
         /// <summary>
         ///     The singleton instance of this manager.
