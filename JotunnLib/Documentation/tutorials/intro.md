@@ -8,7 +8,7 @@ These tutorials cover the following.
 - Creating [custom Status Effects](data/statuseffects.md)
 - Creating [custom skills](data/skills.md)
 - Using [mocks](data/mocks.md) inside of AssetBundles to reference native assets
-- Adding [localisations](data/localisations.md)
+- Adding [localizations](data/localizations.md)
 - Implementing [mod synchronisation](utils/networkcompatibility.md)
 
 

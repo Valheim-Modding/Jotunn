@@ -1,8 +1,14 @@
+- name: Assets
+  href: assets.md
+
+- name: Unity
+  href: unity.md
+
+- name: Localization
+  href: localization.md
+
 - name: Skills
   href: skills.md
-
-- name: Prefabs
-  href: prefabs.md
 
 - name: Items
   href: items.md
@@ -19,5 +25,11 @@
 - name: Vegetation
   href: vegetation.md
 
-- name: Input Manager
+- name: Inputs
   href: inputs.md
+
+- name: GUI
+  href: gui.md
+
+- name: Mocks
+  href: mocks.md

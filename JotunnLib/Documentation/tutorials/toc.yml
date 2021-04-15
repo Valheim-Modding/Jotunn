@@ -16,13 +16,6 @@
   href: inputs/toc.yml
   topicHref: inputs/overview.md
 
-- name: Events
-  href: events/toc.yml
-  topicHref: events/overview.md
-
-- name: Localization
-  href: localization.md
-
 - name: Utils
   href: utils/toc.yml
   topicHref: utils/overview.md
