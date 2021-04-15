@@ -22,7 +22,9 @@ jobs:
 
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        run: |
+          echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+          echo ::set-output name=VERSION_NUMBER::${VERSION:1}
 
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
@@ -67,6 +69,26 @@ jobs:
       - name: Set references to DLLs
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
+
+      - name: Set JotunnLib version
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><Version>${{ steps.get_version.outputs.VERSION_NUMBER }}-0</Version></PropertyGroup></Project>" > JotunnLib/BuildProps/version.props
+
+      - name: Reset DoPrebuild.props
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><ExecutePrebuild>true</ExecutePrebuild></PropertyGroup></Project>" > JotunnLib/BuildProps/DoPrebuild.props
+
+      - name: Update GitVersion.yml
+        run: |
+          cat JotunnLib/GitVersion.yml | sed '4s/.*/next-version: ${{ steps.get_version.outputs.VERSION_NUMBER }}/' > JotunnLib/GitVersion_temp.yml && mv JotunnLib/GitVersion_temp.yml JotunnLib/GitVersion.yml
+
+      - name: Push version update to prod
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add JotunnLib/GitVersion.yml
+          git commit -m "deploy: Released ${{ steps.get_version.outputs.VERSION }}"
+          git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn HEAD:prod
 
       # Build DLLs
       - name: Build solution
