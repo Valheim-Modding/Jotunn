@@ -89,6 +89,7 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add JotunnLib/GitVersion.yml
+          git add JotunnLib/BuildProps/version.props
           git commit -m "deploy: Released ${{ steps.get_version.outputs.VERSION }}"
           git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn HEAD:prod
 
