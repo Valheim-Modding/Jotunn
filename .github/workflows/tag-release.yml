@@ -25,6 +25,7 @@ jobs:
         run: |
           echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
           echo ::set-output name=VERSION_NUMBER::${VERSION:1}
+          echo ::set-output name=VERSION_NEXT_NUMBER::${$(echo $VERSION_NUMBER | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')}
 
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
@@ -78,9 +79,10 @@ jobs:
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><ExecutePrebuild>true</ExecutePrebuild></PropertyGroup></Project>" > JotunnLib/BuildProps/DoPrebuild.props
 
-      - name: Update GitVersion.yml
+      - name: Update GitVersion.yml and version.props
         run: |
-          cat JotunnLib/GitVersion.yml | sed '4s/.*/next-version: ${{ steps.get_version.outputs.VERSION_NUMBER }}/' > JotunnLib/GitVersion_temp.yml && mv JotunnLib/GitVersion_temp.yml JotunnLib/GitVersion.yml
+          cat JotunnLib/GitVersion.yml | sed '4s/.*/next-version: ${{ steps.get_version.outputs.VERSION_NEXT_NUMBER }}/' > JotunnLib/GitVersion_temp.yml && mv JotunnLib/GitVersion_temp.yml JotunnLib/GitVersion.yml
+          cat JotunnLib/BuildProps/version.props  | sed '4s#.*#    <Version>${{ steps.get_version.outputs.VERSION_NUMBER }}</Version>#' > JotunnLib/BuildProps/version_temp.props && mv JotunnLib/BuildProps/version_temp.props JotunnLib/BuildProps/version.props
 
       - name: Push version update to prod
         run: |
