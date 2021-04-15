@@ -32,23 +32,6 @@ namespace JotunnLib
 
         internal static GameObject RootObject;
 
-        // Load order for managers
-        //private readonly List<Type> managerTypes = new List<Type>()
-        //{
-        //    typeof(LocalizationManager),
-        //    typeof(EventManager),
-        //    typeof(CommandManager),
-        //    typeof(InputManager),
-        //    typeof(SkillManager),
-        //    typeof(PrefabManager),
-        //    typeof(ItemManager),
-        //    typeof(PieceManager),
-        //    typeof(MockManager),
-        //    typeof(ZoneManager),
-        //    typeof(GUIManager),
-        //    typeof(SaveManager),
-        //    typeof(SynchronizationManager)
-        //};
         private List<IManager> managers;
 
         private void Awake()
@@ -60,12 +43,6 @@ namespace JotunnLib
             RootObject = new GameObject("_JotunnLibRoot");
             GameObject.DontDestroyOnLoad(RootObject);
 
-
-
-            //foreach (Type managerType in managerTypes)
-            //{
-            //    managers.Add(managerType);
-            //}
             managers = new List<IManager>() {
             LocalizationManager.Instance,
             EventManager.Instance,
@@ -81,12 +58,11 @@ namespace JotunnLib
             SaveManager.Instance,
             SynchronizationManager.Instance
             };
-
-            //foreach (IManager manager in managers)
-            //{
-            //    manager.Init();
-            //    Logger.LogInfo("Initialized " + manager.GetType().Name);
-            //}
+            foreach (IManager manager in managers)
+            {
+                manager.Init();
+                Logger.LogInfo("Initialized " + manager.GetType().Name);
+            }
 
             Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
         }

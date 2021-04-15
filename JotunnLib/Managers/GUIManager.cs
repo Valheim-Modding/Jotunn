@@ -22,12 +22,10 @@ namespace JotunnLib.Managers
         {
             get
             {
-                if (Instance == null) _instance = new GUIManager();
+                if (_instance == null) _instance = new GUIManager();
                 return _instance;
             }
         }
-
-        private GameObject guiRoot;
 
         public static GameObject PixelFix { get; private set; }
 
@@ -75,7 +73,7 @@ namespace JotunnLib.Managers
 
         public void Init()
         {
-            //GUIContainer = new GameObject("GUI");
+            GUIContainer = new GameObject("GUI");
             GUIContainer.transform.SetParent(Main.RootObject.transform);
             GUIContainer.layer = UILayer; // UI
             var canvas = GUIContainer.AddComponent<Canvas>();
