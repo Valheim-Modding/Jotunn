@@ -63,7 +63,6 @@ We will want to have two instances of the Unity Editor running, I know that it c
 ![Game Assemblies](https://i.imgur.com/yVOLfOa.png) ![Assemblies Folder](https://i.imgur.com/4Zun1yU.png)
 
 7. Go back to the Unity Editor and press `Ctrl+R`. This should reload all files and add the Valheim assemblies under `Assets\Assemblies`
-8. Click on `Window` -> `PackageManager` and search for `AssetBundleBrowser` and install it.
 
 ## Making our Item Prefab
 
