@@ -84,7 +84,7 @@ namespace JotunnLib
                     // Cut off the suffix in the name to correctly query the original material
                     if (unityObject is Material)
                     {
-                        const string materialInstance = " (instance)";
+                        const string materialInstance = " (Instance)";
                         if (unityObjectName.EndsWith(materialInstance))
                         {
                             unityObjectName = unityObjectName.Substring(0, unityObjectName.Length - materialInstance.Length);
