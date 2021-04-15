@@ -3,7 +3,7 @@
 
 ## Tables & Tabs
 
-PieceTables can be associated with items such as Hammer, Cultivator, and Hoe. Each have their own set of [categories](piececategories.md) which can act as tabs to organise content within a certain PieceTable. 
+PieceTables can be associated with items such as Hammer, Cultivator, and Hoe. Each have their own set of [categories](piece-categories.md) which can act as tabs to organise content within a certain PieceTable. 
 
 TODO: prefab component requirement description
 
@@ -12,7 +12,7 @@ see: [AddPieceTable](xref:JotunnLib.Managers.PieceTables.AddPieceTable)
 PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
 ```
 
-[Tabs/Categories](categories.md) are something we are looking to provide interfaces and abstractions for in our v1.1 release, so key an eye out for any updates from JVL.
+[Tabs/Categories](piece-categories.md) are something we are looking to provide interfaces and abstractions for in our v1.1 release, so key an eye out for any updates from JVL.
 
 ## Pieces
 _Pieces_ in Valheim are anything that can be built in the game, through means such as the Hammer, Cultivator, or Hoe. This includes things such as plant sapplings, the workbench, and walls. Custom pieces are handled by the [PieceManager](xref:JotunnLib.Managers.PieceManager) singleton.  
@@ -43,7 +43,7 @@ private void addEmptyItems()
 
 The Blueprint rune, a custom item one of our developers has been working on, is intended to duplicate existing structures. In order to keep this example simple, we are not including this functionality, but are utilising these assets to provide an example of loading pieces via prefabs, so please bear in mind that while the code bellow is perfectly functional, there is no mesh/model associated with the following pieces due to the nature of their intended function.
 
-With that said, we will load two new pieces into the previously created blueprint piecetable. In order to better facilitate creation of pieces we have introduced the abstractions of [PieceConfig's](xref:JotunnLib.Configs.PieceConfig) and [RequirementConfig](JotunnLib.Config.RequirementConfig). These allow us to quickly and easily define common properties for pieces, such as the table they belong too, any restrictions or resources required.
+With that said, we will load two new pieces into the previously created blueprint piecetable. In order to better facilitate creation of pieces we have introduced the abstractions of [PieceConfig's](xref:JotunnLib.Configs.PieceConfig) and [RequirementConfig](xref:JotunnLib.Config.RequirementConfig). These allow us to quickly and easily define common properties for pieces, such as the table they belong too, any restrictions or resources required.
 
 ```cs
 private void CreateRunePieces()

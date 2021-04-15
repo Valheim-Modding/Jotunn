@@ -80,7 +80,7 @@ private static void recipeEvilSword(ItemDrop itemDrop)
 
 ## Instantiating items from prefabs, RecipeConfig's
 
-In the previous examples we saw that its possible to easily clone existing items and customise our recipe's required for the items, however these examples are rather verbose, and requires a fair amount of setup. In order to better facilitate configurations such as these, we have introduced `*Config` abstractions such as the [RecipeConfig](JotunnLib.Config.RecipeConfig) and [PieceRequirementConfig](JotunnLib.Config.PieceRequirementConfig), which expose common properties such as the itemdrop, craftingstation, and resources.
+In the previous examples we saw that its possible to easily clone existing items and customise our recipe's required for the items, however these examples are rather verbose, and requires a fair amount of setup. In order to better facilitate configurations such as these, we have introduced `*Config` abstractions such as the [RecipeConfig](xref:JotunnLib.Config.RecipeConfig) and [PieceRequirementConfig](xref:JotunnLib.Config.PieceRequirementConfig), which exposes common properties such as the ItemDrop, CraftingStation, and Resources.
 
 Similarly in this example instead of cloning our prefabs, we are just going to import a custom prefab directly from an asset bundle, which is exceedingly convenient using J�tunn's asset loading helpers:
 

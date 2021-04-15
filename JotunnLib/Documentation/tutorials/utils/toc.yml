@@ -7,8 +7,8 @@
 - name: Config
   href: config.md
 
-- name: NetworkCompat
-  href: networkcompat.md
+- name: NetworkCompatibility
+  href: networkcompatibility.md
 
 - name: ReflectionUtils
   href: reflection.md
