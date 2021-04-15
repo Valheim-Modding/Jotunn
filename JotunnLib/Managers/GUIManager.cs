@@ -305,18 +305,21 @@ namespace JotunnLib.Managers
                     // Add every ButtonConfig as a child to the custom key hints object
                     foreach (var buttonConfig in entry.Value.ButtonConfigs)
                     {
+                        string key = LocalizationManager.Instance.TryTranslate(buttonConfig.KeyToken);
+                        string hint = LocalizationManager.Instance.TryTranslate(buttonConfig.HintToken);
+
                         if (string.IsNullOrEmpty(buttonConfig.Axis))
                         {
                             var customObject = Instantiate(baseKey, keyHintTransform, false);
                             customObject.name = buttonConfig.Name;
-                            customObject.transform.Find("key_bkg/Key").gameObject.SetText(buttonConfig.KeyToken);
-                            customObject.transform.Find("Text").gameObject.SetText(buttonConfig.HintToken);
+                            customObject.transform.Find("key_bkg/Key").gameObject.SetText(key);
+                            customObject.transform.Find("Text").gameObject.SetText(hint);
                             customObject.SetActive(true);
                         }
                         else
                         {
                             var customObject = Instantiate(baseRotate, keyHintTransform, false);
-                            customObject.transform.Find("Text").gameObject.SetText(buttonConfig.HintToken);
+                            customObject.transform.Find("Text").gameObject.SetText(hint);
                             customObject.SetActive(true);
                         }
                     }

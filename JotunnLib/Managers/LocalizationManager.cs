@@ -47,13 +47,6 @@ namespace JotunnLib.Managers
         /// </summary>
         internal Dictionary<string, Dictionary<string, string>> Localizations = new Dictionary<string, Dictionary<string, string>>();
 
-        /// <summary>
-        ///     Event for plugins to register their localizations via code.
-        /// </summary>
-        public event EventHandler LocalizationRegister;
-
-        private bool registered;
-
         private void Awake()
         {
             if (Instance != null)
@@ -79,22 +72,13 @@ namespace JotunnLib.Managers
                     doQuoteLineSplitMethodInfo);
         }
 
-        private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
-        {
-            var result = orig(self, language);
-            Logger.LogDebug($"\t-> SetupLanguage called {language}");
-
-            // Register & load localizations for selected language
-            Register();
-            Load(self, language);
-
-            return result;
-        }
-
         private List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
         {
             var result = orig(self);
-            LocalizationManager.Instance.Register();
+
+            Logger.LogInfo("---- Loading custom localizations ----");
+
+            AddLanguageFilesFromPluginFolder();
 
             // Add in localized languages that do not yet exist
             foreach (var language in Localizations.Keys.OrderBy(x => x))
@@ -108,39 +92,19 @@ namespace JotunnLib.Managers
             return result;
         }
 
-        /// <summary>
-        ///     Register all plugin's localizations.
-        /// </summary>
-        internal void Register()
+        private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
         {
-            if (registered)
+            var result = orig(self, language);
+            
+            Logger.LogInfo($"---- Adding tokens for language '{language}' ----");
+
+            // Only if we have translations for this language
+            if (Localizations.ContainsKey(language))
             {
-                return;
+                AddTokens(self, language);
             }
 
-            Logger.LogInfo("---- Registering custom localizations ----");
-
-            AddLanguageFilesFromPluginFolder();
-
-            LocalizationRegister?.Invoke(null, EventArgs.Empty);
-            registered = true;
-        }
-
-        /// <summary>
-        ///     Load the localization into Valheim's buffers.
-        /// </summary>
-        /// <param name="localization"></param>
-        /// <param name="language"></param>
-        public void Load(Localization localization, string language)
-        {
-            // only if we have translations for this language
-            if (!Localizations.ContainsKey(language))
-            {
-                return;
-            }
-
-            Logger.LogDebug($"Adding tokens for language {language}");
-            AddTokens(localization, language);
+            return result;
         }
 
         /// <summary>
@@ -317,6 +281,23 @@ namespace JotunnLib.Managers
             }
 
             LoadJsonLanguageFile(language, fileContent);
+        }
+
+        public string TryTranslate(string word)
+        {
+            var toTranslate = word;
+
+            if (string.IsNullOrEmpty(toTranslate))
+            {
+                return null;
+            }
+
+            if (toTranslate[0] == TokenFirstChar)
+            {
+                toTranslate = toTranslate.Substring(1);
+            }
+
+            return Localization.instance.Translate(toTranslate);
         }
 
         /// <summary>

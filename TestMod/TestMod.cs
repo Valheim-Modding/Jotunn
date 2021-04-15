@@ -11,17 +11,17 @@ using JotunnLib.Managers;
 using JotunnLib.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace TestMod
 {
-    [BepInPlugin(ModGUID, "JotunnLib Test Mod", "0.1.0")]
+    [BepInPlugin(ModGUID, ModName, ModVersion)]
     [BepInDependency(Main.ModGuid)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Build)]
     internal class TestMod : BaseUnityPlugin
     {
         private const string ModGUID = "com.jotunn.testmod";
+        private const string ModName = "JotunnLib Test Mod";
+        private const string ModVersion = "0.1.0";
 
         public AssetBundle BlueprintRuneBundle;
         private bool clonedItemsAdded;
@@ -36,13 +36,13 @@ namespace TestMod
         private Sprite testSprite;
         private Texture2D testTex;
 
-        // Init handlers
+        // Load, create and init your custom mod stuff
         private void Awake()
         {
             InputManager.Instance.InputRegister += registerInputs;
-            LocalizationManager.Instance.LocalizationRegister += registerLocalization;
 
             LoadAssets();
+            AddLocalizations();
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
@@ -50,24 +50,13 @@ namespace TestMod
             AddSkills();
             CreateConfigValues();
 
+
             // Hook ObjectDB.CopyOtherDB to add custom items cloned from vanilla items
-            On.ObjectDB.CopyOtherDB += addClonedItems;
+            On.ObjectDB.CopyOtherDB += AddClonedItems;
 
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
-
-            // POC: Key hints
-            KeyHintConfig KHC = new KeyHintConfig
-            {
-                Item = "Hammer",
-                ButtonConfigs = new[]
-                {
-                    new ButtonConfig { Name = "Shwing", KeyToken = "$KEY_Attack1", HintToken = "$doit" },
-                    new ButtonConfig { Name = "Shcroll", Axis = "Up", HintToken = "$upndown" }
-                }
-            };
-            GUIManager.Instance.AddKeyHint(KHC);
         }
 
         // Called every frame
@@ -176,6 +165,22 @@ namespace TestMod
 
             // Embedded Resources
             JotunnLib.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
+        }
+
+        // Adds localizations with configs
+        private void AddLocalizations()
+        {
+            // Add translations for the custom item in AddClonedItems
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            {
+                Translations = {
+                    {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
+                    { "evilsword_shwing", "Woooosh" }, {"evilsword_scroll", "*scroll*"}
+                }
+            });
+
+            // Add translations for the custom piece in AddEmptyItems
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") { Translations = { { "piece_lul", "Lulz" } } });
         }
 
         // Add new Items with item Configs
@@ -296,7 +301,7 @@ namespace TestMod
 
         // Add new items as copies of vanilla items - just works when vanilla prefabs are already loaded (ObjectDB.CopyOtherDB for example)
         // You can use the Cache of the PrefabManager in here
-        private void addClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             // You want that to run only once, JotunnLib has the item cached for the game session
             if (!clonedItemsAdded)
@@ -324,23 +329,22 @@ namespace TestMod
                 ItemManager.Instance.AddRecipe(CR);
 
                 clonedItemsAdded = true;
+
+                // Create custom KeyHints for the item
+                KeyHintConfig KHC = new KeyHintConfig
+                {
+                    Item = "EvilSword",
+                    ButtonConfigs = new[]
+                    {
+                    new ButtonConfig { Name = "Shwing", KeyToken = "$KEY_Attack", HintToken = "$evilsword_shwing" },
+                    new ButtonConfig { Name = "Scroll", Axis = "Up", HintToken = "$evilsword_scroll" }
+                }
+                };
+                GUIManager.Instance.AddKeyHint(KHC);
             }
 
             // Hook is prefix, we just need to be able to get the vanilla prefabs, JotunnLib registers them in ObjectDB
             orig(self, other);
-        }
-
-        // Registers localizations with configs
-        private void registerLocalization(object sender, EventArgs e)
-        {
-            // Add translations for the custom item in addClonedItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
-            {
-                Translations = {{"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"}}
-            });
-
-            // Add translations for the custom piece in AddEmptyItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") {Translations = {{"piece_lul", "Lulz"}}});
         }
 
         // Register new console commands
