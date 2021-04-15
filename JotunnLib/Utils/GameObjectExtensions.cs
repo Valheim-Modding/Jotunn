@@ -109,7 +109,7 @@ namespace JotunnLib.Utils
         }
 
         /// <summary>
-        /// Facilitates use of Null Propogation operator for unity GameObjects
+        /// Facilitates use of null propagation operator for unity GameObjects by respecting op_equality.
         /// </summary>
         /// <param name="this">this</param>
         /// <returns>Returns null when GameObject.op_equality returns false.</returns>
