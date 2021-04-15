@@ -503,7 +503,7 @@ namespace JotunnLib.InGameConfig
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
 
             // Add this keybinding to the list in Settings to utilize valheim's keybind dialog
-            Settings.instance.m_keys.Add(new Settings.KeySetting {m_keyName = key, m_keyTransform = result.GetComponent<RectTransform>()});
+            Settings.instance.m_keys.Add(new Settings.KeySetting { m_keyName = key + "!" + modguid, m_keyTransform = result.GetComponent<RectTransform>() });
 
             // Create description text
             var desc = GUIManager.Instance.CreateText(description, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
@@ -767,7 +767,7 @@ namespace JotunnLib.InGameConfig
 
             public void Awake()
             {
-                gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() => { Settings.instance.OpenBindDialog(Key); });
+                gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() => { Settings.instance.OpenBindDialog(Key + "!" + ModGUID); });
             }
 
             public override void SetEnabled(bool enabled)
