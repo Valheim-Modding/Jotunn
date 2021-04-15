@@ -1,8 +1,7 @@
-name: Create DLL on merge to main
+name: Create DLL on merge to dev
 "on":
   push:
     branches:
-      - main
       - dev
 jobs:
   build_merge:
@@ -72,10 +71,10 @@ jobs:
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.7
         with:
-          versionSpec: '5.x'
+          versionSpec: "5.x"
 
       - name: Determine Version
-        id:   gitversion
+        id: gitversion
         uses: gittools/actions/gitversion/execute@v0.9.7
         with:
           useConfigFile: true
@@ -99,8 +98,8 @@ jobs:
         with:
           name: JotunnLib-${{ steps.date.outputs.date }}.dll
           path: JotunnLib/bin/Release/net462/JotunnLib.dll
-            
+
       - uses: actions/upload-artifact@v2
         with:
           name: JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg
-          path: JotunnLib/bin/Release/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg            
+          path: JotunnLib/bin/Release/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg
