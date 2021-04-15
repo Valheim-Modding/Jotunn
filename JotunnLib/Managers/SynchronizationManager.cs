@@ -43,6 +43,12 @@ namespace JotunnLib.Managers
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
 
             On.Menu.IsVisible += Menu_IsVisible;
+
+            // Find Configuration manager plugin and add to DisplayingWindowChanged event
+            if (!configurationManager)
+            {
+                HookConfigurationManager();
+            }
         }
 
         /// <summary>
@@ -70,8 +76,6 @@ namespace JotunnLib.Managers
 
         internal void Start()
         {
-            // Find Configuration manager plugin and add to DisplayingWindowChanged event
-            HookConfigurationManager();
         }
 
         /// <summary>
@@ -147,6 +151,11 @@ namespace JotunnLib.Managers
                     {
                         var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
                         valuesToSend.Add(value);
+                    }
+
+                    if (cx.SettingType == typeof(KeyCode))
+                    {
+                        ZInput.instance.Setbutton(cd.Key + "!" + plugin.Value.Info.Metadata.GUID, (KeyCode) cx.BoxedValue);
                     }
                 }
             }
