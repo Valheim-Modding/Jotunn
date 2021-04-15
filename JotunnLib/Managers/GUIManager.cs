@@ -285,32 +285,40 @@ namespace JotunnLib.Managers
                 foreach (var entry in KeyHints)
                 {
                     // Clone BuildHints and add it under KeyHints to get the position right
-                    var keyHintObject = Instantiate(KeyHintContainer.Find("BuildHints").gameObject);
+                    var keyHintObject = Instantiate(KeyHintContainer.Find("BuildHints").gameObject, KeyHintContainer, false);
                     keyHintObject.name = entry.Key;
                     keyHintObject.SetActive(false);
 
-                    var keyHintTransform = keyHintObject.GetComponent<RectTransform>();
-                    keyHintTransform.SetParent(KeyHintContainer, false);
+                    // Get the Transforms of Keyboard and Gamepad
+                    var kb = keyHintObject.transform.Find("Keyboard");
+                    var gp = keyHintObject.transform.Find("Gamepad");
 
-                    // Clone Place object and use it as the base for custom keys
-                    var baseKey = Instantiate(keyHintObject.transform.Find("Keyboard/Place").gameObject);
-                    var baseRotate = Instantiate(keyHintObject.transform.Find("Keyboard/rotate").gameObject);
+                    // Clone vanilla key hint objects and use it as the base for custom key hints
+                    var baseKey = Instantiate(kb.transform.Find("Place").gameObject);
+                    var baseRotate = Instantiate(kb.transform.Find("rotate").gameObject);
 
                     // Destroy all child objects
-                    foreach (RectTransform child in keyHintTransform)
+                    foreach (RectTransform child in kb)
+                    {
+                        Destroy(child.gameObject);
+                    }
+                    foreach (RectTransform child in gp)
                     {
                         Destroy(child.gameObject);
                     }
 
                     // Add every ButtonConfig as a child to the custom key hints object
-                    foreach (var buttonConfig in entry.Value.ButtonConfigs)
+                    /*for (int i = entry.Value.ButtonConfigs.Length - 1; i >= 0; i--)
                     {
+                        var buttonConfig = entry.Value.ButtonConfigs[i];*/
+                    foreach (var buttonConfig in entry.Value.ButtonConfigs)
+                    { 
                         string key = LocalizationManager.Instance.TryTranslate(buttonConfig.KeyToken);
                         string hint = LocalizationManager.Instance.TryTranslate(buttonConfig.HintToken);
 
                         if (string.IsNullOrEmpty(buttonConfig.Axis))
                         {
-                            var customObject = Instantiate(baseKey, keyHintTransform, false);
+                            var customObject = Instantiate(baseKey, kb, false);
                             customObject.name = buttonConfig.Name;
                             customObject.transform.Find("key_bkg/Key").gameObject.SetText(key);
                             customObject.transform.Find("Text").gameObject.SetText(hint);
@@ -318,10 +326,11 @@ namespace JotunnLib.Managers
                         }
                         else
                         {
-                            var customObject = Instantiate(baseRotate, keyHintTransform, false);
+                            var customObject = Instantiate(baseRotate, kb, false);
                             customObject.transform.Find("Text").gameObject.SetText(hint);
                             customObject.SetActive(true);
                         }
+
                     }
 
                     // Add UIInputHint to automatically switch between Keyboard and Gamepad objects
@@ -404,9 +413,10 @@ namespace JotunnLib.Managers
                 }
             }
 
-            // Check if a custom item has a custom key hint registered and show it instead the vanilla one
+            // Is there a hint displayed?
             if (self.m_buildHints.activeSelf || self.m_combatHints.activeSelf)
             {
+                // Get current equipped item name
                 var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
                 if (item == null)
                 {
@@ -414,6 +424,7 @@ namespace JotunnLib.Managers
                 }
                 var prefabName = item.m_dropPrefab.name;
 
+                // Check if that item has a custom key hint and display it instead the vanilla one
                 if (KeyHints.TryGetValue(prefabName, out var keyHints))
                 {
                     self.m_buildHints.SetActive(false);
@@ -421,6 +432,7 @@ namespace JotunnLib.Managers
 
                     var hint = KeyHintContainer.Find(keyHints.Item).gameObject;
                     hint.SetActive(true);
+                    hint.GetComponent<UIInputHint>()?.Update();
                 }
             }
         }

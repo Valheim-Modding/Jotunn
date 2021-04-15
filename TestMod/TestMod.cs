@@ -175,7 +175,8 @@ namespace TestMod
             {
                 Translations = {
                     {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
-                    { "evilsword_shwing", "Woooosh" }, {"evilsword_scroll", "*scroll*"}
+                    {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
+                    {"evilswordKEY_beevil", "B"}, {"evilsword_beevil", "Muaahaha"}
                 }
             });
 
@@ -337,6 +338,7 @@ namespace TestMod
                         ButtonConfigs = new[]
                         {
                             new ButtonConfig { Name = "Shwing", KeyToken = "$KEY_Attack", HintToken = "$evilsword_shwing" },
+                            new ButtonConfig { Name = "BeEvil", KeyToken = "$evilswordKEY_beevil", HintToken = "$evilsword_beevil" },
                             new ButtonConfig { Name = "Scroll", Axis = "Up", HintToken = "$evilsword_scroll" }
                         }
                     };
