@@ -6,26 +6,24 @@ using JotunnLib.Configs;
 
 namespace JotunnLib.Managers
 {
-    public class InputManager : Manager
+    public class InputManager : IManager
     {
-        public static InputManager Instance { get; private set; }
+        private static InputManager _instance;
+        public static InputManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = new InputManager();
+                return _instance;
+            }
+        }
         internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
 
         public EventHandler InputRegister;
         private bool inputsRegistered = false;
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType().Name}");
-                return;
-            }
 
-            Instance = this;
-        }
-
-        internal override void Init()
+        public void Init()
         {
             On.ZInput.Initialize += ZInput_Initialize;
             On.ZInput.Reset += ZInput_Reset;

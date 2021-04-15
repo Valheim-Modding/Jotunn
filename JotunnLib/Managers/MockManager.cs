@@ -10,27 +10,25 @@ namespace JotunnLib.Managers
     /// <summary>
     ///     Handles all logic to do with managing mocked prefabs added into the game.
     /// </summary>
-    class MockManager : Manager
+    class MockManager : IManager
     {
+        private static MockManager _instance;
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static MockManager Instance { get; private set; }
+        public static MockManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = new MockManager();
+                return _instance;
+            }
+        }
 
         internal GameObject MockPrefabContainer;
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
-                return;
-            }
 
-            Instance = this;
-        }
-
-        internal override void Init()
+        public void Init()
         {
             MockPrefabContainer = new GameObject("MockPrefabs");
             MockPrefabContainer.transform.parent = Main.RootObject.transform;
@@ -78,7 +76,7 @@ namespace JotunnLib.Managers
 
                 foreach (var transform in MockPrefabContainer.transform)
                 {
-                    Destroy(((Transform)transform).gameObject);
+                    GameObject.Destroy(((Transform)transform).gameObject);
                 }
             }
         }

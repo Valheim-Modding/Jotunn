@@ -32,24 +32,7 @@ namespace JotunnLib
 
         internal static GameObject RootObject;
 
-        // Load order for managers
-        private readonly List<Type> managerTypes = new List<Type>()
-        {
-            typeof(LocalizationManager),
-            typeof(EventManager),
-            typeof(CommandManager),
-            typeof(InputManager),
-            typeof(SkillManager),
-            typeof(PrefabManager),
-            typeof(ItemManager),
-            typeof(PieceManager),
-            typeof(MockManager),
-            typeof(ZoneManager),
-            typeof(GUIManager),
-            typeof(SaveManager),
-            typeof(SynchronizationManager)
-        };
-        private readonly List<Manager> managers = new List<Manager>();
+        private List<IManager> managers;
 
         private void Awake()
         {
@@ -60,12 +43,22 @@ namespace JotunnLib
             RootObject = new GameObject("_JotunnLibRoot");
             GameObject.DontDestroyOnLoad(RootObject);
 
-            foreach (Type managerType in managerTypes)
-            {
-                managers.Add((Manager)RootObject.AddComponent(managerType));
-            }
-
-            foreach (Manager manager in managers)
+            managers = new List<IManager>() {
+            LocalizationManager.Instance,
+            EventManager.Instance,
+            CommandManager.Instance,
+            InputManager.Instance,
+            SkillManager.Instance,
+            PrefabManager.Instance,
+            ItemManager.Instance,
+            PieceManager.Instance,
+            MockManager.Instance,
+            ZoneManager.Instance,
+            GUIManager.Instance,
+            SaveManager.Instance,
+            SynchronizationManager.Instance
+            };
+            foreach (IManager manager in managers)
             {
                 manager.Init();
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
@@ -99,6 +92,9 @@ namespace JotunnLib
             {
                 GUI.Label(new Rect(Screen.width - 100, 5, 100, 25), "JotunnLib v" + Version);
             }
+
+            //Fake monobehaviour event for manager
+            GUIManager.Instance.OnGUI();
         }
 
         /// <summary>

@@ -9,12 +9,20 @@ namespace JotunnLib.Managers
     /// <summary>
     ///     Manager for handling custom prefabs added to the game.
     /// </summary>
-    public class PrefabManager : Manager
+    public class PrefabManager : IManager
     {
+        private static PrefabManager _instance;
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static PrefabManager Instance { get; private set; }
+        public static PrefabManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = new PrefabManager();
+                return _instance;
+            }
+        }
 
         /// <summary>
         ///     One time event called after adding the prefabs to <see cref="ZNetScene"/> for the first time.
@@ -33,18 +41,7 @@ namespace JotunnLib.Managers
 
         private bool loaded = false;
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
-                return;
-            }
-
-            Instance = this;
-        }
-
-        internal override void Init()
+        public void Init()
         {
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
@@ -162,7 +159,7 @@ namespace JotunnLib.Managers
                 return null;
             }
 
-            var newPrefab = Instantiate(prefab, PrefabContainer.transform);
+            var newPrefab = GameObject.Instantiate(prefab, PrefabContainer.transform);
             newPrefab.name = name;
 
             return newPrefab;

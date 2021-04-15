@@ -4,6 +4,7 @@ using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using JotunnLib.Utils;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace JotunnLib.Managers
@@ -11,31 +12,29 @@ namespace JotunnLib.Managers
     /// <summary>
     ///     Handles all logic to do with synchronization between the client and server.
     /// </summary>
-    public class SynchronizationManager : Manager
+    public class SynchronizationManager : IManager
     {
         private List<Tuple<string, string, string, string>> cachedConfigValues = new List<Tuple<string, string, string, string>>();
 
         private BaseUnityPlugin configurationManager;
         internal bool configurationManagerWindowShown;
-        public static SynchronizationManager Instance { get; private set; }
+        private static SynchronizationManager _instance;
+        public static SynchronizationManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = new SynchronizationManager();
+                return _instance;
+            }
+        }
 
         public bool PlayerIsAdmin { get; private set; }
 
-        internal void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType().Name}");
-                return;
-            }
-
-            Instance = this;
-        }
 
         /// <summary>
         ///     Manager's main init
         /// </summary>
-        internal override void Init()
+        public void Init()
         {
             // Register RPCs in Game.Start
             On.Game.Start += Game_Start;
@@ -44,6 +43,12 @@ namespace JotunnLib.Managers
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
 
             On.Menu.IsVisible += Menu_IsVisible;
+
+            // Find Configuration manager plugin and add to DisplayingWindowChanged event
+            if (!configurationManager)
+            {
+                HookConfigurationManager();
+            }
         }
 
         /// <summary>
@@ -71,8 +76,6 @@ namespace JotunnLib.Managers
 
         internal void Start()
         {
-            // Find Configuration manager plugin and add to DisplayingWindowChanged event
-            HookConfigurationManager();
         }
 
         /// <summary>
@@ -83,7 +86,7 @@ namespace JotunnLib.Managers
             Logger.LogDebug("Trying to hook config manager");
 
             var result = new Dictionary<string, BaseUnityPlugin>();
-            configurationManager = FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray()
+            configurationManager = GameObject.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray()
                 .FirstOrDefault(x => x.Info.Metadata.GUID == "com.bepis.bepinex.configurationmanager");
 
             if (configurationManager)
@@ -148,6 +151,11 @@ namespace JotunnLib.Managers
                     {
                         var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
                         valuesToSend.Add(value);
+                    }
+
+                    if (cx.SettingType == typeof(KeyCode))
+                    {
+                        ZInput.instance.Setbutton(cd.Key + "!" + plugin.Value.Info.Metadata.GUID, (KeyCode) cx.BoxedValue);
                     }
                 }
             }

@@ -12,12 +12,21 @@ namespace JotunnLib.Managers
     /// <summary>
     ///    Manager for handling items, recipes, and status effects added to the game.
     /// </summary>
-    public class ItemManager : Manager
+    public class ItemManager : IManager
     {
+
+        private static ItemManager _instance;
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static ItemManager Instance { get; private set; }
+        public static ItemManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = new ItemManager();
+                return _instance;
+            }
+        }
 
         /// <summary>
         ///     Event that get fired after the ObjectDB get init and before its filled with custom items.
@@ -37,19 +46,8 @@ namespace JotunnLib.Managers
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
 
-                return;
-            }
-
-            Instance = this;
-        }
-
-        internal override void Init()
+        public void Init()
         {
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
             On.ObjectDB.Awake += RegisterCustomData;

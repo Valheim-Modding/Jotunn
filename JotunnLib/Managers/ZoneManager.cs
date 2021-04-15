@@ -3,27 +3,24 @@ using System.Collections.Generic;
 
 namespace JotunnLib.Managers
 {
-    internal class ZoneManager : Manager
+    internal class ZoneManager : IManager
     {
-        public static ZoneManager Instance { get; private set; }
+        private static ZoneManager _instance;
+        public static ZoneManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = new ZoneManager();
+                return _instance;
+            }
+        }
 
         public event EventHandler ZoneLoad;
         internal List<ZoneSystem.ZoneVegetation> Vegetation = new List<ZoneSystem.ZoneVegetation>();
 
-        internal override void Init()
+        public void Init()
         {
             On.ZNetScene.Awake += RegisterAllToZNetScene;
-        }
-
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
-                return;
-            }
-
-            Instance = this;
         }
 
         private void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)

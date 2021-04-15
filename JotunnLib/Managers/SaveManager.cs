@@ -5,30 +5,28 @@ using MonoMod.Cil;
 
 namespace JotunnLib.Managers
 {
-    internal class SaveManager : Manager
+    internal class SaveManager : IManager
     {
         internal const string PlayerPrefix = "player_";
         internal const string EntrySeparator = ".";
 
-        internal static SaveManager Instance { get; private set; }
+        private static SaveManager _instrance;
+        internal static SaveManager Instance
+        {
+            get
+            {
+                if (_instrance == null) _instrance = new SaveManager();
+                return _instrance;
+            }
+        }
 
         internal readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
 
         internal ConditionalWeakTable<Inventory, Container> InventoryToContainer = new ConditionalWeakTable<Inventory, Container>();
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Two instances of singleton {GetType()}");
 
-                return;
-            }
 
-            Instance = this;
-        }
-
-        internal override void Init()
+        public void Init()
         {
             Directory.CreateDirectory(Paths.CustomItemDataFolder);
 

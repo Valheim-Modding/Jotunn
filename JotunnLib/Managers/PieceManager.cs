@@ -8,12 +8,20 @@ namespace JotunnLib.Managers
     /// <summary>
     ///     Manager for handling custom pieces added to the game.
     /// </summary>
-    public class PieceManager : Manager
+    public class PieceManager : IManager
     {
+        private static PieceManager _instance;
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static PieceManager Instance { get; private set; }
+        public static PieceManager Instance
+        {
+            get 
+            {
+                if (_instance == null) _instance = new PieceManager();
+                return _instance;
+            }
+        }
         
         public event EventHandler OnPiecesRegistered;
         public event EventHandler OnPieceTablesRegistered;
@@ -29,18 +37,8 @@ namespace JotunnLib.Managers
             { "Hoe", "_HoePieceTable" }
         };
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
-                return;
-            }
 
-            Instance = this;
-        }
-
-        internal override void Init()
+        public void Init()
         {
             // Create PieceTable Container
             PieceTableContainer = new GameObject("PieceTables");
