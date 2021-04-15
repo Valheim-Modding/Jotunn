@@ -1,28 +1,28 @@
 ﻿using System;
 using JotunnLib.Events;
+using UnityEngine;
 
 namespace JotunnLib.Managers
 {
     /// <summary>
     /// Handles all logic to do with hooking into the game's events.
     /// </summary>
-    public class EventManager : Manager
+    public class EventManager : IManager
     {
-        internal static EventManager Instance { get; private set; }
+        private static EventManager _instance;
+        internal static EventManager Instance
+        {
+            get
+            {
+
+                if (_instance == null) _instance = new EventManager();
+                return _instance;
+            }
+        }
 
         public static event EventHandler<PlayerEventArgs> PlayerSpawned;
         public static event EventHandler<PlayerPlacedPieceEventArgs> PlayerPlacedPiece;
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType().Name}");
-                return;
-            }
-
-            Instance = this;
-        }
 
         internal static void OnPlayerSpawned(Player player)
         {
@@ -32,6 +32,11 @@ namespace JotunnLib.Managers
         internal static void OnPlayerPlacedPiece(PlayerPlacedPieceEventArgs args)
         {
             PlayerPlacedPiece?.Invoke(args.Player, args);
+        }
+
+        public void Init()
+        {
+            
         }
 
         // To be implemented

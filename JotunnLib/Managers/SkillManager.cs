@@ -11,25 +11,27 @@ namespace JotunnLib.Managers
     /// <summary>
     ///     Handles all logic that has to do with skills, and adding custom skills.
     /// </summary>
-    public class SkillManager : Manager
+    public class SkillManager : IManager
     {
+        private static SkillManager _instance;
         /// <summary>
         ///     Global singleton instance of the manager.
         /// </summary>
-        public static SkillManager Instance { get; private set; }
+        public static SkillManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = new SkillManager();
+                return _instance;
+            }
+        }
+
+        public void Init()
+        {
+
+        }
 
         internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
-
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType().Name}");
-                return;
-            }
-
-            Instance = this;
-        }
 
         /// <summary>
         ///     Add a new skill with given SkillConfig object, and adds translations for it in the current localization.
@@ -143,5 +145,7 @@ namespace JotunnLib.Managers
 
             return GetSkill((Skills.SkillType)identifier.GetStableHashCode());
         }
+
+        
     }
 }

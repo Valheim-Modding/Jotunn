@@ -10,7 +10,7 @@ namespace JotunnLib.Managers
     /// <summary>
     ///     Handles all logic to do with managing the game's localizations.
     /// </summary>
-    public class LocalizationManager : Manager
+    public class LocalizationManager : IManager
     {
         /// <summary>
         ///     Your token must start with this character.
@@ -32,10 +32,19 @@ namespace JotunnLib.Managers
         /// </summary>
         public const string CommunityTranslationFileName = "community_translation.json";
 
+        private static LocalizationManager _instance;
+
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static LocalizationManager Instance { get; private set; }
+        public static LocalizationManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = new LocalizationManager();
+                return _instance;
+            }
+        }
 
         /// <summary>
         ///     Call into unity's DoQuoteLineSplit.
@@ -47,21 +56,10 @@ namespace JotunnLib.Managers
         /// </summary>
         internal Dictionary<string, Dictionary<string, string>> Localizations = new Dictionary<string, Dictionary<string, string>>();
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType().Name}");
-                return;
-            }
-
-            Instance = this;
-        }
-
         /// <summary>
         ///     Initialize localization manager.
         /// </summary>
-        internal override void Init()
+        public void Init()
         {
             On.Localization.LoadLanguages += Localization_LoadLanguages;
             On.Localization.SetupLanguage += Localization_SetupLanguage;

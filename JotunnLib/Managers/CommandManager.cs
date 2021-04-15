@@ -10,10 +10,17 @@ namespace JotunnLib.Managers
     /// </summary>
     public class CommandManager : IManager
     {
+        private static CommandManager _instance;
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static CommandManager Instance { get; private set; }
+        public static CommandManager Instance { 
+            get
+            {
+                if (_instance == null) _instance = new CommandManager();
+                return _instance;
+            }
+        }
 
         /// <summary>
         ///     The console commands that are built-in to Valheim. These cannot be changed or overriden, and
@@ -50,20 +57,10 @@ namespace JotunnLib.Managers
 
         private List<ConsoleCommand> _consoleCommands = new List<ConsoleCommand>();
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
-                return;
-            }
-            Instance = this;
-        }
-
         /// <summary>
         ///     Initialize console commands that come with Jotunn.
         /// </summary>
-        internal override void Init()
+        public void Init()
         {
             AddConsoleCommand(new HelpCommand());
             AddConsoleCommand(new ClearCommand());

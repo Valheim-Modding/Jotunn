@@ -15,9 +15,19 @@ using Toggle = UnityEngine.UI.Toggle;
 
 namespace JotunnLib.Managers
 {
-    public class GUIManager : Manager, IPointerClickHandler
+    public class GUIManager : IManager, IPointerClickHandler
     {
-        public static GUIManager Instance { get; private set; }
+        private static GUIManager _instance;
+        public static GUIManager Instance
+        {
+            get
+            {
+                if (Instance == null) _instance = new GUIManager();
+                return _instance;
+            }
+        }
+
+        private GameObject guiRoot;
 
         public static GameObject PixelFix { get; private set; }
 
@@ -63,19 +73,9 @@ namespace JotunnLib.Managers
 #endif
         }
 
-        private void Awake()
+        public void Init()
         {
-            if (Instance != null)
-            {
-                Logger.LogError($"Cannot have multiple instances of singleton: {GetType()}");
-                return;
-            }
-            Instance = this;
-        }
-
-        internal override void Init()
-        {
-            GUIContainer = new GameObject("GUI");
+            //GUIContainer = new GameObject("GUI");
             GUIContainer.transform.SetParent(Main.RootObject.transform);
             GUIContainer.layer = UILayer; // UI
             var canvas = GUIContainer.AddComponent<Canvas>();
@@ -96,7 +96,7 @@ namespace JotunnLib.Managers
             On.KeyHints.UpdateHints += ShowCustomKeyHint;
         }
 
-        private void OnGUI()
+        internal void OnGUI()
         {
             // Load valheim GUI assets
 
@@ -267,7 +267,7 @@ namespace JotunnLib.Managers
                     GameObject gui = root.transform.Find("GUI/PixelFix").gameObject;
                     if (gui != null)
                     {
-                        Destroy(PixelFix);
+                        GameObject.Destroy(PixelFix);
                         PixelFix = new GameObject("GUIFix", typeof(RectTransform));
                         PixelFix.layer = UILayer; // UI
                         PixelFix.transform.SetParent(gui.transform, false);
@@ -285,7 +285,7 @@ namespace JotunnLib.Managers
                 foreach (var entry in KeyHints)
                 {
                     // Clone BuildHints and add it under KeyHints to get the position right
-                    var keyHintObject = Instantiate(KeyHintContainer.Find("BuildHints").gameObject, KeyHintContainer, false);
+                    var keyHintObject = GameObject.Instantiate(KeyHintContainer.Find("BuildHints").gameObject, KeyHintContainer, false);
                     keyHintObject.name = entry.Key;
                     keyHintObject.SetActive(false);
 
@@ -294,17 +294,17 @@ namespace JotunnLib.Managers
                     var gp = keyHintObject.transform.Find("Gamepad");
 
                     // Clone vanilla key hint objects and use it as the base for custom key hints
-                    var baseKey = Instantiate(kb.transform.Find("Place").gameObject);
-                    var baseRotate = Instantiate(kb.transform.Find("rotate").gameObject);
+                    var baseKey = GameObject.Instantiate(kb.transform.Find("Place").gameObject);
+                    var baseRotate = GameObject.Instantiate(kb.transform.Find("rotate").gameObject);
 
                     // Destroy all child objects
                     foreach (RectTransform child in kb)
                     {
-                        Destroy(child.gameObject);
+                        GameObject.Destroy(child.gameObject);
                     }
                     foreach (RectTransform child in gp)
                     {
-                        Destroy(child.gameObject);
+                        GameObject.Destroy(child.gameObject);
                     }
 
                     // Add every ButtonConfig as a child to the custom key hints object
@@ -318,7 +318,7 @@ namespace JotunnLib.Managers
 
                         if (string.IsNullOrEmpty(buttonConfig.Axis))
                         {
-                            var customObject = Instantiate(baseKey, kb, false);
+                            var customObject = GameObject.Instantiate(baseKey, kb, false);
                             customObject.name = buttonConfig.Name;
                             customObject.transform.Find("key_bkg/Key").gameObject.SetText(key);
                             customObject.transform.Find("Text").gameObject.SetText(hint);
@@ -326,7 +326,7 @@ namespace JotunnLib.Managers
                         }
                         else
                         {
-                            var customObject = Instantiate(baseRotate, kb, false);
+                            var customObject = GameObject.Instantiate(baseRotate, kb, false);
                             customObject.transform.Find("Text").gameObject.SetText(hint);
                             customObject.SetActive(true);
                         }
@@ -459,7 +459,7 @@ namespace JotunnLib.Managers
                 return null;
             }
 
-            var newButton = Instantiate(baseButton, parent, false);
+            var newButton = GameObject.Instantiate(baseButton, parent, false);
 
             newButton.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
 
@@ -503,7 +503,7 @@ namespace JotunnLib.Managers
                 Logger.LogError("BasePanel is null");
             }
 
-            var newPanel = Instantiate(basepanel, parent, false);
+            var newPanel = GameObject.Instantiate(basepanel, parent, false);
             newPanel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
 
             // Set positions and anchors
