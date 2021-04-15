@@ -22,7 +22,10 @@ jobs:
 
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        run: |
+          echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+          echo ::set-output name=VERSION_NUMBER::${VERSION:1}
+          echo ::set-output name=VERSION_NEXT_NUMBER::${$(echo $VERSION_NUMBER | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')}
 
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
@@ -68,6 +71,28 @@ jobs:
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
+      - name: Set JotunnLib version
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><Version>${{ steps.get_version.outputs.VERSION_NUMBER }}-0</Version></PropertyGroup></Project>" > JotunnLib/BuildProps/version.props
+
+      - name: Reset DoPrebuild.props
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><ExecutePrebuild>true</ExecutePrebuild></PropertyGroup></Project>" > JotunnLib/BuildProps/DoPrebuild.props
+
+      - name: Update GitVersion.yml and version.props
+        run: |
+          cat JotunnLib/GitVersion.yml | sed '4s/.*/next-version: ${{ steps.get_version.outputs.VERSION_NEXT_NUMBER }}/' > JotunnLib/GitVersion_temp.yml && mv JotunnLib/GitVersion_temp.yml JotunnLib/GitVersion.yml
+          cat JotunnLib/BuildProps/version.props  | sed '4s#.*#    <Version>${{ steps.get_version.outputs.VERSION_NUMBER }}</Version>#' > JotunnLib/BuildProps/version_temp.props && mv JotunnLib/BuildProps/version_temp.props JotunnLib/BuildProps/version.props
+
+      - name: Push version update to prod
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add JotunnLib/GitVersion.yml
+          git add JotunnLib/BuildProps/version.props
+          git commit -m "deploy: Released ${{ steps.get_version.outputs.VERSION }}"
+          git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn HEAD:prod
+
       # Build DLLs
       - name: Build solution
         run: |
@@ -75,6 +100,12 @@ jobs:
           mv JotunnLib/bin/Release/net462/JotunnLib.dll JotunnLib.dll
           msbuild JotunnLib.sln /p:Configuration=Debug
           mv JotunnLib/bin/Debug/net462/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
+
+      - name: Pack
+        run: dotnet pack -c Release
+
+      - name: Publish the package to Nuget
+        run: dotnet nuget push "*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
 
       - name: Release
         uses: softprops/action-gh-release@v1
