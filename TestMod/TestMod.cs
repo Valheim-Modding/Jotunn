@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using JotunnLib;
@@ -10,16 +11,17 @@ using JotunnLib.Managers;
 using JotunnLib.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace TestMod
 {
-    [BepInPlugin(ModGUID, "JotunnLib Test Mod", "0.1.0")]
+    [BepInPlugin(ModGUID, ModName, ModVersion)]
     [BepInDependency(Main.ModGuid)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Build)]
     internal class TestMod : BaseUnityPlugin
     {
         private const string ModGUID = "com.jotunn.testmod";
+        private const string ModName = "JotunnLib Test Mod";
+        private const string ModVersion = "0.1.0";
 
         public AssetBundle BlueprintRuneBundle;
         private bool clonedItemsAdded;
@@ -34,13 +36,13 @@ namespace TestMod
         private Sprite testSprite;
         private Texture2D testTex;
 
-        // Init handlers
+        // Load, create and init your custom mod stuff
         private void Awake()
         {
             InputManager.Instance.InputRegister += registerInputs;
-            LocalizationManager.Instance.LocalizationRegister += registerLocalization;
 
             LoadAssets();
+            AddLocalizations();
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
@@ -48,8 +50,9 @@ namespace TestMod
             AddSkills();
             CreateConfigValues();
 
+
             // Hook ObjectDB.CopyOtherDB to add custom items cloned from vanilla items
-            On.ObjectDB.CopyOtherDB += addClonedItems;
+            On.ObjectDB.CopyOtherDB += AddClonedItems;
 
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
@@ -77,9 +80,9 @@ namespace TestMod
             }
         }
 
-        // Display our GUI if enabled
         private void OnGUI()
         {
+            // Display our GUI if enabled
             if (showMenu)
             {
                 GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
@@ -115,6 +118,27 @@ namespace TestMod
                 testPanel.SetActive(!testPanel.activeSelf);
                 showGUIButton = false;
             }
+
+            // Displays the current equiped tool/weapon
+            if (Player.m_localPlayer)
+            {
+                var bez = "nothing";
+
+                var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
+                if (item != null)
+                {
+                    if (item.m_dropPrefab)
+                    {
+                        bez = item.m_dropPrefab.name;
+                    }
+                    else
+                    {
+                        bez = item.m_shared.m_name;
+                    }
+                }
+
+                GUI.Label(new Rect(10, 10, 100, 25), bez);
+            }
         }
 
         // Add custom key bindings
@@ -141,6 +165,23 @@ namespace TestMod
 
             // Embedded Resources
             JotunnLib.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
+        }
+
+        // Adds localizations with configs
+        private void AddLocalizations()
+        {
+            // Add translations for the custom item in AddClonedItems
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            {
+                Translations = {
+                    {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
+                    {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
+                    {"evilswordKEY_beevil", "B"}, {"evilsword_beevil", "Muaahaha"}
+                }
+            });
+
+            // Add translations for the custom piece in AddEmptyItems
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") { Translations = { { "piece_lul", "Lulz" } } });
         }
 
         // Add new Items with item Configs
@@ -261,51 +302,60 @@ namespace TestMod
 
         // Add new items as copies of vanilla items - just works when vanilla prefabs are already loaded (ObjectDB.CopyOtherDB for example)
         // You can use the Cache of the PrefabManager in here
-        private void addClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             // You want that to run only once, JotunnLib has the item cached for the game session
             if (!clonedItemsAdded)
             {
-                // Create and add a custom item based on SwordBlackmetal
-                var CI = new CustomItem("EvilSword", "SwordBlackmetal");
-                ItemManager.Instance.AddItem(CI);
-
-                // Replace vanilla properties of the custom item
-                var itemDrop = CI.ItemDrop;
-                itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
-                itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
-
-                // Create and add a recipe for the copied item
-                var recipe = ScriptableObject.CreateInstance<Recipe>();
-                recipe.name = "Recipe_EvilSword";
-                recipe.m_item = itemDrop;
-                recipe.m_craftingStation = PrefabManager.Cache.GetPrefab<CraftingStation>("piece_workbench");
-                recipe.m_resources = new[]
+                try
                 {
-                    new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Stone"), m_amount = 1},
-                    new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Wood"), m_amount = 1}
-                };
-                var CR = new CustomRecipe(recipe, fixReference: false, fixRequirementReferences: false);  // no need to fix because the refs from the cache are valid
-                ItemManager.Instance.AddRecipe(CR);
+                    // Create and add a custom item based on SwordBlackmetal
+                    var CI = new CustomItem("EvilSword", "SwordBlackmetal");
+                    ItemManager.Instance.AddItem(CI);
 
-                clonedItemsAdded = true;
+                    // Replace vanilla properties of the custom item
+                    var itemDrop = CI.ItemDrop;
+                    itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
+                    itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
+
+                    // Create and add a recipe for the copied item
+                    var recipe = ScriptableObject.CreateInstance<Recipe>();
+                    recipe.name = "Recipe_EvilSword";
+                    recipe.m_item = itemDrop;
+                    recipe.m_craftingStation = PrefabManager.Cache.GetPrefab<CraftingStation>("piece_workbench");
+                    recipe.m_resources = new[]
+                    {
+                        new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Stone"), m_amount = 1},
+                        new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Wood"), m_amount = 1}
+                    };
+                    var CR = new CustomRecipe(recipe, fixReference: false, fixRequirementReferences: false);  // no need to fix because the refs from the cache are valid
+                    ItemManager.Instance.AddRecipe(CR);
+
+                    // Create custom KeyHints for the item
+                    KeyHintConfig KHC = new KeyHintConfig
+                    {
+                        Item = "EvilSword",
+                        ButtonConfigs = new[]
+                        {
+                            new ButtonConfig { Name = "Shwing", KeyToken = "$KEY_Attack", HintToken = "$evilsword_shwing" },
+                            new ButtonConfig { Name = "BeEvil", KeyToken = "$evilswordKEY_beevil", HintToken = "$evilsword_beevil" },
+                            new ButtonConfig { Name = "Scroll", Axis = "Up", HintToken = "$evilsword_scroll" }
+                        }
+                    };
+                    GUIManager.Instance.AddKeyHint(KHC);
+                }
+                catch (Exception ex)
+                {
+                    JotunnLib.Logger.LogError($"Error while adding cloned item: {ex.Message}");
+                }
+                finally
+                {
+                    clonedItemsAdded = true;
+                }
             }
 
             // Hook is prefix, we just need to be able to get the vanilla prefabs, JotunnLib registers them in ObjectDB
             orig(self, other);
-        }
-
-        // Registers localizations with configs
-        private void registerLocalization(object sender, EventArgs e)
-        {
-            // Add translations for the custom item in addClonedItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
-            {
-                Translations = {{"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"}}
-            });
-
-            // Add translations for the custom piece in AddEmptyItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") {Translations = {{"piece_lul", "Lulz"}}});
         }
 
         // Register new console commands

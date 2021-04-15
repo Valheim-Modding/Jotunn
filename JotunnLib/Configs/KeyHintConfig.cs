@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using JotunnLib.Managers;
+using System;
 
 namespace JotunnLib.Configs
 {
@@ -12,16 +13,7 @@ namespace JotunnLib.Configs
         /// </summary>
         public string Item { get; set; }
 
-        /// <summary>
-        ///      Create the actual <see cref="GameObject"/> from this config.
-        /// </summary>
-        /// <returns></returns>
-        public GameObject GetKeyHint()
-        {
-            GameObject ret = new GameObject($"KeyHint{Item}");
-
-            return ret;
-        }
+        public ButtonConfig[] ButtonConfigs { get; set; } = new ButtonConfig[0];
 
         /// <summary>
         ///     Loads a single KeyHintConfig from a JSON string
