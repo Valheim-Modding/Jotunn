@@ -16,4 +16,4 @@ Jötunn provides some helper utilities to assist developers with common tasks an
  TODO
 
  ### SimpleJson
- JVL provides the MIT licenced SimpleJSON via the [SimpleJSON](xref:SimpleJSON) namespace.
+ JVL provides the MIT licenced SimpleJSON via the [SimpleJSON](xref:SimpleJson) namespace.

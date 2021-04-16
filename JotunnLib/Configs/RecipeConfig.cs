@@ -65,7 +65,7 @@ namespace JotunnLib.Configs
             return recipe;
         }
 
-        // <summary>
+        /// <summary>
         ///     Loads a single RecipeConfig from a JSON string
         /// </summary>
         /// <param name="json">JSON text</param>

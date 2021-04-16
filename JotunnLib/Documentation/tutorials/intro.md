@@ -5,10 +5,10 @@ These tutorials cover the following.
 - Importing unity [assets](data/assets.md)
 - Creating [custom items](data/items.md)
 - Creating [custom pieces/tables](data/pieces.md) (buildable items)
-- Creating [custom Status Effects](data/statuseffects.md)
+- Creating [custom Status Effects](data/status-effects.md)
 - Creating [custom skills](data/skills.md)
 - Using [mocks](data/mocks.md) inside of AssetBundles to reference native assets
-- Adding [localisations](data/localisations.md)
+- Adding [localizations](data/localizations.md)
 - Implementing [mod synchronisation](utils/networkcompatibility.md)
 
 
