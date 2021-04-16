@@ -88,7 +88,7 @@ namespace JotunnLib.Managers
             GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
             GUIContainer.AddComponent<GuiScaler>().UpdateScale();
 
-            createPixelFix();
+            CreatePixelFix();
 
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             On.KeyHints.UpdateHints += ShowCustomKeyHint;
@@ -253,7 +253,7 @@ namespace JotunnLib.Managers
             {
                 // Create a new PixelFix for start scene
                 GUIContainer.SetActive(true);
-                createPixelFix();
+                CreatePixelFix();
                 GUIInStart = true;
             }
             if (scene.name == "main" && GUIInStart)
@@ -274,82 +274,13 @@ namespace JotunnLib.Managers
                     }
                 }
 
-                // Create custom key hints
-                Logger.LogInfo($"---- Adding custom key hints ----");
-
-                // Get the KeyHints transform for this scene
+                // Get the KeyHints transform for this scene and create new KeyHint objects
                 KeyHintContainer = (RectTransform)root.transform.Find("GUI/PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints");
-                
-                foreach (var entry in KeyHints)
-                {
-                    // Clone BuildHints and add it under KeyHints to get the position right
-                    var keyHintObject = GameObject.Instantiate(KeyHintContainer.Find("BuildHints").gameObject, KeyHintContainer, false);
-                    keyHintObject.name = entry.Key;
-                    keyHintObject.SetActive(false);
-
-                    // Get the Transforms of Keyboard and Gamepad
-                    var kb = keyHintObject.transform.Find("Keyboard");
-                    var gp = keyHintObject.transform.Find("Gamepad");
-
-                    // Clone vanilla key hint objects and use it as the base for custom key hints
-                    var baseKey = GameObject.Instantiate(kb.transform.Find("Place").gameObject);
-                    var baseRotate = GameObject.Instantiate(kb.transform.Find("rotate").gameObject);
-
-                    // Destroy all child objects
-                    foreach (RectTransform child in kb)
-                    {
-                        GameObject.Destroy(child.gameObject);
-                    }
-                    foreach (RectTransform child in gp)
-                    {
-                        GameObject.Destroy(child.gameObject);
-                    }
-
-                    // Add every ButtonConfig as a child to the custom key hints object
-                    /*for (int i = entry.Value.ButtonConfigs.Length - 1; i >= 0; i--)
-                    {
-                        var buttonConfig = entry.Value.ButtonConfigs[i];*/
-                    foreach (var buttonConfig in entry.Value.ButtonConfigs)
-                    { 
-                        string key = LocalizationManager.Instance.TryTranslate(buttonConfig.KeyToken);
-                        string hint = LocalizationManager.Instance.TryTranslate(buttonConfig.HintToken);
-
-                        if (string.IsNullOrEmpty(buttonConfig.Axis))
-                        {
-                            var customObject = GameObject.Instantiate(baseKey, kb, false);
-                            customObject.name = buttonConfig.Name;
-                            customObject.transform.Find("key_bkg/Key").gameObject.SetText(key);
-                            customObject.transform.Find("Text").gameObject.SetText(hint);
-                            customObject.SetActive(true);
-                        }
-                        else
-                        {
-                            var customObject = GameObject.Instantiate(baseRotate, kb, false);
-                            customObject.transform.Find("Text").gameObject.SetText(hint);
-                            customObject.SetActive(true);
-                        }
-
-                    }
-
-                    // Add UIInputHint to automatically switch between Keyboard and Gamepad objects
-                    /*var uihint = hint.AddComponent<UIInputHint>();
-                    var kb = hint.transform.Find("Keyboard");
-                    if (kb != null)
-                    {
-                        uihint.m_mouseKeyboardHint = kb.gameObject;
-                    }
-                    var gp = hint.transform.Find("GamePad");
-                    if (gp != null)
-                    {
-                        uihint.m_gamepadHint = gp.gameObject;
-                    }*/
-
-                    Logger.LogInfo($"Added key hints for Item : {entry.Key}");
-                }
+                CreateKeyHints();
             }
         }
 
-        private void createPixelFix()
+        private void CreatePixelFix()
         {
             PixelFix = new GameObject("GUIFix", typeof(RectTransform), typeof(GuiPixelFix));
             PixelFix.layer = UILayer; // UI
@@ -361,6 +292,83 @@ namespace JotunnLib.Managers
             PixelFix.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, GUIContainer.GetComponent<RectTransform>().rect.height);
             PixelFix.GetComponent<RectTransform>().anchoredPosition = new Vector2(GUIContainer.GetComponent<RectTransform>().rect.width / 2f,
                 GUIContainer.GetComponent<RectTransform>().rect.height / 2f);
+        }
+
+        private void CreateKeyHints()
+        {
+            // Create custom key hints
+            Logger.LogInfo($"---- Adding custom key hints ----");
+
+            foreach (var entry in KeyHints)
+            {
+                // Clone BuildHints and add it under KeyHints to get the position right
+                var keyHintObject = GameObject.Instantiate(KeyHintContainer.Find("BuildHints").gameObject, KeyHintContainer, false);
+                keyHintObject.name = entry.Key;
+                keyHintObject.SetActive(false);
+
+                // Get the Transforms of Keyboard and Gamepad
+                var kb = keyHintObject.transform.Find("Keyboard");
+                var gp = keyHintObject.transform.Find("Gamepad");
+
+                // Clone vanilla key hint objects and use it as the base for custom key hints
+                var baseKey = GameObject.Instantiate(kb.transform.Find("Place").gameObject);
+                var baseRotate = GameObject.Instantiate(kb.transform.Find("rotate").gameObject);
+
+                // Destroy all child objects
+                foreach (RectTransform child in kb)
+                {
+                    GameObject.Destroy(child.gameObject);
+                }
+                foreach (RectTransform child in gp)
+                {
+                    GameObject.Destroy(child.gameObject);
+                }
+
+                // Add every ButtonConfig as a child to the custom key hints object
+                /*for (int i = entry.Value.ButtonConfigs.Length - 1; i >= 0; i--)
+                {
+                    var buttonConfig = entry.Value.ButtonConfigs[i];*/
+                foreach (var buttonConfig in entry.Value.ButtonConfigs)
+                {
+                    //string key = LocalizationManager.Instance.TryTranslate(buttonConfig.KeyToken);
+                    string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                    if (key[0].Equals(LocalizationManager.TokenFirstChar))
+                    {
+                        key = LocalizationManager.Instance.TryTranslate(key);
+                    }
+                    string hint = LocalizationManager.Instance.TryTranslate(buttonConfig.HintToken);
+
+                    if (string.IsNullOrEmpty(buttonConfig.Axis))
+                    {
+                        var customObject = GameObject.Instantiate(baseKey, kb, false);
+                        customObject.name = buttonConfig.Name;
+                        customObject.transform.Find("key_bkg/Key").gameObject.SetText(key);
+                        customObject.transform.Find("Text").gameObject.SetText(hint);
+                        customObject.SetActive(true);
+                    }
+                    else
+                    {
+                        var customObject = GameObject.Instantiate(baseRotate, kb, false);
+                        customObject.transform.Find("Text").gameObject.SetText(hint);
+                        customObject.SetActive(true);
+                    }
+                }
+
+                // Add UIInputHint to automatically switch between Keyboard and Gamepad objects
+                /*var uihint = hint.AddComponent<UIInputHint>();
+                var kb = hint.transform.Find("Keyboard");
+                if (kb != null)
+                {
+                    uihint.m_mouseKeyboardHint = kb.gameObject;
+                }
+                var gp = hint.transform.Find("GamePad");
+                if (gp != null)
+                {
+                    uihint.m_gamepadHint = gp.gameObject;
+                }*/
+
+                Logger.LogInfo($"Added key hints for Item : {entry.Key}");
+            }
         }
 
         /// <summary>
@@ -397,6 +405,8 @@ namespace JotunnLib.Managers
         {
             orig(self);
 
+            //TODO: this is so much code smell. its Update() turf here. need to implement something smart asap!
+
             if (Player.m_localPlayer == null)
             {
                 return;
@@ -423,12 +433,28 @@ namespace JotunnLib.Managers
                 var prefabName = item.m_dropPrefab.name;
 
                 // Check if that item has a custom key hint and display it instead the vanilla one
-                if (KeyHints.TryGetValue(prefabName, out var keyHints))
+                if (KeyHints.TryGetValue(prefabName, out var keyHint))
                 {
                     self.m_buildHints.SetActive(false);
                     self.m_combatHints.SetActive(false);
 
-                    var hint = KeyHintContainer.Find(keyHints.Item).gameObject;
+                    var hint = KeyHintContainer.Find(keyHint.Item).gameObject;
+
+                    // Update bound keys
+                    foreach (var buttonConfig in keyHint.ButtonConfigs)
+                    {
+                        string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                        if (key[0].Equals(LocalizationManager.TokenFirstChar))
+                        {
+                            key = LocalizationManager.Instance.TryTranslate(key);
+                        }
+
+                        if (string.IsNullOrEmpty(buttonConfig.Axis))
+                        {
+                            hint.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key").gameObject.SetText(key);
+                        }
+                    }
+
                     hint.SetActive(true);
                     hint.GetComponent<UIInputHint>()?.Update();
                 }

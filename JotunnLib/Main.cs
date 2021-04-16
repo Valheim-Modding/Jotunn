@@ -5,7 +5,6 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using BepInEx;
-using BepInEx.Configuration;
 using JotunnLib.Managers;
 using JotunnLib.Utils;
 
@@ -43,20 +42,20 @@ namespace JotunnLib
             RootObject = new GameObject("_JotunnLibRoot");
             GameObject.DontDestroyOnLoad(RootObject);
 
-            managers = new List<IManager>() {
-            LocalizationManager.Instance,
-            EventManager.Instance,
-            CommandManager.Instance,
-            InputManager.Instance,
-            SkillManager.Instance,
-            PrefabManager.Instance,
-            ItemManager.Instance,
-            PieceManager.Instance,
-            MockManager.Instance,
-            ZoneManager.Instance,
-            GUIManager.Instance,
-            SaveManager.Instance,
-            SynchronizationManager.Instance
+            managers = new List<IManager>() 
+            {
+                LocalizationManager.Instance,
+                CommandManager.Instance,
+                InputManager.Instance,
+                SkillManager.Instance,
+                PrefabManager.Instance,
+                ItemManager.Instance,
+                PieceManager.Instance,
+                MockManager.Instance,
+                ZoneManager.Instance,
+                GUIManager.Instance,
+                SaveManager.Instance,
+                SynchronizationManager.Instance
             };
             foreach (IManager manager in managers)
             {
@@ -93,7 +92,7 @@ namespace JotunnLib
                 GUI.Label(new Rect(Screen.width - 100, 5, 100, 25), "JotunnLib v" + Version);
             }
 
-            //Fake monobehaviour event for manager
+            // Fake MonoBehaviour event for GUIManager
             GUIManager.Instance.OnGUI();
         }
 
