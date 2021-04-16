@@ -15,7 +15,7 @@ using UnityEngine;
 namespace TestMod
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
-    [BepInDependency(Main.ModGUID)]
+    [BepInDependency(Main.ModGuid)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Build)]
     internal class TestMod : BaseUnityPlugin
     {

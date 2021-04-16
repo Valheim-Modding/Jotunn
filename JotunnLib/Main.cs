@@ -10,7 +10,7 @@ using JotunnLib.Utils;
 
 namespace JotunnLib
 {
-    [BepInPlugin(ModGUID, ModName, Version)]
+    [BepInPlugin(ModGuid, ModName, Version)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
@@ -27,7 +27,7 @@ namespace JotunnLib
         /// <summary>
         ///     The BepInEx plugin Mod GUID being used.
         /// </summary>
-        public const string ModGUID = "com.jotunn.jotunnlib";
+        public const string ModGuid = "com.jotunn.jotunnlib";
 
         internal static GameObject RootObject;
 
