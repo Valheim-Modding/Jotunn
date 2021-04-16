@@ -1,11 +1,6 @@
-﻿# Jötunn, the Valheim Library
+﻿# Managers
 
-Jötunn (/ˈjɔːtʊn/, "giant"), the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability and networked gameplay consistency.
-
-Some of our major features which we have worked hard on are [mock reference fixing](../data/mocks.md), [NetworkCompatibility / networked mod interop](../utils/networkcompatibility.md), [config synchronisation](../utils/config.md), our [mod stub](https://github.com/Valheim-Modding/JotunnModStub) which provides some basic automations, as well as our various `Manager` interfaces and `Entity` abstractions which allow developers to focus more on creating content, and less on implementation details.
-
-We have lots of features planned for the future, and did hold back on what we wanted to release with so that we could focus on house keeping post merger, however I hope the features we have implemented thus far prove to be a useful base and provide an idea of the consistency we aim to deliver moving forwards.
-
+This section covers the main interfaces we provide with the library, enabling developers to easily interact with items, recipes, skills, UI, entities, and much more.
 
 # TODO
 
