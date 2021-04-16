@@ -18,7 +18,7 @@ namespace JotunnLib.Utils
 
             foreach (var plugin in plugins)
             {
-                if (includeJotunnLib && plugin.Info.Metadata.GUID == Main.ModGuid)
+                if (includeJotunnLib && plugin.Info.Metadata.GUID == Main.ModGUID)
                 {
                     result.Add(plugin.Info.Metadata.GUID, plugin);
                     continue;
@@ -26,7 +26,7 @@ namespace JotunnLib.Utils
 
                 foreach (var dependencyAttribute in plugin.GetType().GetCustomAttributes(typeof(BepInDependency), false).Cast<BepInDependency>())
                 {
-                    if (dependencyAttribute.DependencyGUID == Main.ModGuid)
+                    if (dependencyAttribute.DependencyGUID == Main.ModGUID)
                     {
                         result.Add(plugin.Info.Metadata.GUID, plugin);
                     }
