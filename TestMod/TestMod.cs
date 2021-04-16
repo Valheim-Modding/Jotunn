@@ -23,33 +23,33 @@ namespace TestMod
         private const string ModName = "JotunnLib Test Mod";
         private const string ModVersion = "0.1.0";
 
-        public AssetBundle BlueprintRuneBundle;
-        private bool clonedItemsAdded;
-        private System.Version currentVersion;
-        private bool forceVersionMismatch;
-        private bool showGUIButton;
-
-        private bool showMenu;
-        public AssetBundle TestAssets;
-        private GameObject testPanel;
-        public Skills.SkillType TestSkillType = 0;
+        private AssetBundle blueprintRuneBundle;
+        private AssetBundle testAssets;
         private Sprite testSprite;
         private Texture2D testTex;
+        private bool clonedItemsAdded;
+
+        private System.Version currentVersion;
+        private bool forceVersionMismatch;
+
+        private bool showButton;
+        private bool showMenu;
+        private GameObject testPanel;
+
+        private ButtonConfig evilSwordSpecial;
 
         // Load, create and init your custom mod stuff
         private void Awake()
         {
-            InputManager.Instance.InputRegister += registerInputs;
-
+            CreateConfigValues();
             LoadAssets();
+            AddInputs();
             AddLocalizations();
+            AddCommands();
+            AddSkills();
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
-            AddCommands();
-            AddSkills();
-            CreateConfigValues();
-
 
             // Hook ObjectDB.CopyOtherDB to add custom items cloned from vanilla items
             On.ObjectDB.CopyOtherDB += AddClonedItems;
@@ -66,7 +66,9 @@ namespace TestMod
             // we need to check that ZInput is ready to use first.
             if (ZInput.instance != null)
             {
-                // Check if our button is pressed. This will only return true ONCE, right after our button is pressed.
+                // Check if custom buttons are pressed.
+                // Custom buttons need to be added to the InputManager before we can poll them.
+                // GetButtonDown will only return true ONCE, right after our button is pressed.
                 // If we hold the button down, it won't spam toggle our menu.
                 if (ZInput.GetButtonDown("TestMod_Menu"))
                 {
@@ -75,11 +77,17 @@ namespace TestMod
 
                 if (ZInput.GetButtonDown("GUIManagerTest"))
                 {
-                    showGUIButton = !showGUIButton;
+                    showButton = !showButton;
+                }
+
+                if (ZInput.GetButtonDown(evilSwordSpecial.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                {
+                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                 }
             }
         }
 
+        // Called every frame for rendering and handling GUI events
         private void OnGUI()
         {
             // Display our GUI if enabled
@@ -88,7 +96,7 @@ namespace TestMod
                 GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
             }
 
-            if (showGUIButton)
+            if (showButton)
             {
                 if (testPanel == null)
                 {
@@ -116,7 +124,7 @@ namespace TestMod
                 }
 
                 testPanel.SetActive(!testPanel.activeSelf);
-                showGUIButton = false;
+                showButton = false;
             }
 
             // Displays the current equiped tool/weapon
@@ -141,11 +149,39 @@ namespace TestMod
             }
         }
 
-        // Add custom key bindings
-        private void registerInputs(object sender, EventArgs e)
+        // Create persistent configurations for the mod
+        private void CreateConfigValues()
         {
-            InputManager.Instance.AddButton(ModGUID, "TestMod_Menu", KeyCode.Insert);
-            InputManager.Instance.AddButton(ModGUID, "GUIManagerTest", KeyCode.F8);
+            Config.SaveOnConfigSet = true;
+
+            // Add server config which gets pushed to all clients connecting and can only be edited by admins
+            Config.Bind("JotunnLibTest", "StringValue1", "StringValue",
+                new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "FloatValue1", 750f,
+                new ConfigDescription("Server side float", new AcceptableValueRange<float>(500, 1000),
+                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "IntegerValue1", 200,
+                new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind("JotunnLibTest", "BoolValue1", false,
+                new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            // Add client config to test ModCompatibility
+            Config.Bind("JotunnLibTest", "EnableVersionMismatch", false, new ConfigDescription("Enable to test ModCompatibility module"));
+            forceVersionMismatch = (bool)Config["JotunnLibTest", "EnableVersionMismatch"].BoxedValue;
+            Config.SettingChanged += Config_SettingChanged;
+
+            // Add a custom input key for the EvilSword
+            Config.Bind("JotunnLibTest", "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+        }
+
+        // React on changed settings
+        private void Config_SettingChanged(object sender, SettingChangedEventArgs e)
+        {
+            if (e.ChangedSetting.Definition.Section == "JotunnLibTest" && e.ChangedSetting.Definition.Key == "EnableVersionMismatch")
+            {
+                forceVersionMismatch = (bool)e.ChangedSetting.BoxedValue;
+                SetVersion();
+            }
         }
 
         // Load assets
@@ -156,15 +192,33 @@ namespace TestMod
             testSprite = Sprite.Create(testTex, new Rect(0f, 0f, testTex.width, testTex.height), Vector2.zero);
 
             // Load asset bundle from filesystem
-            TestAssets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
-            JotunnLib.Logger.LogInfo(TestAssets);
+            testAssets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
+            JotunnLib.Logger.LogInfo(testAssets);
 
             // Load asset bundle from filesystem
-            BlueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/blueprints");
-            JotunnLib.Logger.LogInfo(BlueprintRuneBundle);
+            blueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/blueprints");
+            JotunnLib.Logger.LogInfo(blueprintRuneBundle);
 
             // Embedded Resources
             JotunnLib.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
+        }
+
+        // Add custom key bindings
+        private void AddInputs()
+        {
+            // Add key bindings on the fly
+            InputManager.Instance.AddButton(ModGUID, "TestMod_Menu", KeyCode.Insert);
+            InputManager.Instance.AddButton(ModGUID, "GUIManagerTest", KeyCode.F8);
+
+            // Add key bindings backed by a config value
+            // Create a ButtonConfig to also add it as a custom key hint in AddClonedItem
+            evilSwordSpecial = new ButtonConfig
+            {
+                Name = "EvilSwordSpecialAttack",
+                Key = (KeyCode)Config["JotunnLibTest", "EvilSwordSpecialAttack"].BoxedValue,
+                HintToken = "$evilsword_beevil"
+            };
+            InputManager.Instance.AddButton(ModGUID, evilSwordSpecial);
         }
 
         // Adds localizations with configs
@@ -176,12 +230,39 @@ namespace TestMod
                 Translations = {
                     {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
                     {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
-                    {"evilswordKEY_beevil", "B"}, {"evilsword_beevil", "Muaahaha"}
+                    {"evilsword_beevil", "Muaahaha"}, {"evilsword_beevilmessage", ":reee:"}
                 }
             });
 
             // Add translations for the custom piece in AddEmptyItems
             LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") { Translations = { { "piece_lul", "Lulz" } } });
+        }
+
+        // Register new console commands
+        private void AddCommands()
+        {
+            CommandManager.Instance.AddConsoleCommand(new PrintItemsCommand());
+            CommandManager.Instance.AddConsoleCommand(new TpCommand());
+            CommandManager.Instance.AddConsoleCommand(new ListPlayersCommand());
+            CommandManager.Instance.AddConsoleCommand(new SkinColorCommand());
+            CommandManager.Instance.AddConsoleCommand(new RaiseSkillCommand());
+            CommandManager.Instance.AddConsoleCommand(new BetterSpawnCommand());
+        }
+
+        // Register new skills
+        private void AddSkills()
+        {
+            // Test adding a skill with a texture
+            SkillManager.Instance.AddSkill(new SkillConfig()
+            {
+                Identifier = "com.jotunn.testmod.testskill_code",
+                Name = "Testing Skill From Code",
+                Description = "A testing skill (but from code)!",
+                Icon = testSprite
+            });
+
+            // Test adding skills from JSON
+            SkillManager.Instance.AddSkillsFromJson("TestMod/Assets/skills.json");
         }
 
         // Add new Items with item Configs
@@ -191,11 +272,11 @@ namespace TestMod
             ItemManager.Instance.AddRecipesFromJson("TestMod/Assets/recipes.json");
 
             // Add a custom piece table
-            var table_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable");
+            var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable");
             PieceManager.Instance.AddPieceTable(table_prefab);
 
             // Create and add a custom item
-            var rune_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintRune");
+            var rune_prefab = blueprintRuneBundle.LoadAsset<GameObject>("BlueprintRune");
             var rune = new CustomItem(rune_prefab, fixReference: false,  // Prefab did not use mocked refs so no need to fix them
                 new ItemConfig
                 {
@@ -208,7 +289,7 @@ namespace TestMod
             ItemManager.Instance.AddItem(rune);
 
             // Create and add custom pieces
-            var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
+            var makebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
             var makebp = new CustomPiece(makebp_prefab, 
                 new PieceConfig 
                 {
@@ -216,7 +297,7 @@ namespace TestMod
                 });
             PieceManager.Instance.AddPiece(makebp);
 
-            var placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
+            var placebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
             var placebp = new CustomPiece(placebp_prefab,
                 new PieceConfig
                 {
@@ -230,7 +311,7 @@ namespace TestMod
             PieceManager.Instance.AddPiece(placebp);
 
             // Add localizations
-            var textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
+            var textAssets = blueprintRuneBundle.LoadAllAssets<TextAsset>();
             foreach (var textAsset in textAssets)
             {
                 var lang = textAsset.name.Replace(".json", null);
@@ -238,7 +319,7 @@ namespace TestMod
             }
 
             // Don't forget to unload the bundle to free the resources
-            BlueprintRuneBundle.Unload(false);
+            blueprintRuneBundle.Unload(false);
         }
 
         // Add new items with mocked prefabs
@@ -337,10 +418,13 @@ namespace TestMod
                         Item = "EvilSword",
                         ButtonConfigs = new[]
                         {
-                            new ButtonConfig { Name = "Shwing", KeyToken = "$KEY_Attack", HintToken = "$evilsword_shwing" },
-                            new ButtonConfig { Name = "BeEvil", KeyToken = "$evilswordKEY_beevil", HintToken = "$evilsword_beevil" },
+                            // Override vanilla "Attack" key text
+                            new ButtonConfig { Name = "Attack", HintToken = "$evilsword_shwing" },
+                            // New custom input
+                            evilSwordSpecial,
+                            // Override vanilla "Mouse Wheel" text
                             new ButtonConfig { Name = "Scroll", Axis = "Up", HintToken = "$evilsword_scroll" }
-                        }
+                }
                     };
                     GUIManager.Instance.AddKeyHint(KHC);
                 }
@@ -356,70 +440,6 @@ namespace TestMod
 
             // Hook is prefix, we just need to be able to get the vanilla prefabs, JotunnLib registers them in ObjectDB
             orig(self, other);
-        }
-
-        // Register new console commands
-        private void AddCommands()
-        {
-            CommandManager.Instance.AddConsoleCommand(new PrintItemsCommand());
-            CommandManager.Instance.AddConsoleCommand(new TpCommand());
-            CommandManager.Instance.AddConsoleCommand(new ListPlayersCommand());
-            CommandManager.Instance.AddConsoleCommand(new SkinColorCommand());
-            CommandManager.Instance.AddConsoleCommand(new RaiseSkillCommand());
-            CommandManager.Instance.AddConsoleCommand(new BetterSpawnCommand());
-        }
-
-        // Register new skills
-        private void AddSkills()
-        {
-            // Test adding a skill with a texture
-            Texture2D testSkillTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
-            Sprite testSkillSprite = Sprite.Create(testSkillTex, new Rect(0f, 0f, testSkillTex.width, testSkillTex.height), Vector2.zero);
-            TestSkillType = SkillManager.Instance.AddSkill(new SkillConfig()
-            {
-                Identifier = "com.jotunn.testmod.testskill_code",
-                Name = "Testing Skill From Code",
-                Description = "A testing skill (but from code)!",
-                Icon = testSkillSprite
-            });
-
-            // Test adding skills from JSON
-            SkillManager.Instance.AddSkillsFromJson("TestMod/Assets/skills.json");
-        }
-
-        // Create some sample configuration values to check server sync
-        private void CreateConfigValues()
-        {
-            Config.SaveOnConfigSet = true;
-
-            Config.Bind("JotunnLibTest", "StringValue1", "StringValue",
-                new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes {IsAdminOnly = true}));
-            Config.Bind("JotunnLibTest", "FloatValue1", 750f,
-                new ConfigDescription("Server side float", new AcceptableValueRange<float>(500, 1000),
-                    new ConfigurationManagerAttributes {IsAdminOnly = true}));
-            Config.Bind("JotunnLibTest", "IntegerValue1", 200,
-                new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes {IsAdminOnly = true}));
-            Config.Bind("JotunnLibTest", "BoolValue1", false,
-                new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes {IsAdminOnly = true}));
-            Config.Bind("JotunnLibTest", "KeycodeValue", KeyCode.F10,
-                new ConfigDescription("Server side Keycode", null, new ConfigurationManagerAttributes {IsAdminOnly = true}));
-
-            // Add client config to test ModCompatibility
-            Config.Bind("JotunnLibTest", "EnableVersionMismatch", false, new ConfigDescription("Enable to test ModCompatibility module"));
-            forceVersionMismatch = (bool) Config["JotunnLibTest", "EnableVersionMismatch"].BoxedValue;
-            Config.SettingChanged += Config_SettingChanged;
-
-            InputManager.Instance.AddButton(ModGUID, "KeycodeValue", (KeyCode) Config["JotunnLibTest", "KeycodeValue"].BoxedValue);
-        }
-
-        // React on changed settings
-        private void Config_SettingChanged(object sender, SettingChangedEventArgs e)
-        {
-            if (e.ChangedSetting.Definition.Section == "JotunnLibTest" && e.ChangedSetting.Definition.Key == "EnableVersionMismatch")
-            {
-                forceVersionMismatch = (bool) e.ChangedSetting.BoxedValue;
-                SetVersion();
-            }
         }
 
         // Set version of the plugin for the mod compatibility test

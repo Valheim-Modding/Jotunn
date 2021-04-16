@@ -330,7 +330,12 @@ namespace JotunnLib.Managers
                     var buttonConfig = entry.Value.ButtonConfigs[i];*/
                 foreach (var buttonConfig in entry.Value.ButtonConfigs)
                 {
-                    string key = LocalizationManager.Instance.TryTranslate(buttonConfig.KeyToken);
+                    //string key = LocalizationManager.Instance.TryTranslate(buttonConfig.KeyToken);
+                    string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                    if (key[0].Equals(LocalizationManager.TokenFirstChar))
+                    {
+                        key = LocalizationManager.Instance.TryTranslate(key);
+                    }
                     string hint = LocalizationManager.Instance.TryTranslate(buttonConfig.HintToken);
 
                     if (string.IsNullOrEmpty(buttonConfig.Axis))
@@ -347,7 +352,6 @@ namespace JotunnLib.Managers
                         customObject.transform.Find("Text").gameObject.SetText(hint);
                         customObject.SetActive(true);
                     }
-
                 }
 
                 // Add UIInputHint to automatically switch between Keyboard and Gamepad objects
@@ -401,6 +405,8 @@ namespace JotunnLib.Managers
         {
             orig(self);
 
+            //TODO: this is so much code smell. its Update() turf here. need to implement something smart asap!
+
             if (Player.m_localPlayer == null)
             {
                 return;
@@ -427,12 +433,28 @@ namespace JotunnLib.Managers
                 var prefabName = item.m_dropPrefab.name;
 
                 // Check if that item has a custom key hint and display it instead the vanilla one
-                if (KeyHints.TryGetValue(prefabName, out var keyHints))
+                if (KeyHints.TryGetValue(prefabName, out var keyHint))
                 {
                     self.m_buildHints.SetActive(false);
                     self.m_combatHints.SetActive(false);
 
-                    var hint = KeyHintContainer.Find(keyHints.Item).gameObject;
+                    var hint = KeyHintContainer.Find(keyHint.Item).gameObject;
+
+                    // Update bound keys
+                    foreach (var buttonConfig in keyHint.ButtonConfigs)
+                    {
+                        string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                        if (key[0].Equals(LocalizationManager.TokenFirstChar))
+                        {
+                            key = LocalizationManager.Instance.TryTranslate(key);
+                        }
+
+                        if (string.IsNullOrEmpty(buttonConfig.Axis))
+                        {
+                            hint.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key").gameObject.SetText(key);
+                        }
+                    }
+
                     hint.SetActive(true);
                     hint.GetComponent<UIInputHint>()?.Update();
                 }
