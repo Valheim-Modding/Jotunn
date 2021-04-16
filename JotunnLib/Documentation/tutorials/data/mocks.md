@@ -17,7 +17,7 @@ Be sure to **fix the script references for all items that you've brought into th
 
 We also want to prefix the asset name with `JVLmock_` so we now we end up with an asset called `JVLmock_Harpooned`
 
-One last thing, we need to tell `ValheimLib` to fix the references for us, for that, when creating the instance of our `CustomItem` in code, we want to have the FixReference parameter set to true, like so : 
+One last thing, we need to tell JVL to fix the references for us, for that, when creating the instance of our `CustomItem` in code, we want to have the FixReference parameter set to true, like so : 
 
 ```cs
 CustomItem = new CustomItem(AssetHelper.LeadPrefab, fixReference : true);
