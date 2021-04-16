@@ -14,16 +14,16 @@ namespace JotunnLib.Entities
         public StatusEffect StatusEffect { get; set; }
 
         /// <summary>
-        ///     Indicator if references from <see cref="Mock"/>s will be replaced at runtime.
+        ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
 
         /// <summary>
         ///     Custom status effect from a <see cref="global::StatusEffect"/>.<br />
-        ///     Can fix references for <see cref="Mock"/>s.
+        ///     Can fix references for <see cref="Entities.Mock{T}"/>s.
         /// </summary>
         /// <param name="statusEffect">A preloaded <see cref="global::StatusEffect"/></param>
-        /// <param name="fixReference">If true references for <see cref="Mock"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         public CustomStatusEffect(StatusEffect statusEffect, bool fixReference)
         {
             StatusEffect = statusEffect;

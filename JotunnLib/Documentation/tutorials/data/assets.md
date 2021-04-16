@@ -14,7 +14,7 @@ private GameObject backpackPrefab;
 private AssetBundle embeddedResourceBundle;
 ```
 
-To acquire the references we will be using here you may [download](JotunnModExample.zip) them and place inside your project root: 
+To acquire the references we will be using here you may [download](https://github.com/Valheim-Modding/JotunnModExample/blob/master/JotunnModExample/assets.zip) them and place inside your project root: 
 
 ![Assets Extraction](../../images/data/AssetsExtraction.png)
 

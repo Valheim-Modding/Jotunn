@@ -14,8 +14,9 @@
 * In visual studio, in the right hand toobar, select `Git Changes`, and then `Clone Repository`, and paste the URL provided by the previous step. Name your project and place it accordingly.
 ![VS Clone forked stub](..\images\getting-started\vs-CloneForkedStub.png)
 
-* Download this [DoPrebuild.props](DoPrebuild.props), and place it into the solution directory. Set Execute prebuild to true. If you opt not to utilise this automation, it is suggested that you generate your method detours and publicised assemblies, and add them to your projects references manually.
-**WARNING:** *This prebuild task will automate the generation of monomod method detours and publicising of game assemblies. By enabling this, you understand that you will be generating new publicised assemblies and method detours upon PreBuild **IF** the game has updated since the last time the PreBuild has run.*
+* Download this [DoPrebuild.props](https://github.com/Valheim-Modding/JotunnModStub/blob/master/DoPrebuild.props), and place it into the solution directory. Set Execute prebuild to true. If you opt not to utilise this automation, it is suggested that you generate your method detours and publicised assemblies, and add them to your projects references manually.
+
+**WARNING:** *This prebuild task will automate the generation of monomod method detours and publicising of game assemblies. By enabling this, you understand that you will be generating new publicised assemblies and method detours upon PreBuild **IF** the binaries have been updated since the last time the PreBuild has run.*
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -26,7 +27,18 @@
 </Project>
 ```
 
-* Browse to your solution directory. Download this [Environment.props](Environment.props) and place it inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory.  Right click on your project in the solution explorer, and select reload project.
+* Browse to your solution directory. Create a new file called `Environment.props` and place the following contents inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory.  Right click on your project in the solution explorer, and select reload project:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Needs to be your path to the base Valheim folder -->
+    <VALHEIM_INSTALL>INSTALL\PATH\GOES\HERE</VALHEIM_INSTALL>
+  </PropertyGroup>
+</Project>
+```
+
 
 * Build your solution. Check your `BepInEx/plugins/yourtestmod/` folder for the `yourtestmod.dll.mdb` monodebug symbols file.
 

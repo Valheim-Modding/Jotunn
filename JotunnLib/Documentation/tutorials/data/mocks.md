@@ -31,4 +31,4 @@ Good, we now have our mock and we can use it for reference in our ItemDrop compo
 
 We use the [OnAfterInit](xref:JotunnLib.Managers.ItemManager.OnAfterInit) event subscription provided by JVL. OnAfterInit is fired once after the `ObjectDB` is has loaded all its native AND custom assets. That's perfect for us ! We want to do this just once : clone the prefab, so that we don't modify the original, remove the GameObject in the hierarchy that we don't want, and then we do the `m_attackProjectile assignment`.
 
-If you have been following the unity Asset Creation guide, you can return back to where you left off [here](unity.md#AssetBundle).
+If you have been following the unity Asset Creation guide, you can return back to where you left off [here](unity.md#assetbundle).

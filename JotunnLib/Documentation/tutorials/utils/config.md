@@ -1,13 +1,13 @@
 ﻿# Persistent & Synced Configurations
 
-Jötunn itself does not provide any implementations or abstractions for persisent configurations. We do however respect [BepInEx.ConfigEntry](https://bepinex.github.io/bepinex_docs/master/articles/dev_guide/plugin_tutorial/3_configuration.html)'s, their various properties, as well as their [ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager) properties. Furthermore we have implemented a method of enforcing server side sync on specific configs via the [ConfigurationManagerAttributes](xref:ConfigurationManagerAttributes) `IsAdminOnly` flag.
+Jötunn itself does not provide any implementations or abstractions for persisent configurations. We do however respect [BepInEx.ConfigEntry](https://bepinex.github.io/bepinex_docs/master/articles/dev_guide/plugin_tutorial/3_configuration.html)'s, their various properties, as well as their [ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager) properties. Furthermore we have implemented a method of enforcing server side sync on specific configs via the `ConfigurationManagerAttributes` `IsAdminOnly` flag.
 
 **Hint:** `IsAdminOnly` is provided via JVL, not BepInEx.
 
 ![Config Manager U I](../../images/utils/ConfigManagerUI.png)
 
 ### Synced Configurations
-We can sync a client configuration with the server by ensuring that the plugin has a [NetworkCompatibilityAttribute](xref:JotunnLib.Utils.NetworkCompatibilityAttribute) enabled, and then setting the `IsAdminOnly` flag on the configuration like so:
+We can sync a client configuration with the server by ensuring that the plugin has a `NetworkCompatibilityAttribute` enabled, and then setting the `IsAdminOnly` flag on the configuration like so:
 
 ```cs
 // Create some sample configuration values to check server sync
