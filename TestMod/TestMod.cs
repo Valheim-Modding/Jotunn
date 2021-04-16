@@ -27,7 +27,7 @@ namespace TestMod
         private AssetBundle testAssets;
         private Sprite testSprite;
         private Texture2D testTex;
-        private bool clonedItemsAdded;
+        private bool clonedItemsProcessed;
 
         private System.Version currentVersion;
         private bool forceVersionMismatch;
@@ -47,6 +47,7 @@ namespace TestMod
             AddLocalizations();
             AddCommands();
             AddSkills();
+            AddRecipes();
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
@@ -265,12 +266,16 @@ namespace TestMod
             SkillManager.Instance.AddSkillsFromJson("TestMod/Assets/skills.json");
         }
 
-        // Add new Items with item Configs
-        private void AddItemsWithConfigs()
+        // Add custom recipes
+        private void AddRecipes()
         {
             // Load recipes from JSON file
             ItemManager.Instance.AddRecipesFromJson("TestMod/Assets/recipes.json");
+        }
 
+        // Add new Items with item Configs
+        private void AddItemsWithConfigs()
+        {
             // Add a custom piece table
             var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable");
             PieceManager.Instance.AddPieceTable(table_prefab);
@@ -386,7 +391,7 @@ namespace TestMod
         private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             // You want that to run only once, JotunnLib has the item cached for the game session
-            if (!clonedItemsAdded)
+            if (!clonedItemsProcessed)
             {
                 try
                 {
@@ -434,11 +439,11 @@ namespace TestMod
                 }
                 finally
                 {
-                    clonedItemsAdded = true;
+                    clonedItemsProcessed = true;
                 }
             }
 
-            // Hook is prefix, we just need to be able to get the vanilla prefabs, JotunnLib registers them in ObjectDB
+            // Hook is prefix, we just need to be able to get the vanilla prefabs, JötunnLib registers them in ObjectDB
             orig(self, other);
         }
 
