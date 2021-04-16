@@ -38,4 +38,4 @@ The input manager also provides an eventhandler to give you an entry point to re
 Until version 1.1 there is a small inconvenience for mod's:
 
 If multiple mods bind the same button, the button's are internally split into two. This is to prevent another mod overwriting a keybinding with its keycode.
-The downside: For the moment, both mod's will trigger if one of the bound keys are pressed.
+The downside: For the moment, both mod's will trigger if one of the bound keys is pressed.
