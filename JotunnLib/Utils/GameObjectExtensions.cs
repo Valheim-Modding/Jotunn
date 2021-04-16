@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace JotunnLib.Utils
@@ -107,15 +108,29 @@ namespace JotunnLib.Utils
             go.GetComponent<Text>().text = text;
             return go;
         }
+    }
 
+    public static class ExposedGameObjectExtensions
+    {
         /// <summary>
         /// Facilitates use of null propagation operator for unity GameObjects by respecting op_equality.
         /// </summary>
-        /// <param name="this">this</param>
-        /// <returns>Returns null when GameObject.op_equality returns false.</returns>
+        /// <param name = "this" > this </ param >
+        /// < returns > Returns null when GameObject.op_equality returns false.</returns>
         public static GameObject OrNull(this GameObject @this)
         {
             return @this ? @this : null;
+        }
+
+        /// <summary>
+        /// Facilitates use of null propagation operator for unity MonBehaviours by respecting op_equality.
+        /// </summary>
+        /// <typeparam name="T">Any type that inherits MonoBehaviour</typeparam>
+        /// <param name="this">this</param>
+        /// <returns>Returns null when MonoBehaviours.op_equality returns false.</returns>
+        public static T OrNull<T>(this T @this) where T : MonoBehaviour
+        {
+            return (T)(@this ? @this : null);
         }
     }
 }
