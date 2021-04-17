@@ -1,4 +1,4 @@
-# Registering custom recipes
+# Custom Recipes
 _Recipes_ in Valheim are coupling the items a player can craft to the various crafting stations. They also define if and at which cost items can be upgraded as well as the crafting station which can repair items. Creation of custom recipes is done through the [ItemManager](xref:JotunnLib.Managers.ItemManager) singleton class.
 
 All recipes will always be loaded **after** all items. However, recipes will be loaded in the order that you call the `AddRecipe` function.
