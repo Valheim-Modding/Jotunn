@@ -25,6 +25,8 @@ private void AddInputs()
 
 Now, to use our input, we can use the `ZInput` class provided by Valheim.
 
+Note that `AddButton` takes your PluginGUID as the first parameter. For now this is how Jötunn tries to avoid conflicts between multiple plugins which might bind the same key. This is still a workaround and will be adressed in future Jötunn releases.
+
 ```cs
 // Called every frame
 private void Update()
