@@ -88,7 +88,7 @@ namespace JotunnLib.Managers
             GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
             GUIContainer.AddComponent<GuiScaler>().UpdateScale();
 
-            createPixelFix();
+            CreatePixelFix();
 
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             On.KeyHints.UpdateHints += ShowCustomKeyHint;
@@ -253,7 +253,7 @@ namespace JotunnLib.Managers
             {
                 // Create a new PixelFix for start scene
                 GUIContainer.SetActive(true);
-                createPixelFix();
+                CreatePixelFix();
                 GUIInStart = true;
             }
             if (scene.name == "main" && GUIInStart)
@@ -349,7 +349,7 @@ namespace JotunnLib.Managers
             }
         }
 
-        private void createPixelFix()
+        private void CreatePixelFix()
         {
             PixelFix = new GameObject("GUIFix", typeof(RectTransform), typeof(GuiPixelFix));
             PixelFix.layer = UILayer; // UI

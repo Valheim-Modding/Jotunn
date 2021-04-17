@@ -11,10 +11,10 @@ namespace JotunnDoc.Docs
     {
         public ItemDoc() : base("JotunnDoc/Docs/conceptual/objects/item-list.md")
         {
-            ItemManager.Instance.OnItemsRegistered += docItems;
+            ItemManager.Instance.OnItemsRegistered += DocItems;
         }
 
-        private void docItems(object sender, EventArgs e)
+        private void DocItems(object sender, EventArgs e)
         {
             Debug.Log("Documenting items");
 

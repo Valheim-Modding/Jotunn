@@ -20,7 +20,7 @@ private void Awake()
 then, create the handler. You can register custom items and recipes from this handler. To register custom items, you must either pass a `[RecipeConfig](xref:JotunnLib.Entities.RecipeConfig)` instance to the function, or a Valheim `Recipe` object. The following example demonstrates how to use the `[RecipeConfig](xref:JotunnLib.Entities.RecipeConfig)`, as it is easier and less verbose.
 
 ```cs
-private void initObjects(object sender, EventArgs e)
+private void InitObjects(object sender, EventArgs e)
 {
     // Recipes
     ObjectManager.Instance.RegisterRecipe(new RecipeConfig()
@@ -70,7 +70,7 @@ That's it! Now, we can visit a forge with some blueberries and deer hide in our 
 
 
 ```cs
-private static void recipeEvilSword(ItemDrop itemDrop)
+private static void RecipeEvilSword(ItemDrop itemDrop)
 {
     Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
     recipe.name = "Recipe_EvilSword";

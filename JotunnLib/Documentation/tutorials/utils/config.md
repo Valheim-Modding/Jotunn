@@ -11,7 +11,7 @@ We can sync a client configuration with the server by ensuring that the plugin h
 
 ```cs
 // Create some sample configuration values to check server sync
-private void createConfigValues()
+private void CreateConfigValues()
 {
     Config.SaveOnConfigSet = true;
 

@@ -16,7 +16,7 @@ private voic Awake()
 
 First we use the [CustomItem](xref:JotunnLib.Entities.CustomItem) constructor to define the name of our item, and the existing prefab name which it should be cloned from. The item can be immediately added via the [AddItem](xref:JotunnLib.Managers.ItemManager.AddItem(JotunnLib.Entities.CustomItem)) method, and then modified to make our clone a little bit more unique.
 ```cs
-private void addClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
 {
     // You want that to run only once, JotunnLib has the item cached for the game session
     if (!clonedItemsAdded)
@@ -52,7 +52,7 @@ As you may notice, our item does not hold the display text we might prefer. In o
 In this example, we create a method named recipeEvilSword which adds a new crafting bench recipe for our custom item. In particular, this recipe includes a custom resource. We will use the native `Recipe` object and instantiate a new instance, and then define some basic properties of the recipe, such as the item which it produces, the piece where it can be crafted, and the resources required to craft the product. You will notice that before we add our native recipe that we wrap it inside of a [CustomRecipe](xref:JotunnLib.Entities.CustomRecipe). This wrapper is mostly to facilitate Jötunn's FixReferences for prefabs which include [mock references](mocks.md) but does not really have any affect for this specific scenario. Notice both fixRef params are set to false, this is because we will use the [PrefabManager's](xref:JotunnLib.Managers.PrefabManager.GetPrefab(System.String)) cache to acquire a reference to native assets such as the crafting bench, and required resources to define the recipe's conditions.
 
 ```cs
-private static void recipeEvilSword(ItemDrop itemDrop)
+private static void RecipeEvilSword(ItemDrop itemDrop)
 {
     // Create and add a recipe for the copied item
     Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
