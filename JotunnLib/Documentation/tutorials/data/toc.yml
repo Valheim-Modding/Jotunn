@@ -9,18 +9,21 @@
 
 - name: Inputs
   href: inputs.md
-
+  
 - name: Items
   href: items.md
-
+  
 - name: Localization
   href: localization.md
 
 - name: Mocks
   href: mocks.md
-
+  
 - name: Pieces
   href: pieces.md
+
+  name: Recipes
+  href: recipes.md
 
 - name: Skills
   href: skills.md
