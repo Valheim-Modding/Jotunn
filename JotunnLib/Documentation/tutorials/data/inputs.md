@@ -1,8 +1,8 @@
-# Custom inputs
+# Custom Inputs
 Custom inputs can be registered through the [InputManager](xref:JotunnLib.Managers.InputManager) singleton.
 
 ## Example
-First, within `Awake` in your mod class, call a method to create and add all your custom key bindings to the [InputManager](xref:JotunnLib.Managers.InputManager).
+First, within `Awake` in your mod class, call a method to create and add all your custom key bindings to the [InputManager](xref:JotunnLib.Managers.InputManager). You can have key bindings defined "on the fly" which binds a specific key to an artificial button name. To be more versatile you can have the custom binding be defined in a configuration file and let the user change it to his preference. In our [JotunnModExample](https://github.com/Valheim-Modding/JotunnModExample) we have both options implemented like this:
 
 ```cs
 // Add custom key bindings
