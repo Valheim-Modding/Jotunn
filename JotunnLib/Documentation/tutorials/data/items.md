@@ -49,7 +49,7 @@ If we load up the game, type `devcommands` into the console(F5), and `spawn Evil
 As you may notice, our item does not hold the display text we might prefer. In order to resolve this you can read our [localization](localization.md) tutorial.
 
 ### Item Recipe's
-In this example, we create a method named recipeEvilSword which adds a new crafting bench recipe for our custom item. In particular, this recipe includes a custom resource. We will use the native `Recipe` object and instantiate a new instance, and then define some basic properties of the recipe, such as the item which it produces, the piece where it can be crafted, and the resources required to craft the product. You will notice that before we add our native recipe that we wrap it inside of a [CustomRecipe](xref:JotunnLib.Entities.CustomRecipe). This wrapper is mostly to facilitate J�tunnLib's FixReferences for prefabs which include [mock references](mocks.md) but does not really have any affect for this specific scenario. Notice both fixRef params are set to false, this is because we will use the [PrefabManager's](xref:JotunnLib.Managers.PrefabManager.GetPrefab(System.String)) cache to acquire a reference to native assets such as the crafting bench, and required resources to define the recipe's conditions.
+In this example, we create a method named recipeEvilSword which adds a new crafting bench recipe for our custom item. In particular, this recipe includes a custom resource. We will use the native `Recipe` object and instantiate a new instance, and then define some basic properties of the recipe, such as the item which it produces, the piece where it can be crafted, and the resources required to craft the product. You will notice that before we add our native recipe that we wrap it inside of a [CustomRecipe](xref:JotunnLib.Entities.CustomRecipe). This wrapper is mostly to facilitate Jötunn's FixReferences for prefabs which include [mock references](mocks.md) but does not really have any affect for this specific scenario. Notice both fixRef params are set to false, this is because we will use the [PrefabManager's](xref:JotunnLib.Managers.PrefabManager.GetPrefab(System.String)) cache to acquire a reference to native assets such as the crafting bench, and required resources to define the recipe's conditions.
 
 ```cs
 private static void recipeEvilSword(ItemDrop itemDrop)
@@ -82,7 +82,7 @@ private static void recipeEvilSword(ItemDrop itemDrop)
 
 In the previous examples we saw that its possible to easily clone existing items and customise our recipe's required for the items, however these examples are rather verbose, and requires a fair amount of setup. In order to better facilitate configurations such as these, we have introduced `*Config` abstractions such as the [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) and [RequirementConfig](xref:JotunnLib.Configs.RequirementConfig), which exposes common properties such as the ItemDrop, CraftingStation, and Resources.
 
-Similarly in this example instead of cloning our prefabs, we are just going to import a custom prefab directly from an asset bundle, which is exceedingly convenient using J�tunn's asset loading helpers:
+Similarly in this example instead of cloning our prefabs, we are just going to import a custom prefab directly from an asset bundle, which is exceedingly convenient using Jötunn's asset loading helpers:
 
 ```cs
 private void CreateBlueprintRune()

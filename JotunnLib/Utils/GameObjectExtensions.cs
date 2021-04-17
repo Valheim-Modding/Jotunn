@@ -128,7 +128,7 @@ namespace JotunnLib.Utils
         /// <typeparam name="T">Any type that inherits MonoBehaviour</typeparam>
         /// <param name="this">this</param>
         /// <returns>Returns null when MonoBehaviours.op_equality returns false.</returns>
-        public static T OrNull<T>(this T @this) where T : MonoBehaviour
+        public static T OrNull<T>(this T @this) where T : UnityEngine.Object
         {
             return (T)(@this ? @this : null);
         }
