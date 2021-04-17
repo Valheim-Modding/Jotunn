@@ -12,7 +12,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 
-internal static class ObjImporter
+public static class ObjImporter
 {
     private struct meshStruct
     {
