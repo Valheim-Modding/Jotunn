@@ -80,10 +80,6 @@ jobs:
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><ExecutePrebuild>true</ExecutePrebuild></PropertyGroup></Project>" > JotunnLib/BuildProps/DoPrebuild.props
 
-#      - name: Update GitVersion.yml and version.props
-#        run: |
-#          cat JotunnLib/BuildProps/version.props  | sed '4s#.*#    <Version>${{ steps.get_version.outputs.VERSION_NUMBER }}</Version>#' > JotunnLib/BuildProps/version_temp.props && mv JotunnLib/BuildProps/version_temp.props JotunnLib/BuildProps/version.props
-
       # - name: Push version update to prod
       #   run: |
       #     git config --global user.name 'github-actions[bot]'
@@ -101,8 +97,8 @@ jobs:
           msbuild JotunnLib.sln /p:Configuration=Debug
           mv JotunnLib/bin/Debug/net462/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
-#      - name: Publish the package to Nuget
-#        run: dotnet nuget push "JotunnLib/bin/Release/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+      - name: Publish the package to Nuget
+        run: dotnet nuget push "JotunnLib/bin/Release/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -110,6 +106,5 @@ jobs:
           files: |
             JotunnLib.dll
             JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
-            JotunnLib/BuildProps/version.props
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
