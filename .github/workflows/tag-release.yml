@@ -24,7 +24,7 @@ jobs:
         id: get_version
         run: |
           echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-          echo ::set-output name=VERSION_NUMBER::${{ steps.get_version.outputs.VERSION:1 }}
+          echo ::set-output name=VERSION_NUMBER::${GITHUB_REF/refs\/tags\/v/}
 
       # Install NuGet
       - uses: nuget/setup-nuget@v1
