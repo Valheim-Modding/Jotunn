@@ -14,9 +14,6 @@ jobs:
         id: valheimversion
         run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
 
-      - name: Install SteamCMD
-        uses: CyberAndrii/setup-steamcmd@v1
-
       # Install NuGet
       - uses: nuget/setup-nuget@v1
         name: Install NuGet
@@ -45,6 +42,10 @@ jobs:
           path: ~/VHINSTALL
           key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}
 
+      - name: Install SteamCMD
+        if: steps.cachevalheim.outputs.cache-hit != 'true'
+        uses: CyberAndrii/setup-steamcmd@v1
+
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
         if: steps.cachevalheim.outputs.cache-hit != 'true'
@@ -63,10 +64,10 @@ jobs:
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.7
         with:
-          versionSpec: '5.x'
+          versionSpec: "5.x"
 
       - name: Determine Version
-        id:   gitversion
+        id: gitversion
         uses: gittools/actions/gitversion/execute@v0.9.7
         with:
           useConfigFile: true
@@ -90,9 +91,8 @@ jobs:
         with:
           name: JotunnLib-${{ steps.date.outputs.date }}.dll
           path: JotunnLib/bin/Debug/net462/JotunnLib.dll
-            
+
       - uses: actions/upload-artifact@v2
         with:
           name: JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg
-          path: JotunnLib/bin/Debug/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg            
-
+          path: JotunnLib/bin/Debug/JotunnLib.${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.nupkg
