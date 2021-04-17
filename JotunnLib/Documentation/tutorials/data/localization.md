@@ -19,7 +19,8 @@ The format for localizations is a standard json collection as such:
 
 ## Side loading localizations
 Localizations can be provide through loading side by side with your plugin. The folder structure which will be queried will be `Translations/{LanguageName}/{anyname}.json`, and can be placed in any sub directory within your plugin.
-An example of a path which will be read for localization at run time may be: `BepInEx/plugins/JotunnModExample/Assets/Translations/English/backpack.json`. All .json files within such a directory will be iterated through and localizations added for each of those languages.
+An example of a path which will be read for localization at run time may be: `BepInEx/plugins/JotunnModExample/Assets/Translations/English/backpack.json`. 
+All .json files within such a directory will be iterated through and localizations added for each of those languages.
 
 ## Hardcoding
 Localizations may also be hardcoded into your plugin by invoking the [AddLocalization](xref:JotunnLib.Managers.LocalizationManager.AddLocalization(JotunnLib.Configs.LocalizationConfig)) method.
@@ -48,7 +49,7 @@ LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
 
 
 ## Prefabs
-It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime via [AddJson](xref:JotunnLib.Managers.LocalizationManager.AddJson(System.String,System.String)).. In this example, we use our filenames to provide the language which we wish to add the translations for:
+It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime via [AddJson](xref:JotunnLib.Managers.LocalizationManager.AddJson(System.String,System.String)). In this example, we use our filenames to provide the language which we wish to add the translations for:
 
 ```cs
  TextAsset[] textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
