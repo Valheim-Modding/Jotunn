@@ -27,7 +27,7 @@ namespace TestMod
         private AssetBundle testAssets;
         private Sprite testSprite;
         private Texture2D testTex;
-        private bool clonedItemsAdded;
+        private bool clonedItemsProcessed;
 
         private System.Version currentVersion;
         private bool forceVersionMismatch;
@@ -37,6 +37,7 @@ namespace TestMod
         private GameObject testPanel;
 
         private ButtonConfig evilSwordSpecial;
+        private CustomStatusEffect evilSwordEffect;
 
         // Load, create and init your custom mod stuff
         private void Awake()
@@ -47,6 +48,8 @@ namespace TestMod
             AddLocalizations();
             AddCommands();
             AddSkills();
+            AddRecipes();
+            AddStatusEffects();
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
@@ -230,7 +233,9 @@ namespace TestMod
                 Translations = {
                     {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
                     {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
-                    {"evilsword_beevil", "Muaahaha"}, {"evilsword_beevilmessage", ":reee:"}
+                    {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
+                    {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
+                    {"evilsword_effectstop", "You feel nice again"}
                 }
             });
 
@@ -265,12 +270,34 @@ namespace TestMod
             SkillManager.Instance.AddSkillsFromJson("TestMod/Assets/skills.json");
         }
 
-        // Add new Items with item Configs
-        private void AddItemsWithConfigs()
+        // Add custom recipes
+        private void AddRecipes()
         {
             // Load recipes from JSON file
             ItemManager.Instance.AddRecipesFromJson("TestMod/Assets/recipes.json");
+        }
 
+        // Add new status effects
+        private void AddStatusEffects()
+        {
+            // Create a new status effect. The base class "StatusEffect" does not do very much except displaying messages
+            // A Status Effect is normally a subclass of StatusEffects which has methods for further coding of the effects (e.g. SE_Stats).
+            StatusEffect effect = ScriptableObject.CreateInstance<StatusEffect>();
+            effect.name = "EvilStatusEffect";
+            effect.m_name = "$evilsword_effectname";
+            effect.m_icon = AssetUtils.LoadSpriteFromFile("TestMod/Assets/reee.png");
+            effect.m_startMessageType = MessageHud.MessageType.Center;
+            effect.m_startMessage = "$evilsword_effectstart";
+            effect.m_stopMessageType = MessageHud.MessageType.Center;
+            effect.m_stopMessage = "$evilsword_effectstop";
+
+            evilSwordEffect = new CustomStatusEffect(effect, fixReference: false);  // We dont need to fix refs here, because no mocks were used
+            ItemManager.Instance.AddStatusEffect(evilSwordEffect);
+        }
+
+        // Add new Items with item Configs
+        private void AddItemsWithConfigs()
+        {
             // Add a custom piece table
             var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable");
             PieceManager.Instance.AddPieceTable(table_prefab);
@@ -370,7 +397,7 @@ namespace TestMod
         // Add a custom item from an "empty" prefab
         private void AddEmptyItems()
         {
-            CustomPiece CP = new CustomPiece("$piece_lul", "Hammer");
+            CustomPiece CP = new CustomPiece("piece_lul", "Hammer");
             if (CP != null)
             {
                 var piece = CP.Piece;
@@ -386,7 +413,7 @@ namespace TestMod
         private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             // You want that to run only once, JotunnLib has the item cached for the game session
-            if (!clonedItemsAdded)
+            if (!clonedItemsProcessed)
             {
                 try
                 {
@@ -398,6 +425,9 @@ namespace TestMod
                     var itemDrop = CI.ItemDrop;
                     itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
                     itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
+
+                    // Add our custom status effect to it
+                    itemDrop.m_itemData.m_shared.m_equipStatusEffect = evilSwordEffect.StatusEffect;
 
                     // Create and add a recipe for the copied item
                     var recipe = ScriptableObject.CreateInstance<Recipe>();
@@ -424,7 +454,7 @@ namespace TestMod
                             evilSwordSpecial,
                             // Override vanilla "Mouse Wheel" text
                             new ButtonConfig { Name = "Scroll", Axis = "Up", HintToken = "$evilsword_scroll" }
-                }
+                        }
                     };
                     GUIManager.Instance.AddKeyHint(KHC);
                 }
@@ -434,11 +464,11 @@ namespace TestMod
                 }
                 finally
                 {
-                    clonedItemsAdded = true;
+                    clonedItemsProcessed = true;
                 }
             }
 
-            // Hook is prefix, we just need to be able to get the vanilla prefabs, JotunnLib registers them in ObjectDB
+            // Hook is prefix, we just need to be able to get the vanilla prefabs, JötunnLib registers them in ObjectDB
             orig(self, other);
         }
 

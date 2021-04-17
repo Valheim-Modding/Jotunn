@@ -113,7 +113,7 @@ namespace JotunnLib.Utils
     public static class ExposedGameObjectExtensions
     {
         /// <summary>
-        /// Facilitates use of null propagation operator for unity GameObjects by respecting op_equality.
+        ///     Facilitates use of null propagation operator for unity GameObjects by respecting op_equality.
         /// </summary>
         /// <param name="this"> this </param>
         /// <returns>Returns null when GameObject.op_equality returns false.</returns>

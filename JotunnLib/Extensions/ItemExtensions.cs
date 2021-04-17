@@ -18,12 +18,6 @@ namespace JotunnLib
         {
             try
             {
-                /*var tokenName = self.TokenName();
-                if (tokenName[0] != LocalizationManager.TokenFirstChar)
-                {
-                    throw new Exception($"Item name first char should be {LocalizationManager.TokenFirstChar} for token lookup ! (current item name : {tokenName})");
-                }*/
-
                 var hasIcon = self.m_itemData.m_shared.m_icons.Length > 0;
                 if (!hasIcon)
                 {
@@ -130,16 +124,45 @@ namespace JotunnLib
         {
             try
             {
-                /*var tokenName = self.TokenName();
-                if (tokenName[0] != LocalizationManager.TokenFirstChar)
-                {
-                    throw new Exception($"Piece name first char should be {LocalizationManager.TokenFirstChar} for token lookup ! (current piece name : {tokenName})");
-                }*/
-
                 var hasIcon = self.m_icon != null;
                 if (!hasIcon)
                 {
                     throw new Exception($"Piece must have an icon !");
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e);
+
+                return false;
+            }
+        }
+    }
+
+    public static class StatusEffectExtension
+    {
+        public static string TokenName(this StatusEffect self) => self.m_name;
+
+        public static bool IsValid(this StatusEffect self)
+        {
+            try
+            {
+                var name = self.name;
+                if (name.IndexOf('(') > 0)
+                {
+                    name = name.Substring(self.name.IndexOf('(')).Trim();
+                }
+                if (string.IsNullOrEmpty(name))
+                {
+                    throw new Exception($"StatusEffect must have a name !");
+                }
+
+                var hasIcon = self.m_icon != null;
+                if (!hasIcon)
+                {
+                    throw new Exception($"StatusEffect must have an icon !");
                 }
 
                 return true;
