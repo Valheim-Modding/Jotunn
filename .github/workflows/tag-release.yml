@@ -25,6 +25,7 @@ jobs:
         run: |
           echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
           echo ::set-output name=VERSION_NUMBER::${VERSION:1}
+          echo ${VERSION_NUMBER}
 
       # Install NuGet
       - uses: nuget/setup-nuget@v1
@@ -101,8 +102,8 @@ jobs:
           msbuild JotunnLib.sln /p:Configuration=Debug
           mv JotunnLib/bin/Debug/net462/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
-      - name: Publish the package to Nuget
-        run: dotnet nuget push "JotunnLib/bin/Release/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+#      - name: Publish the package to Nuget
+#        run: dotnet nuget push "JotunnLib/bin/Release/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -110,5 +111,6 @@ jobs:
           files: |
             JotunnLib.dll
             JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
+            JotunnLib/BuildProps/version.props
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
