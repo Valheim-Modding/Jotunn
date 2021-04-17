@@ -73,7 +73,7 @@ jobs:
 
       - name: Set JotunnLib version
         run: |
-          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><Version>${{ steps.get_version.outputs.VERSION_NUMBER }}-0</Version></PropertyGroup></Project>" > JotunnLib/BuildProps/version.props
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><Version>${{ steps.get_version.outputs.VERSION_NUMBER }}</Version></PropertyGroup></Project>" > JotunnLib/BuildProps/version.props
 
       - name: Reset DoPrebuild.props
         run: |
