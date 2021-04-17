@@ -70,7 +70,7 @@ These people have been integral to pushing JVL out of the door, and without them
 
 *Quaesar#5604*: [github](https://github.com/RatikKapoor), [thunderstore](), [nexus]()
 
-*radu#0571*: [github](https://github.com/raduschirliu), [thunderstore](), [nexus]()
+*radu#0571*: [github](https://github.com/raduschirliu), [thunderstore](https://valheim.thunderstore.io/package/radu/), [nexus](https://www.nexusmods.com/users/112072898)
 
 *paddy#1337*: [github](https://github.com/paddywaan), [thunderstore](https://valheim.thunderstore.io/package/paddywan/), [nexus](https://valheim.thunderstore.io/package/ValheimModding/)
 
