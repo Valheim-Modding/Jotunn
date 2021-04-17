@@ -26,9 +26,6 @@ jobs:
           echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
           echo ::set-output name=VERSION_NUMBER::${VERSION:1}
 
-      - name: Install SteamCMD
-        uses: CyberAndrii/setup-steamcmd@v1
-
       # Install NuGet
       - uses: nuget/setup-nuget@v1
         name: Install NuGet
@@ -56,6 +53,10 @@ jobs:
         with:
           path: ~/VHINSTALL
           key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Install SteamCMD
+        if: steps.cachevalheim.outputs.cache-hit != 'true'
+        uses: CyberAndrii/setup-steamcmd@v1
 
       # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
