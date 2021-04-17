@@ -15,17 +15,13 @@ These options for the most part are self explanatory, however version strictness
 
 **No NetworkCompatibility in any plugin, client or server**: Vanilla version checking.
 
-**Clientside NetworkCompatibility plugin, none server**: Client Version mismatch from additional plugin:
-TODO image
+**Clientside NetworkCompatibility plugin, none server**: Client Version mismatch from additional plugin:<br>![NetworkCompatibilityClientHasAdditionalMod](../../images/utils/NetworkCompatClientsideAdditional.png)
 
-**Clientside none, NetworkCompatibilityPlugin server**: Server version mismatch from additional plugin:
-TODO image
+**Clientside none, NetworkCompatibilityPlugin server**: Server version mismatch from additional plugin:<br>![Network Compat Client Missing Module](../../images/utils/NetworkCompatClientMissingModule.png)
 
-**VersionStrictness unequal, client>server**: server version mismatch from major, minor, patch:
-![File](../../images/utils/NetworkCompatClient-gr-Server.png)
+**VersionStrictness unequal, client>server**: server version mismatch from major, minor, patch:<br>![File](../../images/utils/NetworkCompatClient-gr-Server.png)
 
-**VersionStrictness unequal, server>client**: client version mismatch from major, minor, patch:
-![Network Compat Server Gr Client](../../images/utils/NetworkCompatServer-gr-Client.png)
+**VersionStrictness unequal, server>client**: client version mismatch from major, minor, patch:<br>![Network Compat Server Gr Client](../../images/utils/NetworkCompatServer-gr-Client.png)
 
 ### Semantic versioning and NetworkCompatibility.
 
@@ -41,7 +37,7 @@ Another use case might be an overhaul which tweaks many different settings and c
 Generally, it is not advised to enforce version strictness on patches, however we do not dictate how developers control their versioning, and as thus we expose this version for network compatibility should the developer only choose to increment patches.
 
 
-Some examples which **need** version synchronizity with the server and other clients:
+Some examples which **need** version synchronicity with the server and other clients:
 
 - Newly introduced RPCs (client or server wouldn't know what to do with them)
 - Changed RPCs (for example data format changes) which could either break server or client execution
