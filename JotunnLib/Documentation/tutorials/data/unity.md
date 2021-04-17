@@ -26,13 +26,13 @@ This example is heavily based on [iDeathHD's Lead Mod](https://github.com/xiaoxi
 
 
 # TODO
-Throughout the code, we will reference code snippets from an example project. That project has a clear example of how to add a new, craftable item to the game with custom assets. You can get that project in its entirety [here](https://github.com/Valheim-Modding/JotunnExampleMod). You can download that repository and open the Lead.sln file in Visual Studio in order to see the way our mod will be structured.
+Throughout the code, we will reference code snippets from an example project. That project has a clear example of how to add a new, craftable item to the game with custom assets. You can get that project in its entirety [here](https://github.com/Valheim-Modding/JotunnModExample). You can download that repository and open the Lead.sln file in Visual Studio in order to see the way our mod will be structured.
 
 ## Useful Info About Valheim Items
 
 To add the item into the game, we are going to be utilising various manager and utility methods provided by JVL.
 
-[ItemManager.Instance.AddItem(CustomItem item)](xref:JotunnLib.ItemManager.AddItem) method.
+[ItemManager.Instance.AddItem(CustomItem item)](xref:JotunnLib.Managers.ItemManager.AddItem(JotunnLib.Entities.CustomItem)) method.
 But what is a `CustomItem` ?
 
 ### CustomItem

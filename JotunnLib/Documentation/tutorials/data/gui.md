@@ -47,7 +47,7 @@ var checkbox = GUIManager.Instance.CreateToggle(GUIManager.PixelFix.transform, n
 
 ### Getting sprites
 
-Gets sprites from the textureatlas by name. A list of the sprites
+Gets sprites from the textureatlas by name. You find a list of the sprite names [here](spritelist.md).
 
 ```cs
 var sprite = GUIManager.Instance.GetSprite("text_field");

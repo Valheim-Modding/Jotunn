@@ -113,10 +113,10 @@ namespace JotunnLib.Utils
     public static class ExposedGameObjectExtensions
     {
         /// <summary>
-        /// Facilitates use of null propagation operator for unity GameObjects by respecting op_equality.
+        ///     Facilitates use of null propagation operator for unity GameObjects by respecting op_equality.
         /// </summary>
-        /// <param name = "this" > this </ param >
-        /// < returns > Returns null when GameObject.op_equality returns false.</returns>
+        /// <param name="this"> this </param>
+        /// <returns>Returns null when GameObject.op_equality returns false.</returns>
         public static GameObject OrNull(this GameObject @this)
         {
             return @this ? @this : null;
@@ -128,7 +128,7 @@ namespace JotunnLib.Utils
         /// <typeparam name="T">Any type that inherits MonoBehaviour</typeparam>
         /// <param name="this">this</param>
         /// <returns>Returns null when MonoBehaviours.op_equality returns false.</returns>
-        public static T OrNull<T>(this T @this) where T : MonoBehaviour
+        public static T OrNull<T>(this T @this) where T : UnityEngine.Object
         {
             return (T)(@this ? @this : null);
         }

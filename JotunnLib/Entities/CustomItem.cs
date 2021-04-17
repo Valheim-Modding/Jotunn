@@ -28,16 +28,16 @@ namespace JotunnLib.Entities
         public CustomRecipe Recipe { get; set; }
 
         /// <summary>
-        ///     Indicator if references from <see cref="Mock"/>s will be replaced at runtime.
+        ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; } = false;
 
         /// <summary>
         ///     Custom item from a prefab.<br />
-        ///     Can fix references for <see cref="Mock"/>s and the <see cref="global::Recipe"/>.
+        ///     Can fix references for <see cref="Entities.Mock{T}"/>s and the <see cref="global::Recipe"/>.
         /// </summary>
         /// <param name="itemPrefab">The prefab for this custom item.</param>
-        /// <param name="fixReference">If true references for <see cref="Mock"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         public CustomItem(GameObject itemPrefab, bool fixReference)
         {
             ItemPrefab = itemPrefab;
@@ -47,7 +47,7 @@ namespace JotunnLib.Entities
 
         /// <summary>
         ///     Custom item from a prefab with a <see cref="global::Recipe"/> made from a <see cref="ItemConfig"/>.<br />
-        ///     Can fix references for <see cref="Mock"/>s.
+        ///     Can fix references for <see cref="Entities.Mock{T}"/>s.
         /// </summary>
         /// <param name="itemPrefab">The prefab for this custom item.</param>
         /// <param name="itemConfig">The recipe config for this custom item.</param>
