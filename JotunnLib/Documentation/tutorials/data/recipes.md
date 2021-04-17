@@ -3,7 +3,7 @@ _Recipes_ in Valheim are coupling the items a player can craft to the various cr
 
 All recipes will always be loaded **after** all items. However, recipes will be loaded in the order that you call the `AddRecipe` function.
 
-You have two options for adding custom recipes in Jötunn. You either use a [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) where you can define the ingame objects your recipe should reference via strings of the object names. Or you can create the `Recipe` ScriptableObject on your own. If the game has already loaded it's own assets, you can reference the objects in the recipe via Jötunns ([Prefab Cache](xref:JotunnLib.Managers.PrefabManager.Cache)) or create [Mocks](mocks.md) and let Jötunn fix the references at runtime.
+You have two options for adding custom recipes in Jötunn. You either use a [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) where you can define the ingame objects your recipe should reference via strings of the object names. Or you can create the `Recipe` ScriptableObject on your own. If the game has already loaded it's own assets, you can reference the objects in the recipe via Jötunns [Prefab Cache](xref:JotunnLib.Managers.PrefabManager.Cache) or create [Mocks](mocks.md) and let Jötunn fix the references at runtime.
 
 **Note:** You **must** only use names of existing prefabs (either ones you created or default Valheim ones). This can be prefabs that have already been registered by another mod, or that already exist in the game.
 
