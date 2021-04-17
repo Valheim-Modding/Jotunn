@@ -17,7 +17,7 @@ Next, register your inputs within the handler using the `RegisterInput` command 
 This version of [AddButton](xref:JotunnLib.Managers.InputManager.AddButton(System.String,System.String,UnityEngine.KeyCode,System.Single,System.Single)) takes a string argument for the key name (this **MUST** be unique), and a UnityEngine KeyCode as the default arguments
 
 ```cs
-private void registerInputs(object sender, EventArgs e)
+private void RegisterInputs(object sender, EventArgs e)
 {
     // Init menu toggle key
     InputManager.Instance.AddButton("TestMod_Menu", KeyCode.Insert);

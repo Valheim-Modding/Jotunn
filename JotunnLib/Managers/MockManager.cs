@@ -34,7 +34,7 @@ namespace JotunnLib.Managers
             MockPrefabContainer.transform.parent = Main.RootObject.transform;
             MockPrefabContainer.SetActive(false);
 
-            On.ObjectDB.Awake += removeMockPrefabs;
+            On.ObjectDB.Awake += RemoveMockPrefabs;
         }
 
         internal T CreateMockedPrefab<T>(string prefabName) where T : Component
@@ -65,7 +65,7 @@ namespace JotunnLib.Managers
 
         }
 
-        private void removeMockPrefabs(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void RemoveMockPrefabs(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
             var isValid = self.IsValid();

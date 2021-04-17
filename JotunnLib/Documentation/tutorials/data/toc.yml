@@ -1,35 +1,32 @@
 - name: Assets
   href: assets.md
 
-- name: Unity
-  href: unity.md
-
-- name: Localization
-  href: localization.md
-
-- name: Skills
-  href: skills.md
-
-- name: Items
-  href: items.md
-
-- name: Recipes
-  href: recipes.md
-
-- name: Pieces
-  href: pieces.md
-
-- name: Piece tables
-  href: piece-tables.md
-
-- name: Vegetation
-  href: vegetation.md
-
-- name: Inputs
-  href: inputs.md
+- name: Console Commands
+  href: console-commands.md
 
 - name: GUI
   href: gui.md
 
+- name: Inputs
+  href: inputs.md
+
+- name: Items
+  href: items.md
+
+- name: Localization
+  href: localization.md
+
 - name: Mocks
   href: mocks.md
+
+- name: Pieces
+  href: pieces.md
+
+- name: Skills
+  href: skills.md
+
+- name: Status effects
+  href: status-effects.md
+
+- name: Unity
+  href: unity.md

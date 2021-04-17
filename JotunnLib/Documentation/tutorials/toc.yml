@@ -4,17 +4,9 @@
 - name: Getting started
   href: getting-started.md
 
-- name: Custom data
+- name: Managers
   href: data/toc.yml
   topicHref: data/overview.md
-
-- name: Custom commands
-  href: commands/toc.yml
-  topicHref: commands/overview.md
-
-- name: Inputs
-  href: inputs/toc.yml
-  topicHref: inputs/overview.md
 
 - name: Utils
   href: utils/toc.yml

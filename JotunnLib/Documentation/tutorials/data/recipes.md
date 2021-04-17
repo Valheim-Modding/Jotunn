@@ -1,14 +1,14 @@
 # DEPRECATED
 # Registering custom recipes
 _Recipes_ in Valheim are anything that the player is able to hold in their inventory.  
-Creation of custom recipes is done through the [ObjectManager](xref:JotunnLib.Managers.ObjectManager) singleton class.
+Creation of custom recipes is done through the `[ObjectManager](xref:JotunnLib.Managers.ObjectManager)` singleton class.
 
 All recipes will always be loaded **after** all items. However, recipes will be loaded in the order that you call the `RegisterRecipe` function.
 
 **Note:** You **must** only use names of existing prefabs (either ones you created or default Valheim ones). This can be prefabs that have already been registered by another mod, or that already exist in the game.
 
 ## Example
-To create a new recipe, you must first add a handler for the [ObjectRegister](xref:JotunnLib.Managers.ObjectManager.ObjectRegister) event
+To create a new recipe, you must first add a handler for the `[ObjectRegister](xref:JotunnLib.Managers.ObjectManager.ObjectRegister)` event
 
 ```cs
 private void Awake()
@@ -17,10 +17,10 @@ private void Awake()
 }
 ```
 
-then, create the handler. You can register custom items and recipes from this handler. To register custom items, you must either pass a [RecipeConfig](xref:JotunnLib.Entities.RecipeConfig) instance to the function, or a Valheim `Recipe` object. The following example demonstrates how to use the [RecipeConfig](xref:JotunnLib.Entities.RecipeConfig), as it is easier and less verbose.
+then, create the handler. You can register custom items and recipes from this handler. To register custom items, you must either pass a `[RecipeConfig](xref:JotunnLib.Entities.RecipeConfig)` instance to the function, or a Valheim `Recipe` object. The following example demonstrates how to use the `[RecipeConfig](xref:JotunnLib.Entities.RecipeConfig)`, as it is easier and less verbose.
 
 ```cs
-private void initObjects(object sender, EventArgs e)
+private void InitObjects(object sender, EventArgs e)
 {
     // Recipes
     ObjectManager.Instance.RegisterRecipe(new RecipeConfig()
@@ -70,7 +70,7 @@ That's it! Now, we can visit a forge with some blueberries and deer hide in our 
 
 
 ```cs
-private static void recipeEvilSword(ItemDrop itemDrop)
+private static void RecipeEvilSword(ItemDrop itemDrop)
 {
     Recipe recipe = ScriptableObject.CreateInstance<Recipe>();
     recipe.name = "Recipe_EvilSword";

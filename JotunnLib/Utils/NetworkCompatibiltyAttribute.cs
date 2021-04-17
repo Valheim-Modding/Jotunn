@@ -21,7 +21,7 @@ namespace JotunnLib.Utils
         None = 0,
         Major = 1,
         Minor = 2,
-        Build = 3
+        Patch = 3
     }
 
     /// <summary>

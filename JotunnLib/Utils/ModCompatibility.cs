@@ -243,8 +243,8 @@ namespace JotunnLib.Utils
                         }
                     }
 
-                    // Build
-                    if (module.Item4 >= VersionStrictness.Build || clientModule.Item4 >= VersionStrictness.Build)
+                    // Patch
+                    if (module.Item4 >= VersionStrictness.Patch || clientModule.Item4 >= VersionStrictness.Patch)
                     {
                         if (module.Item2.Build > clientModule.Item2.Build)
                         {
@@ -444,7 +444,7 @@ namespace JotunnLib.Utils
                     }
 
                     if (module.Item2.Build != otherModule.Item2.Build &&
-                        (module.Item4 >= VersionStrictness.Build || otherModule.Item4 >= VersionStrictness.Build))
+                        (module.Item4 >= VersionStrictness.Patch || otherModule.Item4 >= VersionStrictness.Patch))
                     {
                         return false;
                     }
@@ -472,7 +472,7 @@ namespace JotunnLib.Utils
                     }
 
                     if (module.Item2.Build != serverModule.Item2.Build &&
-                        (module.Item4 >= VersionStrictness.Build || serverModule.Item4 >= VersionStrictness.Build))
+                        (module.Item4 >= VersionStrictness.Patch || serverModule.Item4 >= VersionStrictness.Patch))
                     {
                         return false;
                     }

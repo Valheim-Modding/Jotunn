@@ -15,7 +15,7 @@ namespace JotunnLib.Entities
         public Recipe Recipe { get; set; }
 
         /// <summary>
-        ///     Indicator if references from <see cref="Mock"/>s will be replaced at runtime.
+        ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; } = false;
 
@@ -26,10 +26,10 @@ namespace JotunnLib.Entities
 
         /// <summary>
         ///     Custom recipe from a <see cref="global::Recipe"/>.<br />
-        ///     Can fix references for <see cref="Mock"/>s and <see cref="MockRequirement"/>s or not.
+        ///     Can fix references for <see cref="Entities.Mock{T}"/>s and <see cref="MockRequirement"/>s or not.
         /// </summary>
         /// <param name="recipe">The <see cref="global::Recipe"/> for a custom item.</param>
-        /// <param name="fixReference">If true references for <see cref="Mock"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="fixRequirementReferences">If true references for <see cref="MockRequirement"/>s get resolved at runtime by Jötunn.</param>
         public CustomRecipe(Recipe recipe, bool fixReference, bool fixRequirementReferences)
         {
