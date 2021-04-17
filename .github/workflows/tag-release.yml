@@ -98,7 +98,7 @@ jobs:
           mv JotunnLib/bin/Debug/net462/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
       - name: Publish the package to Nuget
-        run: dotnet nuget push "JotunnLib/bin/Release/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "JotunnLib/bin/Release/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Release
         uses: softprops/action-gh-release@v1
