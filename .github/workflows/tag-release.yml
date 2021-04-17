@@ -25,7 +25,6 @@ jobs:
         run: |
           echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
           echo ::set-output name=VERSION_NUMBER::${VERSION:1}
-          echo ::set-output name=VERSION_NEXT_NUMBER::$(echo $VERSION_NUMBER | perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e')
 
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
@@ -82,7 +81,6 @@ jobs:
 
       - name: Update GitVersion.yml and version.props
         run: |
-          cat JotunnLib/GitVersion.yml | sed '4s/.*/next-version: ${{ steps.get_version.outputs.VERSION_NEXT_NUMBER }}/' > JotunnLib/GitVersion_temp.yml && mv JotunnLib/GitVersion_temp.yml JotunnLib/GitVersion.yml
           cat JotunnLib/BuildProps/version.props  | sed '4s#.*#    <Version>${{ steps.get_version.outputs.VERSION_NUMBER }}</Version>#' > JotunnLib/BuildProps/version_temp.props && mv JotunnLib/BuildProps/version_temp.props JotunnLib/BuildProps/version.props
 
       - name: Push version update to prod
