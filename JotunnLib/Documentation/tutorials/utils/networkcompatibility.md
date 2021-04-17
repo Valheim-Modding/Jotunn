@@ -5,7 +5,7 @@
 In order to quote *"enforce"* network compatibility, a version check is initiated when the client connects to the server, where each client will compare their plugins, and the requirements specified by each, and the server will decide depending on the requirements of each plugin, if the client is permissible. If there is a version mismatch, the client will be disconnected with a version mismatch error, that details the pluginGUID'd and the offending version string, and the requirement. The client may then satisfy the requirements and reconnect successfully.
 
 ### CompatibilityLevel & Version Strictness
-The [NetworkCompatibility attribute](xref:JotunnLib.Utils.NetworkCompatibiltyAttribute) provides two parameters, one for [CompatibilityLevel](xref:JotunnLib.Utils.CompatibilityLevel) (`NoNeedForSync`,`EveryoneMustHaveMod`), and one for [VersionStrictness](xref:JotunnLib.Utils.VersionStrictness) (`None`,`Major`,`Minor`,`Build`).
+The [NetworkCompatibility attribute](xref:JotunnLib.Utils.NetworkCompatibiltyAttribute) provides two parameters, one for [CompatibilityLevel](xref:JotunnLib.Utils.CompatibilityLevel) (`NoNeedForSync`,`EveryoneMustHaveMod`), and one for [VersionStrictness](xref:JotunnLib.Utils.VersionStrictness) (`None`,`Major`,`Minor`,`Patch`).
 
 ```cs
 [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
@@ -21,10 +21,10 @@ TODO image
 **Clientside none, NetworkCompatibilityPlugin server**: Server version mismatch from additional plugin:
 TODO image
 
-**VersionStrictness unequal, client>server**: server version mismatch from major,minor,build:
+**VersionStrictness unequal, client>server**: server version mismatch from major, minor, patch:
 ![File](../../images/utils/NetworkCompatClient-gr-Server.png)
 
-**VersionStrictness unequal, server>client**: client version mismatch from major,minor,build:
+**VersionStrictness unequal, server>client**: client version mismatch from major, minor, patch:
 ![Network Compat Server Gr Client](../../images/utils/NetworkCompatServer-gr-Client.png)
 
 ### Semantic versioning and NetworkCompatibility.
