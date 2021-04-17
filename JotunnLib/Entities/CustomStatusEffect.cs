@@ -36,7 +36,7 @@ namespace JotunnLib.Entities
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return StatusEffect != null;
+            return StatusEffect != null && StatusEffect.IsValid();
         }
 
         public override bool Equals(object obj)
