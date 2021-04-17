@@ -26,13 +26,15 @@ All .json files within such a directory will be iterated through and localizatio
 Localizations may also be hardcoded into your plugin by invoking the [AddLocalization](xref:JotunnLib.Managers.LocalizationManager.AddLocalization(JotunnLib.Configs.LocalizationConfig)) method.
 
 ```cs
-// Add translations for the custom item in addClonedItems
+// Add translations for the custom item in AddClonedItems
 LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
 {
-    Translations =
-    {
-        { "item_evilsword", "Sword of Darkness" },
-        { "item_evilsword_desc", "Bringing the light" }
+    Translations = {
+        {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the ight"},
+        {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
+        {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
+        {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
+        {"evilsword_effectstop", "You feel nice again"}
     }
 });
 
