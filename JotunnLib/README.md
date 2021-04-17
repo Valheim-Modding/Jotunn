@@ -64,7 +64,7 @@ These people have been integral to pushing JVL out of the door, and without them
 
 *iDeathHD#7866*: [github](https://github.com/xiaoxiao921), [thunderstore](https://valheim.thunderstore.io/package/xiaoxiao921/), [nexus]()
 
-*Algorithman#6741*: [github](https://github.com/Algorithman), [thunderstore](), [nexus]()
+*Algorithman#6741*: [github](https://github.com/Algorithman)
 
 *Jules#7950*: [github](https://github.com/sirskunkalot), [thunderstore](), [nexus]()
 
