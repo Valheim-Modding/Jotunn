@@ -285,10 +285,6 @@ namespace TestMod
             StatusEffect effect = ScriptableObject.CreateInstance<StatusEffect>();
             effect.name = "EvilStatusEffect";
             effect.m_name = "$evilsword_effectname";
-            effect.m_activationAnimation = null;
-            effect.m_cooldownIcon = false;
-            effect.m_flashIcon = false;
-            effect.m_attributes = StatusEffect.StatusAttribute.None;
             effect.m_icon = AssetUtils.LoadSpriteFromFile("TestMod/Assets/reee.png");
             effect.m_startMessageType = MessageHud.MessageType.Center;
             effect.m_startMessage = "$evilsword_effectstart";
