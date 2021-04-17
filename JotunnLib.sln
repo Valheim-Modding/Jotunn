@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnLib", "JotunnLib\JotunnLib.csproj", "{A6082A59-38BE-4CAB-9078-2C8FCDA65B8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JotunnLib", "JotunnLib\JotunnLib.csproj", "{A6082A59-38BE-4CAB-9078-2C8FCDA65B8F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{839DFF98-EE10-4BA6-879F-5BF628889F4F} = {839DFF98-EE10-4BA6-879F-5BF628889F4F}
 	EndProjectSection
