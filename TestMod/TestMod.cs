@@ -83,6 +83,7 @@ namespace TestMod
                     showButton = !showButton;
                 }
 
+                // Use the name of the ButtonConfig to identify the button pressed
                 if (ZInput.GetButtonDown(evilSwordSpecial.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                 {
                     MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
@@ -158,6 +159,7 @@ namespace TestMod
             Config.SaveOnConfigSet = true;
 
             // Add server config which gets pushed to all clients connecting and can only be edited by admins
+            // In local/single player games the player is always considered the admin
             Config.Bind("JotunnLibTest", "StringValue1", "StringValue",
                 new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind("JotunnLibTest", "FloatValue1", 750f,
@@ -173,7 +175,7 @@ namespace TestMod
             forceVersionMismatch = (bool)Config["JotunnLibTest", "EnableVersionMismatch"].BoxedValue;
             Config.SettingChanged += Config_SettingChanged;
 
-            // Add a custom input key for the EvilSword
+            // Add a client side custom input key for the EvilSword
             Config.Bind("JotunnLibTest", "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
         }
 
