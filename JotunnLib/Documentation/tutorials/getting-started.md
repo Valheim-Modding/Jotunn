@@ -1,41 +1,94 @@
 # Getting started
 
 
-## Setting up development environment
-Setting up development environment to create a mod using JotunnLib and Visual studio:
+## Development Environment
 
-1. Download [BepInEx for Valheim](https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.701/) and extract the zip file into your root Valheim directory.
-2. Create a new Visual Studio project of type `Class Library (.NET Framework)`. Make sure that you select `.NET Framework 4` as the target framework. **Do not** select any higher version, as it will be incompatible with Valheim, since it's compiled using .NET Framework 4.
-![Creating a new project](../images/getting-started/vs-create-proj.png "Creating a new project")
-3. Adding references to the project:
-    - Click `References > Add reference`
+* We begin by downloading [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) and extract the zip file into your root Valheim directory.
 
-    - Navigate to your Valheim folder (should be `<Steam path>/steamapps/common/Valheim/unstripped_corlib`). Add all of the DLLs there _except_ for `Mono.security.dll`, `mscorlib.dll`, `System.configuration.dll`, `System.dll`, and `System.xml.dll`.
-    ![Adding Valheim Assemblies](../images/getting-started/vs-valheim-assemblies.png "Adding Valheim Assemblies")
-    
-    - Navigate to your BepInEx core folder in Valheim (should be `<Steam path>/steamapps/common/Valheim/BepInEx/core`). Add all of the DLLs there _except_ for `0Harmony20.dll`.
-    ![Adding BepInEx Assemblies](../images/getting-started/vs-bepinex-assemblies.png "Adding BepInEx Assemblies")
+* Inside the visual studio installer, ensure that `.NET Desktop Development` and `.NET Core Cross-Platform Development` are installed, then click on the `Individual Components` tab and select `.NET Framework 4.6.2`:<br />
+![Components](../images/getting-started/vs-InstallerComponents.png)
 
-    - Lastly, navigate to your BepInEx plugins folder, and add `JotunnLib.dll` as an assembly.
-4. Using the `NuGet Packge Manager`, download and install `HarmonyX` as a dependency.
+* Fork our [ModStub](https://github.com/Valheim-Modding/JotunnModStub) from github, and copy the link to the git<br />
+![Forked github stub](../images/getting-started/gh-ForkedStub.png)
 
-## Creating your mod
-To use JotunnLib, you must add it as a BepInEx dependency. If possible, please use our `JotunnLib.JotunnLib.ModGuid` variable to reference our mod, to prevent against any issues if this changes in the future.
+* In visual studio, in the right hand toobar, select `Git Changes`, and then `Clone Repository`, and paste the URL provided by the previous step. Name your project and place it accordingly.<br />
+![VS Clone forked stub](../images/getting-started/vs-CloneForkedStub.png)
 
-```cs
-namespace TestMod
-{
-    [BepInPlugin("com.bepinex.plugins.testmod", "JotunnLib Test Mod", "0.0.1")]
-    [BepInDependency(JotunnLib.JotunnLib.ModGuid)]
-    public class TestMod : BaseUnityPlugin
-    {
-        // ...
-    }
-}
+* Browse to your solution directory. Create a new file called `Environment.props` and place the following contents inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. Right click on your project in the solution explorer, and select reload project:
+
+Example:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Needs to be your path to the base Valheim folder -->
+    <VALHEIM_INSTALL>X:\PathToYourSteamLibary\steamapps\common\Valheim</VALHEIM_INSTALL>
+  </PropertyGroup>
+</Project>
 ```
 
-That's it! Now you can go about creating your mod as normal, using any HarmonyX or JotunnLib functionality as you wish.  
-Refer to the following sections for guides on how to use JotunnLib to add custom data to the game.
 
-## Installing your mod
-Just like any other BepInEx mod, you can install it by just putting the mod DLL file in `BepInEx/plugins`, along with any other assets it may need.
+If you want the publicised and MMHOOK dlls automatically created, then set `ExecutePrebuild` in [DoPrebuild.props](https://github.com/Valheim-Modding/JotunnModStub/blob/master/DoPrebuild.props) to true. If you opt not to utilise this automation, it is suggested that you generate your method detours and publicised assemblies, and add them to your projects references manually.
+
+**WARNING:** *This prebuild task will automate the generation of monomod method detours and publicising of game assemblies. By enabling this, you understand that you will be generating new publicised assemblies and method detours upon PreBuild **IF** the binaries have been updated since the last time the PreBuild has run.*
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ExecutePrebuild>true</ExecutePrebuild>
+  </PropertyGroup>
+</Project>
+```
+
+
+
+**NOTE**: If for whatever reason you disable the prebuild, you will need to:
+- acquire and install [HookGen](https://valheim.thunderstore.io/package/ValheimModding/HookGenPatcher/)
+- launch the game to generate event wrappers
+- add the `/BepInEx/plugins/MMHook/assembly_*` files to your project references. 
+- grab the [Assembly Publiciser](https://github.com/CabbageCrow/AssemblyPublicizer) *(drag drop your `/BepInEx/plugins/MMHook/assembly_*` files ontop of the publiciser)*
+- and add the resulting assemblies to your stub project.
+- Build the stub, make sure it compiles and automates the postbuild tasks, producing compiled binaries in your plugin directory
+- Create a new project template of this project. You will then be able to duplicate this project to create a multi-plugin solution, convenient for maintaining multiple mods.
+
+* Build your solution. Check your `BepInEx/plugins/yourtestmod/` folder for the `yourtestmod.dll.mdb` monodebug symbols file.
+
+* You may now proceed to one of the [Tutorials](intro.md)
+
+## Customising your project
+
+* Once you have your base project, select the solution in the solution explorer, hit F2 to rename the solution as required. Rename your plugin project, an all namespace references, then right click your project settings and ensure the assembly name has also been changed.
+
+* Rename the `PluginGUID` `PluginName`, and `PluginVersion` to match your intended base release metadata. Your PluginGUID should contain your github username/organisation.
+
+* Grab the [Project Template](https://github.com/Valheim-Modding/JotunnModStub/blob/master/JotunnModStub.zip) which you can use to add new projects to your current solution, based on the mod stub boilerplate.
+
+* Place the project template into your<br />
+![VS Project Template Location](../images/getting-started/vs-ProjectTemplateLocationpng.png)
+
+* Restart visual studio. You can now create a new project using the imported templated. Right click your solution, add, new project, then scroll to the bottom where you will find the template:<br />
+![Create new project template](../images/getting-started/vs-CreateNewProjectTemplate.png)
+
+* Your project base is now ready for use! You can proceed to []() or select a specific section to learn about from our [Tutorials]()
+
+
+# Build automations
+
+Included in this repo are a PowerShell script `publish.ps1`. The script is referenced in the project file as a build event. Depending on the chosen configuration in Visual Studio the script executes the following actions.
+
+## Building Debug
+
+* The compiled dll file for this project is copied to `<ValheimDir>\BepInEx\plugins`.
+* A .mdb file is generated for the compiled project dll and copied to `<ValheimDir>\BepInEx\plugins`.
+* `<ValheimModStub>\libraries\Debug\mono-2.0-bdwgc.dll` is copied to `<ValheimDir>\MonoBleedingEdge\EmbedRuntime` replacing the original file (a backup is created before).
+
+## Building Release
+
+* The README.md in `SolutionDir/ProjectDir/package/README.md` is copied to `SolutionDir/ProjectDir/README.md` so that it is present and readable in single-solution-multi-project githubs to give an overview of the project.
+* The compiled binary is placed inside of `SolutionDir/ProjectDir/package/plugins`
+* The contents of `SolutionDir/ProjectDir/package/*` is archived into a zip, ready for thunderstore upload.
+
+## Debugging with Visual Studio
+
+Please see: [this article](https://github.com/Valheim-Modding/Wiki/wiki/Debugging-Plugins-via-IDE)

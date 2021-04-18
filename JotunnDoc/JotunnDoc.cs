@@ -1,27 +1,19 @@
-﻿using System;
+﻿using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using BepInEx;
-using HarmonyLib;
 using UnityEngine;
-using JotunnLib.Managers;
 using JotunnDoc.Docs;
-using System.Text.RegularExpressions;
 
 namespace JotunnDoc
 {
     [BepInPlugin("com.bepinex.plugins.jotunndoc", "JotunnDoc", "0.1.0")]
-    [BepInDependency(JotunnLib.JotunnLib.ModGuid)]
+    [BepInDependency(JotunnLib.Main.ModGuid)]
     public class JotunnDoc : BaseUnityPlugin
     {
         private List<Doc> docs;
 
         private void Awake()
         {
-            // Harmony harmony = new Harmony("jotunndoc");
-            // harmony.PatchAll();
-
             docs = new List<Doc>()
             {
                 new PrefabDoc(),

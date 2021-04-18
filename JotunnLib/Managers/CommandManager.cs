@@ -1,22 +1,47 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+using System.Collections.ObjectModel;
 using JotunnLib.Entities;
+using JotunnLib.ConsoleCommands;
 
 namespace JotunnLib.Managers
 {
-    public class CommandManager : Manager
+    /// <summary>
+    ///     Handles loading of all custom console and chat commands.
+    /// </summary>
+    public class CommandManager : IManager
     {
-        public static CommandManager Instance { get; private set; }
+        private static CommandManager _instance;
+        /// <summary>
+        ///     The singleton instance of this manager.
+        /// </summary>
+        public static CommandManager Instance { 
+            get
+            {
+                if (_instance == null) _instance = new CommandManager();
+                return _instance;
+            }
+        }
 
-        // TODO: Make these lists immutable
-        public static readonly List<string> DefaultConsoleCommands = new List<string>()
+        /// <summary>
+        ///     The console commands that are built-in to Valheim. These cannot be changed or overriden, and
+        ///     no other commands can be declared with the same names as these.
+        /// </summary>
+        public static ReadOnlyCollection<string> DefaultConsoleCommands => _defaultConsoleCommands.AsReadOnly();
+
+        /// <summary>
+        ///     The "dev" console commands that are built-in to Valheim. These cannot be changed or overriden, and
+        ///     no other commands can be declared with the same names as these.
+        /// </summary>
+        public static ReadOnlyCollection<string> DefaultCheatConsoleCommands => _defaultCheatConsoleCommands.AsReadOnly();
+
+        private static List<string> _defaultConsoleCommands = new List<string>()
         {
             // "help" command not included since we want to overwrite it
             
-            // Basic commands
+            // Basic (non-dev) commands
             "kick", "ban", "unban", "banned", "ping", "lodbias", "info", "devcommands"
         };
-        public static readonly List<string> DefaultCheatConsoleCommands = new List<string>()
+        private static readonly List<string> _defaultCheatConsoleCommands = new List<string>()
         {
             "genloc", "debugmode", "spawn", "pos", "goto", "exploremap", "resetmap", "killall", "tame",
             "hair", "beard", "location", "raiseskill", "resetskill", "freefly", "ffsmooth", "tod",
@@ -24,36 +49,44 @@ namespace JotunnLib.Managers
             "resetcharacter", "removedrops", "setkey", "resetkeys", "listkeys", "players", "dpsdebug"
         };
 
-        internal List<ConsoleCommand> ConsoleCommands = new List<ConsoleCommand>();
+        /// <summary>
+        ///     A list of all the custom console commands that have been added to the game through this manager,
+        ///     either by Jotunn or by mods using Jotunn.
+        /// </summary>
+        public ReadOnlyCollection<ConsoleCommand> ConsoleCommands => _consoleCommands.AsReadOnly();
 
-        private void Awake()
+        private List<ConsoleCommand> _consoleCommands = new List<ConsoleCommand>();
+
+        /// <summary>
+        ///     Initialize console commands that come with Jotunn.
+        /// </summary>
+        public void Init()
         {
-            if (Instance != null)
-            {
-                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
-                return;
-            }
-
-            Instance = this;
+            AddConsoleCommand(new HelpCommand());
+            AddConsoleCommand(new ClearCommand());
         }
 
-        public void RegisterConsoleCommand(ConsoleCommand cmd)
+        /// <summary>
+        ///     Adds a new console command to Valheim.
+        /// </summary>
+        /// <param name="cmd">The console command to add</param>
+        public void AddConsoleCommand(ConsoleCommand cmd)
         {
             // Cannot override default command
-            if (DefaultConsoleCommands.Contains(cmd.Name))
+            if (_defaultConsoleCommands.Contains(cmd.Name))
             {
-                Debug.LogError("Cannot override default command: " + cmd.Name);
+                Logger.LogError($"Cannot override default command: {cmd.Name}");
                 return;
             }
 
             // Cannot have two commands with same name
-            if (ConsoleCommands.Exists(c => c.Name == cmd.Name))
+            if (_consoleCommands.Exists(c => c.Name == cmd.Name))
             {
-                Debug.LogError("Cannot have two console commands with same name: " + cmd.Name);
+                Logger.LogError($"Cannot have two console commands with same name: {cmd.Name}");
                 return;
             }
 
-            ConsoleCommands.Add(cmd);
+            _consoleCommands.Add(cmd);
         }
     }
 }

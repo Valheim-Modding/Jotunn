@@ -3,13 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnLib", "JotunnLib\JotunnLib.csproj", "{A6082A59-38BE-4CAB-9078-2C8FCDA65B8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JotunnLib", "JotunnLib\JotunnLib.csproj", "{A6082A59-38BE-4CAB-9078-2C8FCDA65B8F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{839DFF98-EE10-4BA6-879F-5BF628889F4F} = {839DFF98-EE10-4BA6-879F-5BF628889F4F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMod", "TestMod\TestMod.csproj", "{4C2C2CF0-05F9-42C9-AD1D-5CD040D06344}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnDoc", "JotunnDoc\JotunnDoc.csproj", "{C1CE124B-037E-46F6-A4BF-58793967D471}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A6082A59-38BE-4CAB-9078-2C8FCDA65B8F} = {A6082A59-38BE-4CAB-9078-2C8FCDA65B8F}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnBuildTask", "JotunnBuildTask\JotunnBuildTask.csproj", "{839DFF98-EE10-4BA6-879F-5BF628889F4F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{C48162A3-C7D9-4A0F-8CE2-C617FFFE6EB9}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		CONTRIBUTING.md = CONTRIBUTING.md
+		resources\JVL_Banner.png = resources\JVL_Banner.png
+		resources\JVL_Logo.gif = resources\JVL_Logo.gif
+		publish.ps1 = publish.ps1
+		README.md = README.md
 	EndProjectSection
 EndProject
 Global
@@ -30,6 +46,10 @@ Global
 		{C1CE124B-037E-46F6-A4BF-58793967D471}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1CE124B-037E-46F6-A4BF-58793967D471}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1CE124B-037E-46F6-A4BF-58793967D471}.Release|Any CPU.Build.0 = Release|Any CPU
+		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

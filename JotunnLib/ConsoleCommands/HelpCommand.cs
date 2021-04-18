@@ -3,7 +3,7 @@ using JotunnLib.Entities;
 
 namespace JotunnLib.ConsoleCommands
 {
-    class HelpCommand : ConsoleCommand
+    internal class HelpCommand : ConsoleCommand
     {
         public override string Name => "help";
 

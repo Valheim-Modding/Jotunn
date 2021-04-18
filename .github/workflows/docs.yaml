@@ -1,34 +1,34 @@
 on:
   push:
     branches:
-      - main
+      - prod
 
 jobs:
   build_docs:
     runs-on: ubuntu-latest
     name: Builds documentation and publishes to GitHub Pages
     steps:
-    # Checkout repo
-    - uses: actions/checkout@v1
-      name: Checkout repo
+      # Checkout repo
+      - uses: actions/checkout@v1
+        name: Checkout repo
 
-    # Install NuGet
-    - uses: nuget/setup-nuget@v1
-      name: Install NuGet
+      # Install NuGet
+      - uses: nuget/setup-nuget@v1
+        name: Install NuGet
 
-    # Install NuGet dependencies
-    - name: Install NuGet dependencies
-      run: nuget restore JotunnLib.sln
+      # Install NuGet dependencies
+      - name: Install NuGet dependencies
+        run: nuget restore JotunnLib.sln
 
-    # Build docs
-    - uses: nikeee/docfx-action@v1.0.0
-      name: Build documentation
-      with:
-        args: JotunnLib/docfx.json
+      # Build docs
+      - uses: nikeee/docfx-action@v1.0.0
+        name: Build documentation
+        with:
+          args: JotunnLib/docfx.json
 
-    # Publish generated site using GitHub Pages
-    - uses: maxheld83/ghpages@master
-      name: Publish documentation to GitHub Pages
-      env:
-        BUILD_DIR: JotunnLib/_site # docfx's default output directory is _site
-        GH_PAT: ${{ secrets.GH_PAT }} # See https://github.com/maxheld83/ghpages
+      # Publish generated site using GitHub Pages
+      - uses: maxheld83/ghpages@master
+        name: Publish documentation to GitHub Pages
+        env:
+          BUILD_DIR: JotunnLib/_site # docfx's default output directory is _site
+          GH_PAT: ${{ secrets.GH_PAT }} # See https://github.com/maxheld83/ghpages

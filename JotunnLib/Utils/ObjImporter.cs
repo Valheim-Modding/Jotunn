@@ -9,12 +9,10 @@
  */
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-internal static class ObjImporter
+public static class ObjImporter
 {
     private struct meshStruct
     {
@@ -34,8 +32,8 @@ internal static class ObjImporter
     // Use this for initialization
     public static Mesh ImportFile(string filePath)
     {
-        meshStruct newMesh = createMeshStruct(filePath);
-        populateMeshStruct(ref newMesh);
+        meshStruct newMesh = CreateMeshStruct(filePath);
+        PopulateMeshStruct(ref newMesh);
 
         Vector3[] newVerts = new Vector3[newMesh.faceData.Length];
         Vector2[] newUVs = new Vector2[newMesh.faceData.Length];
@@ -68,7 +66,7 @@ internal static class ObjImporter
         return mesh;
     }
 
-    private static meshStruct createMeshStruct(string filename)
+    private static meshStruct CreateMeshStruct(string filename)
     {
         int triangles = 0;
         int vertices = 0;
@@ -134,7 +132,7 @@ internal static class ObjImporter
         return mesh;
     }
 
-    private static void populateMeshStruct(ref meshStruct mesh)
+    private static void PopulateMeshStruct(ref meshStruct mesh)
     {
         StreamReader stream = File.OpenText(mesh.fileName);
         string entireText = stream.ReadToEnd();

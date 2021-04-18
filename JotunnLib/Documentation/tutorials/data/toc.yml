@@ -1,20 +1,35 @@
-- name: Skills
-  href: skills.md
+- name: Assets
+  href: assets.md
 
-- name: Prefabs
-  href: prefabs.md
+- name: Console Commands
+  href: console-commands.md
 
+- name: GUI
+  href: gui.md
+
+- name: Inputs
+  href: inputs.md
+  
 - name: Items
   href: items.md
+  
+- name: Localization
+  href: localization.md
 
-- name: Recipes
-  href: recipes.md
-
+- name: Mocks
+  href: mocks.md
+  
 - name: Pieces
   href: pieces.md
 
-- name: Piece tables
-  href: piece-tables.md
+  name: Recipes
+  href: recipes.md
 
-- name: Vegetation
-  href: vegetation.md
+- name: Skills
+  href: skills.md
+
+- name: Status effects
+  href: status-effects.md
+
+- name: Unity
+  href: unity.md

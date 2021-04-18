@@ -2,13 +2,15 @@
 Jötunn (_/ˈjɔːtʊn/, "giant"_) Lib is a modding library for Valheim, with the goal of making the lives of mod developers easier.  
 Get the mod on [NexusMods](https://www.nexusmods.com/valheim/mods/507)!
 
+# MERGER IS IN PROGRESS! Forking is not recommended. Please wait for v1 release Soon™
+
 ## Installation
 Instructions for installing and using JotunnLib as a user:
 
 1. You will first need to download [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/).  
     Move the contents of BepInExPack_Valheim folder into `<Steam Location>\steamapps\common\Valheim`.  
     _Note: If you already have used any other mods, you likely already have this installed._
-2. Download JotunnLib from the [Releases](https://github.com/jotunnlib/jotunnlib/releases) page. 
+2. Download JotunnLib from the [Releases](https://github.com/valheim-modding/jotunn/releases) page. 
     Unzip the downloaded files into `<Steam Location>\steamapps\common\Valheim\BepInEx\plugins`.
 3. That's it! Now download some mods which use JotunnLib! :)
 
@@ -40,19 +42,19 @@ Currently, JotunnLib lets you create & add all of the following custom things in
 - [ ] Listening to game events
     - [x] (Currently very few event listeners implemented)
     - [ ] All game events
-- [ ] Custom tabs for in-game settings menu
+- [x] Custom tabs for in-game settings menu
 
 ## Developing mods
 Visit our [documentation site](https://jotunnlib.github.io/jotunnlib) for more info.
 
 ## Repo structure
 The repository is split up into a few parts:
-- Code relating to JotunnLib is in the [JotunnLib](https://github.com/jotunnlib/jotunnlib/tree/main/JotunnLib) folder
-- Documentation source for JotunnLib is within the [JotunnLib/Documentation](https://github.com/jotunnlib/jotunnlib/tree/main/JotunnLib/Documentation) folder
-- Demo mod used as an example is in the [TestMod](https://github.com/jotunnlib/jotunnlib/tree/main/TestMod) folder
+- Code relating to JotunnLib is in the [JotunnLib](https://github.com/valheim-modding/jotunn/tree/main/JotunnLib) folder
+- Documentation source for JotunnLib is within the [JotunnLib/Documentation](https://github.com/valheim-modding/jotunn/tree/main/JotunnLib/Documentation) folder
+- Demo mod used as an example is in the [TestMod](https://github.com/valheim-modding/jotunn/tree/main/TestMod) folder
 
 ## Issues
-Have any issues or feature requests? Open a [pull request](https://github.com/jotunnlib/jotunnlib/pulls) or submit an [issue](https://github.com/jotunnlib/jotunnlib/issues)!
+Have any issues or feature requests? Open a [pull request](https://github.com/valheim-modding/jotunn/pulls) or submit an [issue](https://github.com/valheim-modding/jotunn/issues)!
 
 ## Contributing
 For information about contributing to the repo, see the [Contributing instructions](CONTRIBUTING.md).

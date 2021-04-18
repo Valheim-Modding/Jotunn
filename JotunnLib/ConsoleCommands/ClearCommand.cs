@@ -4,7 +4,7 @@ using JotunnLib.Entities;
 
 namespace JotunnLib.ConsoleCommands
 {
-    class ClearCommand : ConsoleCommand
+    internal class ClearCommand : ConsoleCommand
     {
         public override string Name => "clear";
 
@@ -12,7 +12,7 @@ namespace JotunnLib.ConsoleCommands
 
         public override void Run(string[] args)
         {
-            ReflectionUtils.GetPrivateField<List<string>>(Console.instance, "m_chatBuffer").Clear();
+            Console.instance.m_chatBuffer.Clear();
             Console.instance.m_output.text = "";
         }
     }

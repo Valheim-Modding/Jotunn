@@ -13,10 +13,10 @@ namespace JotunnDoc.Docs
     {
         public StatusEffectDoc() : base("JotunnDoc/Docs/conceptual/status-effects/status-effect-list.md")
         {
-            ObjectManager.Instance.ObjectRegister += docStatusEffects;
+            ItemManager.Instance.OnItemsRegistered += DocStatusEffects;
         }
 
-        private void docStatusEffects(object sender, EventArgs e)
+        private void DocStatusEffects(object sender, EventArgs e)
         {
             Debug.Log("Documenting status effects");
 

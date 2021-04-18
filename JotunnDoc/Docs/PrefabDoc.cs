@@ -11,10 +11,10 @@ namespace JotunnDoc.Docs
     {
         public PrefabDoc() : base("JotunnDoc/Docs/conceptual/prefabs/prefab-list.md")
         {
-            PrefabManager.Instance.PrefabsLoaded += docPrefabs;
+            PrefabManager.Instance.PrefabsLoaded += DocPrefabs;
         }
 
-        private void docPrefabs(object sender, EventArgs e)
+        private void DocPrefabs(object sender, EventArgs e)
         {
             Debug.Log("Documenting prefabs");
 

@@ -1,138 +1,109 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using BepInEx;
 using UnityEngine;
-using JotunnLib.Entities;
+using JotunnLib.Utils;
+using JotunnLib.Configs;
 
 namespace JotunnLib.Managers
 {
     /// <summary>
-    /// Handles all logic that has to do with skills, and registering custom skills
+    ///     Handles all logic that has to do with skills, and adding custom skills.
     /// </summary>
-    public class SkillManager : Manager
+    public class SkillManager : IManager
     {
+        private static SkillManager _instance;
         /// <summary>
-        /// Global singleton instance of the manager
+        ///     Global singleton instance of the manager.
         /// </summary>
-        public static SkillManager Instance { get; private set; }
-
-        internal Dictionary<Skills.SkillType, Skills.SkillDef> Skills = new Dictionary<Skills.SkillType, Skills.SkillDef>();
-        // FIXME: Deprecate
-        private int nextSkillId = 1000;
-        private void Awake()
+        public static SkillManager Instance
         {
-            if (Instance != null)
+            get
             {
-                Debug.LogError("Error, two instances of singleton: " + this.GetType().Name);
-                return;
+                if (_instance == null) _instance = new SkillManager();
+                return _instance;
             }
-
-            Instance = this;
         }
 
-        /// <summary>
-        /// DEPRECATED DUE TO POSSIBLE CONFLICT ISSUE, see: <see href="https://github.com/jotunnlib/jotunnlib/issues/18">GitHub Issue</see>
-        /// <para/>
-        /// Register a new skill with given parameters, and registers translations for it in the current localization
-        /// </summary>
-        /// <param name="name">Name of the new skill</param>
-        /// <param name="description">Description of the new skill</param>
-        /// <param name="increaseStep"></param>
-        /// <param name="icon">Icon for the skill</param>
-        /// <returns>The SkillType of the newly registered skill</returns>
-        [Obsolete(
-            "Use `RegisterSkill(SkillConfig config)` instead. This method could potentially cause users to lose skill save progress",
-            true)]
-        public Skills.SkillType RegisterSkill(string name, string description, float increaseStep = 1f, Sprite icon = null)
+        public void Init()
         {
-            LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId, name);
-            LocalizationManager.Instance.RegisterTranslation("skill_" + nextSkillId + "_description", description);
 
-            Skills.SkillDef skillDef = new Skills.SkillDef()
-            {
-                m_skill = (Skills.SkillType)nextSkillId,
-                m_description = "$skill_" + nextSkillId + "_description",
-                m_increseStep = increaseStep, // nice they spelled increase wrong 
-                m_icon = icon
-            };
-
-            Skills.Add((Skills.SkillType)nextSkillId, skillDef);
-            nextSkillId++;
-
-            return skillDef.m_skill;
         }
 
+        internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
+
         /// <summary>
-        /// Register a new skill with given SkillConfig object, and registers translations for it in the current localization
+        ///     Add a new skill with given SkillConfig object, and adds translations for it in the current localization.
         /// </summary>
         /// <param name="skillConfig">SkillConfig object representing new skill to register</param>
-        /// <returns>The SkillType of the newly registered skill</returns>
-        public Skills.SkillType RegisterSkill(SkillConfig skillConfig, bool registerLocalizations = true)
+        /// <returns>The SkillType of the newly added skill</returns>
+        public Skills.SkillType AddSkill(SkillConfig skillConfig)
         {
-            if (string.IsNullOrEmpty(skillConfig.Identifier))
+            if (string.IsNullOrEmpty(skillConfig?.Identifier))
             {
-                Debug.LogError("Failed to register skill with invalid identifier: " + skillConfig.Identifier);
+                Logger.LogError($"Failed to register skill with invalid identifier: {skillConfig.Identifier}");
                 return global::Skills.SkillType.None;
             }
 
-            if (Skills.ContainsKey(skillConfig.UID))
-            {
-                Debug.LogError("Failed to register skill with conflicting UID (m_skill): " + skillConfig.UID);
-                return global::Skills.SkillType.None;
-            }
-
-            if ((int)skillConfig.UID < 1000)
-            {
-                Debug.LogError("Failed to register skill with invalid UID (m_skill), please use a UID >= 1000: " + (int)skillConfig.UID);
-                return global::Skills.SkillType.None;
-            }
-
-            if (registerLocalizations)
-            {
-                LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID, skillConfig.Name);
-                LocalizationManager.Instance.RegisterTranslation("skill_" + skillConfig.UID + "_description", skillConfig.Description);
-            }
-
-            Skills.SkillDef skillDef = new Skills.SkillDef()
-            {
-                m_skill = skillConfig.UID,
-                m_description = "$skill_" + skillConfig.UID + "_description",
-                m_increseStep = skillConfig.IncreaseStep,
-                m_icon = skillConfig.Icon
-            };
-
-            Skills.Add(skillConfig.UID, skillDef);
-            return skillDef.m_skill;
+            Skills.Add(skillConfig.UID, skillConfig);
+            Logger.LogInfo($"Added skill: {skillConfig}");
+            
+            return skillConfig.UID;
         }
 
         /// <summary>
-        /// Register a new skill with given parameters, and registers translations for it in the current localization
+        ///     Register a new skill with given parameters, and registers translations for it in the current localization.
         /// </summary>
-        /// <param name="identifer">Unique identifier of the new skill, ex: "com.jotunnlib.testmod.testskill"</param>
+        /// <param name="identifer">Unique identifier of the new skill, ex: "com.jotunn.testmod.testskill"</param>
         /// <param name="name">Name of the new skill</param>
         /// <param name="description">Description of the new skill</param>
         /// <param name="increaseStep"></param>
         /// <param name="icon">Icon for the skill</param>
+        /// <param name="autoLocalize">Automatically generate English localizations for the given name and description</param>
         /// <returns>The SkillType of the newly registered skill</returns>
-        public Skills.SkillType RegisterSkill(
+        [Obsolete("Use AddSkill(SkillConfig) instead")]
+        public Skills.SkillType AddSkill(
             string identifer,
             string name,
             string description,
             float increaseStep = 1f,
-            Sprite icon = null,
-            bool registerLocalizations = true)
+            Sprite icon = null)
         {
-            return RegisterSkill(new SkillConfig()
+            return AddSkill(new SkillConfig()
             {
                 Identifier = identifer,
                 Name = name,
                 Description = description,
                 IncreaseStep = increaseStep,
                 Icon = icon
-            }, registerLocalizations);
+            });
         }
 
         /// <summary>
-        /// Gets a custom skill with given SkillType
+        ///     Adds skills defined in a JSON file at given path, relative to BepInEx/plugins
+        /// </summary>
+        /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
+        public void AddSkillsFromJson(string path)
+        {
+            string json = AssetUtils.LoadText(path);
+
+            if (string.IsNullOrEmpty(json))
+            {
+                Logger.LogError($"Failed to load skills from json: {path}");
+                return;
+            }
+
+            List<SkillConfig> skills = SkillConfig.ListFromJson(json);
+
+            foreach (SkillConfig skill in skills)
+            {
+                AddSkill(skill);
+            }
+        }
+
+        /// <summary>
+        ///     Gets a custom skill with given SkillType.
         /// </summary>
         /// <param name="skillType">SkillType to look for</param>
         /// <returns>Custom skill with given SkillType</returns>
@@ -140,7 +111,7 @@ namespace JotunnLib.Managers
         {
             if (Skills.ContainsKey(skillType))
             {
-                return Skills[skillType];
+                return Skills[skillType].ToSkillDef();
             }
 
             if (Player.m_localPlayer != null)
@@ -161,7 +132,7 @@ namespace JotunnLib.Managers
         }
 
         /// <summary>
-        /// Gets a custom skill with given skill identifier
+        ///     Gets a custom skill with given skill identifier.
         /// </summary>
         /// <param name="identifier">String indentifer of SkillType to look for</param>
         /// <returns>Custom skill with given SkillType</returns>
@@ -174,5 +145,7 @@ namespace JotunnLib.Managers
 
             return GetSkill((Skills.SkillType)identifier.GetStableHashCode());
         }
+
+        
     }
 }

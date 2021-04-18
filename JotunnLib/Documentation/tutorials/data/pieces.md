@@ -1,83 +1,80 @@
-# Registering custom pieces
-_Pieces_ in Valheim are anything that can be built in the game, through means such as the Hammer, Cultivator, or Hoe. This includes things such as plant sapplings, the workbench, and walls. Custom pieces are handled by the [PieceManager](xref:JotunnLib.Managers.PieceManager) singleton class.  
+# Pieces, Tables, and Tabs
+**Note**: This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
+
+## Tables & Tabs
+
+PieceTables can be associated with items such as Hammer, Cultivator, and Hoe. Each have their own set of [categories](piece-categories.md) which can act as tabs to organise content within a certain PieceTable. 
+
+TODO: prefab component requirement description
+
+see: [AddPieceTable](xref:JotunnLib.Managers.PieceManager.AddPieceTable(UnityEngine.GameObject))
+```cs
+PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
+```
+
+[Tabs/Categories](piece-categories.md) are something we are looking to provide interfaces and abstractions for in our v1.1 release, so key an eye out for any updates from JVL.
+
+## Pieces
+_Pieces_ in Valheim are anything that can be built in the game, through means such as the Hammer, Cultivator, or Hoe. This includes things such as plant sapplings, the workbench, and walls. Custom pieces are handled by the [PieceManager](xref:JotunnLib.Managers.PieceManager) singleton.  
 
 **Note:** You **must** only use names of existing prefabs (either ones you created or default Valheim ones). This can be prefabs that have already been registered by another mod, or that already exist in the game.  
 
 In order for a prefab to be a _piece_, it must have the `Piece` component attached to the prefab.
 
+### "Empty piece" example
 
-## Example
-First, we need to create a prefab, and add the `Piece` component to it. Here, we use the AddPiece util function from our [PrefabConfig](xref:JotunnLib.Entities.PrefabConfig) to make it a bit easier to create our piece component with requirements.  
-(For more info on creating prefabs, check the [Prefabs](prefabs.md) section).
+In this example we will create a stubbed piece to act as a demonstration for the minimal implementation for pieces, which will allow a piece to be selected and placed into the environment as a networked object. We add the [CustomPiece](xref:JotunnLib.Entities.CustomPiece) via the [PieceManager](xref:JotunnLib.Managers.PieceManager.AddPiece(JotunnLib.Entities.CustomPiece)).
 
 ```cs
-public class TestCubePrefab : PrefabConfig
+private void AddEmptyItems()
 {
-    // Create a prefab called "TestCube" with no base
-    public TestCubePrefab() : base("TestCube")
-    {
-        // Nothing to  do here
-    }
+    CustomPiece CP = new CustomPiece("$piece_lul", "Hammer");
+    var piece = CP.Piece;
+    piece.m_icon = testSprite;
+    var prefab = CP.PiecePrefab;
+    prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
+    PieceManager.Instance.AddPiece(CP);
+}
+```
+![Piece Stub](../../images/data/pieceStub.png) ![Piece Stub Placed](../../images/data/pieceStubPlaced.png)
 
-    public override void Register()
-    {
-        // Add piece component so that we can register this as a piece
-        // This function is just a util function that will add a piece, and help setup some of the basic requirements of it
-        Piece piece = AddPiece(new PieceConfig()
+
+### `Blueprint Rune` from prefabs using PieceConfigs
+
+The Blueprint rune, a custom item one of our developers has been working on, is intended to duplicate existing structures. In order to keep this example simple, we are not including this functionality, but are utilising these assets to provide an example of loading pieces via prefabs, so please bear in mind that while the code bellow is perfectly functional, there is no mesh/model associated with the following pieces due to the nature of their intended function.
+
+With that said, we will load two new pieces into the previously created blueprint piecetable. In order to better facilitate creation of pieces we have introduced the abstractions of [PieceConfig's](xref:JotunnLib.Configs.PieceConfig) and [RequirementConfig](xref:JotunnLib.Configs.RequirementConfig). These allow us to quickly and easily define common properties for pieces, such as the table they belong too, any restrictions or resources required.
+
+```cs
+private void CreateRunePieces()
+{
+    // Create and add custom pieces
+    var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
+    var makebp = new CustomPiece(makebp_prefab,
+        new PieceConfig
         {
-            // The name that shows up in game
-            Name = "Test cube",
+            PieceTable = "_BlueprintPieceTable"
+        });
+    PieceManager.Instance.AddPiece(makebp);
 
-            // The description that shows up in game
-            Description = "A nice test cube",
-
-            // What items we'll need to build it
-            Requirements = new PieceRequirementConfig[]
+    var placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
+    var placebp = new CustomPiece(placebp_prefab,
+        new PieceConfig
+        {
+            PieceTable = "_BlueprintPieceTable",
+            AllowedInDungeons = true,
+            Requirements = new[]
             {
-                new PieceRequirementConfig()
-                {
-                    // Name of item prefab we need
-                    Item = "Wood",
-                    
-                    // Amount we need
-                    Amount = 1
-                }
+                new RequirementConfig { Item = "Wood", Amount = 2 }
             }
         });
-
-        // Additional piece config if you need here...
-    }
+    PieceManager.Instance.AddPiece(placebp);
+    
+    blueprintRuneLocalizations();  // Add localization
 }
 ```
 
-Next, in our mod's `Awake` function, we need to create an event handler for [PrefabRegister](xref:JotunnLib.Managers.PrefabManager.PrefabRegister) to register our prefab, and [PieceRegister](xref:JotunnLib.Managers.PieceManager.PieceRegister) to register our Piece
+And here we have our final results:<br />
+![Blue Print Rune Piece Table](../../images/data/BluePrintRunePieceTable.png)
 
-```cs
-private void Awake()
-{
-    PrefabManager.Instance.PrefabRegister += registerPrefabs;
-    PieceManager.Instance.PieceRegister += registerPieces;
-}
-```
-
-Finally, we need to implement those handlers and register our prefab and piece
-
-```cs
-// Register new prefabs
-private void registerPrefabs(object sender, EventArgs e)
-{
-    PrefabManager.Instance.RegisterPrefab(new TestCubePrefab());
-}
-
-// Register new pieces
-private void registerPieces(object sender, EventArgs e)
-{
-    // Register our piece in the "Hammer", using the "TestCube" prefab
-    PieceManager.Instance.RegisterPiece("Hammer", "TestCube");
-}
-```
-
-That's all! Now, if we pick up a piece of Wood in game we'll get the recipe, and can now build our cube using the hammer!  
-
-![Cube Piece in Build Menu](../../images/data/cube-piece-inv.png "Cube Piece in Build Menu")
-![Cube Piece in World](../../images/data/cube-piece-world.png "Cube Piece in World")
+As you can see in the screenshot the name and description are not yet localized. This is done via the `blueprintRuneLocalizations()` method. To read more about localization/translation head over to the [localization tutorial pages](localization.md).
