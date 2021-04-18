@@ -1,5 +1,7 @@
 # Pieces, Tables, and Tabs
-**Note**: This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
+
+
+##### Note: _This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md)._
 
 ## Tables & Tabs
 
