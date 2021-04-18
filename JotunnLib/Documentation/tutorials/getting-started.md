@@ -59,7 +59,7 @@ If you want the publicised and MMHOOK dlls automatically created, then set `Exec
 
 * Rename the `PluginGUID` `PluginName`, and `PluginVersion` to match your intended base release metadata. Your PluginGUID should contain your github username/organisation.
 
-* Grab the [Project Template]() which you can use to add new projects to your current solution, based on the mod stub boilerplate.
+* Grab the [Project Template](https://github.com/Valheim-Modding/JotunnModStub/blob/master/JotunnModStub.zip) which you can use to add new projects to your current solution, based on the mod stub boilerplate.
 
 * Place the project template into your <br>![VS Project Template Location](..\images\getting-started\vs-ProjectTemplateLocationpng.png)
 
