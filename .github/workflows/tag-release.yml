@@ -15,6 +15,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
+          ref: 'dev'
 
       # Get Valheim version id
       - name: Get Valheim version id
