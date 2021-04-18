@@ -1,60 +1,81 @@
-# JotunnLib
-Jötunn (_/ˈjɔːtʊn/, "giant"_) Lib is a modding library for Valheim, with the goal of making the lives of mod developers easier.  
-Get the mod on [NexusMods](https://www.nexusmods.com/valheim/mods/507)!
+﻿# JotunnLib
+![Banner](Documentation/images/banner.png)
 
-# MERGER IS IN PROGRESS! Forking is not recommended. Please wait for v1 release Soon™
+Jötunn (/ˈjɔːtʊn/, "giant"), the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability. networked gameplay consistency, and remove the need to maintain valheim version specific code by acting as an interface between the developer and the games changing internals.
 
-## Installation
-Instructions for installing and using JotunnLib as a user:
+This project was originally derived from the base structure of [JötunnLib](https://github.com/jotunnlib/jotunnlib), and had many entity abstractions and features from [ValheimLib](https://github.com/Valheim-Modding/ValheimLib) merged into it before we proceeded with further implementations. We have lots of features planned for the future, and we hope the community has many feature requests to suggest. I hope the features we have implemented thus far prove to be a useful base and provide an idea of the consistency we aim to deliver moving forwards.
 
-1. You will first need to download [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/).  
-    Move the contents of BepInExPack_Valheim folder into `<Steam Location>\steamapps\common\Valheim`.  
-    _Note: If you already have used any other mods, you likely already have this installed._
-2. Download JotunnLib from the [Releases](https://github.com/valheim-modding/jotunn/releases) page. 
-    Unzip the downloaded files into `<Steam Location>\steamapps\common\Valheim\BepInEx\plugins`.
-3. That's it! Now download some mods which use JotunnLib! :)
+#### Usage
+Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/). We have gone to great lengths to ensure there is ample documentation to facilitate the developers learning experience.
 
-## Features & Roadmap
-Currently, JotunnLib lets you create & add all of the following custom things into Valheim:
+________________
 
-- [x] Custom prefabs
-- [x] Custom inventory items
-- [x] Custom recipes
-    - [ ] Create using JSON
-- [x] Custom input buttons
-    - [ ] Ability to change custom keybinds in-game via settings menu
-- [x] Custom skills
-    - [ ] Add using JSON
-- [x] Custom localizations for current language
-    - [ ] Localizations for other languages
-    - [ ] Localizations from JSON file
-- [x] Custom piece tables (create your own variant of the Hammer, Cultivator, etc.)
-    - [ ] Create using JSON
-- [x] Custom pieces to existing piece tables (adding extra items to Hammer, Cultivator, etc.)
-    - [ ] Add using JSON
-- [x] Custom vegetation spawning in the world
-- [x] Utils for loading custom assets at runtime
-    - [x] Loading 2D textures
-    - [x] Loading meshes from .obj model files
-- [ ] Custom commands
-    - [x] Custom console commands
-    - [ ] Custom chat commands
-- [ ] Listening to game events
-    - [x] (Currently very few event listeners implemented)
-    - [ ] All game events
-- [x] Custom tabs for in-game settings menu
+## Features
+JVL provides two distinct groups of features. Managers, which act as interfaces between the developer and native collections or subsystems, and utilities where are there to aid in generic/common functions that can span many different areas.
 
-## Developing mods
-Visit our [documentation site](https://jotunnlib.github.io/jotunnlib) for more info.
+#### Managers
+- **Command Manager** - Facilitates implementation of methods which can be registered as executable console commands.
+- **GUI Manager** - Allows invocation of UI prefabs on the fly via code.
+- **Input Manager** - Provides an interface for binding keys via ZInput in a consistent manner, facilitating custom keybind hints.
+- **Item Manager** - Abstracts away implementation details of configurations applied to items/recipes to provide a consistent developer experience in adding new items. tl;dr items are easy!
+- **Localization Manager** - Provides multiple methods of loading localisation data into the game, as well as exposing an interface for adding additional languages to provide localizations to unsupported languages.
+- **Piece Manager** - Very similar to the Item Manager, abstracting implementation details of configurations for pieces/recipe's.
+- **Prefab Manager** - Provides a cache of prefabs registered through other managers, mostly developers will only query the cache for prefabs added via other managers.
+- **Skill Manager** - Facilitates additional custom skills.
 
-## Repo structure
-The repository is split up into a few parts:
-- Code relating to JotunnLib is in the [JotunnLib](https://github.com/valheim-modding/jotunn/tree/main/JotunnLib) folder
-- Documentation source for JotunnLib is within the [JotunnLib/Documentation](https://github.com/valheim-modding/jotunn/tree/main/JotunnLib/Documentation) folder
-- Demo mod used as an example is in the [TestMod](https://github.com/valheim-modding/jotunn/tree/main/TestMod) folder
+#### Utilities
+- **Asset Helpers** - Methods to facilitate referencing and loading of assets.
+- **Bone Reorderer** - Fixes bone ordering issues on `SkinnedMeshRenderer`'s that have been ripped and imported into unity.
+- **NetworkCompatibility** - Allows plugins to define their own version requirements for clients connected to the server. Ensures a customisable level of interoperability with clients of differing mod configurations on a plugin-by-plugin basis.
+- **Config Synchronisation** - Allows administrators to adjust configuration values via an in game menu. Config setting is synced to connected clients.
+- **SimpleJSON** - We have imported SimpleJSON into our library at the request of developers who would simply prefer to have this dependency taken care of already. We use the MIT Licensed [SimpleJSON](https://simplejson.readthedocs.io/en/latest/)
 
-## Issues
-Have any issues or feature requests? Open a [pull request](https://github.com/valheim-modding/jotunn/pulls) or submit an [issue](https://github.com/valheim-modding/jotunn/issues)!
+## Roadmap
+- **v1.1.0**
+  * Facilitate custom adjustment of bone attachments
+  * Provide a more meaningful and interopable solution to mod interopable keybindings (resolve mod bind conflicts/standardise an interface)
+  * TODO: cooking recipes?!??! this is not currently possible?
+  * Implement item variations into codable enmtity abstractions to minimise asset workflow.
+  * Custom piecetable category/tabs
+  * Check our [v1.1 milestones](https://github.com/Valheim-Modding/Jotunn/milestone/2) for a more up to date list of features currently in development, or suggest your own features for inclusion by creating a new [feature request](https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D)
 
-## Contributing
-For information about contributing to the repo, see the [Contributing instructions](CONTRIBUTING.md).
+## Bugs, Support, Contributions
+Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/) before requesting [support via discord](https://discord.gg/DdUt6g7gyA). If there are any mod interoperability issues developers experience (not just exclusive JVL issues), we would like to hear from you! If we can facilitate better mod interoperability by providing a common interface, or exposing native valheim objects, including a utility which you have created, then please feel free to create a new [feature request](https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D) or [pull request](https://github.com/Valheim-Modding/Jotunn/pulls).
+
+## Changelog
+
+- **v1.0.0**
+  * Merged VL's Entity abstractions: `CustomItem`, `CustomPiece`, `CustomRecipe`
+  * Implemented JL's Entity configs into `Custom*` abstractions
+  * Merged VL's runtime `FixReference` resolver into JVL, split out MockManager to be responsible for prefabs that it resolves.
+  * Merged VL's Localization implementation into JVL
+  * Refactored JL's patch system to use Monomod's hookgen.
+  * Deprecated JL's EventManager in favour of Monomod's event subscriptions (Why implement a feature that already exists?)
+  * Refactored JL's and VL's recipe interfaces to provide a consistent developer experience by generalising requirements and providing consistently named abstraction interfaces to piece and item collections.
+  * Implemented GUIManager, which facilitates usage of Synchronised configurations
+  * Implemented NetworkCompatibility attribute.
+  * Implemented custom keybind/hints 
+
+## Contributors to Jötunn, the Valheim Library
+
+These people have been integral to pushing JVL out of the door, and without them we could not have achieved nearly as much. Please give them some love on github, thunderstore, and nexus.
+
+#### Core:
+
+*iDeathHD#7866*: [github](https://github.com/xiaoxiao921), [thunderstore](https://valheim.thunderstore.io/package/xiaoxiao921/), [nexus]()
+
+*Algorithman#6741*: [github](https://github.com/Algorithman), [thunderstore](), [nexus]()
+
+*Jules#7950*: [github](https://github.com/sirskunkalot), [thunderstore](), [nexus]()
+
+*Quaesar#5604*: [github](https://github.com/RatikKapoor), [thunderstore](), [nexus]()
+
+*radu#0571*: [github](https://github.com/raduschirliu), [thunderstore](), [nexus]()
+
+*paddy#1337*: [github](https://github.com/paddywaan), [thunderstore](https://valheim.thunderstore.io/package/paddywan/), [nexus](https://valheim.thunderstore.io/package/ValheimModding/)
+
+#### Contributors:
+
+*Cinnabun#0451*: [github](https://github.com/capnbubs), [thunderstore](), [nexus]()
+
+*GoldenJude#8965**: [github](https://github.com/GoldenJude), [thunderstore](), [nexus](https://www.nexusmods.com/users/48864143?tab=user+files)
