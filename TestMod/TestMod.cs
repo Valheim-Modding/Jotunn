@@ -84,9 +84,12 @@ namespace TestMod
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (ZInput.GetButtonDown(evilSwordSpecial.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                if (evilSwordSpecial != null && ZInput.instance != null && MessageHud.instance != null)
                 {
-                    MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
+                    if (ZInput.GetButtonDown(evilSwordSpecial.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                    {
+                        MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
+                    }
                 }
             }
         }
@@ -310,17 +313,17 @@ namespace TestMod
                 new ItemConfig
                 {
                     Amount = 1,
-                    Requirements = new[] 
-                    { 
-                        new RequirementConfig { Item = "Stone", Amount = 1 } 
+                    Requirements = new[]
+                    {
+                        new RequirementConfig { Item = "Stone", Amount = 1 }
                     }
                 });
             ItemManager.Instance.AddItem(rune);
 
             // Create and add custom pieces
             var makebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
-            var makebp = new CustomPiece(makebp_prefab, 
-                new PieceConfig 
+            var makebp = new CustomPiece(makebp_prefab,
+                new PieceConfig
                 {
                     PieceTable = "_BlueprintPieceTable"
                 });
@@ -332,7 +335,7 @@ namespace TestMod
                 {
                     PieceTable = "_BlueprintPieceTable",
                     AllowedInDungeons = true,
-                    Requirements = new[] 
+                    Requirements = new[]
                     {
                         new RequirementConfig { Item = "Wood", Amount = 2 }
                     }
@@ -380,8 +383,8 @@ namespace TestMod
                     recipe.m_craftingStation = Mock<CraftingStation>.Create("piece_workbench");
                     var ingredients = new List<Piece.Requirement>
                     {
-                        MockRequirement.Create("LeatherScraps", 10), 
-                        MockRequirement.Create("DeerHide", 2), 
+                        MockRequirement.Create("LeatherScraps", 10),
+                        MockRequirement.Create("DeerHide", 2),
                         MockRequirement.Create("Iron", 4)
                     };
                     recipe.m_resources = ingredients.ToArray();
