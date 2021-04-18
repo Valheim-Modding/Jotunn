@@ -54,12 +54,24 @@ LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
 It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime via [AddJson](xref:JotunnLib.Managers.LocalizationManager.AddJson(System.String,System.String)). In this example, we use our filenames to provide the language which we wish to add the translations for:
 
 ```cs
- TextAsset[] textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
+TextAsset[] textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
 foreach (var textAsset in textAssets)
 {
     var lang = textAsset.name.Replace(".json", null);
     LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
 }
 ```
-
 ![Blueprint Rune Localizations](../../images/data/blueprintRuneLocalizations.png)
+
+## Example JSON file
+This is how the JSON file looks like which is deliverd as a TextAsset in the asset bundle for the Blueprint Rune example:
+```json
+{
+  "item_blueprintrune": "Blueprint Rune",
+  "item_blueprintrune_desc": "Used to make copies of structures and rebuild exact copies of them somewhere else.",
+  "make_blueprint": "Create new blueprint",
+  "make_blueprint_desc": "Creates a new blueprint of a structure.",
+  "piece_blueprint": "Blueprint",
+  "piece_blueprint_desc": "Creates the structure attached to this blueprint."
+}
+```
