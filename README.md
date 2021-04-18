@@ -1,6 +1,5 @@
+![](/JotunnLib/Documentation/images/banner.png)
 ﻿# JotunnLib
-![Banner](Documentation/images/banner.png)
-
 Jötunn (/ˈjɔːtʊn/, "giant"), the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability. networked gameplay consistency, and remove the need to maintain valheim version specific code by acting as an interface between the developer and the games changing internals.
 
 This project was originally derived from the base structure of [JötunnLib](https://github.com/jotunnlib/jotunnlib), and had many entity abstractions and features from [ValheimLib](https://github.com/Valheim-Modding/ValheimLib) merged into it before we proceeded with further implementations. We have lots of features planned for the future, and we hope the community has many feature requests to suggest. I hope the features we have implemented thus far prove to be a useful base and provide an idea of the consistency we aim to deliver moving forwards.
