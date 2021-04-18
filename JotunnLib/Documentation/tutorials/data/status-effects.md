@@ -2,7 +2,7 @@
 
 _Status Effects_ in Valheim are used in quite a lot of places. You can have attack status effects like *Buring* or *Frozen*. You have the guardian powers which are temporary status effects affecting the players stats. You also have status effects attached to items like the Megingjord Belt which adds more available carrying weight to the player. Adding of custom status effects is done through the [ItemManager](xref:JotunnLib.Managers.ItemManager) singleton class and JVLs abstraction [CustomStatusEffect](xref:JotunnLib.Entities.CustomStatusEffect).
 
-All status effects will always be loaded **after** all items. However, recipes will be loaded in the order that you call the `AddStatusEffect` function.
+All status effects will always be loaded **after** all items. However, status effects will be loaded in the order that you call the `AddStatusEffect` function.
 
 ## Example 
 
