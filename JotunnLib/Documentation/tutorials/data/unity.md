@@ -1,6 +1,6 @@
 ﻿# Developing Assets with Unity
 
-New Assets can be created with Unity and imported into Valheim using Jötunn. A Unity project is included in [this repository](https://github.com/Valheim-Modding/JotunnModStub/tree/master/JotunnModUnity).
+New Assets can be created with Unity and imported into Valheim using Jötunn. A Unity project is included in [the Jötunn Mod Stub](https://github.com/Valheim-Modding/JotunnModStub/tree/master/JotunnModUnity).
 
 ### Software Requirements
 
