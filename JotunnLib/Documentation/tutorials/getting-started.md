@@ -5,11 +5,14 @@
 
 * We begin by downloading [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) and extract the zip file into your root Valheim directory.
 
-* Inside the visual studio installer, ensure that `.NET Desktop Development` and `.NET Core Cross-Platform Development` are installed, then click on the `Individual Components` tab and select `.NET Framework 4.6.2`: <br>![Components](..\images\getting-started\vs-InstallerComponents.png)
+* Inside the visual studio installer, ensure that `.NET Desktop Development` and `.NET Core Cross-Platform Development` are installed, then click on the `Individual Components` tab and select `.NET Framework 4.6.2`:
+![Components](../images/getting-started/vs-InstallerComponents.png)
 
-* Fork our [ModStub](https://github.com/Valheim-Modding/JotunnModStub) from github, and copy the link to the git <br>![github forked project link](..\images\getting-started\gh-ForkedStub.png)
+* Fork our [ModStub](https://github.com/Valheim-Modding/JotunnModStub) from github, and copy the link to the git
+![](../images/getting-started/gh-ForkedStub.png)
 
-* In visual studio, in the right hand toobar, select `Git Changes`, and then `Clone Repository`, and paste the URL provided by the previous step. Name your project and place it accordingly.<br>![VS Clone forked stub](..\images\getting-started\vs-CloneForkedStub.png)
+* In visual studio, in the right hand toobar, select `Git Changes`, and then `Clone Repository`, and paste the URL provided by the previous step. Name your project and place it accordingly.
+![VS Clone forked stub](../images/getting-started/vs-CloneForkedStub.png)
 
 * If you want the publicised and MMHOOK dlls automatically created, then set `ExecutePrebuild` in [DoPrebuild.props](https://github.com/Valheim-Modding/JotunnModStub/blob/master/DoPrebuild.props) to true. If you opt not to utilise this automation, it is suggested that you generate your method detours and publicised assemblies, and add them to your projects references manually.
 
@@ -51,9 +54,11 @@ Example:
 
 * Grab the [Project Template]() which you can use to add new projects to your current solution, based on the mod stub boilerplate.
 
-* Place the project template into your <br>![VS Project Template Location](..\images\getting-started\vs-ProjectTemplateLocationpng.png)
+* Place the project template into your
+![VS Project Template Location](../images/getting-started/vs-ProjectTemplateLocationpng.png)
 
-* Restart visual studio. You can now create a new project using the imported templated. Right click your solution, add, new project, then scroll to the bottom where you will find the template:<br>![Create new project template](..\images\getting-started\vs-CreateNewProjectTemplate.png)
+* Restart visual studio. You can now create a new project using the imported templated. Right click your solution, add, new project, then scroll to the bottom where you will find the template:
+![Create new project template](../images/getting-started/vs-CreateNewProjectTemplate.png)
 
 * Your project base is now ready for use! You can proceed to []() or select a specific section to learn about from our [Tutorials]()
 
