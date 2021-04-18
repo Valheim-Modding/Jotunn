@@ -69,9 +69,12 @@ private void CreateRunePieces()
             }
         });
     PieceManager.Instance.AddPiece(placebp);
-    blueprintRuneLocalizations();
+    
+    blueprintRuneLocalizations();  // Add localization
 }
 ```
 
-And here we have our final results: 
+And here we have our final results:<br />
 ![Blue Print Rune Piece Table](../../images/data/BluePrintRunePieceTable.png)
+
+As you can see in the screenshot the name and description are not yet localized. This is done via the `blueprintRuneLocalizations()` method. To read more about localization/translation head over to the [localization tutorial pages](localization.md).
