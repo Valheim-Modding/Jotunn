@@ -16,9 +16,9 @@ jobs:
           fetch-depth: 0
 
       # Get Valheim version id
-      - name: Get Valheim version id
-        id: valheimversion
-        run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
+#      - name: Get Valheim version id
+#        id: valheimversion
+#        run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
 
       - name: Get the version
         id: get_version
@@ -91,5 +91,5 @@ jobs:
           git add JotunnLib/GitVersion.yml
           git add JotunnLib/BuildProps/version.props
           git commit -m "deploy: Released ${{ steps.get_version.outputs.VERSION }}"
-          git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn HEAD:dev
+          git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn
           git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn dev:testbranch
