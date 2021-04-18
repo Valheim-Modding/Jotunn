@@ -14,20 +14,6 @@
 * In visual studio, in the right hand toobar, select `Git Changes`, and then `Clone Repository`, and paste the URL provided by the previous step. Name your project and place it accordingly.<br />
 ![VS Clone forked stub](../images/getting-started/vs-CloneForkedStub.png)
 
-* If you want the publicised and MMHOOK dlls automatically created, then set `ExecutePrebuild` in [DoPrebuild.props](https://github.com/Valheim-Modding/JotunnModStub/blob/master/DoPrebuild.props) to true. If you opt not to utilise this automation, it is suggested that you generate your method detours and publicised assemblies, and add them to your projects references manually.
-
-**WARNING:** *This prebuild task will automate the generation of monomod method detours and publicising of game assemblies. By enabling this, you understand that you will be generating new publicised assemblies and method detours upon PreBuild **IF** the binaries have been updated since the last time the PreBuild has run.*
-
-Example:
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ExecutePrebuild>true</ExecutePrebuild>
-  </PropertyGroup>
-</Project>
-```
-
 * Browse to your solution directory. Create a new file called `Environment.props` and place the following contents inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. Right click on your project in the solution explorer, and select reload project:
 
 Example:
@@ -42,6 +28,30 @@ Example:
 ```
 
 
+If you want the publicised and MMHOOK dlls automatically created, then set `ExecutePrebuild` in [DoPrebuild.props](https://github.com/Valheim-Modding/JotunnModStub/blob/master/DoPrebuild.props) to true. If you opt not to utilise this automation, it is suggested that you generate your method detours and publicised assemblies, and add them to your projects references manually.
+
+**WARNING:** *This prebuild task will automate the generation of monomod method detours and publicising of game assemblies. By enabling this, you understand that you will be generating new publicised assemblies and method detours upon PreBuild **IF** the binaries have been updated since the last time the PreBuild has run.*
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ExecutePrebuild>true</ExecutePrebuild>
+  </PropertyGroup>
+</Project>
+```
+
+
+
+**NOTE**: If for whatever reason you disable the prebuild, you will need to:
+- acquire and install [HookGen](https://valheim.thunderstore.io/package/ValheimModding/HookGenPatcher/)
+- launch the game to generate event wrappers
+- add the `/BepInEx/plugins/MMHook/assembly_*` files to your project references. 
+- grab the [Assembly Publiciser](https://github.com/CabbageCrow/AssemblyPublicizer) *(drag drop your `/BepInEx/plugins/MMHook/assembly_*` files ontop of the publiciser)*
+- and add the resulting assemblies to your stub project.
+- Build the stub, make sure it compiles and automates the postbuild tasks, producing compiled binaries in your plugin directory
+- Create a new project template of this project. You will then be able to duplicate this project to create a multi-plugin solution, convenient for maintaining multiple mods.
+
 * Build your solution. Check your `BepInEx/plugins/yourtestmod/` folder for the `yourtestmod.dll.mdb` monodebug symbols file.
 
 * You may now proceed to one of the [Tutorials](intro.md)
@@ -52,7 +62,7 @@ Example:
 
 * Rename the `PluginGUID` `PluginName`, and `PluginVersion` to match your intended base release metadata. Your PluginGUID should contain your github username/organisation.
 
-* Grab the [Project Template]() which you can use to add new projects to your current solution, based on the mod stub boilerplate.
+* Grab the [Project Template](https://github.com/Valheim-Modding/JotunnModStub/blob/master/JotunnModStub.zip) which you can use to add new projects to your current solution, based on the mod stub boilerplate.
 
 * Place the project template into your<br />
 ![VS Project Template Location](../images/getting-started/vs-ProjectTemplateLocationpng.png)
