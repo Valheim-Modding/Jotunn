@@ -92,5 +92,5 @@ jobs:
           git add JotunnLib/GitVersion.yml
           git add JotunnLib/BuildProps/version.props
           git commit -m "deploy: Released ${{ steps.get_version.outputs.VERSION }}"
-          git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn --no-verify
-          git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn dev:testbranch
+          git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH2 }}@github.com/Valheim-Modding/Jotunn --no-verify
+          git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH2 }}@github.com/Valheim-Modding/Jotunn dev:testbranch
