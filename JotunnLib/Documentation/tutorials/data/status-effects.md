@@ -26,9 +26,14 @@ private void AddStatusEffects()
 }
 ```
 
-In our [JotunnExampleMod](https://github.com/Valheim-Modding/Jotunn/JotunnModExample) this effect is added as the equip effect to the "EvilSword" so it activates when equipping the sword from the inventory. This is the result of it.
+In our [JotunnExampleMod](https://github.com/Valheim-Modding/Jotunn/JotunnModExample) this effect is added as the equip effect to the "EvilSword" so it activates when equipping the sword from the inventory.
+
+The result is an icon displaying that the status effect is active.
 
 ![custom status effect](../../images/data/EvilSwordStatusEffect.png)
 
+And also custom messages when the effect starts and ends.
+
+![custom status effect start](../../images/data/EvilSwordStatusStart.png) ![custom status effect](../../images/data/EvilSwordStatusStop.png)
 
 Note that all texts are tokenized and translated ingame. The translations are also provided by Jötunn. Read the [tutorial on Localizations](localization.md) for more information on that topic.
