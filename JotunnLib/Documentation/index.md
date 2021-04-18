@@ -9,7 +9,7 @@ The source code for Jötunn (and the accompanying test/demo mod) is available on
 ## Tutorials
 This section contains tutorials on how to get started with using JötunnLib, and how to create a basic mod. View it [here](tutorials/intro.md)
 
-_note: the tutorial uses the [Mod Stub](https://github.com/Valheim-Modding/JotunnModStub) to work towards creating the final [Example mod](https://github.com/Valheim-Modding/JotunnExampleMod)._
+_note: the tutorial uses the [Mod Stub](https://github.com/Valheim-Modding/JotunnModStub) to work towards creating the final [Example mod](https://github.com/Valheim-Modding/JotunnModExample)._
 
 ## Conceptual
 This section contains information about how Valheim itself works, as well as how JötunnLib interfaces with the game. There likely will not be many code examples here, but rather high level overviews of how various systems work. View it [here](conceptual/intro.md) 
