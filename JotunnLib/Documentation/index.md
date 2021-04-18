@@ -1,4 +1,7 @@
+![Banner](images/banner.png)
+
 # Jötunn, the Valheim Library
+
 Jötunn (/ˈjɔːtʊn/, "giant"), the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability and networked gameplay consistency.
 
 We have lots of features planned for the future, and did hold back on what we wanted to release with so that we could focus on house keeping post-merger, however I hope the features we have implemented thus far prove to be a useful base and provide an idea of the consistency we aim to deliver moving forwards.
