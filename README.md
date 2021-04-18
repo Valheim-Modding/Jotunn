@@ -1,5 +1,6 @@
-![](/JotunnLib/Documentation/images/banner.png)
 ﻿# JotunnLib
+![Banner](JotunnLib/Documentation/images/banner.png)
+
 Jötunn (/ˈjɔːtʊn/, "giant"), the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability. networked gameplay consistency, and remove the need to maintain valheim version specific code by acting as an interface between the developer and the games changing internals.
 
 This project was originally derived from the base structure of [JötunnLib](https://github.com/jotunnlib/jotunnlib), and had many entity abstractions and features from [ValheimLib](https://github.com/Valheim-Modding/ValheimLib) merged into it before we proceeded with further implementations. We have lots of features planned for the future, and we hope the community has many feature requests to suggest. I hope the features we have implemented thus far prove to be a useful base and provide an idea of the consistency we aim to deliver moving forwards.
@@ -10,7 +11,15 @@ Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/). 
 ________________
 
 ## Features
-JVL provides two distinct groups of features. Managers, which act as interfaces between the developer and native collections or subsystems, and utilities where are there to aid in generic/common functions that can span many different areas.
+JVL provides three distinct groups of features. Entities, which abstract the game's own entities into easy-to-use interfaces. Managers, which act as interfaces between the entities and native collections or subsystems. Utilities, which are there to aid in generic/common functions that can span many different areas.
+
+#### Entities
+- **CustomItem** - Represents ingame items such as weapons, tools and consumables.
+- **CustomRecipe** - Represents ingame recipes for managing crafting and upgrading of items.
+- **CustomPiece** - Represent ingame building pieces.
+- **CustomStatusEffect** - Represents ingame status effects from weapon hit effects to guardian powers.
+- **Mocks** - Fake any vanilla prefab and use it in your custom assets - Jötunn resolves the references to the vanilla objects at runtime.
+- **Config classes** - There are many more abstractions beside the main entities which allow for easy creation of things like key bindings, custom commands, skills and more.
 
 #### Managers
 - **Command Manager** - Facilitates implementation of methods which can be registered as executable console commands.
@@ -45,7 +54,7 @@ Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/) b
 
 - **v1.0.0**
   * Merged VL's Entity abstractions: `CustomItem`, `CustomPiece`, `CustomRecipe`
-  * Implemented JL's Entity configs into `Custom*` abstractions
+  * Implemented JL's Entity Configs into the `Custom` abstractions
   * Merged VL's runtime `FixReference` resolver into JVL, split out MockManager to be responsible for prefabs that it resolves.
   * Merged VL's Localization implementation into JVL
   * Refactored JL's patch system to use Monomod's hookgen.
@@ -63,13 +72,13 @@ These people have been integral to pushing JVL out of the door, and without them
 
 *iDeathHD#7866*: [github](https://github.com/xiaoxiao921), [thunderstore](https://valheim.thunderstore.io/package/xiaoxiao921/), [nexus]()
 
-*Algorithman#6741*: [github](https://github.com/Algorithman), [thunderstore](), [nexus]()
+*Algorithman#6741*: [github](https://github.com/Algorithman)
 
-*Jules#7950*: [github](https://github.com/sirskunkalot), [thunderstore](), [nexus]()
+*Jules#7950*: [github](https://github.com/sirskunkalot), [nexus](https://www.nexusmods.com/users/61184721)
 
 *Quaesar#5604*: [github](https://github.com/RatikKapoor), [thunderstore](), [nexus]()
 
-*radu#0571*: [github](https://github.com/raduschirliu), [thunderstore](), [nexus]()
+*radu#0571*: [github](https://github.com/raduschirliu), [thunderstore](https://valheim.thunderstore.io/package/radu/), [nexus](https://www.nexusmods.com/users/112072898)
 
 *paddy#1337*: [github](https://github.com/paddywaan), [thunderstore](https://valheim.thunderstore.io/package/paddywan/), [nexus](https://valheim.thunderstore.io/package/ValheimModding/)
 
