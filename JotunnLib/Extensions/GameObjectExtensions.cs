@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace JotunnLib.Utils
+namespace JotunnLib
 {
     /// <summary>
     /// Use only, if you know what you do.
