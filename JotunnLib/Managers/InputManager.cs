@@ -22,7 +22,7 @@ namespace JotunnLib.Managers
 
         public void Init()
         {
-            On.ZInput.Reset += ZInput_Reset;
+            On.ZInput.Reset += RegisterCustomInputs;
             On.ZInput.GetButtonDown += ZInput_GetButtonDown;
             On.ZInput.GetButtonUp += ZInput_GetButtonUp;
         }
@@ -121,17 +121,11 @@ namespace JotunnLib.Managers
             return result;
         }
 
-        private void ZInput_Reset(On.ZInput.orig_Reset orig, ZInput self)
+        private void RegisterCustomInputs(On.ZInput.orig_Reset orig, ZInput self)
         {
             orig(self);
 
             Logger.LogInfo("---- Registering custom inputs ----");
-
-            if (self == null)
-            {
-                Logger.LogError("\t-> ZInput does not exist yet, delaying...");
-                return;
-            }
 
             foreach (var pair in Buttons)
             {
@@ -146,7 +140,7 @@ namespace JotunnLib.Managers
                     self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
                 }
 
-                Logger.LogInfo("Registered input: " + pair.Key);
+                Logger.LogInfo($"Registered input {pair.Key}");
             }
         }
     }

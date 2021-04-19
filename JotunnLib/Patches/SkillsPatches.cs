@@ -11,7 +11,6 @@ namespace JotunnLib.Patches
         [PatchInit(0)]
         public static void Init()
         {
-            On.Skills.Awake += Skills_Awake;
             On.Skills.IsSkillValid += Skills_IsSkillValid;
             On.Skills.CheatRaiseSkill += Skills_CheatRaiseSkill;
             On.Skills.CheatResetSkill += Skills_CheatResetSkill;
@@ -61,19 +60,6 @@ namespace JotunnLib.Patches
             }
 
             return orig(self, type);
-        }
-
-        private static void Skills_Awake(On.Skills.orig_Awake orig, Skills self)
-        {
-            orig(self);
-
-            // TODO: Move into SkillsManager Register
-            foreach (var pair in SkillManager.Instance.Skills)
-            {
-                self.m_skills.Add(pair.Value.ToSkillDef());
-                Logger.LogInfo($"Loaded skill {pair.Value}");
-            }
-
         }
 
         private static void SkillsDialog_Setup(On.SkillsDialog.orig_Setup orig, SkillsDialog self, Player player)

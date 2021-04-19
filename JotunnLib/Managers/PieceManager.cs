@@ -166,8 +166,7 @@ namespace JotunnLib.Managers
         /// <returns></returns>
         public CustomPiece GetPiece(string pieceName)
         {
-            var piece = Pieces.Find(x => x.PiecePrefab.name.Equals(pieceName));
-            return piece;
+            return Pieces.Find(x => x.PiecePrefab.name.Equals(pieceName));
         }
 
         /// <summary>
@@ -205,21 +204,21 @@ namespace JotunnLib.Managers
                     var pieceTable = GetPieceTable(customPiece.PieceTable);
                     if (pieceTable == null)
                     {
-                        throw new Exception($"Could not find piecetable: {customPiece.PieceTable}");
+                        throw new Exception($"Could not find piecetable {customPiece.PieceTable}");
                     }
                     if (pieceTable.m_pieces.Contains(customPiece.PiecePrefab))
                     {
-                        Logger.LogInfo($"Already added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
+                        Logger.LogInfo($"Already added piece {customPiece}");
                     }
                     else
                     {
                         pieceTable.m_pieces.Add(customPiece.PiecePrefab);
-                        Logger.LogInfo($"Added custom Piece : {customPiece.PiecePrefab.name} | Token : {customPiece.Piece.TokenName()}");
+                        Logger.LogInfo($"Added piece {customPiece} | Token: {customPiece.Piece.TokenName()}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while adding custom item {customPiece.PiecePrefab.name}: {ex.Message}");
+                    Logger.LogError($"Error while adding piece {customPiece}: {ex.Message}");
 
                     // Remove piece again
                     PrefabManager.Instance.RemovePrefab(customPiece.PiecePrefab.name);
