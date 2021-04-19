@@ -28,13 +28,13 @@ namespace JotunnLib.Managers
 
         public void Init()
         {
-
+            On.Skills.Awake += RegisterCustomSkills;
         }
 
         internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
 
         /// <summary>
-        ///     Add a new skill with given SkillConfig object, and adds translations for it in the current localization.
+        ///     Add a new skill with given SkillConfig object.
         /// </summary>
         /// <param name="skillConfig">SkillConfig object representing new skill to register</param>
         /// <returns>The SkillType of the newly added skill</returns>
@@ -47,7 +47,6 @@ namespace JotunnLib.Managers
             }
 
             Skills.Add(skillConfig.UID, skillConfig);
-            Logger.LogInfo($"Added skill: {skillConfig}");
             
             return skillConfig.UID;
         }
@@ -60,7 +59,6 @@ namespace JotunnLib.Managers
         /// <param name="description">Description of the new skill</param>
         /// <param name="increaseStep"></param>
         /// <param name="icon">Icon for the skill</param>
-        /// <param name="autoLocalize">Automatically generate English localizations for the given name and description</param>
         /// <returns>The SkillType of the newly registered skill</returns>
         [Obsolete("Use AddSkill(SkillConfig) instead")]
         public Skills.SkillType AddSkill(
@@ -146,6 +144,19 @@ namespace JotunnLib.Managers
             return GetSkill((Skills.SkillType)identifier.GetStableHashCode());
         }
 
-        
+        private void RegisterCustomSkills(On.Skills.orig_Awake orig, Skills self)
+        {
+            orig(self);
+
+            Logger.LogInfo($"---- Registering custom skills ----");
+
+            foreach (var pair in Skills)
+            {
+                self.m_skills.Add(pair.Value.ToSkillDef());
+                Logger.LogInfo($"Registered skill {pair.Value.Name} | ID: {pair.Value.Identifier}");
+            }
+
+        }
+
     }
 }

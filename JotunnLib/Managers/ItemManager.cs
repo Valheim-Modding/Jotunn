@@ -118,11 +118,11 @@ namespace JotunnLib.Managers
                     }
                     objectDB.m_items.Add(customItem.ItemPrefab);
 
-                    Logger.LogInfo($"Added custom item : {customItem.ItemPrefab.name} | Token : {customItem.ItemDrop.TokenName()}");
+                    Logger.LogInfo($"Added item {customItem} | Token: {customItem.ItemDrop.TokenName()}");
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while adding custom item {customItem.ItemPrefab.name}: {ex.Message}");
+                    Logger.LogError($"Error while adding item {customItem}: {ex.Message}");
 
                     // Remove prefab, item and recipe from the managers again
                     PrefabManager.Instance.RemovePrefab(customItem.ItemPrefab.name);
@@ -211,11 +211,11 @@ namespace JotunnLib.Managers
                     }
                     objectDB.m_recipes.Add(recipe);
 
-                    Logger.LogInfo($"Added recipe for : {recipe.m_item.TokenName()}");
+                    Logger.LogInfo($"Added recipe for {recipe.m_item.TokenName()}");
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while adding custom recipe {customRecipe.Recipe.name}: {ex.Message}");
+                    Logger.LogError($"Error while adding recipe {customRecipe}: {ex.Message}");
 
                     // Remove recipe from the manager again
                     Recipes.Remove(customRecipe);
@@ -265,12 +265,12 @@ namespace JotunnLib.Managers
 
                     objectDB.m_StatusEffects.Add(statusEffect);
 
-                    Logger.LogInfo($"Added status effect : {statusEffect.m_name}");
+                    Logger.LogInfo($"Added status effect {customStatusEffect}");
 
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while adding custom status effect {customStatusEffect.StatusEffect.name}: {ex.Message}");
+                    Logger.LogError($"Error while adding status effect {customStatusEffect}: {ex.Message}");
 
                     // Remove status effect
                     StatusEffects.Remove(customStatusEffect);
