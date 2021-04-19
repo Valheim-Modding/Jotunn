@@ -82,6 +82,10 @@ jobs:
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><ExecutePrebuild>true</ExecutePrebuild></PropertyGroup></Project>" > JotunnLib/BuildProps/DoPrebuild.props
 
+      - name: Set Gitversion.yml version
+        run: |
+          cat JotunnLib/GitVersion.yml | sed '4s/.*/next-version: ${{ steps.get_version.outputs.VERSION_NUMBER }}/' > JotunnLib/GitVersion_temp.yml && mv JotunnLib/GitVersion_temp.yml JotunnLib/GitVersion.yml
+      
       - name: Push version update to prod
         run: |
           git config --global user.name 'github-actions[bot]'
