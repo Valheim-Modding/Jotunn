@@ -285,7 +285,7 @@ namespace TestMod
             });
 
             // Test adding skills from JSON
-            //SkillManager.Instance.AddSkillsFromJson("TestMod/Assets/skills.json");
+            SkillManager.Instance.AddSkillsFromJson("TestMod/Assets/skills.json");
         }
 
         // Add custom recipes
