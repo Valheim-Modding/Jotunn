@@ -35,7 +35,7 @@ namespace JotunnLib.Configs
 
         public string Description { get; set; }
         public Sprite Icon { get; set; }
-        public float IncreaseStep { get; set; }
+        public float IncreaseStep { get; set; } = 1.0f;
 
         public string IconPath
         {
