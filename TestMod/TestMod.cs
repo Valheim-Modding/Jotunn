@@ -39,6 +39,8 @@ namespace TestMod
         private ButtonConfig evilSwordSpecial;
         private CustomStatusEffect evilSwordEffect;
 
+        private static Skills.SkillType cType;
+
         // Load, create and init your custom mod stuff
         private void Awake()
         {
@@ -60,6 +62,15 @@ namespace TestMod
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
+
+            //On.Skills.RaiseSkill += Skills_RaiseSkill;
+        }
+
+        private void Skills_RaiseSkill(On.Skills.orig_RaiseSkill orig, Skills self, Skills.SkillType skillType, float factor)
+        {
+            orig(self, skillType, factor);
+            Skills.Skill skill = self.GetSkill(skillType);
+            JotunnLib.Logger.LogWarning($"{skill.m_info.m_skill.ToString().ToLower()}");
         }
 
         // Called every frame
@@ -91,7 +102,9 @@ namespace TestMod
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
                 }
+                
             }
+            if (Input.GetKeyDown(KeyCode.F7)) Player.m_localPlayer.RaiseSkill(cType, 1f);
         }
 
         // Called every frame for rendering and handling GUI events
@@ -263,7 +276,7 @@ namespace TestMod
         private void AddSkills()
         {
             // Test adding a skill with a texture
-            SkillManager.Instance.AddSkill(new SkillConfig()
+            cType = SkillManager.Instance.AddSkill(new SkillConfig()
             {
                 Identifier = "com.jotunn.testmod.testskill_code",
                 Name = "Testing Skill From Code",
@@ -272,7 +285,7 @@ namespace TestMod
             });
 
             // Test adding skills from JSON
-            SkillManager.Instance.AddSkillsFromJson("TestMod/Assets/skills.json");
+            //SkillManager.Instance.AddSkillsFromJson("TestMod/Assets/skills.json");
         }
 
         // Add custom recipes
