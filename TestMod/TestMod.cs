@@ -63,6 +63,15 @@ namespace TestMod
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
+
+            //On.Skills.RaiseSkill += Skills_RaiseSkill;
+        }
+
+        private void Skills_RaiseSkill(On.Skills.orig_RaiseSkill orig, Skills self, Skills.SkillType skillType, float factor)
+        {
+            orig(self, skillType, factor);
+            Skills.Skill skill = self.GetSkill(skillType);
+            JotunnLib.Logger.LogWarning($"{skill.m_info.m_skill.ToString().ToLower()}");
         }
 
         // Called every frame
@@ -100,7 +109,9 @@ namespace TestMod
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
                 }
+                
             }
+            if (Input.GetKeyDown(KeyCode.F7)) Player.m_localPlayer.RaiseSkill(testSkill, 1f);
         }
 
         // Called every frame for rendering and handling GUI events

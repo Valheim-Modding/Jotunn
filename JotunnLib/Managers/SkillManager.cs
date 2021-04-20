@@ -5,6 +5,7 @@ using BepInEx;
 using UnityEngine;
 using JotunnLib.Utils;
 using JotunnLib.Configs;
+using MonoMod.Cil;
 
 namespace JotunnLib.Managers
 {
@@ -28,7 +29,30 @@ namespace JotunnLib.Managers
 
         public void Init()
         {
+
+            IL.Skills.RaiseSkill += Skills_RaiseSkill;
             On.Skills.Awake += RegisterCustomSkills;
+        }
+
+        private void Skills_RaiseSkill(MonoMod.Cil.ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            c.GotoNext(MoveType.After,
+                    zz => zz.MatchConstrained(out _),
+                    zz => zz.MatchCallOrCallvirt<System.Object>("ToString"),
+                    zz => zz.MatchCallOrCallvirt<System.String>("ToLower")
+                );
+            c.EmitDelegate<Func<string, string>>((string skillID) => {
+
+            var asd = Enum.TryParse<global::Skills.SkillType>(skillID, out var result);
+
+            if (asd && Skills.ContainsKey(result))
+            {
+                JotunnLib.Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
+                return Skills[result].Name;
+            }
+            return skillID;
+            });
         }
 
         internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
