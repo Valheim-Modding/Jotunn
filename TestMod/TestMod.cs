@@ -23,10 +23,11 @@ namespace TestMod
         private const string ModName = "JotunnLib Test Mod";
         private const string ModVersion = "0.1.0";
 
-        private AssetBundle blueprintRuneBundle;
-        private AssetBundle testAssets;
         private Sprite testSprite;
         private Texture2D testTex;
+
+        private AssetBundle blueprintRuneBundle;
+        private AssetBundle testAssets;
         private bool clonedItemsProcessed;
 
         private System.Version currentVersion;
@@ -89,13 +90,19 @@ namespace TestMod
                     showMenu = !showMenu;
                 }
 
-                if (ZInput.GetButtonDown("GUIManagerTest"))
+                if (ZInput.GetButtonDown("TestMod_GUIManagerTest"))
                 {
                     showButton = !showButton;
                 }
 
+                // Raise the test skill
+                if (Player.m_localPlayer != null && ZInput.GetButtonDown("TestMod_RaiseSkill"))
+                {
+                    Player.m_localPlayer.RaiseSkill(testSkill, 1);
+                }
+
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (evilSwordSpecial != null && ZInput.instance != null && MessageHud.instance != null)
+                if (evilSwordSpecial != null && MessageHud.instance != null)
                 {
                     if (ZInput.GetButtonDown(evilSwordSpecial.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                     {
@@ -229,7 +236,7 @@ namespace TestMod
         {
             // Add key bindings on the fly
             InputManager.Instance.AddButton(ModGUID, "TestMod_Menu", KeyCode.Insert);
-            InputManager.Instance.AddButton(ModGUID, "GUIManagerTest", KeyCode.F8);
+            InputManager.Instance.AddButton(ModGUID, "TestMod_GUIManagerTest", KeyCode.F8);
 
             // Add key bindings backed by a config value
             // Create a ButtonConfig to also add it as a custom key hint in AddClonedItem
@@ -240,6 +247,9 @@ namespace TestMod
                 HintToken = "$evilsword_beevil"
             };
             InputManager.Instance.AddButton(ModGUID, evilSwordSpecial);
+
+            // Add a key binding to test skill raising
+            InputManager.Instance.AddButton(ModGUID, "TestMod_RaiseSkill", KeyCode.Home);
         }
 
         // Adds localizations with configs
@@ -276,7 +286,7 @@ namespace TestMod
         private void AddSkills()
         {
             // Test adding a skill with a texture
-            cType = SkillManager.Instance.AddSkill(new SkillConfig()
+            testSkill = SkillManager.Instance.AddSkill(new SkillConfig()
             {
                 Identifier = "com.jotunn.testmod.testskill_code",
                 Name = "Testing Skill From Code",
