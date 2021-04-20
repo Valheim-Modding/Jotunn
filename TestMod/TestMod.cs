@@ -39,7 +39,7 @@ namespace TestMod
         private ButtonConfig evilSwordSpecial;
         private CustomStatusEffect evilSwordEffect;
 
-        private static Skills.SkillType cType;
+        private Skills.SkillType testSkill;
 
         // Load, create and init your custom mod stuff
         private void Awake()
@@ -104,7 +104,7 @@ namespace TestMod
                 }
                 
             }
-            if (Input.GetKeyDown(KeyCode.F7)) Player.m_localPlayer.RaiseSkill(cType, 1f);
+            if (Input.GetKeyDown(KeyCode.F7)) Player.m_localPlayer.RaiseSkill(testSkill, 1f);
         }
 
         // Called every frame for rendering and handling GUI events

@@ -36,8 +36,6 @@ namespace JotunnLib.Managers
         {
             ILCursor c = new ILCursor(il);
             c.GotoNext(MoveType.After,
-                    //zz => zz.MatchLdfld<Skills.SkillDef>("m_info")//,
-                    //zz => zz.MatchLdflda<Skills.SkillType>("m_skill")//,
                     zz => zz.MatchConstrained(out _),
                     zz => zz.MatchCallOrCallvirt<System.Object>("ToString"),
                     zz => zz.MatchCallOrCallvirt<System.String>("ToLower")
