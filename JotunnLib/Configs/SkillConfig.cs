@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using JotunnLib.Utils;
-using JotunnLib.Managers;
 
 namespace JotunnLib.Configs
 {
@@ -11,8 +10,20 @@ namespace JotunnLib.Configs
     /// </summary>
     public class SkillConfig
     {
+        /// <summary>
+        ///     A SkillType used to distinguish this skill from others. This is a unique ID that Jotunn generates
+        ///     based on the Identifier provided.
+        /// </summary>
         public Skills.SkillType UID { get; private set; }
 
+        /// <summary>
+        ///     A <b>unique</b> string used to identify the skill, and used to generate the <see cref="UID"/>.
+        ///     <para>
+        ///         <b>Do not</b> change the Identifier after you have released a mod using it.
+        ///         If the Identifier changes, so will the skill's SkillType/UID, so
+        ///         all users who have your mod will lose their save progress for the skill.
+        ///     </para>
+        /// </summary>
         public string Identifier
         {
             get { return _identifier; }
@@ -31,12 +42,45 @@ namespace JotunnLib.Configs
             }
         }
 
+        /// <summary>
+        ///     The in-game name for your skill.
+        ///     Can either be the name you want to see in-game, or a localization token.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        ///     The in-game description for your skill.
+        ///     Can either be the description you want to see in-game, or a localization token.
+        /// </summary>
         public string Description { get; set; }
+        
+        /// <summary>
+        ///     The in-game icon for your skill. If null, will default to a "shield" icon.
+        /// </summary>
         public Sprite Icon { get; set; }
+
+        /// <summary>
+        ///     The multiplier applied to all XP gained for this skill via <see cref="Skills.RaiseSkill(Skills.SkillType, float)"/>.
+        ///     If this is set to 0, your skill will be unable to gain XP at all.
+        /// </summary>
         public float IncreaseStep { get; set; } = 1.0f;
 
+        /// <summary>
+        ///     The path to load an icon png/jpg file from.
+        ///     If you wish to load from an asset bundle, use a <c>$</c> to separate the path to the asset bundle,
+        ///     and your sprite name in the asset bundle
+        ///     
+        ///     <para>
+        ///         This <b>cannot</b> be set if <see cref="Icon"/> is also set. You can only set one of them at once.
+        ///     </para>
+        ///     
+        ///     <example>
+        ///         This sample shows how you would load a sprite from an asset bundle:
+        ///         <code>
+        ///             IconPath = "MyMod/Assets/assetbundle$mysprite"
+        ///         </code>
+        ///     </example>
+        /// </summary>
         public string IconPath
         {
             set
@@ -53,15 +97,20 @@ namespace JotunnLib.Configs
 
         private string _identifier;
 
+
+        /// <summary>
+        ///     Converts the SkillConfig to a printable string.
+        /// </summary>
+        /// <returns>String representation of the SkillConfig</returns>
         public override string ToString()
         {
             return $"SkillConfig(Identifier='{Identifier}', UID={UID}, Name='{Name}')";
         }
 
         /// <summary>
-        ///     Converts a JotunnLib SkillConfig into a Valheim SkillDef
+        ///     Converts a JotunnLib SkillConfig into a Valheim SkillDef.
         /// </summary>
-        /// <returns>Valheim SkillDef</returns>
+        /// <returns>Valheim SkillDef representation of the SkillConfig</returns>
         public Skills.SkillDef ToSkillDef()
         {
             return new Skills.SkillDef()
@@ -81,7 +130,7 @@ namespace JotunnLib.Configs
         }
 
         /// <summary>
-        ///     Creates a SkillConfig object for mods that previously used SkillInjector
+        ///     Creates a SkillConfig object for mods that previously used SkillInjector.
         /// </summary>
         /// <param name="identifier">Unique identifier of the new skill, ex: "com.jotunnlib.testmod.testskill"</param>
         /// <param name="uid">"id" from SkillInjector</param>
@@ -106,7 +155,7 @@ namespace JotunnLib.Configs
         }
 
         /// <summary>
-        ///     Loads a single SkillConfig from a JSON string
+        ///     Loads a single SkillConfig from a JSON string.
         /// </summary>
         /// <param name="json">JSON text</param>
         /// <returns>Loaded SkillConfig</returns>
@@ -116,7 +165,7 @@ namespace JotunnLib.Configs
         }
 
         /// <summary>
-        ///     Loads a list of SkillConfigs from a JSON string
+        ///     Loads a list of SkillConfigs from a JSON string.
         /// </summary>
         /// <param name="json">JSON text</param>
         /// <returns>Loaded list of SkillConfigs</returns>

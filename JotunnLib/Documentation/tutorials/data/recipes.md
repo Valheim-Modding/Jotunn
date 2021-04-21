@@ -3,13 +3,23 @@ _Recipes_ in Valheim are coupling the items a player can craft to the various cr
 
 All recipes will always be loaded **after** all items. However, recipes will be loaded in the order that you call the `AddRecipe` function.
 
-You have two options for adding custom recipes in Jötunn. You either use a [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) where you can define the ingame objects your recipe should reference via strings of the object names. Or you can create the `Recipe` ScriptableObject on your own. If the game has already loaded it's own assets, you can reference the objects in the recipe via Jötunns [Prefab Cache](xref:JotunnLib.Managers.PrefabManager.Cache) or create [Mocks](mocks.md) and let Jötunn fix the references at runtime.
+You have three options for adding custom recipes in Jï¿½tunn:
+- Use a [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) where you can define the ingame objects your recipe should reference via strings of the object names.
+- Use a JSON file to define an array of [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) objects, then load them when your mod starts.
+- Create the `Recipe` ScriptableObject on your own. If the game has already loaded it's own assets, you can reference the objects in the recipe via Jï¿½tunns [Prefab Cache](xref:JotunnLib.Managers.PrefabManager.Cache) or create [Mocks](mocks.md) and let Jï¿½tunn fix the references at runtime.
+
+These three approaches can be mixed and used as you please, as they will accomplish the same goal.
 
 **Note:** You **must** only use names of existing prefabs (either ones you created or default Valheim ones). This can be prefabs that have already been registered by another mod, or that already exist in the game.
 
-## Example (RecipeConfig)
+## Examples
+This is what our finished product will look like in-game after using any of the following examples:
 
-When you are loading your mod assets before Valheim loads it's vanilla assets into the game (in your Mods `Awake()` for example) you need to use the [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) class to create a custom recipe. You define the referenced prefabs via their names by string, instantiate a [CustomRecipe](xref:JotunnLib.Entities.CustomRecipe) with that and let Jötunn resolve the correct references at runtime for you.
+![Custom Resource Recipe](../../images/data/customResourceRecipe.png)
+
+### Adding a recipe using RecipeConfig
+
+When you are loading your mod assets before Valheim loads it's vanilla assets into the game (in your Mods `Awake()` for example) you need to use the [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) class to create a custom recipe. You define the referenced prefabs via their names by string, instantiate a [CustomRecipe](xref:JotunnLib.Entities.CustomRecipe) with that and let Jï¿½tunn resolve the correct references at runtime for you.
 
 ```cs
 CustomRecipe runeRecipe = new CustomRecipe(new RecipeConfig()
@@ -18,8 +28,8 @@ CustomRecipe runeRecipe = new CustomRecipe(new RecipeConfig()
     CraftingStation = "piece_workbench"     // name of the crafting station prefab where the item can be crafted
     Requirements = new RequirementConfig[]  // resources and amount needed for it to be crafted
     {
-        new RequirementConfig {Item = "Stone", Amount = 2},  
-        new RequirementConfig {Item = "Wood", Amount = 1}
+        new RequirementConfig { Item = "Stone", Amount = 2 },  
+        new RequirementConfig { Item = "Wood", Amount = 1 }
     }
 });
 ItemManager.Instance.AddRecipe(runeRecipe);
@@ -27,9 +37,41 @@ ItemManager.Instance.AddRecipe(runeRecipe);
 
 Please take a look at the actual implementation of [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) for all properties you can set in the config.
 
-## Example (Recipe & Prefab Cache)
+### Adding a recipe using JSON
+First, we must create a JSON file which will keep an array of all the recipes we wish to add. This JSON file should contain an array of [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) objects (note, this _must_ be an array). This can be done like so:
+```json
+[
+  {
+    "Item": "Blueberries",
+    "Amount": 1,
+    "Requirements": [
+      {
+        "Item": "Stone",
+        "Amount": 2
+      },
+      {
+        "Item": "Wood",
+         "Amount": 1
+      }
+    ]
+  }
+]
+```
+Please take a look at the actual implementation of [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) for all properties you can set in the config.
 
-The [JotunnModExample](https://github.com/Valheim-Modding/JotunnModExample) creates a cloned item "EvilSword" in the method `AddClonedItem()`. For the user to be able to craft the sword at the workbench we define a recipe as an actual Valheim Recipe class using the Prefab Cache of Jötunn and add it to the [ItemManager](xref:JotunnLib.Managers.ItemManager) as a [CustomRecipe](xref:JotunnLib.Entities.CustomRecipe) like this:
+Next, we need to tell Jotunn where our JSON file is. If the JSON file is not in an AssetBundle, we can load it like so:
+
+```cs
+private void Awake()
+{
+    // Load recipes from JSON file
+    ItemManager.Instance.AddRecipesFromJson("TestMod/Assets/recipes.json");
+}
+```
+
+### Adding a recipe using Valheim Recipe & Prefab Cache
+
+The [JotunnModExample](https://github.com/Valheim-Modding/JotunnModExample) creates a cloned item "EvilSword" in the method `AddClonedItem()`. For the user to be able to craft the sword at the workbench we define a recipe as an actual Valheim Recipe class using the Prefab Cache of Jï¿½tunn and add it to the [ItemManager](xref:JotunnLib.Managers.ItemManager) as a [CustomRecipe](xref:JotunnLib.Entities.CustomRecipe) like this:
 
 ```cs
 // Implementation of assets via using manual recipe creation and prefab cache's
@@ -56,5 +98,3 @@ private static void RecipeEvilSword(ItemDrop itemDrop)
     ItemManager.Instance.AddRecipe(CR);
 }
 ```
-
-![Custom Resource Recipe](../../images/data/customResourceRecipe.png)
