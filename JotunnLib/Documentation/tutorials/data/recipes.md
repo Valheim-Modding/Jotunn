@@ -59,7 +59,7 @@ First, we must create a JSON file which will keep an array of all the recipes we
 ```
 Please take a look at the actual implementation of [RecipeConfig](xref:JotunnLib.Configs.RecipeConfig) for all properties you can set in the config.
 
-Next, we need to tell Jotunn where our JSON file is. If the JSON file is not in an AssetBundle, we can load it like so:
+Next, we need to tell Jötunn where our JSON file is. If the JSON file is not in an AssetBundle, we can load it like so:
 
 ```cs
 private void Awake()
