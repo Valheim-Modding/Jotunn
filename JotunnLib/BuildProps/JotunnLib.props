@@ -61,40 +61,40 @@
       <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\HarmonyXInterop.dll</HintPath>
     </Reference>
-    <Reference Include="MMHOOK_assembly_googleanalytics_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_googleanalytics_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_googleanalytics">
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_googleanalytics.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="MMHOOK_assembly_guiutils_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_guiutils_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_guiutils">
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_guiutils.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="MMHOOK_assembly_lux_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_lux_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_lux">
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_lux.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="MMHOOK_assembly_postprocessing_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_postprocessing_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_postprocessing">
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_postprocessing.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="MMHOOK_assembly_simplemeshcombine_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_simplemeshcombine_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_simplemeshcombine">
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_simplemeshcombine.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="MMHOOK_assembly_steamworks_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_steamworks_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_steamworks">
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_steamworks.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="MMHOOK_assembly_sunshafts_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_sunshafts_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_sunshafts">
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_sunshafts.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="MMHOOK_assembly_utils_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_utils_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_utils">
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_utils.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="MMHOOK_assembly_valheim_publicized">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_valheim_publicized.dll</HintPath>
+    <Reference Include="MMHOOK_assembly_valheim">
+      <HintPath>$(VALHEIM_INSTALL)\BepInEx\plugins\MMHOOK\MMHOOK_assembly_valheim.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Mono.Security">
