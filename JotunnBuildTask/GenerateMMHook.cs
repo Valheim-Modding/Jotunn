@@ -46,12 +46,13 @@ namespace JotunnBuildTask
                 }
             }
 
+            // Try to publicize
             if (!AssemblyPublicizer.PublicizeDll(file, ValheimPath))
             {
                 return false;
             }
 
-            string publicizedFile = Path.Combine(Path.GetDirectoryName(file), PublicizedAssemblies,
+            /*string publicizedFile = Path.Combine(Path.GetDirectoryName(file), PublicizedAssemblies,
                 $"{Path.GetFileNameWithoutExtension(file)}_{Publicized}{Path.GetExtension(file)}");
 
             // only write the hash to file if HookGen was successful
@@ -59,9 +60,17 @@ namespace JotunnBuildTask
             {
                 File.WriteAllText(hashFilePath, hash);
                 return true;
+            }*/
+
+            // Try to generate HookGen
+            if (!InvokeHookgen(file, Path.Combine(outputFolder, $"{Mmhook}_{Path.GetFileName(file)}"), hash))
+            {
+                return false;
             }
 
-            return false;
+            // Write current hash to file if all previous actions succeeded
+            File.WriteAllText(hashFilePath, hash);
+            return true;
         }
 
         /// <summary>
@@ -90,12 +99,12 @@ namespace JotunnBuildTask
                 ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, ValheimServerData, Managed));
             }
             ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, UnstrippedCorlib));
-            /*
-            foreach (var dir in ((BaseAssemblyResolver) modder.AssemblyResolver)?.GetSearchDirectories())
+            
+            /*foreach (var dir in ((BaseAssemblyResolver) modder.AssemblyResolver)?.GetSearchDirectories())
             {
                 Log.LogMessage(MessageImportance.High,$"Searching in {dir}");
-            }
-            */
+            }*/
+            
             modder.Read();
 
             modder.MapDependencies();
