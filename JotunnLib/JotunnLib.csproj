@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <Product>Jotunn</Product>
-    <Id>Jotunn</Id>
-    <PackageId>Jotunn</PackageId>
+    <Product>JotunnLib</Product>
+    <Id>JotunnLib</Id>
+    <PackageId>JotunnLib</PackageId>
     <Authors>Valheim-Modding team</Authors>
     <Description>Jötunn (/ˈjɔːtʊn/, "giant") is a modding library for Valheim, with the goal of making the lives of mod developers easier.</Description>
     <projectUrl>https://github.com/Valheim-Modding/</projectUrl>
@@ -449,8 +449,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Valheim Modding Library</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
-    <AssemblyName>JotunnLib</AssemblyName>
-    <RootNamespace>JotunnLib</RootNamespace>
+    <AssemblyName>Jotunn</AssemblyName>
+    <RootNamespace>Jotunn</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
