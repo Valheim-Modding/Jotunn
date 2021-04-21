@@ -116,6 +116,8 @@ namespace JotunnBuildTask
             }
 
             HookGenerator hookGenerator = new HookGenerator(modder, Path.GetFileName(output));
+            
+            hookGenerator.HookPrivate = true;
 
             using (ModuleDefinition mOut = hookGenerator.OutputModule)
             {
