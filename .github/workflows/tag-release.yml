@@ -70,6 +70,11 @@ jobs:
           mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
 
+      - name: remove old hash, publicized dlls and mmhook dlls
+        run: |
+          rm -rf ~/VHINSTALL/valheim_server_Data/Managed/publicized_assemblies
+          rm -rf ~/VHINSTALL/BepInEx/plugins/MMHOOK
+
       - name: Set references to DLLs
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props

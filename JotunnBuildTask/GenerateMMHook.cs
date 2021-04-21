@@ -33,6 +33,9 @@ namespace JotunnBuildTask
         /// <param name="outputFolder">output file name</param>
         private bool HashAndCompare(string file, string outputFolder)
         {
+
+            Log.LogMessage(MessageImportance.High, $"Processing {file}");
+
             var hash = MD5HashFile(file);
 
             string hashFilePath = Path.Combine(outputFolder, Path.GetFileName(file) + ".hash");
@@ -46,17 +49,26 @@ namespace JotunnBuildTask
                 }
             }
 
-            if (!AssemblyPublicizer.PublicizeDll(file, ValheimPath))
+            // Try to publicize
+            if (!AssemblyPublicizer.PublicizeDll(file, ValheimPath, Log))
             {
                 return false;
             }
 
-            string publicizedFile = Path.Combine(Path.GetDirectoryName(file), PublicizedAssemblies,
+            /*string publicizedFile = Path.Combine(Path.GetDirectoryName(file), PublicizedAssemblies,
                 $"{Path.GetFileNameWithoutExtension(file)}_{Publicized}{Path.GetExtension(file)}");
 
             // only write the hash to file if HookGen was successful
             if (InvokeHookgen(publicizedFile, Path.Combine(outputFolder, $"{Mmhook}_{Path.GetFileNameWithoutExtension(file)}_{Publicized}{Path.GetExtension(file)}"), hash))
             {
+                File.WriteAllText(hashFilePath, hash);
+                return true;
+            }*/
+
+            // Try to generate HookGen
+            if (InvokeHookgen(file, Path.Combine(outputFolder, $"{Mmhook}_{Path.GetFileName(file)}"), hash))
+            {
+                // Only write if 
                 File.WriteAllText(hashFilePath, hash);
                 return true;
             }
@@ -90,23 +102,27 @@ namespace JotunnBuildTask
                 ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, ValheimServerData, Managed));
             }
             ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, UnstrippedCorlib));
+            
             /*
             foreach (var dir in ((BaseAssemblyResolver) modder.AssemblyResolver)?.GetSearchDirectories())
             {
                 Log.LogMessage(MessageImportance.High,$"Searching in {dir}");
             }
             */
+
             modder.Read();
 
             modder.MapDependencies();
 
             if (File.Exists(output))
             {
-                Console.WriteLine($"Clearing {output}");
+                Log.LogMessage(MessageImportance.High, $"Clearing {output}");
                 File.Delete(output);
             }
 
             HookGenerator hookGenerator = new HookGenerator(modder, Path.GetFileName(output));
+            
+            hookGenerator.HookPrivate = true;
 
             using (ModuleDefinition mOut = hookGenerator.OutputModule)
             {
@@ -115,7 +131,7 @@ namespace JotunnBuildTask
                 mOut.Write(output);
             }
 
-            Console.WriteLine($"Finished writing {output}");
+            Log.LogMessage(MessageImportance.High, $"Finished writing {output}");
 
             return true;
         }
