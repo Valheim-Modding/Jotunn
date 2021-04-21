@@ -19,6 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnBuildTask", "JotunnBu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{C48162A3-C7D9-4A0F-8CE2-C617FFFE6EB9}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		CONTRIBUTING.md = CONTRIBUTING.md
