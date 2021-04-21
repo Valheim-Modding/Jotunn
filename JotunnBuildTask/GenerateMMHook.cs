@@ -33,6 +33,9 @@ namespace JotunnBuildTask
         /// <param name="outputFolder">output file name</param>
         private bool HashAndCompare(string file, string outputFolder)
         {
+
+            Log.LogMessage(MessageImportance.High, $"Processing {file}");
+
             var hash = MD5HashFile(file);
 
             string hashFilePath = Path.Combine(outputFolder, Path.GetFileName(file) + ".hash");
@@ -100,10 +103,10 @@ namespace JotunnBuildTask
             }
             ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, UnstrippedCorlib));
             
-            /*foreach (var dir in ((BaseAssemblyResolver) modder.AssemblyResolver)?.GetSearchDirectories())
+            foreach (var dir in ((BaseAssemblyResolver) modder.AssemblyResolver)?.GetSearchDirectories())
             {
                 Log.LogMessage(MessageImportance.High,$"Searching in {dir}");
-            }*/
+            }
             
             modder.Read();
 
