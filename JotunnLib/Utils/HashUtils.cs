@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     /// <summary>
     ///     A util class for computing various hashes

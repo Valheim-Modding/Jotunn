@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using JotunnLib.Managers;
-using JotunnLib.Utils;
+using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace JotunnLib.Patches
+namespace Jotunn.Patches
 {
     internal class SkillsPatches 
     {

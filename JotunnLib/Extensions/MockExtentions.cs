@@ -1,5 +1,5 @@
-﻿using JotunnLib.Managers;
-using JotunnLib.Utils;
+﻿using Jotunn.Managers;
+using Jotunn.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace JotunnLib
+namespace Jotunn
 {
     internal static class ItemDropMockFix
     {

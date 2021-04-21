@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using JotunnLib.Utils;
-using JotunnLib.Entities;
+using Jotunn.Utils;
+using Jotunn.Entities;
 
-namespace JotunnLib.ConsoleCommands
+namespace Jotunn.ConsoleCommands
 {
     internal class ClearCommand : ConsoleCommand
     {

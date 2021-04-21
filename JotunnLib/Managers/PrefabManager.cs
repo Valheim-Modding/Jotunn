@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     /// <summary>
     ///     Manager for handling custom prefabs added to the game.

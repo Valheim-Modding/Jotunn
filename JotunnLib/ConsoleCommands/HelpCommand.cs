@@ -1,7 +1,7 @@
-﻿using JotunnLib.Managers;
-using JotunnLib.Entities;
+﻿using Jotunn.Managers;
+using Jotunn.Entities;
 
-namespace JotunnLib.ConsoleCommands
+namespace Jotunn.ConsoleCommands
 {
     internal class HelpCommand : ConsoleCommand
     {

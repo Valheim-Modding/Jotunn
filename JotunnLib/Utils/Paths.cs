@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     public static class Paths
     {

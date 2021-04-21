@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     /// <summary>
     ///     Helper class for C# Events.

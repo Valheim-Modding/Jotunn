@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using JotunnLib.Managers;
+using Jotunn.Managers;
 
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     /// <summary>
     ///     Original code from https://github.com/GoldenJude.

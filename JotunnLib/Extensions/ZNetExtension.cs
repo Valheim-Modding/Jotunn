@@ -1,4 +1,4 @@
-namespace JotunnLib
+namespace Jotunn
 {
     public static class ZNetExtension
     {

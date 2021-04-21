@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using BepInEx;
 using UnityEngine;
-using JotunnLib.Utils;
-using JotunnLib.Configs;
+using Jotunn.Utils;
+using Jotunn.Configs;
 using MonoMod.Cil;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     /// <summary>
     ///     Handles all logic that has to do with skills, and adding custom skills.
@@ -48,7 +48,7 @@ namespace JotunnLib.Managers
 
             if (asd && Skills.ContainsKey(result))
             {
-                JotunnLib.Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
+                Jotunn.Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
                 return Skills[result].Name;
             }
             return skillID;

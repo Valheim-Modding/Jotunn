@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using JotunnLib.Configs;
+using Jotunn.Configs;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     public class InputManager : IManager
     {

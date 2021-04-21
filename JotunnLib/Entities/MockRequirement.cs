@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JotunnLib.Entities
+namespace Jotunn.Entities
 {
     public static class MockRequirement
     {

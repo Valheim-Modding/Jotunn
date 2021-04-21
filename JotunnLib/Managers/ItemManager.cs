@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using JotunnLib.Utils;
-using JotunnLib.Entities;
-using JotunnLib.Configs;
+using Jotunn.Utils;
+using Jotunn.Entities;
+using Jotunn.Configs;
 using System.Linq;
 using UnityEngine.UI;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     /// <summary>
     ///    Manager for handling items, recipes, and status effects added to the game.

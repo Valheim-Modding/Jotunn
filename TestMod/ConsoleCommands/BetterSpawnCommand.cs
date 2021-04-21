@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using JotunnLib.Entities;
-using JotunnLib.Managers;
+using Jotunn.Entities;
+using Jotunn.Managers;
 
 namespace TestMod.ConsoleCommands
 {

@@ -4,11 +4,11 @@ using System.Reflection;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
-using JotunnLib;
-using JotunnLib.Configs;
-using JotunnLib.Entities;
-using JotunnLib.Managers;
-using JotunnLib.Utils;
+using Jotunn;
+using Jotunn.Configs;
+using Jotunn.Entities;
+using Jotunn.Managers;
+using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
 
@@ -71,7 +71,7 @@ namespace TestMod
         {
             orig(self, skillType, factor);
             Skills.Skill skill = self.GetSkill(skillType);
-            JotunnLib.Logger.LogWarning($"{skill.m_info.m_skill.ToString().ToLower()}");
+            Jotunn.Logger.LogWarning($"{skill.m_info.m_skill.ToString().ToLower()}");
         }
 
         // Called every frame
@@ -221,14 +221,14 @@ namespace TestMod
 
             // Load asset bundle from filesystem
             testAssets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
-            JotunnLib.Logger.LogInfo(testAssets);
+            Jotunn.Logger.LogInfo(testAssets);
 
             // Load asset bundle from filesystem
             blueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/blueprints");
-            JotunnLib.Logger.LogInfo(blueprintRuneBundle);
+            Jotunn.Logger.LogInfo(blueprintRuneBundle);
 
             // Embedded Resources
-            JotunnLib.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
+            Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
         }
 
         // Add custom key bindings
@@ -384,7 +384,7 @@ namespace TestMod
             var assetstream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TestMod.AssetsEmbedded.capeironbackpack");
             if (assetstream == null)
             {
-                JotunnLib.Logger.LogWarning("Requested asset stream could not be found.");
+                Jotunn.Logger.LogWarning("Requested asset stream could not be found.");
             }
             else
             {
@@ -392,7 +392,7 @@ namespace TestMod
                 var prefab = assetBundle.LoadAsset<GameObject>("Assets/Evie/CapeIronBackpack.prefab");
                 if (!prefab)
                 {
-                    JotunnLib.Logger.LogWarning($"Failed to load asset from bundle: {assetBundle}");
+                    Jotunn.Logger.LogWarning($"Failed to load asset from bundle: {assetBundle}");
                 }
                 else
                 {
@@ -488,7 +488,7 @@ namespace TestMod
                 }
                 catch (Exception ex)
                 {
-                    JotunnLib.Logger.LogError($"Error while adding cloned item: {ex.Message}");
+                    Jotunn.Logger.LogError($"Error while adding cloned item: {ex.Message}");
                 }
                 finally
                 {

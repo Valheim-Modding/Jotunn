@@ -4,14 +4,14 @@ using System.Globalization;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
-using JotunnLib.Managers;
-using JotunnLib.Utils;
+using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace JotunnLib.InGameConfig
+namespace Jotunn.InGameConfig
 {
     public class InGameConfig
     {

@@ -6,7 +6,7 @@
 
 using System;
 
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     /// <summary>
     ///     Priority attribute for PatchInitalizer.

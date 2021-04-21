@@ -2,7 +2,7 @@
 using System.Linq;
 using BepInEx;
 
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     internal class BepInExUtils
     {

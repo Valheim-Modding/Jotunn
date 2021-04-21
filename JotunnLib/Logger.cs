@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace JotunnLib
+namespace Jotunn
 {
     /// <summary>
     ///     A namespace wide Logger class, which automatically creates a <see cref="ManualLogSource" />

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JotunnLib.Configs;
-using JotunnLib.Entities;
-using JotunnLib.Utils;
+using Jotunn.Configs;
+using Jotunn.Entities;
+using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -13,7 +13,7 @@ using Image = UnityEngine.UI.Image;
 using Object = UnityEngine.Object;
 using Toggle = UnityEngine.UI.Toggle;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     public class GUIManager : IManager, IPointerClickHandler
     {

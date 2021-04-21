@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace JotunnLib.Configs
+namespace Jotunn.Configs
 {
     public class ButtonConfig
     {

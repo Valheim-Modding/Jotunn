@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using JotunnLib.Utils;
-using JotunnLib.Entities;
+using Jotunn.Utils;
+using Jotunn.Entities;
 
 namespace TestMod.ConsoleCommands
 {
@@ -24,7 +24,7 @@ namespace TestMod.ConsoleCommands
 
             foreach (Skills.SkillDef skillDef in skills.m_skills)
             {
-                JotunnLib.Logger.LogInfo(skillDef.m_skill.ToString().ToLower());
+                Jotunn.Logger.LogInfo(skillDef.m_skill.ToString().ToLower());
                 if (skillDef.m_skill.ToString().ToLower() == name)
                 {
                     Skills.Skill skill = skills.GetSkill(skillDef.m_skill);

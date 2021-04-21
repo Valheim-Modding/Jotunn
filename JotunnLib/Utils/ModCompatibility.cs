@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using JotunnLib.Managers;
+using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     public class ModCompatibility
     {

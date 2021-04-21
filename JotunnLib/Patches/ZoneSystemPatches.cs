@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using JotunnLib.Managers;
-using JotunnLib.Utils;
+using Jotunn.Managers;
+using Jotunn.Utils;
 
-namespace JotunnLib.Patches
+namespace Jotunn.Patches
 {
     internal class ZoneSystemPatches
     {

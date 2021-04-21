@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
-using JotunnLib.Utils;
+using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     /// <summary>
     ///     Handles all logic to do with synchronization between the client and server.

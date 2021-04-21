@@ -1,7 +1,7 @@
-﻿using JotunnLib.Configs;
-using JotunnLib.Managers;
+﻿using Jotunn.Configs;
+using Jotunn.Managers;
 
-namespace JotunnLib.Entities
+namespace Jotunn.Entities
 {
     /// <summary>
     ///     Main interface for adding custom recipes to the game.<br />

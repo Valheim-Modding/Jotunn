@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     /// <summary>
     /// Enum used for telling whether or not the mod should be needed by everyone in multiplayer games.

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using JotunnLib.Managers;
-using JotunnLib.Utils;
+using Jotunn.Managers;
+using Jotunn.Utils;
 
 namespace JotunnDoc.Docs
 {

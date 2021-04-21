@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using JotunnLib.Utils;
+using Jotunn.Utils;
 
-namespace JotunnLib.Configs
+namespace Jotunn.Configs
 {
     /// <summary>
     ///     Configuration class for adding custom skills.
