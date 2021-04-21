@@ -97,13 +97,18 @@ namespace JotunnLib.Configs
 
         private string _identifier;
 
+
+        /// <summary>
+        ///     Converts the SkillConfig to a printable string.
+        /// </summary>
+        /// <returns>String representation of the SkillConfig</returns>
         public override string ToString()
         {
             return $"SkillConfig(Identifier='{Identifier}', UID={UID}, Name='{Name}')";
         }
 
         /// <summary>
-        ///     Converts a JotunnLib SkillConfig into a Valheim SkillDef
+        ///     Converts a JotunnLib SkillConfig into a Valheim SkillDef.
         /// </summary>
         /// <returns>Valheim SkillDef representation of the SkillConfig</returns>
         public Skills.SkillDef ToSkillDef()
@@ -125,7 +130,7 @@ namespace JotunnLib.Configs
         }
 
         /// <summary>
-        ///     Creates a SkillConfig object for mods that previously used SkillInjector
+        ///     Creates a SkillConfig object for mods that previously used SkillInjector.
         /// </summary>
         /// <param name="identifier">Unique identifier of the new skill, ex: "com.jotunnlib.testmod.testskill"</param>
         /// <param name="uid">"id" from SkillInjector</param>
@@ -150,7 +155,7 @@ namespace JotunnLib.Configs
         }
 
         /// <summary>
-        ///     Loads a single SkillConfig from a JSON string
+        ///     Loads a single SkillConfig from a JSON string.
         /// </summary>
         /// <param name="json">JSON text</param>
         /// <returns>Loaded SkillConfig</returns>
@@ -160,7 +165,7 @@ namespace JotunnLib.Configs
         }
 
         /// <summary>
-        ///     Loads a list of SkillConfigs from a JSON string
+        ///     Loads a list of SkillConfigs from a JSON string.
         /// </summary>
         /// <param name="json">JSON text</param>
         /// <returns>Loaded list of SkillConfigs</returns>
