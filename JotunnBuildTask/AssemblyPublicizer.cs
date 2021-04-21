@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 using Mono.Cecil;
 
 namespace JotunnBuildTask
@@ -13,13 +15,13 @@ namespace JotunnBuildTask
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public static bool PublicizeDll(string file, string ValheimPath)
+        public static bool PublicizeDll(string file, string ValheimPath, TaskLoggingHelper Log)
         {
             var outputPath = Path.Combine(Path.GetDirectoryName(file), GenerateMMHook.PublicizedAssemblies);
 
             if (!File.Exists(file))
             {
-                Console.WriteLine($"File {file} not found.");
+                Log.LogMessage(MessageImportance.High, $"File {file} not found.");
                 return false;
             }
 
@@ -50,7 +52,7 @@ namespace JotunnBuildTask
             }
             catch (Exception exception)
             {
-                Console.WriteLine($"{exception.Message}");
+                Log.LogMessage(MessageImportance.High, $"{exception.Message}");
                 return false;
             }
 
@@ -95,8 +97,8 @@ namespace JotunnBuildTask
             }
             catch (Exception exception)
             {
-                Console.WriteLine($"Could not write file {outputFilename}.");
-                Console.WriteLine(exception.Message);
+                Log.LogMessage(MessageImportance.High, $"Could not write file {outputFilename}.");
+                Log.LogMessage(MessageImportance.High, exception.Message);
                 return false;
             }
 

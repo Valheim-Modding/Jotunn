@@ -47,7 +47,7 @@ namespace JotunnBuildTask
             }
 
             // Try to publicize
-            if (!AssemblyPublicizer.PublicizeDll(file, ValheimPath))
+            if (!AssemblyPublicizer.PublicizeDll(file, ValheimPath, Log))
             {
                 return false;
             }
@@ -63,14 +63,14 @@ namespace JotunnBuildTask
             }*/
 
             // Try to generate HookGen
-            if (!InvokeHookgen(file, Path.Combine(outputFolder, $"{Mmhook}_{Path.GetFileName(file)}"), hash))
+            if (InvokeHookgen(file, Path.Combine(outputFolder, $"{Mmhook}_{Path.GetFileName(file)}"), hash))
             {
-                return false;
+                // Only write if 
+                File.WriteAllText(hashFilePath, hash);
+                return true;
             }
 
-            // Write current hash to file if all previous actions succeeded
-            File.WriteAllText(hashFilePath, hash);
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace JotunnBuildTask
 
             if (File.Exists(output))
             {
-                Console.WriteLine($"Clearing {output}");
+                Log.LogMessage(MessageImportance.High, $"Clearing {output}");
                 File.Delete(output);
             }
 
@@ -126,7 +126,7 @@ namespace JotunnBuildTask
                 mOut.Write(output);
             }
 
-            Console.WriteLine($"Finished writing {output}");
+            Log.LogMessage(MessageImportance.High, $"Finished writing {output}");
 
             return true;
         }
