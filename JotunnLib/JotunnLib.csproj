@@ -449,8 +449,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Valheim Modding Library</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
-    <AssemblyName>Jotunn</AssemblyName>
-    <RootNamespace>Jotunn</RootNamespace>
+    <AssemblyName>JotunnLib</AssemblyName>
+    <RootNamespace>JotunnLib</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
