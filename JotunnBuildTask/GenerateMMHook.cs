@@ -103,11 +103,13 @@ namespace JotunnBuildTask
             }
             ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, UnstrippedCorlib));
             
+            /*
             foreach (var dir in ((BaseAssemblyResolver) modder.AssemblyResolver)?.GetSearchDirectories())
             {
                 Log.LogMessage(MessageImportance.High,$"Searching in {dir}");
             }
-            
+            */
+
             modder.Read();
 
             modder.MapDependencies();
