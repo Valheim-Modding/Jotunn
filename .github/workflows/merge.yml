@@ -102,8 +102,8 @@ jobs:
       # Upload artifact
       - uses: actions/upload-artifact@v2
         with:
-          name: JotunnLib-${{ steps.date.outputs.date }}.dll
-          path: JotunnLib/bin/Release/net462/JotunnLib.dll
+          name: Jotunn-${{ steps.date.outputs.date }}.dll
+          path: JotunnLib/bin/Release/net462/Jotunn.dll
 
       - uses: actions/upload-artifact@v2
         with:
