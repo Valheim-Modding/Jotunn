@@ -102,7 +102,7 @@ jobs:
       # Upload artifact
       - uses: actions/upload-artifact@v2
         with:
-          name: Jotunn-${{ steps.date.outputs.date }}.dll
+          name: Jotunn-${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}-${{ steps.gitversion.outputs.commitsSinceVersionSource }}.dll
           path: JotunnLib/bin/Release/net462/Jotunn.dll
 
       - uses: actions/upload-artifact@v2
