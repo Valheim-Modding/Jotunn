@@ -1,4 +1,4 @@
-# Loading Assets, the Jötunn way
+﻿# Loading Assets, the Jötunn way
 
 
 
@@ -38,7 +38,7 @@ Another option is to embed our resources inside the binary itself. You may do th
 
 
 ### Referencing our assets
-In order to load our resources, we can utilise Jötunn's [AssetUtils](xref:JotunnLib.Utils.AssetUtils) helper methods, such as [LoadTexture](xref:JotunnLib.Utils.AssetUtils.LoadTexture(System.String,System.Boolean)), [LoadAssetBundle](xref:JotunnLib.Utils.AssetUtils.LoadAssetBundle(System.String)), [LoadAssetBundleFromResources](xref:JotunnLib.Utils.AssetUtils.LoadAssetBundleFromResources(System.String,System.Reflection.Assembly)). The method bellow showcases a number of ways to load your assets into various forms of objects.
+In order to load our resources, we can utilise Jötunn's [AssetUtils](xref:Jotunn.Utils.AssetUtils) helper methods, such as [LoadTexture](xref:Jotunn.Utils.AssetUtils.LoadTexture(System.String,System.Boolean)), [LoadAssetBundle](xref:Jotunn.Utils.AssetUtils.LoadAssetBundle(System.String)), [LoadAssetBundleFromResources](xref:Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources(System.String,System.Reflection.Assembly)). The method bellow showcases a number of ways to load your assets into various forms of objects.
 
 ```cs
 private void LoadAssets()

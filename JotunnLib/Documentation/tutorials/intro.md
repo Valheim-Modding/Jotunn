@@ -19,6 +19,6 @@ In this tutorial, we will cover:
 - Mod interoperable [inputs](data/inputs.md)
 
 
-Everything that you interact with will be through the various [managers](xref:JotunnLib.Managers), most of which will be Singletons that can be accessed through their `Instance` property. There are also various [utilities](xref:JotunnLib.Utils) which can be assist in common tasks.
+Everything that you interact with will be through the various [managers](xref:Jotunn.Managers), most of which will be Singletons that can be accessed through their `Instance` property. There are also various [utilities](xref:Jotunn.Utils) which can be assist in common tasks.
 
 For information on how to setup a mod with JötunnLib, see [Getting started](getting-started.md).
