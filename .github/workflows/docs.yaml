@@ -47,6 +47,16 @@ jobs:
           mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
 
+      - name: remove old hash, publicized dlls and mmhook dlls
+        run: |
+          rm -rf ~/VHINSTALL/valheim_server_Data/Managed/publicized_assemblies
+          rm -rf ~/VHINSTALL/BepInEx/plugins/MMHOOK
+
+      # Build DLLs
+      - name: Build solution
+        run: |
+          msbuild JotunnLib.sln /p:Configuration=Debug
+
       # Build docs
       - uses: nikeee/docfx-action@v1.0.0
         name: Build documentation
