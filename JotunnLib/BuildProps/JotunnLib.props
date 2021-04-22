@@ -1,16 +1,10 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="EnsureEnvironmentPropsImport" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project needs a Environment.props file with the path to your Valheim installation. See https://github.com/Valheim-Modding/JotunnModStub. {0} is missing.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)Environment.props')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)Environment.props'))" />
-  </Target>
   <Import Project="$(SolutionDir)Environment.props" Condition="'$(VALHEIM_INSTALL)' == '' And Exists('$(SolutionDir)Environment.props')"/>
-  <Import Project="$(SolutionDir)DoPrebuild.props" Condition="'$(ExecutePrebuild)' == ''" />
+  <Import Project="$(SolutionDir)DoPrebuild.props" Condition="Exists('$(SolutionDir)DoPrebuild.props') And '$(ExecutePrebuild)' == ''" />
   <PropertyGroup>
     <GenerateResourceNeverLockTypeAssemblies>true</GenerateResourceNeverLockTypeAssemblies>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="Exists('$(SolutionDir)Environment.props')">
     <Reference Include="assembly_googleanalytics_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_googleanalytics_publicized.dll</HintPath>
       <Private>false</Private>
@@ -415,11 +409,11 @@
   </ItemGroup>
   <UsingTask TaskName="GenerateMMHook" AssemblyFile="JotunnBuildTask.dll" />
 
-  <Target Name="JotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true'" >
+  <Target Name="JotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(SolutionDir)Environment.props')" >
     <Message Importance="High" Text="Executing Jotunn Prebuild Task creating MMHOOK dlls"/> 
     <GenerateMMHook ValheimPath="$(VALHEIM_INSTALL)" />
   </Target>
-  <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'false'" >
+  <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'false' And Exists('$(SolutionDir)Environment.props')" >
     <Message Importance="High" Text="Skipping MMHOOK dll generation"/>
   </Target>
 </Project>

@@ -436,7 +436,13 @@
     </Reference>
   </ItemGroup>
   <Import Project="BuildProps\version.props" Condition="Exists('BuildProps\version.props')" />
-  <Import Project="..\Environment.props" />
+  <Target Name="EnsureEnvironmentPropsImport" BeforeTargets="PrepareForBuild">
+      <PropertyGroup>
+          <ErrorText>This project needs a Environment.props file with the path to your Valheim installation. See https://github.com/Valheim-Modding/Jotunn. {0} is missing.</ErrorText>
+      </PropertyGroup>
+      <Error Condition="!Exists('$(SolutionDir)Environment.props')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)Environment.props'))" />
+  </Target>
+  <Import Project="$(SolutionDir)Environment.props" Condition="Exists('$(SolutionDir)Environment.props')"/>
   <Import Project="BuildProps\JotunnBuildTask.props" />
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'" AfterTargets="Build">
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot;" />
