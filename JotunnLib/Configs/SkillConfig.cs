@@ -108,7 +108,7 @@ namespace Jotunn.Configs
         }
 
         /// <summary>
-        ///     Converts a JotunnLib SkillConfig into a Valheim SkillDef.
+        ///     Converts a Jotunn SkillConfig into a Valheim SkillDef.
         /// </summary>
         /// <returns>Valheim SkillDef representation of the SkillConfig</returns>
         public Skills.SkillDef ToSkillDef()
@@ -132,13 +132,13 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Creates a SkillConfig object for mods that previously used SkillInjector.
         /// </summary>
-        /// <param name="identifier">Unique identifier of the new skill, ex: "com.jotunnlib.testmod.testskill"</param>
+        /// <param name="identifier">Unique identifier of the new skill, ex: "com.jotunn.testmod.testskill"</param>
         /// <param name="uid">"id" from SkillInjector</param>
         /// <param name="name">"name" from SkillInjector</param>
         /// <param name="description">"description" from SkillInjector</param>
         /// <param name="increaseStep">"increment" from SkillInjector</param>
         /// <param name="icon">"icon" from SkillInjector</param>
-        /// <returns>New SkillConfig object that bridges SkillInjector to JotunnLib without losing user progress</returns>
+        /// <returns>New SkillConfig object that bridges SkillInjector to Jotunn without losing user progress</returns>
         /// <remarks>For any new skills please do not use this method!</remarks>
         [Obsolete("This is kept for easy compatibility with SkillInjector. Use other ways of registering skills if possible to avoid conflicts with other mods")]
         public static SkillConfig FromSkillInjector(string identifier, Skills.SkillType uid, string name, string description, float increaseStep, Sprite icon)

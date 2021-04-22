@@ -49,17 +49,17 @@ private void LoadAssets()
 
     // Load asset bundle from filesystem
     TestAssets = AssetUtils.LoadAssetBundle("JotunnModExample/Assets/jotunnlibtest");
-    JotunnLib.Logger.LogInfo(TestAssets);
+    Jotunn.Logger.LogInfo(TestAssets);
 
     // Load asset bundle from filesystem
     BlueprintRuneBundle = AssetUtils.LoadAssetBundle("JotunnModExample/Assets/blueprints");
-    JotunnLib.Logger.LogInfo(BlueprintRuneBundle);
+    Jotunn.Logger.LogInfo(BlueprintRuneBundle);
     
     //Load embedded resources
     embeddedResourceBundle = AssetUtils.LoadAssetBundleFromResources("capeironbackpack");
     backpackPrefab = embeddedResourceBundle.LoadAsset<GameObject>("Assets/Evie/CapeIronBackpack.prefab");
 
     // Embedded Resources
-    JotunnLib.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
+    Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
 }
 ```

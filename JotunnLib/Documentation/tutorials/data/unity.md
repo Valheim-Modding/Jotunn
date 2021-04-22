@@ -32,7 +32,7 @@ Throughout the code, we will reference code snippets from an example project. Th
 
 To add the item into the game, we are going to be utilising various manager and utility methods provided by JVL.
 
-[ItemManager.Instance.AddItem(CustomItem item)](xref:Jotunn.Managers.ItemManager.AddItem(JotunnLib.Entities.CustomItem)) method.
+[ItemManager.Instance.AddItem(CustomItem item)](xref:Jotunn.Managers.ItemManager.AddItem(Jotunn.Entities.CustomItem)) method.
 But what is a `CustomItem` ?
 
 ### CustomItem

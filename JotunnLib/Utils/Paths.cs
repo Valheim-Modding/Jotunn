@@ -4,7 +4,7 @@ namespace Jotunn.Utils
 {
     public static class Paths
     {
-        public static string JotunnLibFolder
+        public static string JotunnFolder
         {
             get
             {
@@ -13,7 +13,7 @@ namespace Jotunn.Utils
             }
         }
 
-        public static string CustomItemDataFolder => Path.Combine(JotunnLibFolder, "CustomItemData");
+        public static string CustomItemDataFolder => Path.Combine(JotunnFolder, "CustomItemData");
 
         public static string LanguageTranslationsFolder => BepInEx.Paths.PluginPath;
     }

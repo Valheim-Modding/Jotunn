@@ -1,10 +1,4 @@
-﻿// JotunnLib
-// a Valheim mod
-// 
-// File:    PatchInitAttribute.cs
-// Project: JotunnLib
-
-using System;
+﻿using System;
 
 namespace Jotunn.Utils
 {

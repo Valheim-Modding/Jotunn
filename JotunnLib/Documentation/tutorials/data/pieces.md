@@ -25,7 +25,7 @@ In order for a prefab to be a _piece_, it must have the `Piece` component attach
 
 ### "Empty piece" example
 
-In this example we will create a stubbed piece to act as a demonstration for the minimal implementation for pieces, which will allow a piece to be selected and placed into the environment as a networked object. We add the [CustomPiece](xref:Jotunn.Entities.CustomPiece) via the [PieceManager](xref:Jotunn.Managers.PieceManager.AddPiece(JotunnLib.Entities.CustomPiece)).
+In this example we will create a stubbed piece to act as a demonstration for the minimal implementation for pieces, which will allow a piece to be selected and placed into the environment as a networked object. We add the [CustomPiece](xref:Jotunn.Entities.CustomPiece) via the [PieceManager](xref:Jotunn.Managers.PieceManager.AddPiece(Jotunn.Entities.CustomPiece)).
 
 ```cs
 private void AddEmptyItems()

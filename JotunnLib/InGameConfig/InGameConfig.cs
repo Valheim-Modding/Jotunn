@@ -153,7 +153,7 @@ namespace Jotunn.InGameConfig
 
             var innerWidth = configTab.GetComponent<RectTransform>().rect.width - 25f;
 
-            // Iterate over all dependent plugins (including JotunnLib itself)
+            // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true))
             {
                 // Create a header if there are any relevant configuration entries

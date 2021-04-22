@@ -171,14 +171,14 @@ namespace Jotunn.Managers
                 // Send values to server if it isn't a local instance
                 if (!ZNet.instance.IsLocalInstance())
                 {
-                    ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_JotunnLib_ApplyConfig), zPackage);
+                    ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_Jotunn_ApplyConfig), zPackage);
                 }
                 else
                 {
                     // If it is a local instance, send it to all connected peers
                     foreach (var peer in ZNet.instance.m_peers)
                     {
-                        ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_JotunnLib_ApplyConfig), zPackage);
+                        ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_Jotunn_ApplyConfig), zPackage);
                     }
                 }
             }
@@ -197,7 +197,7 @@ namespace Jotunn.Managers
 
             if (ZNet.instance.IsClientInstance())
             {
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_JotunnLib_IsAdmin), false);
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_Jotunn_IsAdmin), false);
             }
         }
 
@@ -205,9 +205,9 @@ namespace Jotunn.Managers
         internal void Game_Start(On.Game.orig_Start orig, Game self)
         {
             orig(self);
-            ZRoutedRpc.instance.Register(nameof(RPC_JotunnLib_IsAdmin), new Action<long, bool>(RPC_JotunnLib_IsAdmin));
-            ZRoutedRpc.instance.Register(nameof(RPC_JotunnLib_ConfigSync), new Action<long, ZPackage>(RPC_JotunnLib_ConfigSync));
-            ZRoutedRpc.instance.Register(nameof(RPC_JotunnLib_ApplyConfig), new Action<long, ZPackage>(RPC_JotunnLib_ApplyConfig));
+            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_IsAdmin), new Action<long, bool>(RPC_Jotunn_IsAdmin));
+            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_ConfigSync), new Action<long, ZPackage>(RPC_Jotunn_ConfigSync));
+            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_ApplyConfig), new Action<long, ZPackage>(RPC_Jotunn_ApplyConfig));
 
             if (ZNet.instance != null && ZNet.instance.IsLocalInstance())
             {
@@ -226,7 +226,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="configPkg"></param>
-        internal void RPC_JotunnLib_ApplyConfig(long sender, ZPackage configPkg)
+        internal void RPC_Jotunn_ApplyConfig(long sender, ZPackage configPkg)
         {
             if (ZNet.instance.IsClientInstance())
             {
@@ -247,7 +247,7 @@ namespace Jotunn.Managers
                     // Send to all other clients
                     foreach (var peer in ZNet.instance.m_peers.Where(x => x.m_uid != sender))
                     {
-                        ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_JotunnLib_ApplyConfig), configPkg);
+                        ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_Jotunn_ApplyConfig), configPkg);
                     }
 
                     // Apply config locally
@@ -261,7 +261,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="isAdmin"></param>
-        internal void RPC_JotunnLib_IsAdmin(long sender, bool isAdmin)
+        internal void RPC_Jotunn_IsAdmin(long sender, bool isAdmin)
         {
             // Client Receive
             if (ZNet.instance.IsClientInstance())
@@ -283,10 +283,10 @@ namespace Jotunn.Managers
                 {
                     var result = ZNet.instance.m_adminList.Contains(peer.m_socket.GetHostName());
                     Logger.LogInfo($"Sending admin status to peer #{sender}: {(result ? "Admin" : "no admin")}");
-                    ZRoutedRpc.instance.InvokeRoutedRPC(sender, nameof(RPC_JotunnLib_IsAdmin), result);
+                    ZRoutedRpc.instance.InvokeRoutedRPC(sender, nameof(RPC_Jotunn_IsAdmin), result);
 
                     // Also sending server-only configuration values to client
-                    RPC_JotunnLib_ConfigSync(sender, null);
+                    RPC_Jotunn_ConfigSync(sender, null);
                 }
             }
         }
@@ -340,7 +340,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="configPkg"></param>
-        internal void RPC_JotunnLib_ConfigSync(long sender, ZPackage configPkg)
+        internal void RPC_Jotunn_ConfigSync(long sender, ZPackage configPkg)
         {
             if (ZNet.instance.IsClientInstance())
             {
@@ -364,7 +364,7 @@ namespace Jotunn.Managers
                     var pkg = GenerateConfigZPackage(values);
 
                     Logger.LogDebug($"Sending {values.Count} configuration values to client {sender}");
-                    ZRoutedRpc.instance.InvokeRoutedRPC(sender, nameof(RPC_JotunnLib_ConfigSync), pkg);
+                    ZRoutedRpc.instance.InvokeRoutedRPC(sender, nameof(RPC_Jotunn_ConfigSync), pkg);
                 }
             }
         }

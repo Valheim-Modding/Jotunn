@@ -1,5 +1,5 @@
 ﻿# Adding custom console commands
-Custom console commands can be created by creating a class that inherits from [ConsoleCommand](xref:Jotunn.Entities.ConsoleCommand). The command can then be added by calling [AddConsoleCommand](xref:Jotunn.Managers.CommandManager.AddConsoleCommand(JotunnLib.Entities.ConsoleCommand)). The command should be added when your mod is loaded, in `Awake`.  
+Custom console commands can be created by creating a class that inherits from [ConsoleCommand](xref:Jotunn.Entities.ConsoleCommand). The command can then be added by calling [AddConsoleCommand](xref:Jotunn.Managers.CommandManager.AddConsoleCommand(Jotunn.Entities.ConsoleCommand)). The command should be added when your mod is loaded, in `Awake`.  
 
 This will add your custom console command into the game, and your command will be shown when the user types `help` into their console.
 

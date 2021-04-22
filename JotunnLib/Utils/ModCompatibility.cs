@@ -42,7 +42,7 @@ namespace Jotunn.Utils
         private static void ZNet_SendPeerInfo(On.ZNet.orig_SendPeerInfo orig, ZNet self, ZRpc rpc, string password)
         {
             // Only client needs to register this one
-            rpc.Register(nameof(RPC_JotunnLib_ReceiveServerVersionData), new Action<ZRpc, ZPackage>(RPC_JotunnLib_ReceiveServerVersionData));
+            rpc.Register(nameof(RPC_Jotunn_ReceiveServerVersionData), new Action<ZRpc, ZPackage>(RPC_Jotunn_ReceiveServerVersionData));
 
             On.ZRpc.Invoke += AppendPackage;
             orig(self, rpc, password);
@@ -78,7 +78,7 @@ namespace Jotunn.Utils
 
                     if (!clientVersion.Equals(serverVersion))
                     {
-                        rpc.Invoke(nameof(RPC_JotunnLib_ReceiveServerVersionData), serverVersion.ToZPackage());
+                        rpc.Invoke(nameof(RPC_Jotunn_ReceiveServerVersionData), serverVersion.ToZPackage());
 
                         rpc.Invoke("Error", 3);
                         return;
@@ -86,7 +86,7 @@ namespace Jotunn.Utils
                 }
                 catch (EndOfStreamException)
                 {
-                    Logger.LogError("Reading beyond end of stream. Probably client without JotunnLib tried to connect.");
+                    Logger.LogError("Reading beyond end of stream. Probably client without Jotunn tried to connect.");
 
                     // Client did not send appended package, just disconnect with the incompatible version error
                     rpc.Invoke("Error", 3);
@@ -331,7 +331,7 @@ namespace Jotunn.Utils
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="data"></param>
-        private static void RPC_JotunnLib_ReceiveServerVersionData(ZRpc sender, ZPackage data)
+        private static void RPC_Jotunn_ReceiveServerVersionData(ZRpc sender, ZPackage data)
         {
             Logger.LogDebug("Received version data from server");
             if (ZNet.instance.IsClientInstance())

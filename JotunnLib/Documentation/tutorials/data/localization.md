@@ -23,7 +23,7 @@ An example of a path which will be read for localization at run time may be: `Be
 All .json files within such a directory will be iterated through and localizations added for each of those languages.
 
 ## Hardcoding
-Localizations may also be hardcoded into your plugin by invoking the [AddLocalization](xref:Jotunn.Managers.LocalizationManager.AddLocalization(JotunnLib.Configs.LocalizationConfig)) method.
+Localizations may also be hardcoded into your plugin by invoking the [AddLocalization](xref:Jotunn.Managers.LocalizationManager.AddLocalization(Jotunn.Configs.LocalizationConfig)) method.
 
 ```cs
 // Add translations for the custom item in AddClonedItems

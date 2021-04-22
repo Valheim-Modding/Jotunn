@@ -1,5 +1,5 @@
 # Conceptual documentation
-This section contains information about how Valheim itself works, as well as how JotunnLib interfaces with the game. There likely will not be many code examples here, but rather high level overviews of how various systems work.  
+This section contains information about how Valheim itself works, as well as how Jotunn interfaces with the game. There likely will not be many code examples here, but rather high level overviews of how various systems work.  
 
 For code examples and tutorials, checkout the [tutorials section](../tutorials/intro.md).
 

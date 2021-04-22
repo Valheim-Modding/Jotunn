@@ -22,6 +22,7 @@ namespace TestMod
         private const string ModGUID = "com.jotunn.testmod";
         private const string ModName = "Jotunn Test Mod";
         private const string ModVersion = "0.1.0";
+        private const string JotunnTestModConfigSection = "JotunnTest";
 
         private Sprite testSprite;
         private Texture2D testTex;
@@ -183,29 +184,29 @@ namespace TestMod
 
             // Add server config which gets pushed to all clients connecting and can only be edited by admins
             // In local/single player games the player is always considered the admin
-            Config.Bind("JotunnLibTest", "StringValue1", "StringValue",
+            Config.Bind(JotunnTestModConfigSection, "StringValue1", "StringValue",
                 new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind("JotunnLibTest", "FloatValue1", 750f,
+            Config.Bind(JotunnTestModConfigSection, "FloatValue1", 750f,
                 new ConfigDescription("Server side float", new AcceptableValueRange<float>(500, 1000),
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind("JotunnLibTest", "IntegerValue1", 200,
+            Config.Bind(JotunnTestModConfigSection, "IntegerValue1", 200,
                 new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind("JotunnLibTest", "BoolValue1", false,
+            Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
                 new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             // Add client config to test ModCompatibility
-            Config.Bind("JotunnLibTest", "EnableVersionMismatch", false, new ConfigDescription("Enable to test ModCompatibility module"));
-            forceVersionMismatch = (bool)Config["JotunnLibTest", "EnableVersionMismatch"].BoxedValue;
+            Config.Bind(JotunnTestModConfigSection, "EnableVersionMismatch", false, new ConfigDescription("Enable to test ModCompatibility module"));
+            forceVersionMismatch = (bool)Config[JotunnTestModConfigSection, "EnableVersionMismatch"].BoxedValue;
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
-            Config.Bind("JotunnLibTest", "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+            Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
         }
 
         // React on changed settings
         private void Config_SettingChanged(object sender, SettingChangedEventArgs e)
         {
-            if (e.ChangedSetting.Definition.Section == "JotunnLibTest" && e.ChangedSetting.Definition.Key == "EnableVersionMismatch")
+            if (e.ChangedSetting.Definition.Section == JotunnTestModConfigSection && e.ChangedSetting.Definition.Key == "EnableVersionMismatch")
             {
                 forceVersionMismatch = (bool)e.ChangedSetting.BoxedValue;
                 SetVersion();
@@ -243,7 +244,7 @@ namespace TestMod
             evilSwordSpecial = new ButtonConfig
             {
                 Name = "EvilSwordSpecialAttack",
-                Key = (KeyCode)Config["JotunnLibTest", "EvilSwordSpecialAttack"].BoxedValue,
+                Key = (KeyCode)Config[JotunnTestModConfigSection, "EvilSwordSpecialAttack"].BoxedValue,
                 HintToken = "$evilsword_beevil"
             };
             InputManager.Instance.AddButton(ModGUID, evilSwordSpecial);
@@ -440,7 +441,7 @@ namespace TestMod
         // You can use the Cache of the PrefabManager in here
         private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
-            // You want that to run only once, JotunnLib has the item cached for the game session
+            // You want that to run only once, Jotunn has the item cached for the game session
             if (!clonedItemsProcessed)
             {
                 try

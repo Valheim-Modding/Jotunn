@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(SolutionDir)Environment.props" Condition="'$(VALHEIM_INSTALL)' == ''"/>
   <Import Project="$(SolutionDir)DoPrebuild.props" Condition="'$(ExecutePrebuild)' == ''" />
   <PropertyGroup>
@@ -410,7 +410,7 @@
   <UsingTask TaskName="GenerateMMHook" AssemblyFile="JotunnBuildTask.dll" />
 
   <Target Name="JotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true'" >
-    <Message Importance="High" Text="Executing JotunnLib Prebuild Task creating MMHOOK dlls"/> 
+    <Message Importance="High" Text="Executing Jotunn Prebuild Task creating MMHOOK dlls"/> 
     <GenerateMMHook ValheimPath="$(VALHEIM_INSTALL)" />
   </Target>
   <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'false'" >

@@ -3,7 +3,7 @@ Creation of custom skills is done through the [SkillManager](xref:Jotunn.Manager
 
 This can be done in two ways:
 - Through a JSON file, using [AddSkillsFromJson](xref:Jotunn.Managers.SkillManager.AddSkillsFromJson(System.String))
-- Through code, using [AddSkill](xref:Jotunn.Managers.SkillManager.AddSkill(JotunnLib.Configs.SkillConfig))
+- Through code, using [AddSkill](xref:Jotunn.Managers.SkillManager.AddSkill(Jotunn.Configs.SkillConfig))
 
 The two approaches can both be used at once, and can be mixed as you see fit.
 
@@ -91,7 +91,7 @@ private void Awake()
 ### Adding skills through code
 _This example requires [assets](assets.md) to be loaded._  
 
-To create a new skill, you must call the [AddSkill](xref:Jotunn.Managers.SkillManager.AddSkill(JotunnLib.Configs.SkillConfig)) method.
+To create a new skill, you must call the [AddSkill](xref:Jotunn.Managers.SkillManager.AddSkill(Jotunn.Configs.SkillConfig)) method.
 This should be called from within your mod's `Awake` method, and it will return a randomly generated SkillType for your new skill.
 ```cs
 public static Skills.SkillType TestSkillType = 0;
@@ -102,7 +102,7 @@ private void Awake()
     Sprite testSkillSprite = Sprite.Create(testTex, new Rect(0f, 0f, testTex.width, testTex.height), Vector2.zero);
     TestSkillType = SkillManager.Instance.AddSkill(new SkillConfig
     {
-        Identifier = "com.jotunnlib.JotunnModExample.testskill",
+        Identifier = "com.jotunn.JotunnModExample.testskill",
         Name = "TestingSkill",
         Description = "A nice testing skill!",
         Icon = testSkillSprite,

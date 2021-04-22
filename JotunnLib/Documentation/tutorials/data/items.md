@@ -14,11 +14,11 @@ private voic Awake()
 }
 ```
 
-First we use the [CustomItem](xref:Jotunn.Entities.CustomItem) constructor to define the name of our item, and the existing prefab name which it should be cloned from. The item can be immediately added via the [AddItem](xref:Jotunn.Managers.ItemManager.AddItem(JotunnLib.Entities.CustomItem)) method, and then modified to make our clone a little bit more unique.
+First we use the [CustomItem](xref:Jotunn.Entities.CustomItem) constructor to define the name of our item, and the existing prefab name which it should be cloned from. The item can be immediately added via the [AddItem](xref:Jotunn.Managers.ItemManager.AddItem(Jotunn.Entities.CustomItem)) method, and then modified to make our clone a little bit more unique.
 ```cs
 private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
 {
-    // You want that to run only once, JotunnLib has the item cached for the game session
+    // You want that to run only once, Jotunn has the item cached for the game session
     if (!clonedItemsAdded)
     {
         // Create and add a custom item based on SwordBlackmetal
@@ -36,7 +36,7 @@ private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, Ob
         clonedItemsAdded = true;
     }
 
-    // Hook is prefix, we just need to be able to get the vanilla prefabs, JotunnLib registers them in ObjectDB
+    // Hook is prefix, we just need to be able to get the vanilla prefabs, Jotunn registers them in ObjectDB
     orig(self, other);
 }
 ```
