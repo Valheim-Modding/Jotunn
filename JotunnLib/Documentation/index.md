@@ -7,12 +7,15 @@ Jötunn (/ˈjɔːtʊn/, "giant"), the Valheim Library was created with the inten
 We have lots of features planned for the future, and did hold back on what we wanted to release with so that we could focus on house keeping post-merger, however I hope the features we have implemented thus far prove to be a useful base and provide an idea of the consistency we aim to deliver moving forwards.
 
 ## Source code
-The source code for Jötunn (and the accompanying test/demo mod) is available on GitHub, [here](https://github.com/Valheim-Modding) 
+The source code for Jötunn (and the accompanying test/demo mod) is available on [GitHub](https://github.com/Valheim-Modding).
+
+## Getting started
+A quick overview of the prerequisites to start using Jötunn for beginners and advanced users can be found [here](tutorials/getting-started.md).
 
 ## Tutorials
-This section contains tutorials on how to get started with using JötunnLib, and how to create a basic mod. View it [here](tutorials/intro.md)
+This section contains tutorials on how to get started with Valheim modding using Jötunn. View it [here](tutorials/intro.md)
 
-_note: the tutorial uses the [Mod Stub](https://github.com/Valheim-Modding/JotunnModStub) to work towards creating the final [Example mod](https://github.com/Valheim-Modding/JotunnModExample)._
+_note: the tutorial uses the [Mod Stub](https://github.com/Valheim-Modding/JotunnModStub) to work towards creating the final [Example mod](https://github.com/Valheim-Modding/JotunnModExample) from scratch. If you just want to look up some of the concepts of Jötunn skip the intro part and browse to the specific topic you are interested in._
 
 ## Conceptual
 This section contains information about how Valheim itself works, as well as how JötunnLib interfaces with the game. There likely will not be many code examples here, but rather high level overviews of how various systems work. View it [here](conceptual/intro.md) 
