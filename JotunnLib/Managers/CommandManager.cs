@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using JotunnLib.Entities;
-using JotunnLib.ConsoleCommands;
+using Jotunn.Entities;
+using Jotunn.ConsoleCommands;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     /// <summary>
     ///     Handles loading of all custom console and chat commands.

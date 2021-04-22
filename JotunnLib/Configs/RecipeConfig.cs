@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using JotunnLib.Entities;
+using Jotunn.Entities;
 
-namespace JotunnLib.Configs
+namespace Jotunn.Configs
 {
     /// <summary>
     ///     Configuration class for adding custom recipes.

@@ -1,5 +1,5 @@
-﻿using JotunnLib.Managers;
-using JotunnLib.Utils;
+﻿using Jotunn.Managers;
+using Jotunn.Utils;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace JotunnLib
+namespace Jotunn
 {
     public static class ItemDropExtension
     {

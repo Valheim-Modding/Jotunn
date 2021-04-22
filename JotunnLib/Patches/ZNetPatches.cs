@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using JotunnLib.Utils;
+using Jotunn.Utils;
 
-namespace JotunnLib.Patches
+namespace Jotunn.Patches
 {
     internal class ZNetPatches
     {

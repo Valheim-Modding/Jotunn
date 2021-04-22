@@ -1,5 +1,5 @@
 ﻿using System;
-using JotunnLib.Utils;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace JotunnDoc.Patches

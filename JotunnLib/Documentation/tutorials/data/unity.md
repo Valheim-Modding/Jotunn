@@ -32,11 +32,11 @@ Throughout the code, we will reference code snippets from an example project. Th
 
 To add the item into the game, we are going to be utilising various manager and utility methods provided by JVL.
 
-[ItemManager.Instance.AddItem(CustomItem item)](xref:JotunnLib.Managers.ItemManager.AddItem(JotunnLib.Entities.CustomItem)) method.
+[ItemManager.Instance.AddItem(CustomItem item)](xref:Jotunn.Managers.ItemManager.AddItem(Jotunn.Entities.CustomItem)) method.
 But what is a `CustomItem` ?
 
 ### CustomItem
-A [CustomItem](xref:JotunnLib.Entities.CustomItem) can be instantiated a different number of ways, to facilitate different workflows. In this example we will be providing:
+A [CustomItem](xref:Jotunn.Entities.CustomItem) can be instantiated a different number of ways, to facilitate different workflows. In this example we will be providing:
 
 * A `GameObject` that will hold a reference to the item prefab. This prefab contains an `ItemDrop` component.
 * A `bool` called FixReferences

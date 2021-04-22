@@ -1,9 +1,9 @@
-﻿using JotunnLib.Entities;
+﻿using Jotunn.Entities;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     /// <summary>
     ///     Manager for handling custom pieces added to the game.

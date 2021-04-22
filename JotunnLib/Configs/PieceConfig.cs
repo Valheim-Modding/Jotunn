@@ -1,7 +1,7 @@
-﻿using JotunnLib.Entities;
+﻿using Jotunn.Entities;
 using UnityEngine;
 
-namespace JotunnLib.Configs
+namespace Jotunn.Configs
 {
     public class PieceConfig
     {

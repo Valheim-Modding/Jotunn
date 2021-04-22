@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using UnityEngine;
-using JotunnLib.Managers;
-using JotunnLib.Utils;
+using Jotunn.Managers;
+using Jotunn.Utils;
 
 namespace JotunnDoc.Docs
 {

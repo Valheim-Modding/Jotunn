@@ -1,8 +1,8 @@
-﻿using JotunnLib.Configs;
-using JotunnLib.Managers;
+﻿using Jotunn.Configs;
+using Jotunn.Managers;
 using UnityEngine;
 
-namespace JotunnLib.Entities
+namespace Jotunn.Entities
 {
     /// <summary>
     ///     Main interface for adding custom items to the game.<br />

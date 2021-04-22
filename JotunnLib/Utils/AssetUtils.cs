@@ -5,7 +5,7 @@ using BepInEx;
 using System.Reflection;
 using System.Linq;
 
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     /// <summary>
     ///     Util functions related to loading assets at runtime.

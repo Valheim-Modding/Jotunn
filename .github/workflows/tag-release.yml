@@ -105,9 +105,9 @@ jobs:
       - name: Build solution
         run: |
           msbuild JotunnLib.sln /p:Configuration=Release
-          mv JotunnLib/bin/Release/net462/JotunnLib.dll JotunnLib.dll
+          mv JotunnLib/bin/Release/net462/Jotunn.dll Jotunn.dll
           msbuild JotunnLib.sln /p:Configuration=Debug
-          mv JotunnLib/bin/Debug/net462/JotunnLib.dll JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
+          mv JotunnLib/bin/Debug/net462/Jotunn.dll Jotunn-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
       - name: Publish the package to Nuget
         run: dotnet nuget push "JotunnLib/bin/Release/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
@@ -116,7 +116,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            JotunnLib.dll
-            JotunnLib-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
+            Jotunn.dll
+            Jotunn-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

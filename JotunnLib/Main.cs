@@ -5,10 +5,10 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using BepInEx;
-using JotunnLib.Managers;
-using JotunnLib.Utils;
+using Jotunn.Managers;
+using Jotunn.Utils;
 
-namespace JotunnLib
+namespace Jotunn
 {
     [BepInPlugin(ModGuid, ModName, Version)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
@@ -22,12 +22,12 @@ namespace JotunnLib
         /// <summary>
         ///     The name of the library.
         /// </summary>
-        public const string ModName = "JotunnLib";
+        public const string ModName = "Jotunn";
 
         /// <summary>
         ///     The BepInEx plugin Mod GUID being used.
         /// </summary>
-        public const string ModGuid = "com.jotunn.jotunnlib";
+        public const string ModGuid = "com.jotunn.jotunn";
 
         internal static GameObject RootObject;
 
@@ -36,10 +36,10 @@ namespace JotunnLib
         private void Awake()
         {
             // Initialize Logger
-            JotunnLib.Logger.Init();
+            Jotunn.Logger.Init();
 
             // Create and initialize all managers
-            RootObject = new GameObject("_JotunnLibRoot");
+            RootObject = new GameObject("_JotunnRoot");
             GameObject.DontDestroyOnLoad(RootObject);
 
             managers = new List<IManager>() 
@@ -63,7 +63,7 @@ namespace JotunnLib
                 Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
 
-            Logger.LogInfo("JotunnLib v" + Version + " loaded successfully");
+            Logger.LogInfo("Jotunn v" + Version + " loaded successfully");
         }
 
 
@@ -89,7 +89,7 @@ namespace JotunnLib
             // Display version in main menu
             if (SceneManager.GetActiveScene().name == "start")
             {
-                GUI.Label(new Rect(Screen.width - 100, 5, 100, 25), "JotunnLib v" + Version);
+                GUI.Label(new Rect(Screen.width - 100, 5, 100, 25), "Jotunn v" + Version);
             }
 
             // Fake MonoBehaviour event for GUIManager

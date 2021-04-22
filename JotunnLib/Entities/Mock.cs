@@ -1,7 +1,7 @@
-﻿using JotunnLib.Managers;
+﻿using Jotunn.Managers;
 using UnityEngine;
 
-namespace JotunnLib.Entities
+namespace Jotunn.Entities
 {
     /// <summary>
     ///     Helper class for creating Mock for a given vanilla Component

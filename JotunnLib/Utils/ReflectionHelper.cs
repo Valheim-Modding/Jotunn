@@ -4,7 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     public static class ReflectionHelper
     {

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using JotunnLib.Configs;
-using JotunnLib.Utils;
+using Jotunn.Configs;
+using Jotunn.Utils;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     /// <summary>
     ///     Handles all logic to do with managing the game's localizations.

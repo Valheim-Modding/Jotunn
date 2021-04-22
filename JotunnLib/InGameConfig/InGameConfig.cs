@@ -4,14 +4,14 @@ using System.Globalization;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
-using JotunnLib.Managers;
-using JotunnLib.Utils;
+using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace JotunnLib.InGameConfig
+namespace Jotunn.InGameConfig
 {
     public class InGameConfig
     {
@@ -153,7 +153,7 @@ namespace JotunnLib.InGameConfig
 
             var innerWidth = configTab.GetComponent<RectTransform>().rect.width - 25f;
 
-            // Iterate over all dependent plugins (including JotunnLib itself)
+            // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true))
             {
                 // Create a header if there are any relevant configuration entries

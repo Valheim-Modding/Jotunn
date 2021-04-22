@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace JotunnLib
+namespace Jotunn
 {
 
     static class ObjectExtensions

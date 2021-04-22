@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     internal class ZoneManager : IManager
     {

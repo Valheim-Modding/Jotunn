@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using JotunnLib.Managers;
+using Jotunn.Managers;
 using System;
 
-namespace JotunnLib.Configs
+namespace Jotunn.Configs
 {
     public class KeyHintConfig
     {

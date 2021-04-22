@@ -1,6 +1,6 @@
-﻿using JotunnLib.Managers;
+﻿using Jotunn.Managers;
 
-namespace JotunnLib.Entities
+namespace Jotunn.Entities
 {
     /// <summary>
     ///     Main interface for adding custom status effects to the game.<br />

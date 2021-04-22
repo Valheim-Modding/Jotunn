@@ -1,12 +1,6 @@
-﻿// JotunnLib
-// a Valheim mod
-// 
-// File:    PatchInitAttribute.cs
-// Project: JotunnLib
+﻿using System;
 
-using System;
-
-namespace JotunnLib.Utils
+namespace Jotunn.Utils
 {
     /// <summary>
     ///     Priority attribute for PatchInitalizer.

@@ -1,4 +1,4 @@
-![Banner](images/banner.png)
+﻿![Banner](images/banner.png)
 
 # Jötunn, the Valheim Library
 
@@ -18,7 +18,7 @@ _note: the tutorial uses the [Mod Stub](https://github.com/Valheim-Modding/Jotun
 This section contains information about how Valheim itself works, as well as how JötunnLib interfaces with the game. There likely will not be many code examples here, but rather high level overviews of how various systems work. View it [here](conceptual/intro.md) 
 
 ## API Documentation
-This section contains documentation on all of the public code within JötunnLib. View it [here](xref:JotunnLib)
+This section contains documentation on all of the public code within JötunnLib. View it [here](xref:Jotunn)
 
 ## Contributing
 Notice anything that can be improved, either in the docs or in the library itself?  

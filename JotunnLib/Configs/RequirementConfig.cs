@@ -1,6 +1,6 @@
-﻿using JotunnLib.Entities;
+﻿using Jotunn.Entities;
 
-namespace JotunnLib.Configs
+namespace Jotunn.Configs
 {
     public class RequirementConfig
     {

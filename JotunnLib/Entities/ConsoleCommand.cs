@@ -1,4 +1,4 @@
-﻿namespace JotunnLib.Entities
+﻿namespace Jotunn.Entities
 {
     /// <summary>
     ///     A custom console command.

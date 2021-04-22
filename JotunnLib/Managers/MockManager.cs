@@ -1,11 +1,11 @@
-﻿using JotunnLib.Entities;
+﻿using Jotunn.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     /// <summary>
     ///     Handles all logic to do with managing mocked prefabs added into the game.

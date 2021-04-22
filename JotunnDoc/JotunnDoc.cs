@@ -7,7 +7,7 @@ using JotunnDoc.Docs;
 namespace JotunnDoc
 {
     [BepInPlugin("com.bepinex.plugins.jotunndoc", "JotunnDoc", "0.1.0")]
-    [BepInDependency(JotunnLib.Main.ModGuid)]
+    [BepInDependency(Jotunn.Main.ModGuid)]
     public class JotunnDoc : BaseUnityPlugin
     {
         private List<Doc> docs;

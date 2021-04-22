@@ -1,4 +1,4 @@
-﻿using JotunnLib.Utils;
+﻿using Jotunn.Utils;
 using UnityEngine;
 
 namespace TestMod.PatchInit
@@ -14,11 +14,11 @@ namespace TestMod.PatchInit
             test1run = true;
             if (test2run == false)
             {
-                JotunnLib.Logger.LogError("Test2 did not run before Test1, check priority");
+                Jotunn.Logger.LogError("Test2 did not run before Test1, check priority");
             }
             else
             {
-                JotunnLib.Logger.LogInfo("Test1 passed");
+                Jotunn.Logger.LogInfo("Test1 passed");
             }
 
         }
@@ -29,11 +29,11 @@ namespace TestMod.PatchInit
             test2run = true;
             if (test1run)
             {
-                JotunnLib.Logger.LogError("This patch needs to run before Test1");
+                Jotunn.Logger.LogError("This patch needs to run before Test1");
             }
             else
             {
-                JotunnLib.Logger.LogInfo("Test2 passed");
+                Jotunn.Logger.LogInfo("Test2 passed");
             }
         }
 

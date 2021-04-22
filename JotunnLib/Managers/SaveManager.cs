@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using System.Runtime.CompilerServices;
-using JotunnLib.Utils;
+using Jotunn.Utils;
 using MonoMod.Cil;
 
-namespace JotunnLib.Managers
+namespace Jotunn.Managers
 {
     internal class SaveManager : IManager
     {
