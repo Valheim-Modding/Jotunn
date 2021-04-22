@@ -79,7 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyPublicizer.cs" />
-    <Compile Include="GenerateMMHook.cs" />
+    <Compile Include="JotunnBuildTask.cs" />
+    <Compile Include="MMHookGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
