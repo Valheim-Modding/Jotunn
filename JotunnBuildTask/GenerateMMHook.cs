@@ -55,25 +55,15 @@ namespace JotunnBuildTask
                 return false;
             }
 
-            /*string publicizedFile = Path.Combine(Path.GetDirectoryName(file), PublicizedAssemblies,
-                $"{Path.GetFileNameWithoutExtension(file)}_{Publicized}{Path.GetExtension(file)}");
-
-            // only write the hash to file if HookGen was successful
-            if (InvokeHookgen(publicizedFile, Path.Combine(outputFolder, $"{Mmhook}_{Path.GetFileNameWithoutExtension(file)}_{Publicized}{Path.GetExtension(file)}"), hash))
-            {
-                File.WriteAllText(hashFilePath, hash);
-                return true;
-            }*/
-
             // Try to generate HookGen
-            if (InvokeHookgen(file, Path.Combine(outputFolder, $"{Mmhook}_{Path.GetFileName(file)}"), hash))
+            if (!InvokeHookgen(file, Path.Combine(outputFolder, $"{Mmhook}_{Path.GetFileName(file)}"), hash))
             {
-                // Only write if 
-                File.WriteAllText(hashFilePath, hash);
-                return true;
+                return false;
             }
 
-            return false;
+            // Write hash if everything was built
+            File.WriteAllText(hashFilePath, hash);
+            return true;
         }
 
         /// <summary>
