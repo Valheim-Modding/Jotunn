@@ -5,12 +5,12 @@
     <GenerateResourceNeverLockTypeAssemblies>true</GenerateResourceNeverLockTypeAssemblies>
   </PropertyGroup>
   <Import Project="JotunnLibRefs.props" Condition="Exists('$(SolutionDir)Environment.props')" />
-  <UsingTask TaskName="GenerateMMHook" AssemblyFile="JotunnBuildTask.dll" />
-  <Target Name="JotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(SolutionDir)Environment.props')" >
+  <UsingTask TaskName="JotunnBuildTask" AssemblyFile="JotunnBuildTask.dll" />
+  <Target Name="JotunnBuildTaskRunner" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(SolutionDir)Environment.props')" >
     <Message Importance="High" Text="Executing Jotunn Prebuild Task creating MMHOOK dlls"/> 
-    <GenerateMMHook ValheimPath="$(VALHEIM_INSTALL)" />
+    <JotunnBuildTask ValheimPath="$(VALHEIM_INSTALL)" />
   </Target>
-  <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'false' And Exists('$(SolutionDir)Environment.props')" >
+  <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' != 'true' And Exists('$(SolutionDir)Environment.props')" >
     <Message Importance="High" Text="Skipping MMHOOK dll generation"/>
   </Target>
 </Project>
