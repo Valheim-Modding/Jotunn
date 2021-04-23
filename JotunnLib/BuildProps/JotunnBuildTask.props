@@ -2,14 +2,14 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="DoPrebuild.props" />
   <UsingTask TaskName="JotunnBuildTask" AssemblyFile="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\JotunnBuildTask.dll"/>
-  <Target Name="JotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(SolutionDir)Environment.props')" >
+  <Target Name="JotunnBuildTaskRunner" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(SolutionDir)Environment.props')" >
     <Message Importance="High" Text="Executing Jotunn Prebuild Task creating MMHOOK dlls"/>
     <JotunnBuildTask ValheimPath="$(VALHEIM_INSTALL)" />
   </Target>
   <Target Name="NoJotunnEnvProps" AfterTargets="BeforeBuild" Condition="!Exists('$(SolutionDir)Environment.props')">
     <Message Importance="High" Text="Cannot execute Jotunn prebuild task because Environment.props is missing." />
   </Target>
-  <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'false'" >
+  <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' != 'true'" >
     <Message Importance="High" Text="Skipping MMHOOK dll generation"/>
   </Target>
 </Project>

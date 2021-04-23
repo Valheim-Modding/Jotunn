@@ -21,7 +21,9 @@ namespace JotunnBuildTask
         /// <returns></returns>
         public static bool GenerateMMHook(string input, string mmhookFolder, string md5, string ValheimPath, TaskLoggingHelper Log)
         {
-            string output = Path.Combine(mmhookFolder, $"MMHOOK_{Path.GetFileName(input)}");
+            string output = Path.Combine(mmhookFolder, $"{JotunnBuildTask.Mmhook}_{Path.GetFileName(input)}");
+
+            Log.LogMessage(MessageImportance.High, $"Generating MMHOOK of {input}.");
 
             MonoModder modder = new MonoModder();
             modder.InputPath = input;
@@ -41,13 +43,6 @@ namespace JotunnBuildTask
                 ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, JotunnBuildTask.ValheimServerData, JotunnBuildTask.Managed));
             }
             ((BaseAssemblyResolver)modder.AssemblyResolver)?.AddSearchDirectory(Path.Combine(ValheimPath, JotunnBuildTask.UnstrippedCorlib));
-
-            /*
-            foreach (var dir in ((BaseAssemblyResolver) modder.AssemblyResolver)?.GetSearchDirectories())
-            {
-                Log.LogMessage(MessageImportance.High,$"Searching in {dir}");
-            }
-            */
 
             modder.Read();
 

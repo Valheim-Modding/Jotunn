@@ -27,6 +27,8 @@ namespace JotunnBuildTask
 
             try
             {
+                Log.LogMessage(MessageImportance.High, $"Publicizing {input}.");
+
                 assemblyDefinition = AssemblyDefinition.ReadAssembly(input);
                 if (Directory.Exists(Path.Combine(publicizedFolder, JotunnBuildTask.ValheimData,
                     JotunnBuildTask.Managed)))

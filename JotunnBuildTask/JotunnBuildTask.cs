@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using Mono.Cecil;
@@ -15,7 +16,7 @@ namespace JotunnBuildTask
         public string ValheimPath { get; set; }
 
         internal const string ValheimServerData = "valheim_server_Data";
-        internal const string ValheimData= "valheim_Data";
+        internal const string ValheimData = "valheim_Data";
         internal const string Managed = "Managed";
         internal const string UnstrippedCorlib = "unstripped_corlib";
         internal const string PublicizedAssemblies = "publicized_assemblies";
@@ -29,25 +30,37 @@ namespace JotunnBuildTask
         /// </summary>
         /// <param name="assembly">Valheim assembly</param>
         /// <param name="managedPath">Path to managed assemblies</param>
-        private bool HashAndCompare(string assembly, out string hash)
+        private bool HashAndCompare(string assembly, string mmhookfolder, out string hash)
         {
-
             Log.LogMessage(MessageImportance.High, $"Processing {assembly}");
 
             hash = MD5HashFile(assembly);
 
-            string hashFilePath = assembly + ".hash";
-            if (File.Exists(hashFilePath))
+            string oldHash = ReadHashFromDll(Path.Combine(mmhookfolder, $"{Mmhook}_{Path.GetFileName(assembly)}"));
+
+            return hash == oldHash;
+        }
+
+        private string ReadHashFromDll(string dllFile)
+        {
+            string result = "";
+
+            if (File.Exists(dllFile))
             {
-                // read hash and compare
-                var oldHash = File.ReadAllText(hashFilePath);
-                if (hash == oldHash)
+                AssemblyDefinition assemblyDefinition = AssemblyDefinition.ReadAssembly(dllFile);
+                foreach (var typeDefinition in assemblyDefinition.MainModule.Types.Where(x => x.Namespace == "BepHookGen"))
                 {
-                    return true;
+                    if (typeDefinition.Name.StartsWith("hash"))
+                    {
+                        result = typeDefinition.Name.Substring(4);
+                        break;
+                    }
                 }
+
+                assemblyDefinition.Dispose();
             }
 
-            return false;
+            return result;
         }
 
         /// <summary>
@@ -63,10 +76,6 @@ namespace JotunnBuildTask
 
         public override bool Execute()
         {
-
-            Log.LogMessage(MessageImportance.High, "Current folder:  " + Environment.CurrentDirectory);
-            Log.LogMessage(MessageImportance.High, "DLL Folder: " + Assembly.GetExecutingAssembly().CodeBase);
-
             try
             {
                 // Get managed folder of valheim or valheim_dedicated
@@ -101,7 +110,7 @@ namespace JotunnBuildTask
                 // Loop assemblies and check if the hash has changed
                 foreach (var assembly in Directory.GetFiles(managedFolder, "assembly_*.dll"))
                 {
-                    if (!HashAndCompare(assembly, out var hash))
+                    if (!HashAndCompare(assembly, mmhookFolder, out var hash) || !File.Exists(Path.Combine(publicizedFolder, $"{Path.GetFileNameWithoutExtension(assembly)}_{Publicized}{Path.GetExtension(assembly)}")))
                     {
                         try
                         {
@@ -110,19 +119,17 @@ namespace JotunnBuildTask
                             {
                                 return false;
                             }
-
+                            
                             // Try to generate MMHook
                             if (!MMHookGenerator.GenerateMMHook(assembly, mmhookFolder, hash, ValheimPath, Log))
                             {
                                 return false;
                             }
-
-                            // Write current hash to file if all previous actions succeeded
-                            File.WriteAllText(assembly + ".hash", hash);
                         }
                         catch (Exception ex)
                         {
                             Log.LogError($"Error occured on {assembly}");
+                            Log.LogError(ex.Message);
                             return false;
                         }
                     }
