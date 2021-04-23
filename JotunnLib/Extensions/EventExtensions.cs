@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using On.Steamworks;
 
 namespace Jotunn
 {
@@ -55,6 +57,16 @@ namespace Jotunn
                     Logger.LogError(e);
                 }
             }
+        }
+
+        public static void ClearEvent(this Action events, List<Action> items)
+        {
+            foreach (var @event in items)
+            {
+                events -= @event;
+            }
+
+            items.Clear();
         }
     }
 }
