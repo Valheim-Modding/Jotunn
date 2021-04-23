@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Jotunn.Managers;
+﻿using Jotunn.Managers;
 using UnityEngine;
 
 namespace JotunnDoc.Docs
@@ -11,10 +7,10 @@ namespace JotunnDoc.Docs
     {
         public RecipeDoc() : base("JotunnDoc/Docs/conceptual/objects/recipe-list.md")
         {
-            ItemManager.Instance.OnItemsRegistered += DocRecipes;
+            ItemManager.OnItemsRegistered += DocRecipes;
         }
 
-        private void DocRecipes(object sender, EventArgs e)
+        private void DocRecipes()
         {
             Debug.Log("Documenting recipes");
 

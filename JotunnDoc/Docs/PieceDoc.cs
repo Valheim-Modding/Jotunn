@@ -10,10 +10,10 @@ namespace JotunnDoc.Docs
     {
         public PieceDoc() : base("JotunnDoc/Docs/conceptual/pieces/piece-list.md")
         {
-            PieceManager.Instance.OnPiecesRegistered += docPieces;
+            PieceManager.OnPiecesRegistered += docPieces;
         }
 
-        public void docPieces(object sender, EventArgs e)
+        public void docPieces()
         {
             Debug.Log("Documenting pieces");
 

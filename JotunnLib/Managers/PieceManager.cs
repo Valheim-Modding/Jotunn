@@ -22,9 +22,12 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
-        
-        public event EventHandler OnPiecesRegistered;
-        public event EventHandler OnPieceTablesRegistered;
+
+        /// <summary>
+        ///     Event that gets fired after all pieces were added to their respective PieceTables.
+        ///     Your code will execute once unless you resub, the event get cleared after each fire.
+        /// </summary>
+        public static event Action OnPiecesRegistered;
 
         internal GameObject PieceTableContainer;
         internal List<CustomPiece> Pieces = new List<CustomPiece>();
@@ -241,8 +244,8 @@ namespace Jotunn.Managers
             }
 
             // Fire event that everything is added and registered
-            OnPieceTablesRegistered?.Invoke(null, EventArgs.Empty);
-            OnPiecesRegistered?.Invoke(null, EventArgs.Empty);
+            OnPiecesRegistered?.SafeInvoke();
+            OnPiecesRegistered = null;
         }
 
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)

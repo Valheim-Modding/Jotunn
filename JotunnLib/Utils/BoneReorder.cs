@@ -25,14 +25,14 @@ namespace Jotunn.Utils
         {
             if (!applied)
             {
-                ItemManager.OnAfterInit += () =>
-                {
+                //ItemManager.OnItemsRegistered += () =>
+                //{
                     On.VisEquipment.SetUtilityEquiped += VisEquipmentOnSetUtilityEquiped;
                     On.VisEquipment.SetShoulderEquiped += VisEquipmentOnSetShoulderEquiped;
                     On.VisEquipment.SetChestEquiped += VisEquipmentOnSetChestEquiped;
                     On.VisEquipment.SetHelmetEquiped += VisEquipmentOnSetHelmetEquiped;
                     On.VisEquipment.SetLegEquiped += VisEquipmentOnSetLegEquiped;
-                };
+                //};
 
                 applied = true;
             }
