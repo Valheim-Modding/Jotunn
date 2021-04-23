@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="DoPrebuild.props" />
-  <UsingTask TaskName="GenerateMMHook" AssemblyFile="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\JotunnBuildTask.dll"/>
+  <UsingTask TaskName="JotunnBuildTask" AssemblyFile="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\JotunnBuildTask.dll"/>
   <Target Name="JotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(SolutionDir)Environment.props')" >
-    <Message Importance="High" Text="Executing Jotunn Prebuild Task creating MMHOOK dlls"/> 
-    <GenerateMMHook ValheimPath="$(VALHEIM_INSTALL)" />
+    <Message Importance="High" Text="Executing Jotunn Prebuild Task creating MMHOOK dlls"/>
+    <JotunnBuildTask ValheimPath="$(VALHEIM_INSTALL)" />
   </Target>
   <Target Name="NoJotunnEnvProps" AfterTargets="BeforeBuild" Condition="!Exists('$(SolutionDir)Environment.props')">
     <Message Importance="High" Text="Cannot execute Jotunn prebuild task because Environment.props is missing." />
