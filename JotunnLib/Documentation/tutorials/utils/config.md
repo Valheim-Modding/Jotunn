@@ -7,8 +7,15 @@ Jötunn itself does not provide any implementations or abstractions for persisen
 ![Config Manager U I](../../images/utils/ConfigManagerUI.png)
 
 ### Synced Configurations
-We can sync a client configuration with the server by ensuring that the plugin has a `NetworkCompatibilityAttribute` enabled, and then setting the `IsAdminOnly` flag on the configuration like so:
-
+We can sync a client configuration with the server by:
+- ensuring that the [BaseUnityPlugin](xref:BepInEx.BaseUnityPlugin) has a [NetworkCompatibilityAttribute](xref:Jotunn.Utils.NetworkCompatibiltyAttribute) enabled
+```cs
+    [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+    [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
+    [BepInDependency(Jotunn.Main.ModGuid)]
+    internal class JotunnModExample : BaseUnityPlugin
+```
+- and then setting the `IsAdminOnly` flag on the configuration like so:
 ```cs
 // Create some sample configuration values to check server sync
 private void CreateConfigValues()
@@ -28,4 +35,4 @@ private void CreateConfigValues()
 }
 ```
 
-Here we have implemented some BepInEx configuration attributes to act as a showcase for what BepInEx has to offer, as well as our own implementation of synced attributes. This allows admins defined in the servers adminlist.txt to change the values on the fly, however clients without admin have no control over this config.
+Here we have implemented some BepInEx configuration attributes to act as a showcase for what BepInEx has to offer, as well as our own implementation of synced attributes. This allows admins defined in the servers adminlist.txt to change the values on the fly, however clients without admin have no control over this configs.
