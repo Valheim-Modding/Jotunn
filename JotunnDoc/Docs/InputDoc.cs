@@ -22,7 +22,7 @@ namespace JotunnDoc.Docs
                 return;
             }
 
-            Debug.Log("Documenting inputs");
+            Jotunn.Logger.LogInfo("Documenting inputs");
 
             AddHeader(1, "Input list");
             AddText("All of the inputs currently in the game, and their default values.");

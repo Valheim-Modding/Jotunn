@@ -4,8 +4,6 @@ using UnityEngine;
 using Jotunn.Utils;
 using Jotunn.Entities;
 using Jotunn.Configs;
-using System.Linq;
-using UnityEngine.UI;
 
 namespace Jotunn.Managers
 {
@@ -16,6 +14,7 @@ namespace Jotunn.Managers
     {
 
         private static ItemManager _instance;
+
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
@@ -29,18 +28,18 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Event that get fired after the ObjectDB get init and before its filled with custom items.
-        ///     Your code will execute once unless you resub, the event get cleared after each fire.
+        ///     Event that gets fired after all items were added to the ObjectDB on the FejdStartup screen.
+        ///     Your code will execute every time a new ObjectDB is copied (on every menu start).
+        ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
-        public static Action OnBeforeCustomItemsAdded;
+        public static event Action OnItemsRegisteredFejd;
 
         /// <summary>
-        ///     Event that get fired after the ObjectDB get init and filled with custom items.
-        ///     Your code will execute once unless you resub, the event get cleared after each fire.
+        ///     Event that gets fired after all items were added to the ObjectDB.
+        ///     Your code will execute every time a new ObjectDB is created (on every game start).
+        ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
-        public static Action OnAfterInit;
-
-        public event EventHandler OnItemsRegistered;
+        public static event Action OnItemsRegistered;
 
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
@@ -293,16 +292,13 @@ namespace Jotunn.Managers
 
             if (isValid)
             {
-                OnBeforeCustomItemsAdded.SafeInvoke();
-                OnBeforeCustomItemsAdded = null;
-
                 RegisterCustomItems(self);
 
                 self.UpdateItemHashes();
-
-                OnAfterInit.SafeInvoke();
-                OnAfterInit = null;
             }
+
+            // Fire event that everything is registered
+            OnItemsRegisteredFejd?.SafeInvoke();
         }
 
         /// <summary>
@@ -319,21 +315,15 @@ namespace Jotunn.Managers
 
             if (isValid)
             {
-                OnBeforeCustomItemsAdded.SafeInvoke();
-                OnBeforeCustomItemsAdded = null;
-
                 RegisterCustomItems(self);
                 RegisterCustomRecipes(self);
                 RegisterCustomStatusEffects(self);
 
                 self.UpdateItemHashes();
-
-                OnAfterInit.SafeInvoke();
-                OnAfterInit = null;
             }
 
-            // Fire event that everything is added and registered
-            OnItemsRegistered?.Invoke(null, EventArgs.Empty);
+            // Fire event that everything is registered
+            OnItemsRegistered?.SafeInvoke();
         }
 
         /// <summary>

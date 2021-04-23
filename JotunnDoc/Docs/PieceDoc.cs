@@ -10,12 +10,17 @@ namespace JotunnDoc.Docs
     {
         public PieceDoc() : base("JotunnDoc/Docs/conceptual/pieces/piece-list.md")
         {
-            PieceManager.Instance.OnPiecesRegistered += docPieces;
+            PieceManager.OnPiecesRegistered += docPieces;
         }
 
-        public void docPieces(object sender, EventArgs e)
+        public void docPieces()
         {
-            Debug.Log("Documenting pieces");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting pieces");
 
             AddHeader(1, "Piece list");
             AddText("All of the pieces currently in the game.");

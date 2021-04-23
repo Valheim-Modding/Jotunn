@@ -25,9 +25,11 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     One time event called after adding the prefabs to <see cref="ZNetScene"/> for the first time.
+        ///     Event that gets fired after registering all custom prefabs to <see cref="ZNetScene"/>.
+        ///     Your code will execute every time a new ZNetScene is created (on every game start). 
+        ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
-        public event EventHandler PrefabsLoaded;
+        public static event Action OnPrefabsRegistered;
 
         /// <summary>
         ///     Container for custom prefabs in the DontDestroyOnLoad scene.
@@ -38,8 +40,6 @@ namespace Jotunn.Managers
         /// Dictionary of all added custom prefabs by name.
         /// </summary>
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
-
-        private bool loaded = false;
 
         public void Init()
         {
@@ -255,13 +255,8 @@ namespace Jotunn.Managers
                 }
             }
 
-            // Send event that all prefabs are loaded
-            if (!loaded)
-            {
-                PrefabsLoaded?.Invoke(null, EventArgs.Empty);
-            }
-
-            loaded = true;
+            // Send event that all prefabs are registered
+            OnPrefabsRegistered?.SafeInvoke();
         }
 
         /// <summary>

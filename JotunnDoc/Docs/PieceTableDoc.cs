@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Jotunn.Managers;
 using Jotunn.Utils;
@@ -12,12 +9,17 @@ namespace JotunnDoc.Docs
     {
         public PieceTableDoc() : base("JotunnDoc/Docs/conceptual/pieces/piece-table-list.md")
         {
-            PieceManager.Instance.OnPieceTablesRegistered += docPieceTables;
+            PieceManager.OnPiecesRegistered += docPieceTables;
         }
 
-        public void docPieceTables(object sender, EventArgs e)
+        public void docPieceTables()
         {
-            Debug.Log("Documenting piece tables");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting piece tables");
 
             AddHeader(1, "Piece table list");
             AddText("All of the piece tables currently in the game.");

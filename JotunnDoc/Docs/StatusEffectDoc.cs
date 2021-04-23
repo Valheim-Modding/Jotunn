@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Jotunn.Managers;
-using Jotunn.Utils;
 
 namespace JotunnDoc.Docs
 {
@@ -13,12 +8,17 @@ namespace JotunnDoc.Docs
     {
         public StatusEffectDoc() : base("JotunnDoc/Docs/conceptual/status-effects/status-effect-list.md")
         {
-            ItemManager.Instance.OnItemsRegistered += DocStatusEffects;
+            ItemManager.OnItemsRegistered += DocStatusEffects;
         }
 
-        private void DocStatusEffects(object sender, EventArgs e)
+        private void DocStatusEffects()
         {
-            Debug.Log("Documenting status effects");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting status effects");
 
             AddHeader(1, "Status effect list");
             AddText("All of the status effects currently in the game, with English localizations applied");
@@ -62,7 +62,6 @@ namespace JotunnDoc.Docs
             }
 
             Save();
-            Debug.Log("\t-> Done");
         }
     }
 }

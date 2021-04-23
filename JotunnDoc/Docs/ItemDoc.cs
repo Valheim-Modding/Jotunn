@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -11,12 +8,17 @@ namespace JotunnDoc.Docs
     {
         public ItemDoc() : base("JotunnDoc/Docs/conceptual/objects/item-list.md")
         {
-            ItemManager.Instance.OnItemsRegistered += DocItems;
+            ItemManager.OnItemsRegistered += DocItems;
         }
 
-        private void DocItems(object sender, EventArgs e)
+        private void DocItems()
         {
-            Debug.Log("Documenting items");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting items");
 
             AddHeader(1, "Item list");
             AddText("All of the items currently in the game, with English localizations applied");
@@ -36,7 +38,6 @@ namespace JotunnDoc.Docs
             }
 
             Save();
-            Debug.Log("\t-> Done");
         }
     }
 }

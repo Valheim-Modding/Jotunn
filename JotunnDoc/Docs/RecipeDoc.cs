@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Jotunn.Managers;
+﻿using Jotunn.Managers;
 using UnityEngine;
 
 namespace JotunnDoc.Docs
@@ -11,12 +7,17 @@ namespace JotunnDoc.Docs
     {
         public RecipeDoc() : base("JotunnDoc/Docs/conceptual/objects/recipe-list.md")
         {
-            ItemManager.Instance.OnItemsRegistered += DocRecipes;
+            ItemManager.OnItemsRegistered += DocRecipes;
         }
 
-        private void DocRecipes(object sender, EventArgs e)
+        private void DocRecipes()
         {
-            Debug.Log("Documenting recipes");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting recipes");
 
             AddHeader(1, "Recipe list");
             AddText("All of the recipes currently in the game, with English localizations applied");
@@ -48,7 +49,6 @@ namespace JotunnDoc.Docs
             }
 
             Save();
-            Debug.Log("\t-> Done");
         }
     }
 }
