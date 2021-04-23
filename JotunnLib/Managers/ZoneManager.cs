@@ -39,7 +39,7 @@ namespace Jotunn.Managers
             }
         }
 
-        public void AddVegetation(ZoneSystem.ZoneVegetation veg)
+        internal void AddVegetation(ZoneSystem.ZoneVegetation veg)
         {
             Vegetation.Add(veg);
         }

@@ -1,4 +1,4 @@
-on:
+﻿on:
   push:
     tags:
       - "v*"
@@ -91,12 +91,17 @@ jobs:
         run: |
           cat JotunnLib/GitVersion.yml | sed '4s/.*/next-version: ${{ steps.get_version.outputs.VERSION_NUMBER }}/' > JotunnLib/GitVersion_temp.yml && mv JotunnLib/GitVersion_temp.yml JotunnLib/GitVersion.yml
       
+      - name: Set manifest.json version
+        run: |
+          cat manifest.json | sed -e 's/version_number": "[^"]*"/version_number": "${{ steps.get_version.outputs.VERSION_NUMBER }}"/' > manifest.tmp && mv manifest.tmp manifest.json
+
       - name: Push version update to prod
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add JotunnLib/GitVersion.yml
           git add JotunnLib/BuildProps/version.props
+          git add manifest.json
           git commit -m "deploy: Released ${{ steps.get_version.outputs.VERSION }}"
           git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn HEAD:dev
           git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn dev:prod
