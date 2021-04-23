@@ -15,7 +15,7 @@ namespace Jotunn.Managers
             }
         }
 
-        public event EventHandler ZoneLoad;
+        internal event EventHandler ZoneLoad;
         internal List<ZoneSystem.ZoneVegetation> Vegetation = new List<ZoneSystem.ZoneVegetation>();
 
         public void Init()
@@ -39,7 +39,7 @@ namespace Jotunn.Managers
             }
         }
 
-        public void AddVegetation(ZoneSystem.ZoneVegetation veg)
+        internal void AddVegetation(ZoneSystem.ZoneVegetation veg)
         {
             Vegetation.Add(veg);
         }

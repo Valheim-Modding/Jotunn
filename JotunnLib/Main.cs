@@ -52,7 +52,6 @@ namespace Jotunn
                 ItemManager.Instance,
                 PieceManager.Instance,
                 MockManager.Instance,
-                ZoneManager.Instance,
                 GUIManager.Instance,
                 SaveManager.Instance,
                 SynchronizationManager.Instance
