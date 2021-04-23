@@ -25,7 +25,8 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Event that gets fired after all pieces were added to their respective PieceTables.
-        ///     Your code will execute once unless you resub, the event get cleared after each fire.
+        ///     Your code will execute every time a new ObjectDB is created (on every game start).
+        ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
         public static event Action OnPiecesRegistered;
 
@@ -243,9 +244,8 @@ namespace Jotunn.Managers
                 RegisterInPieceTables();
             }
 
-            // Fire event that everything is added and registered
+            // Fire event that everything is registered
             OnPiecesRegistered?.SafeInvoke();
-            OnPiecesRegistered = null;
         }
 
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)

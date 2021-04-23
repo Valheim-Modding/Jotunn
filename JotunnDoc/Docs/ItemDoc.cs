@@ -13,7 +13,12 @@ namespace JotunnDoc.Docs
 
         private void DocItems()
         {
-            Debug.Log("Documenting items");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting items");
 
             AddHeader(1, "Item list");
             AddText("All of the items currently in the game, with English localizations applied");
@@ -33,7 +38,6 @@ namespace JotunnDoc.Docs
             }
 
             Save();
-            Debug.Log("\t-> Done");
         }
     }
 }

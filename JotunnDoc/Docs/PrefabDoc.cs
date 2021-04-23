@@ -12,7 +12,12 @@ namespace JotunnDoc.Docs
 
         private void DocPrefabs()
         {
-            Debug.Log("Documenting prefabs");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting prefabs");
 
             AddHeader(1, "Prefab list");
             AddText("All of the prefabs currently in the game.");
@@ -34,7 +39,6 @@ namespace JotunnDoc.Docs
             }
 
             Save();
-            Debug.Log("\t-> Done");
         }
     }
 }

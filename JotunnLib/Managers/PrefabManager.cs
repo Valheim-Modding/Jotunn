@@ -26,7 +26,8 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Event that gets fired after registering all custom prefabs to <see cref="ZNetScene"/>.
-        ///     Your code will execute once unless you resub, the event get cleared after each fire.
+        ///     Your code will execute every time a new ZNetScene is created (on every game start). 
+        ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
         public static event Action OnPrefabsRegistered;
 
@@ -256,7 +257,6 @@ namespace Jotunn.Managers
 
             // Send event that all prefabs are registered
             OnPrefabsRegistered?.SafeInvoke();
-            OnPrefabsRegistered = null;
         }
 
         /// <summary>

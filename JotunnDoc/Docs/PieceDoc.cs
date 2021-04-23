@@ -15,7 +15,12 @@ namespace JotunnDoc.Docs
 
         public void docPieces()
         {
-            Debug.Log("Documenting pieces");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting pieces");
 
             AddHeader(1, "Piece list");
             AddText("All of the pieces currently in the game.");

@@ -14,7 +14,12 @@ namespace JotunnDoc.Docs
 
         public void docPieceTables()
         {
-            Debug.Log("Documenting piece tables");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting piece tables");
 
             AddHeader(1, "Piece table list");
             AddText("All of the piece tables currently in the game.");

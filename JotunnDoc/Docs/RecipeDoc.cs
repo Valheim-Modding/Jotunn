@@ -12,7 +12,12 @@ namespace JotunnDoc.Docs
 
         private void DocRecipes()
         {
-            Debug.Log("Documenting recipes");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting recipes");
 
             AddHeader(1, "Recipe list");
             AddText("All of the recipes currently in the game, with English localizations applied");
@@ -44,7 +49,6 @@ namespace JotunnDoc.Docs
             }
 
             Save();
-            Debug.Log("\t-> Done");
         }
     }
 }

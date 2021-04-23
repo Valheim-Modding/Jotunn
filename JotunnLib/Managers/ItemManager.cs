@@ -27,47 +27,19 @@ namespace Jotunn.Managers
             }
         }
 
-        private static event Action _onItemsRegisteredFejd;
-        private static List<Action> onItemsRegisteredFejdActionList = new List<Action>();
-
         /// <summary>
         ///     Event that gets fired after all items were added to the ObjectDB on the FejdStartup screen.
-        ///     Your code will execute once unless you resub, the event get cleared after each fire.
+        ///     Your code will execute every time a new ObjectDB is copied (on every menu start).
+        ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
-        public static event Action OnItemsRegisteredFejd
-        {
-            add
-            {
-                _onItemsRegisteredFejd += value;
-                onItemsRegisteredFejdActionList.Add(value);
-            }
-            remove
-            {
-                _onItemsRegisteredFejd -= value;
-                onItemsRegisteredFejdActionList.Remove(value);
-            }
-        }
-
-        private static event Action _onItemsRegistered;
-        private static List<Action> onItemsRegisteredActionList = new List<Action>();
+        public static event Action OnItemsRegisteredFejd;
 
         /// <summary>
         ///     Event that gets fired after all items were added to the ObjectDB.
-        ///     Your code will execute once unless you resub, the event get cleared after each fire.
+        ///     Your code will execute every time a new ObjectDB is created (on every game start).
+        ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
-        public static event Action OnItemsRegistered
-        {
-            add
-            {
-                _onItemsRegistered += value;
-                onItemsRegisteredActionList.Add(value);
-            }
-            remove
-            {
-                _onItemsRegistered -= value;
-                onItemsRegisteredActionList.Remove(value);
-            }
-        }
+        public static event Action OnItemsRegistered;
 
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
@@ -325,9 +297,8 @@ namespace Jotunn.Managers
                 self.UpdateItemHashes();
             }
 
-            // Fire event that everything is registered and empty it
-            _onItemsRegisteredFejd.Invoke();
-            _onItemsRegisteredFejd.ClearEvent(onItemsRegisteredFejdActionList);
+            // Fire event that everything is registered
+            OnItemsRegisteredFejd?.SafeInvoke();
         }
 
         /// <summary>
@@ -351,9 +322,8 @@ namespace Jotunn.Managers
                 self.UpdateItemHashes();
             }
 
-            // Fire event that everything is registered and empty it
-            _onItemsRegistered?.Invoke();
-            _onItemsRegistered.ClearEvent(onItemsRegisteredActionList);
+            // Fire event that everything is registered
+            OnItemsRegistered?.SafeInvoke();
         }
 
         /// <summary>
