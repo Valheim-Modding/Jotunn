@@ -104,6 +104,11 @@ img{
     box-shadow: 0px 0px 3px #a1c3e0
 }
 
+/* Righ Sidebar Text */
+.affix ul > li > a {
+    color: #aaaaaa;
+}
+
 /* Sidebar Text */
 .toc .nav > li > a {                  /* Normal color */
     color: #bbbbbb;
