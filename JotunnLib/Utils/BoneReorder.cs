@@ -107,11 +107,15 @@ namespace Jotunn.Utils
         /// <param name="instancesToFix">GameObjects that need to match the ordering from the ItemPrefab (itemPrefabHash parameter)</param>
         private static void ReorderBones(VisEquipment visEquipment, int itemPrefabHash, List<GameObject> instancesToFix)
         {
-            Logger.LogInfo($"Reordering bones...");
+            
             Transform skeletonRoot = visEquipment.transform.Find("Visual").Find("Armature").Find("Hips");
             GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabHash);
-            if (!skeletonRoot) Logger.LogInfo($"{skeletonRoot} is null.");
-            if (!itemPrefab) Logger.LogInfo($"{itemPrefab} is null.");
+            if (!skeletonRoot || !itemPrefab)
+            {
+                    Logger.LogInfo($"prefab missing components... Skipping {itemPrefab} {skeletonRoot}");
+                    return;
+            }
+            Logger.LogInfo($"Reordering bones...");
             int childCount = itemPrefab.transform.childCount;
             int num = 0;
             for (var i = 0; i < childCount; i++)
