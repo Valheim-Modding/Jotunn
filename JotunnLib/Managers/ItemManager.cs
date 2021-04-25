@@ -44,6 +44,8 @@ namespace Jotunn.Managers
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
+        internal readonly Dictionary<CookingStation, CookingStation.ItemConversion> ItemConversions =
+            new Dictionary<CookingStation, CookingStation.ItemConversion>();
 
 
         public void Init()
@@ -93,6 +95,70 @@ namespace Jotunn.Managers
             }
 
             return true;
+        }
+
+        /// <summary>
+        ///     Adds a new item conversion for any prefab that has a CookingStation component (such as a "piece_cookingstation").
+        /// </summary>
+        /// <param name="prefabName">The name of the prefab that has the CookingStation</param>
+        /// <param name="itemConversion">Item conversion details</param>
+        /// <returns>Whether the addition was successful or not</returns>
+        public bool AddItemConversion(ItemConversionConfig itemConversion)
+        {
+            CookingStation cookingStation = itemConversion.GetCookingStation();
+
+            if (!cookingStation)
+            {
+                Debug.LogError($"Failed to register ItemConversion for invalid CookingStation prefab: {itemConversion.CookingStation}");
+                return false;
+            }
+
+            CookingStation.ItemConversion conv = itemConversion.GetItemConversion();
+
+            if (conv == null)
+            {
+                Debug.LogError($"Failed to create item conversion for: {itemConversion.FromItem} -> {itemConversion.ToItem}");
+                return false;
+            }
+
+            if (conv.m_from == null || conv.m_to == null)
+            {
+                Logger.LogError("Failed to create ItemConversion from ItemConversionConfig with null From or To items");
+                return false;
+            }
+
+            if (cookingStation.m_conversion.Exists(c => c.m_from == conv.m_from))
+            {
+                Debug.LogError($"Failed to add ItemConversion on ${cookingStation.name} for item with existing conversion: ${conv.m_from.name}");
+                return false;
+            }
+
+            ItemConversions.Add(cookingStation, conv);
+            cookingStation.m_conversion.Add(conv);
+
+            return true;
+        }
+
+        /// <summary>
+        ///     Adds item conversions defined in a JSON file at given path, relative to BepInEx/plugins
+        /// </summary>
+        /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
+        public void AddItemConversionsFromJson(string path)
+        {
+            string json = AssetUtils.LoadText(path);
+
+            if (string.IsNullOrEmpty(json))
+            {
+                Logger.LogError($"Failed to load item conversions from invalid JSON: {path}");
+                return;
+            }
+
+            List<ItemConversionConfig> configs = ItemConversionConfig.ListFromJson(json);
+
+            foreach (var config in configs)
+            {
+                AddItemConversion(config);
+            }
         }
 
         private void RegisterCustomItems(ObjectDB objectDB)
@@ -172,7 +238,7 @@ namespace Jotunn.Managers
 
             if (string.IsNullOrEmpty(json))
             {
-                Logger.LogError($"Failed to load recipes from json: {path}");
+                Logger.LogError($"Failed to load recipes from invalid JSON: {path}");
                 return;
             }
 
