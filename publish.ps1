@@ -69,14 +69,14 @@ if($Target.Equals("Release")) {
     $thunder = New-Item -Type Directory -Path "$package\Thunderstore"
     $thunder.CreateSubdirectory('plugins')
     Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$thunder\plugins\$TargetAssembly"
-    Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder"
+    Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder\README"
     Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore-$name-$version.zip" -Forc
     $thunder.Delete($true)
 
     Write-Host "Packaging for NexusMods"
     $nexus = New-Item -Type Directory -Path "$package\Nexusmods"
     Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$nexus\$TargetAssembly"
-    Copy-Item -Path "$ProjectPath\README.md" -Destination "$nexus"
+    Copy-Item -Path "$ProjectPath\README.bbcode" -Destination "$nexus\README"
     Compress-Archive -Path "$nexus\*" -DestinationPath "$package\Nexusmods-$name-$version.zip" -Force
     $nexus.Delete($true)
 }
