@@ -104,25 +104,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\HarmonyXInterop.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Security">
-      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Mono.Security.dll</HintPath>
-    </Reference>
     <Reference Include="MonoMod.RuntimeDetour, Version=20.11.26.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
@@ -398,13 +379,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">
       <Project>{a6082a59-38be-4cab-9078-2c8fcda65b8f}</Project>
       <Name>JotunnLib</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="../Environment.props" />

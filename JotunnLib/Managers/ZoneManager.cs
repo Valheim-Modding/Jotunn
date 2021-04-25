@@ -15,7 +15,7 @@ namespace Jotunn.Managers
             }
         }
 
-        public event EventHandler ZoneLoad;
+        public event EventHandler OnBeforeZoneLoad;
         internal List<ZoneSystem.ZoneVegetation> Vegetation = new List<ZoneSystem.ZoneVegetation>();
 
         public void Init()
@@ -30,7 +30,7 @@ namespace Jotunn.Managers
             Logger.LogInfo("---- Registering custom zone data ----");
 
             // Call event handlers to load prefabs
-            ZoneLoad?.Invoke(null, EventArgs.Empty);
+            OnBeforeZoneLoad?.Invoke(null, EventArgs.Empty);
 
             foreach (var veg in Vegetation)
             {
@@ -39,7 +39,7 @@ namespace Jotunn.Managers
             }
         }
 
-        public void AddVegetation(ZoneSystem.ZoneVegetation veg)
+        internal void AddVegetation(ZoneSystem.ZoneVegetation veg)
         {
             Vegetation.Add(veg);
         }

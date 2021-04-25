@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Jotunn.Managers;
+﻿using Jotunn.Managers;
 using UnityEngine;
 
 namespace JotunnDoc.Docs
@@ -11,12 +7,17 @@ namespace JotunnDoc.Docs
     {
         public PrefabDoc() : base("JotunnDoc/Docs/conceptual/prefabs/prefab-list.md")
         {
-            PrefabManager.Instance.PrefabsLoaded += DocPrefabs;
+            PrefabManager.OnPrefabsRegistered += DocPrefabs;
         }
 
-        private void DocPrefabs(object sender, EventArgs e)
+        private void DocPrefabs()
         {
-            Debug.Log("Documenting prefabs");
+            if (Generated)
+            {
+                return;
+            }
+
+            Jotunn.Logger.LogInfo("Documenting prefabs");
 
             AddHeader(1, "Prefab list");
             AddText("All of the prefabs currently in the game.");
@@ -38,7 +39,6 @@ namespace JotunnDoc.Docs
             }
 
             Save();
-            Debug.Log("\t-> Done");
         }
     }
 }

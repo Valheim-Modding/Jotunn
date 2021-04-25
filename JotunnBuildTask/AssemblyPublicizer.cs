@@ -13,42 +13,37 @@ namespace JotunnBuildTask
         /// <summary>
         ///     Publicize a dll
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="input">Input assembly</param>
         /// <returns></returns>
-        public static bool PublicizeDll(string file, string ValheimPath, TaskLoggingHelper Log)
+        public static bool PublicizeDll(string input, string publicizedFolder, string ValheimPath, TaskLoggingHelper Log)
         {
-            var outputPath = Path.Combine(Path.GetDirectoryName(file), GenerateMMHook.PublicizedAssemblies);
-
-            if (!File.Exists(file))
+            if (!File.Exists(input))
             {
-                Log.LogMessage(MessageImportance.High, $"File {file} not found.");
+                Log.LogMessage(MessageImportance.High, $"File {input} not found.");
                 return false;
-            }
-
-            if (!Directory.Exists(outputPath))
-            {
-                Directory.CreateDirectory(outputPath);
             }
 
             AssemblyDefinition assemblyDefinition;
 
             try
             {
-                assemblyDefinition = AssemblyDefinition.ReadAssembly(file);
-                if (Directory.Exists(Path.Combine(ValheimPath, GenerateMMHook.ValheimData,
-                    GenerateMMHook.Managed)))
+                Log.LogMessage(MessageImportance.High, $"Publicizing {input}.");
+
+                assemblyDefinition = AssemblyDefinition.ReadAssembly(input);
+                if (Directory.Exists(Path.Combine(publicizedFolder, JotunnBuildTask.ValheimData,
+                    JotunnBuildTask.Managed)))
                 {
-                    ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, GenerateMMHook.ValheimData,
-                        GenerateMMHook.Managed));
+                    ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, JotunnBuildTask.ValheimData,
+                        JotunnBuildTask.Managed));
                 }
-                if (Directory.Exists(Path.Combine(ValheimPath, GenerateMMHook.ValheimServerData,
-                    GenerateMMHook.Managed)))
+                if (Directory.Exists(Path.Combine(publicizedFolder, JotunnBuildTask.ValheimServerData,
+                    JotunnBuildTask.Managed)))
                 {
-                    ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, GenerateMMHook.ValheimServerData,
-                        GenerateMMHook.Managed));
+                    ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, JotunnBuildTask.ValheimServerData,
+                        JotunnBuildTask.Managed));
                 }
 
-                ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, GenerateMMHook.UnstrippedCorlib));
+                ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, JotunnBuildTask.UnstrippedCorlib));
             }
             catch (Exception exception)
             {
@@ -89,7 +84,7 @@ namespace JotunnBuildTask
             }
 
 
-            var outputFilename = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}_{GenerateMMHook.Publicized}{Path.GetExtension(file)}");
+            var outputFilename = Path.Combine(publicizedFolder, $"{Path.GetFileNameWithoutExtension(input)}_{JotunnBuildTask.Publicized}{Path.GetExtension(input)}");
 
             try
             {
