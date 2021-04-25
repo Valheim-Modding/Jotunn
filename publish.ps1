@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory)]
     [ValidateSet('Debug','Release')]
     [System.String]$Target,
@@ -10,7 +10,10 @@ param(
     [System.String]$TargetAssembly,
 
     [Parameter(Mandatory)]
-    [System.String]$ValheimPath
+    [System.String]$ValheimPath,
+    
+    [Parameter(Mandatory)]
+    [System.String]$ProjectPath
 )
 
 # Make sure Get-Location is the script path
@@ -24,9 +27,10 @@ Push-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
     if (!(Test-Path "$_")) {Write-Error -ErrorAction Stop -Message "$_ folder is missing"}
 }
 
-# Main Script
+# Go
 Write-Host "Publishing for $Target from $TargetPath"
 
+# Debug copies the dll to Valheim and creates the mdb
 if ($Target.Equals("Debug")) {
     Write-Host "Updating local installation in $ValheimPath"
     
@@ -55,6 +59,21 @@ if ($Target.Equals("Debug")) {
     #$dnspy = '--debugger-agent=transport=dt_socket,server=y,address=127.0.0.1:56000,suspend=y,no-hide-debugger'
     #[Environment]::SetEnvironmentVariable('DNSPY_UNITY_DBG2','','User')
 }
+
+# Release builds packages for ThunderStore and Nexusmods
+if($Target.Equals("Release")) {
+    $Package = "_package"
+    $PackagePath = "$ProjectPath\$Package"
+    
+    Write-Host "Packaging for ThunderStore"
+    $thunder = New-Item -Type Directory -Path "$PackagePath\Thunderstore"
+    $thunder.CreateSubdirectory('plugins')
+    Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$thunder\plugins\$TargetAssembly"
+    Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder\README.md"
+    Compress-Archive -Path "$thunder\*" -DestinationPath "$PackagePath\$TargetAssembly.zip" -Force
+    $thunder.Delete($true)
+}
+
 
 # Pop Location
 Pop-Location
