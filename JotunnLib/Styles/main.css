@@ -50,11 +50,12 @@ h3 {
 }
 
 /* Logo spacing */
-#autocollapse .navbar-header {    
+#autocollapse .navbar-brand {    
     max-width: 50px;
     max-height: 50px;
-    margin-left: 100px;
-    margin-right: 145px;
+    padding-right: 4px;
+    padding-left: 4px;
+    background: #101010;
 }
 
 /* Topbar active item */
@@ -74,11 +75,6 @@ h3 {
 .article
 {
     margin-top: 60px;
-}
-
-/* Widens the whole thing */
-.container {
-    width: 1500px;
 }
 
 /* In-line Code Snippets */
