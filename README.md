@@ -76,7 +76,7 @@ These people have been integral to pushing JVL out of the door, and without them
 
 *Jules#7950*: [github](https://github.com/sirskunkalot), [nexus](https://www.nexusmods.com/users/61184721)
 
-*Quaesar#5604*: [github](https://github.com/RatikKapoor), [thunderstore](), [nexus]()
+*Quaesar#5604*: [github](https://github.com/RatikKapoor)
 
 *radu#0571*: [github](https://github.com/raduschirliu), [thunderstore](https://valheim.thunderstore.io/package/radu/), [nexus](https://www.nexusmods.com/users/112072898)
 
@@ -84,6 +84,6 @@ These people have been integral to pushing JVL out of the door, and without them
 
 #### Contributors:
 
-*Cinnabun#0451*: [github](https://github.com/capnbubs), [thunderstore](), [nexus]()
+*Cinnabun#0451*: [github](https://github.com/capnbubs)
 
-*GoldenJude#8965**: [github](https://github.com/GoldenJude), [thunderstore](), [nexus](https://www.nexusmods.com/users/48864143?tab=user+files)
+*GoldenJude#8965**: [github](https://github.com/GoldenJude), [nexus](https://www.nexusmods.com/users/48864143?tab=user+files)
