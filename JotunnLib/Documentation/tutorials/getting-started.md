@@ -2,11 +2,11 @@
 
 If you already have a mod for Valheim and want to switch to Jötunn or did use legacy JötunnLib or ValheimLib before all you need to do is to install the latest release of Jötunn from [nuget.org](https://www.nuget.org/packages/JotunnLib) into your project and start using it. Jötunn uses [MMHooks](https://github.com/MonoMod/MonoMod), so make sure you have build the detour dlls and referenced them in your project.
 
-Jötunn offers some PreBuild and PostBuild tasks to automate certain housekeeping duties for you. If you already have a development environment setup but still want to learn about the automations read the sections [PreBuild automations] and [PostBuild automations].
+Jötunn offers some PreBuild and PostBuild tasks to automate certain housekeeping duties for you. If you already have a development environment setup but still want to learn about the automations read the sections [PreBuild automations](#prebuild-automations) and [PostBuild automations](#postbuild-automations).
 
 If you want step-by-step instructions to start a Valheim mod from scratch using Jötunn continue reading as we guide you through the process of setting up everything you need to get going.
 
-## Development Environment
+# Development Environment
 
 * We begin by downloading [BepInEx for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) and extract the zip file into your root Valheim directory.
 
@@ -19,9 +19,9 @@ If you want step-by-step instructions to start a Valheim mod from scratch using 
 * In Visual Studio, in the right hand toobar, select `Git Changes`, and then `Clone Repository`, and paste the URL provided by the previous step. Name your project and place it accordingly.<br />
 ![VS Clone forked stub](../images/getting-started/vs-CloneForkedStub.png)
 
-## PreBuild automations
+# PreBuild automations
 
-### Add project references
+## Add project references
 
 Jötunn can automatically set references to all important libraries needed to mod the game on your project. To use this feature browse to your solution directory. Create a new file called `Environment.props` and place the following contents inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. This sets up references in your project to BepInEx, the publicized dlls, the unstripped corlibs from Unity and MMHook dlls.
 
@@ -37,7 +37,7 @@ Jötunn can automatically set references to all important libraries needed to mo
 
 **WARNING:** _This prebuild task will add references to your current project. If you already have setup that references it most certainly will duplicate them._
 
-### Publicize and MMHook Valheim assemblies
+## Publicize and MMHook Valheim assemblies
 
 Jötunn can automatically create the publicized and MMHook assemblies for you. To use this feature you must have the `Environment.props` file from the last step. Additionally you need to create a new file called `DoPrebuild.props` in your solution directory. If you are using the ModStub the file will already be there so just change `ExecutePrebuild` to `true`. If you opt not to utilise this automation, you will need to generate your method detours and publicised assemblies, and add them to your projects references manually.
 
@@ -52,7 +52,7 @@ Jötunn can automatically create the publicized and MMHook assemblies for you. T
 
 **WARNING:** _This prebuild task will automate the generation of monomod method detours and publicising of game assemblies. By enabling this, you understand that you will be generating new publicised assemblies and method detours upon PreBuild **IF** the binaries have been updated since the last time the PreBuild has run._
 
-### Manual setup
+## Manual setup
 
 If for whatever reason you disable the prebuild, you will need to:
 - acquire and install [HookGen](https://valheim.thunderstore.io/package/ValheimModding/HookGenPatcher/)
@@ -62,7 +62,7 @@ If for whatever reason you disable the prebuild, you will need to:
 - Build the stub, make sure it compiles and automates the postbuild tasks, producing compiled binaries in your plugin directory `BepInEx/plugins/yourtestmod/` folder and also generated a `yourtestmod.dll.mdb` monodebug symbols file.
 - You may now proceed to one of the [Tutorials](intro.md)
 
-## Customising the ModStub project
+# Customising the ModStub project
 
 * Once you have your base project, select the solution in the solution explorer, hit F2 to rename the solution as required. Rename your plugin project, an all namespace references, then right click your project settings and ensure the assembly name has also been changed.
 
