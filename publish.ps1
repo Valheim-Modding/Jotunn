@@ -22,7 +22,7 @@ Push-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
 # Test some preliminaries
 ("$TargetPath",
  "$ValheimPath",
- "$(Get-Location)\libraries"
+ "$ProjectPath"
 ) | % {
     if (!(Test-Path "$_")) {Write-Error -ErrorAction Stop -Message "$_ folder is missing"}
 }
@@ -30,12 +30,12 @@ Push-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
 # Go
 Write-Host "Publishing for $Target from $TargetPath"
 
+$name = "$TargetAssembly" -Replace('.dll')
+
 # Debug copies the dll to Valheim and creates the mdb
 if ($Target.Equals("Debug")) {
     Write-Host "Updating local installation in $ValheimPath"
     
-    $name = "$TargetAssembly" -Replace('.dll')
-
     $plug = New-Item -Type Directory -Path "$ValheimPath\BepInEx\plugins\$name" -Force
     Write-Host "Copy $TargetAssembly to $plug"
     Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$plug" -Force
@@ -59,18 +59,26 @@ if ($Target.Equals("Debug")) {
     #[Environment]::SetEnvironmentVariable('DNSPY_UNITY_DBG2','','User')
 }
 
-# Release builds packages for ThunderStore and Nexusmods
+# Release builds packages for ThunderStore and NexusMods
 if($Target.Equals("Release")) {
-    $Package = "_package"
-    $PackagePath = "$ProjectPath\$Package"
+    $package = "$ProjectPath\_package"
+    [xml]$versionxml = Get-Content -Path "$ProjectPath\BuildProps\version.props"
+    $version = $versionxml.Project.PropertyGroup.Version
     
     Write-Host "Packaging for ThunderStore"
-    $thunder = New-Item -Type Directory -Path "$PackagePath\Thunderstore"
+    $thunder = New-Item -Type Directory -Path "$package\Thunderstore"
     $thunder.CreateSubdirectory('plugins')
     Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$thunder\plugins\$TargetAssembly"
-    Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder\README.md"
-    Compress-Archive -Path "$thunder\*" -DestinationPath "$PackagePath\$TargetAssembly.zip" -Force
+    Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder"
+    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore-$name-$version.zip" -Forc
     $thunder.Delete($true)
+
+    Write-Host "Packaging for NexusMods"
+    $nexus = New-Item -Type Directory -Path "$package\Nexusmods"
+    Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$nexus\$TargetAssembly"
+    Copy-Item -Path "$ProjectPath\README.md" -Destination "$nexus"
+    Compress-Archive -Path "$nexus\*" -DestinationPath "$package\Nexusmods-$name-$version.zip" -Force
+    $nexus.Delete($true)
 }
 
 
