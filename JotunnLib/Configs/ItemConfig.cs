@@ -5,7 +5,9 @@ using Jotunn.Entities;
 namespace Jotunn.Configs
 {
     /// <summary>
-    ///     Configuration class for adding custom items. Automatically creates a recipe for this item.
+    ///     Configuration class for adding custom items. Automatically creates a recipe for this item.<br />
+    ///     Use this in a constructor of <see cref="CustomItem"/> and 
+    ///     Jötunn resolves the references to the game objects at runtime.
     /// </summary>
     public class ItemConfig
     {
