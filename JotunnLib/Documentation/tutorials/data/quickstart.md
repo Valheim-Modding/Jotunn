@@ -1,4 +1,4 @@
-﻿# Developer's Quickstart for transitioning a project to Jötunn
+﻿# Jötunn Developer's Quickstart
 
 Different developers prefer to reference their dependencies in different manners, for different use cases and situations. These are the basic steps to integrate Jötunn into a new or existing project.
 
