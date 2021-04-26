@@ -5,5 +5,8 @@
 - name: Conceptual Documentation
   href: conceptual/
 
+- name: Transition
+  href: transition/
+
 - name: API Documentation
   href: api/
