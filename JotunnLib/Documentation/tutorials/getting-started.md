@@ -23,7 +23,7 @@ If you want step-by-step instructions to start a Valheim mod from scratch using 
 
 ## Add project references
 
-Jötunn can automatically generate, reference, and resolve all dependencies that may be needed for the development process, including `MonoMod`'s hooks, and publicized assemblies. To use this feature browse to your solution directory. Create a new file called `Environment.props` and place the following contents inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. This sets up references in your project to BepInEx, the publicized dlls and MMHook dlls.
+Jötunn can automatically reference and resolve all dependencies that may be needed for the development process. To use this feature browse to your solution directory. Create a new file called `Environment.props` and place the following contents inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. This sets up references in your project to BepInEx, the publicized dlls and MMHook dlls.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -35,7 +35,7 @@ Jötunn can automatically generate, reference, and resolve all dependencies that
 </Project>
 ```
 
-
+**WARNING:** _If you already have references to BepInEx and Valheim, this task will most certainly duplicate them._
 
 ## Publicize and MMHook Valheim assemblies
 
@@ -49,7 +49,6 @@ Jötunn can automatically create the publicized and MMHook assemblies for you. T
   </PropertyGroup>
 </Project>
 ```
-**WARNING:** _If you already have references to BepInEX and Valheim, this task will most certainly duplicate them._
 
 **WARNING:** _This prebuild task will automate the generation of monomod method detours and publicising of game assemblies. By enabling this, you understand that you will be generating new publicised assemblies and method detours upon PreBuild **IF** the binaries have been updated since the last time the PreBuild has run._
 
