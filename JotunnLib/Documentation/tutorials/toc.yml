@@ -4,9 +4,6 @@
 - name: Getting started
   href: getting-started.md
   
-- name: Quickstart
-  href: quickstart.md
-
 - name: Entities
   href: data/toc.yml
   topicHref: data/overview.md
