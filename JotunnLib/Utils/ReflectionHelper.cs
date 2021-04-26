@@ -6,6 +6,9 @@ using System.Reflection;
 
 namespace Jotunn.Utils
 {
+    /// <summary>
+    ///     Various utility methods aiding Reflection tasks.
+    /// </summary>
     public static class ReflectionHelper
     {
         public const BindingFlags AllBindingFlags = (BindingFlags) (-1);
@@ -85,6 +88,9 @@ namespace Jotunn.Utils
             var.SetValue(instance, value);
         }
 
+        /// <summary>
+        ///     Cache for Reflection tasks.
+        /// </summary>
         public static class Cache
         {
             private static MethodInfo _enumerableToArray;

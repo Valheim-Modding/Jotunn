@@ -11,6 +11,9 @@ using Object = UnityEngine.Object;
 
 namespace Jotunn.Utils
 {
+    /// <summary>
+    ///     Implementation of the mod compatibility features.
+    /// </summary>
     public class ModCompatibility
     {
         /// <summary>
