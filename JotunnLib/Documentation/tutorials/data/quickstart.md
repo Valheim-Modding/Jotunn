@@ -1,9 +1,9 @@
 ﻿# Developer's Quickstart for transitioning a project to Jötunn
 
-Different developers prefer to reference their dependencies in different manners, for different usecases and situations. This guide is meant to provide a consistent experience for dependency acquisition for both beginners, and experienced developers.
+Different developers prefer to reference their dependencies in different manners, for different use cases and situations. This guide is meant to provide a consistent experience for dependency acquisition for both beginners, and experienced developers.
 
 ### Manual Dependency Acquisition (experienced developers)
-This method is for those who prefer to explicitly manage their project dependencies. You can simply add the Jotunn NuGet, and instead of creating `Environment.props`, make sure the file does not exist in the solution root, this will prevent the nuget from adding unwanted dependencies. You can then just ensure the `PreBuild.props` is set to false, or is deleted.
+This method is for those who prefer to explicitly manage their project dependencies. You can simply add the Jötunn NuGet, and instead of creating `Environment.props`, make sure the file does not exist in the solution root, this will prevent the nuget from adding unwanted dependencies. You can then just ensure the `PreBuild.props` is set to false, or is deleted.
 
 Done! Your project is now all set to use Jötunn!
 
