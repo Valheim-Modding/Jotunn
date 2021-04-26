@@ -324,13 +324,8 @@ namespace Jotunn.Managers
                     GameObject.Destroy(child.gameObject);
                 }
 
-                // Add every ButtonConfig as a child to the custom key hints object
-                /*for (int i = entry.Value.ButtonConfigs.Length - 1; i >= 0; i--)
-                {
-                    var buttonConfig = entry.Value.ButtonConfigs[i];*/
                 foreach (var buttonConfig in entry.Value.ButtonConfigs)
                 {
-                    //string key = LocalizationManager.Instance.TryTranslate(buttonConfig.KeyToken);
                     string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
                     if (key[0].Equals(LocalizationManager.TokenFirstChar))
                     {
@@ -338,7 +333,7 @@ namespace Jotunn.Managers
                     }
                     string hint = LocalizationManager.Instance.TryTranslate(buttonConfig.HintToken);
 
-                    if (string.IsNullOrEmpty(buttonConfig.Axis))
+                    if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                     {
                         var customObject = GameObject.Instantiate(baseKey, kb, false);
                         customObject.name = buttonConfig.Name;
@@ -449,7 +444,7 @@ namespace Jotunn.Managers
                             key = LocalizationManager.Instance.TryTranslate(key);
                         }
 
-                        if (string.IsNullOrEmpty(buttonConfig.Axis))
+                        if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                         {
                             hint.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key").gameObject.SetText(key);
                         }
