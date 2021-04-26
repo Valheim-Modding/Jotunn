@@ -1,8 +1,8 @@
 ﻿# Getting started
 
-If you already have a mod for Valheim and want to switch to Jötunn have a look at the [Developer's Quickstart](data/quickstart.md). 
+If you already have a mod for Valheim and want to switch to Jötunn have a look at the [Developer's Quickstart](quickstart.md). 
 
-If you did use legacy JötunnLib or ValheimLib before first read the [Developer's Quickstart](data/quickstart.md) and then head over to the [transition docs](../transition/overview.md) where you can learn about the main differences and changes needed to port your mod to Jötunn
+If you did use legacy JötunnLib or ValheimLib before first read the [Developer's Quickstart](quickstart.md) and then head over to the [transition docs](../transition/overview.md) where you can learn about the main differences and changes needed to port your mod to Jötunn
 
 If you want step-by-step instructions to start a Valheim mod from scratch using Jötunn continue reading as we guide you through the process of setting up everything you need to get going.
 
