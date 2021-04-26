@@ -2,8 +2,10 @@
 
 namespace Jotunn
 {
-
-    static class ObjectExtensions
+    /// <summary>
+    ///     Helpful Unity Object extensions.
+    /// </summary>
+    internal static class ObjectExtension
     {
         public static string GetObjectString(this object obj)
         {

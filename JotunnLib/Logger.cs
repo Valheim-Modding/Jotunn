@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace Jotunn
 {
     /// <summary>
-    ///     A namespace wide Logger class, which automatically creates a <see cref="ManualLogSource" />
+    ///     A namespace wide Logger class, which automatically creates a ManualLogSource
     ///     for every Class from which it is being called.
     /// </summary>
     public class Logger
