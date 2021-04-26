@@ -1,12 +1,12 @@
-
+﻿
 - name: Tutorials
   href: tutorials/
 
-- name: Conceptual Documentation
-  href: conceptual/
-
 - name: Transition
   href: transition/
+  
+- name: Valheim concepts
+  href: conceptual/
 
 - name: API Documentation
   href: api/

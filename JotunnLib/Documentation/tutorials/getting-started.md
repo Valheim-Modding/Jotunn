@@ -1,8 +1,8 @@
 ﻿# Getting started
 
-If you already have a mod for Valheim and want to switch to Jötunn or did use legacy JötunnLib or ValheimLib before all you need to do is to install the latest release of Jötunn from [nuget.org](https://www.nuget.org/packages/JotunnLib) into your project and start using it. Jötunn uses [MMHooks](https://github.com/MonoMod/MonoMod), so make sure you have build the detour dlls and referenced them in your project.
+If you already have a mod for Valheim and want to switch to Jötunn have a look at the [Developer's Quickstart](data/quickstart.md). 
 
-Jötunn offers some PreBuild and PostBuild tasks to automate certain housekeeping duties for you. If you already have a development environment setup but still want to learn about the automations read the sections [PreBuild automations](#prebuild-automations) and [PostBuild automations](#postbuild-automations).
+If you did use legacy JötunnLib or ValheimLib before first read the [Developer's Quickstart](data/quickstart.md) and then head over to the [transition docs](../transition/overview.md) where you can learn about the main differences and changes needed to port your mod to Jötunn
 
 If you want step-by-step instructions to start a Valheim mod from scratch using Jötunn continue reading as we guide you through the process of setting up everything you need to get going.
 
