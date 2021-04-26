@@ -88,38 +88,26 @@ namespace Jotunn.Configs
                 piece.m_icon = Icon;
             }
 
-            // Assign the CraftingStation for this piece, if needed
+            // Assign all needed resources for this piece
+            piece.m_resources = GetRequirements();
+
+            // Assign the CraftingStation for this piece
             if (!string.IsNullOrEmpty(CraftingStation))
             {
                 piece.m_craftingStation = Mock<CraftingStation>.Create(CraftingStation);
             }
 
-            // Assign all needed resources for this piece
-            piece.m_resources = GetRequirements();
-
-            // Try to assign the effect prefabs of another extension defined in ExtendStation
-            var stationExt = prefab.GetComponent<StationExtension>();
-            if (stationExt != null && !string.IsNullOrEmpty(ExtendStation))
+            // Assign an extension station for this piece
+            if (!string.IsNullOrEmpty(ExtendStation))
             {
-                stationExt.m_craftingStation = Mock<CraftingStation>.Create(ExtendStation);
-
-                // TODO: resolve that stuff
-                /*var otherExt = pieceTable.m_pieces.Find(x => x.GetComponent<StationExtension>() != null);
-                if (otherExt != null)
+                var stationExt = prefab.GetComponent<StationExtension>();
+                if (stationExt == null)
                 {
-                    var otherStationExt = otherExt.GetComponent<StationExtension>();
-                    var otherPiece = otherExt.GetComponent<Piece>();
-
-                    stationExt.m_connectionPrefab = otherStationExt.m_connectionPrefab;
-                    piece.m_placeEffect.m_effectPrefabs = otherPiece.m_placeEffect.m_effectPrefabs.ToArray();
-                }*/
+                    stationExt = prefab.AddComponent<StationExtension>();
+                }
+                
+                stationExt.m_craftingStation = Mock<CraftingStation>.Create(ExtendStation);
             }
-            // Otherwise just copy the effect prefabs of any piece within the table
-            /*else
-            {
-                var otherPiece = pieceTable.m_pieces.Find(x => x.GetComponent<Piece>() != null).GetComponent<Piece>();
-                piece.m_placeEffect.m_effectPrefabs.AddRangeToArray(otherPiece.m_placeEffect.m_effectPrefabs);
-            }*/
         }
     }
 }
