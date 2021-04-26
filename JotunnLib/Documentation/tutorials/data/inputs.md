@@ -55,6 +55,8 @@ private void Update()
 
 Key hints are displayed in Valheim when you equip weapons or tools to show which keys execute a certain action. With Jötunn you can add your own key hints for your custom weapons and tools by the means of the same ButtonConfig class you can use to define custom key bindings. You need to create a [KeyHintConfig](xref:Jotunn.Configs.KeyHintConfig) with one or more instances of [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) in it. In our [JotunnModExample](https://github.com/Valheim-Modding/JotunnModExample) we use the custom key bindings from the EvilSword to display a key hint for it and also override vanilla Valheim key hint messages. 
 
+Note the use of the special Axis "Mouse ScrollWheel" to override the Valheim scroll icon text.
+
 ```cs
 // Implementation of key hints replacing vanilla keys and using custom keys
 private void KeyHintsEvilSword()
@@ -69,8 +71,8 @@ private void KeyHintsEvilSword()
             new ButtonConfig { Name = "Attack", HintToken = "$evilsword_shwing" },
             // New custom input
             evilSwordSpecial,
-            // Override vanilla "Mouse Wheel" text
-            new ButtonConfig { Name = "Scroll", Axis = "Up", HintToken = "$evilsword_scroll" }
+            // Override vanilla "Mouse ScrollWheel" text
+            new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
         }
     };
     GUIManager.Instance.AddKeyHint(KHC);

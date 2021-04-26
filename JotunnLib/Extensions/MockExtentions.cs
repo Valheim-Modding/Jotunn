@@ -47,10 +47,11 @@ namespace Jotunn
             return self.m_items.Count > 0;
         }
     }
+
     /// <summary>
-    ///     Extension class to facilitate prefab manipulations
+    ///     Extends prefab GameObjects with functionality related to the mocking system.
     /// </summary>
-    public static class PrefabExtensions
+    public static class PrefabExtension
     {
         /// <summary>
         ///     Legacy ValheimLib prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
@@ -298,7 +299,7 @@ namespace Jotunn
         }
 
         /// <summary>
-        ///     Fix the components fields of a given gameObject
+        ///     Resolves all references for mocks in this GameObject recursively.
         /// </summary>
         /// <param name="gameObject"></param>
         public static void FixReferences(this GameObject gameObject)
@@ -310,7 +311,7 @@ namespace Jotunn
         }
 
         /// <summary>
-        ///     Will clone all fields from gameObject to objectToClone
+        ///     Clones all fields from this GameObject to objectToClone.
         /// </summary>
         /// <param name="gameObject"></param>
         /// <param name="objectToClone"></param>

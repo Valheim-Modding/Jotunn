@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using BepInEx;
@@ -10,7 +10,7 @@ using MonoMod.Cil;
 namespace Jotunn.Managers
 {
     /// <summary>
-    ///     Handles all logic that has to do with skills, and adding custom skills.
+    ///    Manager for handling custom skills added to the game.
     /// </summary>
     public class SkillManager : IManager
     {

@@ -10,6 +10,9 @@ using Jotunn.Utils;
 
 namespace Jotunn
 {
+    /// <summary>
+    ///     Main class implementing BaseUnityPlugin.
+    /// </summary>
     [BepInPlugin(ModGuid, ModName, Version)]
     [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
@@ -25,7 +28,7 @@ namespace Jotunn
         public const string ModName = "Jotunn";
 
         /// <summary>
-        ///     The BepInEx plugin Mod GUID being used.
+        ///     The BepInEx plugin Mod GUID being used (com.jotunn.jotunn).
         /// </summary>
         public const string ModGuid = "com.jotunn.jotunn";
 

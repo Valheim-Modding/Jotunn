@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using Jotunn.Managers;
-using System;
 
 namespace Jotunn.Configs
 {
+    /// <summary>
+    ///     Configuration class for adding custom key hints.
+    /// </summary>
     public class KeyHintConfig
     {
         /// <summary>
@@ -13,6 +14,9 @@ namespace Jotunn.Configs
         /// </summary>
         public string Item { get; set; }
 
+        /// <summary>
+        ///     Array of <see cref="ButtonConfig"/>s used for this key hint.
+        /// </summary>
         public ButtonConfig[] ButtonConfigs { get; set; } = new ButtonConfig[0];
 
         /// <summary>
