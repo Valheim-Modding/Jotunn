@@ -11,15 +11,15 @@ using Object = UnityEngine.Object;
 
 namespace Jotunn.Utils
 {
+    /// <summary>
+    ///     Implementation of the mod compatibility features.
+    /// </summary>
     public class ModCompatibility
     {
         /// <summary>
         ///     Stores the last server message.
         /// </summary>
         private static ZPackage lastServerVersion;
-
-        private static On.ZNet.orig_SendPeerInfo originalZNetSendPeerInfo;
-        private static string lastPassword = "";
 
         [PatchInit(-1000)]
         public static void InitPatch()

@@ -10,6 +10,9 @@ using UnityEngine;
 
 namespace Jotunn
 {
+    /// <summary>
+    ///     Extends ItemDrop with a TokenName and a check if the ItemDrop is valid so it can be added to the game.
+    /// </summary>
     public static class ItemDropExtension
     {
         public static string TokenName(this ItemDrop self) => self.m_itemData.m_shared.m_name;
@@ -35,6 +38,9 @@ namespace Jotunn
         }
     }
 
+    /// <summary>
+    ///     Extends ItemData with a TokenName.
+    /// </summary>
     public static class ItemDataExtension
     {
         public static string TokenName(this ItemDrop.ItemData self) => self.m_shared.m_name;
@@ -116,6 +122,9 @@ namespace Jotunn
         }
     }
 
+    /// <summary>
+    ///     Extends Piece with a TokenName and a check if the Piece is valid so it can be added to the game.
+    /// </summary>
     public static class PieceExtension
     {
         public static string TokenName(this Piece self) => self.m_name;
@@ -141,6 +150,9 @@ namespace Jotunn
         }
     }
 
+    /// <summary>
+    ///     Extends StatusEffect with a TokenName and a check if the StatusEffect is valid so it can be added to the game.
+    /// </summary>
     public static class StatusEffectExtension
     {
         public static string TokenName(this StatusEffect self) => self.m_name;
@@ -176,7 +188,7 @@ namespace Jotunn
         }
     }
 
-    public static class InventoryExtension
+    internal static class InventoryExtension
     {
         private static string GetContainerUID(this Container container) => container.m_nview.GetZDO().m_uid.ToString();
 
@@ -198,7 +210,7 @@ namespace Jotunn
             return null;
         }
 
-        public static bool HasAnyCustomItem(this Inventory self)
+        internal static bool HasAnyCustomItem(this Inventory self)
         {
             foreach (var inventoryItem in self.m_inventory)
             {

@@ -1,61 +1,62 @@
 {
-    "metadata": [
+  "metadata": [
+    {
+      "src": [
         {
-            "src": [
-                {
-                    "files": [
-                        "*.csproj"
-                    ],
-                    "src": ".",
-                    "exclude": [
-                        "**/obj/**",
-                        "**/bin/**",
-                        "_site/**"
-                    ]
-                }
-            ],
-            "shouldSkipMarkup": true,
-            "dest": "Documentation/api"
+          "files": [
+            "*.csproj"
+          ],
+          "exclude": [
+            "**/obj/**",
+            "**/bin/**",
+            "_site/**"
+          ]
         }
-    ],
-    "build": {
-        "content": [
-            {
-                "files": [
-                    "**/*.md",
-                    "**/*.yml"
-                ],
-                "src": "Documentation"
-            }
-        ],
-        "resource": [
-            {
-                "files": [
-                    "logo.svg",
-                    "favicon.ico",
-                    "Styles/main.css",
-                    "Documentation/images/**/*"
-                ],
-                "exclude": [
-                    "obj/**",
-                    "_site/**"
-                ]
-            }
-        ],
-        "overwrite": [
-            {
-                "files": [
-                    "apidoc/**.md"
-                ],
-                "exclude": [
-                    "obj/**",
-                    "_site/**"
-                ]
-            }
-        ],
-        "dest": "_site",
-        "template": [
-            "default"
-        ]
+      ],
+      "shouldSkipMarkup": true,
+      "dest": "Documentation/api"
     }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "**/*.md",
+          "**/*.yml"
+        ],
+        "src": "Documentation"
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "logo.svg",
+          "favicon.ico",
+          "styles/main.css"
+        ],
+        "src": "DocFX",
+        "dest": "."
+      },
+      {
+        "files": [
+          "Documentation/images/**/*"
+        ]
+      }
+    ],
+    "overwrite": [
+      {
+        "files": [
+          "apidoc/**.md"
+        ],
+        "exclude": [
+          "obj/**",
+          "_site/**"
+        ]
+      }
+    ],
+    "dest": "_site",
+    "template": [
+      "default"
+    ]
+  }
 }

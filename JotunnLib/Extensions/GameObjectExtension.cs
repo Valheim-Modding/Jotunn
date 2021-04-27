@@ -1,14 +1,40 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Jotunn
 {
     /// <summary>
-    /// Use only, if you know what you do.
-    /// There are no checks if a component exists
+    ///     Extends GameObject with a shortcut for the Unity bool operator override.
     /// </summary>
-    internal static class GameObjectExtensions
+    public static class ExposedGameObjectExtension
+    {
+        /// <summary>
+        ///     Facilitates use of null propagation operator for unity GameObjects by respecting op_equality.
+        /// </summary>
+        /// <param name="this"> this </param>
+        /// <returns>Returns null when GameObject.op_equality returns false.</returns>
+        public static GameObject OrNull(this GameObject @this)
+        {
+            return @this ? @this : null;
+        }
+
+        /// <summary>
+        /// Facilitates use of null propagation operator for unity MonBehaviours by respecting op_equality.
+        /// </summary>
+        /// <typeparam name="T">Any type that inherits MonoBehaviour</typeparam>
+        /// <param name="this">this</param>
+        /// <returns>Returns null when MonoBehaviours.op_equality returns false.</returns>
+        public static T OrNull<T>(this T @this) where T : UnityEngine.Object
+        {
+            return (T)(@this ? @this : null);
+        }
+    }
+
+    /// <summary>
+    ///     Use only, if you know what you do.
+    ///     There are no checks if a component exists.
+    /// </summary>
+    internal static class GameObjectExtension
     {
         internal static GameObject SetToTextHeight(this GameObject go)
         {
@@ -107,30 +133,6 @@ namespace Jotunn
         {
             go.GetComponent<Text>().text = text;
             return go;
-        }
-    }
-
-    public static class ExposedGameObjectExtensions
-    {
-        /// <summary>
-        ///     Facilitates use of null propagation operator for unity GameObjects by respecting op_equality.
-        /// </summary>
-        /// <param name="this"> this </param>
-        /// <returns>Returns null when GameObject.op_equality returns false.</returns>
-        public static GameObject OrNull(this GameObject @this)
-        {
-            return @this ? @this : null;
-        }
-
-        /// <summary>
-        /// Facilitates use of null propagation operator for unity MonBehaviours by respecting op_equality.
-        /// </summary>
-        /// <typeparam name="T">Any type that inherits MonoBehaviour</typeparam>
-        /// <param name="this">this</param>
-        /// <returns>Returns null when MonoBehaviours.op_equality returns false.</returns>
-        public static T OrNull<T>(this T @this) where T : UnityEngine.Object
-        {
-            return (T)(@this ? @this : null);
         }
     }
 }

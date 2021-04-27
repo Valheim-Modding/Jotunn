@@ -3,8 +3,8 @@
   
 - name: Getting started
   href: getting-started.md
-
-- name: Data
+  
+- name: Entities
   href: data/toc.yml
   topicHref: data/overview.md
 

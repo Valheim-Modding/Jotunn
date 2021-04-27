@@ -8,7 +8,7 @@ using Jotunn.Configs;
 namespace Jotunn.Managers
 {
     /// <summary>
-    ///    Manager for handling items, recipes, and status effects added to the game.
+    ///    Manager for handling all custom data added to the game related to items.
     /// </summary>
     public class ItemManager : IManager
     {
