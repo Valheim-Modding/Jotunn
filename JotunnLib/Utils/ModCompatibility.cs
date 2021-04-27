@@ -21,9 +21,6 @@ namespace Jotunn.Utils
         /// </summary>
         private static ZPackage lastServerVersion;
 
-        private static On.ZNet.orig_SendPeerInfo originalZNetSendPeerInfo;
-        private static string lastPassword = "";
-
         [PatchInit(-1000)]
         public static void InitPatch()
         {
