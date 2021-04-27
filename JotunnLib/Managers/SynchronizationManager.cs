@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 namespace Jotunn.Managers
 {
     /// <summary>
-    ///     Handles all logic to do with synchronization between the client and server.
+    ///    Manager for handling synchronisation between client and server instances.
     /// </summary>
     public class SynchronizationManager : IManager
     {

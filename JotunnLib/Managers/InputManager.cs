@@ -6,6 +6,9 @@ using Jotunn.Configs;
 
 namespace Jotunn.Managers
 {
+    /// <summary>
+    ///    Manager for handling custom inputs registered by mods.
+    /// </summary>
     public class InputManager : IManager
     {
         private static InputManager _instance;

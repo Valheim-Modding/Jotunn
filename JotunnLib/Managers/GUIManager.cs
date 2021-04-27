@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jotunn.Configs;
-using Jotunn.Entities;
-using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -15,6 +13,10 @@ using Toggle = UnityEngine.UI.Toggle;
 
 namespace Jotunn.Managers
 {
+    /// <summary>
+    ///     Manager for handling anything GUI related. Provides Valheim style 
+    ///     GUI elements as well as an anchor for custom GUI prefabs.
+    /// </summary>
     public class GUIManager : IManager, IPointerClickHandler
     {
         private static GUIManager _instance;
@@ -27,14 +29,33 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     GUI container with automatic scaling for high res displays.
+        ///     Gets rebuild at every scene change so make sure to add your custom
+        ///     GUI prefabs again on each scene change.
+        /// </summary>
         public static GameObject PixelFix { get; private set; }
 
+        /// <summary>
+        ///     Internal container for GUI elements created by the GUIManager. 
+        ///     Acts as a static transform for the base GUI elements which can
+        ///     be instantiated with this classes helper methods.
+        /// </summary>
         internal static GameObject GUIContainer;
 
+        /// <summary>
+        ///     Unity layer constant for UI objects.
+        /// </summary>
         public const int UILayer = 5;
 
+        /// <summary>
+        ///     The default Valheim orange color.
+        /// </summary>
         public Color ValheimOrange = new Color(1f, 0.631f, 0.235f, 1f);
 
+        /// <summary>
+        ///     Scrollbar handle color block in default Valheim orange.
+        /// </summary>
         public ColorBlock ValheimScrollbarHandleColorBlock = new ColorBlock()
         {
             colorMultiplier = 1f,
@@ -46,22 +67,51 @@ namespace Jotunn.Managers
             selectedColor = new Color(1, 0.786f, 0.088f, 1f),
         };
 
+        /// <summary>
+        ///     Valheim standard font normal faced.
+        /// </summary>
         public Font AveriaSerif { get; private set; }
 
+        /// <summary>
+        ///     Valheims standard font bold faced.
+        /// </summary>
         public Font AveriaSerifBold { get; private set; }
 
+        /// <summary>
+        ///     Internal reference to Valheims TextureAtlas. 
+        ///     Used to get Valheim sprites in <see cref="CreateSpriteFromAtlas"/>.
+        /// </summary>
         internal Texture2D TextureAtlas { get; private set; }
 
+        /// <summary>
+        ///     Internal reference to Valheims second TextureAtlas.
+        ///     Used to get Valheim sprites in <see cref="CreateSpriteFromAtlas2"/>.
+        /// </summary>
         internal Texture2D TextureAtlas2 { get; private set; }
         
+        /// <summary>
+        ///     Internal Disctionary holding the references to the sprites used in the helper methods.
+        /// </summary>
         internal readonly Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
 
+        /// <summary>
+        ///     Internal Disctionary holding the references to the custom key hints added to the manager.
+        /// </summary>
         internal readonly Dictionary<string, KeyHintConfig> KeyHints = new Dictionary<string, KeyHintConfig>();
 
+        /// <summary>
+        ///     Reference to the games "KeyHint" GameObjects RectTransform.
+        /// </summary>
         private RectTransform KeyHintContainer;
 
+        /// <summary>
+        ///     Indicates if the initial resource load needs to be performed.
+        /// </summary>
         private bool needsLoad = true;
 
+        /// <summary>
+        ///     Indicates if the PixelFix must be created for the start or main scene.
+        /// </summary>
         private bool GUIInStart = true;
 
         public void OnPointerClick(PointerEventData eventData)
@@ -324,13 +374,8 @@ namespace Jotunn.Managers
                     GameObject.Destroy(child.gameObject);
                 }
 
-                // Add every ButtonConfig as a child to the custom key hints object
-                /*for (int i = entry.Value.ButtonConfigs.Length - 1; i >= 0; i--)
-                {
-                    var buttonConfig = entry.Value.ButtonConfigs[i];*/
                 foreach (var buttonConfig in entry.Value.ButtonConfigs)
                 {
-                    //string key = LocalizationManager.Instance.TryTranslate(buttonConfig.KeyToken);
                     string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
                     if (key[0].Equals(LocalizationManager.TokenFirstChar))
                     {
@@ -338,7 +383,7 @@ namespace Jotunn.Managers
                     }
                     string hint = LocalizationManager.Instance.TryTranslate(buttonConfig.HintToken);
 
-                    if (string.IsNullOrEmpty(buttonConfig.Axis))
+                    if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                     {
                         var customObject = GameObject.Instantiate(baseKey, kb, false);
                         customObject.name = buttonConfig.Name;
@@ -449,7 +494,7 @@ namespace Jotunn.Managers
                             key = LocalizationManager.Instance.TryTranslate(key);
                         }
 
-                        if (string.IsNullOrEmpty(buttonConfig.Axis))
+                        if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                         {
                             hint.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key").gameObject.SetText(key);
                         }

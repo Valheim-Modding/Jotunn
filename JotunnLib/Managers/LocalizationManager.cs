@@ -8,7 +8,7 @@ using Jotunn.Utils;
 namespace Jotunn.Managers
 {
     /// <summary>
-    ///     Handles all logic to do with managing the game's localizations.
+    ///     Manager for handling localizations for all custom content added to the game.
     /// </summary>
     public class LocalizationManager : IManager
     {

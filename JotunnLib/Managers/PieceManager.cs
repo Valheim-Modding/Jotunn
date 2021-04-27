@@ -204,6 +204,13 @@ namespace Jotunn.Managers
                         customPiece.FixReference = false;
                     }
 
+                    // Assign vfx_ExtensionConnection for StationExtensions
+                    var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
+                    if (extension != null && !extension.m_connectionPrefab)
+                    {
+                        extension.m_connectionPrefab = PrefabManager.Cache.GetPrefab<GameObject>("vfx_ExtensionConnection");
+                    }
+
                     // Assign the piece to the actual PieceTable if not already in there
                     var pieceTable = GetPieceTable(customPiece.PieceTable);
                     if (pieceTable == null)

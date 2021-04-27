@@ -378,7 +378,7 @@
       </PropertyGroup>
       <Error Condition="!Exists('$(SolutionDir)Environment.props')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)Environment.props'))" />
   </Target>
-  <Import Project="$(SolutionDir)Environment.props" Condition="Exists('$(SolutionDir)Environment.props')"/>
+  <Import Project="$(SolutionDir)Environment.props" Condition="Exists('$(SolutionDir)Environment.props')" />
   <Import Project="BuildProps\JotunnBuildTask.props" />
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'" AfterTargets="Build">
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot; -ProjectPath &quot;$(ProjectDir.TrimEnd('\'))&quot;" />

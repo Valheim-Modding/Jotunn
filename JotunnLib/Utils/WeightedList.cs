@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace Jotunn.Utils
 {
+    /// <summary>
+    ///     Like a list but stores elements in the order specified by the weight.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="ItemType"></typeparam>
     public class WeightedList<T, ItemType> where T : WeightedItem<ItemType>
     {
         public readonly List<T> List;
@@ -42,6 +47,10 @@ namespace Jotunn.Utils
         }
     }
 
+    /// <summary>
+    ///     Weighted item used in <see cref="WeightedList{T, ItemType}"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class WeightedItem<T>
     {
         public T Item { get; private set; }

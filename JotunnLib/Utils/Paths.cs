@@ -2,6 +2,9 @@
 
 namespace Jotunn.Utils
 {
+    /// <summary>
+    ///     Various Path constants used in Jötunn
+    /// </summary>
     public static class Paths
     {
         public static string JotunnFolder

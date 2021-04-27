@@ -15,10 +15,14 @@ A quick overview of the prerequisites to start using Jötunn for beginners and a
 ## Tutorials
 This section contains tutorials on how to get started with Valheim modding using Jötunn. View it [here](tutorials/intro.md)
 
-_note: the tutorial uses the [Mod Stub](https://github.com/Valheim-Modding/JotunnModStub) to work towards creating the final [Example mod](https://github.com/Valheim-Modding/JotunnModExample) from scratch. If you just want to look up some of the concepts of Jötunn skip the intro part and browse to the specific topic you are interested in._
+_Note: the tutorial uses the [Mod Stub](https://github.com/Valheim-Modding/JotunnModStub) to work towards creating the final [Example mod](https://github.com/Valheim-Modding/JotunnModExample) from scratch. If you just want to look up some of the concepts of Jötunn skip the intro part and browse to the specific topic you are interested in._
+
+## Transition
+If you're currently using JotunnLib, ValheimLib, or SkillInjector and wish to transition your mod to Jötunn, this is for you!
+This section outlines all the differences, and what you'd need to change in order to update your mod. View it [here](transition/overview.md).  
 
 ## Conceptual
-This section contains information about how Valheim itself works, as well as how JötunnLib interfaces with the game. There likely will not be many code examples here, but rather high level overviews of how various systems work. View it [here](conceptual/intro.md) 
+This section contains information about how Valheim itself works, as well as how JötunnLib interfaces with the game. There likely will not be many code examples here, but rather high level overviews of how various systems work. View it [here](conceptual/intro.md). 
 
 ## API Documentation
 This section contains documentation on all of the public code within JötunnLib. View it [here](xref:Jotunn)

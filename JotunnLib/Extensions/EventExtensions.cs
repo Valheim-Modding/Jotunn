@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using On.Steamworks;
 
 namespace Jotunn
 {
     /// <summary>
     ///     Helper class for C# Events.
     /// </summary>
-    public static class EventExtensions
+    internal static class EventExtensions
     {
         /// <summary>
         ///     Try catch the delegate chain so that it doesnt break on the first failing Delegate.

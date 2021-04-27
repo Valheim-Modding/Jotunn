@@ -64,15 +64,6 @@ namespace TestMod
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
-
-            //On.Skills.RaiseSkill += Skills_RaiseSkill;
-        }
-
-        private void Skills_RaiseSkill(On.Skills.orig_RaiseSkill orig, Skills self, Skills.SkillType skillType, float factor)
-        {
-            orig(self, skillType, factor);
-            Skills.Skill skill = self.GetSkill(skillType);
-            Jotunn.Logger.LogWarning($"{skill.m_info.m_skill.ToString().ToLower()}");
         }
 
         // Called every frame
@@ -99,7 +90,7 @@ namespace TestMod
                 // Raise the test skill
                 if (Player.m_localPlayer != null && ZInput.GetButtonDown("TestMod_RaiseSkill"))
                 {
-                    Player.m_localPlayer.RaiseSkill(testSkill, 1);
+                    Player.m_localPlayer.RaiseSkill(testSkill, 1f);
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
@@ -110,9 +101,7 @@ namespace TestMod
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
                 }
-                
             }
-            if (Input.GetKeyDown(KeyCode.F7)) Player.m_localPlayer.RaiseSkill(testSkill, 1f);
         }
 
         // Called every frame for rendering and handling GUI events
@@ -433,6 +422,15 @@ namespace TestMod
                 piece.m_icon = testSprite;
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
+
+                // Test station extension, do it manually cause there is no config on empty pieces atm
+                var cfg = new PieceConfig
+                {
+                    ExtendStation = "piece_workbench"
+                };
+                cfg.Apply(prefab);
+                CP.FixReference = true;
+                
                 PieceManager.Instance.AddPiece(CP);
             }
         }

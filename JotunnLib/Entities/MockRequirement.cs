@@ -2,6 +2,9 @@
 
 namespace Jotunn.Entities
 {
+    /// <summary>
+    ///     Helper class for creating Mocks of item/piece requirements.
+    /// </summary>
     public static class MockRequirement
     {
         public static Piece.Requirement Create(string name, int amount = 1, bool recover = true)

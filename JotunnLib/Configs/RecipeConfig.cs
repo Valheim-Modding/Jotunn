@@ -49,10 +49,9 @@ namespace Jotunn.Configs
         public int MinStationLevel { get; set; }
 
         /// <summary>
-        /// 
+        ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
         public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
-
 
         /// <summary>
         ///     Converts the RequirementConfigs to Valheim style Piece.Requirements
