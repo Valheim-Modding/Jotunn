@@ -54,6 +54,7 @@ namespace TestMod
             AddSkills();
             AddRecipes();
             AddStatusEffects();
+            AddItemConversions();
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
@@ -311,6 +312,19 @@ namespace TestMod
 
             evilSwordEffect = new CustomStatusEffect(effect, fixReference: false);  // We dont need to fix refs here, because no mocks were used
             ItemManager.Instance.AddStatusEffect(evilSwordEffect);
+        }
+
+        // Add item conversions (cooking or smelter recipes)
+        private void AddItemConversions()
+        {
+            // Add an item conversion for the CookingStation. The items must have an attach child GameObject to display it on the station.
+            var conversion = new CookingConversionConfig
+            {
+                CookingStation = "piece_cookingstation",
+                FromItem = "Coal",
+                ToItem = "CookedLoxMeat"
+            };
+            ItemManager.Instance.AddItemConversion(conversion);
         }
 
         // Add new Items with item Configs
