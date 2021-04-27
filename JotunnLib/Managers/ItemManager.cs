@@ -44,8 +44,7 @@ namespace Jotunn.Managers
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
-        internal readonly Dictionary<CookingStation, CookingStation.ItemConversion> ItemConversions =
-            new Dictionary<CookingStation, CookingStation.ItemConversion>();
+        internal readonly List<ItemConversionConfig> ItemConversions = new List<ItemConversionConfig>();
 
 
         public void Init()
@@ -98,44 +97,91 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Add a <see cref="CustomRecipe"/> to the game.<br />
+        ///     Checks if the custom recipe is unique and adds it to the list of custom recipes.<br />
+        ///     Custom recipes are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
+        /// </summary>
+        /// <param name="customRecipe">The custom recipe to add.</param>
+        /// <returns>true if the custom recipe was added to the manager.</returns>
+        public bool AddRecipe(CustomRecipe customRecipe)
+        {
+            if (!customRecipe.IsValid())
+            {
+                Logger.LogWarning($"Custom recipe {customRecipe} is not valid");
+                return false;
+            }
+            if (Recipes.Contains(customRecipe))
+            {
+                Logger.LogWarning($"Custom recipe {customRecipe} already added");
+                return false;
+            }
+
+            Recipes.Add(customRecipe);
+            return true;
+        }
+
+        /// <summary>
+        ///     Adds recipes defined in a JSON file at given path, relative to BepInEx/plugins
+        /// </summary>
+        /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
+        public void AddRecipesFromJson(string path)
+        {
+            string json = AssetUtils.LoadText(path);
+
+            if (string.IsNullOrEmpty(json))
+            {
+                Logger.LogError($"Failed to load recipes from invalid JSON: {path}");
+                return;
+            }
+
+            List<RecipeConfig> recipes = RecipeConfig.ListFromJson(json);
+
+            foreach (RecipeConfig recipe in recipes)
+            {
+                AddRecipe(new CustomRecipe(recipe));
+            }
+        }
+
+        /// <summary>
+        ///     Add a <see cref="CustomStatusEffect"/> to the game.<br />
+        ///     Checks if the custom status effect is unique and adds it to the list of custom status effects.<br />
+        ///     Custom status effects are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
+        /// </summary>
+        /// <param name="customStatusEffect">The custom status effect to add.</param>
+        /// <returns>true if the custom status effect was added to the manager.</returns>
+        public bool AddStatusEffect(CustomStatusEffect customStatusEffect)
+        {
+            if (!customStatusEffect.IsValid())
+            {
+                Logger.LogWarning($"Custom status effect {customStatusEffect} is not valid");
+                return false;
+            }
+            if (StatusEffects.Contains(customStatusEffect))
+            {
+                Logger.LogWarning($"Custom status effect {customStatusEffect} already added");
+                return false;
+            }
+
+            StatusEffects.Add(customStatusEffect);
+            return true;
+        }
+
+        /// <summary>
         ///     Adds a new item conversion for any prefab that has a CookingStation component (such as a "piece_cookingstation").
         /// </summary>
-        /// <param name="prefabName">The name of the prefab that has the CookingStation</param>
         /// <param name="itemConversion">Item conversion details</param>
         /// <returns>Whether the addition was successful or not</returns>
         public bool AddItemConversion(ItemConversionConfig itemConversion)
         {
-            CookingStation cookingStation = itemConversion.GetCookingStation();
-
-            if (!cookingStation)
+            if (string.IsNullOrEmpty(itemConversion.CookingStation) || 
+                string.IsNullOrEmpty(itemConversion.FromItem) ||
+                string.IsNullOrEmpty(itemConversion.ToItem))
             {
-                Debug.LogError($"Failed to register ItemConversion for invalid CookingStation prefab: {itemConversion.CookingStation}");
+                Logger.LogWarning($"Custom item conversion {itemConversion} is not valid");
                 return false;
             }
 
-            CookingStation.ItemConversion conv = itemConversion.GetItemConversion();
-
-            if (conv == null)
-            {
-                Debug.LogError($"Failed to create item conversion for: {itemConversion.FromItem} -> {itemConversion.ToItem}");
-                return false;
-            }
-
-            if (conv.m_from == null || conv.m_to == null)
-            {
-                Logger.LogError("Failed to create ItemConversion from ItemConversionConfig with null From or To items");
-                return false;
-            }
-
-            if (cookingStation.m_conversion.Exists(c => c.m_from == conv.m_from))
-            {
-                Debug.LogError($"Failed to add ItemConversion on ${cookingStation.name} for item with existing conversion: ${conv.m_from.name}");
-                return false;
-            }
-
-            ItemConversions.Add(cookingStation, conv);
-            cookingStation.m_conversion.Add(conv);
-
+            ItemConversions.Add(itemConversion);
             return true;
         }
 
@@ -204,52 +250,6 @@ namespace Jotunn.Managers
             objectDB.UpdateItemHashes();
         }
 
-        /// <summary>
-        ///     Add a <see cref="CustomRecipe"/> to the game.<br />
-        ///     Checks if the custom recipe is unique and adds it to the list of custom recipes.<br />
-        ///     Custom recipes are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
-        /// </summary>
-        /// <param name="customRecipe">The custom recipe to add.</param>
-        /// <returns>true if the custom recipe was added to the manager.</returns>
-        public bool AddRecipe(CustomRecipe customRecipe)
-        {
-            if (!customRecipe.IsValid())
-            {
-                Logger.LogWarning($"Custom recipe {customRecipe} is not valid");
-                return false;
-            }
-            if (Recipes.Contains(customRecipe))
-            {
-                Logger.LogWarning($"Custom recipe {customRecipe} already added");
-                return false;
-            }
-
-            Recipes.Add(customRecipe);
-            return true;
-        }
-
-        /// <summary>
-        ///     Adds recipes defined in a JSON file at given path, relative to BepInEx/plugins
-        /// </summary>
-        /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
-        public void AddRecipesFromJson(string path)
-        {
-            string json = AssetUtils.LoadText(path);
-
-            if (string.IsNullOrEmpty(json))
-            {
-                Logger.LogError($"Failed to load recipes from invalid JSON: {path}");
-                return;
-            }
-
-            List<RecipeConfig> recipes = RecipeConfig.ListFromJson(json);
-
-            foreach (RecipeConfig recipe in recipes)
-            {
-                AddRecipe(new CustomRecipe(recipe));
-            }
-        }
-
         private void RegisterCustomRecipes(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom recipes to {objectDB} ----");
@@ -289,30 +289,6 @@ namespace Jotunn.Managers
             }
         }
 
-        /// <summary>
-        ///     Add a <see cref="CustomStatusEffect"/> to the game.<br />
-        ///     Checks if the custom status effect is unique and adds it to the list of custom status effects.<br />
-        ///     Custom status effects are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
-        /// </summary>
-        /// <param name="customStatusEffect">The custom status effect to add.</param>
-        /// <returns>true if the custom status effect was added to the manager.</returns>
-        public bool AddStatusEffect(CustomStatusEffect customStatusEffect)
-        {
-            if (!customStatusEffect.IsValid())
-            {
-                Logger.LogWarning($"Custom status effect {customStatusEffect} is not valid");
-                return false;
-            }
-            if (StatusEffects.Contains(customStatusEffect))
-            {
-                Logger.LogWarning($"Custom status effect {customStatusEffect} already added");
-                return false;
-            }
-
-            StatusEffects.Add(customStatusEffect);
-            return true;
-        }
-
         private void RegisterCustomStatusEffects(ObjectDB objectDB)
         {
             Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
@@ -339,6 +315,49 @@ namespace Jotunn.Managers
 
                     // Remove status effect
                     StatusEffects.Remove(customStatusEffect);
+                }
+            }
+        }
+
+        private void RegisterCustomItemConversions()
+        {
+            Logger.LogInfo($"---- Adding custom item conversions ----");
+
+            foreach (var conversion in ItemConversions)
+            {
+                try
+                {
+                    GameObject stationPrefab = PrefabManager.Instance.GetPrefab(conversion.CookingStation);
+                    CookingStation station = stationPrefab.GetComponent<CookingStation>();
+
+                    if (!stationPrefab || station == null)
+                    {
+                        throw new Exception($"Invalid CookingStation prefab: {conversion.CookingStation}");
+                    }
+
+                    CookingStation.ItemConversion conv = conversion.GetItemConversion();
+                    conv.FixReferences();
+
+                    if (conv == null || conv.m_from == null || conv.m_to == null)
+                    {
+                        throw new Exception("Item conversion is null or items are null");
+                    }
+
+                    if (station.m_conversion.Exists(c => c.m_from == conv.m_from))
+                    {
+                        throw new Exception($"Item conversion already added to cooking station: ${conv.m_from.name}");
+                    }
+
+                    station.m_conversion.Add(conv);
+
+                    Logger.LogInfo($"Added item conversion {conversion.FromItem} -> {conversion.ToItem}");
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error while adding item conversion {conversion.FromItem} -> {conversion.ToItem}: {ex.Message}");
+
+                    // Remove item conversion
+                    ItemConversions.Remove(conversion);
                 }
             }
         }
@@ -384,6 +403,7 @@ namespace Jotunn.Managers
                 RegisterCustomItems(self);
                 RegisterCustomRecipes(self);
                 RegisterCustomStatusEffects(self);
+                RegisterCustomItemConversions();
 
                 self.UpdateItemHashes();
             }

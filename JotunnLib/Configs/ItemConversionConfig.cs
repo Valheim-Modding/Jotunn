@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Jotunn.Entities;
 using Jotunn.Managers;
 
 namespace Jotunn.Configs
@@ -34,26 +35,14 @@ namespace Jotunn.Configs
         /// <returns>The Valheim ItemConversion</returns>
         public CookingStation.ItemConversion GetItemConversion()
         {
-            ItemDrop fromItem = PrefabManager.Instance.GetPrefab(FromItem)?.GetComponent<ItemDrop>();
-            ItemDrop toItem = PrefabManager.Instance.GetPrefab(ToItem)?.GetComponent<ItemDrop>();
-
             CookingStation.ItemConversion conv = new CookingStation.ItemConversion()
             {
                 m_cookTime = CookTime,
-                m_from = fromItem,
-                m_to = toItem
+                m_from = Mock<ItemDrop>.Create(FromItem),
+                m_to = Mock<ItemDrop>.Create(ToItem),
             };
 
             return conv;
-        }
-
-        /// <summary>
-        ///     Gets the cooking station component from the prefab name.
-        /// </summary>
-        /// <returns>The CookingStation component, or null if it is not valid</returns>
-        public CookingStation GetCookingStation()
-        {
-            return PrefabManager.Instance.GetPrefab(CookingStation)?.GetComponent<CookingStation>();
         }
 
         /// <summary>
