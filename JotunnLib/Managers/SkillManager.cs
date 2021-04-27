@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using BepInEx;
 using UnityEngine;
 using Jotunn.Utils;
 using Jotunn.Configs;
 using MonoMod.Cil;
+using UnityEngine.UI;
 
 namespace Jotunn.Managers
 {
@@ -29,30 +28,12 @@ namespace Jotunn.Managers
 
         public void Init()
         {
-
-            IL.Skills.RaiseSkill += Skills_RaiseSkill;
             On.Skills.Awake += RegisterCustomSkills;
-        }
-
-        private void Skills_RaiseSkill(MonoMod.Cil.ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-            c.GotoNext(MoveType.After,
-                    zz => zz.MatchConstrained(out _),
-                    zz => zz.MatchCallOrCallvirt<System.Object>("ToString"),
-                    zz => zz.MatchCallOrCallvirt<System.String>("ToLower")
-                );
-            c.EmitDelegate<Func<string, string>>((string skillID) => {
-
-            var asd = Enum.TryParse<global::Skills.SkillType>(skillID, out var result);
-
-            if (asd && Skills.ContainsKey(result))
-            {
-                Jotunn.Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
-                return Skills[result].Name;
-            }
-            return skillID;
-            });
+            On.SkillsDialog.Setup += SkillsDialog_Setup;
+            On.Skills.IsSkillValid += Skills_IsSkillValid;
+            IL.Skills.RaiseSkill += Skills_RaiseSkill;
+            On.Skills.CheatRaiseSkill += Skills_CheatRaiseSkill;
+            On.Skills.CheatResetSkill += Skills_CheatResetSkill;
         }
 
         internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
@@ -182,5 +163,95 @@ namespace Jotunn.Managers
 
         }
 
+        private void SkillsDialog_Setup(On.SkillsDialog.orig_Setup orig, SkillsDialog self, Player player)
+        {
+            orig(self, player);
+
+            // Update skill names to allow for negative m_skill IDs
+            List<Skills.Skill> skillList = player.GetSkills().GetSkillList();
+
+            for (int i = 0; i < skillList.Count; i++)
+            {
+                var skill = skillList[i];
+                var elem = self.m_elements[i];
+
+                // Ignore vanilla skills
+                if (!Skills.ContainsKey(skill.m_info.m_skill))
+                {
+                    continue;
+                }
+
+                var skillConfig = Skills[skill.m_info.m_skill];
+                var name = skillConfig.Name.StartsWith("$") ? Localization.instance.Localize(skillConfig.Name) : skillConfig.Name;
+                Logger.LogInfo($"Updated skill: {skillConfig.Name} -> {name}");
+                global::Utils.FindChild(elem.transform, "name").GetComponent<Text>().text = name;
+            }
+        }
+
+        private bool Skills_IsSkillValid(On.Skills.orig_IsSkillValid orig, Skills self, Skills.SkillType type)
+        {
+            if (Skills.ContainsKey(type))
+            {
+                return true;
+            }
+
+            return orig(self, type);
+        }
+
+        private void Skills_RaiseSkill(MonoMod.Cil.ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            c.GotoNext(MoveType.After,
+                    zz => zz.MatchConstrained(out _),
+                    zz => zz.MatchCallOrCallvirt<System.Object>("ToString"),
+                    zz => zz.MatchCallOrCallvirt<System.String>("ToLower")
+                );
+            c.EmitDelegate<Func<string, string>>((string skillID) =>
+            {
+                var asd = Enum.TryParse<global::Skills.SkillType>(skillID, out var result);
+
+                if (asd && Skills.ContainsKey(result))
+                {
+                    Jotunn.Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
+                    return Skills[result].Name;
+                }
+                return skillID;
+            });
+        }
+
+        private void Skills_CheatRaiseSkill(On.Skills.orig_CheatRaiseSkill orig, Skills self, string name, float value)
+        {
+            foreach (var config in Skills.Values)
+            {
+                if (config.IsFromName(name))
+                {
+                    Skills.Skill skill = self.GetSkill(config.UID);
+                    var localizedName = config.Name.StartsWith("$") ? Localization.instance.Translate(config.Name) : config.Name;
+
+                    skill.m_level += value;
+                    skill.m_level = Mathf.Clamp(skill.m_level, 0f, 100f);
+                    self.m_player.Message(MessageHud.MessageType.TopLeft, "Skill increased " + localizedName + ": " + (int)skill.m_level, 0, skill.m_info.m_icon);
+                    Console.instance.Print("Skill " + config.Name + " = " + skill.m_level);
+
+                    return;
+                }
+            }
+
+            orig(self, name, value);
+        }
+
+        private void Skills_CheatResetSkill(On.Skills.orig_CheatResetSkill orig, Skills self, string name)
+        {
+            foreach (var config in Skills.Values)
+            {
+                if (config.IsFromName(name))
+                {
+                    self.m_player.GetSkills().ResetSkill(config.UID);
+                    return;
+                }
+            }
+
+            orig(self, name);
+        }
     }
 }
