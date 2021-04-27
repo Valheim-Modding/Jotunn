@@ -1,5 +1,5 @@
 ﻿# Transitioning from ValheimLib
-This walkthrough requires previous steps from the [Quick Start](../../tutorials/data/quickstart.md) before proceeding.
+This walkthrough requires previous steps from the [Quick Start](../../tutorials/quickstart.md) before proceeding.
 
 Once your Jotunn dependencies have been resolved, its time that we start stripping out ValheimLib. First, we remove the VL binary from our dependencies, and then removing the `using` namespaces.
 
