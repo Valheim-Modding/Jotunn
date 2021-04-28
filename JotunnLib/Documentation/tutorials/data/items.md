@@ -1,4 +1,4 @@
-# Items
+﻿# Items
 Valheim items can be equipment, resources, or building pieces. In this tutorial you will learn how to set up custom items within the game, either based upon existing assets, or through the creation of entirely custom assets.
 
 **Note**: This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
@@ -97,9 +97,9 @@ private void CreateBlueprintRune()
     {
         Item = "BlueprintRune",
         Amount = 1,
-        Requirements = new PieceRequirementConfig[]
+        Requirements = new RequirementConfig[]
         {
-            new PieceRequirementConfig {Item = "Stone", Amount = 1}
+            new RequirementConfig {Item = "Stone", Amount = 1}
         }
     });
     ItemManager.Instance.AddRecipe(runeRecipe);
