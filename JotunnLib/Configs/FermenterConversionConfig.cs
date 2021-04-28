@@ -9,14 +9,19 @@ namespace Jotunn.Configs
     public class FermenterConversionConfig : ConversionConfig
     {
         /// <summary>
-        ///     The amount of items one conversion yields.
+        ///     The name of the station prefab this conversion is added to. Defaults to fermenter.
+        /// </summary>
+        public override string Station { get; set; } = "piece_cookingstation";
+
+        /// <summary>
+        ///     The amount of items one conversion yields. Defaults to 4.
         /// </summary>
         public int ProducedItems { get; set; } = 4;
 
         /// <summary>
         ///     Turns the FermenterConversionConfig into a Valheim Fermenter.ItemConversion item.
         /// </summary>
-        /// <returns>The Valheim ItemConversion</returns>
+        /// <returns>The Valheim Fermenter.ItemConversion</returns>
         public Fermenter.ItemConversion GetItemConversion()
         {
             Fermenter.ItemConversion conv = new Fermenter.ItemConversion()

@@ -9,9 +9,14 @@ namespace Jotunn.Configs
     public class SmelterConversionConfig : ConversionConfig
     {
         /// <summary>
+        ///     The name of the station prefab this conversion is added to. Defaults to smelter.
+        /// </summary>
+        public override string Station { get; set; } = "smelter";
+
+        /// <summary>
         ///     Turns the SmelterConversionConfig into a Valheim Smelter.ItemConversion item.
         /// </summary>
-        /// <returns>The Valheim ItemConversion</returns>
+        /// <returns>The Valheim Smelter.ItemConversion</returns>
         public Smelter.ItemConversion GetItemConversion()
         {
             Smelter.ItemConversion conv = new Smelter.ItemConversion()

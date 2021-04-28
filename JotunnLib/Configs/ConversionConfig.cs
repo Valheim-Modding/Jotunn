@@ -8,7 +8,7 @@
         /// <summary>
         ///     The name of the station prefab this conversion is added to.
         /// </summary>
-        public string Station { get; set; }
+        public abstract string Station { get; set; }
 
         /// <summary>
         ///     The name of the item prefab you need to put ín the station.

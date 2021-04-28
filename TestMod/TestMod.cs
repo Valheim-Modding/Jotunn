@@ -329,7 +329,7 @@ namespace TestMod
             // Add an item conversion for the smelter
             var smeltConversion = new CustomItemConversion(new SmelterConversionConfig
             {
-                Station = "smelter",
+                //Station = "smelter",  // Use the default from the config
                 FromItem = "Stone",
                 ToItem = "Coal"
             });

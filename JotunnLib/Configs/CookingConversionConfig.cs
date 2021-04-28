@@ -9,14 +9,19 @@ namespace Jotunn.Configs
     public class CookingConversionConfig : ConversionConfig
     {
         /// <summary>
-        ///     Amount of time it takes to perform the conversion.
+        ///     The name of the station prefab this conversion is added to. Defaults to piece_cookingstation.
+        /// </summary>
+        public override string Station { get; set; } = "piece_cookingstation";
+
+        /// <summary>
+        ///     Amount of time it takes to perform the conversion. Defaults to 10f.
         /// </summary>
         public float CookTime { get; set; } = 10f;
 
         /// <summary>
         ///     Turns the CookingConversionConfig into a Valheim CookingStation.ItemConversion item.
         /// </summary>
-        /// <returns>The Valheim ItemConversion</returns>
+        /// <returns>The Valheim CookingStation.ItemConversion</returns>
         public CookingStation.ItemConversion GetItemConversion()
         {
             CookingStation.ItemConversion conv = new CookingStation.ItemConversion()
