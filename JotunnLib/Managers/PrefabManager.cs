@@ -54,18 +54,8 @@ namespace Jotunn.Managers
             //Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
             using (new DetourContext() { Priority = int.MaxValue - 1000 })
             {
-                On.ZNetScene.Awake += LateRegisterZNetScene;
+                On.ZNetScene.Awake += InvokeOnPrefabsRegistered;
             }
-        }
-
-        /// <summary>
-        /// Event is run after most mods have hooked ZNetScene.
-        /// </summary>
-        private void LateRegisterZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
-        {
-            orig(self);
-            Jotunn.Logger.LogInfo($"Invoking late OnPrefabsRegistered");
-            OnPrefabsRegistered?.SafeInvoke();
         }
 
         /// <summary>
@@ -298,6 +288,15 @@ namespace Jotunn.Managers
                     Logger.LogInfo($"Added prefab {name}");
                 }
             }
+        }
+
+        /// <summary>
+        ///     Notify event subscribers that all prefabs got registered in ObjectDB. Runs late in the detour hierarchy.
+        /// </summary>
+        private void InvokeOnPrefabsRegistered(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        {
+            orig(self);
+            OnPrefabsRegistered?.SafeInvoke();
         }
 
         /// <summary>

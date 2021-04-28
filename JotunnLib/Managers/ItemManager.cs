@@ -5,7 +5,6 @@ using Jotunn.Utils;
 using Jotunn.Entities;
 using Jotunn.Configs;
 using MonoMod.RuntimeDetour;
-using System.Reflection;
 using static Jotunn.Entities.CustomItemConversion;
 
 namespace Jotunn.Managers
@@ -48,7 +47,6 @@ namespace Jotunn.Managers
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
         internal readonly List<CustomItemConversion> ItemConversions = new List<CustomItemConversion>();
 
-
         public void Init()
         {
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
@@ -58,28 +56,9 @@ namespace Jotunn.Managers
             //Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
             using (new DetourContext() { Priority = int.MaxValue - 1000 })
             {
-                On.ObjectDB.Awake += LateObjectDBAwake;
-                On.ObjectDB.CopyOtherDB += LateFejdCopy;
+                On.ObjectDB.Awake += InvokeOnItemsRegistered;
+                On.ObjectDB.CopyOtherDB += InvokeOnItemsRegisteredFejd;
             }
-        }
-
-        /// <summary>
-        /// Event is invoked after most other mods have hooked CopyOtherDB.
-        /// </summary>
-        private void LateFejdCopy(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
-        {
-            orig(self, other);
-            Jotunn.Logger.LogInfo($"Invoking late OnItemsRegisteredFejd");
-            OnItemsRegisteredFejd?.SafeInvoke();
-        }
-        /// <summary>
-        /// Event is invoked after most other mods have hooked ObjectDB.Awake.
-        /// </summary>
-        private void LateObjectDBAwake(On.ObjectDB.orig_Awake orig, ObjectDB self)
-        {
-            orig(self);
-            Jotunn.Logger.LogInfo($"Invoking late OnItemsRegistered");
-            OnItemsRegistered?.SafeInvoke();
         }
 
         /// <summary>
@@ -465,6 +444,24 @@ namespace Jotunn.Managers
 
                 self.UpdateItemHashes();
             }
+        }
+
+        /// <summary>
+        ///     Notify event subscribers that items got registered in ObjectDB in FejdStartup. Runs late in the detour hierarchy.
+        /// </summary>
+        private void InvokeOnItemsRegisteredFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        {
+            orig(self, other);
+            OnItemsRegisteredFejd?.SafeInvoke();
+        }
+
+        /// <summary>
+        ///     Notify event subscribers that items got registered in ObjectDB. Runs late in the detour hierarchy.
+        /// </summary>
+        private void InvokeOnItemsRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
+            OnItemsRegistered?.SafeInvoke();
         }
 
         /// <summary>

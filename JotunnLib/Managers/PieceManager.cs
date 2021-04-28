@@ -53,21 +53,11 @@ namespace Jotunn.Managers
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
 
-            //Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
             using (new DetourContext() { Priority = int.MaxValue - 1000 })
             {
-                On.ObjectDB.Awake += LateObjectDBAwake;
+                On.ObjectDB.Awake += InvokeOnPiecesRegistered;
             }
-        }
-
-        /// <summary>
-        /// Event is run after most mods have hooked ObjectDB.Awake.
-        /// </summary>
-        private void LateObjectDBAwake(On.ObjectDB.orig_Awake orig, ObjectDB self)
-        {
-            orig(self);
-            Jotunn.Logger.LogInfo($"Invoking late OnPiecesRegistered");
-            OnPiecesRegistered?.SafeInvoke();
         }
 
         /// <summary>
@@ -267,6 +257,15 @@ namespace Jotunn.Managers
             {
                 RegisterInPieceTables();
             }
+        }
+
+        /// <summary>
+        ///     Notify event subscribers that pieces got registered. Runs late in the detour hierarchy.
+        /// </summary>
+        private void InvokeOnPiecesRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
+            OnPiecesRegistered?.SafeInvoke();
         }
 
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
