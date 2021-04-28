@@ -42,7 +42,9 @@ namespace Jotunn.Managers
             { "Hoe", "_HoePieceTable" }
         };
 
-
+        /// <summary>
+        ///     Creates the piece table container and registers all hooks.
+        /// </summary>
         public void Init()
         {
             // Create PieceTable Container
@@ -52,12 +54,6 @@ namespace Jotunn.Managers
             // Setup Hooks
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
-
-            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
-            using (new DetourContext() { Priority = int.MaxValue - 1000 })
-            {
-                On.ObjectDB.Awake += InvokeOnPiecesRegistered;
-            }
         }
 
         /// <summary>
@@ -237,10 +233,6 @@ namespace Jotunn.Managers
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding piece {customPiece}: {ex.Message}");
-
-                    // Remove piece again
-                    PrefabManager.Instance.RemovePrefab(customPiece.PiecePrefab.name);
-                    Pieces.Remove(customPiece);
                 }
 
             }
@@ -257,15 +249,6 @@ namespace Jotunn.Managers
             {
                 RegisterInPieceTables();
             }
-        }
-
-        /// <summary>
-        ///     Notify event subscribers that pieces got registered. Runs late in the detour hierarchy.
-        /// </summary>
-        private void InvokeOnPiecesRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
-        {
-            orig(self);
-            OnPiecesRegistered?.SafeInvoke();
         }
 
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)

@@ -28,19 +28,56 @@ namespace Jotunn.Entities
         /// </summary>
         public ConversionConfig Config { get; set; }
 
+        /// <summary>
+        ///     Indicator if the conversion needs fixing.
+        /// </summary>
+        internal bool fixReference = true;
+
+        /// <summary>
+        ///     Actual ItemConversion type as <see cref="object"/>. Needs to be cast according to <see cref="ConversionType"/>.
+        /// </summary>
+        internal object ItemConversion { 
+            get
+            {
+                return Type switch
+                {
+                    ConversionType.CookingStation => _cookingConversion,
+                    ConversionType.Fermenter => _fermenterConversion,
+                    ConversionType.Smelter => _smelterConversion,
+                    _ => null,
+                };
+            }
+        }
+        private CookingStation.ItemConversion _cookingConversion;
+        private Fermenter.ItemConversion _fermenterConversion;
+        private Smelter.ItemConversion _smelterConversion;
+
+        /// <summary>
+        ///     Create a custom item conversion. Depending on the config class this custom
+        ///     conversion represents one of the following item conversions:<br />
+        ///     <list type="bullet">
+        ///         <item>CookingStation.ItemConversion</item>
+        ///         <item>Fermenter.ItemConversion</item>
+        ///         <item>Smelter.ItemConversion</item>
+        ///     </list>
+        /// </summary>
+        /// <param name="config">The item conversion config</param>
         public CustomItemConversion(ConversionConfig config)
         {
-            if (config is CookingConversionConfig)
+            if (config is CookingConversionConfig cookConfig)
             {
                 Type = ConversionType.CookingStation;
+                _cookingConversion = cookConfig.GetItemConversion();
             }
-            if (config is FermenterConversionConfig)
+            if (config is FermenterConversionConfig fermentConfig)
             {
                 Type = ConversionType.Fermenter;
+                _fermenterConversion = fermentConfig.GetItemConversion();
             }
-            if (config is SmelterConversionConfig)
+            if (config is SmelterConversionConfig smeltConfig)
             {
                 Type = ConversionType.Smelter;
+                _smelterConversion = smeltConfig.GetItemConversion();
             }
 
             Config = config;

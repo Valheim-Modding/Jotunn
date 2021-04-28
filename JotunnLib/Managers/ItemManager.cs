@@ -4,7 +4,6 @@ using UnityEngine;
 using Jotunn.Utils;
 using Jotunn.Entities;
 using Jotunn.Configs;
-using MonoMod.RuntimeDetour;
 
 namespace Jotunn.Managers
 {
@@ -41,23 +40,20 @@ namespace Jotunn.Managers
         /// </summary>
         public static event Action OnItemsRegistered;
 
+        // Internal lists of all custom entities added
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
         internal readonly List<CustomItemConversion> ItemConversions = new List<CustomItemConversion>();
 
+        /// <summary>
+        ///     Registers all hooks.
+        /// </summary>
         public void Init()
         {
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
-
-            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
-            using (new DetourContext() { Priority = int.MaxValue - 1000 })
-            {
-                On.ObjectDB.Awake += InvokeOnItemsRegistered;
-                On.ObjectDB.CopyOtherDB += InvokeOnItemsRegisteredFejd;
-            }
         }
 
         /// <summary>
@@ -243,14 +239,6 @@ namespace Jotunn.Managers
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding item {customItem}: {ex.Message}");
-
-                    // Remove prefab, item and recipe from the managers again
-                    PrefabManager.Instance.RemovePrefab(customItem.ItemPrefab.name);
-                    Items.Remove(customItem);
-                    if (customItem.Recipe != null)
-                    {
-                        Recipes.Remove(customItem.Recipe);
-                    }
                 }
             }
 
@@ -290,11 +278,7 @@ namespace Jotunn.Managers
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding recipe {customRecipe}: {ex.Message}");
-
-                    // Remove recipe from the manager again
-                    Recipes.Remove(customRecipe);
                 }
-
             }
         }
 
@@ -321,9 +305,6 @@ namespace Jotunn.Managers
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding status effect {customStatusEffect}: {ex.Message}");
-
-                    // Remove status effect
-                    StatusEffects.Remove(customStatusEffect);
                 }
             }
         }
@@ -336,11 +317,18 @@ namespace Jotunn.Managers
             {
                 try
                 {
+                    // Try to get the station prefab
                     GameObject stationPrefab = PrefabManager.Instance.GetPrefab(conversion.Config.Station);
-
                     if (!stationPrefab)
                     {
-                        throw new Exception($"Invalid station prefab: {conversion.Config.Station}");
+                        throw new Exception($"Invalid station prefab {conversion.Config.Station}");
+                    }
+
+                    // Fix references if needed
+                    if (conversion.fixReference)
+                    {
+                        conversion.ItemConversion.FixReferences();
+                        conversion.fixReference = false;
                     }
 
                     // Sure, make three almost identical classes but dont have a common base class, Iron Gate
@@ -348,12 +336,12 @@ namespace Jotunn.Managers
                     {
                         case CustomItemConversion.ConversionType.CookingStation:
                             var cookStation = stationPrefab.GetComponent<CookingStation>();
-                            var cookConversion = ((CookingConversionConfig)conversion.Config).GetItemConversion();
-                            cookConversion.FixReferences();
-
+                            var cookConversion = (CookingStation.ItemConversion)conversion.ItemConversion;
+                            
                             if (cookStation.m_conversion.Exists(c => c.m_from == cookConversion.m_from))
                             {
-                                throw new Exception($"Conversion already added: ${cookConversion.m_from.name}");
+                                Logger.LogInfo($"Already added conversion ${conversion}");
+                                continue;
                             }
 
                             cookStation.m_conversion.Add(cookConversion);
@@ -361,12 +349,12 @@ namespace Jotunn.Managers
                             break;
                         case CustomItemConversion.ConversionType.Fermenter:
                             var fermenterStation = stationPrefab.GetComponent<Fermenter>();
-                            var fermenterConversion = ((FermenterConversionConfig)conversion.Config).GetItemConversion();
-                            fermenterConversion.FixReferences();
+                            var fermenterConversion = (Fermenter.ItemConversion)conversion.ItemConversion;
 
                             if (fermenterStation.m_conversion.Exists(c => c.m_from == fermenterConversion.m_from))
                             {
-                                throw new Exception($"Conversion already added: ${fermenterConversion.m_from.name}");
+                                Logger.LogInfo($"Already added conversion ${conversion}");
+                                continue;
                             }
 
                             fermenterStation.m_conversion.Add(fermenterConversion);
@@ -374,12 +362,12 @@ namespace Jotunn.Managers
                             break;
                         case CustomItemConversion.ConversionType.Smelter:
                             var smelterStation = stationPrefab.GetComponent<Smelter>();
-                            var smelterConversion = ((SmelterConversionConfig)conversion.Config).GetItemConversion();
-                            smelterConversion.FixReferences();
+                            var smelterConversion = (Smelter.ItemConversion)conversion.ItemConversion;
 
                             if (smelterStation.m_conversion.Exists(c => c.m_from == smelterConversion.m_from))
                             {
-                                throw new Exception($"Conversion already added: ${smelterConversion.m_from.name}");
+                                Logger.LogInfo($"Already added conversion ${conversion}");
+                                continue;
                             }
 
                             smelterStation.m_conversion.Add(smelterConversion);
@@ -394,9 +382,6 @@ namespace Jotunn.Managers
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error while adding item conversion {conversion}: {ex.Message}");
-
-                    // Remove item conversion again
-                    ItemConversions.Remove(conversion);
                 }
             }
         }
@@ -420,6 +405,8 @@ namespace Jotunn.Managers
 
                 self.UpdateItemHashes();
             }
+            
+            OnItemsRegisteredFejd?.SafeInvoke();
         }
 
         /// <summary>
@@ -443,32 +430,8 @@ namespace Jotunn.Managers
 
                 self.UpdateItemHashes();
             }
-        }
-
-        /// <summary>
-        ///     Notify event subscribers that items got registered in ObjectDB in FejdStartup. Runs late in the detour hierarchy.
-        /// </summary>
-        private void InvokeOnItemsRegisteredFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
-        {
-            orig(self, other);
-
-            if (self.IsValid())
-            {
-                OnItemsRegisteredFejd?.SafeInvoke();
-            }
-        }
-
-        /// <summary>
-        ///     Notify event subscribers that items got registered in ObjectDB. Runs late in the detour hierarchy.
-        /// </summary>
-        private void InvokeOnItemsRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
-        {
-            orig(self);
-
-            if (self.IsValid())
-            {
-                OnItemsRegistered?.SafeInvoke();
-            }
+            
+            OnItemsRegistered?.SafeInvoke();
         }
 
         /// <summary>
