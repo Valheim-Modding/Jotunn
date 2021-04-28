@@ -5,7 +5,6 @@ using Jotunn.Utils;
 using Jotunn.Entities;
 using Jotunn.Configs;
 using MonoMod.RuntimeDetour;
-using static Jotunn.Entities.CustomItemConversion;
 
 namespace Jotunn.Managers
 {
@@ -347,7 +346,7 @@ namespace Jotunn.Managers
                     // Sure, make three almost identical classes but dont have a common base class, Iron Gate
                     switch (conversion.Type)
                     {
-                        case ConversionType.CookingStation:
+                        case CustomItemConversion.ConversionType.CookingStation:
                             var cookStation = stationPrefab.GetComponent<CookingStation>();
                             var cookConversion = ((CookingConversionConfig)conversion.Config).GetItemConversion();
                             cookConversion.FixReferences();
@@ -360,7 +359,7 @@ namespace Jotunn.Managers
                             cookStation.m_conversion.Add(cookConversion);
 
                             break;
-                        case ConversionType.Fermenter:
+                        case CustomItemConversion.ConversionType.Fermenter:
                             var fermenterStation = stationPrefab.GetComponent<Fermenter>();
                             var fermenterConversion = ((FermenterConversionConfig)conversion.Config).GetItemConversion();
                             fermenterConversion.FixReferences();
@@ -373,7 +372,7 @@ namespace Jotunn.Managers
                             fermenterStation.m_conversion.Add(fermenterConversion);
 
                             break;
-                        case ConversionType.Smelter:
+                        case CustomItemConversion.ConversionType.Smelter:
                             var smelterStation = stationPrefab.GetComponent<Smelter>();
                             var smelterConversion = ((SmelterConversionConfig)conversion.Config).GetItemConversion();
                             smelterConversion.FixReferences();
