@@ -52,7 +52,7 @@ namespace Jotunn.Managers
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
 
-            //Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
             using (new DetourContext() { Priority = int.MaxValue - 1000 })
             {
                 On.ObjectDB.Awake += InvokeOnItemsRegistered;
@@ -451,7 +451,11 @@ namespace Jotunn.Managers
         private void InvokeOnItemsRegisteredFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             orig(self, other);
-            OnItemsRegisteredFejd?.SafeInvoke();
+
+            if (self.IsValid())
+            {
+                OnItemsRegisteredFejd?.SafeInvoke();
+            }
         }
 
         /// <summary>
@@ -460,7 +464,11 @@ namespace Jotunn.Managers
         private void InvokeOnItemsRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
-            OnItemsRegistered?.SafeInvoke();
+
+            if (self.IsValid())
+            {
+                OnItemsRegistered?.SafeInvoke();
+            }
         }
 
         /// <summary>
