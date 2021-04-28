@@ -179,6 +179,11 @@ namespace Jotunn.Managers
                 Logger.LogWarning($"Custom item conversion {itemConversion} is not valid");
                 return false;
             }
+            if (ItemConversions.Contains(itemConversion))
+            {
+                Logger.LogWarning($"Custom item conversion {itemConversion} already added");
+                return false;
+            }
 
             ItemConversions.Add(itemConversion);
             return true;
