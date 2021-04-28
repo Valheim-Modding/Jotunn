@@ -38,7 +38,7 @@ If you decide to disable the prebuild, you will need to:
 - add the `/BepInEx/plugins/MMHook/assembly_*` files to your project references. 
 - grab the [Assembly Publicizer](https://github.com/CabbageCrow/AssemblyPublicizer) *(drag drop your `/BepInEx/plugins/MMHook/assembly_*` files on top of the publiciser)* and add the resulting assemblies to your stub project.
 - Build the stub, make sure it compiles and automates the postbuild tasks, producing compiled binaries in your plugin directory `BepInEx/plugins/yourtestmod/` folder and also generated a `yourtestmod.dll.mdb` monodebug symbols file.
-- You may now proceed to one of the [Tutorials](intro.md)
+- You may now proceed to one of the [Tutorials](tutorials/overview.md)
 
 # [2. Customising the ModStub project](#tab/tabid-2)
 # Customising the ModStub project
@@ -55,7 +55,7 @@ If you decide to disable the prebuild, you will need to:
 * Restart visual studio. You can now create a new project using the imported templated. Right click your solution, add, new project, then scroll to the bottom where you will find the template:<br />
 ![Create new project template](../images/getting-started/vs-CreateNewProjectTemplate.png)
 
-* Your project base is now ready for use! You can proceed to []() or select a specific section to learn about from our [Tutorials]()
+* Your project base is now ready for use! You can proceed to []() or select a specific section to learn about from our [Tutorials](tutorials/overview.md)
 
 # [3. PreBuild Automations](#tab/tabid-3)
 # PreBuild Automations

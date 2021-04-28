@@ -1,15 +1,9 @@
 ﻿- name: Home
   href: home.md
 
-- name: Step-by-Step Guide
+- name: Guide
   href: guide.md
 
 - name: Tutorials
   href: tutorials/toc.yml
   topicHref: tutorials/overview.md
-
-- name: Mod Stub
-  topicHref: https://github.com/Valheim-Modding/JotunnModStub
-
-- name: Example Mod
-  topicHref: https://github.com/Valheim-Modding/JotunnModExample

@@ -1,11 +1,11 @@
 - name: Home
   href: home/
 
-- name: Systems Data
-  href: data/
-
 - name: Transition
   href: transition/
+
+- name: Systems Data
+  href: data/
 
 - name: API Documentation
   href: api/
