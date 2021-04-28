@@ -1,15 +1,17 @@
-﻿
-- name: Tutorials
-  href: tutorials/
+- name: Home
+  href: home/
+
+- name: Systems Data
+  href: data/
 
 - name: Transition
   href: transition/
-  
-- name: Valheim concepts
-  href: conceptual/
 
 - name: API Documentation
   href: api/
 
-  name: Discord
+- name: Discord
   href: https://discord.gg/DdUt6g7gyA
+
+- name: GitHub
+  href: https://github.com/Valheim-Modding
