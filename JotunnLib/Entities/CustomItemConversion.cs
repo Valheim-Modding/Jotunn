@@ -28,6 +28,24 @@ namespace Jotunn.Entities
         /// </summary>
         public ConversionConfig Config { get; set; }
 
+        public CustomItemConversion(ConversionConfig config)
+        {
+            if (config is CookingConversionConfig)
+            {
+                Type = ConversionType.CookingStation;
+            }
+            if (config is FermenterConversionConfig)
+            {
+                Type = ConversionType.Fermenter;
+            }
+            if (config is SmelterConversionConfig)
+            {
+                Type = ConversionType.Smelter;
+            }
+
+            Config = config;
+        }
+
         /// <summary>
         ///     Checks if a custom item conversion is valid.
         /// </summary>

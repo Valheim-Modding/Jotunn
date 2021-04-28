@@ -318,13 +318,22 @@ namespace TestMod
         private void AddItemConversions()
         {
             // Add an item conversion for the CookingStation. The items must have an attach child GameObject to display it on the station.
-            var conversion = new CookingConversionConfig
+            var cookConversion = new CustomItemConversion(new CookingConversionConfig
             {
-                CookingStation = "piece_cookingstation",
+                Station = "piece_cookingstation",
                 FromItem = "Coal",
                 ToItem = "CookedLoxMeat"
-            };
-            ItemManager.Instance.AddItemConversion(conversion);
+            });
+            ItemManager.Instance.AddItemConversion(cookConversion);
+
+            // Add an item conversion for the smelter
+            var smeltConversion = new CustomItemConversion(new SmelterConversionConfig
+            {
+                Station = "smelter",
+                FromItem = "Stone",
+                ToItem = "Coal"
+            });
+            ItemManager.Instance.AddItemConversion(smeltConversion);
         }
 
         // Add new Items with item Configs
