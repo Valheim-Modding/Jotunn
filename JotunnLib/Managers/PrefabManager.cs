@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -49,6 +50,12 @@ namespace Jotunn.Managers
 
             On.ZNetScene.Awake += RegisterAllToZNetScene;
             SceneManager.sceneUnloaded += (Scene current) => Cache.ClearCache();
+
+            //Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            using (new DetourContext() { Priority = int.MaxValue - 1000 })
+            {
+                On.ZNetScene.Awake += InvokeOnPrefabsRegistered;
+            }
         }
 
         /// <summary>
@@ -254,9 +261,6 @@ namespace Jotunn.Managers
                     RegisterToZNetScene(prefab.Value);
                 }
             }
-
-            // Send event that all prefabs are registered
-            OnPrefabsRegistered?.SafeInvoke();
         }
 
         /// <summary>
@@ -284,6 +288,15 @@ namespace Jotunn.Managers
                     Logger.LogInfo($"Added prefab {name}");
                 }
             }
+        }
+
+        /// <summary>
+        ///     Notify event subscribers that all prefabs got registered in ObjectDB. Runs late in the detour hierarchy.
+        /// </summary>
+        private void InvokeOnPrefabsRegistered(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        {
+            orig(self);
+            OnPrefabsRegistered?.SafeInvoke();
         }
 
         /// <summary>

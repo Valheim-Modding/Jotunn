@@ -1,4 +1,5 @@
 ﻿using Jotunn.Entities;
+using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,6 +52,12 @@ namespace Jotunn.Managers
             // Setup Hooks
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
+
+            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            using (new DetourContext() { Priority = int.MaxValue - 1000 })
+            {
+                On.ObjectDB.Awake += InvokeOnPiecesRegistered;
+            }
         }
 
         /// <summary>
@@ -250,8 +257,14 @@ namespace Jotunn.Managers
             {
                 RegisterInPieceTables();
             }
+        }
 
-            // Fire event that everything is registered
+        /// <summary>
+        ///     Notify event subscribers that pieces got registered. Runs late in the detour hierarchy.
+        /// </summary>
+        private void InvokeOnPiecesRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
             OnPiecesRegistered?.SafeInvoke();
         }
 

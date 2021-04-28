@@ -4,7 +4,7 @@ using UnityEngine;
 using Jotunn.Utils;
 using Jotunn.Entities;
 using Jotunn.Configs;
-using static Jotunn.Entities.CustomItemConversion;
+using MonoMod.RuntimeDetour;
 
 namespace Jotunn.Managers
 {
@@ -13,7 +13,6 @@ namespace Jotunn.Managers
     /// </summary>
     public class ItemManager : IManager
     {
-
         private static ItemManager _instance;
 
         /// <summary>
@@ -47,12 +46,18 @@ namespace Jotunn.Managers
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
         internal readonly List<CustomItemConversion> ItemConversions = new List<CustomItemConversion>();
 
-
         public void Init()
         {
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
+
+            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            using (new DetourContext() { Priority = int.MaxValue - 1000 })
+            {
+                On.ObjectDB.Awake += InvokeOnItemsRegistered;
+                On.ObjectDB.CopyOtherDB += InvokeOnItemsRegisteredFejd;
+            }
         }
 
         /// <summary>
@@ -341,7 +346,7 @@ namespace Jotunn.Managers
                     // Sure, make three almost identical classes but dont have a common base class, Iron Gate
                     switch (conversion.Type)
                     {
-                        case ConversionType.CookingStation:
+                        case CustomItemConversion.ConversionType.CookingStation:
                             var cookStation = stationPrefab.GetComponent<CookingStation>();
                             var cookConversion = ((CookingConversionConfig)conversion.Config).GetItemConversion();
                             cookConversion.FixReferences();
@@ -354,7 +359,7 @@ namespace Jotunn.Managers
                             cookStation.m_conversion.Add(cookConversion);
 
                             break;
-                        case ConversionType.Fermenter:
+                        case CustomItemConversion.ConversionType.Fermenter:
                             var fermenterStation = stationPrefab.GetComponent<Fermenter>();
                             var fermenterConversion = ((FermenterConversionConfig)conversion.Config).GetItemConversion();
                             fermenterConversion.FixReferences();
@@ -367,7 +372,7 @@ namespace Jotunn.Managers
                             fermenterStation.m_conversion.Add(fermenterConversion);
 
                             break;
-                        case ConversionType.Smelter:
+                        case CustomItemConversion.ConversionType.Smelter:
                             var smelterStation = stationPrefab.GetComponent<Smelter>();
                             var smelterConversion = ((SmelterConversionConfig)conversion.Config).GetItemConversion();
                             smelterConversion.FixReferences();
@@ -415,9 +420,6 @@ namespace Jotunn.Managers
 
                 self.UpdateItemHashes();
             }
-
-            // Fire event that everything is registered
-            OnItemsRegisteredFejd?.SafeInvoke();
         }
 
         /// <summary>
@@ -441,9 +443,32 @@ namespace Jotunn.Managers
 
                 self.UpdateItemHashes();
             }
+        }
 
-            // Fire event that everything is registered
-            OnItemsRegistered?.SafeInvoke();
+        /// <summary>
+        ///     Notify event subscribers that items got registered in ObjectDB in FejdStartup. Runs late in the detour hierarchy.
+        /// </summary>
+        private void InvokeOnItemsRegisteredFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        {
+            orig(self, other);
+
+            if (self.IsValid())
+            {
+                OnItemsRegisteredFejd?.SafeInvoke();
+            }
+        }
+
+        /// <summary>
+        ///     Notify event subscribers that items got registered in ObjectDB. Runs late in the detour hierarchy.
+        /// </summary>
+        private void InvokeOnItemsRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
+
+            if (self.IsValid())
+            {
+                OnItemsRegistered?.SafeInvoke();
+            }
         }
 
         /// <summary>
