@@ -1,5 +1,6 @@
 name: Create DLL on merge to dev
-"on":
+
+on:
   push:
     branches:
       - dev

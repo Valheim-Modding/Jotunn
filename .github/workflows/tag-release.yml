@@ -1,13 +1,12 @@
-﻿on:
+﻿name: Create Release
+
+on:
   push:
     tags:
       - "v*"
 
-name: Create Release
-
 jobs:
   build_release:
-    name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -17,7 +16,6 @@ jobs:
           token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
           ref: 'dev'
 
-      # Get Valheim version id
       - name: Get Valheim version id
         id: valheimversion
         run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
@@ -28,17 +26,18 @@ jobs:
           echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
           echo ::set-output name=VERSION_NUMBER::${GITHUB_REF/refs\/tags\/v/}
 
-      # Install NuGet
-      - uses: nuget/setup-nuget@v1
-        name: Install NuGet
+      - name: Install NuGet
+        uses: nuget/setup-nuget@v1
 
-      # Install NuGet dependencies
-      - name: Install NuGet dependencies
+      - name: Restore project dependencies
         run: |
           nuget restore JotunnLib.sln
           dotnet restore JotunnLib/JotunnLib.csproj
 
-      # Get build commands
+      - name: Restore tools
+        run: |
+          dotnet tool restore
+
       - name: Get build commands
         run: |
           sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
@@ -48,7 +47,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-5.0 dotnet-runtime-5.0
 
-      # Cache the results
       - name: Cache Valheim
         id: cachevalheim
         uses: actions/cache@v2
@@ -60,40 +58,41 @@ jobs:
         if: steps.cachevalheim.outputs.cache-hit != 'true'
         uses: CyberAndrii/setup-steamcmd@v1
 
-      # Prepare Valheim dependencies
       - name: Prepare Valheim dependencies
         if: steps.cachevalheim.outputs.cache-hit != 'true'
         run: |
-          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.800/"
+          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.901/"
           unzip bepinex.zip -d ~/BepInExRaw
           steamcmd +login anonymous +force_install_dir ~/VHINSTALL +app_update 896660 validate +exit
           mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
 
-      - name: remove old hash, publicized dlls and mmhook dlls
+      - name: Remove old publicized and mmhook dlls from cache
+        if: steps.cachevalheim.outputs.cache-hit != 'true'
         run: |
+          rm -rf ~/VHINSTALL/valheim_Data/Managed/publicized_assemblies
           rm -rf ~/VHINSTALL/valheim_server_Data/Managed/publicized_assemblies
           rm -rf ~/VHINSTALL/BepInEx/plugins/MMHOOK
 
-      - name: Set references to DLLs
+      - name: Create Environment.props
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
-      - name: Set JotunnLib version
-        run: |
-          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><Version>${{ steps.get_version.outputs.VERSION_NUMBER }}</Version></PropertyGroup></Project>" > JotunnLib/BuildProps/version.props
-
-      - name: Reset DoPrebuild.props
+      - name: Create DoPrebuild.props
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><ExecutePrebuild>true</ExecutePrebuild></PropertyGroup></Project>" > JotunnLib/BuildProps/DoPrebuild.props
 
-      - name: Set Gitversion.yml version
+      - name: Create version.props
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><Version>${{ steps.get_version.outputs.VERSION_NUMBER }}</Version></PropertyGroup></Project>" > JotunnLib/BuildProps/version.props
+
+      - name: Update GitVersion.yml version
         run: |
           cat JotunnLib/GitVersion.yml | sed '4s/.*/next-version: ${{ steps.get_version.outputs.VERSION_NUMBER }}/' > JotunnLib/GitVersion_temp.yml && mv JotunnLib/GitVersion_temp.yml JotunnLib/GitVersion.yml
       
-      - name: Set manifest.json version
+      - name: Update manifest.json version
         run: |
-          cat manifest.json | sed -e 's/version_number": "[^"]*"/version_number": "${{ steps.get_version.outputs.VERSION_NUMBER }}"/' > manifest.tmp && mv manifest.tmp manifest.json
+          cat JotunnLib/manifest.json | sed -e 's/version_number": "[^"]*"/version_number": "${{ steps.get_version.outputs.VERSION_NUMBER }}"/' > JotunnLib/manifest.tmp && mv JotunnLib/manifest.tmp JotunnLib/manifest.json
 
       - name: Push version update to prod
         run: |
@@ -101,12 +100,11 @@ jobs:
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add JotunnLib/GitVersion.yml
           git add JotunnLib/BuildProps/version.props
-          git add manifest.json
+          git add JotunnLib/manifest.json
           git commit -m "deploy: Released ${{ steps.get_version.outputs.VERSION }}"
           git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn HEAD:dev
           git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn dev:prod
 
-      # Build DLLs
       - name: Build solution
         run: |
           msbuild JotunnLib.sln /p:Configuration=Release
@@ -114,10 +112,10 @@ jobs:
           msbuild JotunnLib.sln /p:Configuration=Debug
           mv JotunnLib/bin/Debug/net462/Jotunn.dll Jotunn-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
-      - name: Publish the package to Nuget
+      - name: Publish to NuGet
         run: dotnet nuget push "JotunnLib/bin/Release/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
-      - name: Release
+      - name: Create GH Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
@@ -125,3 +123,26 @@ jobs:
             Jotunn-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+#      - name: Read unex.yml
+#        id: unexyaml
+#        uses: juliojimenez/yamler@v0
+#        with:
+#          yaml-file: unex.yml
+#
+#      - name: Create output vars from unex.yml
+#        id: unexconf
+#        run: |
+#          echo ::set-output name=modid::${{ steps.unexyaml.outputs.modid }}
+#        
+#      - name: Upload to NexusMods
+#        run: >
+#          dotnet unex upload
+#          ${{ steps.unexconf.outputs.modid }}
+#          JotunnLib/_packages/
+#          -v ${{ steps.get_version.outputs.VERSION_NUMBER }}
+#
+#        env:
+#          UNEX_DEBUG: true
+#          UNEX_APIKEY: ${{ secrets.UNEX_API_KEY }}
+#          UNEX_COOKIES: ${{ secrets.UNEX_COOKIES }}

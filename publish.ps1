@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory)]
     [ValidateSet('Debug','Release')]
     [System.String]$Target,
@@ -10,7 +10,10 @@ param(
     [System.String]$TargetAssembly,
 
     [Parameter(Mandatory)]
-    [System.String]$ValheimPath
+    [System.String]$ValheimPath,
+    
+    [Parameter(Mandatory)]
+    [System.String]$ProjectPath
 )
 
 # Make sure Get-Location is the script path
@@ -19,19 +22,20 @@ Push-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
 # Test some preliminaries
 ("$TargetPath",
  "$ValheimPath",
- "$(Get-Location)\libraries"
+ "$ProjectPath"
 ) | % {
     if (!(Test-Path "$_")) {Write-Error -ErrorAction Stop -Message "$_ folder is missing"}
 }
 
-# Main Script
+# Go
 Write-Host "Publishing for $Target from $TargetPath"
 
+$name = "$TargetAssembly" -Replace('.dll')
+
+# Debug copies the dll to Valheim and creates the mdb
 if ($Target.Equals("Debug")) {
     Write-Host "Updating local installation in $ValheimPath"
     
-    $name = "$TargetAssembly" -Replace('.dll')
-
     $plug = New-Item -Type Directory -Path "$ValheimPath\BepInEx\plugins\$name" -Force
     Write-Host "Copy $TargetAssembly to $plug"
     Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$plug" -Force
@@ -47,7 +51,6 @@ if ($Target.Equals("Debug")) {
     if (Test-Path -Path "$pdb") {
         Write-Host "Copy Debug files for plugin $name"
         Copy-Item -Path "$pdb" -Destination "$plug" -Force
-        Write-Host "$(Get-Location)\libraries\Debug\pdb2mdb.exe `"$plug\$TargetAssembly`""
         Start-Process -FilePath "$(Get-Location)\libraries\Debug\pdb2mdb.exe" -ArgumentList "`"$plug\$TargetAssembly`""
     }
         
@@ -55,6 +58,29 @@ if ($Target.Equals("Debug")) {
     #$dnspy = '--debugger-agent=transport=dt_socket,server=y,address=127.0.0.1:56000,suspend=y,no-hide-debugger'
     #[Environment]::SetEnvironmentVariable('DNSPY_UNITY_DBG2','','User')
 }
+
+# Release builds packages for ThunderStore and NexusMods
+if($Target.Equals("Release")) {
+    $package = "$ProjectPath\_package"
+    [xml]$versionxml = Get-Content -Path "$ProjectPath\BuildProps\version.props"
+    $version = $versionxml.Project.PropertyGroup.Version
+    
+    Write-Host "Packaging for ThunderStore"
+    $thunder = New-Item -Type Directory -Path "$package\Thunderstore"
+    $thunder.CreateSubdirectory('plugins')
+    Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$thunder\plugins\$TargetAssembly"
+    Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder\README"
+    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore-$name-$version.zip" -Forc
+    $thunder.Delete($true)
+
+    Write-Host "Packaging for NexusMods"
+    $nexus = New-Item -Type Directory -Path "$package\Nexusmods"
+    Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$nexus\$TargetAssembly"
+    Copy-Item -Path "$ProjectPath\README.bbcode" -Destination "$nexus\README"
+    Compress-Archive -Path "$nexus\*" -DestinationPath "$package\Nexusmods-$name-$version.zip" -Force
+    $nexus.Delete($true)
+}
+
 
 # Pop Location
 Pop-Location

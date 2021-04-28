@@ -1,0 +1,5 @@
+Game: valheim
+ModId: 0
+FileName: Jötunn
+FileDescription: |-
+  Jötunn, the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability and networked gameplay consistency.

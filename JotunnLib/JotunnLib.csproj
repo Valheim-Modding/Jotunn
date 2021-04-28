@@ -370,6 +370,7 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+  
   <Import Project="BuildProps\version.props" Condition="Exists('BuildProps\version.props')" />
   <Target Name="EnsureEnvironmentPropsImport" BeforeTargets="PrepareForBuild">
       <PropertyGroup>
@@ -380,7 +381,7 @@
   <Import Project="$(SolutionDir)Environment.props" Condition="Exists('$(SolutionDir)Environment.props')" />
   <Import Project="BuildProps\JotunnBuildTask.props" />
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'" AfterTargets="Build">
-    <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot;" />
+    <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot; -ProjectPath &quot;$(ProjectDir.TrimEnd('\'))&quot;" />
   </Target>
 
   <PropertyGroup>
@@ -404,9 +405,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="JotunnLib.0.2.0.nupkg" />
-  </ItemGroup>
+  
   <ItemGroup>
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\JotunnBuildTask.dll" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.dll" Pack="true" PackagePath="build" />
