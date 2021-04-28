@@ -88,3 +88,5 @@ These people have been integral to pushing JVL out of the door, and without them
 *Cinnabun#0451*: [github](https://github.com/capnbubs)
 
 *GoldenJude#8965*: [github](https://github.com/GoldenJude), [nexus](https://www.nexusmods.com/users/48864143?tab=user+files)
+
+*zarboz#7828*: [github](https://github.com/sbtoonz), [thunderstore](https://valheim.thunderstore.io/package/sbtoonz/), [nexus](https://www.nexusmods.com/users/4057483)
