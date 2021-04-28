@@ -18,6 +18,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **CustomRecipe** - Represents ingame recipes for managing crafting and upgrading of items.
 - **CustomPiece** - Represent ingame building pieces.
 - **CustomStatusEffect** - Represents ingame status effects from weapon hit effects to guardian powers.
+- **CustomItemConversion** - Represents ingame item conversions for the CookingStation, Fermenter and Smelter in one abstraction.
 - **Mocks** - Fake any vanilla prefab and use it in your custom assets - Jötunn resolves the references to the vanilla objects at runtime.
 - **Config classes** - There are many more abstractions beside the main entities which allow for easy creation of things like key bindings, custom commands, skills and more.
 
@@ -70,11 +71,11 @@ These people have been integral to pushing JVL out of the door, and without them
 
 #### Core:
 
-*iDeathHD#7866*: [github](https://github.com/xiaoxiao921), [thunderstore](https://valheim.thunderstore.io/package/xiaoxiao921/), [nexus]()
+*iDeathHD#7866*: [github](https://github.com/xiaoxiao921), [thunderstore](https://valheim.thunderstore.io/package/xiaoxiao921/)
 
 *Algorithman#6741*: [github](https://github.com/Algorithman)
 
-*Jules#7950*: [github](https://github.com/sirskunkalot), [nexus](https://www.nexusmods.com/users/61184721)
+*Jules#7950*: [github](https://github.com/sirskunkalot)
 
 *Quaesar#5604*: [github](https://github.com/RatikKapoor)
 
@@ -86,4 +87,4 @@ These people have been integral to pushing JVL out of the door, and without them
 
 *Cinnabun#0451*: [github](https://github.com/capnbubs)
 
-*GoldenJude#8965**: [github](https://github.com/GoldenJude), [nexus](https://www.nexusmods.com/users/48864143?tab=user+files)
+*GoldenJude#8965*: [github](https://github.com/GoldenJude), [nexus](https://www.nexusmods.com/users/48864143?tab=user+files)
