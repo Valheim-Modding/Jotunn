@@ -3,7 +3,7 @@
 In this tutorial, we will cover:
 
 - Using the [ModStub](https://github.com/Valheim-Modding/JotunnModStub) template to create the [ExampleMod](https://github.com/Valheim-Modding/JotunnModExample)
-- Adding Jötunn to an existing project using the [quick start guide](data/quickstart.md)
+- Adding Jötunn to an existing project using the [quick start guide](quickstart.md)
 - Creating assets with [Unity](data/unity.md)
 - Importing unity [assets](data/assets.md)
 - Using [mocks](data/mocks.md) inside of AssetBundles to reference native assets
