@@ -4,6 +4,9 @@ using UnityEngine;
 using Jotunn.Utils;
 using Jotunn.Entities;
 using Jotunn.Configs;
+using MonoMod.RuntimeDetour;
+using MonoMod.Utils;
+using System.Reflection;
 
 namespace Jotunn.Managers
 {
@@ -51,6 +54,22 @@ namespace Jotunn.Managers
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
+            HookLateAwake();
+        }
+
+        private static void HookLateAwake()
+        {
+            new Hook(
+                typeof(ObjectDB).GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Instance),
+                new Action<Action<ObjectDB>, ObjectDB>((orig, self) =>
+                {
+                    orig(self);
+                    Jotunn.Logger.LogInfo($"Invoking late ObjectDB.Awake");
+                    OnItemsRegistered?.SafeInvoke();
+                }),
+                new HookConfig() { Priority = int.MaxValue - 1000 }
+                )
+            { };
         }
 
         /// <summary>
@@ -322,8 +341,6 @@ namespace Jotunn.Managers
                 self.UpdateItemHashes();
             }
 
-            // Fire event that everything is registered
-            OnItemsRegistered?.SafeInvoke();
         }
 
         /// <summary>
