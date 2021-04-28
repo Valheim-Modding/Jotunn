@@ -1,5 +1,6 @@
 ﻿using Jotunn.Configs;
 using Jotunn.Managers;
+using UnityEngine;
 
 namespace Jotunn.Entities
 {
@@ -17,12 +18,15 @@ namespace Jotunn.Entities
             Smelter
         };
 
-        public ConversionType Type;
-        
         /// <summary>
-        ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
+        ///     Type of the item conversion. Defines to which station the conversion is added.
         /// </summary>
-        public bool FixReference { get; set; } = false;
+        public ConversionType Type { get; set; }
+
+        /// <summary>
+        ///     Config of the item conversion. Depends on the <see cref="Type"/> of the conversion.
+        /// </summary>
+        public ConversionConfig Config { get; set; }
 
         /// <summary>
         ///     Checks if a custom item conversion is valid.
@@ -30,7 +34,7 @@ namespace Jotunn.Entities
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return true;
+            return Config.Station != null && Config.FromItem != null && Config.ToItem != null;
         }
 
         public override bool Equals(object obj)
@@ -45,7 +49,7 @@ namespace Jotunn.Entities
 
         public override string ToString()
         {
-            return $"({Type.ToString()})";
+            return $"({Type}) {Config.FromItem} -> {Config.ToItem}";
         }
     }
 }

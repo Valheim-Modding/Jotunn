@@ -4,6 +4,7 @@ using UnityEngine;
 using Jotunn.Utils;
 using Jotunn.Entities;
 using Jotunn.Configs;
+using static Jotunn.Entities.CustomItemConversion;
 
 namespace Jotunn.Managers
 {
@@ -44,7 +45,7 @@ namespace Jotunn.Managers
         internal readonly List<CustomItem> Items = new List<CustomItem>();
         internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
         internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
-        internal readonly List<ItemConversionConfig> ItemConversions = new List<ItemConversionConfig>();
+        internal readonly List<CustomItemConversion> ItemConversions = new List<CustomItemConversion>();
 
 
         public void Init()
@@ -171,11 +172,9 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="itemConversion">Item conversion details</param>
         /// <returns>Whether the addition was successful or not</returns>
-        public bool AddItemConversion(ItemConversionConfig itemConversion)
+        public bool AddItemConversion(CustomItemConversion itemConversion)
         {
-            if (string.IsNullOrEmpty(itemConversion.CookingStation) || 
-                string.IsNullOrEmpty(itemConversion.FromItem) ||
-                string.IsNullOrEmpty(itemConversion.ToItem))
+            if (!itemConversion.IsValid())
             {
                 Logger.LogWarning($"Custom item conversion {itemConversion} is not valid");
                 return false;
@@ -189,7 +188,7 @@ namespace Jotunn.Managers
         ///     Adds item conversions defined in a JSON file at given path, relative to BepInEx/plugins
         /// </summary>
         /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
-        public void AddItemConversionsFromJson(string path)
+       /* public void AddItemConversionsFromJson(string path)
         {
             string json = AssetUtils.LoadText(path);
 
@@ -199,13 +198,13 @@ namespace Jotunn.Managers
                 return;
             }
 
-            List<ItemConversionConfig> configs = ItemConversionConfig.ListFromJson(json);
+            List<CustomItemConversion> configs = CustomItemConversion.ListFromJson(json);
 
             foreach (var config in configs)
             {
                 AddItemConversion(config);
             }
-        }
+        }*/
 
         private void RegisterCustomItems(ObjectDB objectDB)
         {
@@ -327,36 +326,66 @@ namespace Jotunn.Managers
             {
                 try
                 {
-                    GameObject stationPrefab = PrefabManager.Instance.GetPrefab(conversion.CookingStation);
-                    CookingStation station = stationPrefab.GetComponent<CookingStation>();
+                    GameObject stationPrefab = PrefabManager.Instance.GetPrefab(conversion.Config.Station);
 
-                    if (!stationPrefab || station == null)
+                    if (!stationPrefab)
                     {
-                        throw new Exception($"Invalid CookingStation prefab: {conversion.CookingStation}");
+                        throw new Exception($"Invalid station prefab: {conversion.Config.Station}");
                     }
 
-                    CookingStation.ItemConversion conv = conversion.GetItemConversion();
-                    conv.FixReferences();
-
-                    if (conv == null || conv.m_from == null || conv.m_to == null)
+                    // Sure, make three almost identical classes but dont have a common base class, Iron Gate
+                    switch (conversion.Type)
                     {
-                        throw new Exception("Item conversion is null or items are null");
+                        case ConversionType.CookingStation:
+                            var cookStation = stationPrefab.GetComponent<CookingStation>();
+                            var cookConversion = ((CookingConversionConfig)conversion.Config).GetItemConversion();
+                            cookConversion.FixReferences();
+
+                            if (cookStation.m_conversion.Exists(c => c.m_from == cookConversion.m_from))
+                            {
+                                throw new Exception($"Conversion already added: ${cookConversion.m_from.name}");
+                            }
+
+                            cookStation.m_conversion.Add(cookConversion);
+
+                            break;
+                        case ConversionType.Fermenter:
+                            var fermenterStation = stationPrefab.GetComponent<Fermenter>();
+                            var fermenterConversion = ((FermenterConversionConfig)conversion.Config).GetItemConversion();
+                            fermenterConversion.FixReferences();
+
+                            if (fermenterStation.m_conversion.Exists(c => c.m_from == fermenterConversion.m_from))
+                            {
+                                throw new Exception($"Conversion already added: ${fermenterConversion.m_from.name}");
+                            }
+
+                            fermenterStation.m_conversion.Add(fermenterConversion);
+
+                            break;
+                        case ConversionType.Smelter:
+                            var smelterStation = stationPrefab.GetComponent<Smelter>();
+                            var smelterConversion = ((SmelterConversionConfig)conversion.Config).GetItemConversion();
+                            smelterConversion.FixReferences();
+
+                            if (smelterStation.m_conversion.Exists(c => c.m_from == smelterConversion.m_from))
+                            {
+                                throw new Exception($"Conversion already added: ${smelterConversion.m_from.name}");
+                            }
+
+                            smelterStation.m_conversion.Add(smelterConversion);
+
+                            break;
+                        default:
+                            throw new Exception($"Unknown conversion type");
                     }
 
-                    if (station.m_conversion.Exists(c => c.m_from == conv.m_from))
-                    {
-                        throw new Exception($"Item conversion already added to cooking station: ${conv.m_from.name}");
-                    }
-
-                    station.m_conversion.Add(conv);
-
-                    Logger.LogInfo($"Added item conversion {conversion.FromItem} -> {conversion.ToItem}");
+                    Logger.LogInfo($"Added item conversion {conversion}");
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while adding item conversion {conversion.FromItem} -> {conversion.ToItem}: {ex.Message}");
+                    Logger.LogError($"Error while adding item conversion {conversion}: {ex.Message}");
 
-                    // Remove item conversion
+                    // Remove item conversion again
                     ItemConversions.Remove(conversion);
                 }
             }
