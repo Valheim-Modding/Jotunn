@@ -29,6 +29,7 @@ namespace TestMod
 
         private AssetBundle blueprintRuneBundle;
         private AssetBundle testAssets;
+        private AssetBundle steelingot;
         private bool clonedItemsProcessed;
 
         private System.Version currentVersion;
@@ -54,6 +55,8 @@ namespace TestMod
             AddSkills();
             AddRecipes();
             AddStatusEffects();
+            AddItemConversions();
+            CustomItemConversion();
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
@@ -217,6 +220,9 @@ namespace TestMod
             blueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/blueprints");
             Jotunn.Logger.LogInfo(blueprintRuneBundle);
 
+            // Load Steel ingot from streamed resource
+            steelingot = AssetUtils.LoadAssetBundleFromResources("steel", Assembly.GetExecutingAssembly());
+
             // Embedded Resources
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
         }
@@ -312,6 +318,45 @@ namespace TestMod
             evilSwordEffect = new CustomStatusEffect(effect, fixReference: false);  // We dont need to fix refs here, because no mocks were used
             ItemManager.Instance.AddStatusEffect(evilSwordEffect);
         }
+
+        // Add item conversions (cooking or smelter recipes)
+        private void AddItemConversions()
+        {
+            // Add an item conversion for the CookingStation. The items must have an attach child GameObject to display it on the station.
+            var cookConversion = new CustomItemConversion(new CookingConversionConfig
+            {
+                Station = "piece_cookingstation",
+                FromItem = "Coal",
+                ToItem = "CookedLoxMeat"
+            });
+            ItemManager.Instance.AddItemConversion(cookConversion);
+
+            // Add an item conversion for the smelter
+            var smeltConversion = new CustomItemConversion(new SmelterConversionConfig
+            {
+                //Station = "smelter",  // Use the default from the config
+                FromItem = "Stone",
+                ToItem = "Coal"
+            });
+            ItemManager.Instance.AddItemConversion(smeltConversion);
+        }
+
+
+        // Add custom item conversion (gives a steel ingot to smelter)
+        private void CustomItemConversion()
+        {
+            var steel_prefab = steelingot.LoadAsset<GameObject>("Steel");
+            var ingot = new CustomItem(steel_prefab, fixReference: false);
+            var blastConversion = new CustomItemConversion(new SmelterConversionConfig
+            { 
+                Station = "blastfurnace", // let's specify something other than default here 
+                FromItem = "Iron",
+                ToItem = "Steel" //This is our custom prefabs name we have loaded just above 
+            });
+            ItemManager.Instance.AddItem(ingot);
+            ItemManager.Instance.AddItemConversion(blastConversion); 
+        }
+
 
         // Add new Items with item Configs
         private void AddItemsWithConfigs()
