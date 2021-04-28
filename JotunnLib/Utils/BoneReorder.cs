@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Jotunn.Managers;
 
 namespace Jotunn.Utils
 {
@@ -25,14 +24,11 @@ namespace Jotunn.Utils
         {
             if (!applied)
             {
-                //ItemManager.OnItemsRegistered += () =>
-                //{
-                    On.VisEquipment.SetUtilityEquiped += VisEquipmentOnSetUtilityEquiped;
-                    On.VisEquipment.SetShoulderEquiped += VisEquipmentOnSetShoulderEquiped;
-                    On.VisEquipment.SetChestEquiped += VisEquipmentOnSetChestEquiped;
-                    On.VisEquipment.SetHelmetEquiped += VisEquipmentOnSetHelmetEquiped;
-                    On.VisEquipment.SetLegEquiped += VisEquipmentOnSetLegEquiped;
-                //};
+                On.VisEquipment.SetUtilityEquiped += VisEquipmentOnSetUtilityEquiped;
+                On.VisEquipment.SetShoulderEquiped += VisEquipmentOnSetShoulderEquiped;
+                On.VisEquipment.SetChestEquiped += VisEquipmentOnSetChestEquiped;
+                On.VisEquipment.SetHelmetEquiped += VisEquipmentOnSetHelmetEquiped;
+                On.VisEquipment.SetLegEquiped += VisEquipmentOnSetLegEquiped;
 
                 applied = true;
             }
@@ -107,34 +103,35 @@ namespace Jotunn.Utils
         /// <param name="instancesToFix">GameObjects that need to match the ordering from the ItemPrefab (itemPrefabHash parameter)</param>
         private static void ReorderBones(VisEquipment visEquipment, int itemPrefabHash, List<GameObject> instancesToFix)
         {
-            
-            Transform skeletonRoot = visEquipment.transform.Find("Visual").Find("Armature").Find("Hips");
-            GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabHash);
-            if (!skeletonRoot || !itemPrefab)
+            if (visEquipment != null)
             {
+                Transform skeletonRoot = visEquipment.transform.Find("Visual/Armature/Hips");
+                GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabHash);
+                if (!skeletonRoot || !itemPrefab)
+                {
                     Logger.LogInfo($"prefab missing components... Skipping {itemPrefab} {skeletonRoot}");
                     return;
-            }
-            Logger.LogInfo($"Reordering bones...");
-            int childCount = itemPrefab.transform.childCount;
-            int num = 0;
-            for (var i = 0; i < childCount; i++)
-            {
-                var itemPrefabChilds = itemPrefab.transform.GetChild(i);
-                if (itemPrefabChilds.name.StartsWith("attach_skin"))
+                }
+                Logger.LogInfo($"Reordering bones...");
+                int childCount = itemPrefab.transform.childCount;
+                int num = 0;
+                for (var i = 0; i < childCount; i++)
                 {
-                    int j = 0;
-                    var meshRenderersToReorder = instancesToFix[num].GetComponentsInChildren<SkinnedMeshRenderer>();
-                    foreach (var meshRenderer in itemPrefabChilds.GetComponentsInChildren<SkinnedMeshRenderer>())
+                    var itemPrefabChilds = itemPrefab.transform.GetChild(i);
+                    if (itemPrefabChilds.name.StartsWith("attach_skin"))
                     {
-                        var meshRendererThatNeedFix = meshRenderersToReorder[j];
-                        meshRendererThatNeedFix.SetBones(meshRenderer.GetBoneNames(), skeletonRoot);
-                        j++;
+                        int j = 0;
+                        var meshRenderersToReorder = instancesToFix[num].GetComponentsInChildren<SkinnedMeshRenderer>();
+                        foreach (var meshRenderer in itemPrefabChilds.GetComponentsInChildren<SkinnedMeshRenderer>())
+                        {
+                            var meshRendererThatNeedFix = meshRenderersToReorder[j];
+                            meshRendererThatNeedFix.SetBones(meshRenderer.GetBoneNames(), skeletonRoot);
+                            j++;
+                        }
+                        num++;
                     }
-                    num++;
                 }
             }
-            
         }
 
         /// <summary>

@@ -183,7 +183,16 @@ namespace Jotunn.InGameConfig
                     sectiontext.AddComponent<LayoutElement>().preferredHeight = 30f;
 
                     // Iterate over all entries of this section
-                    foreach (var entry in kv.OrderBy(x => x.Key.Key))
+                    foreach (var entry in
+                        kv.OrderByDescending(x =>
+                    {
+                        if (x.Value.Description.Tags.FirstOrDefault(y => y is ConfigurationManagerAttributes) is ConfigurationManagerAttributes cma)
+                        {
+                            return cma.Order ?? 0;
+                        }
+
+                        return 0;
+                    }).ThenBy(x => x.Key.Key))
                     {
                         // Create config entry
                         // switch by type
@@ -323,7 +332,7 @@ namespace Jotunn.InGameConfig
         private static void SetProperties<T>(ConfigBound<T> binding, KeyValuePair<ConfigDefinition, ConfigEntryBase> entry)
         {
             var configurationManagerAttribute =
-                (ConfigurationManagerAttributes) entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes);
+                (ConfigurationManagerAttributes)entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes);
 
             // Only act, if we have a valid ConfigurationManagerAttributes tag
             if (configurationManagerAttribute != null)
@@ -341,7 +350,7 @@ namespace Jotunn.InGameConfig
                 }
 
                 // and set it's default value
-                binding.Default = (T) entry.Value.DefaultValue;
+                binding.Default = (T)entry.Value.DefaultValue;
             }
 
             // Set clamp
@@ -599,7 +608,7 @@ namespace Jotunn.InGameConfig
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
-                return (bool) entry.BoxedValue;
+                return (bool)entry.BoxedValue;
             }
 
             public override void SetValueInConfig(bool value)
@@ -639,7 +648,7 @@ namespace Jotunn.InGameConfig
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
-                return (int) entry.BoxedValue;
+                return (int)entry.BoxedValue;
             }
 
             public override void SetValueInConfig(int value)
@@ -687,7 +696,7 @@ namespace Jotunn.InGameConfig
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
-                return (float) entry.BoxedValue;
+                return (float)entry.BoxedValue;
             }
 
             public override void SetValueInConfig(float value)
@@ -735,7 +744,7 @@ namespace Jotunn.InGameConfig
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
-                return (KeyCode) entry.BoxedValue;
+                return (KeyCode)entry.BoxedValue;
             }
 
             public override void SetValueInConfig(KeyCode value)
@@ -791,7 +800,7 @@ namespace Jotunn.InGameConfig
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
-                return (string) entry.BoxedValue;
+                return (string)entry.BoxedValue;
             }
 
             public override void SetValueInConfig(string value)
