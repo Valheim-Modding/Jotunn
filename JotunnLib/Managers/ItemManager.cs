@@ -5,7 +5,6 @@ using Jotunn.Utils;
 using Jotunn.Entities;
 using Jotunn.Configs;
 using MonoMod.RuntimeDetour;
-using MonoMod.Utils;
 using System.Reflection;
 
 namespace Jotunn.Managers
@@ -15,7 +14,6 @@ namespace Jotunn.Managers
     /// </summary>
     public class ItemManager : IManager
     {
-
         private static ItemManager _instance;
 
         /// <summary>
@@ -54,22 +52,32 @@ namespace Jotunn.Managers
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
-            HookLateAwake();
+
+            //Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            using (new DetourContext() { Priority = int.MaxValue - 1000 })
+            {
+                On.ObjectDB.Awake += LateObjectDBAwake;
+                On.ObjectDB.CopyOtherDB += LateFejdCopy;
+            }
         }
 
-        private static void HookLateAwake()
+        /// <summary>
+        /// Event is invoked after most other mods have hooked CopyOtherDB.
+        /// </summary>
+        private void LateFejdCopy(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
-            new Hook(
-                typeof(ObjectDB).GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Instance),
-                new Action<Action<ObjectDB>, ObjectDB>((orig, self) =>
-                {
-                    orig(self);
-                    Jotunn.Logger.LogInfo($"Invoking late ObjectDB.Awake");
-                    OnItemsRegistered?.SafeInvoke();
-                }),
-                new HookConfig() { Priority = int.MaxValue - 1000 }
-                )
-            { };
+            orig(self, other);
+            Jotunn.Logger.LogInfo($"Invoking late OnItemsRegisteredFejd");
+            OnItemsRegisteredFejd?.SafeInvoke();
+        }
+        /// <summary>
+        /// Event is invoked after most other mods have hooked ObjectDB.Awake.
+        /// </summary>
+        private void LateObjectDBAwake(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
+            Jotunn.Logger.LogInfo($"Invoking late OnItemsRegistered");
+            OnItemsRegistered?.SafeInvoke();
         }
 
         /// <summary>
@@ -315,9 +323,6 @@ namespace Jotunn.Managers
 
                 self.UpdateItemHashes();
             }
-
-            // Fire event that everything is registered
-            OnItemsRegisteredFejd?.SafeInvoke();
         }
 
         /// <summary>
@@ -340,7 +345,6 @@ namespace Jotunn.Managers
 
                 self.UpdateItemHashes();
             }
-
         }
 
         /// <summary>

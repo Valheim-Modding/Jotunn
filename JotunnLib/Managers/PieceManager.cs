@@ -1,4 +1,5 @@
 ﻿using Jotunn.Entities;
+using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,6 +52,22 @@ namespace Jotunn.Managers
             // Setup Hooks
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
+
+            //Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            using (new DetourContext() { Priority = int.MaxValue - 1000 })
+            {
+                On.ObjectDB.Awake += LateObjectDBAwake;
+            }
+        }
+
+        /// <summary>
+        /// Event is run after most mods have hooked ObjectDB.Awake.
+        /// </summary>
+        private void LateObjectDBAwake(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
+            Jotunn.Logger.LogInfo($"Invoking late OnPiecesRegistered");
+            OnPiecesRegistered?.SafeInvoke();
         }
 
         /// <summary>
@@ -250,9 +267,6 @@ namespace Jotunn.Managers
             {
                 RegisterInPieceTables();
             }
-
-            // Fire event that everything is registered
-            OnPiecesRegistered?.SafeInvoke();
         }
 
         private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
