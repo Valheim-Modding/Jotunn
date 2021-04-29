@@ -38,10 +38,13 @@ namespace Jotunn.Managers
         internal GameObject PrefabContainer;
 
         /// <summary>
-        /// Dictionary of all added custom prefabs by name.
+        ///     Dictionary of all added custom prefabs by name.
         /// </summary>
         internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
 
+        /// <summary>
+        ///     Creates the prefab container and registers all hooks.
+        /// </summary>
         public void Init()
         {
             PrefabContainer = new GameObject("Prefabs");
@@ -50,12 +53,6 @@ namespace Jotunn.Managers
 
             On.ZNetScene.Awake += RegisterAllToZNetScene;
             SceneManager.sceneUnloaded += (Scene current) => Cache.ClearCache();
-
-            //Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
-            using (new DetourContext() { Priority = int.MaxValue - 1000 })
-            {
-                On.ZNetScene.Awake += InvokeOnPrefabsRegistered;
-            }
         }
 
         /// <summary>
@@ -63,7 +60,7 @@ namespace Jotunn.Managers
         ///     Checks if a prefab with the same name is already added.<br />
         ///     Added prefabs get registered to the <see cref="ZNetScene"/> on <see cref="ZNetScene.Awake"/>.
         /// </summary>
-        /// <param name="prefab">Prefab to add.</param>
+        /// <param name="prefab">Prefab to add</param>
         public void AddPrefab(GameObject prefab)
         {
             if (Prefabs.ContainsKey(prefab.name))
@@ -116,7 +113,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="name">Name of the new prefab.</param>
         /// <param name="baseName">Name of the vanilla prefab to copy from.</param>
-        /// <returns>Newly created prefab object.</returns>
+        /// <returns>Newly created prefab object</returns>
         public GameObject CreateClonedPrefab(string name, string baseName)
         {
             if (string.IsNullOrEmpty(baseName))
@@ -147,7 +144,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="name">Name of the new prefab.</param>
         /// <param name="prefab">Prefab instance to copy.</param>
-        /// <returns>Newly created prefab object.</returns>
+        /// <returns>Newly created prefab object</returns>
         public GameObject CreateClonedPrefab(string name, GameObject prefab)
         {
             if (string.IsNullOrEmpty(name))
@@ -181,7 +178,7 @@ namespace Jotunn.Managers
         ///     </list>
         /// </summary>
         /// <param name="name">Name of the prefab to search for.</param>
-        /// <returns>The existing prefab, or null if none exists with given name.</returns>
+        /// <returns>The existing prefab, or null if none exists with given name</returns>
         public GameObject GetPrefab(string name)
         {
             if (Prefabs.ContainsKey(name))
@@ -206,7 +203,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Remove a custom prefab from the manager.
         /// </summary>
-        /// <param name="name">Name of the prefab to remove.</param>
+        /// <param name="name">Name of the prefab to remove</param>
         public void RemovePrefab(string name)
         {
             if (Prefabs.ContainsKey(name))
@@ -219,7 +216,7 @@ namespace Jotunn.Managers
         ///     Destroy a custom prefab.<br />
         ///     Removes it from the manager and if instantiated also from the <see cref="ZNetScene"/>.
         /// </summary>
-        /// <param name="name">The name of the prefab to destroy.</param>
+        /// <param name="name">The name of the prefab to destroy</param>
         public void DestroyPrefab(string name)
         {
             RemovePrefab(name);
@@ -288,14 +285,7 @@ namespace Jotunn.Managers
                     Logger.LogInfo($"Added prefab {name}");
                 }
             }
-        }
 
-        /// <summary>
-        ///     Notify event subscribers that all prefabs got registered in ObjectDB. Runs late in the detour hierarchy.
-        /// </summary>
-        private void InvokeOnPrefabsRegistered(On.ZNetScene.orig_Awake orig, ZNetScene self)
-        {
-            orig(self);
             OnPrefabsRegistered?.SafeInvoke();
         }
 

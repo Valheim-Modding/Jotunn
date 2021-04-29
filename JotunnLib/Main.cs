@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using BepInEx;
 using Jotunn.Managers;
 using Jotunn.Utils;
+using MonoMod.RuntimeDetour;
 
 namespace Jotunn
 {
@@ -59,11 +60,18 @@ namespace Jotunn
                 SaveManager.Instance,
                 SynchronizationManager.Instance
             };
-            foreach (IManager manager in managers)
+
+            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            using (new DetourContext(int.MaxValue - 1000, "com.jotunn.jotunndetour"))
             {
-                manager.Init();
-                Logger.LogInfo("Initialized " + manager.GetType().Name);
+                foreach (IManager manager in managers)
+                {
+                    manager.Init();
+                    Logger.LogInfo("Initialized " + manager.GetType().Name);
+                }
             }
+
+            // Create a detour context 
 
             Logger.LogInfo("Jotunn v" + Version + " loaded successfully");
         }
