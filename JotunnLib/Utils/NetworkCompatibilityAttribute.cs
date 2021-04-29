@@ -34,13 +34,13 @@ namespace Jotunn.Utils
     /// If your mod is just GUI changes (for example bigger inventory, additional equip slots) there is no need to set this attribute
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly)]
-    public class NetworkCompatibiltyAttribute : Attribute
+    public class NetworkCompatibilityAttribute: Attribute
     {
         public CompatibilityLevel EnforceModOnClients { get; set; }
 
         public VersionStrictness EnforceSameVersion { get; set; }
 
-        public NetworkCompatibiltyAttribute(CompatibilityLevel enforceMod, VersionStrictness enforceVersion)
+        public NetworkCompatibilityAttribute(CompatibilityLevel enforceMod, VersionStrictness enforceVersion)
         {
             EnforceModOnClients = enforceMod;
             EnforceSameVersion = enforceVersion;

@@ -316,7 +316,7 @@ namespace Jotunn.Utils
         {
             foreach (var plugin in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Key))
             {
-                var nca = plugin.Value.GetType().GetCustomAttributes(typeof(NetworkCompatibiltyAttribute), true).Cast<NetworkCompatibiltyAttribute>()
+                var nca = plugin.Value.GetType().GetCustomAttributes(typeof(NetworkCompatibilityAttribute), true).Cast<NetworkCompatibilityAttribute>()
                     .FirstOrDefault();
                 if (nca != null)
                 {
