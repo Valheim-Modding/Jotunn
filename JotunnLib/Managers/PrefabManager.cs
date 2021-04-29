@@ -292,8 +292,6 @@ namespace Jotunn.Managers
                     Logger.LogInfo($"Added prefab {name}");
                 }
             }
-
-            OnPrefabsRegistered?.SafeInvoke();
         }
 
         private void InvokeOnPrefabsRegistered(On.ZNetScene.orig_Awake orig, ZNetScene self)
