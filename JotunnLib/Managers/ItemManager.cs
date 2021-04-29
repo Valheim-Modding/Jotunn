@@ -5,6 +5,7 @@ using Jotunn.Utils;
 using Jotunn.Entities;
 using Jotunn.Configs;
 using UnityEngine.SceneManagement;
+using MonoMod.RuntimeDetour;
 
 namespace Jotunn.Managers
 {
@@ -55,6 +56,14 @@ namespace Jotunn.Managers
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
+
+            // Fire events as a late action in the detour so all mods can load before
+            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            using (new DetourContext(int.MaxValue - 1000))
+            {
+                On.ObjectDB.CopyOtherDB += InvokeOnItemsRegisteredFejd;
+                On.ObjectDB.Awake += InvokeOnItemsRegistered;
+            }
         }
 
         /// <summary>
@@ -408,7 +417,15 @@ namespace Jotunn.Managers
 
                     self.UpdateItemHashes();
                 }
+            }
+        }
 
+        private void InvokeOnItemsRegisteredFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        {
+            orig(self, other);
+
+            if (SceneManager.GetActiveScene().name == "start" && self.IsValid())
+            {
                 OnItemsRegisteredFejd?.SafeInvoke();
             }
         }
@@ -436,7 +453,14 @@ namespace Jotunn.Managers
 
                     self.UpdateItemHashes();
                 }
+            }
+        }
+        private void InvokeOnItemsRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
 
+            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            {
                 OnItemsRegistered?.SafeInvoke();
             }
         }
