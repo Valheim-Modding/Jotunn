@@ -5,16 +5,16 @@
 
 ## Tables & Tabs
 
-PieceTables can be associated with items such as Hammer, Cultivator, and Hoe. Each have their own set of [categories](piece-categories.md) which can act as tabs to organise content within a certain PieceTable. 
+PieceTables can be associated with items such as Hammer, Cultivator, and Hoe. Each have their own set of categories which can act as tabs to organise content within a certain PieceTable. 
 
 TODO: prefab component requirement description
 
-see: [AddPieceTable](xref:Jotunn.Managers.PieceManager.AddPieceTable(UnityEngine.GameObject))
+see: [AddPieceTable](xref:Jotunn.Managers.PieceManager.AddPieceTable(GameObject))
 ```cs
 PieceManager.Instance.AddPieceTable(BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable"));
 ```
 
-[Tabs/Categories](piece-categories.md) are something we are looking to provide interfaces and abstractions for in our v1.1 release, so key an eye out for any updates from JVL.
+Tabs/Categories are something we are looking to provide interfaces and abstractions for in our v1.1 release, so key an eye out for any updates from JVL.
 
 ## Pieces
 _Pieces_ in Valheim are anything that can be built in the game, through means such as the Hammer, Cultivator, or Hoe. This includes things such as plant sapplings, the workbench, and walls. Custom pieces are handled by the [PieceManager](xref:Jotunn.Managers.PieceManager) singleton.  
