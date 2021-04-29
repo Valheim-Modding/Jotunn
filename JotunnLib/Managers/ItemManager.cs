@@ -4,6 +4,7 @@ using UnityEngine;
 using Jotunn.Utils;
 using Jotunn.Entities;
 using Jotunn.Configs;
+using UnityEngine.SceneManagement;
 
 namespace Jotunn.Managers
 {
@@ -396,17 +397,20 @@ namespace Jotunn.Managers
         {
             orig(self, other);
 
-            var isValid = self.IsValid();
-            ItemDropMockFix.Switch(!isValid);
-
-            if (isValid)
+            if (SceneManager.GetActiveScene().name == "start")
             {
-                RegisterCustomItems(self);
+                var isValid = self.IsValid();
+                ItemDropMockFix.Switch(!isValid);
 
-                self.UpdateItemHashes();
+                if (isValid)
+                {
+                    RegisterCustomItems(self);
+
+                    self.UpdateItemHashes();
+                }
+
+                OnItemsRegisteredFejd?.SafeInvoke();
             }
-            
-            OnItemsRegisteredFejd?.SafeInvoke();
         }
 
         /// <summary>
@@ -418,20 +422,23 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            var isValid = self.IsValid();
-            ItemDropMockFix.Switch(!isValid);
-
-            if (isValid)
+            if (SceneManager.GetActiveScene().name == "main")
             {
-                RegisterCustomItems(self);
-                RegisterCustomRecipes(self);
-                RegisterCustomStatusEffects(self);
-                RegisterCustomItemConversions();
+                var isValid = self.IsValid();
+                ItemDropMockFix.Switch(!isValid);
 
-                self.UpdateItemHashes();
+                if (isValid)
+                {
+                    RegisterCustomItems(self);
+                    RegisterCustomRecipes(self);
+                    RegisterCustomStatusEffects(self);
+                    RegisterCustomItemConversions();
+
+                    self.UpdateItemHashes();
+                }
+
+                OnItemsRegistered?.SafeInvoke();
             }
-            
-            OnItemsRegistered?.SafeInvoke();
         }
 
         /// <summary>
