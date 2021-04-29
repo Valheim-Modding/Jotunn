@@ -1,4 +1,4 @@
-# Register events
+﻿# Register events
 In JotunnLib, the majority of custom data added to the game (prefabs, recipes, items, etc.) had to be added during one of the `Register` events.
 For example, when adding recipes in JotunnLib, you would need to do something like this:
 
@@ -25,4 +25,4 @@ private void Awake()
 }
 ```
 
-For a more in-depth look at how to add add items, recipes, or anything else, please check out the [tutorials](../../tutorials/intro.md) section.
+For a more in-depth look at how to add add items, recipes, or anything else, please check out the [tutorials](../../home/tutorials/overview.md) section.

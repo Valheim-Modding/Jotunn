@@ -89,7 +89,7 @@ private void Awake()
 ```
 
 ### Adding skills through code
-_This example requires [assets](assets.md) to be loaded._  
+_This example requires [assets](asset-loading.md) to be loaded._  
 
 To create a new skill, you must call the [AddSkill](xref:Jotunn.Managers.SkillManager.AddSkill(Jotunn.Configs.SkillConfig)) method.
 This should be called from within your mod's `Awake` method, and it will return a randomly generated SkillType for your new skill.

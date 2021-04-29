@@ -1,4 +1,4 @@
-# Transitioning from JotunnLib
+﻿# Transitioning from JotunnLib
 
 When switching from JotunnLib to the new combined Jotunn library, you'll find that most things have remained similar, but are just renamed or used _slightly_ differently.  
 
@@ -12,4 +12,4 @@ The notable changes between JotunnLib and the new Jotunn are:
 A few of the more minor changes between JotunnLib and the new Jotunn are:
 - _ReflectionUtils_ has been renamed to _ReflectionHelper_
 
-In addition, there are a whole bunch of new features added, such as support for custom status effects, custom UI, and loading recipes from JSON. Check out the [tutorials](../../tutorials/intro.md) section to see how to do all of these and more.
+In addition, there are a whole bunch of new features added, such as support for custom status effects, custom UI, and loading recipes from JSON. Check out the [tutorials](../../home/tutorials/overview.md) section to see how to do all of these and more.

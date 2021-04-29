@@ -31,11 +31,11 @@ Good, we now have our mock and we can use it for reference in our ItemDrop compo
 
 We use the [OnItemsRegistered](xref:Jotunn.Managers.ItemManager.OnItemsRegistered) event subscription provided by JVL. OnItemsRegistered is fired once after the `ObjectDB` is has loaded all its native AND custom assets. That's perfect for us ! We want to do this just once : clone the prefab, so that we don't modify the original, remove the GameObject in the hierarchy that we don't want, and then we do the `m_attackProjectile assignment`.
 
-If you have been following the Unity Asset Creation guide, you can return back to where you left off [here](unity.md#assetbundle).
+If you have been following the Unity Asset Creation guide, you can return back to where you left off [here](asset-creation.md#assetbundle).
 
 ## Referencing native assets from within an asset
 
-**Note**: This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
+**Note**: This example requires [assets](asset-loading.md) to be loaded, as well as [localizations](localization.md).
 
 As well as mocking assets to use for referencing, it is also possible to reference native assets from within an asset. The Recursive Reference Resolver will dig through children of an asset, querying for any prefabs with the `JVLmock_` prefix, it will strip the prefix and then try to resolve the name to an existing asset.
 

@@ -1,6 +1,6 @@
 ﻿# Tutorials
 
-This section covers the main interfaces we provide with the library, enabling developers to easily interact with items, recipes, pieces, skills, UI, entities, and much more. It is suggested to begin with [getting started](../getting-started.md) before proceeding with the tutorials.
+This section covers the main interfaces we provide with the library, enabling developers to easily interact with items, recipes, pieces, skills, UI, entities, and much more. It is suggested to begin with [getting started](../guide.md) before proceeding with the tutorials.
 
 > [!NOTE]
 > All custom data that is registered (prefabs, items, recipes) will automatically be saved and loaded by the game on logout/reload, and will persist across game sessions as long as the mods are still installed.  
@@ -12,34 +12,34 @@ Each section will have examples showing how this is done. All of the examples sh
 
 ## Quick guide
 
-### [Asset Creation](data/asset-creation.md): Create new Assets with Unity and prepare them to be imported into Valheim using JotunnLib.
+### [Asset Creation](asset-creation.md): Create new Assets with Unity and prepare them to be imported into Valheim using JotunnLib.
 
-### [Asset Loading](data/asset-loading.md): Load Assets into your plugin using JotunnLib.
+### [Asset Loading](asset-loading.md): Load Assets into your plugin using JotunnLib.
 
-### [Asset Mocking](data/asset-mocking.md): Duplicate and modify Assets without the need to include copyrighted content in your plugin.
+### [Asset Mocking](asset-mocking.md): Duplicate and modify Assets without the need to include copyrighted content in your plugin.
 
-### [Custom Items](data/items.md): Create equipment and resources.
+### [Custom Items](items.md): Create equipment and resources.
 
-### [Custom Pieces](data/pieces.md): Create building pieces.
+### [Custom Pieces](pieces.md): Create building pieces.
 
-### [Custom Recipes](data/recipes.md): Create building pieces.
+### [Custom Recipes](recipes.md): Create building pieces.
 
-### [Custom Status Effects](data/status-effects.md): Add custom Status Effects.
+### [Custom Status Effects](status-effects.md): Add custom Status Effects.
 
-### [Custom Skills](data/skills.md): Add custom trainable Skills.
+### [Custom Skills](skills.md): Add custom trainable Skills.
 
-### [Custom Console Commands](data/console-commands.md): Add custom commands to the Console that can execute your methods.
+### [Custom Console Commands](console-commands.md): Add custom commands to the Console that can execute your methods.
 
-### [UI Elements](data/gui.md): Add custom windows and UI elements.
+### [UI Elements](gui.md): Add custom windows and UI elements.
 
-### [Localizations](data/localization.md): Create language tokens that are replaced at runtime by their specified localization.
+### [Localizations](localization.md): Create language tokens that are replaced at runtime by their specified localization.
 
-### [Reordering Bones](data/bonereorder.md): Reoder and preserve bone order so player attached objects preserve their position.
+### [Reordering Bones](bonereorder.md): Reoder and preserve bone order so player attached objects preserve their position.
 
-### [Network Compatibility](data/networkcompatibility.md): Make sure that clients are running compatible versions of the plugin and it's assets.
+### [Network Compatibility](networkcompatibility.md): Make sure that clients are running compatible versions of the plugin and it's assets.
 
-### [Config Sync](data/config.md): Ensures the synchronization of plugin config files between server and client.
+### [Config Sync](config.md): Ensures the synchronization of plugin config files between server and client.
 
-### [Inputs](data/inputs.md): Register custom inputs and add key hints to your custom items.
+### [Inputs](inputs.md): Register custom inputs and add key hints to your custom items.
 
 ### [JSON](https://github.com/mhallin/SimpleJSON.NET): JVL integrates the MIT licensed SimpleJSON, accessible via its namespace.

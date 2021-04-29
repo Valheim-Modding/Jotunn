@@ -106,7 +106,7 @@ Port the item into the new stubbed unity project, with ALL linked assets (mesh, 
 Before we actually create our bundle, though, you might be wondering - how am I gonna reference game assets in my Unity Project?
 If I were to copy paste those, I'd need to fix shaders, and now I'd also have to be worried about copyright infringement, bad.
 
-The solution is easy though, thanks to [JVL](https://github.com/Valheim-Modding/Jotunn), we introduce a [Mock object system](mocks.md). Click the link to learn more about resolving native asset references at runtime.
+The solution is easy though, thanks to [JVL](https://github.com/Valheim-Modding/Jotunn), we introduce a [Mock object system](asset-mocking.md). Click the link to learn more about resolving native asset references at runtime.
 
 
 ## AssetBundle
@@ -130,5 +130,5 @@ We now want to put our AssetBundle in the BepinEx plugin so that we can later in
 
 ## Implementing your asset ingame using JVL
 
-If you have not done so yet, please ensure you have completed the [relevant visual studio setup](../getting-started.md).
-You can then follow the [Asset importing guide](../data/assets.md), [Item Creation](../data/items.md), and [Localization](../data/localization.md) tutorials.
+If you have not done so yet, please ensure you have completed the [relevant visual studio setup](../guide.md).
+You can then follow the [Asset importing guide](asset-loading.md), [Item Creation](items.md), and [Localization](localization.md) tutorials.

@@ -1,5 +1,5 @@
-# Objects
-This section will go into details about how objects work in Valheim. For a tutorial on how to create one, check [here](../../tutorials/data/overview.md).
+﻿# Objects
+This section will go into details about how objects work in Valheim. For a tutorial on how to create one, check [here](../../home/tutorials/overview.md).
 
 ## List of all Valheim items
 See the [list of all items currently in the game](item-list.md).

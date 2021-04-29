@@ -1,7 +1,7 @@
 ﻿# Items
 Valheim items can be equipment, resources, or building pieces. In this tutorial you will learn how to set up custom items within the game, either based upon existing assets, or through the creation of entirely custom assets.
 
-**Note**: This example requires [assets](assets.md) to be loaded, as well as [localizations](localization.md).
+**Note**: This example requires [assets](asset-loading.md) to be loaded, as well as [localizations](localization.md).
 
 ## Cloning existing prefabs
 
@@ -49,7 +49,7 @@ If we load up the game, type `devcommands` into the console(F5), and `spawn Evil
 As you may notice, our item does not hold the display text we might prefer. In order to resolve this you can read our [localization](localization.md) tutorial.
 
 ### Item Recipe's
-In this example, we create a method named recipeEvilSword which adds a new crafting bench recipe for our custom item. In particular, this recipe includes a custom resource. We will use the native `Recipe` object and instantiate a new instance, and then define some basic properties of the recipe, such as the item which it produces, the piece where it can be crafted, and the resources required to craft the product. You will notice that before we add our native recipe that we wrap it inside of a [CustomRecipe](xref:Jotunn.Entities.CustomRecipe). This wrapper is mostly to facilitate Jötunn's FixReferences for prefabs which include [mock references](mocks.md) but does not really have any affect for this specific scenario. Notice both fixRef params are set to false, this is because we will use the [PrefabManager's](xref:Jotunn.Managers.PrefabManager.GetPrefab(System.String)) cache to acquire a reference to native assets such as the crafting bench, and required resources to define the recipe's conditions.
+In this example, we create a method named recipeEvilSword which adds a new crafting bench recipe for our custom item. In particular, this recipe includes a custom resource. We will use the native `Recipe` object and instantiate a new instance, and then define some basic properties of the recipe, such as the item which it produces, the piece where it can be crafted, and the resources required to craft the product. You will notice that before we add our native recipe that we wrap it inside of a [CustomRecipe](xref:Jotunn.Entities.CustomRecipe). This wrapper is mostly to facilitate Jötunn's FixReferences for prefabs which include [mock references](asset-mocking.md) but does not really have any affect for this specific scenario. Notice both fixRef params are set to false, this is because we will use the [PrefabManager's](xref:Jotunn.Managers.PrefabManager.GetPrefab(System.String)) cache to acquire a reference to native assets such as the crafting bench, and required resources to define the recipe's conditions.
 
 ```cs
 private static void RecipeEvilSword(ItemDrop itemDrop)
@@ -108,4 +108,4 @@ private void CreateBlueprintRune()
 
 ![Blueprint Rune Item](../../images/data/blueprintRuneItem.png) ![Blueprint Recipe Config](../../images/data/blueprintRecipeConfig.png)
 
-We have now added two custom items, both of which can be equipped, as well as a custom resource which is used to create items. This concludes the items tutorial. [Go back to the index](../intro.md).
+We have now added two custom items, both of which can be equipped, as well as a custom resource which is used to create items. This concludes the items tutorial. [Go back to the index](../home.md).
