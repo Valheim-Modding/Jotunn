@@ -3,6 +3,7 @@ using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Jotunn.Managers
 {
@@ -54,6 +55,13 @@ namespace Jotunn.Managers
             // Setup Hooks
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
+
+            // Fire events as a late action in the detour so all mods can load before
+            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            using (new DetourContext(int.MaxValue - 1000))
+            {
+                On.ObjectDB.Awake += InvokeOnPiecesRegistered;
+            }
         }
 
         /// <summary>
@@ -242,12 +250,25 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            var isValid = self.IsValid();
-            ItemDropMockFix.Switch(!isValid);
-
-            if (isValid)
+            if (SceneManager.GetActiveScene().name == "main")
             {
-                RegisterInPieceTables();
+                var isValid = self.IsValid();
+                ItemDropMockFix.Switch(!isValid);
+
+                if (isValid)
+                {
+                    RegisterInPieceTables();
+                }
+            }
+        }
+
+        private void InvokeOnPiecesRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        {
+            orig(self);
+
+            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            {
+                OnPiecesRegistered?.SafeInvoke();
             }
         }
 

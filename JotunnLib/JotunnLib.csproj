@@ -15,8 +15,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HarmonyX" Version="2.4.0" />
-    <PackageReference Include="MonoMod" Version="21.3.1.1" />
+    <PackageReference Include="HarmonyX" Version="2.4.2" />
+    <PackageReference Include="MonoMod" Version="21.4.21.3" />
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="5.9.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

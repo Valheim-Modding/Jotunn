@@ -53,6 +53,13 @@ namespace Jotunn.Managers
 
             On.ZNetScene.Awake += RegisterAllToZNetScene;
             SceneManager.sceneUnloaded += (Scene current) => Cache.ClearCache();
+
+            // Fire events as a late action in the detour so all mods can load before
+            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            using (new DetourContext(int.MaxValue - 1000))
+            {
+                On.ZNetScene.Awake += InvokeOnPrefabsRegistered;
+            }
         }
 
         /// <summary>
@@ -285,6 +292,11 @@ namespace Jotunn.Managers
                     Logger.LogInfo($"Added prefab {name}");
                 }
             }
+        }
+
+        private void InvokeOnPrefabsRegistered(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        {
+            orig(self);
 
             OnPrefabsRegistered?.SafeInvoke();
         }
