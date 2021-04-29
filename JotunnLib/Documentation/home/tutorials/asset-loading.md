@@ -1,7 +1,5 @@
 ﻿# Loading Assets, the Jötunn way
 
-
-
 Inside of our `Awake` in our `BaseUnityPlugin` we will invoke a new method `loadAssets();` which will load the prefabs from our asset bundles and resources into our plugin. To facilitate this we will first need to define some fields as such:
 
 ```cs
