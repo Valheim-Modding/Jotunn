@@ -1,19 +1,16 @@
-﻿# JotunnLib
-![url=Documentation/images/banner.png]Banner[/url]
-
+﻿[size=5][b]Jötunn, the Valheim Library[/b][/size]
 Jötunn (/ˈjɔːtʊn/, "giant"), the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability. networked gameplay consistency, and remove the need to maintain valheim version specific code by acting as an interface between the developer and the games changing internals.
 
-This project was originally derived from the base structure of [url=https://github.com/jotunnlib/jotunnlib]JötunnLib[/url], and had many entity abstractions and features from [url=https://github.com/Valheim-Modding/ValheimLib]ValheimLib[/url] merged into it before we proceeded with further implementations. We have lots of features planned for the future, and we hope the community has many feature requests to suggest. I hope the features we have implemented thus far prove to be a useful base and provide an idea of the consistency we aim to deliver moving forwards.
+[size=5][b]Jötunn is not JotunnLib is not ValheimLib[/b][/size]
+Jötunn was created as a joint effort to merge [url=https://www.nexusmods.com/valheim/mods/507]JotunnLib[/url]﻿ and [url=https://www.nexusmods.com/valheim/mods/504]ValheimLib[/url]﻿ into a single library to use the best of both worlds. It is possible to use all three libraries side by side so all current mods will continue working. But it is highly recommended to port your mod to this new library as the other two won't be actively developed anymore.
 
-[h4]Usage[/h4]
+[size=5][b]Usage[/b][/size]
 Please refer to our [url=https://valheim-modding.github.io/Jotunn/]documentation[/url]. We have gone to great lengths to ensure there is ample documentation to facilitate the developers learning experience.
 
-________________
-
-## Features
+[size=5][b]Features[/b][/size]
 JVL provides three distinct groups of features. Entities, which abstract the game's own entities into easy-to-use interfaces. Managers, which act as interfaces between the entities and native collections or subsystems. Utilities, which are there to aid in generic/common functions that can span many different areas.
 
-[h4]Entities[/h4]
+[size=4][b]Entities[/b][/size]
 - [b]CustomItem[/b] - Represents ingame items such as weapons, tools and consumables.
 - [b]CustomRecipe[/b] - Represents ingame recipes for managing crafting and upgrading of items.
 - [b]CustomPiece[/b] - Represent ingame building pieces.
@@ -22,7 +19,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - [b]Mocks[/b] - Fake any vanilla prefab and use it in your custom assets - Jötunn resolves the references to the vanilla objects at runtime.
 - [b]Config classes[/b] - There are many more abstractions beside the main entities which allow for easy creation of things like key bindings, custom commands, skills and more.
 
-[h4]Managers[/h4]
+[size=4][b]Managers[/b][/size]
 - [b]Command Manager[/b] - Facilitates implementation of methods which can be registered as executable console commands.
 - [b]GUI Manager[/b] - Allows invocation of UI prefabs on the fly via code.
 - [b]Input Manager[/b] - Provides an interface for binding keys via ZInput in a consistent manner, facilitating custom keybind hints.
@@ -32,59 +29,28 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - [b]Prefab Manager[/b] - Provides a cache of prefabs registered through other managers, mostly developers will only query the cache for prefabs added via other managers.
 - [b]Skill Manager[/b] - Facilitates additional custom skills.
 
-[h4]Utilities[/h4]
+[size=4][b]Utilities[/b][/size]
 - [b]Asset Helpers[/b] - Methods to facilitate referencing and loading of assets.
 - [b]Bone Reorderer[/b] - Fixes bone ordering issues on [code single]SkinnedMeshRenderer[/code]'s that have been ripped and imported into unity.
 - [b]NetworkCompatibility[/b] - Allows plugins to define their own version requirements for clients connected to the server. Ensures a customisable level of interoperability with clients of differing mod configurations on a plugin-by-plugin basis.
 - [b]Config Synchronisation[/b] - Allows administrators to adjust configuration values via an in game menu. Config setting is synced to connected clients.
 - [b]SimpleJSON[/b] - We have imported SimpleJSON into our library at the request of developers who would simply prefer to have this dependency taken care of already. We use the MIT Licensed [url=https://simplejson.readthedocs.io/en/latest/]SimpleJSON[/url]
 
-## Roadmap
-- [b]v1.1.0[/b]
-  * Facilitate custom adjustment of bone attachments
-  * Provide a more meaningful and interopable solution to mod interopable keybindings (resolve mod bind conflicts/standardise an interface)
-  * TODO: cooking recipes?!??! this is not currently possible?
-  * Implement item variations into codable enmtity abstractions to minimise asset workflow.
-  * Custom piecetable category/tabs
-  * Check our [url=https://github.com/Valheim-Modding/Jotunn/milestone/2]v1.1 milestones[/url] for a more up to date list of features currently in development, or suggest your own features for inclusion by creating a new [url=https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D]feature request[/url]
-
-## Bugs, Support, Contributions
+[size=5][b]Bugs, Support, Contributions[/b][/size]
 Please refer to our [url=https://valheim-modding.github.io/Jotunn/]documentation[/url] before requesting [url=https://discord.gg/DdUt6g7gyA]support via discord[/url]. If there are any mod interoperability issues developers experience (not just exclusive JVL issues), we would like to hear from you! If we can facilitate better mod interoperability by providing a common interface, or exposing native valheim objects, including a utility which you have created, then please feel free to create a new [url=https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D]feature request[/url] or [url=https://github.com/Valheim-Modding/Jotunn/pulls]pull request[/url].
 
-## Changelog
-
-- [b]v1.0.0[/b]
-  * Merged VL's Entity abstractions: [code single]CustomItem[/code], [code single]CustomPiece[/code], [code single]CustomRecipe[/code]
-  * Implemented JL's Entity Configs into the [code single]Custom[/code] abstractions
-  * Merged VL's runtime [code single]FixReference[/code] resolver into JVL, split out MockManager to be responsible for prefabs that it resolves.
-  * Merged VL's Localization implementation into JVL
-  * Refactored JL's patch system to use Monomod's hookgen.
-  * Deprecated JL's EventManager in favour of Monomod's event subscriptions (Why implement a feature that already exists?)
-  * Refactored JL's and VL's recipe interfaces to provide a consistent developer experience by generalising requirements and providing consistently named abstraction interfaces to piece and item collections.
-  * Implemented GUIManager, which facilitates usage of Synchronised configurations
-  * Implemented NetworkCompatibility attribute.
-  * Implemented custom keybind/hints 
-
-## Contributors to Jötunn, the Valheim Library
-
+[size=5][b]Contributors to Jötunn, the Valheim Library[/b][/size]
 These people have been integral to pushing JVL out of the door, and without them we could not have achieved nearly as much. Please give them some love on github, thunderstore, and nexus.
 
-[h4]Core:[/h4]
-*iDeathHD#7866*: [url=https://github.com/xiaoxiao921]github[/url], [url=https://valheim.thunderstore.io/package/xiaoxiao921/]thunderstore[/url]
+[size=4][b][size=3]Core[/size]:[/b][/size]
+- IDeathHD#7866: [url=https://github.com/xiaoxiao921]github[/url], [url=https://valheim.thunderstore.io/package/xiaoxiao921/]thunderstore[/url]
+- Algorithman#6741: [url=https://github.com/Algorithman]github[/url]
+- Jules#7950: [url=https://github.com/sirskunkalot]github[/url]
+- Quaesar#5604: [url=https://github.com/RatikKapoor]github[/url]
+- radu#0571: [url=https://github.com/raduschirliu]github[/url], [url=https://valheim.thunderstore.io/package/radu/]thunderstore[/url], [url=https://www.nexusmods.com/users/112072898]nexus[/url]
+- paddy#1337: [url=https://github.com/paddywaan]github[/url], [url=https://valheim.thunderstore.io/package/paddywan/]thunderstore[/url], [url=https://valheim.thunderstore.io/package/ValheimModding/]nexus[/url]
 
-*Algorithman#6741*: [url=https://github.com/Algorithman]github[/url]
-
-*Jules#7950*: [url=https://github.com/sirskunkalot]github[/url]
-
-*Quaesar#5604*: [url=https://github.com/RatikKapoor]github[/url]
-
-*radu#0571*: [url=https://github.com/raduschirliu]github[/url], [url=https://valheim.thunderstore.io/package/radu/]thunderstore[/url], [url=https://www.nexusmods.com/users/112072898]nexus[/url]
-
-*paddy#1337*: [url=https://github.com/paddywaan]github[/url], [url=https://valheim.thunderstore.io/package/paddywan/]thunderstore[/url], [url=https://valheim.thunderstore.io/package/ValheimModding/]nexus[/url]
-
-[h4]Contributors:[/h4]
-*Cinnabun#0451*: [url=https://github.com/capnbubs]github[/url]
-
-*GoldenJude#8965*: [url=https://github.com/GoldenJude]github[/url], [url=https://www.nexusmods.com/users/48864143?tab=user+files]nexus[/url]
-
-*zarboz#7828*: [url=https://github.com/sbtoonz]github[/url], [url=https://valheim.thunderstore.io/package/sbtoonz/]thunderstore[/url], [url=https://www.nexusmods.com/users/4057483]nexus[/url]
+[size=4][b][size=3]Contributors[/size]:[/b][/size]
+- Cinnabun#0451: [url=https://github.com/capnbubs]github[/url]
+- GoldenJude#8965: [url=https://github.com/GoldenJude]github[/url], [url=https://www.nexusmods.com/users/48864143?tab=user+files]nexus[/url]
+- zarboz#7828*: [url=https://github.com/sbtoonz]github[/url], [url=https://valheim.thunderstore.io/package/sbtoonz/]thunderstore[/url], [url=https://www.nexusmods.com/users/4057483]nexus[/url]
