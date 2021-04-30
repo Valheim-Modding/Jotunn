@@ -1,4 +1,4 @@
-{
+﻿{
     "metadata": [
         {
             "src": [
@@ -56,7 +56,7 @@
         "dest": "_site",
         "template": [
             "default",
-            "Templates/darkfx"
+            "DocFx/darkfx"
         ]
     }
 }
