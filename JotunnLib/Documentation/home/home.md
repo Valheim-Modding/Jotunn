@@ -1,13 +1,10 @@
 ﻿# Guidelines
 
-### If you are starting from scratch read the [Step-by-Step Guide](guide.md).
+### If you already have a mod follow the base setup instructions in the [Developer's Quickstart](quickstart.md).
 
-### If you are transitioning from JötunnLib or ValheimLib read the [Transition Documentation](../transition/jotunnlib/overview.md).
+### If you are transitioning from JötunnLib or ValheimLib also read the [Transition Documentation](../transition/jotunnlib/overview.md).
 
-### If you already have a mod install the latest release of Jötunn from [nuget.org](https://www.nuget.org/packages/JotunnLib) or [Jötunn Releases](https://github.com/Valheim-Modding/Jotunn/releases).
-
-- Jötunn uses [MMHooks](https://github.com/MonoMod/MonoMod), so make sure you have build the detour dlls and referenced them in your project.
-- Learn about automations and the minimal setup instructions in the [Developer's Quickstart](quickstart.md).
+### If you are starting from scratch and want detailed instructions read the [Step-by-Step Guide](guide.md).
 
 # Features
 Jötunn is continually improving and we have lots of features planned for the future, however we hope the ones we have implemented thus far prove to be a useful base and provide an idea of the consistency we aim to deliver moving forwards:
