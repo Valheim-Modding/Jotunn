@@ -30,15 +30,24 @@ Push-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
 # Go
 Write-Host "Publishing for $Target from $TargetPath"
 
+# Plugin name without ".dll"
 $name = "$TargetAssembly" -Replace('.dll')
 
-# Debug copies the dll to Valheim and creates the mdb
+# Create the mdb file
+$pdb = "$TargetPath\$name.pdb"
+if (Test-Path -Path "$pdb") {
+    Write-Host "Create mdb file for plugin $name"
+    Start-Process -FilePath "$(Get-Location)\libraries\Debug\pdb2mdb.exe" -ArgumentList "`"$TargetPath\$TargetAssembly`""
+}
+
+# Debug copies the dll to Valheim
 if ($Target.Equals("Debug")) {
     Write-Host "Updating local installation in $ValheimPath"
     
     $plug = New-Item -Type Directory -Path "$ValheimPath\BepInEx\plugins\$name" -Force
     Write-Host "Copy $TargetAssembly to $plug"
-    Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$plug" -Force
+    Copy-Item -Path "$TargetPath\$name.dll" -Destination "$plug" -Force
+    Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$plug" -Force
     
     $mono = "$ValheimPath\MonoBleedingEdge\EmbedRuntime";
     Write-Host "Copy mono-2.0-bdwgc.dll to $mono"
@@ -47,13 +56,6 @@ if ($Target.Equals("Debug")) {
     }
     Copy-Item -Path "$(Get-Location)\libraries\Debug\mono-2.0-bdwgc.dll" -Destination "$mono" -Force
 
-    $pdb = "$TargetPath\$name.pdb"
-    if (Test-Path -Path "$pdb") {
-        Write-Host "Copy Debug files for plugin $name"
-        Copy-Item -Path "$pdb" -Destination "$plug" -Force
-        Start-Process -FilePath "$(Get-Location)\libraries\Debug\pdb2mdb.exe" -ArgumentList "`"$plug\$TargetAssembly`""
-    }
-        
     # set dnspy debugger env
     #$dnspy = '--debugger-agent=transport=dt_socket,server=y,address=127.0.0.1:56000,suspend=y,no-hide-debugger'
     #[Environment]::SetEnvironmentVariable('DNSPY_UNITY_DBG2','','User')
@@ -68,15 +70,19 @@ if($Target.Equals("Release")) {
     Write-Host "Packaging for ThunderStore"
     $thunder = New-Item -Type Directory -Path "$package\Thunderstore"
     $thunder.CreateSubdirectory('plugins')
-    Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$thunder\plugins\$TargetAssembly"
+    Copy-Item -Path "$TargetPath\$name.dll" -Destination "$thunder\plugins\"
+    Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$thunder\plugins\"
     Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder\README"
-    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore-$name-$version.zip" -Forc
+    Copy-Item -Path "$ProjectPath\manifest.json" -Destination "$thunder\manifest.json"
+    Copy-Item -Path "$(Get-Location)\resources\JVL_Logo_512x512.png" -Destination "$thunder\icon.png"
+    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore-$name-$version.zip" -Force
     $thunder.Delete($true)
 
     Write-Host "Packaging for NexusMods"
     $nexus = New-Item -Type Directory -Path "$package\Nexusmods"
-    Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$nexus\$TargetAssembly"
-    Copy-Item -Path "$ProjectPath\README.bbcode" -Destination "$nexus\README"
+    Copy-Item -Path "$TargetPath\$name.dll" -Destination "$nexus\"
+    Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$nexus\"
+    Copy-Item -Path "$ProjectPath\README.md" -Destination "$nexus\README"
     Compress-Archive -Path "$nexus\*" -DestinationPath "$package\Nexusmods-$name-$version.zip" -Force
     $nexus.Delete($true)
 }
