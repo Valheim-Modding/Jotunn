@@ -68,22 +68,24 @@ if($Target.Equals("Release")) {
     $version = $versionxml.Project.PropertyGroup.Version
     
     Write-Host "Packaging for ThunderStore"
-    $thunder = New-Item -Type Directory -Path "$package\Thunderstore"
+    New-Item -Type Directory -Path "$package\Thunderstore" -Force
+    $thunder = New-Item -Type Directory -Path "$package\Thunderstore\package"
     $thunder.CreateSubdirectory('plugins')
     Copy-Item -Path "$TargetPath\$name.dll" -Destination "$thunder\plugins\"
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$thunder\plugins\"
     Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder\README"
     Copy-Item -Path "$ProjectPath\manifest.json" -Destination "$thunder\manifest.json"
     Copy-Item -Path "$(Get-Location)\resources\JVL_Logo_512x512.png" -Destination "$thunder\icon.png"
-    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore-$name-$version.zip" -Force
+    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore\$name-$version.zip" -Force
     $thunder.Delete($true)
 
     Write-Host "Packaging for NexusMods"
-    $nexus = New-Item -Type Directory -Path "$package\Nexusmods"
+    New-Item -Type Directory -Path "$package\Nexusmods" -Force
+    $nexus = New-Item -Type Directory -Path "$package\Nexusmods\package"
     Copy-Item -Path "$TargetPath\$name.dll" -Destination "$nexus\"
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$nexus\"
     Copy-Item -Path "$ProjectPath\README.md" -Destination "$nexus\README"
-    Compress-Archive -Path "$nexus\*" -DestinationPath "$package\Nexusmods-$name-$version.zip" -Force
+    Compress-Archive -Path "$nexus\*" -DestinationPath "$package\Nexusmods\$name-$version.zip" -Force
     $nexus.Delete($true)
 }
 
