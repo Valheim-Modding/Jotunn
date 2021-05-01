@@ -18,23 +18,20 @@ First we use the [CustomItem](xref:Jotunn.Entities.CustomItem) constructor to de
 ```cs
 private void AddClonedItems()
 {
+    // Create and add a custom item based on SwordBlackmetal
+    CustomItem CI = new CustomItem("EvilSword", "SwordBlackmetal");
+    ItemManager.Instance.AddItem(CI);
+
+    // Replace vanilla properties of the custom item
+    var itemDrop = CI.ItemDrop;
+    itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
+    itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
+
+    // Create and add a recipe for the copied item
+    recipeEvilSword(itemDrop);
+
     // You want that to run only once, Jotunn has the item cached for the game session
-    if (!clonedItemsAdded)
-    {
-        // Create and add a custom item based on SwordBlackmetal
-        CustomItem CI = new CustomItem("EvilSword", "SwordBlackmetal");
-        ItemManager.Instance.AddItem(CI);
-
-        // Replace vanilla properties of the custom item
-        var itemDrop = CI.ItemDrop;
-        itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
-        itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
-
-        // Create and add a recipe for the copied item
-        recipeEvilSword(itemDrop);
-
-        clonedItemsAdded = true;
-    }
+    ItemManager.OnVanillaItemsAvailable -= AddClonedItems;
 }
 ```
 
