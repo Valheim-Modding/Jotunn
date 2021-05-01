@@ -62,7 +62,7 @@ if ($Target.Equals("Debug")) {
 }
 
 # Release builds packages for ThunderStore and NexusMods
-if($Target.Equals("Release")) {
+if($Target.Equals("Release") -and $name.Equals("JotunnLib")) {
     $package = "$ProjectPath\_package"
     [xml]$versionxml = Get-Content -Path "$ProjectPath\BuildProps\version.props"
     $version = $versionxml.Project.PropertyGroup.Version
