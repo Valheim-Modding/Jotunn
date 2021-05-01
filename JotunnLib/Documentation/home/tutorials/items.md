@@ -5,39 +5,33 @@ Valheim items can be equipment, resources, or building pieces. In this tutorial 
 
 ## Cloning existing prefabs
 
-In this example, we will clone a resource and a weapon which the use may equip. In order to do this, we will need to reference already instantiated game assets. One method of doing so is by subscribing to the `CopyOtherDB` method of the ObjectDB, which instantiates game assets at runtime:
+In this example, we will clone a resource and a weapon which the use may equip. In order to do this, we will need to reference already instantiated game assets. One method of doing so is by using the event provided by Jotunn, the event is fired when the vanilla items are in memory and thus clonable :
 
 ```cs
 private voic Awake()
 {
-    On.ObjectDB.CopyOtherDB += addClonedItems;
+    ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 }
 ```
 
 First we use the [CustomItem](xref:Jotunn.Entities.CustomItem) constructor to define the name of our item, and the existing prefab name which it should be cloned from. The item can be immediately added via the [AddItem](xref:Jotunn.Managers.ItemManager.AddItem(Jotunn.Entities.CustomItem)) method, and then modified to make our clone a little bit more unique.
 ```cs
-private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+private void AddClonedItems()
 {
+    // Create and add a custom item based on SwordBlackmetal
+    CustomItem CI = new CustomItem("EvilSword", "SwordBlackmetal");
+    ItemManager.Instance.AddItem(CI);
+
+    // Replace vanilla properties of the custom item
+    var itemDrop = CI.ItemDrop;
+    itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
+    itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
+
+    // Create and add a recipe for the copied item
+    recipeEvilSword(itemDrop);
+
     // You want that to run only once, Jotunn has the item cached for the game session
-    if (!clonedItemsAdded)
-    {
-        // Create and add a custom item based on SwordBlackmetal
-        CustomItem CI = new CustomItem("EvilSword", "SwordBlackmetal");
-        ItemManager.Instance.AddItem(CI);
-
-        // Replace vanilla properties of the custom item
-        var itemDrop = CI.ItemDrop;
-        itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
-        itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
-
-        // Create and add a recipe for the copied item
-        recipeEvilSword(itemDrop);
-
-        clonedItemsAdded = true;
-    }
-
-    // Hook is prefix, we just need to be able to get the vanilla prefabs, Jotunn registers them in ObjectDB
-    orig(self, other);
+    ItemManager.OnVanillaItemsAvailable -= AddClonedItems;
 }
 ```
 

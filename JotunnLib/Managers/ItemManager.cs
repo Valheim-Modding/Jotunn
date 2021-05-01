@@ -29,6 +29,13 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Event that gets fired after the vanilla items are in memory and available for cloning.
+        ///     Your code will execute every time a new ObjectDB is copied (on every menu start).
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
+        public static event Action OnVanillaItemsAvailable;
+
+        /// <summary>
         ///     Event that gets fired after all items were added to the ObjectDB on the FejdStartup screen.
         ///     Your code will execute every time a new ObjectDB is copied (on every menu start).
         ///     If you want to execute just once you will need to unregister from the event after execution.
@@ -404,6 +411,8 @@ namespace Jotunn.Managers
         /// <param name="other"></param>
         private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
+            OnVanillaItemsAvailable?.SafeInvoke();
+
             orig(self, other);
 
             if (SceneManager.GetActiveScene().name == "start")

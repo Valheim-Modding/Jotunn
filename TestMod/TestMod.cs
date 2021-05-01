@@ -61,8 +61,8 @@ namespace TestMod
             AddMockedItems();
             AddEmptyItems();
 
-            // Hook ObjectDB.CopyOtherDB to add custom items cloned from vanilla items
-            On.ObjectDB.CopyOtherDB += AddClonedItems;
+            // Add custom items cloned from vanilla items
+            ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
@@ -482,66 +482,60 @@ namespace TestMod
 
         // Add new items as copies of vanilla items - just works when vanilla prefabs are already loaded (ObjectDB.CopyOtherDB for example)
         // You can use the Cache of the PrefabManager in here
-        private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void AddClonedItems()
         {
-            // You want that to run only once, Jotunn has the item cached for the game session
-            if (!clonedItemsProcessed)
+            try
             {
-                try
+                // Create and add a custom item based on SwordBlackmetal
+                var CI = new CustomItem("EvilSword", "SwordBlackmetal");
+                ItemManager.Instance.AddItem(CI);
+
+                // Replace vanilla properties of the custom item
+                var itemDrop = CI.ItemDrop;
+                itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
+                itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
+
+                // Add our custom status effect to it
+                itemDrop.m_itemData.m_shared.m_equipStatusEffect = evilSwordEffect.StatusEffect;
+
+                // Create and add a recipe for the copied item
+                var recipe = ScriptableObject.CreateInstance<Recipe>();
+                recipe.name = "Recipe_EvilSword";
+                recipe.m_item = itemDrop;
+                recipe.m_craftingStation = PrefabManager.Cache.GetPrefab<CraftingStation>("piece_workbench");
+                recipe.m_resources = new[]
                 {
-                    // Create and add a custom item based on SwordBlackmetal
-                    var CI = new CustomItem("EvilSword", "SwordBlackmetal");
-                    ItemManager.Instance.AddItem(CI);
+                    new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Stone"), m_amount = 1},
+                    new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Wood"), m_amount = 1}
+                };
+                var CR = new CustomRecipe(recipe, fixReference: false, fixRequirementReferences: false);  // no need to fix because the refs from the cache are valid
+                ItemManager.Instance.AddRecipe(CR);
 
-                    // Replace vanilla properties of the custom item
-                    var itemDrop = CI.ItemDrop;
-                    itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
-                    itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
-
-                    // Add our custom status effect to it
-                    itemDrop.m_itemData.m_shared.m_equipStatusEffect = evilSwordEffect.StatusEffect;
-
-                    // Create and add a recipe for the copied item
-                    var recipe = ScriptableObject.CreateInstance<Recipe>();
-                    recipe.name = "Recipe_EvilSword";
-                    recipe.m_item = itemDrop;
-                    recipe.m_craftingStation = PrefabManager.Cache.GetPrefab<CraftingStation>("piece_workbench");
-                    recipe.m_resources = new[]
+                // Create custom KeyHints for the item
+                KeyHintConfig KHC = new KeyHintConfig
+                {
+                    Item = "EvilSword",
+                    ButtonConfigs = new[]
                     {
-                        new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Stone"), m_amount = 1},
-                        new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Wood"), m_amount = 1}
-                    };
-                    var CR = new CustomRecipe(recipe, fixReference: false, fixRequirementReferences: false);  // no need to fix because the refs from the cache are valid
-                    ItemManager.Instance.AddRecipe(CR);
-
-                    // Create custom KeyHints for the item
-                    KeyHintConfig KHC = new KeyHintConfig
-                    {
-                        Item = "EvilSword",
-                        ButtonConfigs = new[]
-                        {
-                            // Override vanilla "Attack" key text
-                            new ButtonConfig { Name = "Attack", HintToken = "$evilsword_shwing" },
-                            // New custom input
-                            evilSwordSpecial,
-                            // Override vanilla "Mouse Wheel" text
-                            new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
-                        }
-                    };
-                    GUIManager.Instance.AddKeyHint(KHC);
-                }
-                catch (Exception ex)
-                {
-                    Jotunn.Logger.LogError($"Error while adding cloned item: {ex.Message}");
-                }
-                finally
-                {
-                    clonedItemsProcessed = true;
-                }
+                        // Override vanilla "Attack" key text
+                        new ButtonConfig { Name = "Attack", HintToken = "$evilsword_shwing" },
+                        // New custom input
+                        evilSwordSpecial,
+                        // Override vanilla "Mouse Wheel" text
+                        new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
+                    }
+                };
+                GUIManager.Instance.AddKeyHint(KHC);
             }
-
-            // Hook is prefix, we just need to be able to get the vanilla prefabs, JötunnLib registers them in ObjectDB
-            orig(self, other);
+            catch (Exception ex)
+            {
+                Jotunn.Logger.LogError($"Error while adding cloned item: {ex.Message}");
+            }
+            finally
+            {
+                // You want that to run only once, Jotunn has the item cached for the game session
+                ItemManager.OnVanillaItemsAvailable -= AddClonedItems;
+            }
         }
 
         // Set version of the plugin for the mod compatibility test
