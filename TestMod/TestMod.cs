@@ -336,7 +336,7 @@ namespace TestMod
             {
                 //Station = "smelter",  // Use the default from the config
                 FromItem = "Stone",
-                ToItem = "Coal"
+                ToItem = "CookedLoxMeat"
             });
             ItemManager.Instance.AddItemConversion(smeltConversion);
         }
