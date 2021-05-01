@@ -61,8 +61,8 @@ namespace TestMod
             AddMockedItems();
             AddEmptyItems();
 
-            // Hook ObjectDB.CopyOtherDB to add custom items cloned from vanilla items
-            On.ObjectDB.CopyOtherDB += AddClonedItems;
+            // Add custom items cloned from vanilla items
+            ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
@@ -482,7 +482,7 @@ namespace TestMod
 
         // Add new items as copies of vanilla items - just works when vanilla prefabs are already loaded (ObjectDB.CopyOtherDB for example)
         // You can use the Cache of the PrefabManager in here
-        private void AddClonedItems(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void AddClonedItems()
         {
             // You want that to run only once, Jotunn has the item cached for the game session
             if (!clonedItemsProcessed)
@@ -539,9 +539,6 @@ namespace TestMod
                     clonedItemsProcessed = true;
                 }
             }
-
-            // Hook is prefix, we just need to be able to get the vanilla prefabs, JötunnLib registers them in ObjectDB
-            orig(self, other);
         }
 
         // Set version of the plugin for the mod compatibility test
