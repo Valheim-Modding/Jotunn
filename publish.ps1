@@ -37,7 +37,8 @@ $name = "$TargetAssembly" -Replace('.dll')
 $pdb = "$TargetPath\$name.pdb"
 if (Test-Path -Path "$pdb") {
     Write-Host "Create mdb file for plugin $name"
-    Start-Process -FilePath "$(Get-Location)\libraries\Debug\pdb2mdb.exe" -ArgumentList "`"$TargetPath\$TargetAssembly`""
+    $mdbproc = Start-Process -FilePath "$(Get-Location)\libraries\Debug\pdb2mdb.exe" -ArgumentList "`"$TargetPath\$TargetAssembly`"" -PassThru
+    $mdbproc.WaitForExit()
 }
 
 # Debug copies the dll to Valheim
@@ -62,7 +63,7 @@ if ($Target.Equals("Debug")) {
 }
 
 # Release builds packages for ThunderStore and NexusMods
-if($Target.Equals("Release") -and $name.Equals("JotunnLib")) {
+if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     $package = "$ProjectPath\_package"
     [xml]$versionxml = Get-Content -Path "$ProjectPath\BuildProps\version.props"
     $version = $versionxml.Project.PropertyGroup.Version
