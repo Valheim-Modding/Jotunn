@@ -15,7 +15,7 @@ namespace Jotunn.Utils
         {
             var result = new Dictionary<string, BaseUnityPlugin>();
 
-            var plugins = BepInEx.Bootstrap.Chainloader.PluginInfos.Select(x => x.Value.Instance).ToArray();
+            var plugins = BepInEx.Bootstrap.Chainloader.PluginInfos.Select(x => x.Value.Instance).Where(x => x != null).ToArray();
 
             foreach (var plugin in plugins)
             {
