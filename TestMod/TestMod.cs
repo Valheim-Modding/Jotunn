@@ -220,10 +220,10 @@ namespace TestMod
             Jotunn.Logger.LogInfo(blueprintRuneBundle);
 
             // Load Steel ingot from streamed resource
-            steelingot = AssetUtils.LoadAssetBundleFromResources("steel", Assembly.GetExecutingAssembly());
+            steelingot = AssetUtils.LoadAssetBundleFromResources("steel", typeof(TestMod).Assembly);
 
             // Embedded Resources
-            Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
+            Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
         }
 
         // Add custom key bindings
@@ -415,7 +415,7 @@ namespace TestMod
         private void AddMockedItems()
         {
             // Load assets from resources
-            var assetstream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TestMod.AssetsEmbedded.capeironbackpack");
+            var assetstream = typeof(TestMod).Assembly.GetManifestResourceStream("TestMod.AssetsEmbedded.capeironbackpack");
             if (assetstream == null)
             {
                 Jotunn.Logger.LogWarning("Requested asset stream could not be found.");
@@ -436,6 +436,7 @@ namespace TestMod
 
                     // Create and add a custom recipe
                     var recipe = ScriptableObject.CreateInstance<Recipe>();
+                    recipe.name = "Recipe_Backpack";
                     recipe.m_item = prefab.GetComponent<ItemDrop>();
                     recipe.m_craftingStation = Mock<CraftingStation>.Create("piece_workbench");
                     var ingredients = new List<Piece.Requirement>
