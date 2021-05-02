@@ -30,7 +30,6 @@ namespace TestMod
         private AssetBundle blueprintRuneBundle;
         private AssetBundle testAssets;
         private AssetBundle steelingot;
-        private bool clonedItemsProcessed;
 
         private System.Version currentVersion;
         private bool forceVersionMismatch;
