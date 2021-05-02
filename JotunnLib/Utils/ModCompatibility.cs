@@ -53,7 +53,8 @@ namespace Jotunn.Utils
         private static void AppendPackage(On.ZRpc.orig_Invoke orig, ZRpc self, string method, object[] parameters)
         {
             // Just add if method is PeerInfo. Mods may hook ZNet.SendPeerInfo and invoke other RPCs in that context
-            if (method.Equals("PeerInfo"))
+            // Also use the method name so we instantly know when IronGate changes that method name
+            if (method.Equals(nameof(ZNet.RPC_PeerInfo).Substring(4)))
             {
                 var pkg = (ZPackage)parameters[0];
                 pkg.Write(new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
