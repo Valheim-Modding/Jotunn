@@ -52,9 +52,13 @@ namespace Jotunn.Utils
         // Append our version data package to the existing zPackage
         private static void AppendPackage(On.ZRpc.orig_Invoke orig, ZRpc self, string method, object[] parameters)
         {
-            var pkg = (ZPackage)parameters[0];
-            pkg.Write(new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
-            orig(self, method, parameters);
+            // Just add if method is PeerInfo. Mods may hook ZNet.SendPeerInfo and invoke other RPCs in that context
+            if (method.Equals("PeerInfo"))
+            {
+                var pkg = (ZPackage)parameters[0];
+                pkg.Write(new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
+                orig(self, method, parameters);
+            }
         }
 
         // Hook RPC_PeerInfo to check in front of the original method
