@@ -76,7 +76,7 @@ if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$thunder\plugins\"
     Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder\README"
     Copy-Item -Path "$ProjectPath\manifest.json" -Destination "$thunder\manifest.json"
-    Copy-Item -Path "$(Get-Location)\resources\JVL_Logo_512x512.png" -Destination "$thunder\icon.png"
+    Copy-Item -Path "$(Get-Location)\resources\JVL_Logo_256x256.png" -Destination "$thunder\icon.png"
     Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore\$name-$version.zip" -Force
     $thunder.Delete($true)
 
