@@ -18,6 +18,17 @@ namespace Jotunn.Utils
 
             foreach (var plugin in plugins)
             {
+                if (plugin.Info == null)
+                {
+                    Logger.LogWarning($"Plugin without Info found: {plugin.GetType().Assembly.FullName}");
+                    continue;
+                }
+                if (plugin.Info.Metadata == null)
+                {
+                    Logger.LogWarning($"Plugin without Metadata found: {plugin.GetType().Assembly.FullName}");
+                    continue;
+                }
+
                 if (includeJotunn && plugin.Info.Metadata.GUID == Main.ModGuid)
                 {
                     result.Add(plugin.Info.Metadata.GUID, plugin);
