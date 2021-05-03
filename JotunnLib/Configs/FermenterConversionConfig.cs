@@ -11,7 +11,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     The name of the station prefab this conversion is added to. Defaults to fermenter.
         /// </summary>
-        public override string Station { get; set; } = "piece_cookingstation";
+        public override string Station { get; set; } = "fermenter";
 
         /// <summary>
         ///     The amount of items one conversion yields. Defaults to 4.
