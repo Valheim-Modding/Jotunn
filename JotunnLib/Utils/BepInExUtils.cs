@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 
@@ -15,7 +14,7 @@ namespace Jotunn.Utils
         {
             var result = new Dictionary<string, BaseUnityPlugin>();
 
-            var plugins = BepInEx.Bootstrap.Chainloader.PluginInfos.Select(x => x.Value.Instance).Where(x => x != null).ToArray();
+            var plugins = BepInEx.Bootstrap.Chainloader.PluginInfos.Where(x => x.Value != null && x.Value.Instance != null).Select(x => x.Value.Instance).ToArray();
 
             foreach (var plugin in plugins)
             {
