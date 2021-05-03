@@ -322,11 +322,12 @@ namespace TestMod
         private void AddItemConversions()
         {
             // Add an item conversion for the CookingStation. The items must have an attach child GameObject to display it on the station.
-            var cookConversion = new CustomItemConversion(new CookingConversionConfig
+            var cookConversion = new CustomItemConversion(new FermenterConversionConfig
             {
-                Station = "piece_cookingstation",
+                Station = "fermenter",
                 FromItem = "Coal",
-                ToItem = "CookedLoxMeat"
+                ToItem = "CookedLoxMeat",
+                ProducedItems = 10
             });
             ItemManager.Instance.AddItemConversion(cookConversion);
 

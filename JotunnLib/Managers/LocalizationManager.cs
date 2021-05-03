@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Jotunn.Configs;
 using Jotunn.Utils;
+using UnityEngine;
 
 namespace Jotunn.Managers
 {
@@ -33,7 +34,6 @@ namespace Jotunn.Managers
         public const string CommunityTranslationFileName = "community_translation.json";
 
         private static LocalizationManager _instance;
-
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
@@ -56,18 +56,39 @@ namespace Jotunn.Managers
         /// </summary>
         internal Dictionary<string, Dictionary<string, string>> Localizations = new Dictionary<string, Dictionary<string, string>>();
 
+        private Localization Localization;
+
         /// <summary>
         ///     Initialize localization manager.
         /// </summary>
         public void Init()
         {
-            On.Localization.LoadLanguages += Localization_LoadLanguages;
-            On.Localization.SetupLanguage += Localization_SetupLanguage;
+            On.FejdStartup.SetupGui += LoadAndSetupModLanguages;
 
             var doQuoteLineSplitMethodInfo = typeof(Localization).GetMethod(nameof(Localization.DoQuoteLineSplit), ReflectionHelper.AllBindingFlags);
             DoQuoteLineSplit =
                 (Func<StringReader, List<List<string>>>) Delegate.CreateDelegate(typeof(Func<StringReader, List<List<string>>>), null,
                     doQuoteLineSplitMethodInfo);
+        }
+
+        private void LoadAndSetupModLanguages(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
+        {
+            orig(self);
+
+            On.Localization.LoadLanguages += Localization_LoadLanguages;
+            On.Localization.SetupLanguage += Localization_SetupLanguage;
+
+            // Some mod could have initialized Localization before all mods are loaded.
+            lock (Localization.instance.m_languages)
+            {
+                List<string> tmplist = Localization.instance.m_languages.ToList();
+                tmplist.AddRange(Localization.instance.LoadLanguages());
+                tmplist = tmplist.Distinct().ToList();
+                Localization.instance.m_languages.Clear();
+                Localization.instance.m_languages.AddRange(tmplist);
+            }
+            string lang = PlayerPrefs.GetString("language", DefaultLanguage);
+            Localization.instance.SetupLanguage(lang);
         }
 
         private List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
