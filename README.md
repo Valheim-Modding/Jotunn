@@ -8,6 +8,24 @@ This project was originally derived from the base structure of [JötunnLib](http
 #### Usage
 Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/). We have gone to great lengths to ensure there is ample documentation to facilitate the developers learning experience.
 
+#### Installation
+_If you're using a mod installer, you can likely ignore this section_  
+
+For a more in-depth installation guide, please check out the [manual installation guide](https://valheim-modding.github.io/Jotunn/home/installation.html) in our documentation.  
+
+However, here is a quick run-down:
+
+1. **Install BepInEx**  
+Download [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/), extract everything inside `BepInEx_Valheim` into your Valheim folder (typically `C:\<PathToYourSteamLibary>\steamapps\common\Valheim`).
+
+2. **Install MMHookGen**  
+This is a dependency for Jötunn. Download it from either Nexus/Thunderstore, and extract the `config` and `patchers` folders into your `BepInEx` folder in your Valheim install.
+
+3. **Install Jötunn**
+Download from either Nexus/Thunderstore, extract the ZIP, and put the `Jotunn.dll` file inside the `plugins` folder in your Valheim install.
+
+That's it, launch the game and mod away!
+
 ________________
 
 ## Features
