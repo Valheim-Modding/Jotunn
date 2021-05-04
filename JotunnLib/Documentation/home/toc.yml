@@ -1,6 +1,9 @@
 ﻿- name: Home
   href: home.md
 
+- name: Installation
+  href: installation.md
+
 - name: Guide
   href: guide.md
 
