@@ -59,7 +59,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **SimpleJSON** - We have imported SimpleJSON into our library at the request of developers who would simply prefer to have this dependency taken care of already. We use the MIT Licensed [SimpleJSON](https://simplejson.readthedocs.io/en/latest/)
 
 ## Roadmap
-- **v1.1.0**
+- **v2.1.0**
   * Facilitate custom adjustment of bone attachments
   * Provide a more meaningful and interopable solution to mod interopable keybindings (resolve mod bind conflicts/standardise an interface)
   * TODO: cooking recipes?!??! this is not currently possible?
@@ -72,7 +72,7 @@ Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/) b
 
 ## Changelog
 
-- **v1.0.0**
+- **v2.0.0**
   * Merged VL's Entity abstractions: `CustomItem`, `CustomPiece`, `CustomRecipe`
   * Implemented JL's Entity Configs into the `Custom` abstractions
   * Merged VL's runtime `FixReference` resolver into JVL, split out MockManager to be responsible for prefabs that it resolves.
