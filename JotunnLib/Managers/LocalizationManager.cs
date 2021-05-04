@@ -215,7 +215,7 @@ namespace Jotunn.Managers
 
             if (token.Any(x => LocalizationEndChars.Contains(x)))
             {
-                Logger.LogError($"Token '{token}' must not have an end char in it ({LocalizationEndChars}).");
+                Logger.LogError($"Token '{token}' must not contain an end char ({LocalizationEndChars}).");
                 return;
             }
 
