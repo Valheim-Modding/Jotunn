@@ -1,4 +1,4 @@
-﻿# JotunnLib
+﻿# Jötunn, the Valheim Library
 Jötunn (/ˈjɔːtʊn/, "giant"), the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability. networked gameplay consistency, and remove the need to maintain valheim version specific code by acting as an interface between the developer and the games changing internals.
 
 ## Jötunn is not JotunnLib is not ValheimLib
@@ -6,6 +6,25 @@ Jötunn was created as a joint effort to merge [JötunnLib](https://github.com/j
 
 ## Usage
 Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/). We have gone to great lengths to ensure there is ample documentation to facilitate the developers learning experience.
+
+## Installation
+_If you're using a mod installer, you can likely ignore this section_  
+
+For a more in-depth installation guide, please check out the [manual installation guide](https://valheim-modding.github.io/Jotunn/home/installation.html) in our documentation.  
+
+However, here is a quick run-down:
+
+1. **Install BepInEx**  
+Download [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/), extract everything inside `BepInEx_Valheim` into your Valheim folder (typically `C:\<PathToYourSteamLibary>\steamapps\common\Valheim`).
+
+2. **Install MMHookGen**  
+This is a dependency for Jötunn. Download [MMHookGen](https://valheim.thunderstore.io/package/ValheimModding/HookGenPatcher/), extract the `config` and `patchers` folders into your `BepInEx` folder in your Valheim install.
+
+3. **Install Jötunn**
+Download from either Nexus/Thunderstore, extract the ZIP, and put the `Jotunn.dll` file inside the `plugins` folder in your Valheim install.
+
+That's it, launch the game and mod away!  
+You can tell it worked by either looking at the console output, or if you see `Jotunn Vx.x.x` in the top-right corner of the main menu.
 
 ## Features
 JVL provides three distinct groups of features. Entities, which abstract the game's own entities into easy-to-use interfaces. Managers, which act as interfaces between the entities and native collections or subsystems. Utilities, which are there to aid in generic/common functions that can span many different areas.

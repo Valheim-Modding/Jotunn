@@ -1,4 +1,4 @@
-﻿# JotunnLib
+﻿# Jötunn, the Valheim Library
 ![Banner](JotunnLib/Documentation/images/banner.png)
 
 Jötunn (/ˈjɔːtʊn/, "giant"), the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability. networked gameplay consistency, and remove the need to maintain valheim version specific code by acting as an interface between the developer and the games changing internals.
@@ -19,7 +19,7 @@ However, here is a quick run-down:
 Download [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/), extract everything inside `BepInEx_Valheim` into your Valheim folder (typically `C:\<PathToYourSteamLibary>\steamapps\common\Valheim`).
 
 2. **Install MMHookGen**  
-This is a dependency for Jötunn. Download it from either Nexus/Thunderstore, and extract the `config` and `patchers` folders into your `BepInEx` folder in your Valheim install.
+This is a dependency for Jötunn. Download [MMHookGen](https://valheim.thunderstore.io/package/ValheimModding/HookGenPatcher/), extract the `config` and `patchers` folders into your `BepInEx` folder in your Valheim install.
 
 3. **Install Jötunn**
 Download from either Nexus/Thunderstore, extract the ZIP, and put the `Jotunn.dll` file inside the `plugins` folder in your Valheim install.
