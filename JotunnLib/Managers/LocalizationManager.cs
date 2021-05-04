@@ -71,6 +71,8 @@ namespace Jotunn.Managers
                     doQuoteLineSplitMethodInfo);
         }
 
+        // Some mod could have initialized Localization before all mods are loaded.
+        // See https://github.com/Valheim-Modding/Jotunn/issues/193
         private void LoadAndSetupModLanguages(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
             orig(self);
@@ -78,15 +80,12 @@ namespace Jotunn.Managers
             On.Localization.LoadLanguages += Localization_LoadLanguages;
             On.Localization.SetupLanguage += Localization_SetupLanguage;
 
-            // Some mod could have initialized Localization before all mods are loaded.
-            lock (Localization.instance.m_languages)
-            {
-                List<string> tmplist = Localization.instance.m_languages.ToList();
-                tmplist.AddRange(Localization.instance.LoadLanguages());
-                tmplist = tmplist.Distinct().ToList();
-                Localization.instance.m_languages.Clear();
-                Localization.instance.m_languages.AddRange(tmplist);
-            }
+            List<string> tmplist = Localization.instance.m_languages.ToList();
+            tmplist.AddRange(Localization.instance.LoadLanguages());
+            tmplist = tmplist.Distinct().ToList();
+            Localization.instance.m_languages.Clear();
+            Localization.instance.m_languages.AddRange(tmplist);
+
             string lang = PlayerPrefs.GetString("language", DefaultLanguage);
             Localization.instance.SetupLanguage(lang);
         }
