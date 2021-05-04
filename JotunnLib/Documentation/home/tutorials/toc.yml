@@ -12,12 +12,15 @@
   
 - name: Recipes
   href: recipes.md
+  
+- name: Status effects
+  href: status-effects.md
+
+- name: Item conversions
+  href: item-conversions.md
 
 - name: Pieces
   href: pieces.md
-
-- name: Status effects
-  href: status-effects.md
 
 - name: Skills
   href: skills.md
