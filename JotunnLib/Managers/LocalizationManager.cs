@@ -56,8 +56,6 @@ namespace Jotunn.Managers
         /// </summary>
         internal Dictionary<string, Dictionary<string, string>> Localizations = new Dictionary<string, Dictionary<string, string>>();
 
-        private Localization Localization;
-
         /// <summary>
         ///     Initialize localization manager.
         /// </summary>

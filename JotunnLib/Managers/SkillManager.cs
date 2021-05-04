@@ -190,12 +190,14 @@ namespace Jotunn.Managers
 
         private bool Skills_IsSkillValid(On.Skills.orig_IsSkillValid orig, Skills self, Skills.SkillType type)
         {
-            if (Skills.ContainsKey(type))
+            var ret = orig(self, type);
+
+            if (!ret && Skills.ContainsKey(type))
             {
-                return true;
+                ret = true;
             }
 
-            return orig(self, type);
+            return ret;
         }
 
         private void Skills_RaiseSkill(MonoMod.Cil.ILContext il)
