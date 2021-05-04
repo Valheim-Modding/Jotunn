@@ -215,7 +215,8 @@ namespace Jotunn.Managers
 
             if (token.Any(x => LocalizationEndChars.Contains(x)))
             {
-                throw new Exception($"Token has an end char in it ({LocalizationEndChars}).");
+                Logger.LogError($"Token '{token}' must not have an end char in it ({LocalizationEndChars}).");
+                return;
             }
 
             if (!forceReplace)
@@ -224,7 +225,8 @@ namespace Jotunn.Managers
                 {
                     if (languageDict.Keys.Contains(token))
                     {
-                        throw new Exception($"Token named {token} already exist!");
+                        Logger.LogError($"Token named '{token}' already exist!");
+                        return;
                     }
                 }
             }
