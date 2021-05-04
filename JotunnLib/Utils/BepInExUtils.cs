@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 
@@ -15,10 +14,21 @@ namespace Jotunn.Utils
         {
             var result = new Dictionary<string, BaseUnityPlugin>();
 
-            var plugins = BepInEx.Bootstrap.Chainloader.PluginInfos.Select(x => x.Value.Instance).ToArray();
+            var plugins = BepInEx.Bootstrap.Chainloader.PluginInfos.Where(x => x.Value != null && x.Value.Instance != null).Select(x => x.Value.Instance).ToArray();
 
             foreach (var plugin in plugins)
             {
+                if (plugin.Info == null)
+                {
+                    Logger.LogWarning($"Plugin without Info found: {plugin.GetType().Assembly.FullName}");
+                    continue;
+                }
+                if (plugin.Info.Metadata == null)
+                {
+                    Logger.LogWarning($"Plugin without Metadata found: {plugin.GetType().Assembly.FullName}");
+                    continue;
+                }
+
                 if (includeJotunn && plugin.Info.Metadata.GUID == Main.ModGuid)
                 {
                     result.Add(plugin.Info.Metadata.GUID, plugin);

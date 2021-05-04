@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Jotunn.Managers
 {
@@ -68,15 +69,17 @@ namespace Jotunn.Managers
         private void RemoveMockPrefabs(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
-            var isValid = self.IsValid();
 
-            if (isValid && MockPrefabContainer.transform.childCount > 0)
+            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
             {
-                Logger.LogInfo("Destroying Mock prefabs");
-
-                foreach (var transform in MockPrefabContainer.transform)
+                if (MockPrefabContainer.transform.childCount > 0)
                 {
-                    GameObject.Destroy(((Transform)transform).gameObject);
+                    Logger.LogInfo("Destroying Mock prefabs");
+
+                    foreach (var transform in MockPrefabContainer.transform)
+                    {
+                        GameObject.Destroy(((Transform)transform).gameObject);
+                    }
                 }
             }
         }

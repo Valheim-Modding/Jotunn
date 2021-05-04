@@ -171,12 +171,6 @@ namespace Jotunn
                     throw new Exception($"StatusEffect must have a name !");
                 }
 
-                var hasIcon = self.m_icon != null;
-                if (!hasIcon)
-                {
-                    throw new Exception($"StatusEffect must have an icon !");
-                }
-
                 return true;
             }
             catch (Exception e)

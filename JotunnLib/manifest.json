@@ -1,10 +1,10 @@
 {
-    "name": "Jötunn, the Valheim Library",
-    "version_number": "1.0.1-rc9",
+    "name": "Jotunn",
+    "version_number": "2.0.5",
     "website_url": "https://github.com/Valheim-Modding/Jotunn",
-    "description": "Jötunn, the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability and networked gameplay consistency.",
+    "description": "Jötunn (/ˈjɔːtʊn/, 'giant'), the Valheim Library was created with the goal of making the lives of mod developers easier. It enables you to create mods for Valheim using an abstracted API so you can focus on the actual content creation.",
     "dependencies": [
-        "denikson-BepInExPack_Valheim-5.4.901",
+        "denikson-BepInExPack_Valheim-5.4.1000",
         "ValheimModding-HookGenPatcher-0.0.2"
     ]
 }

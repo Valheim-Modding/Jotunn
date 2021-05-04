@@ -94,6 +94,10 @@ jobs:
         run: |
           cat JotunnLib/manifest.json | sed -e 's/version_number": "[^"]*"/version_number": "${{ steps.get_version.outputs.VERSION_NUMBER }}"/' > JotunnLib/manifest.tmp && mv JotunnLib/manifest.tmp JotunnLib/manifest.json
 
+      - name: Update Main.cs version
+        run: |
+          cat JotunnLib/Main.cs | sed -e 's/public const string Version = ".*";/public const string Version = "${{ steps.get_version.outputs.VERSION_NUMBER }}";/' > JotunnLib/Main.tmp && mv JotunnLib/Main.tmp JotunnLib/Main.cs
+
       - name: Push version update to prod
         run: |
           git config --global user.name 'github-actions[bot]'
@@ -101,6 +105,7 @@ jobs:
           git add JotunnLib/GitVersion.yml
           git add JotunnLib/BuildProps/version.props
           git add JotunnLib/manifest.json
+          git add JotunnLib/Main.cs
           git commit -m "deploy: Released ${{ steps.get_version.outputs.VERSION }}"
           git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn HEAD:dev
           git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn dev:prod

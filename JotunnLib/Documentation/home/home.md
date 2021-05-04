@@ -1,6 +1,8 @@
 ﻿# Guidelines
 
-### If you already have a mod follow the base setup instructions in the [Developer's Quickstart](quickstart.md).
+### If you are a user trying to manually install Jötunn, read the [Manual Installation Guide](installation.md).
+
+### If you already have a mod, follow the base setup instructions in the [Developer's Quickstart](quickstart.md).
 
 ### If you are transitioning from JötunnLib or ValheimLib also read the [Transition Documentation](../transition/jotunnlib/overview.md).
 
