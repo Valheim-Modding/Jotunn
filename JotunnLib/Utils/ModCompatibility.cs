@@ -147,7 +147,11 @@ namespace Jotunn.Utils
             scroll.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
 
             var button = GUIManager.Instance.CreateButton("OK", panel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -215f));
+            
+            // Special condition, coming from ingame back into main scene
+            button.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
             button.SetActive(true);
+            
             button.GetComponent<Button>().onClick.AddListener(() =>
             {
                 panel.SetActive(false);
@@ -273,7 +277,7 @@ namespace Jotunn.Utils
             }
 
             // Now lets find additional modules with NetworkCompatibility attribute in the client's list
-            foreach (var module in client.Modules)
+            foreach (var module in client.Modules.Where(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod))
             {
                 if (server.Modules.All(x => x.Item1 != module.Item1))
                 {
@@ -431,6 +435,11 @@ namespace Jotunn.Utils
                 foreach (var module in Modules)
                 {
                     var otherModule = other.Modules.FirstOrDefault(x => x.Item1 == module.Item1);
+                    if (otherModule == null && module.Item3 == CompatibilityLevel.NoNeedForSync)
+                    {
+                        continue;
+                    }
+
                     if (otherModule == null)
                     {
                         return false;
@@ -459,6 +468,11 @@ namespace Jotunn.Utils
                 foreach (var module in other.Modules)
                 {
                     var serverModule = Modules.FirstOrDefault(x => x.Item1 == module.Item1);
+                    if (serverModule == null && module.Item3 == CompatibilityLevel.NoNeedForSync)
+                    {
+                        continue;
+                    }
+
                     if (serverModule == null)
                     {
                         return false;
