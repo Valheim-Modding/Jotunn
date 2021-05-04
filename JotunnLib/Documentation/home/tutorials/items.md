@@ -102,4 +102,4 @@ private void CreateBlueprintRune()
 
 ![Blueprint Rune Item](../../images/data/blueprintRuneItem.png) ![Blueprint Recipe Config](../../images/data/blueprintRecipeConfig.png)
 
-We have now added two custom items, both of which can be equipped, as well as a custom resource which is used to create items. This concludes the items tutorial. [Go back to the index](../home.md).
+We have now added two custom items, both of which can be equipped, as well as a custom resource which is used to create items. This concludes the items tutorial. [Go back to the index](overview.md).

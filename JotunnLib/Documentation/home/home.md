@@ -1,10 +1,12 @@
 ﻿# Guidelines
 
-### If you already have a mod follow the base setup instructions in the [Developer's Quickstart](quickstart.md).
+### If you are a user trying to manually install Jötunn, read the [Manual Installation Guide](installation.md).
 
-### If you are transitioning from JötunnLib or ValheimLib also read the [Transition Documentation](../transition/jotunnlib/overview.md).
+### If you already have a mod, follow the base setup instructions in the [Developer's Quickstart](quickstart.md).
 
-### If you are starting from scratch and want detailed instructions read the [Step-by-Step Guide](guide.md).
+### If you are transitioning from JötunnLib or ValheimLib, read the [Transition Documentation](../transition/jotunnlib/overview.md).
+
+### If you are starting from scratch and want detailed instructions, read the [Step-by-Step Guide](guide.md).
 
 # Features
 Jötunn is continually improving and we have lots of features planned for the future, however we hope the ones we have implemented thus far prove to be a useful base and provide an idea of the consistency we aim to deliver moving forwards:
