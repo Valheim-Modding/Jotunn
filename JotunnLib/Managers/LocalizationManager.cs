@@ -33,6 +33,8 @@ namespace Jotunn.Managers
         /// </summary>
         public const string CommunityTranslationFileName = "community_translation.json";
 
+        private const string LocalizationEndChars = " (){}[]+-!?/\\\\&%,.:-=<>\n";
+
         private static LocalizationManager _instance;
         /// <summary>
         ///     The singleton instance of this manager.
@@ -211,9 +213,9 @@ namespace Jotunn.Managers
         {
             Dictionary<string, string> languageDict = null;
 
-            if (token.Any(x => Localization.instance.m_endChars.Contains(x)))
+            if (token.Any(x => LocalizationEndChars.Contains(x)))
             {
-                throw new Exception($"Token has an end char in it ({Localization.instance.m_endChars}).");
+                throw new Exception($"Token has an end char in it ({LocalizationEndChars}).");
             }
 
             if (!forceReplace)
