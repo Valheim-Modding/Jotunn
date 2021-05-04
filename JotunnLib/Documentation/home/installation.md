@@ -44,7 +44,11 @@ Now, we can extract them:
 
 ## 3. Launch Valheim
 
-That's it, you're done! Now you can launch Valheim and enjoy your mods.
+That's it, you're done! Now you can launch Valheim and enjoy your mods.  
+
+You can tell it worked by either looking at the console output, or if you see `Jotunn Vx.x.x` in the top-right corner of the main menu like so:
+
+![In-game Message](../images/installation/in-game.png)
 
 > [!NOTE]
 > Your first run of the game may take a few seconds longer than it would without any mods. **This is normal.** This is due to MMHookGen creating the MMHook DLL files that are needed for Jötunn and various mods to run. This will only take longer on first install, and after Valheim updates.

@@ -24,7 +24,8 @@ This is a dependency for Jötunn. Download it from either Nexus/Thunderstore, an
 3. **Install Jötunn**
 Download from either Nexus/Thunderstore, extract the ZIP, and put the `Jotunn.dll` file inside the `plugins` folder in your Valheim install.
 
-That's it, launch the game and mod away!
+That's it, launch the game and mod away!  
+You can tell it worked by either looking at the console output, or if you see `Jotunn Vx.x.x` in the top-right corner of the main menu.
 
 ________________
 
