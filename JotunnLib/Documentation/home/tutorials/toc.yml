@@ -7,38 +7,38 @@
 - name: Asset Mocking
   href: asset-mocking.md
 
-- name: Custom Items
+- name: Items
   href: items.md
-
-- name: Custom Pieces
-  href: pieces.md
-
+  
 - name: Recipes
   href: recipes.md
+
+- name: Pieces
+  href: pieces.md
 
 - name: Status effects
   href: status-effects.md
 
 - name: Skills
   href: skills.md
-
-- name: Console Commands
-  href: console-commands.md
-
-- name: GUI
-  href: gui.md
-
+  
+- name: Inputs
+  href: inputs.md
+  
 - name: Localization
   href: localization.md
 
-- name: Bone Reorder
-  href: bonereorder.md
+- name: GUI
+  href: gui.md
+  
+- name: Console Commands
+  href: console-commands.md
 
 - name: Network Compatibility
   href: networkcompatibility.md
 
 - name: Config Sync
   href: config.md
-
-- name: Inputs
-  href: inputs.md
+  
+- name: Bone Reorder
+  href: bonereorder.md

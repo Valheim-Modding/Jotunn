@@ -1,10 +1,13 @@
 ﻿- name: Home
   href: home.md
-
-- name: Installation
+  
+- name: User Installation
   href: installation.md
+  
+- name: Developer Quickstart
+  href: quickstart.md
 
-- name: Guide
+- name: Developer Guide
   href: guide.md
 
 - name: Tutorials
