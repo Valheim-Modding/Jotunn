@@ -25,7 +25,7 @@ Download [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_
 This is a dependency for Jötunn. Download [MMHookGen](https://valheim.thunderstore.io/package/ValheimModding/HookGenPatcher/), extract the `config` and `patchers` folders into your `BepInEx` folder in your Valheim install.
 
 3. **Install Jötunn**
-Download from either Nexus/Thunderstore, extract the ZIP, and put the `Jotunn.dll` file inside the `plugins` folder in your Valheim install.
+Download from either Nexus/Thunderstore, extract the ZIP, and put the `Jotunn.dll` file inside the `BepInEx\plugins` folder in your Valheim install.
 
 That's it, launch the game and mod away!  
 You can tell it worked by either looking at the console output, or if you see `Jotunn Vx.x.x` in the top-right corner of the main menu.
