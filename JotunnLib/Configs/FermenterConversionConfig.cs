@@ -9,7 +9,7 @@ namespace Jotunn.Configs
     public class FermenterConversionConfig : ConversionConfig
     {
         /// <summary>
-        ///     The name of the station prefab this conversion is added to. Defaults to fermenter.
+        ///     The name of the station prefab this conversion is added to. Defaults to "fermenter".
         /// </summary>
         public override string Station { get; set; } = "fermenter";
 
