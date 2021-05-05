@@ -1,13 +1,17 @@
 ﻿# Jötunn, the Valheim Library
+
 Jötunn (/ˈjɔːtʊn/, "giant") was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities, as well as interfaces and abstractions which aid with mod interoperability. networked gameplay consistency, and remove the need to maintain valheim version specific code by acting as an interface between the developer and the games changing internals.
 
 ## Jötunn is not JotunnLib is not ValheimLib
+
 Jötunn was created as a joint effort to merge [JötunnLib](https://github.com/jotunnlib/jotunnlib) and [ValheimLib](https://github.com/Valheim-Modding/ValheimLib) into a single library to use the best of both worlds. It is possible to use all three libraries side by side so all current mods will continue working. But it is highly recommended to port your mod to this new library as the other two won't be actively developed anymore.
 
 ## Usage
+
 Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/). We have gone to great lengths to ensure there is ample documentation to facilitate the developers learning experience.
 
 ## Installation
+
 _If you're using a mod installer, you can likely ignore this section_  
 
 For a more in-depth installation guide, please check out the [manual installation guide](https://valheim-modding.github.io/Jotunn/home/installation.html) in our documentation.  
@@ -27,9 +31,11 @@ That's it, launch the game and mod away!
 You can tell it worked by either looking at the console output, or if you see `Jotunn Vx.x.x` in the top-right corner of the main menu.
 
 ## Features
+
 JVL provides three distinct groups of features. Entities, which abstract the game's own entities into easy-to-use interfaces. Managers, which act as interfaces between the entities and native collections or subsystems. Utilities, which are there to aid in generic/common functions that can span many different areas.
 
 #### Entities
+
 - **CustomItem** - Represents ingame items such as weapons, tools and consumables.
 - **CustomRecipe** - Represents ingame recipes for managing crafting and upgrading of items.
 - **CustomPiece** - Represent ingame building pieces.
@@ -39,6 +45,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **Config classes** - There are many more abstractions beside the main entities which allow for easy creation of things like key bindings, custom commands, skills and more.
 
 #### Managers
+
 - **Command Manager** - Facilitates implementation of methods which can be registered as executable console commands.
 - **GUI Manager** - Allows invocation of UI prefabs on the fly via code.
 - **Input Manager** - Provides an interface for binding keys via ZInput in a consistent manner, facilitating custom keybind hints.
@@ -49,6 +56,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **Skill Manager** - Facilitates additional custom skills.
 
 #### Utilities
+
 - **Asset Helpers** - Methods to facilitate referencing and loading of assets.
 - **Bone Reorderer** - Fixes bone ordering issues on `SkinnedMeshRenderer`'s that have been ripped and imported into unity.
 - **NetworkCompatibility** - Allows plugins to define their own version requirements for clients connected to the server. Ensures a customisable level of interoperability with clients of differing mod configurations on a plugin-by-plugin basis.
@@ -56,6 +64,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **SimpleJSON** - We have imported SimpleJSON into our library at the request of developers who would simply prefer to have this dependency taken care of already. We use the MIT Licensed [SimpleJSON](https://simplejson.readthedocs.io/en/latest/)
 
 ## Bugs, Support, Contributions
+
 Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/) before requesting [support via discord](https://discord.gg/DdUt6g7gyA). If there are any mod interoperability issues developers experience (not just exclusive JVL issues), we would like to hear from you! If we can facilitate better mod interoperability by providing a common interface, or exposing native valheim objects, including a utility which you have created, then please feel free to create a new [feature request](https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D) or [pull request](https://github.com/Valheim-Modding/Jotunn/pulls).
 
 ## Contributors to Jötunn, the Valheim Library
