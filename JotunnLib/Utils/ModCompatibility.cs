@@ -58,8 +58,9 @@ namespace Jotunn.Utils
             {
                 var pkg = (ZPackage)parameters[0];
                 pkg.Write(new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
-                orig(self, method, parameters);
             }
+
+            orig(self, method, parameters);
         }
 
         // Hook RPC_PeerInfo to check in front of the original method
