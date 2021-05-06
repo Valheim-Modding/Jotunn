@@ -32,7 +32,6 @@ namespace TestMod
         private AssetBundle steelingot;
 
         private System.Version currentVersion;
-        private bool forceVersionMismatch;
 
         private bool showButton;
         private bool showMenu;
@@ -42,6 +41,8 @@ namespace TestMod
         private CustomStatusEffect evilSwordEffect;
 
         private Skills.SkillType testSkill;
+
+        private ConfigEntry<bool> EnableVersionMismatch;
 
         // Load, create and init your custom mod stuff
         private void Awake()
@@ -186,8 +187,7 @@ namespace TestMod
                 new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             // Add client config to test ModCompatibility
-            Config.Bind(JotunnTestModConfigSection, "EnableVersionMismatch", false, new ConfigDescription("Enable to test ModCompatibility module"));
-            forceVersionMismatch = (bool)Config[JotunnTestModConfigSection, "EnableVersionMismatch"].BoxedValue;
+            EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
@@ -199,7 +199,6 @@ namespace TestMod
         {
             if (e.ChangedSetting.Definition.Section == JotunnTestModConfigSection && e.ChangedSetting.Definition.Key == "EnableVersionMismatch")
             {
-                forceVersionMismatch = (bool)e.ChangedSetting.BoxedValue;
                 SetVersion();
             }
         }
@@ -476,7 +475,7 @@ namespace TestMod
                 };
                 cfg.Apply(prefab);
                 CP.FixReference = true;
-                
+
                 PieceManager.Instance.AddPiece(CP);
             }
         }
@@ -545,7 +544,7 @@ namespace TestMod
             var propinfo = Info.Metadata.GetType().GetProperty("Version", BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
 
             // Change version number of this module if test is enabled
-            if (forceVersionMismatch)
+            if (EnableVersionMismatch.Value)
             {
                 var v = new System.Version(0, 0, 0);
                 propinfo.SetValue(Info.Metadata, v, null);
