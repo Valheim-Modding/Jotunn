@@ -84,6 +84,10 @@ namespace Jotunn.Utils
                     var clientVersion = new ModuleVersionData(clientVersions[rpc.GetSocket().GetEndPointString()]);
                     var serverVersion = new ModuleVersionData(GetEnforcableMods().ToList());
 
+                    // Remove from list
+                    clientVersions.Remove(rpc.GetSocket().GetEndPointString());
+
+                    // Compare and disconnect when not equal
                     if (!clientVersion.Equals(serverVersion))
                     {
                         rpc.Invoke("Error", 3);
