@@ -60,6 +60,7 @@ namespace TestMod
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
+            AddInvalidItems();
 
             // Add custom items cloned from vanilla items
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
@@ -477,6 +478,29 @@ namespace TestMod
                 CP.FixReference = true;
 
                 PieceManager.Instance.AddPiece(CP);
+            }
+        }
+
+        private void AddInvalidItems()
+        {
+            CustomItem CI = new CustomItem("item_faulty", false);
+            if (CI != null)
+            {
+                CI.ItemDrop.m_itemData.m_shared.m_icons = new Sprite[]
+                {
+                    testSprite
+                };
+                ItemManager.Instance.AddItem(CI);
+
+                CustomRecipe CR = new CustomRecipe(new RecipeConfig
+                {
+                    Item = "item_faulty",
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig { Item = "NotReallyThereResource", Amount = 99 }
+                    }
+                });
+                ItemManager.Instance.AddRecipe(CR);
             }
         }
 
