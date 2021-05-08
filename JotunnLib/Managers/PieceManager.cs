@@ -253,7 +253,6 @@ namespace Jotunn.Managers
             if (SceneManager.GetActiveScene().name == "main")
             {
                 var isValid = self.IsValid();
-                ItemDropMockFix.Switch(!isValid);
 
                 if (isValid)
                 {
