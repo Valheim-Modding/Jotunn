@@ -215,7 +215,7 @@ namespace TestMod
             Jotunn.Logger.LogInfo(testAssets);
 
             // Load asset bundle from filesystem
-            blueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/blueprints");
+            blueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/testblueprints");
             Jotunn.Logger.LogInfo(blueprintRuneBundle);
 
             // Load Steel ingot from streamed resource
@@ -361,11 +361,11 @@ namespace TestMod
         private void AddItemsWithConfigs()
         {
             // Add a custom piece table
-            var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable");
+            var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
             PieceManager.Instance.AddPieceTable(table_prefab);
 
             // Create and add a custom item
-            var rune_prefab = blueprintRuneBundle.LoadAsset<GameObject>("BlueprintRune");
+            var rune_prefab = blueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
             var rune = new CustomItem(rune_prefab, fixReference: false,  // Prefab did not use mocked refs so no need to fix them
                 new ItemConfig
                 {
@@ -378,19 +378,19 @@ namespace TestMod
             ItemManager.Instance.AddItem(rune);
 
             // Create and add custom pieces
-            var makebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
+            var makebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
             var makebp = new CustomPiece(makebp_prefab,
                 new PieceConfig
                 {
-                    PieceTable = "_BlueprintPieceTable"
+                    PieceTable = "_BlueprintTestTable"
                 });
             PieceManager.Instance.AddPiece(makebp);
 
-            var placebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
+            var placebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
             var placebp = new CustomPiece(placebp_prefab,
                 new PieceConfig
                 {
-                    PieceTable = "_BlueprintPieceTable",
+                    PieceTable = "_BlueprintTestTable",
                     AllowedInDungeons = true,
                     Requirements = new[]
                     {
