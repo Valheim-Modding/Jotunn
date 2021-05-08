@@ -75,11 +75,15 @@ namespace Jotunn
             if (unityObject)
             {
                 var unityObjectName = unityObject.name;
+#pragma warning disable CS0618
                 var isVLMock = unityObjectName.StartsWith(MockPrefix);
+#pragma warning restore CS0618
                 var isJVLMock = unityObjectName.StartsWith(JVLMockPrefix);
                 if (isVLMock || isJVLMock)
                 {
+#pragma warning disable CS0618
                     if (isVLMock) unityObjectName = unityObjectName.Substring(MockPrefix.Length);
+#pragma warning restore CS0618
                     if (isJVLMock) unityObjectName = unityObjectName.Substring(JVLMockPrefix.Length);
 
                     // Cut off the suffix in the name to correctly query the original material
