@@ -73,6 +73,8 @@ namespace Jotunn.Entities
             if (ItemPrefab)
             {
                 ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
+                ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
+                ItemDrop.m_itemData.m_shared.m_name = name;
             }
         }
 
