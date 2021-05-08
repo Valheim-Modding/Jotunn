@@ -32,7 +32,6 @@ namespace TestMod
         private AssetBundle steelingot;
 
         private System.Version currentVersion;
-        private bool forceVersionMismatch;
 
         private bool showButton;
         private bool showMenu;
@@ -42,6 +41,8 @@ namespace TestMod
         private CustomStatusEffect evilSwordEffect;
 
         private Skills.SkillType testSkill;
+
+        private ConfigEntry<bool> EnableVersionMismatch;
 
         // Load, create and init your custom mod stuff
         private void Awake()
@@ -59,6 +60,7 @@ namespace TestMod
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
+            AddInvalidItems();
 
             // Add custom items cloned from vanilla items
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
@@ -186,8 +188,7 @@ namespace TestMod
                 new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             // Add client config to test ModCompatibility
-            Config.Bind(JotunnTestModConfigSection, "EnableVersionMismatch", false, new ConfigDescription("Enable to test ModCompatibility module"));
-            forceVersionMismatch = (bool)Config[JotunnTestModConfigSection, "EnableVersionMismatch"].BoxedValue;
+            EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
@@ -199,7 +200,6 @@ namespace TestMod
         {
             if (e.ChangedSetting.Definition.Section == JotunnTestModConfigSection && e.ChangedSetting.Definition.Key == "EnableVersionMismatch")
             {
-                forceVersionMismatch = (bool)e.ChangedSetting.BoxedValue;
                 SetVersion();
             }
         }
@@ -216,7 +216,7 @@ namespace TestMod
             Jotunn.Logger.LogInfo(testAssets);
 
             // Load asset bundle from filesystem
-            blueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/blueprints");
+            blueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/testblueprints");
             Jotunn.Logger.LogInfo(blueprintRuneBundle);
 
             // Load Steel ingot from streamed resource
@@ -362,11 +362,11 @@ namespace TestMod
         private void AddItemsWithConfigs()
         {
             // Add a custom piece table
-            var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintPieceTable");
+            var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
             PieceManager.Instance.AddPieceTable(table_prefab);
 
             // Create and add a custom item
-            var rune_prefab = blueprintRuneBundle.LoadAsset<GameObject>("BlueprintRune");
+            var rune_prefab = blueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
             var rune = new CustomItem(rune_prefab, fixReference: false,  // Prefab did not use mocked refs so no need to fix them
                 new ItemConfig
                 {
@@ -379,19 +379,19 @@ namespace TestMod
             ItemManager.Instance.AddItem(rune);
 
             // Create and add custom pieces
-            var makebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("make_blueprint");
+            var makebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
             var makebp = new CustomPiece(makebp_prefab,
                 new PieceConfig
                 {
-                    PieceTable = "_BlueprintPieceTable"
+                    PieceTable = "_BlueprintTestTable"
                 });
             PieceManager.Instance.AddPiece(makebp);
 
-            var placebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("piece_blueprint");
+            var placebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
             var placebp = new CustomPiece(placebp_prefab,
                 new PieceConfig
                 {
-                    PieceTable = "_BlueprintPieceTable",
+                    PieceTable = "_BlueprintTestTable",
                     AllowedInDungeons = true,
                     Requirements = new[]
                     {
@@ -476,7 +476,51 @@ namespace TestMod
                 };
                 cfg.Apply(prefab);
                 CP.FixReference = true;
-                
+
+                PieceManager.Instance.AddPiece(CP);
+            }
+        }
+
+        private void AddInvalidItems()
+        {
+            CustomItem CI = new CustomItem("item_faulty", false);
+            if (CI != null)
+            {
+                CI.ItemDrop.m_itemData.m_shared.m_icons = new Sprite[]
+                {
+                    testSprite
+                };
+                ItemManager.Instance.AddItem(CI);
+
+                CustomRecipe CR = new CustomRecipe(new RecipeConfig
+                {
+                    Item = "item_faulty",
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig { Item = "NotReallyThereResource", Amount = 99 }
+                    }
+                });
+                ItemManager.Instance.AddRecipe(CR);
+            }
+
+            CustomPiece CP = new CustomPiece("piece_fukup", "Hammer");
+            if (CP != null)
+            {
+                var piece = CP.Piece;
+                piece.m_icon = testSprite;
+                var prefab = CP.PiecePrefab;
+
+                // Test faulty resource, do it manually cause there is no config on empty pieces atm
+                var cfg = new PieceConfig
+                {
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig { Item = "StillNotThereResource", Amount = 99 }
+                    }
+                };
+                cfg.Apply(prefab);
+                CP.FixReference = true;
+
                 PieceManager.Instance.AddPiece(CP);
             }
         }
@@ -545,7 +589,7 @@ namespace TestMod
             var propinfo = Info.Metadata.GetType().GetProperty("Version", BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
 
             // Change version number of this module if test is enabled
-            if (forceVersionMismatch)
+            if (EnableVersionMismatch.Value)
             {
                 var v = new System.Version(0, 0, 0);
                 propinfo.SetValue(Info.Metadata, v, null);

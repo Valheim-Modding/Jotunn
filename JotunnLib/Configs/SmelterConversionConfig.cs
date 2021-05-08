@@ -9,7 +9,7 @@ namespace Jotunn.Configs
     public class SmelterConversionConfig : ConversionConfig
     {
         /// <summary>
-        ///     The name of the station prefab this conversion is added to. Defaults to smelter.
+        ///     The name of the station prefab this conversion is added to. Defaults to "smelter".
         /// </summary>
         public override string Station { get; set; } = "smelter";
 

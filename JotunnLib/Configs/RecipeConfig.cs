@@ -20,12 +20,12 @@ namespace Jotunn.Configs
         public string Item { get; set; }
 
         /// <summary>
-        ///     The amount of <see cref="Item"/> that will be created from this Recipe.
+        ///     The amount of <see cref="Item"/> that will be created from this Recipe. Defaults to 1.
         /// </summary>
         public int Amount { get; set; } = 1;
 
         /// <summary>
-        ///     Whether this recipe is craftable or not.
+        ///     Whether this recipe is craftable or not. Defaults to true.
         /// </summary>
         public bool Enabled { get; set; } = true;
 

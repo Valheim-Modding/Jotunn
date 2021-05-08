@@ -12,7 +12,7 @@ namespace Jotunn.Configs
         ///     Item for which the KeyHint should be displayed when equipped.<br />
         ///     Must be the name of the prefab as registered in the <see cref="ItemManager"/>.
         /// </summary>
-        public string Item { get; set; }
+        public string Item { get; set; } = null;
 
         /// <summary>
         ///     Array of <see cref="ButtonConfig"/>s used for this key hint.

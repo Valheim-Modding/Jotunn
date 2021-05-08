@@ -36,3 +36,29 @@ private void CreateConfigValues()
 ```
 
 Here we have implemented some BepInEx configuration attributes to act as a showcase for what BepInEx has to offer, as well as our own implementation of synced attributes. This allows admins defined in the servers adminlist.txt to change the values on the fly, however clients without admin have no control over this configs.
+
+To access the configuration entries either use properties or cast the boxed value to the value type:
+
+```
+private ConfigEntry<int> configurationEntry1;
+
+public void Awake2()
+{
+    configurationEntry1 = Config.Bind<int>("YourSectionName", "EntryName", 200, new ConfigDescription("Configuration entry #1", new AcceptableValueRange<int>(50, 300)));
+
+    // Reading configuration entry
+    int readValue = configurationEntry1.Value;
+    // or
+    int readBoxedValue = (int)Config["YourSectionName", "EntryName"].BoxedValue;
+
+    // Writing configuration entry
+    configurationEntry1.Value = 150;
+    // or
+    Config["YourSectionName", "EntryName"].BoxedValue = 800;
+}
+```
+
+If you set `Value` it behaves different to setting `BoxedValue`.
+
+Setting `Value` will apply value ranges (defined in the `ConfigurationManagerAttributes` via `AcceptableValueRange` for example) while `BoxedValue` will have no checks.
+

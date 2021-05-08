@@ -11,6 +11,36 @@ using UnityEngine;
 namespace Jotunn
 {
     /// <summary>
+    ///     Extends GameObject with a check if the GameObject is valid
+    /// </summary>
+    public static class GameObjectExtension
+    {
+        public static bool IsValid(this GameObject self)
+        {
+            try
+            {
+                var name = self.name;
+                if (name.IndexOf('(') > 0)
+                {
+                    name = name.Substring(self.name.IndexOf('(')).Trim();
+                }
+                if (string.IsNullOrEmpty(name))
+                {
+                    throw new Exception($"GameObject must have a name !");
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e);
+
+                return false;
+            }
+        }
+    }
+
+    /// <summary>
     ///     Extends ItemDrop with a TokenName and a check if the ItemDrop is valid so it can be added to the game.
     /// </summary>
     public static class ItemDropExtension
@@ -119,6 +149,36 @@ namespace Jotunn
 
             var inventoryFilePath = Path.Combine(Paths.CustomItemDataFolder, inventoryId);
             File.AppendAllText(inventoryFilePath, stringBuilder.ToString());
+        }
+    }
+
+    /// <summary>
+    ///     Extends StatusEffect with a TokenName and a check if the StatusEffect is valid so it can be added to the game.
+    /// </summary>
+    public static class RecipeExtension
+    {
+        public static bool IsValid(this Recipe self)
+        {
+            try
+            {
+                var name = self.name;
+                if (name.IndexOf('(') > 0)
+                {
+                    name = name.Substring(self.name.IndexOf('(')).Trim();
+                }
+                if (string.IsNullOrEmpty(name))
+                {
+                    throw new Exception($"Recipe must have a name !");
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e);
+
+                return false;
+            }
         }
     }
 
