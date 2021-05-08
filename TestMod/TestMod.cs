@@ -502,6 +502,27 @@ namespace TestMod
                 });
                 ItemManager.Instance.AddRecipe(CR);
             }
+
+            CustomPiece CP = new CustomPiece("piece_fukup", "Hammer");
+            if (CP != null)
+            {
+                var piece = CP.Piece;
+                piece.m_icon = testSprite;
+                var prefab = CP.PiecePrefab;
+
+                // Test faulty resource, do it manually cause there is no config on empty pieces atm
+                var cfg = new PieceConfig
+                {
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig { Item = "StillNotThereResource", Amount = 99 }
+                    }
+                };
+                cfg.Apply(prefab);
+                CP.FixReference = true;
+
+                PieceManager.Instance.AddPiece(CP);
+            }
         }
 
         // Add new items as copies of vanilla items - just works when vanilla prefabs are already loaded (ObjectDB.CopyOtherDB for example)

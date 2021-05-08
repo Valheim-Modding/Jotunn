@@ -215,6 +215,16 @@ namespace Jotunn.Managers
                         customPiece.FixReference = false;
                     }
 
+
+                    // workaround for now. needs to be in fixreferences
+                    foreach (var requirement in customPiece.Piece.m_resources)
+                    {
+                        if (requirement.m_resItem.ToString().StartsWith(PrefabExtension.JVLMockPrefix))
+                        {
+                            throw new Exception($"Requirement {requirement.m_resItem} not found");
+                        }
+                    }
+
                     // Assign vfx_ExtensionConnection for StationExtensions
                     var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
                     if (extension != null && !extension.m_connectionPrefab)
