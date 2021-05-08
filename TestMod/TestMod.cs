@@ -60,6 +60,7 @@ namespace TestMod
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
+            AddInvalidItems();
 
             // Add custom items cloned from vanilla items
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
@@ -472,6 +473,50 @@ namespace TestMod
                 var cfg = new PieceConfig
                 {
                     ExtendStation = "piece_workbench"
+                };
+                cfg.Apply(prefab);
+                CP.FixReference = true;
+
+                PieceManager.Instance.AddPiece(CP);
+            }
+        }
+
+        private void AddInvalidItems()
+        {
+            CustomItem CI = new CustomItem("item_faulty", false);
+            if (CI != null)
+            {
+                CI.ItemDrop.m_itemData.m_shared.m_icons = new Sprite[]
+                {
+                    testSprite
+                };
+                ItemManager.Instance.AddItem(CI);
+
+                CustomRecipe CR = new CustomRecipe(new RecipeConfig
+                {
+                    Item = "item_faulty",
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig { Item = "NotReallyThereResource", Amount = 99 }
+                    }
+                });
+                ItemManager.Instance.AddRecipe(CR);
+            }
+
+            CustomPiece CP = new CustomPiece("piece_fukup", "Hammer");
+            if (CP != null)
+            {
+                var piece = CP.Piece;
+                piece.m_icon = testSprite;
+                var prefab = CP.PiecePrefab;
+
+                // Test faulty resource, do it manually cause there is no config on empty pieces atm
+                var cfg = new PieceConfig
+                {
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig { Item = "StillNotThereResource", Amount = 99 }
+                    }
                 };
                 cfg.Apply(prefab);
                 CP.FixReference = true;

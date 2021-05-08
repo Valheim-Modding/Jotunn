@@ -238,16 +238,15 @@ namespace Jotunn.Managers
                 try
                 {
                     var itemDrop = customItem.ItemDrop;
-
-                    if (!itemDrop.m_itemData.m_dropPrefab)
-                    {
-                        itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
-                    }
                     if (customItem.FixReference)
                     {
                         customItem.ItemPrefab.FixReferences();
                         itemDrop.m_itemData.m_shared.FixReferences();
                         customItem.FixReference = false;
+                    }
+                    if (!itemDrop.m_itemData.m_dropPrefab)
+                    {
+                        itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
                     }
                     objectDB.m_items.Add(customItem.ItemPrefab);
 
@@ -285,6 +284,12 @@ namespace Jotunn.Managers
                         foreach (var requirement in recipe.m_resources)
                         {
                             requirement.FixReferences();
+
+                            // workaround for now. needs to be in fixreferences
+                            if (requirement.m_resItem.ToString().StartsWith(PrefabExtension.JVLMockPrefix))
+                            {
+                                throw new Exception($"Requirement {requirement.m_resItem} not found");
+                            }
                         }
                         customRecipe.FixRequirementReferences = false;
                     }

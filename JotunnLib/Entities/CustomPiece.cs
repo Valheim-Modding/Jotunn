@@ -169,7 +169,7 @@ namespace Jotunn.Entities
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return PiecePrefab && Piece && Piece.IsValid() && !string.IsNullOrEmpty(PieceTable);
+            return PiecePrefab && PiecePrefab.IsValid() && Piece && Piece.IsValid() && !string.IsNullOrEmpty(PieceTable);
         }
 
         /// <summary>
