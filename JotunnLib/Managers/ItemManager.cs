@@ -238,16 +238,15 @@ namespace Jotunn.Managers
                 try
                 {
                     var itemDrop = customItem.ItemDrop;
-
-                    if (!itemDrop.m_itemData.m_dropPrefab)
-                    {
-                        itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
-                    }
                     if (customItem.FixReference)
                     {
                         customItem.ItemPrefab.FixReferences();
                         itemDrop.m_itemData.m_shared.FixReferences();
                         customItem.FixReference = false;
+                    }
+                    if (!itemDrop.m_itemData.m_dropPrefab)
+                    {
+                        itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
                     }
                     objectDB.m_items.Add(customItem.ItemPrefab);
 
@@ -285,6 +284,11 @@ namespace Jotunn.Managers
                         foreach (var requirement in recipe.m_resources)
                         {
                             requirement.FixReferences();
+
+                            if (requirement == null)
+                            {
+                                throw new Exception();
+                            }
                         }
                         customRecipe.FixRequirementReferences = false;
                     }
