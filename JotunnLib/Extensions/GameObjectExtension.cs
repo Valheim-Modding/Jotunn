@@ -34,7 +34,7 @@ namespace Jotunn
     ///     Use only, if you know what you do.
     ///     There are no checks if a component exists.
     /// </summary>
-    internal static class GameObjectExtension
+    internal static class GameObjectGUIExtension
     {
         internal static GameObject SetToTextHeight(this GameObject go)
         {

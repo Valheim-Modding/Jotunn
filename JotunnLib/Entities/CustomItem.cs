@@ -134,7 +134,7 @@ namespace Jotunn.Entities
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return ItemPrefab && ItemDrop && ItemDrop.IsValid();
+            return ItemPrefab && ItemPrefab.IsValid() && ItemDrop && ItemDrop.IsValid();
         }
 
         /// <summary>

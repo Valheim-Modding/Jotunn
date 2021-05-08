@@ -55,7 +55,7 @@ namespace Jotunn.Entities
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return Recipe != null && Recipe.m_item != null;
+            return Recipe != null && Recipe.IsValid() && Recipe.m_item != null;
         }
 
         public override bool Equals(object obj)
