@@ -59,6 +59,13 @@ namespace Jotunn.InGameConfig
         /// </summary>
         private static void CreateModConfigTab()
         {
+            bool anyConfig = BepInExUtils.GetDependentPlugins(true).Any(x => GetConfigurationEntries(x.Value).GroupBy(x => x.Key.Section).Any());
+
+            if (!anyConfig)
+            {
+                return;
+            }
+
             // Hook SaveSettings to be notified when OK was pressed
             On.Settings.SaveSettings += Settings_SaveSettings;
 
