@@ -475,16 +475,29 @@ namespace Jotunn.Managers
                 {
                     return;
                 }
-                var prefabName = item.m_dropPrefab.name;
+                var prefabName = item.m_dropPrefab?.name;
+                if (string.IsNullOrEmpty(prefabName))
+                {
+                    return;
+                }
 
                 // Check if that item has a custom key hint and display it instead the vanilla one
                 if (KeyHints.TryGetValue(prefabName, out var keyHint))
                 {
+                    if (keyHint == null)
+                    {
+                        return;
+                    }
+
+                    var hint = KeyHintContainer.Find(keyHint.Item)?.gameObject;
+                    if (hint == null)
+                    {
+                        return;
+                    }
+
                     self.m_buildHints.SetActive(false);
                     self.m_combatHints.SetActive(false);
-
-                    var hint = KeyHintContainer.Find(keyHint.Item).gameObject;
-
+                    
                     // Update bound keys
                     foreach (var buttonConfig in keyHint.ButtonConfigs)
                     {
@@ -496,7 +509,7 @@ namespace Jotunn.Managers
 
                         if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                         {
-                            hint.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key").gameObject.SetText(key);
+                            hint.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
                         }
                     }
 
