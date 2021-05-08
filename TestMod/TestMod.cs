@@ -56,7 +56,7 @@ namespace TestMod
             AddRecipes();
             AddStatusEffects();
             AddItemConversions();
-            CustomItemConversion();
+            AddCustomItemAndConversion();
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
@@ -321,15 +321,23 @@ namespace TestMod
         // Add item conversions (cooking or smelter recipes)
         private void AddItemConversions()
         {
-            // Add an item conversion for the CookingStation. The items must have an attach child GameObject to display it on the station.
-            var cookConversion = new CustomItemConversion(new FermenterConversionConfig
+            // Add an item conversion for the CookingStation. The items must have an "attach" child GameObject to display it on the station.
+            var cookConversion = new CustomItemConversion(new CookingConversionConfig
             {
-                Station = "fermenter",
+                FromItem = "CookedMeat",
+                ToItem = "CookedLoxMeat",
+                CookTime = 2f
+            });
+            ItemManager.Instance.AddItemConversion(cookConversion);
+
+            // Add an item conversion for the Fermenter. You can specify how much new items the conversion yields.
+            var fermentConversion = new CustomItemConversion(new FermenterConversionConfig
+            {
                 FromItem = "Coal",
                 ToItem = "CookedLoxMeat",
                 ProducedItems = 10
             });
-            ItemManager.Instance.AddItemConversion(cookConversion);
+            ItemManager.Instance.AddItemConversion(fermentConversion);
 
             // Add an item conversion for the smelter
             var smeltConversion = new CustomItemConversion(new SmelterConversionConfig
@@ -341,17 +349,16 @@ namespace TestMod
             ItemManager.Instance.AddItemConversion(smeltConversion);
         }
 
-
         // Add custom item conversion (gives a steel ingot to smelter)
-        private void CustomItemConversion()
+        private void AddCustomItemAndConversion()
         {
             var steel_prefab = steelingot.LoadAsset<GameObject>("Steel");
             var ingot = new CustomItem(steel_prefab, fixReference: false);
             var blastConversion = new CustomItemConversion(new SmelterConversionConfig
             { 
-                Station = "blastfurnace", // let's specify something other than default here 
+                Station = "blastfurnace", // Let's specify something other than default here 
                 FromItem = "Iron",
-                ToItem = "Steel" //This is our custom prefabs name we have loaded just above 
+                ToItem = "Steel" // This is our custom prefabs name we have loaded just above 
             });
             ItemManager.Instance.AddItem(ingot);
             ItemManager.Instance.AddItemConversion(blastConversion); 

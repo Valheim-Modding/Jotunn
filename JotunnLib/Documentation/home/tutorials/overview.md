@@ -26,6 +26,8 @@ Each section will have examples showing how this is done. All of the examples sh
 
 ### [Custom Status Effects](status-effects.md): Add custom Status Effects.
 
+### [Custom Item Conversions](item-conversions.md): Add custom item conversions like the cooking of meat or the smelting of ores.
+
 ### [Custom Skills](skills.md): Add custom trainable Skills.
 
 ### [Custom Console Commands](console-commands.md): Add custom commands to the Console that can execute your methods.
