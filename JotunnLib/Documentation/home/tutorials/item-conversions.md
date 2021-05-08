@@ -75,9 +75,9 @@ ItemManager.Instance.AddItem(ingot);
 // Create a conversion for the blastfurnace, the custom item is the new outcome
 var blastConversion = new CustomItemConversion(new SmelterConversionConfig
 {
-    Station = "blastfurnace", // Override the default "smelter" station of the SmelterConversionConfig
+    Station = "blastfurnace", // Override the default "smelter" station
     FromItem = "Iron",
-    ToItem = "Steel" // This is our custom prefabs name we have loaded just above 
+    ToItem = "Steel" // This is our custom prefabs name
 });
 ItemManager.Instance.AddItemConversion(blastConversion);
 ```
