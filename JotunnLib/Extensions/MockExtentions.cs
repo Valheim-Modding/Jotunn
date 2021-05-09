@@ -64,6 +64,7 @@ namespace Jotunn
         /// </summary>
         public const string JVLMockPrefix = "JVLmock_";
 
+#pragma warning disable CS0618
         /// <summary>
         ///     Will try to find the real vanilla prefab from the given mock
         /// </summary>
@@ -75,15 +76,11 @@ namespace Jotunn
             if (unityObject)
             {
                 var unityObjectName = unityObject.name;
-#pragma warning disable CS0618
                 var isVLMock = unityObjectName.StartsWith(MockPrefix);
-#pragma warning restore CS0618
                 var isJVLMock = unityObjectName.StartsWith(JVLMockPrefix);
                 if (isVLMock || isJVLMock)
                 {
-#pragma warning disable CS0618
                     if (isVLMock) unityObjectName = unityObjectName.Substring(MockPrefix.Length);
-#pragma warning restore CS0618
                     if (isJVLMock) unityObjectName = unityObjectName.Substring(JVLMockPrefix.Length);
 
                     // Cut off the suffix in the name to correctly query the original material
@@ -96,12 +93,21 @@ namespace Jotunn
                         }
                     }
 
-                    return PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);
+                    Object ret = PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);
+
+                    if (!ret)
+                    {
+                        //Logger.LogError($"Mock prefab {unityObjectName} could not be resolved");
+                        throw new Exception($"Mock prefab {unityObjectName} could not be resolved");
+                    }
+
+                    return ret;
                 }
             }
 
             return null;
         }
+#pragma warning restore CS0618
 
         /// <summary>
         ///     Will try to find the real vanilla prefab from the given mock
@@ -121,6 +127,18 @@ namespace Jotunn
         public static void FixReferences(this object objectToFix)
         {
             objectToFix.FixReferences(0);
+        }
+
+        /// <summary>
+        ///     Resolves all references for mocks in this GameObject recursively.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public static void FixReferences(this GameObject gameObject)
+        {
+            foreach (var component in gameObject.GetComponents<Component>())
+            {
+                component.FixReferences();
+            }
         }
 
         // Thanks for not using the Resources folder IronGate
@@ -299,18 +317,6 @@ namespace Jotunn
                         }
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        ///     Resolves all references for mocks in this GameObject recursively.
-        /// </summary>
-        /// <param name="gameObject"></param>
-        public static void FixReferences(this GameObject gameObject)
-        {
-            foreach (var component in gameObject.GetComponents<Component>())
-            {
-                component.FixReferences();
             }
         }
 

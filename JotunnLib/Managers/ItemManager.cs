@@ -284,12 +284,6 @@ namespace Jotunn.Managers
                         foreach (var requirement in recipe.m_resources)
                         {
                             requirement.FixReferences();
-
-                            // workaround for now. needs to be in fixreferences
-                            if (requirement.m_resItem.ToString().StartsWith(PrefabExtension.JVLMockPrefix))
-                            {
-                                throw new Exception($"Requirement {requirement.m_resItem} not found");
-                            }
                         }
                         customRecipe.FixRequirementReferences = false;
                     }
