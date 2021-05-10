@@ -347,6 +347,15 @@ namespace TestMod
                 ToItem = "CookedLoxMeat"
             });
             ItemManager.Instance.AddItemConversion(smeltConversion);
+
+            // Add an item conversion which does not resolve the mock
+            var faultConversion = new CustomItemConversion(new SmelterConversionConfig
+            {
+                //Station = "smelter",  // Use the default from the config
+                FromItem = "StonerDude",
+                ToItem = "CookedLoxMeat"
+            });
+            ItemManager.Instance.AddItemConversion(faultConversion);
         }
 
         // Add custom item conversion (gives a steel ingot to smelter)
