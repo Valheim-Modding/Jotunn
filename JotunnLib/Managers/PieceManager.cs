@@ -37,12 +37,7 @@ namespace Jotunn.Managers
         internal List<CustomPiece> Pieces = new List<CustomPiece>();
 
         internal readonly Dictionary<string, PieceTable> PieceTables = new Dictionary<string, PieceTable>();
-        internal readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>()
-        {
-            { "Cultivator", "_CultivatorPieceTable" },
-            { "Hammer", "_HammerPieceTable" },
-            { "Hoe", "_HoePieceTable" }
-        };
+        internal readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>();
 
         /// <summary>
         ///     Creates the piece table container and registers all hooks.
@@ -110,8 +105,6 @@ namespace Jotunn.Managers
 
             PieceTable table = obj.AddComponent<PieceTable>();
             PieceTables.Add(name, table);
-
-            PieceTableNameMap.Add(name, $"_{name}PieceTable");
         }
 
         /// <summary>
