@@ -68,7 +68,6 @@ namespace Jotunn.Managers
 
             // Fire events as a late action in the detour so all mods can load before
             // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
-            // using (new DetourContext(int.MaxValue - 1000))
             using (new DetourContext(int.MaxValue - 1000))
             {
                 On.ObjectDB.CopyOtherDB += InvokeOnItemsRegisteredFejd;
