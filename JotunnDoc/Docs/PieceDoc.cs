@@ -35,6 +35,11 @@ namespace JotunnDoc.Docs
                 {
                     Piece piece = obj.GetComponent<Piece>();
 
+                    if (piece == null)
+                    {
+                        continue;
+                    }
+
                     string resources = "<ul>";
 
                     foreach (Piece.Requirement req in piece.m_resources)
