@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using Jotunn.Utils;
 using Jotunn.Entities;
@@ -66,6 +68,7 @@ namespace Jotunn.Managers
 
             // Fire events as a late action in the detour so all mods can load before
             // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
+            // using (new DetourContext(int.MaxValue - 1000))
             using (new DetourContext(int.MaxValue - 1000))
             {
                 On.ObjectDB.CopyOtherDB += InvokeOnItemsRegisteredFejd;
@@ -262,6 +265,33 @@ namespace Jotunn.Managers
             Logger.LogInfo("Updating item hashes");
 
             objectDB.UpdateItemHashes();
+
+            RegisterObjectDBItemsWithBetterTrader(objectDB);
+
+        }
+
+        private static void RegisterObjectDBItemsWithBetterTrader(ObjectDB objectDB)
+        {
+            var betterTrader = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "BetterTrader");
+            if (betterTrader != null)
+            {
+                Logger.LogInfo("BetterTrader Found");
+                var objectDBPatches = betterTrader.GetExportedTypes().FirstOrDefault(t => t.Name == "ObjectDB_Patches");
+                if (objectDBPatches != null)
+                {
+                    var registerObjectDBItems = objectDBPatches.GetMethod("RegisterObjectDBItems", BindingFlags.Static | BindingFlags.Public);
+
+                    if (registerObjectDBItems != null)
+                    {
+                        Logger.LogDebug("BetterTrader.ObjectDB_Patches.RegisterObjectDBItems found.");
+                        registerObjectDBItems?.Invoke(null, new object[] { objectDB.m_items });
+                    }
+                    else
+                    {
+                        Logger.LogError("BetterTrader.ObjectDB_Patches.RegisterObjectDBItems is not found. Are you running the current version of BetterTrader and Jotunn?");
+                    }
+                }
+            }
         }
 
         private void RegisterCustomRecipes(ObjectDB objectDB)
