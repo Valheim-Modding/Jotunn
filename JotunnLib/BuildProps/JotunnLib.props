@@ -4,7 +4,8 @@
   <PropertyGroup>
     <GenerateResourceNeverLockTypeAssemblies>true</GenerateResourceNeverLockTypeAssemblies>
   </PropertyGroup>
-  <Import Project="JotunnLibRefs.props" Condition="Exists('$(SolutionDir)Environment.props')" />
+  <Import Project="JotunnLibRefsCorlib.props" Condition="Exists('$(SolutionDir)Environment.props') And Exists('$(VALHEIM_INSTALL)/unstripped_corlib/mscorlib.dll')" />
+  <Import Project="JotunnLibRefsManaged.props" Condition="Exists('$(SolutionDir)Environment.props') And Exists('$(VALHEIM_INSTALL)/unstripped_managed/mscorlib.dll') And !Exists('$(VALHEIM_INSTALL)/unstripped_corlib/mscorlib.dll')" />
   <UsingTask TaskName="JotunnBuildTask" AssemblyFile="JotunnBuildTask.dll" />
   <Target Name="JotunnBuildTaskRunner" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(SolutionDir)Environment.props')" >
     <Message Importance="High" Text="Executing Jotunn Prebuild Task creating MMHOOK dlls"/> 
