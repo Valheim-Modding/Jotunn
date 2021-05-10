@@ -2,6 +2,7 @@
 using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,7 +19,7 @@ namespace Jotunn.Managers
         /// </summary>
         public static PieceManager Instance
         {
-            get 
+            get
             {
                 if (_instance == null) _instance = new PieceManager();
                 return _instance;
@@ -80,7 +81,7 @@ namespace Jotunn.Managers
 
             if (table == null)
             {
-                Logger.LogError($"Game object has no PieceTable attached");
+                Logger.LogError($"Prefab {prefab.name} has no PieceTable attached");
                 return;
             }
 
@@ -117,13 +118,12 @@ namespace Jotunn.Managers
         ///     Get a <see cref="PieceTable"/> by name.<br /><br />
         ///     Search hierarchy:<br />
         ///     <list type="number">
-        ///         <item>Custom table with the exact name</item>
-        ///         <item>Vanilla table via "item" name (e.g. "Hammer")</item>
-        ///         <item>Vanilla table with the exact name (e.g. "_HammerPieceTable")</item>
+        ///         <item>PieceTable with the exact name (e.g. "_HammerPieceTable")</item>
+        ///         <item>PieceTable via "item" name (e.g. "Hammer")</item>
         ///     </list>
         /// </summary>
-        /// <param name="name">Name of the PieceTable.</param>
-        /// <returns></returns>
+        /// <param name="name">Prefab or item name of the PieceTable</param>
+        /// <returns>PieceTable prefab</returns>
         public PieceTable GetPieceTable(string name)
         {
             if (PieceTables.ContainsKey(name))
@@ -133,10 +133,11 @@ namespace Jotunn.Managers
 
             if (PieceTableNameMap.ContainsKey(name))
             {
-                return PrefabManager.Cache.GetPrefab<PieceTable>(PieceTableNameMap[name]);
+                return PieceTables[PieceTableNameMap[name]];
             }
 
-            return PrefabManager.Cache.GetPrefab<PieceTable>(name);
+            //return PrefabManager.Cache.GetPrefab<PieceTable>(name);
+            return null;
         }
 
         /// <summary>
@@ -181,7 +182,7 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public CustomPiece GetPiece(string pieceName)
         {
-            return Pieces.Find(x => x.PiecePrefab.name.Equals(pieceName));
+            return Pieces.FirstOrDefault(x => x.PiecePrefab.name.Equals(pieceName));
         }
 
         /// <summary>
@@ -200,6 +201,29 @@ namespace Jotunn.Managers
             Pieces.Remove(piece);
         }
 
+        /// <summary>
+        ///     Loop all items in the game and get all PieceTables used
+        /// </summary>
+        private void LoadPieceTables()
+        {
+            foreach (var item in ObjectDB.instance.m_items)
+            {
+                var table = item.GetComponent<ItemDrop>()?.m_itemData.m_shared.m_buildPieces;
+
+                if (table != null)
+                {
+                    if (!PieceTables.ContainsKey(table.name))
+                    {
+                        PieceTables.Add(table.name, table);
+                    }
+                    if (!PieceTableNameMap.ContainsKey(item.name))
+                    {
+                        PieceTableNameMap.Add(item.name, table.name);
+                    }
+                }
+            }
+        }
+
         private void RegisterInPieceTables()
         {
             Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
@@ -207,22 +231,12 @@ namespace Jotunn.Managers
             foreach (var customPiece in Pieces)
             {
                 try
-                { 
+                {
                     // Fix references if needed
                     if (customPiece.FixReference)
                     {
                         customPiece.PiecePrefab.FixReferences();
                         customPiece.FixReference = false;
-                    }
-
-
-                    // workaround for now. needs to be in fixreferences
-                    foreach (var requirement in customPiece.Piece.m_resources)
-                    {
-                        if (requirement.m_resItem.ToString().StartsWith(PrefabExtension.JVLMockPrefix))
-                        {
-                            throw new Exception($"Requirement {requirement.m_resItem} not found");
-                        }
                     }
 
                     // Assign vfx_ExtensionConnection for StationExtensions
@@ -266,6 +280,7 @@ namespace Jotunn.Managers
 
                 if (isValid)
                 {
+                    LoadPieceTables();
                     RegisterInPieceTables();
                 }
             }
