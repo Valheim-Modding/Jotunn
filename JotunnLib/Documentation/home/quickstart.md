@@ -4,7 +4,7 @@ These are the basic steps to integrate Jötunn into a new or existing project.
 
 ## Install Jötunn via NuGet
 
-If you just want to use the library and none of its automations all you need to do is to install the latest release of Jötunn from [nuget.org](https://www.nuget.org/packages/JotunnLib) into your project and start using it. Jötunn uses [MMHooks](https://github.com/MonoMod/MonoMod), so make sure you have build the detour dlls and referenced them in your project.
+If you just want to use the library and none of its automations all you need to do is to install the latest release of Jötunn from [nuget.org](https://www.nuget.org/packages/JotunnLib) into your project and start using it. Jötunn uses [MMHooks](https://github.com/MonoMod/MonoMod), so make sure you have build the detour dlls and referenced them in your project or use our [PreBuild automations](#activate-prebuild-automations) to automatically reference and optionally create them for you.
 
 Adding a Nuget in Visual Studio is pretty simple.
 
