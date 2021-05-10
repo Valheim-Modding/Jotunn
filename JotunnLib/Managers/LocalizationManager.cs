@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Jotunn.Configs;
 using Jotunn.Utils;
+using UnityEngine;
 
 namespace Jotunn.Managers
 {
@@ -32,8 +33,9 @@ namespace Jotunn.Managers
         /// </summary>
         public const string CommunityTranslationFileName = "community_translation.json";
 
-        private static LocalizationManager _instance;
+        private const string LocalizationEndChars = " (){}[]+-!?/\\\\&%,.:-=<>\n";
 
+        private static LocalizationManager _instance;
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
@@ -61,13 +63,31 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            On.Localization.LoadLanguages += Localization_LoadLanguages;
-            On.Localization.SetupLanguage += Localization_SetupLanguage;
+            On.FejdStartup.SetupGui += LoadAndSetupModLanguages;
 
             var doQuoteLineSplitMethodInfo = typeof(Localization).GetMethod(nameof(Localization.DoQuoteLineSplit), ReflectionHelper.AllBindingFlags);
             DoQuoteLineSplit =
                 (Func<StringReader, List<List<string>>>) Delegate.CreateDelegate(typeof(Func<StringReader, List<List<string>>>), null,
                     doQuoteLineSplitMethodInfo);
+        }
+
+        // Some mod could have initialized Localization before all mods are loaded.
+        // See https://github.com/Valheim-Modding/Jotunn/issues/193
+        private void LoadAndSetupModLanguages(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
+        {
+            orig(self);
+
+            On.Localization.LoadLanguages += Localization_LoadLanguages;
+            On.Localization.SetupLanguage += Localization_SetupLanguage;
+
+            List<string> tmplist = Localization.instance.m_languages.ToList();
+            tmplist.AddRange(Localization.instance.LoadLanguages());
+            tmplist = tmplist.Distinct().ToList();
+            Localization.instance.m_languages.Clear();
+            Localization.instance.m_languages.AddRange(tmplist);
+
+            string lang = PlayerPrefs.GetString("language", DefaultLanguage);
+            Localization.instance.SetupLanguage(lang);
         }
 
         private List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
@@ -192,9 +212,10 @@ namespace Jotunn.Managers
         {
             Dictionary<string, string> languageDict = null;
 
-            if (token.Any(x => Localization.instance.m_endChars.Contains(x)))
+            if (token.Any(x => LocalizationEndChars.Contains(x)))
             {
-                throw new Exception($"Token has an end char in it ({Localization.instance.m_endChars}).");
+                Logger.LogError($"Token '{token}' must not contain an end char ({LocalizationEndChars}).");
+                return;
             }
 
             if (!forceReplace)
@@ -203,7 +224,8 @@ namespace Jotunn.Managers
                 {
                     if (languageDict.Keys.Contains(token))
                     {
-                        throw new Exception($"Token named {token} already exist!");
+                        Logger.LogError($"Token named '{token}' already exist!");
+                        return;
                     }
                 }
             }

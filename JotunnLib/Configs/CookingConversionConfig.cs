@@ -9,7 +9,7 @@ namespace Jotunn.Configs
     public class CookingConversionConfig : ConversionConfig
     {
         /// <summary>
-        ///     The name of the station prefab this conversion is added to. Defaults to piece_cookingstation.
+        ///     The name of the station prefab this conversion is added to. Defaults to "piece_cookingstation".
         /// </summary>
         public override string Station { get; set; } = "piece_cookingstation";
 

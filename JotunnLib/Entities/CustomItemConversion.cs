@@ -11,10 +11,22 @@ namespace Jotunn.Entities
     /// </summary>
     public class CustomItemConversion
     {
+        /// <summary>
+        ///     Type of the conversion component used in game.
+        /// </summary>
         public enum ConversionType
         {
+            /// <summary>
+            ///     Add a conversion to a station with the CookingStation component attached.
+            /// </summary>
             CookingStation,
+            /// <summary>
+            ///     Add a conversion to a station with the Fermenter component attached.
+            /// </summary>
             Fermenter,
+            /// <summary>
+            ///     Add a conversion to a station with the Smelter component attached.
+            /// </summary>
             Smelter
         };
 

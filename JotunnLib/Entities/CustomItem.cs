@@ -73,6 +73,8 @@ namespace Jotunn.Entities
             if (ItemPrefab)
             {
                 ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
+                ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
+                ItemDrop.m_itemData.m_shared.m_name = name;
             }
         }
 
@@ -134,7 +136,7 @@ namespace Jotunn.Entities
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return ItemPrefab && ItemDrop && ItemDrop.IsValid();
+            return ItemPrefab && ItemPrefab.IsValid() && ItemDrop && ItemDrop.IsValid();
         }
 
         /// <summary>

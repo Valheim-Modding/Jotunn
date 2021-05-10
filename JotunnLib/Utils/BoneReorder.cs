@@ -109,10 +109,10 @@ namespace Jotunn.Utils
                 GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabHash);
                 if (!skeletonRoot || !itemPrefab)
                 {
-                    Logger.LogInfo($"prefab missing components... Skipping {itemPrefab} {skeletonRoot}");
+                    Logger.LogDebug($"Prefab missing components. Skipping {itemPrefab} {skeletonRoot}");
                     return;
                 }
-                Logger.LogInfo($"Reordering bones...");
+                Logger.LogDebug($"Reordering bones");
                 int childCount = itemPrefab.transform.childCount;
                 int num = 0;
                 for (var i = 0; i < childCount; i++)

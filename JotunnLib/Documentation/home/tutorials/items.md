@@ -66,7 +66,9 @@ private static void RecipeEvilSword(ItemDrop itemDrop)
                 m_amount = 1
             }
     };
-    CustomRecipe CR = new CustomRecipe(recipe, false, false);
+
+    // Since we got the prefabs from the cache, no referencing is needed
+    CustomRecipe CR = new CustomRecipe(recipe, fixReference: false, fixRequirementReferences: false);
     ItemManager.Instance.AddRecipe(CR);
 }
 ```

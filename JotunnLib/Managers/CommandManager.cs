@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Jotunn.Entities;
 using Jotunn.ConsoleCommands;
@@ -16,7 +17,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static CommandManager Instance { 
+        public static CommandManager Instance
+        {
             get
             {
                 if (_instance == null) _instance = new CommandManager();
@@ -90,6 +92,13 @@ namespace Jotunn.Managers
                 return;
             }
 
+            // Cannot have command with space in it
+            if (cmd.Name.Contains(" "))
+            {
+                Logger.LogError($"Cannot have command containing space: '{cmd.Name}'");
+                return;
+            }
+
             _consoleCommands.Add(cmd);
         }
 
@@ -106,7 +115,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            ConsoleCommand cmd = CommandManager.Instance.ConsoleCommands.FirstOrDefault(c => c.Name == parts[0]);
+            ConsoleCommand cmd = CommandManager.Instance.ConsoleCommands.FirstOrDefault(c => c.Name.Equals(parts[0], StringComparison.InvariantCultureIgnoreCase));
 
             // If we found a command, execute it
             if (cmd != null)

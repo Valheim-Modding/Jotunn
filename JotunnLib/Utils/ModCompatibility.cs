@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,14 +22,49 @@ namespace Jotunn.Utils
         /// </summary>
         private static ZPackage lastServerVersion;
 
+        private static Dictionary<string, ZPackage> clientVersions = new Dictionary<string, ZPackage>();
+
+
         [PatchInit(-1000)]
         public static void InitPatch()
         {
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
-            On.ZNet.SendPeerInfo += ZNet_SendPeerInfo;
+            On.ZNet.OnNewConnection += ZNet_OnNewConnection;
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
 
+        [PatchInit(int.MaxValue - 1000)]
+        public static void InitPatchEarly()
+        {
+            On.ZNet.RPC_ClientHandshake += ZNet_RPC_ClientHandshake;
+            On.ZNet.RPC_ServerHandshake += ZNet_RPC_ServerHandshake;
+        }
+        
+        // Send client module list to server
+        private static void ZNet_RPC_ClientHandshake(On.ZNet.orig_RPC_ClientHandshake orig, ZNet self, ZRpc rpc, bool needPassword)
+        {
+            rpc.Invoke(nameof(RPC_Jotunn_ReceiveVersionData), new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
+
+            orig(self, rpc, needPassword);
+        }
+
+        // Send server module list to client
+        private static void ZNet_RPC_ServerHandshake(On.ZNet.orig_RPC_ServerHandshake orig, ZNet self, ZRpc rpc)
+        {
+            rpc.Invoke(nameof(RPC_Jotunn_ReceiveVersionData), new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
+
+            orig(self, rpc);
+        }
+
+        // Register our RPC
+        private static void ZNet_OnNewConnection(On.ZNet.orig_OnNewConnection orig, ZNet self, ZNetPeer peer)
+        {
+            // Register our RPC very early
+            peer.m_rpc.Register<ZPackage>(nameof(RPC_Jotunn_ReceiveVersionData), RPC_Jotunn_ReceiveVersionData);
+            orig(self, peer);
+        }
+
+        // Show mod compatibility error message when needed
         private static void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
             // Show message box if there is a message to show
@@ -38,53 +74,22 @@ namespace Jotunn.Utils
             }
         }
 
-        // Hook SendPeerInfo on client to add our method to the rpc
-        private static void ZNet_SendPeerInfo(On.ZNet.orig_SendPeerInfo orig, ZNet self, ZRpc rpc, string password)
-        {
-            // Only client needs to register this one
-            rpc.Register(nameof(RPC_Jotunn_ReceiveServerVersionData), new Action<ZRpc, ZPackage>(RPC_Jotunn_ReceiveServerVersionData));
-
-            On.ZRpc.Invoke += AppendPackage;
-            orig(self, rpc, password);
-            On.ZRpc.Invoke -= AppendPackage;
-        }
-
-        // Append our version data package to the existing zPackage
-        private static void AppendPackage(On.ZRpc.orig_Invoke orig, ZRpc self, string method, object[] parameters)
-        {
-            // Just add if method is PeerInfo. Mods may hook ZNet.SendPeerInfo and invoke other RPCs in that context
-            // Also use the method name so we instantly know when IronGate changes that method name
-            if (method.Equals(nameof(ZNet.RPC_PeerInfo).Substring(4)))
-            {
-                var pkg = (ZPackage)parameters[0];
-                pkg.Write(new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
-                orig(self, method, parameters);
-            }
-        }
-
         // Hook RPC_PeerInfo to check in front of the original method
         private static void ZNet_RPC_PeerInfo(On.ZNet.orig_RPC_PeerInfo orig, ZNet self, ZRpc rpc, ZPackage pkg)
         {
             if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
             {
-                pkg.ReadLong();
-                pkg.ReadString();
-                pkg.ReadVector3();
-                pkg.ReadString();
-                pkg.ReadString();
-                pkg.ReadByteArray();
-
                 try
                 {
-                    var appended = new ZPackage(pkg.ReadByteArray());
-
-                    var clientVersion = new ModuleVersionData(appended);
+                    var clientVersion = new ModuleVersionData(clientVersions[rpc.GetSocket().GetEndPointString()]);
                     var serverVersion = new ModuleVersionData(GetEnforcableMods().ToList());
 
+                    // Remove from list
+                    clientVersions.Remove(rpc.GetSocket().GetEndPointString());
+
+                    // Compare and disconnect when not equal
                     if (!clientVersion.Equals(serverVersion))
                     {
-                        rpc.Invoke(nameof(RPC_Jotunn_ReceiveServerVersionData), serverVersion.ToZPackage());
-
                         rpc.Invoke("Error", 3);
                         return;
                     }
@@ -97,13 +102,42 @@ namespace Jotunn.Utils
                     rpc.Invoke("Error", 3);
                     return;
                 }
-
-                // Reset the stream
-                pkg.m_reader.BaseStream.Position = 0;
+            }
+            else
+            {
+                // If we got this far on client side, clear lastServerVersion again
+                lastServerVersion = null;
             }
 
             // call original method
             orig(self, rpc, pkg);
+        }
+
+        /// <summary>
+        ///     Store server's message.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="data"></param>
+        private static void RPC_Jotunn_ReceiveVersionData(ZRpc sender, ZPackage data)
+        {
+            Logger.LogWarning($"Received Version package from {sender.m_socket.GetEndPointString()}");
+
+            if (!ZNet.instance.IsClientInstance())
+            {
+                clientVersions[sender.m_socket.GetEndPointString()] = data;
+                var clientVersion = new ModuleVersionData(clientVersions[sender.GetSocket().GetEndPointString()]);
+                var serverVersion = new ModuleVersionData(GetEnforcableMods().ToList());
+
+                if (!clientVersion.Equals(serverVersion))
+                {
+                    // Disconnect if mods are not network compatible
+                    sender.Invoke("Error", 3);
+                }
+            }
+            else
+            {
+                lastServerVersion = data;
+            }
         }
 
         /// <summary>
@@ -147,11 +181,11 @@ namespace Jotunn.Utils
             scroll.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
 
             var button = GUIManager.Instance.CreateButton("OK", panel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -215f));
-            
+
             // Special condition, coming from ingame back into main scene
             button.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
             button.SetActive(true);
-            
+
             button.GetComponent<Button>().onClick.AddListener(() =>
             {
                 panel.SetActive(false);
@@ -325,36 +359,12 @@ namespace Jotunn.Utils
         {
             foreach (var plugin in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Key))
             {
-                var nca = plugin.Value.GetType().GetCustomAttributes(typeof(NetworkCompatibilityAttribute), true).Cast<NetworkCompatibilityAttribute>()
+                var networkCompatibilityAttribute = plugin.Value.GetType().GetCustomAttributes(typeof(NetworkCompatibilityAttribute), true).Cast<NetworkCompatibilityAttribute>()
                     .FirstOrDefault();
-                if (nca != null)
+                if (networkCompatibilityAttribute != null)
                 {
                     yield return new Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>(plugin.Value.Info.Metadata.Name,
-                        plugin.Value.Info.Metadata.Version, nca.EnforceModOnClients, nca.EnforceSameVersion);
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Store server's message.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="data"></param>
-        private static void RPC_Jotunn_ReceiveServerVersionData(ZRpc sender, ZPackage data)
-        {
-            Logger.LogDebug("Received version data from server");
-            if (ZNet.instance.IsClientInstance())
-            {
-                var clientVersion = new ModuleVersionData(GetEnforcableMods().ToList());
-                var serverVersion = new ModuleVersionData(data);
-
-                if (!clientVersion.Equals(serverVersion))
-                {
-                    // Prepare to show error message on screen after scene load
-                    lastServerVersion = data;
-
-                    // Reset it's stream position
-                    data.m_reader.BaseStream.Position = 0;
+                        plugin.Value.Info.Metadata.Version, networkCompatibilityAttribute.EnforceModOnClients, networkCompatibilityAttribute.EnforceSameVersion);
                 }
             }
         }
@@ -383,6 +393,8 @@ namespace Jotunn.Utils
             {
                 try
                 {
+                    // Needed !!
+                    pkg.SetPos(0);
                     ValheimVersion = new System.Version(pkg.ReadInt(), pkg.ReadInt(), pkg.ReadInt());
 
                     var numberOfModules = pkg.ReadInt();
@@ -395,9 +407,10 @@ namespace Jotunn.Utils
                         numberOfModules--;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     Logger.LogError("Could not deserialize version message data from zPackage");
+                    Logger.LogError(ex.Message);
                 }
             }
 
