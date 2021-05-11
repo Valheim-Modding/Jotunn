@@ -120,7 +120,7 @@ namespace Jotunn.Utils
         /// <param name="data"></param>
         private static void RPC_Jotunn_ReceiveVersionData(ZRpc sender, ZPackage data)
         {
-            Logger.LogWarning($"Received Version package from {sender.m_socket.GetEndPointString()}");
+            Logger.LogDebug($"Received Version package from {sender.m_socket.GetEndPointString()}");
 
             if (!ZNet.instance.IsClientInstance())
             {
