@@ -1,6 +1,6 @@
 ﻿# Loading Assets, the Jötunn way
 
-Inside of our `Awake` in our `BaseUnityPlugin` we will invoke a new method `loadAssets();` which will load the prefabs from our asset bundles and resources into our plugin. To facilitate this we will first need to define some fields as such:
+Inside of our `Awake` in our `BaseUnityPlugin` we will invoke a new method `LoadAssets();` which will load the prefabs from our asset bundles and resources into our plugin. To facilitate this we will first need to define some fields as such:
 
 ```cs
 public AssetBundle TestAssets;
@@ -31,7 +31,8 @@ You may have noticed that we include a postbuild command to copy the `Assets` di
 
 Right click our solution, then add a new directory named `AssetsEmbedded`. Right click the directory and select `Add existing` and select the files we placed inside from the download link provided.
 
-Another option is to embed our resources inside the binary itself. You may do this by right clicking a folder inside of your project, and add an existing item. Once it has been added, right click the item, select properties, and set the build action to embedded resource: 
+Another option is to embed our resources inside the binary itself. You may do this by right clicking a folder inside of your project, and add an existing item. Once it has been added, right click the item, select properties, and set the build action to embedded resource:
+
 ![Assets.Embedded Resource](../../images/data/Assets.EmbeddedResource.png)
 
 
@@ -41,23 +42,21 @@ In order to load our resources, we can utilise Jötunn's [AssetUtils](xref:Jotun
 ```cs
 private void LoadAssets()
 {
-    // Load texture
+    // Load texture from the filesystem
     testTex = AssetUtils.LoadTexture("JotunnModExample/Assets/test_tex.jpg");
     testSprite = Sprite.Create(testTex, new Rect(0f, 0f, testTex.width, testTex.height), Vector2.zero);
 
-    // Load asset bundle from filesystem
-    TestAssets = AssetUtils.LoadAssetBundle("JotunnModExample/Assets/jotunnlibtest");
-    Jotunn.Logger.LogInfo(TestAssets);
+    // Load asset bundle from the filesystem
+    testAssets = AssetUtils.LoadAssetBundle("JotunnModExample/Assets/jotunnlibtest");
+    Jotunn.Logger.LogInfo(testAssets);
 
-    // Load asset bundle from filesystem
-    BlueprintRuneBundle = AssetUtils.LoadAssetBundle("JotunnModExample/Assets/blueprints");
-    Jotunn.Logger.LogInfo(BlueprintRuneBundle);
-    
-    //Load embedded resources
-    embeddedResourceBundle = AssetUtils.LoadAssetBundleFromResources("capeironbackpack");
-    backpackPrefab = embeddedResourceBundle.LoadAsset<GameObject>("Assets/Evie/CapeIronBackpack.prefab");
+    // Load asset bundle from the filesystem
+    blueprintRuneBundle = AssetUtils.LoadAssetBundle("JotunnModExample/Assets/testblueprints");
+    Jotunn.Logger.LogInfo(blueprintRuneBundle);
 
-    // Embedded Resources
-    Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", Assembly.GetExecutingAssembly().GetManifestResourceNames())}");
+    // Load asset bundle from embedded resources
+    embeddedResourceBundle = AssetUtils.LoadAssetBundleFromResources("eviesbackpacks", typeof(JotunnModExample).Assembly);
+    backpackPrefab = embeddedResourceBundle.LoadAsset<GameObject>("Assets/Evie/CapeSilverBackpack.prefab");
+    Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(JotunnModExample).Assembly.GetManifestResourceNames())}");
 }
 ```
