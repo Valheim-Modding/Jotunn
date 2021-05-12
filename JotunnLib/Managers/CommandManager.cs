@@ -50,7 +50,7 @@ namespace Jotunn.Managers
             "genloc", "debugmode", "spawn", "pos", "goto", "exploremap", "resetmap", "killall", "tame",
             "hair", "beard", "location", "raiseskill", "resetskill", "freefly", "ffsmooth", "tod",
             "env", "resetenv", "wind", "god", "event", "stopevent", "randomevent", "save", "tameall",
-            "resetcharacter", "removedrops", "setkey", "resetkeys", "listkeys", "players", "dpsdebug"
+            "resetcharacter", "removedrops", "setkey", "resetkeys", "listkeys", "players", "dpsdebug", "ghost"
         };
 
         /// <summary>
