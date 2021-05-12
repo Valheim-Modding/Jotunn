@@ -68,7 +68,7 @@ namespace Jotunn.Utils
         private static void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
             // Show message box if there is a message to show
-            if (lastServerVersion != null && scene.name == "start")
+            if (lastServerVersion != null && scene.name == "start" && ZNet.m_connectionStatus == ZNet.ConnectionStatus.ErrorVersion)
             {
                 ShowModCompatibilityErrorMessage();
             }
