@@ -154,8 +154,8 @@ namespace Jotunn.Managers
                 {
                     // Texture Atlas aka Sprite Sheet
                     var textures = Resources.FindObjectsOfTypeAll<Texture2D>();
-                    TextureAtlas = textures.LastOrDefault(x => x.name == "sactx-2048x2048-Uncompressed-UIAtlas-a5f4e704");
-                    TextureAtlas2 = textures.FirstOrDefault(x => x.name == "sactx-2048x2048-Uncompressed-UIAtlas-a5f4e704");
+                    TextureAtlas = textures.LastOrDefault(x => x.name.StartsWith("sactx-2048x2048-Uncompressed-UIAtlas-"));
+                    TextureAtlas2 = textures.FirstOrDefault(x => x.name.StartsWith("sactx-2048x2048-Uncompressed-UIAtlas-"));
                     if (TextureAtlas == null || TextureAtlas2 == null)
                     {
                         throw new Exception("Texture atlas not found");
