@@ -604,32 +604,10 @@ namespace Jotunn.Managers
                 Amount = needsAmount1,
                 AmountPerLevel = needsAmountPerLevel1,
                 Recover = recoverMats1
-            },
-            new RequirementConfig
-            {
-                Item = needs2,
-                Amount = needsAmount2,
-                AmountPerLevel = needsAmountPerLevel2,
-                Recover = recoverMats2
-            },
-            new RequirementConfig
-            {
-                Item = needs3,
-                Amount = needsAmount3,
-                AmountPerLevel = needsAmountPerLevel3,
-                Recover = recoverMats3
-            },
-            new RequirementConfig
-            {
-                Item = needs4,
-                Amount = needsAmount4,
-                AmountPerLevel = needsAmountPerLevel4,
-                Recover = recoverMats4
             });
         }
         public void AddCustomConversions(string station, string fromitem, string toitem)
         {
-            // Create a conversion for the blastfurnace, the custom item is the new outcome
             var conversion = new CustomItemConversion(new SmelterConversionConfig
             {
                 Station = station,
@@ -687,10 +665,16 @@ namespace Jotunn.Managers
                 });
             PieceManager.Instance.AddPiece(piece);
         }
-        private void AddPiece(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, bool allowedInDungeon, string needs1, int needsAmount1, int needsAmountPerLevel1, bool recoverMats1)
+        public void AddPiece(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, params RequirementConfig[] inputs)
         {
             AddStationPiece(prefabName, name, description);
-            AddPieceRecipeWithOneInputs(prefab, pieceTable, craftingStation, needs1, needsAmount1, needsAmountPerLevel1, recoverMats1);
+            AddPieceRecipe(prefab, pieceTable, craftingStation, new RequirementConfig
+            {
+                Item = needs1,
+                Amount = needsAmount1,
+                AmountPerLevel = needsAmountPerLevel1,
+                Recover = recoverMats1
+            });
         }
         private void AddStationPiece(string prefabName, string name, string description)
         {
