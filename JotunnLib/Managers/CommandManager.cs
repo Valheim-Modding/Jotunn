@@ -107,11 +107,15 @@ namespace Jotunn.Managers
             orig(self);
 
             string text = self.m_input.text;
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
             string[] parts = text.Split(' ');
 
-            if (string.IsNullOrEmpty(text) && parts.Length == 0)
+            if (parts.Length == 0)
             {
-                self.Print("Invalid command");
                 return;
             }
 
@@ -146,12 +150,7 @@ namespace Jotunn.Managers
                 {
                     self.Print("Cannot use this command without cheats enabled. Use 'devcommands' to enable cheats");
                 }
-
-                return;
             }
-
-            // Display error otherwise
-            self.Print("Invalid command");
         }
     }
 }
