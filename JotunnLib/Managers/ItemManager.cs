@@ -254,7 +254,7 @@ namespace Jotunn.Managers
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while adding item {customItem}: {ex.Message}");
+                    Logger.LogError($"Error while adding item {customItem}: {ex}");
                 }
             }
 
@@ -293,7 +293,7 @@ namespace Jotunn.Managers
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while adding recipe {customRecipe}: {ex.Message}");
+                    Logger.LogError($"Error while adding recipe {customRecipe}: {ex}");
                 }
             }
         }
@@ -320,7 +320,7 @@ namespace Jotunn.Managers
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while adding status effect {customStatusEffect}: {ex.Message}");
+                    Logger.LogError($"Error while adding status effect {customStatusEffect}: {ex}");
                 }
             }
         }
@@ -397,7 +397,7 @@ namespace Jotunn.Managers
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while adding item conversion {conversion}: {ex.Message}");
+                    Logger.LogError($"Error while adding item conversion {conversion}: {ex}");
                 }
             }
         }

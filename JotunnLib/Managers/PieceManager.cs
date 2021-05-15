@@ -257,7 +257,7 @@ namespace Jotunn.Managers
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while adding piece {customPiece}: {ex.Message}");
+                    Logger.LogError($"Error while adding piece {customPiece}: {ex}");
                 }
 
             }
