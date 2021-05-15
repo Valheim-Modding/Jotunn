@@ -184,6 +184,13 @@ namespace Jotunn
                     var isEnumerableOfUnityObjects = enumeratedType?.IsSameOrSubclass(typeof(Object)) == true;
                     if (isEnumerableOfUnityObjects)
                     {
+                        var isDict = fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+                        if (isDict)
+                        {
+                            Logger.LogWarning($"Not fixing potential mock references for field {field.Name} : Dictionary is not supported.");
+                            continue;
+                        }
+
                         var currentValues = (IEnumerable<Object>)field.GetValue(objectToFix);
                         if (currentValues != null)
                         {

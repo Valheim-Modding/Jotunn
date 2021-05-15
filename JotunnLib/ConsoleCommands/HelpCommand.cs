@@ -11,9 +11,9 @@ namespace Jotunn.ConsoleCommands
 
         public override void Run(string[] args)
         {
-            Console.instance.Print("Available commands:");
+            Console.instance.Print("Available custom commands:");
 
-            foreach (ConsoleCommand cmd in CommandManager.Instance.ConsoleCommands)
+            foreach (ConsoleCommand cmd in CommandManager.Instance.CustomCommands)
             {
                 Console.instance.Print(cmd.Name + " - " + cmd.Help);
             }
