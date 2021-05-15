@@ -780,7 +780,7 @@ namespace Jotunn.Managers
 
             canvas.GetComponent<CanvasGroup>().interactable = true;
             canvas.GetComponent<CanvasGroup>().ignoreParentGroups = true;
-            canvas.GetComponent<CanvasGroup>().blocksRaycasts = false;
+            canvas.GetComponent<CanvasGroup>().blocksRaycasts = true;
             canvas.GetComponent<CanvasGroup>().alpha = 1f;
 
             //canvas.transform.localScale = new Vector3(2,2,2);
