@@ -5,6 +5,9 @@ using Jotunn.Entities;
 using Jotunn.ConsoleCommands;
 using System.Text.RegularExpressions;
 using System.Linq;
+using MonoMod.Cil;
+using Mono.Cecil.Cil;
+using Mono.Cecil;
 
 namespace Jotunn.Managers
 {
@@ -30,46 +33,29 @@ namespace Jotunn.Managers
         ///     The console commands that are built-in to Valheim. These cannot be changed or overriden, and
         ///     no other commands can be declared with the same names as these.
         /// </summary>
-        public static ReadOnlyCollection<string> DefaultConsoleCommands => _defaultConsoleCommands.AsReadOnly();
+        public static ReadOnlyCollection<string> VanillaCommands => _vanillaCommands.AsReadOnly();
 
-        /// <summary>
-        ///     The "dev" console commands that are built-in to Valheim. These cannot be changed or overriden, and
-        ///     no other commands can be declared with the same names as these.
-        /// </summary>
-        public static ReadOnlyCollection<string> DefaultCheatConsoleCommands => _defaultCheatConsoleCommands.AsReadOnly();
-
-        private static List<string> _defaultConsoleCommands = new List<string>()
-        {
-            // "help" command not included since we want to overwrite it
-            
-            // Basic (non-dev) commands
-            "kick", "ban", "unban", "banned", "ping", "lodbias", "info", "devcommands"
-        };
-        private static readonly List<string> _defaultCheatConsoleCommands = new List<string>()
-        {
-            "genloc", "debugmode", "spawn", "pos", "goto", "exploremap", "resetmap", "killall", "tame",
-            "hair", "beard", "location", "raiseskill", "resetskill", "freefly", "ffsmooth", "tod",
-            "env", "resetenv", "wind", "god", "event", "stopevent", "randomevent", "save", "tameall",
-            "resetcharacter", "removedrops", "setkey", "resetkeys", "listkeys", "players", "dpsdebug", "ghost"
-        };
+        private static List<string> _vanillaCommands = new List<string>();
 
         /// <summary>
         ///     A list of all the custom console commands that have been added to the game through this manager,
         ///     either by Jotunn or by mods using Jotunn.
         /// </summary>
-        public ReadOnlyCollection<ConsoleCommand> ConsoleCommands => _consoleCommands.AsReadOnly();
+        public ReadOnlyCollection<ConsoleCommand> CustomCommands => _customCommands.AsReadOnly();
 
-        private List<ConsoleCommand> _consoleCommands = new List<ConsoleCommand>();
+        private List<ConsoleCommand> _customCommands = new List<ConsoleCommand>();
 
         /// <summary>
         ///     Initialize console commands that come with Jotunn.
         /// </summary>
         public void Init()
         {
-            On.Console.InputText += Console_InputText;
-
             AddConsoleCommand(new HelpCommand());
             AddConsoleCommand(new ClearCommand());
+
+            IL.Console.InputText += GatherVanillaCommands;
+
+            On.Console.InputText += HandleCustomCommands;
         }
 
         /// <summary>
@@ -78,15 +64,15 @@ namespace Jotunn.Managers
         /// <param name="cmd">The console command to add</param>
         public void AddConsoleCommand(ConsoleCommand cmd)
         {
-            // Cannot override default command
-            if (_defaultConsoleCommands.Contains(cmd.Name))
+            // Cannot override vanilla commands
+            if (_vanillaCommands.Contains(cmd.Name))
             {
-                Logger.LogError($"Cannot override default command: {cmd.Name}");
+                Logger.LogError($"Cannot override vanilla command: {cmd.Name}");
                 return;
             }
 
             // Cannot have two commands with same name
-            if (_consoleCommands.Exists(c => c.Name == cmd.Name))
+            if (_customCommands.Exists(c => c.Name == cmd.Name))
             {
                 Logger.LogError($"Cannot have two console commands with same name: {cmd.Name}");
                 return;
@@ -99,10 +85,44 @@ namespace Jotunn.Managers
                 return;
             }
 
-            _consoleCommands.Add(cmd);
+            _customCommands.Add(cmd);
         }
 
-        private void Console_InputText(On.Console.orig_InputText orig, Console self)
+        private static void GatherVanillaCommands(ILContext il)
+        {
+            var c = new ILCursor(il);
+
+            foreach (var i in c.Instrs)
+            {
+                if (i.OpCode == OpCodes.Ldstr)
+                {
+                    var str = (string)i.Operand;
+
+                    bool IsACmd(Instruction i)
+                    {
+                        if (i.Next.OpCode == OpCodes.Call || i.Next.OpCode == OpCodes.Callvirt)
+                        {
+                            var methodReference = (MethodReference)i.Next.Operand;
+                            var methodName = methodReference.Name;
+                            if (methodName == nameof(string.StartsWith) ||
+                                methodName == "op_Equality")
+                            {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    }
+
+                    if (IsACmd(i))
+                    {
+                        _vanillaCommands.Add(str.Trim());
+                    }
+                }
+            }
+        }
+
+        private void HandleCustomCommands(On.Console.orig_InputText orig, Console self)
         {
             orig(self);
 
@@ -119,7 +139,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            ConsoleCommand cmd = CommandManager.Instance.ConsoleCommands.FirstOrDefault(c => c.Name.Equals(parts[0], StringComparison.InvariantCultureIgnoreCase));
+            ConsoleCommand cmd = CommandManager.Instance.CustomCommands.FirstOrDefault(c => c.Name.Equals(parts[0], StringComparison.InvariantCultureIgnoreCase));
 
             // If we found a command, execute it
             if (cmd != null)
@@ -134,22 +154,6 @@ namespace Jotunn.Managers
                     .ToArray();
 
                 cmd.Run(args);
-                return;
-            }
-
-            // If a default command, don't display error
-            if (CommandManager.DefaultConsoleCommands.Contains(parts[0]))
-            {
-                return;
-            }
-
-            // If a cheat command, check if cheats enabled
-            if (CommandManager.DefaultCheatConsoleCommands.Contains(parts[0]))
-            {
-                if (!Console.instance.IsCheatsEnabled())
-                {
-                    self.Print("Cannot use this command without cheats enabled. Use 'devcommands' to enable cheats");
-                }
             }
         }
     }
