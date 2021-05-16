@@ -10,7 +10,7 @@ using Jotunn.Configs;
 
 namespace Jotunn.Utils
 {
-    static class SimpleJVL
+    public static class SimpleJVL
     {   // Simple JVL - For simpletons, a language simplifier
         private static AssetBundle assetBundle;
         static GameObject prefabObject;
@@ -22,7 +22,6 @@ namespace Jotunn.Utils
         private static bool needsRecovery;
         private static int amount;
         private static int amountPerLevel;
-
         static void LoadAssets(string assetBundleName)
         {
             AssetBundle.UnloadAllAssetBundles(false);
