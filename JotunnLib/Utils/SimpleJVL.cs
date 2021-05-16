@@ -12,24 +12,24 @@ namespace Jotunn.Utils
 {
     public static class SimpleJVL
     {   // Simple JVL - For simpletons, a language simplifier
-        private static AssetBundle assetBundle;
-        static GameObject prefabObject;
-        static ItemDrop.ItemData itemDrop;
-        static CraftingStation reflect;
-        private static string needs;
-        private static int needsAmount;
-        private static int needsAmountPerLevel;
-        private static bool needsRecovery;
-        private static int amount;
-        private static int amountPerLevel;
-        static void LoadAssets(string assetBundleName)
+        public static AssetBundle assetBundle;
+        public static GameObject prefabObject;
+        public static ItemDrop.ItemData itemDrop;
+        public static CraftingStation reflect;
+        public static string needs;
+        public static int needsAmount;
+        public static int needsAmountPerLevel;
+        public static bool needsRecovery;
+        public static int amount;
+        public static int amountPerLevel;
+        public static void LoadAssets(string assetBundleName)
         {
             AssetBundle.UnloadAllAssetBundles(false);
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(Type).Assembly.GetManifestResourceNames())}");
             assetBundle = AssetUtils.LoadAssetBundleFromResources(assetBundleName, typeof(Type).Assembly);
             Jotunn.Logger.LogInfo(assetBundle);
         }
-        static void AddItem(string prefabName, string name, string description)
+        public static void AddItem(string prefabName, string name, string description)
         {
             prefabObject = assetBundle.LoadAsset<GameObject>(prefabName);
             itemDrop = prefabObject.GetComponent<ItemDrop>().m_itemData;
@@ -37,7 +37,7 @@ namespace Jotunn.Utils
             itemDrop.m_shared.m_name = name;
             itemDrop.m_shared.m_description = description;
         }
-        static void AddClonedItem(string prefabNew, string prefabOld, string name, string description, int armor, int armorPerLevel, int maxDurability, int durabilityPerLevel, int movementModifier, StatusEffect setStatusEffect, StatusEffect equipStatusEffect, bool canBeRepaired, bool destroyBroken, string setName, string geartype, int setSize)
+        public static void AddClonedItem(string prefabNew, string prefabOld, string name, string description, int armor, int armorPerLevel, int maxDurability, int durabilityPerLevel, int movementModifier, StatusEffect setStatusEffect, StatusEffect equipStatusEffect, bool canBeRepaired, bool destroyBroken, string setName, string geartype, int setSize)
         {
             CustomItem Item = new CustomItem(prefabNew, prefabOld);
             var ItemDrop = Item.ItemDrop.m_itemData.m_shared;
@@ -56,7 +56,7 @@ namespace Jotunn.Utils
             ItemDrop.m_setSize = setSize;
             ItemManager.Instance.AddItem(Item);
         }
-        static void AddPiece(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, params RequirementConfig[] inputs)
+        public static void AddPiece(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, params RequirementConfig[] inputs)
         {
             AddStationPiece(prefabName, name, description);
             AddPieceRecipe(prefab, pieceTable, craftingStation, new RequirementConfig
@@ -67,13 +67,13 @@ namespace Jotunn.Utils
                 Recover = needsRecovery
             });
         }
-        static void AddStationPiece(string prefabName, string name, string description)
+        public static void AddStationPiece(string prefabName, string name, string description)
         {
             AddItem(prefabName, name, description);
             reflect = prefabObject.GetComponent<CraftingStation>();
             reflect.m_name = name;
         }
-        static void AddStation(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, bool allowedInDungeon, params RequirementConfig[] inputs)
+        public static void AddStation(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, bool allowedInDungeon, params RequirementConfig[] inputs)
         {
             AddStationPiece(prefabName, name, description);
             AddPieceRecipe(prefab, pieceTable, craftingStation, new RequirementConfig
@@ -84,7 +84,7 @@ namespace Jotunn.Utils
                 Recover = needsRecovery
             });
         }
-        static void AddCustomConversions(string station, string fromitem, string toitem)
+        public static void AddCustomConversions(string station, string fromitem, string toitem)
         {
             var conversion = new CustomItemConversion(new SmelterConversionConfig
             {
@@ -94,7 +94,7 @@ namespace Jotunn.Utils
             });
             ItemManager.Instance.AddItemConversion(conversion);
         }
-        static void AddRecipe(GameObject prefabNew, string craftingStation, string repairStation, int minStationLevel, int amount, params RequirementConfig[] inputs)
+        public static void AddRecipe(GameObject prefabNew, string craftingStation, string repairStation, int minStationLevel, int amount, params RequirementConfig[] inputs)
         {
             var recipe = new CustomItem(prefabNew, fixReference: false,
                 new ItemConfig
@@ -110,7 +110,7 @@ namespace Jotunn.Utils
                 });
             ItemManager.Instance.AddItem(recipe);
         }
-        static void AddCloneRecipe(GameObject item, int amount, string craftingStation, int minStationLevel, params RequirementConfig[] inputs)
+        public static void AddCloneRecipe(GameObject item, int amount, string craftingStation, int minStationLevel, params RequirementConfig[] inputs)
         {
             var recipe = new CustomItem(item, fixReference: false,
                 new ItemConfig
@@ -122,7 +122,7 @@ namespace Jotunn.Utils
                 });
             ItemManager.Instance.AddItem(recipe);
         }
-        static void AddPieceRecipe(GameObject pieceName, string pieceTable, string craftingStation, params RequirementConfig[] inputs)
+        public static void AddPieceRecipe(GameObject pieceName, string pieceTable, string craftingStation, params RequirementConfig[] inputs)
         {
             var piece = new CustomPiece(pieceName,
                 new PieceConfig
@@ -143,7 +143,7 @@ namespace Jotunn.Utils
                 });
             PieceManager.Instance.AddPiece(piece);
         }
-        static void AddOneSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1)
+        public static void AddOneSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1)
         {
             var recipe = new CustomItem(prefabNew, fixReference: fixRefs,
                 new ItemConfig
@@ -159,7 +159,7 @@ namespace Jotunn.Utils
                 });
             ItemManager.Instance.AddItem(recipe);
         }
-        static void AddTwoSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1, string needs2, int needsAmount2, int needsAmountPerLevel2)
+        public static void AddTwoSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1, string needs2, int needsAmount2, int needsAmountPerLevel2)
         {
             var recipe = new CustomItem(prefabNew, fixReference: fixRefs,
                 new ItemConfig
@@ -176,7 +176,7 @@ namespace Jotunn.Utils
                 });
             ItemManager.Instance.AddItem(recipe);
         }
-        static void AddThreeSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1, string needs2, int needsAmount2, int needsAmountPerLevel2, string needs3, int needsAmount3, int needsAmountPerLevel3)
+        public static void AddThreeSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1, string needs2, int needsAmount2, int needsAmountPerLevel2, string needs3, int needsAmount3, int needsAmountPerLevel3)
         {
             var recipe = new CustomItem(prefabNew, fixReference: fixRefs,
                 new ItemConfig
@@ -194,7 +194,7 @@ namespace Jotunn.Utils
                 });
             ItemManager.Instance.AddItem(recipe);
         }
-        static void AddFourSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1, string needs2, int needsAmount2, int needsAmountPerLevel2, string needs3, int needsAmount3, int needsAmountPerLevel3, string needs4, int needsAmount4, int needsAmountPerLevel4)
+        public static void AddFourSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1, string needs2, int needsAmount2, int needsAmountPerLevel2, string needs3, int needsAmount3, int needsAmountPerLevel3, string needs4, int needsAmount4, int needsAmountPerLevel4)
         {
             var recipe = new CustomItem(prefabNew, fixReference: fixRefs,
                 new ItemConfig
