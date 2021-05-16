@@ -62,6 +62,33 @@
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="MMHOOK_assembly_googleanalytics">
+      <HintPath>..\..\..\Libs\Libs\MMHOOK_assembly_googleanalytics.dll</HintPath>
+    </Reference>
+    <Reference Include="MMHOOK_assembly_guiutils">
+      <HintPath>..\..\..\Libs\Libs\MMHOOK_assembly_guiutils.dll</HintPath>
+    </Reference>
+    <Reference Include="MMHOOK_assembly_lux">
+      <HintPath>..\..\..\Libs\Libs\MMHOOK_assembly_lux.dll</HintPath>
+    </Reference>
+    <Reference Include="MMHOOK_assembly_postprocessing">
+      <HintPath>..\..\..\Libs\Libs\MMHOOK_assembly_postprocessing.dll</HintPath>
+    </Reference>
+    <Reference Include="MMHOOK_assembly_simplemeshcombine">
+      <HintPath>..\..\..\Libs\Libs\MMHOOK_assembly_simplemeshcombine.dll</HintPath>
+    </Reference>
+    <Reference Include="MMHOOK_assembly_steamworks">
+      <HintPath>..\..\..\Libs\Libs\MMHOOK_assembly_steamworks.dll</HintPath>
+    </Reference>
+    <Reference Include="MMHOOK_assembly_sunshafts">
+      <HintPath>..\..\..\Libs\Libs\MMHOOK_assembly_sunshafts.dll</HintPath>
+    </Reference>
+    <Reference Include="MMHOOK_assembly_utils">
+      <HintPath>..\..\..\Libs\Libs\MMHOOK_assembly_utils.dll</HintPath>
+    </Reference>
+    <Reference Include="MMHOOK_assembly_valheim">
+      <HintPath>..\..\..\Libs\Libs\MMHOOK_assembly_valheim.dll</HintPath>
+    </Reference>
     <Reference Include="BepInEx">
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\BepInEx.dll</HintPath>
       <Private>false</Private>
