@@ -86,13 +86,73 @@ namespace Jotunn.Utils
         }
         public static void AddConversion(string station, string fromitem, string toitem)
         {
-            var conversion = new CustomItemConversion(new SmelterConversionConfig
+            CustomItemConversion conversion;
+            switch (station)
             {
-                Station = station,
-                FromItem = fromitem,
-                ToItem = toitem
-            });
-            ItemManager.Instance.AddItemConversion(conversion);
+                case "piece_cookingstation":
+                    conversion = new CustomItemConversion(new CookingConversionConfig
+                    {
+                        Station = station,
+                        FromItem = fromitem,
+                        ToItem = toitem
+                    });
+                    ItemManager.Instance.AddItemConversion(conversion);
+                    break;
+                case "fermenter":
+                    conversion = new CustomItemConversion(new FermenterConversionConfig
+                    {
+                        Station = station,
+                        FromItem = fromitem,
+                        ToItem = toitem
+                    });
+                    ItemManager.Instance.AddItemConversion(conversion);
+                    break;
+                case "smelter":
+                    conversion = new CustomItemConversion(new SmelterConversionConfig
+                    {
+                        Station = station,
+                        FromItem = fromitem,
+                        ToItem = toitem
+                    });
+                    ItemManager.Instance.AddItemConversion(conversion);
+                    break;
+                case "blastfurnace":
+                    conversion = new CustomItemConversion(new SmelterConversionConfig
+                    {
+                        Station = station,
+                        FromItem = fromitem,
+                        ToItem = toitem
+                    });
+                    ItemManager.Instance.AddItemConversion(conversion);
+                    break;
+                case "charcoal_kiln":
+                    conversion = new CustomItemConversion(new SmelterConversionConfig
+                    {
+                        Station = station,
+                        FromItem = fromitem,
+                        ToItem = toitem
+                    });
+                    ItemManager.Instance.AddItemConversion(conversion);
+                    break;
+                case "windmill":
+                    conversion = new CustomItemConversion(new SmelterConversionConfig
+                    {
+                        Station = station,
+                        FromItem = fromitem,
+                        ToItem = toitem
+                    });
+                    ItemManager.Instance.AddItemConversion(conversion);
+                    break;
+                case "piece_spinningwheel":
+                    conversion = new CustomItemConversion(new SmelterConversionConfig
+                    {
+                        Station = station,
+                        FromItem = fromitem,
+                        ToItem = toitem
+                    });
+                    ItemManager.Instance.AddItemConversion(conversion);
+                    break;
+            }
         }
         public static void AddRecipe(GameObject prefabNew, string craftingStation, string repairStation, int minStationLevel, int amount, params RequirementConfig[] inputs)
         {
