@@ -223,7 +223,6 @@ Flax|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform
 Flies|<ul><li>Transform</li><li>ZNetView</li></ul>|
 Flint|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform</li><li>ItemDrop</li><li>ParticleSystemRenderer</li><li>ParticleSystem</li></ul>|
 flintspear_projectile|<ul><li>Transform</li><li>Projectile</li><li>ZNetView</li><li>ZSyncTransform</li></ul>|
-ForestTroll_ragdoll|<ul><li>Transform</li><li>ZNetView</li><li>Ragdoll</li></ul>|
 forge|<ul><li>Transform</li><li>Piece</li><li>ZNetView</li><li>CraftingStation</li><li>WearNTear</li></ul>|
 forge_ext1|<ul><li>Transform</li><li>Piece</li><li>ZNetView</li><li>WearNTear</li><li>StationExtension</li></ul>|
 forge_ext2|<ul><li>Transform</li><li>Piece</li><li>ZNetView</li><li>WearNTear</li><li>StationExtension</li></ul>|
@@ -978,6 +977,7 @@ skeleton_sword|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyn
 Skull1|<ul><li>Transform</li><li>ZNetView</li></ul>|
 Skull2|<ul><li>Transform</li><li>ZNetView</li></ul>|
 sledge_aoe|<ul><li>Transform</li><li>ZNetView</li><li>Aoe</li></ul>|
+SledgeCheat|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform</li><li>ItemDrop</li><li>ParticleSystemRenderer</li><li>ParticleSystem</li></ul>|
 SledgeIron|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform</li><li>ItemDrop</li><li>ParticleSystemRenderer</li><li>ParticleSystem</li></ul>|
 SledgeStagbreaker|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform</li><li>ItemDrop</li><li>Floating</li><li>ParticleSystemRenderer</li><li>ParticleSystem</li></ul>|
 smelter|<ul><li>Transform</li><li>Piece</li><li>ZNetView</li><li>Smelter</li><li>LODGroup</li><li>WearNTear</li></ul>|
@@ -1091,7 +1091,7 @@ Troll|<ul><li>Transform</li><li>CapsuleCollider</li><li>Rigidbody</li><li>Humano
 troll_groundslam_aoe|<ul><li>Transform</li><li>ZNetView</li><li>Aoe</li></ul>|
 troll_log_swing_h|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform</li><li>ItemDrop</li><li>ParticleSystemRenderer</li><li>ParticleSystem</li></ul>|
 troll_log_swing_v|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform</li><li>ItemDrop</li><li>ParticleSystemRenderer</li><li>ParticleSystem</li></ul>|
-Troll_ragdoll|<ul><li>Transform</li><li>ZNetView</li><li>Ragdoll</li></ul>|
+Troll_ragdoll|<ul><li>Transform</li><li>ZNetView</li><li>Ragdoll</li><li>LODGroup</li></ul>|
 troll_throw_projectile|<ul><li>Transform</li><li>Projectile</li><li>ZNetView</li><li>ZSyncTransform</li></ul>|
 TrollHide|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform</li><li>ItemDrop</li><li>ParticleSystemRenderer</li><li>ParticleSystem</li><li>LODGroup</li></ul>|
 TrophyBlob|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform</li><li>ItemDrop</li><li>ParticleSystemRenderer</li><li>ParticleSystem</li></ul>|

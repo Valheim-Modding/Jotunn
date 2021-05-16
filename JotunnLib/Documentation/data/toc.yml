@@ -1,4 +1,4 @@
-- name: Introduction
+﻿- name: Introduction
   href: intro.md
   
 - name: Prefabs
@@ -16,3 +16,7 @@
 - name: Input
   href: input/toc.yml
   topicHref: input/overview.md
+  
+- name: GUI
+  href: gui/toc.yml
+  topicHref: gui/overview.md

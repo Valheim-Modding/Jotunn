@@ -6,7 +6,7 @@ namespace JotunnDoc.Docs
 {
     public class StatusEffectDoc : Doc
     {
-        public StatusEffectDoc() : base("JotunnDoc/Docs/conceptual/status-effects/status-effect-list.md")
+        public StatusEffectDoc() : base("status-effects/status-effect-list.md")
         {
             ItemManager.OnItemsRegistered += DocStatusEffects;
         }

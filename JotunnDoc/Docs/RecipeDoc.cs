@@ -5,7 +5,7 @@ namespace JotunnDoc.Docs
 {
     public class RecipeDoc : Doc
     {
-        public RecipeDoc() : base("JotunnDoc/Docs/conceptual/objects/recipe-list.md")
+        public RecipeDoc() : base("objects/recipe-list.md")
         {
             ItemManager.OnItemsRegistered += DocRecipes;
         }

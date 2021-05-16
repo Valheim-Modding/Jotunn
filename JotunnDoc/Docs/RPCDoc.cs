@@ -7,7 +7,7 @@ namespace JotunnDoc.Docs
 {
     public class RPCDoc : Doc
     {
-        public RPCDoc() : base("JotunnDoc/Docs/conceptual/rpc/rpc-list.md")
+        public RPCDoc() : base("rpc/rpc-list.md")
         {
             Save();
         }

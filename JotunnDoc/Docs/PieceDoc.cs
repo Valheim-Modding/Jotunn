@@ -8,7 +8,7 @@ namespace JotunnDoc.Docs
 {
     public class PieceDoc : Doc
     {
-        public PieceDoc() : base("JotunnDoc/Docs/conceptual/pieces/piece-list.md")
+        public PieceDoc() : base("pieces/piece-list.md")
         {
             PieceManager.OnPiecesRegistered += docPieces;
         }

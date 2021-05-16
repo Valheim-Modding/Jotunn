@@ -6,7 +6,7 @@ namespace JotunnDoc.Docs
 {
     public class ItemDoc : Doc
     {
-        public ItemDoc() : base("JotunnDoc/Docs/conceptual/objects/item-list.md")
+        public ItemDoc() : base("objects/item-list.md")
         {
             ItemManager.OnItemsRegistered += DocItems;
         }
