@@ -24,7 +24,7 @@ namespace Jotunn.Utils
         public static int amountPerLevel;
         public static void LoadAssets(string assetBundleName)
         {
-            AssetBundle.UnloadAllAssetBundles(false);
+            if (assetBundle) assetBundle.Unload(false);
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(Type).Assembly.GetManifestResourceNames())}");
             assetBundle = AssetUtils.LoadAssetBundleFromResources(assetBundleName, typeof(Type).Assembly);
             Jotunn.Logger.LogInfo(assetBundle);
