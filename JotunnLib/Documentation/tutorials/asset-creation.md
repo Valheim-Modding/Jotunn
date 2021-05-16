@@ -5,7 +5,7 @@ New Assets can be created with Unity and imported into Valheim using Jötunn. A 
 ### Software Requirements
 
 Creation Tools
-* [Unity 2019.4.20](https://unity3d.com/unity/whats-new/2019.4.20) - Game engine that Valheim runs in
+* [Unity 2019.4.24](https://unity3d.com/unity/whats-new/2019.4.24) - Game engine that Valheim runs in
 * Visual Studio (installable with Unity) - editor for our plugin code
 * [uTinyRipper](https://sourceforge.net/projects/utinyripper/files/latest/download) - tool to rip assets and scripts from the release version of the game
 
@@ -44,7 +44,7 @@ A [CustomItem](xref:Jotunn.Entities.CustomItem) can be instantiated a different 
 `ItemDrop` is a class from native valheim, which holds all the needed information for the game to define an item, its name, its functionalities, the text that will show up when hovering it, and so on.
 
 ## Unity Editor Setup
-Valheim uses Unity Version **2019.4.20**
+Valheim uses Unity Version **2019.4.24**
 
 We will want to have two instances of the Unity Editor running, I know that it can be a bit annoying but it's better for how things will be setup, you'll see shortly.
 - One unity project that will be made entirely by [uTinyRipper](https://sourceforge.net/projects/utinyripper/files/latest/download) (explained below in the `Making our Item Prefab` chapter)
@@ -53,7 +53,7 @@ We will want to have two instances of the Unity Editor running, I know that it c
 ### Unity Stub
 1. [Download](https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe) UnityHub directly from Unity or install it with the Visual Studio Installer via `Individual Components` -> `Visual Studio Tools for Unity`.
 2. You will need an Unity account to register your PC and get a free licence. Create the account, login with it in Unity Hub and get your licence via `Settings` -> `Licence Management`.
-3. Install Unity Editor version 2019.4.20f. [download that and install it](https://unity3d.com/unity/whats-new/2019.4.20).
+3. Install Unity Editor version 2019.4.24f. [download that and install it](https://unity3d.com/unity/whats-new/2019.4.24).
 4. Open Unity and add the ValheimModUnity project.
 5. Install the `AssetBundle Browser` package in the Unity Editor via `Window`-> `Package Manager`.
 6. Copy all `assembly_*.dll` from `<ValheimDir>\valheim_Data\Managed` into `<ValheimModStub>\ValheimModUnity\Assets\Assemblies`.
