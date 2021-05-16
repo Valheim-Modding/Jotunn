@@ -1,11 +1,11 @@
 ﻿# NetworkCompatibility
 
-[NetworkCompatibility](xref:Jotunn.Utils.NetworkCompatibiltyAttribute) is an attribute developers can attach to their `BaseUnityPlugin` which will allow them to specify and configure the specific network requirements their plugin requires to maintain client<->client interoperability, consistency, and synchronisation. One example of this may be a mod which uses a custom asset. While one client may be able to create, use, and interact with the object in the environment, if no other clients have the asset mod then they will experience a difference in gameplay from the client with the asset.
+[NetworkCompatibility](xref:Jotunn.Utils.NetworkCompatibilityAttribute) is an attribute developers can attach to their `BaseUnityPlugin` which will allow them to specify and configure the specific network requirements their plugin requires to maintain client<->client interoperability, consistency, and synchronisation. One example of this may be a mod which uses a custom asset. While one client may be able to create, use, and interact with the object in the environment, if no other clients have the asset mod then they will experience a difference in gameplay from the client with the asset.
 
 In order to quote *"enforce"* network compatibility, a version check is initiated when the client connects to the server, where each client will compare their plugins, and the requirements specified by each, and the server will decide depending on the requirements of each plugin, if the client is permissible. If there is a version mismatch, the client will be disconnected with a version mismatch error, that details the pluginGUID'd and the offending version string, and the requirement. The client may then satisfy the requirements and reconnect successfully.
 
 ### CompatibilityLevel & Version Strictness
-The [NetworkCompatibility attribute](xref:Jotunn.Utils.NetworkCompatibiltyAttribute) provides two parameters, one for [CompatibilityLevel](xref:Jotunn.Utils.CompatibilityLevel) (`NoNeedForSync`,`EveryoneMustHaveMod`), and one for [VersionStrictness](xref:Jotunn.Utils.VersionStrictness) (`None`,`Major`,`Minor`,`Patch`).
+The [NetworkCompatibility attribute](xref:Jotunn.Utils.NetworkCompatibilityAttribute) provides two parameters, one for [CompatibilityLevel](xref:Jotunn.Utils.CompatibilityLevel) (`NoNeedForSync`,`EveryoneMustHaveMod`), and one for [VersionStrictness](xref:Jotunn.Utils.VersionStrictness) (`None`,`Major`,`Minor`,`Patch`).
 
 ```cs
 [NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
