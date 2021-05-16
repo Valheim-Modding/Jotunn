@@ -28,7 +28,7 @@
 
 * Rename the `PluginGUID` `PluginName`, and `PluginVersion` to match your intended base release metadata. Your PluginGUID should contain your github username/organisation.
 
-* Your project base is now ready for use! You can proceed to step 3 to activate the Jötunn PreBuild tasks which add references, publicized dlls and MMHook dlls to your project. Or select a specific [Tutorial](tutorials/overview.md) to learn more about Jötunn and mod development for Valheim.
+* Your project base is now ready for use! You can proceed to step 3 to activate the Jötunn PreBuild tasks which add references, publicized dlls and MMHook dlls to your project. Or select a specific [Tutorial](../tutorials/overview.md) to learn more about Jötunn and mod development for Valheim.
 
 ## Optional: Use or create a project template
 
@@ -84,7 +84,7 @@ If you decide to disable the prebuild, you will need to:
 - add the `/BepInEx/plugins/MMHook/assembly_*` files to your project references. 
 - grab the [Assembly Publicizer](https://github.com/CabbageCrow/AssemblyPublicizer) *(drag drop your `/BepInEx/plugins/MMHook/assembly_*` files on top of the publiciser)* and add the resulting assemblies to your stub project.
 - Build the stub, make sure it compiles and automates the postbuild tasks, producing compiled binaries in your plugin directory `BepInEx/plugins/yourtestmod/` folder and also generated a `yourtestmod.dll.mdb` monodebug symbols file.
-- You may now proceed to one of the [Tutorials](tutorials/overview.md)
+- You may now proceed to one of the [Tutorials](../tutorials/overview.md)
 
 # [4. PostBuild Automations](#tab/tabid-4)
 # PostBuild Automations

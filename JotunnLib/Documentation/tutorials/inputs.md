@@ -81,6 +81,6 @@ private void KeyHintsEvilSword()
 
 The resulting KeyHints look like this
 
-![Custom Key Hints](../../images/data/EvilSwordKeyHints.png)
+![Custom Key Hints](../images/data/EvilSwordKeyHints.png)
 
 Note that all texts are tokenized and translated ingame. The translations are also provided by Jötunn. Read the [tutorial on Localizations](localization.md) for more information on that topic.

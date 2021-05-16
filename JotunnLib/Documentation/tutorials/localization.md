@@ -47,7 +47,7 @@ LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
     }
 });
 ```
-![Evil Sword Localizations](../../images/data/EvilSwordLocalizations.png)
+![Evil Sword Localizations](../images/data/EvilSwordLocalizations.png)
 
 
 ## Prefabs
@@ -61,7 +61,7 @@ foreach (var textAsset in textAssets)
     LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
 }
 ```
-![Blueprint Rune Localizations](../../images/data/blueprintRuneLocalizations.png)
+![Blueprint Rune Localizations](../images/data/blueprintRuneLocalizations.png)
 
 ## Example JSON file
 This is how the JSON file looks like which is deliverd as a TextAsset in the asset bundle for the Blueprint Rune example:

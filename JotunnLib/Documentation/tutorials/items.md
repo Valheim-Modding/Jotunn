@@ -37,8 +37,8 @@ private void AddClonedItems()
 
 If we load up the game, type `devcommands` into the console(F5), and `spawn EvilSword` we can now see that we have a new item available to us:
 
- ![Custom Cloned Item Hover](../../images/data/customClonedItemHover.png)
- ![Custom Cloned Item Pickup](../../images/data/customClonedItemPickup.png) 
+ ![Custom Cloned Item Hover](../images/data/customClonedItemHover.png)
+ ![Custom Cloned Item Pickup](../images/data/customClonedItemPickup.png) 
 
 As you may notice, our item does not hold the display text we might prefer. In order to resolve this you can read our [localization](localization.md) tutorial.
 
@@ -102,6 +102,6 @@ private void CreateBlueprintRune()
 }
 ```
 
-![Blueprint Rune Item](../../images/data/blueprintRuneItem.png) ![Blueprint Recipe Config](../../images/data/blueprintRecipeConfig.png)
+![Blueprint Rune Item](../images/data/blueprintRuneItem.png) ![Blueprint Recipe Config](../images/data/blueprintRecipeConfig.png)
 
 We have now added two custom items, both of which can be equipped, as well as a custom resource which is used to create items. This concludes the items tutorial. [Go back to the index](overview.md).

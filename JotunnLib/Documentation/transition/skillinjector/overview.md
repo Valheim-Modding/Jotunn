@@ -34,4 +34,4 @@ private void Awake()
 
 The major difference here is that you **do not provide your own numeric ID**. In order to avoid conflicts between mods, you simply provide an Identifier string, and Jötunn will create a unique integer identifier for you based on the string provided. This makes it easier for mod devs to create unique identifiers, and should avoid collisions. After the skill is created, this method will return the newly generated integer ID (a `Skills.SkillType`) to use however you wish. 
 
-For more info, please check out the [tutorials](../../home/tutorials/skills.md) section on skills.
+For more info, please check out the [tutorials](../../tutorials/skills.md) section on skills.

@@ -14,7 +14,7 @@ private AssetBundle embeddedResourceBundle;
 
 To acquire the references we will be using here you may [download](https://github.com/Valheim-Modding/JotunnModExample/blob/master/JotunnModExample/assets.zip) them and place inside your project root: 
 
-![Assets Extraction](../../images/data/AssetsExtraction.png)
+![Assets Extraction](../images/data/AssetsExtraction.png)
 
 Next, we must import our assets into our project, and ensure they are packed into, or with our plugin. There are a number of ways to do this, such as:
 
@@ -33,7 +33,7 @@ Right click our solution, then add a new directory named `AssetsEmbedded`. Right
 
 Another option is to embed our resources inside the binary itself. You may do this by right clicking a folder inside of your project, and add an existing item. Once it has been added, right click the item, select properties, and set the build action to embedded resource:
 
-![Assets.Embedded Resource](../../images/data/Assets.EmbeddedResource.png)
+![Assets.Embedded Resource](../images/data/Assets.EmbeddedResource.png)
 
 
 ### Referencing our assets

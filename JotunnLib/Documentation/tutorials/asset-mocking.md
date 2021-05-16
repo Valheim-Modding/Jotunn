@@ -41,4 +41,4 @@ As well as mocking assets to use for referencing, it is also possible to referen
 
 Bellow you can see that we have a custom item, and we want to reference the native particle effect that exists in valheim. To do so, we create a new material, set the name to `JVLmock_item_particle`, and then reference this new material in the asset. There is no need to configure the material itself, only the particle system renderer.
 
-![Asset Mock Reference](../../images/data/assetMockReference.png)
+![Asset Mock Reference](../images/data/assetMockReference.png)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jotunn;
 using Jotunn.Configs;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -450,9 +451,25 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            //TODO: this is so much code smell. its Update() turf here. need to implement something smart asap!
-
+            // Needs a localPlayer
             if (Player.m_localPlayer == null)
+            {
+                return;
+            }
+
+            // Needs the current equipped item name
+            ItemDrop.ItemData item = null;
+            try
+            {
+                item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
+            }
+            catch (Exception) { }
+            if (item == null)
+            {
+                return;
+            }
+            var prefabName = item.m_dropPrefab?.name;
+            if (string.IsNullOrEmpty(prefabName))
             {
                 return;
             }
@@ -466,56 +483,40 @@ namespace Jotunn.Managers
                 }
             }
 
-            // Is there a hint displayed?
-            if (self.m_buildHints.activeSelf || self.m_combatHints.activeSelf)
+            // Check if that item has a custom key hint and display it instead the vanilla one
+            if (KeyHints.TryGetValue(prefabName, out var keyHint))
             {
-                // Get current equipped item name
-                var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
-                if (item == null)
-                {
-                    return;
-                }
-                var prefabName = item.m_dropPrefab?.name;
-                if (string.IsNullOrEmpty(prefabName))
+                if (keyHint == null)
                 {
                     return;
                 }
 
-                // Check if that item has a custom key hint and display it instead the vanilla one
-                if (KeyHints.TryGetValue(prefabName, out var keyHint))
+                var hint = KeyHintContainer.Find(keyHint.Item)?.gameObject;
+                if (hint == null)
                 {
-                    if (keyHint == null)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    var hint = KeyHintContainer.Find(keyHint.Item)?.gameObject;
-                    if (hint == null)
-                    {
-                        return;
-                    }
-
-                    self.m_buildHints.SetActive(false);
-                    self.m_combatHints.SetActive(false);
+                self.m_buildHints.SetActive(false);
+                self.m_combatHints.SetActive(false);
                     
-                    // Update bound keys
-                    foreach (var buttonConfig in keyHint.ButtonConfigs)
+                // Update bound keys
+                foreach (var buttonConfig in keyHint.ButtonConfigs)
+                {
+                    string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                    if (key[0].Equals(LocalizationManager.TokenFirstChar))
                     {
-                        string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
-                        if (key[0].Equals(LocalizationManager.TokenFirstChar))
-                        {
-                            key = LocalizationManager.Instance.TryTranslate(key);
-                        }
-
-                        if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
-                        {
-                            hint.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
-                        }
+                        key = LocalizationManager.Instance.TryTranslate(key);
                     }
 
-                    hint.SetActive(true);
-                    hint.GetComponent<UIInputHint>()?.Update();
+                    if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
+                    {
+                        hint.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
+                    }
                 }
+
+                hint.SetActive(true);
+                hint.GetComponent<UIInputHint>()?.Update();
             }
         }
 

@@ -130,5 +130,5 @@ We now want to put our AssetBundle in the BepinEx plugin so that we can later in
 
 ## Implementing your asset ingame using JVL
 
-If you have not done so yet, please ensure you have completed the [relevant visual studio setup](../guide.md).
+If you have not done so yet, please ensure you have completed the [relevant visual studio setup](../guides/guide.md).
 You can then follow the [Asset importing guide](asset-loading.md), [Item Creation](items.md), and [Localization](localization.md) tutorials.

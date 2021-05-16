@@ -15,7 +15,7 @@ These three approaches can be mixed and used as you please, as they will accompl
 ## Examples
 This is what our finished product will look like in-game after using any of the following examples:
 
-![Custom Resource Recipe](../../images/data/customResourceRecipe.png)
+![Custom Resource Recipe](../images/data/customResourceRecipe.png)
 
 ### Adding a recipe using RecipeConfig
 

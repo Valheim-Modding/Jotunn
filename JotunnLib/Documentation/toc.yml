@@ -1,11 +1,18 @@
-- name: Home
-  href: home/
+﻿- name: Guides
+  href: guides/
+  topicHref: guides/overview.md
+
+- name: Tutorials
+  href: tutorials/
+  topicHref: tutorials/overview.md
 
 - name: Transition
   href: transition/
+  topicHref: transition/overview.md
 
-- name: Systems Data
+- name: Valheim Data
   href: data/
+  topicHref: data/intro.md
 
 - name: API Documentation
   href: api/

@@ -1,7 +1,7 @@
 ﻿# Conceptual documentation
 This section contains information about how Valheim itself works, as well as how Jotunn interfaces with the game. There likely will not be many code examples here, but rather high level overviews of how various systems work.  
 
-For code examples and tutorials, checkout the [tutorials section](../home/tutorials/overview.md).
+For code examples and tutorials, checkout the [tutorials section](../tutorials/overview.md).
 
 In addition to the inner workings of components, it will contain lists of things in Valheim such as:
 - All of the prefabs, their names, their components

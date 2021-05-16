@@ -1,7 +1,7 @@
 ﻿# Renaming
 If you're familiar with the current naming of the Manager type classes in JotunnLib, then you should be fairly comfortable using Jotunn. Most of the functionality of the Managers is kept the same. However, some have been renamed, and some have had their methods renamed.  
 
-For a more in-depth look at all the new naming, please check out the [tutorials](../../home/tutorials/overview.md) section.
+For a more in-depth look at all the new naming, please check out the [tutorials](../../tutorials/overview.md) section.
 
 ## Method names
 In JotunnLib, most methods that were used to add new items to the game all began with `Register`, such as `PieceManager.Instance.RegisterPiece`. In Jotunn, these have all been changed to begin with `Add` instead. So, for example:

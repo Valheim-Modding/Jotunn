@@ -1,4 +1,4 @@
-# NetworkCompatibility
+﻿# NetworkCompatibility
 
 [NetworkCompatibility](xref:Jotunn.Utils.NetworkCompatibiltyAttribute) is an attribute developers can attach to their `BaseUnityPlugin` which will allow them to specify and configure the specific network requirements their plugin requires to maintain client<->client interoperability, consistency, and synchronisation. One example of this may be a mod which uses a custom asset. While one client may be able to create, use, and interact with the object in the environment, if no other clients have the asset mod then they will experience a difference in gameplay from the client with the asset.
 
@@ -15,13 +15,13 @@ These options for the most part are self explanatory, however version strictness
 
 **No NetworkCompatibility in any plugin, client or server**: Vanilla version checking.
 
-**Clientside NetworkCompatibility plugin, none server**: Client Version mismatch from additional plugin:<br>![NetworkCompatibilityClientHasAdditionalMod](../../images/utils/NetworkCompatClientsideAdditional.png)
+**Clientside NetworkCompatibility plugin, none server**: Client Version mismatch from additional plugin:<br>![NetworkCompatibilityClientHasAdditionalMod](../images/utils/NetworkCompatClientsideAdditional.png)
 
-**Clientside none, NetworkCompatibilityPlugin server**: Server version mismatch from additional plugin:<br>![Network Compat Client Missing Module](../../images/utils/NetworkCompatClientMissingModule.png)
+**Clientside none, NetworkCompatibilityPlugin server**: Server version mismatch from additional plugin:<br>![Network Compat Client Missing Module](../images/utils/NetworkCompatClientMissingModule.png)
 
-**VersionStrictness unequal, client>server**: server version mismatch from major, minor, patch:<br>![File](../../images/utils/NetworkCompatClient-gr-Server.png)
+**VersionStrictness unequal, client>server**: server version mismatch from major, minor, patch:<br>![File](../images/utils/NetworkCompatClient-gr-Server.png)
 
-**VersionStrictness unequal, server>client**: client version mismatch from major, minor, patch:<br>![Network Compat Server Gr Client](../../images/utils/NetworkCompatServer-gr-Client.png)
+**VersionStrictness unequal, server>client**: client version mismatch from major, minor, patch:<br>![Network Compat Server Gr Client](../images/utils/NetworkCompatServer-gr-Client.png)
 
 ### Semantic versioning and NetworkCompatibility.
 

@@ -1,4 +1,4 @@
-﻿# Guidelines
+﻿# Guides
 
 ### If you are a user trying to manually install Jötunn, read the [Manual Installation Guide](installation.md).
 

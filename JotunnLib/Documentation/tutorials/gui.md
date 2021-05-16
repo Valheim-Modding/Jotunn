@@ -6,7 +6,7 @@ The GUI manager provides useful methods to create buttons, text element and more
 
 ### Wood panels
 
-![Woodpanel](../../images/data/woodpanel.png)
+![Woodpanel](../images/data/woodpanel.png)
 
 Woodpanels, nicely usable as containers for other gui elements.
 
@@ -17,7 +17,7 @@ var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, n
 
 ### Buttons
 
-![GUI Button](../../images/data/test-button.png)
+![GUI Button](../images/data/test-button.png)
 
 To create buttons, provide text, the parent's transform, min and max anchors, the position and it's size (width and height).
 
@@ -28,7 +28,7 @@ var button = GUIManager.Instance.CreateButton("A Test Button", testPanel.transfo
 
 ### Text elements
 
-![Text Element](../../images/data/text-element.png)
+![Text Element](../images/data/text-element.png)
 
 Example:
 ```cs
@@ -38,7 +38,7 @@ var text = GUIManager.Instance.CreateText("JötunnLib, the Valheim Lib", GUIMana
 
 ### Checkboxes
 
-![Checkbox](../../images/data/checkbox.png)
+![Checkbox](../images/data/checkbox.png)
 
 Example:
 ```cs
@@ -47,7 +47,7 @@ var checkbox = GUIManager.Instance.CreateToggle(GUIManager.PixelFix.transform, n
 
 ### Getting sprites
 
-Gets sprites from the textureatlas by name. You find a list of the sprite names [here](../../data/gui/sprite-list.md).
+Gets sprites from the textureatlas by name. You find a list of the sprite names [here](../data/gui/sprite-list.md).
 
 ```cs
 var sprite = GUIManager.Instance.GetSprite("text_field");

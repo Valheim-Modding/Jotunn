@@ -42,7 +42,7 @@ Now, these unique tokens can be localized exactly the same as you would for item
 ## Examples
 This is what our finished product should look like in-game:
 
-![Custom skill raised](../../images/data/customSkillRaised.png)
+![Custom skill raised](../images/data/customSkillRaised.png)
 
 ### Adding skills through JSON
 First, we must create a JSON file which will keep an array of all the skills we wish to add. This JSON file should contain an array of [SkillConfig](xref:Jotunn.Configs.SkillConfig) objects (note, this _must_ be an array). This can be done like so:

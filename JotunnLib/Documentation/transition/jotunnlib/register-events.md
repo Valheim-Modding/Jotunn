@@ -25,4 +25,4 @@ private void Awake()
 }
 ```
 
-For a more in-depth look at how to add add items, recipes, or anything else, please check out the [tutorials](../../home/tutorials/overview.md) section.
+For a more in-depth look at how to add add items, recipes, or anything else, please check out the [tutorials](../../tutorials/overview.md) section.

@@ -38,7 +38,7 @@ private void AddEmptyItems()
     PieceManager.Instance.AddPiece(CP);
 }
 ```
-![Piece Stub](../../images/data/pieceStub.png) ![Piece Stub Placed](../../images/data/pieceStubPlaced.png)
+![Piece Stub](../images/data/pieceStub.png) ![Piece Stub Placed](../images/data/pieceStubPlaced.png)
 
 
 ### `Blueprint Rune` from prefabs using PieceConfigs
@@ -77,6 +77,6 @@ private void CreateRunePieces()
 ```
 
 And here we have our final results:<br />
-![Blue Print Rune Piece Table](../../images/data/BluePrintRunePieceTable.png)
+![Blue Print Rune Piece Table](../images/data/BluePrintRunePieceTable.png)
 
 As you can see in the screenshot the name and description are not yet localized. This is done via the `blueprintRuneLocalizations()` method. To read more about localization/translation head over to the [localization tutorial pages](localization.md).

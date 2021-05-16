@@ -1,5 +1,5 @@
 ﻿# Pieces & Piece tables
-This section will go into details about how pieces and piece tables work in Valheim. For a tutorial on how to create one, check [here](../../home/tutorials/overview.md).
+This section will go into details about how pieces and piece tables work in Valheim. For a tutorial on how to create one, check [here](../../tutorials/overview.md).
 
 ## List of all Valheim pieces
 See the [list of all pieces currently in the game](piece-list.md).

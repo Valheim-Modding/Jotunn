@@ -4,7 +4,7 @@ Jötunn itself does not provide any implementations or abstractions for persisen
 
 **Hint:** `IsAdminOnly` is provided via JVL, not BepInEx.
 
-![Config Manager U I](../../images/utils/ConfigManagerUI.png)
+![Config Manager U I](../images/utils/ConfigManagerUI.png)
 
 ### Synced Configurations
 We can sync a client configuration with the server by:

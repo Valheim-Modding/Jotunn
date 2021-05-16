@@ -30,10 +30,10 @@ In our [JotunnModExample](https://github.com/Valheim-Modding/Jotunn/JotunnModExa
 
 The result is an icon displaying that the status effect is active.
 
-![custom status effect](../../images/data/EvilSwordStatusEffect.png)
+![custom status effect](../images/data/EvilSwordStatusEffect.png)
 
 And also custom messages when the effect starts and ends.
 
-![custom status effect start](../../images/data/EvilSwordStatusStart.png) ![custom status effect](../../images/data/EvilSwordStatusStop.png)
+![custom status effect start](../images/data/EvilSwordStatusStart.png) ![custom status effect](../images/data/EvilSwordStatusStop.png)
 
 Note that all texts are tokenized and translated ingame. The translations are also provided by Jötunn. Read the [tutorial on Localizations](localization.md) for more information on that topic.

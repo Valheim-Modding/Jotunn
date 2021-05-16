@@ -1,6 +1,6 @@
 ﻿# Tutorials
 
-This section covers the main interfaces we provide with the library, enabling developers to easily interact with items, recipes, pieces, skills, UI, entities, and much more. It is suggested to begin with [getting started](../guide.md) before proceeding with the tutorials.
+This section covers the main interfaces we provide with the library, enabling developers to easily interact with items, recipes, pieces, skills, UI, entities, and much more. It is suggested to begin with [getting started](../guides/guide.md) before proceeding with the tutorials.
 
 > [!NOTE]
 > All custom data that is registered (prefabs, items, recipes) will automatically be saved and loaded by the game on logout/reload, and will persist across game sessions as long as the mods are still installed.  
