@@ -59,6 +59,7 @@ Jötunn can automatically set references to all important libraries needed to mo
 
 > [!WARNING]
 > This prebuild task will add references to your current project. If you already have setup that references it most certainly will duplicate them.
+
 ## Publicize and MMHook Valheim assemblies
 
 Jötunn can automatically create the publicised and MMHook assemblies for you. To use this feature you must have the `Environment.props` file from the last step. Additionally you need to create a new file called `DoPrebuild.props` in your solution directory. If you are using the ModStub the file will already be there so just change `ExecutePrebuild` to `true`. If you opt not to utilise this automation, you will need to generate your method detours and publicised assemblies, and add them to your projects references manually.
