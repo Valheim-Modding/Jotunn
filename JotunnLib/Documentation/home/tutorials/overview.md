@@ -45,3 +45,5 @@ Each section will have examples showing how this is done. All of the examples sh
 ### [Inputs](inputs.md): Register custom inputs and add key hints to your custom items.
 
 ### [JSON](https://github.com/mhallin/SimpleJSON.NET): JVL integrates the MIT licensed SimpleJSON, accessible via its namespace.
+
+### [SimpleJVL](SimpleJVL.md): Extended functionality for simpler factoring, limited.
