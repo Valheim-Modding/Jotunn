@@ -11,14 +11,9 @@ using Jotunn.Configs;
 namespace Jotunn.Utils
 {
     static class SimpleJVL
-    {   // Simple JVL - For simpletons, a language simplifier.
+    {   // Simple JVL - For simpletons, a language simplifier
         static GameObject prefabObject;
         static ItemDrop.ItemData itemDrop;
-        static StatusEffect setStatusEffect;
-        static StatusEffect equipStatusEffect;
-        static ItemDrop.ItemData.SharedData shareddata;
-        static HitData.DamageTypes itemDamagePerLevel;
-        static HitData.DamageTypes itemDamages;
         static CraftingStation reflect;
         private static AssetBundle assetBundle;
         private static string needs1;
