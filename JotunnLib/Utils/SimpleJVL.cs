@@ -23,6 +23,13 @@ namespace Jotunn.Utils
         private static int amount;
         private static int amountPerLevel;
 
+        static void LoadAssets(string assetBundleName)
+        {
+            AssetBundle.UnloadAllAssetBundles(false);
+            Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(Type).Assembly.GetManifestResourceNames())}");
+            assetBundle = AssetUtils.LoadAssetBundleFromResources(assetBundleName, typeof(Type).Assembly);
+            Jotunn.Logger.LogInfo(assetBundle);
+        }
         static void AddItem(string prefabName, string name, string description)
         {
             prefabObject = assetBundle.LoadAsset<GameObject>(prefabName);
