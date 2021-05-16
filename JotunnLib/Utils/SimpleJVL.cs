@@ -12,16 +12,16 @@ namespace Jotunn.Utils
 {
     static class SimpleJVL
     {   // Simple JVL - For simpletons, a language simplifier
+        private static AssetBundle assetBundle;
         static GameObject prefabObject;
         static ItemDrop.ItemData itemDrop;
         static CraftingStation reflect;
-        private static AssetBundle assetBundle;
-        private static string needs1;
-        private static int needsAmount1;
-        private static int needsAmountPerLevel1;
-        private static bool recoverMats1;
-        private static int amount1;
-        private static int amountPerLevel1;
+        private static string needs;
+        private static int needsAmount;
+        private static int needsAmountPerLevel;
+        private static bool needsRecovery;
+        private static int amount;
+        private static int amountPerLevel;
 
         static void AddItem(string prefabName, string name, string description)
         {
@@ -50,15 +50,32 @@ namespace Jotunn.Utils
             ItemDrop.m_setSize = setSize;
             ItemManager.Instance.AddItem(Item);
         }
+        static void AddPiece(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, params RequirementConfig[] inputs)
+        {
+            AddStationPiece(prefabName, name, description);
+            AddPieceRecipe(prefab, pieceTable, craftingStation, new RequirementConfig
+            {
+                Item = needs,
+                Amount = needsAmount,
+                AmountPerLevel = needsAmountPerLevel,
+                Recover = needsRecovery
+            });
+        }
+        static void AddStationPiece(string prefabName, string name, string description)
+        {
+            AddItem(prefabName, name, description);
+            reflect = prefabObject.GetComponent<CraftingStation>();
+            reflect.m_name = name;
+        }
         static void AddStation(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, bool allowedInDungeon, params RequirementConfig[] inputs)
         {
             AddStationPiece(prefabName, name, description);
             AddPieceRecipe(prefab, pieceTable, craftingStation, new RequirementConfig
             {
-                Item = needs1,
-                Amount = needsAmount1,
-                AmountPerLevel = needsAmountPerLevel1,
-                Recover = recoverMats1
+                Item = needs,
+                Amount = needsAmount,
+                AmountPerLevel = needsAmountPerLevel,
+                Recover = needsRecovery
             });
         }
         static void AddCustomConversions(string station, string fromitem, string toitem)
@@ -82,7 +99,7 @@ namespace Jotunn.Utils
                     Amount = amount,
                     Requirements = new[]
                     {
-                        new RequirementConfig {Item = needs1, Amount = needsAmount1, AmountPerLevel = needsAmountPerLevel1},
+                        new RequirementConfig {Item = needs, Amount = needsAmount, AmountPerLevel = needsAmountPerLevel},
                     }
                 });
             ItemManager.Instance.AddItem(recipe);
@@ -111,32 +128,84 @@ namespace Jotunn.Utils
                     {
                         new RequirementConfig
                         {
-                            Item = needs1,
-                            Amount = amount1,
-                            AmountPerLevel = amountPerLevel1,
-                            Recover = recoverMats1
+                            Item = needs,
+                            Amount = amount,
+                            AmountPerLevel = amountPerLevel,
+                            Recover = needsRecovery
                         }
                     }
                 });
             PieceManager.Instance.AddPiece(piece);
         }
-        static void AddPiece(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, params RequirementConfig[] inputs)
+        static void AddOneSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1)
         {
-            AddStationPiece(prefabName, name, description);
-            AddPieceRecipe(prefab, pieceTable, craftingStation, new RequirementConfig
-            {
-                Item = needs1,
-                Amount = needsAmount1,
-                AmountPerLevel = needsAmountPerLevel1,
-                Recover = recoverMats1
-            });
+            var recipe = new CustomItem(prefabNew, fixReference: fixRefs,
+                new ItemConfig
+                {
+                    CraftingStation = craftingStation,
+                    RepairStation = repairStation,
+                    MinStationLevel = minStationLevel,
+                    Amount = amount,
+                    Requirements = new[]
+                    {
+                        new RequirementConfig {Item = needs1, Amount = needsAmount1, AmountPerLevel = needsAmountPerLevel1},
+                    }
+                });
+            ItemManager.Instance.AddItem(recipe);
         }
-        static void AddStationPiece(string prefabName, string name, string description)
+        static void AddTwoSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1, string needs2, int needsAmount2, int needsAmountPerLevel2)
         {
-            AddItem(prefabName, name, description);
-            reflect = prefabObject.GetComponent<CraftingStation>();
-            reflect.m_name = name;
+            var recipe = new CustomItem(prefabNew, fixReference: fixRefs,
+                new ItemConfig
+                {
+                    CraftingStation = craftingStation,
+                    RepairStation = repairStation,
+                    MinStationLevel = minStationLevel,
+                    Amount = amount,
+                    Requirements = new[]
+                    {
+                        new RequirementConfig {Item = needs1, Amount = needsAmount1, AmountPerLevel = needsAmountPerLevel1},
+                        new RequirementConfig {Item = needs2, Amount = needsAmount2, AmountPerLevel = needsAmountPerLevel2},
+                    }
+                });
+            ItemManager.Instance.AddItem(recipe);
         }
-
+        static void AddThreeSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1, string needs2, int needsAmount2, int needsAmountPerLevel2, string needs3, int needsAmount3, int needsAmountPerLevel3)
+        {
+            var recipe = new CustomItem(prefabNew, fixReference: fixRefs,
+                new ItemConfig
+                {
+                    CraftingStation = craftingStation,
+                    RepairStation = repairStation,
+                    MinStationLevel = minStationLevel,
+                    Amount = amount,
+                    Requirements = new[]
+                    {
+                        new RequirementConfig {Item = needs1, Amount = needsAmount1, AmountPerLevel = needsAmountPerLevel1},
+                        new RequirementConfig {Item = needs2, Amount = needsAmount2, AmountPerLevel = needsAmountPerLevel2},
+                        new RequirementConfig {Item = needs3, Amount = needsAmount3, AmountPerLevel = needsAmountPerLevel3},
+                    }
+                });
+            ItemManager.Instance.AddItem(recipe);
+        }
+        static void AddFourSlotRecipe(GameObject prefabNew, bool fixRefs, string craftingStation, string repairStation, int minStationLevel, int amount, string needs1, int needsAmount1, int needsAmountPerLevel1, string needs2, int needsAmount2, int needsAmountPerLevel2, string needs3, int needsAmount3, int needsAmountPerLevel3, string needs4, int needsAmount4, int needsAmountPerLevel4)
+        {
+            var recipe = new CustomItem(prefabNew, fixReference: fixRefs,
+                new ItemConfig
+                {
+                    CraftingStation = craftingStation,
+                    RepairStation = repairStation,
+                    MinStationLevel = minStationLevel,
+                    Amount = amount,
+                    Requirements = new[]
+                    {
+                        new RequirementConfig {Item = needs1, Amount = needsAmount1, AmountPerLevel = needsAmountPerLevel1},
+                        new RequirementConfig {Item = needs2, Amount = needsAmount2, AmountPerLevel = needsAmountPerLevel2},
+                        new RequirementConfig {Item = needs3, Amount = needsAmount3, AmountPerLevel = needsAmountPerLevel3},
+                        new RequirementConfig {Item = needs4, Amount = needsAmount4, AmountPerLevel = needsAmountPerLevel4},
+                    }
+                });
+            ItemManager.Instance.AddItem(recipe);
+        }
     }
 }
