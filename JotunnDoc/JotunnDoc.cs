@@ -16,14 +16,15 @@ namespace JotunnDoc
         {
             docs = new List<Doc>()
             {
-                new PrefabDoc(),
-                new ItemDoc(),
-                new RecipeDoc(),
                 new InputDoc(),
+                new ItemDoc(),
+                new PrefabDoc(),
                 new PieceTableDoc(),
                 new PieceDoc(),
-                new StatusEffectDoc(),
-                new RPCDoc()
+                new RecipeDoc(),
+                new RPCDoc(),
+                new SpriteDoc(),
+                new StatusEffectDoc()
             };
 
             Debug.Log("Initialized JotunnDoc");

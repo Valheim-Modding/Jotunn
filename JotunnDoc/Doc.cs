@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+﻿using System.IO;
 using BepInEx;
 
 namespace JotunnDoc
@@ -16,7 +12,7 @@ namespace JotunnDoc
 
         public Doc(string filePath)
         {
-            FilePath = Path.Combine(Paths.PluginPath, filePath);
+            FilePath = Path.Combine(Paths.PluginPath, nameof(JotunnDoc), "Docs", "data", filePath);
 
             // Ensure we only create markdown files
             if (!FilePath.EndsWith(".md"))

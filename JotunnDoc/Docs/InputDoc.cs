@@ -1,11 +1,10 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine.SceneManagement;
 
 namespace JotunnDoc.Docs
 {
     public class InputDoc : Doc
     {
-        public InputDoc() : base("JotunnDoc/Docs/conceptual/input/input-list.md")
+        public InputDoc() : base("input/input-list.md")
         {
             SceneManager.sceneLoaded += docInputs;
         }

@@ -295,6 +295,7 @@ SilverOre|Silver ore|Material|Unrefined silver. Needs to be refined in a smelter
 skeleton_bow|Bow|Bow|A simple bow.<br/>|
 skeleton_mace|Dragur axe|OneHandedWeapon|NULL|
 skeleton_sword|Dragur axe|OneHandedWeapon|NULL|
+SledgeCheat|Cheat sledge|TwoHandedWeapon|Cheater!|
 SledgeIron|Iron sledge|TwoHandedWeapon|A mighty hammer, worthy of a champion.|
 SledgeStagbreaker|Stagbreaker|TwoHandedWeapon|A weapon worthy of the gods! If you get hit with this, you'll know it...|
 SpearBronze|Bronze spear|OneHandedWeapon|A sturdy spear with a head of burnished bronze.|

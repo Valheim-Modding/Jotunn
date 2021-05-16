@@ -5,7 +5,7 @@ namespace JotunnDoc.Docs
 {
     public class PrefabDoc : Doc
     {
-        public PrefabDoc() : base("JotunnDoc/Docs/conceptual/prefabs/prefab-list.md")
+        public PrefabDoc() : base("prefabs/prefab-list.md")
         {
             PrefabManager.OnPrefabsRegistered += DocPrefabs;
         }
