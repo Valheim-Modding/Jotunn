@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Jotunn.Managers;
 using Jotunn.Entities;
+using Jotunn.Configs;
 
 namespace Jotunn.Utils
 {
@@ -20,6 +21,12 @@ namespace Jotunn.Utils
         static HitData.DamageTypes itemDamages;
         static CraftingStation reflect;
         private static AssetBundle assetBundle;
+        private static string needs1;
+        private static int needsAmount1;
+        private static int needsAmountPerLevel1;
+        private static bool recoverMats1;
+        private static int amount1;
+        private static int amountPerLevel1;
 
         static void AddItem(string prefabName, string name, string description)
         {
