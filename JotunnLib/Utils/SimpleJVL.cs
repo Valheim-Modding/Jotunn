@@ -84,7 +84,7 @@ namespace Jotunn.Utils
                 Recover = needsRecovery
             });
         }
-        public static void AddCustomConversions(string station, string fromitem, string toitem)
+        public static void AddConversion(string station, string fromitem, string toitem)
         {
             var conversion = new CustomItemConversion(new SmelterConversionConfig
             {

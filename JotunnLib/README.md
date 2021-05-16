@@ -62,6 +62,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **NetworkCompatibility** - Allows plugins to define their own version requirements for clients connected to the server. Ensures a customisable level of interoperability with clients of differing mod configurations on a plugin-by-plugin basis.
 - **Config Synchronisation** - Allows administrators to adjust configuration values via an in game menu. Config setting is synced to connected clients.
 - **SimpleJSON** - We have imported SimpleJSON into our library at the request of developers who would simply prefer to have this dependency taken care of already. We use the MIT Licensed [SimpleJSON](https://simplejson.readthedocs.io/en/latest/)
+- **SimpleJVL** - Wrappers and extensions to allow broadside importing without hassle. Simple method names are useful for new programmers.
 
 ## Bugs, Support, Contributions
 
@@ -92,3 +93,5 @@ These people have been integral to pushing JVL out of the door, and without them
 *GoldenJude#8965*: [github](https://github.com/GoldenJude), [nexus](https://www.nexusmods.com/users/48864143?tab=user+files)
 
 *zarboz#7828*: [github](https://github.com/sbtoonz), [thunderstore](https://valheim.thunderstore.io/package/sbtoonz/), [nexus](https://www.nexusmods.com/users/4057483)
+
+*Soulin (クリス)#2709*: [github](https://github.com/Mr-Rageous), [thunderstore](https://valheim.thunderstore.io/package/MrRageous/), [nexus](https://www.nexusmods.com/users/83541393)

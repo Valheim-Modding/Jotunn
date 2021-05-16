@@ -80,3 +80,18 @@ And here we have our final results:<br />
 ![Blue Print Rune Piece Table](../../images/data/BluePrintRunePieceTable.png)
 
 As you can see in the screenshot the name and description are not yet localized. This is done via the `blueprintRuneLocalizations()` method. To read more about localization/translation head over to the [localization tutorial pages](localization.md).
+
+## Using SimpleJVL
+# Pieces
+Instead of the above, we can simply use;
+```cs
+// Notice that this method simply does the previous method for you, using parameters within the constructore rather than nesting them.
+Jotunn.Utils.SimpleJVL.AddPiece(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, params RequirementConfig[] inputs)
+```
+Requirements should be formatted like this;
+```cs
+Requirements = new[]
+{
+    new RequirementConfig { Item = "Wood", Amount = 2 }
+}
+```

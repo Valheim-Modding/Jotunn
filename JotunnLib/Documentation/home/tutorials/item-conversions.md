@@ -81,3 +81,22 @@ var blastConversion = new CustomItemConversion(new SmelterConversionConfig
 });
 ItemManager.Instance.AddItemConversion(blastConversion);
 ```
+
+## Using SimpleJVL
+# Conversions
+Instead of;
+```cs
+// Create a conversion for the blastfurnace, the custom item is the new outcome
+var blastConversion = new CustomItemConversion(new SmelterConversionConfig
+{
+    Station = "blastfurnace", // Override the default "smelter" station
+    FromItem = "Iron",
+    ToItem = "Steel" // This is our custom prefabs name
+});
+ItemManager.Instance.AddItemConversion(blastConversion);
+```
+We can simply use;
+```cs
+// Notice that this method simply does the previous method for you, using parameters within the constructore rather than nesting them.
+Jotunn.Utils.SimpleJVL.AddConversion("blastfurnace", "CookedMeat", "CookedLoxMeat")
+```
