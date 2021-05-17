@@ -479,7 +479,7 @@ namespace Jotunn.Managers
             {
                 if (KeyHints.ContainsKey(transform.name))
                 {
-                    transform.gameObject.SetActive(false);
+                    transform.gameObject?.SetActive(false);
                 }
             }
 
