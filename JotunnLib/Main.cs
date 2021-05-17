@@ -14,7 +14,7 @@ namespace Jotunn
     ///     Main class implementing BaseUnityPlugin.
     /// </summary>
     [BepInPlugin(ModGuid, ModName, Version)]
-    [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.Minor)]
+    [NetworkCompatibility(CompatibilityLevel.OnlySyncWhenInstalled, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
         /// <summary>

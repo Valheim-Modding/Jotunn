@@ -9,7 +9,8 @@ namespace Jotunn.Utils
     public enum CompatibilityLevel
     {
         NoNeedForSync = 0,
-        EveryoneMustHaveMod = 1
+        OnlySyncWhenInstalled = 1,
+        EveryoneMustHaveMod = 2
     }
 
     /// <summary>

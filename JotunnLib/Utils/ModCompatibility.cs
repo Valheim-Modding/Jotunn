@@ -462,8 +462,14 @@ namespace Jotunn.Utils
                 // Check if server modules exist on client side 
                 foreach (var module in Modules)
                 {
+                    if (module.Item3 == CompatibilityLevel.NoNeedForSync)
+                    {
+                        continue;
+                    }
+
                     var otherModule = other.Modules.FirstOrDefault(x => x.Item1 == module.Item1);
-                    if (otherModule == null && module.Item3 == CompatibilityLevel.NoNeedForSync && module.Item4 == VersionStrictness.None)
+
+                    if (otherModule == null && module.Item3 == CompatibilityLevel.OnlySyncWhenInstalled)
                     {
                         continue;
                     }
@@ -492,11 +498,17 @@ namespace Jotunn.Utils
                     }
                 }
 
-                // Check the other way around too
+                // Check if client modules exist on server side
                 foreach (var module in other.Modules)
                 {
+                    if (module.Item3 == CompatibilityLevel.NoNeedForSync)
+                    {
+                        continue;
+                    }
+
                     var serverModule = Modules.FirstOrDefault(x => x.Item1 == module.Item1);
-                    if (serverModule == null && module.Item3 == CompatibilityLevel.NoNeedForSync && module.Item4 == VersionStrictness.None)
+
+                    if (serverModule == null && module.Item3 == CompatibilityLevel.OnlySyncWhenInstalled)
                     {
                         continue;
                     }
