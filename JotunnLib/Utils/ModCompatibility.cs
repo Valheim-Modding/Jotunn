@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Jotunn.Managers;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace Jotunn.Utils
             On.ZNet.RPC_ClientHandshake += ZNet_RPC_ClientHandshake;
             On.ZNet.RPC_ServerHandshake += ZNet_RPC_ServerHandshake;
         }
-        
+
         // Send client module list to server
         private static void ZNet_RPC_ClientHandshake(On.ZNet.orig_RPC_ClientHandshake orig, ZNet self, ZRpc rpc, bool needPassword)
         {
@@ -101,6 +102,20 @@ namespace Jotunn.Utils
                     // Client did not send appended package, just disconnect with the incompatible version error
                     rpc.Invoke("Error", 3);
                     return;
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    // Vanilla client trying to connect?
+                    // Check mods, if there are some installed on the server which need also to be on the client
+
+                    if (GetEnforcableMods().Any(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod))
+                    {
+                        // There is a mod, which needs to be client side too
+                        // Lets disconnect the vanilla client with Incompatible Version message
+
+                        rpc.Invoke("Error", 3);
+                        return;
+                    }
                 }
             }
             else
