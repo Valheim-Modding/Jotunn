@@ -463,7 +463,7 @@ namespace Jotunn.Utils
                 foreach (var module in Modules)
                 {
                     var otherModule = other.Modules.FirstOrDefault(x => x.Item1 == module.Item1);
-                    if (otherModule == null && module.Item3 == CompatibilityLevel.NoNeedForSync)
+                    if (otherModule == null && module.Item3 == CompatibilityLevel.NoNeedForSync && module.Item4 == VersionStrictness.None)
                     {
                         continue;
                     }
@@ -496,7 +496,7 @@ namespace Jotunn.Utils
                 foreach (var module in other.Modules)
                 {
                     var serverModule = Modules.FirstOrDefault(x => x.Item1 == module.Item1);
-                    if (serverModule == null && module.Item3 == CompatibilityLevel.NoNeedForSync)
+                    if (serverModule == null && module.Item3 == CompatibilityLevel.NoNeedForSync && module.Item4 == VersionStrictness.None)
                     {
                         continue;
                     }
