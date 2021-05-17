@@ -2,16 +2,33 @@
 
 [NetworkCompatibility](xref:Jotunn.Utils.NetworkCompatibilityAttribute) is an attribute developers can attach to their `BaseUnityPlugin` which will allow them to specify and configure the specific network requirements their plugin requires to maintain client<->client interoperability, consistency, and synchronisation. One example of this may be a mod which uses a custom asset. While one client may be able to create, use, and interact with the object in the environment, if no other clients have the asset mod then they will experience a difference in gameplay from the client with the asset.
 
-In order to quote *"enforce"* network compatibility, a version check is initiated when the client connects to the server, where each client will compare their plugins, and the requirements specified by each, and the server will decide depending on the requirements of each plugin, if the client is permissible. If there is a version mismatch, the client will be disconnected with a version mismatch error, that details the pluginGUID'd and the offending version string, and the requirement. The client may then satisfy the requirements and reconnect successfully.
+In order to quote _"enforce"_ network compatibility, a version check is initiated when the client connects to the server, where each client will compare their plugins, and the requirements specified by each, and the server will decide depending on the requirements of each plugin, if the client is permissible. If there is a version mismatch, the client will be disconnected with a version mismatch error, that details the pluginGUID'd and the offending version string, and the requirement. The client may then satisfy the requirements and reconnect successfully.
 
-### CompatibilityLevel & Version Strictness
-The [NetworkCompatibility attribute](xref:Jotunn.Utils.NetworkCompatibilityAttribute) provides two parameters, one for [CompatibilityLevel](xref:Jotunn.Utils.CompatibilityLevel) (`NoNeedForSync`,`EveryoneMustHaveMod`), and one for [VersionStrictness](xref:Jotunn.Utils.VersionStrictness) (`None`,`Major`,`Minor`,`Patch`).
+## NetworkCompatibility Attribute
+The [NetworkCompatibility attribute](xref:Jotunn.Utils.NetworkCompatibilityAttribute) provides two parameters, one for [CompatibilityLevel](xref:Jotunn.Utils.CompatibilityLevel) (`NoNeedForSync`, `OnlySyncWhenInstalled`, `EveryoneMustHaveMod`), and one for [VersionStrictness](xref:Jotunn.Utils.VersionStrictness) (`None`,`Major`,`Minor`,`Patch`). This attribute must be defined on your mods main class (the one which inherits from BaseUnityPlugin) to use the feature. If nothing is defined your mod is treated as it had the compatibility level of `NoNeedForSync`.
 
+Example:
 ```cs
-[NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+internal class TestMod : BaseUnityPlugin
+{
+  ...
+}
 ```
 
-These options for the most part are self explanatory, however version strictness is a little complex, so lets take a further look at how this interacts over two devices, a dedicated server and a client:
+## Compatibility Level
+
+The compatibility levels define if your mod has to be loaded on both sides and if your mod's version must be checked by Jötunn.
+
+**NoNeedForSync:** The compatibility check ignores if the mod is installed or not and also does not check the version at all. 
+
+**OnlySyncWhenInstalled:** The compatibility check ignores when a mod is not installed on either side but when it is installed, the version is checked according to the VersionStrictness.
+
+**EveryoneMustHaveMod:** It is checked if the mod is installed and if the version matches the requirements of the versions strictness.
+
+## Version Strictness
+
+Version strictness is a little complex, so lets take a further look at how this interacts over two devices, a dedicated server and a client:
 
 **No NetworkCompatibility in any plugin, client or server**: Vanilla version checking.
 
@@ -23,7 +40,7 @@ These options for the most part are self explanatory, however version strictness
 
 **VersionStrictness unequal, server>client**: client version mismatch from major, minor, patch:<br>![Network Compat Server Gr Client](../images/utils/NetworkCompatServer-gr-Client.png)
 
-### Semantic versioning and NetworkCompatibility.
+## Semantic versioning and NetworkCompatibility
 
 [Semantic Versioning](https://semver.org/) is the process of assigning versions to states in the form of `Major.Minor.Patch`. In general, bug fixes are usually placed within the patch version, feature additions are placed within the minor version, and breaking changes are placed within the major version.
 
