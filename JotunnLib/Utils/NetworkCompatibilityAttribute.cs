@@ -3,25 +3,47 @@
 namespace Jotunn.Utils
 {
     /// <summary>
-    /// Enum used for telling whether or not the mod should be needed by everyone in multiplayer games.
-    /// Also can specify if the mod does not work in multiplayer.
+    ///     Determines the level of compatibility of a mod which is enforced by Jötunn.
+    ///     Servers disconnect clients with mods which enforce their compatibility when 
+    ///     the version does not match as defined by the VersionStrictness attribute.
     /// </summary>
     public enum CompatibilityLevel
     {
+        /// <summary>
+        ///     Mod is not checked at all, VersionsStrictness does not apply.
+        /// </summary>
         NoNeedForSync = 0,
+        /// <summary>
+        ///     Mod is checked only if the client and server have loaded it and ignores if just one side has it.
+        /// </summary>
         OnlySyncWhenInstalled = 1,
+        /// <summary>
+        ///     Mod must be loaded on server and client. Version checking depends on the VersionStrictness.
+        /// </summary>
         EveryoneMustHaveMod = 2
     }
 
     /// <summary>
-    /// Enum used for telling whether or not the same mod version should be used by both the server and the clients.
-    /// This enum is only useful if CompatibilityLevel.EveryoneMustHaveMod was chosen.
+    ///     Enum used for telling whether or not the same mod version should be used by both the server and the clients.
+    ///     This enum is only useful if CompatibilityLevel.EveryoneMustHaveMod or OnlySyncWhenInstalled was chosen.
     /// </summary>
     public enum VersionStrictness : int
     {
+        /// <summary>
+        ///     No version check is done
+        /// </summary>
         None = 0,
+        /// <summary>
+        ///     Mod must have the same Major version
+        /// </summary>
         Major = 1,
+        /// <summary>
+        ///     Mods must have the same Minor version
+        /// </summary>
         Minor = 2,
+        /// <summary>
+        ///     Mods must have the same Patch version
+        /// </summary>
         Patch = 3
     }
 
