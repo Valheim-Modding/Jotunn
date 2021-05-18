@@ -6,7 +6,7 @@
 
 ### If you are transitioning from JötunnLib or ValheimLib also read the [Transition Documentation](../transition/jotunnlib/overview.md).
 
-### If you are starting from scratch and want detailed instructions read the [Step-by-Step Guide](guide.md) and see [SimpleJVL](simplejvl.md) for shorthand methods that may be useful for new programmers.
+### If you are starting from scratch and want detailed instructions read the [Step-by-Step Guide](guide.md)
 
 # Features
 Jötunn is continually improving and we have lots of features planned for the future, however we hope the ones we have implemented thus far prove to be a useful base and provide an idea of the consistency we aim to deliver moving forwards:
