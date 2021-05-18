@@ -55,8 +55,8 @@ namespace Jotunn.Utils
         /// <param name="description">Description of the item, shows up in tooltip.</param>
         public GameObject AddItem(string prefabName, string name, string description)
         {
-            var prefabObject = assetBundle.LoadAsset<GameObject>(prefabName);
-            var itemDrop = prefabObject.GetComponent<ItemDrop>().m_itemData;
+            GameObject prefabObject = assetBundle.LoadAsset<GameObject>(prefabName);
+            ItemDrop itemDrop = prefabObject.GetComponent<ItemDrop>().m_itemData;
             itemDrop.m_dropPrefab = prefabObject;
             itemDrop.m_shared.m_name = name;
             itemDrop.m_shared.m_description = description;
@@ -154,11 +154,8 @@ namespace Jotunn.Utils
             StatusEffect setStatusEffect = null, int durabilityDrain = 1, int durabilityPerLevel = 50,
             bool useDurability = true, float useDurabilityDrain = 0)
         {
-
-            // if (prefabOld == null) { var Item = new CustomItem(prefabName, prefabOld); }
-            // else, break;
-            var prefabObject = assetBundle.LoadAsset<GameObject>(prefabName);
-            var itemDrop = prefabObject.GetComponent<ItemDrop>().m_itemData;
+            GameObject prefabObject = assetBundle.LoadAsset<GameObject>(prefabName);
+            ItemDrop itemDrop = prefabObject.GetComponent<ItemDrop>().m_itemData;
 
             // GENERAL
             itemDrop.m_dropPrefab = prefabObject;
@@ -244,8 +241,8 @@ namespace Jotunn.Utils
         /// <param name="description">Description of the item, shows up in tooltip.</param>
         public void AddClonedItem(string prefabNew, string prefabOld, string name, string description)
         {
-            var Item = new CustomItem(prefabNew, prefabOld);
-            var ItemDrop = Item.ItemDrop.m_itemData.m_shared;
+            CustomItem Item = new CustomItem(prefabNew, prefabOld);
+            ItemDrop ItemDrop = Item.ItemDrop.m_itemData.m_shared;
             ItemDrop.m_name = name;
             ItemDrop.m_description = description;
             ItemManager.Instance.AddItem(Item);
@@ -341,8 +338,8 @@ namespace Jotunn.Utils
             StatusEffect setStatusEffect = null, int durabilityDrain = 1, int durabilityPerLevel = 50,
             bool useDurability = true, float useDurabilityDrain = 0)
         {
-            var Item = new CustomItem(prefabNew, prefabOld);
-            var itemDrop = Item.ItemDrop.m_itemData.m_shared;
+            CustomItem Item = new CustomItem(prefabNew, prefabOld);
+            ItemDrop itemDrop = Item.ItemDrop.m_itemData.m_shared;
             itemDrop.m_name = name;
             itemDrop.m_description = description;
             itemDrop.m_ammoType = ammoType;
@@ -441,14 +438,14 @@ namespace Jotunn.Utils
         /// <param name="description">Description of the item, shows up in tooltip.</param>
         public void AddStationPiece(string prefabName, string name, string description)
         {
-            var prefabObject = AddItem(prefabName, name, description);
-            var reflect = prefabObject.GetComponent<CraftingStation>();
+            GameObject prefabObject = AddItem(prefabName, name, description);
+            CraftingStation reflect = prefabObject.GetComponent<CraftingStation>();
             if (reflect == null)
             {
-                var er = GameObject.Find("piece_workbench");
-                var craft = er.GetComponent<CraftingStation>();
+                GameObject er = GameObject.Find("piece_workbench");
+                CraftingStation craft = er.GetComponent<CraftingStation>();
                 prefabObject.AddComponent<CraftingStation>();
-                var Craft = prefabObject.GetComponent<CraftingStation>();
+                CraftingStation Craft = prefabObject.GetComponent<CraftingStation>();
                 Craft.m_areaMarker = craft.m_areaMarker;
                 Craft.m_attachedExtensions = craft.m_attachedExtensions;
                 Craft.m_connectionPoint = craft.m_connectionPoint;
@@ -482,11 +479,11 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Adds a <see cref="CraftingStation"/> to ObjectDB with inherited properties by default, and builds a new recipe for it.
         /// </summary>
-        /// <param name="prefabName">Case sensitive name of the new <see cref="Piece"/>.</param>
+        /// <param name="prefabName">Case sensitive name of the new Piece.</param>
         /// <param name="name">Token name of the new item.</param>
         /// <param name="description">Description of the item, shows up in tooltip.</param>
-        /// <param name="pieceTable">Case sensitive name of <see cref="PieceTable"/> assigned to the recipe.</param>
-        /// <param name="craftingStation">Case sensitive name of the <see cref="CraftingStation"/> required </param>
+        /// <param name="pieceTable">Case sensitive name of PieceTable assigned to the recipe.</param>
+        /// <param name="craftingStation">Case sensitive name of the CraftingStation required </param>
         /// <param name="inputs">Recipe config as a <see cref="RequirementConfig"/></param>
         public void AddStation(string prefabName, string name, string description, GameObject prefab, string pieceTable,
             string craftingStation, bool isAllowedInDungeons, params RequirementConfig[] inputs)
@@ -542,7 +539,7 @@ namespace Jotunn.Utils
             string repairStation = "", int minStationLevel = 1, int amount = 1,
             params RequirementConfig[] inputs)
         {
-            var recipe = new CustomItem(prefabNew, fixRefs,
+            CustomItem recipe = new CustomItem(prefabNew, fixRefs,
                 new ItemConfig { CraftingStation = craftingStation, RepairStation = repairStation, MinStationLevel = minStationLevel, Amount = amount, Requirements = inputs });
             ItemManager.Instance.AddItem(recipe);
         }
@@ -558,7 +555,7 @@ namespace Jotunn.Utils
         public void AddPieceRequirements(string pieceName, string pieceTable, string craftingStation,
             bool isAllowedInDungeons = false, params RequirementConfig[] inputs)
         {
-            var piece = new CustomPiece(pieceName,
+            CustomPiece piece = new CustomPiece(pieceName,
                 new PieceConfig { PieceTable = pieceTable, CraftingStation = craftingStation, AllowedInDungeons = isAllowedInDungeons, Requirements = inputs });
             PieceManager.Instance.AddPiece(piece);
         }
@@ -579,8 +576,8 @@ namespace Jotunn.Utils
         {
             GameObject ger = GameObject.Find(prefabOld);
             ItemDrop change = ger.GetComponent<ItemDrop>();
-            var d = change.GetComponent<Recipe>();
-            var recipe = new CustomItem(ger, fixRefs,
+            ItemData d = change.GetComponent<Recipe>();
+            CustomItem recipe = new CustomItem(ger, fixRefs,
                 new ItemConfig
                 {
                     CraftingStation = craftingStation,
