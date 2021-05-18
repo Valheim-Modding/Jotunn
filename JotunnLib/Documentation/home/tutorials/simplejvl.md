@@ -120,15 +120,28 @@ simpleJVL.AddItem(prefabNew: "ExampleItem.prefab", name: "Example Item", descrip
 ```
 **Example 2: Bone Bolt**
 ```cs
-var name = "BoneBolt";
-var recipe = new RequirementConfig
+public void AddBolts()
 {
+    try
+    {
+        SimpleJVL.Setup.instance.AddItem("BoltBone", "Bone Bolt", "A Bolt made of Bone");
+        var item = GameObject.Find("BoltBone");
+        SimpleJVL.Setup.instance.AddRecipe(item, "piece_workbench", "piece_workbench", 10, 2, new RequirementConfig
+        {
             Item = "BoneFragments",
-            Amount = 10
-};
-SimpleJVL.Setup.instance.AddItem(name, "Bone Bolt", "A Bolt made of Bone");
-GameObject item = GameObject.Find(name);
-SimpleJVL.Setup.instance.AddRecipe(item, "piece_workbench", "piece_workbench", 10, 2, recipe);
+            Amount = 4,
+            AmountPerLevel = 0
+        });
+    }
+    catch (Exception ex)
+    {
+        Jotunn.Logger.LogError($"Error while adding Bone Bolt: " + ex.Message);
+    }
+    finally
+    {
+        // continue
+    }
+}
 ```
 ## Creating Conversions
 Instead of;
