@@ -4,57 +4,57 @@ SimpleJVL shortens language use for front end modders who merely want a few of t
 
 ## Exposed Methods
 ### Item Creation
-- ```cs
+```cs
 SimpleJVL(string assetBundleName, Assembly assembly)
 ```
 Checks whether there is an assetbundle already loaded, and if not, loads defined assetbundle into cache.
-- ```cs
+```cs
 AddItem(string prefabName, string name, string description) +1Overload
 ```
 Adds item to DB based on prefab, and registers it on that name
-- ```cs
+```cs
 AddClonedItem(string prefabNew, string prefabOld, string name, string description) +1Overload
 ```
 Broad extender for cloning
 ### Piece Creation
-- ```cs
+```cs
 AddPiece(string prefabName, string name, string description, GameObject prefab, string pieceTable = "piece_HammerPieceTable", string craftingStation = "", bool isAllowedInDungeons = false, params RequirementConfig[] inputs)
 ```
 Adds piece to registry based on asset prefab, used by AddStationPiece()
-- ```cs
+```cs
 AddStation(string prefabName, string name, string description, GameObject prefab, string pieceTable, string craftingStation, bool isAllowedInDungeons, params RequirementConfig[] inputs)
 ```
 Adds crafting station from assets, should _allow_ cloning
-- ```cs
+```cs
 AddStationPiece(string prefabName, string name, string description)
 ```
 A constructor for reformatting a Piece into a CraftingStation, regardless of whether it was one before. It defaults to an identical CraftingStation component in the Workbench being added to your piece, if the piece does not have one already.
 ### Recipe Creation
-- ```cs
+```cs
 AddConversion(string station, string fromitem, string toitem)
 ```
 Shorthand extender for doing what it says it does.
-- ```cs
+```cs
 AddRecipe(GameObject prefabNew, string craftingStation, string repairStation, int minStationLevel, int amount, params RequirementConfig[] inputs)
 ```
 Adds recipe based on prefab, meant to be hooked by one of the previous methods
-- ```cs
+```cs
 AddCloneRecipe(GameObject item, int amount, string craftingStation, int minStationLevel, params RequirementConfig[] inputs)
 ```
 Shorthand extender for doing what it says it does, but for AddClonedItem()
-- ```cs
+```cs
 AddPieceRecipe(GameObject pieceName, string pieceTable, string craftingStation, params RequirementConfig[] inputs)
 ```
 Shorthand extender for doing what it says it does, but for AddPiece()
 ### Mob Creation
-- ```cs
+```cs
 LoadMob(string prefabName, string mobName)
 ```
 Registers any GameObject as a prefab, but does not add it to any spawn tables. Only to be used with prebuilt assets... for now.
 
 ### Overloads
 There are also 2 overload constructors, for usage in fine tuning your items.
-- ```cs
+```cs
     AddItem(
             string prefabName, string name, string description,
             string ammoType = "arrow", int armor = 0, Material armorMaterial = null,
@@ -78,7 +78,7 @@ There are also 2 overload constructors, for usage in fine tuning your items.
             bool useDurability = true, float useDurabilityDrain = 0
             )`
 All are optional besides the first three. Target a parameter to avoid using commas., see examples below.
-- ```cs
+```cs
     AddClonedItem(
             string prefabNew, string prefabOld, string name, string description,
             string ammoType = "arrow", int armor = 0, Material armorMaterial = null,
