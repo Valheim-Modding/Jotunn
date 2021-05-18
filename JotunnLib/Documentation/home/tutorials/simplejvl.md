@@ -77,6 +77,7 @@ There are also 2 overload constructors, for usage in fine tuning your items.
             StatusEffect setStatusEffect = null, int durabilityDrain = 1, int durabilityPerLevel = 50,
             bool useDurability = true, float useDurabilityDrain = 0
             )`
+```
 All are optional besides the first three. Target a parameter to avoid using commas., see examples below.
 ```cs
     AddClonedItem(
@@ -99,13 +100,15 @@ All are optional besides the first three. Target a parameter to avoid using comm
             int foodRegen = 0, int foodStamina = 0, string setName = "", int setSize = 0,
             StatusEffect setStatusEffect = null, int durabilityDrain = 1, int durabilityPerLevel = 50,
             bool useDurability = true, float useDurabilityDrain = 0
-            )```
+            )
+```
 All are optional besides the first four. Target a parameter to avoid using commas., see examples below.
 ## Using SimpleJVL
 # How it works
 The methods within this librarry are almost entirely wrappers.
 Use them in place of stretches of code when repeating tasks that are needed for assets.
-To expose these methods, preclude your call with ```cs
+To expose these methods, preclude your call with 
+```cs
 simpleJVL.Method(params)
 ```
 
