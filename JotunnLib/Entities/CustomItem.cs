@@ -57,7 +57,7 @@ namespace Jotunn.Entities
             ItemDrop = itemPrefab.GetComponent<ItemDrop>();
             FixReference = fixReference;
 
-            itemConfig.Item = ItemPrefab.name;
+            itemConfig.Apply(ItemPrefab);
             Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
         }
 
@@ -79,20 +79,19 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
-        ///     Custom item created as an "empty" primitive with a <see cref="global::Recipe"/> made from a <see cref="ItemConfig"/>.<br />
-        ///     At least the name and the Icon of the <see cref="global::ItemDrop"/> must be edited after creation.
+        ///     Custom item created as an "empty" primitive with a <see cref="global::Recipe"/> made from a <see cref="ItemConfig"/>.
         /// </summary>
         /// <param name="name">Name of the new prefab. Must be unique.</param>
         /// <param name="addZNetView">If true a ZNetView component will be added to the prefab for network sync.</param>
-        /// <param name="itemConfig">The recipe config for this custom item.</param>
+        /// <param name="itemConfig">The item config for this custom item.</param>
         public CustomItem(string name, bool addZNetView, ItemConfig itemConfig)
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             if (ItemPrefab)
             {
                 ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
-
-                itemConfig.Item = name;
+                ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
+                itemConfig.Apply(ItemPrefab);
                 Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
             }
         }
@@ -123,8 +122,7 @@ namespace Jotunn.Entities
             if (ItemPrefab)
             {
                 ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
-
-                itemConfig.Item = name;
+                itemConfig.Apply(ItemPrefab);
                 Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
             }
         }
