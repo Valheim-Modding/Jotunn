@@ -20,17 +20,19 @@ internal class TestMod : BaseUnityPlugin
 
 The compatibility levels define if your mod has to be loaded on both sides and if your mod's version must be checked by Jötunn.
 
-**NoNeedForSync:** The compatibility check ignores if the mod is installed or not and also does not check the version at all. 
+**NoNeedForSync:** The compatibility check ignores if the mod is installed or not and also does not check the version at all. VersionStrictness value is ignored.
 
-**OnlySyncWhenInstalled:** The compatibility check ignores when a mod is not installed on either side but when it is installed, the version is checked according to the VersionStrictness.
+**OnlySyncWhenInstalled:** The compatibility check ignores the mod if it is not installed on both sides. If it is installed on both sides the version is checked according to the VersionStrictness value.
 
-**EveryoneMustHaveMod:** It is checked if the mod is installed and if the version matches the requirements of the versions strictness.
+**EveryoneMustHaveMod:** It is checked if the mod is installed and if the version matches the requirements of the VersionStrictness value.
 
 ## Version Strictness
 
-Version strictness is a little complex, so lets take a further look at how this interacts over two devices, a dedicated server and a client:
+Version strictness defines at which level according to the [Semantic Versioning scheme](#semantic-versioning-and-networkcompatibility) the mod's version must be equal to be allowed to connect.
 
-**No NetworkCompatibility in any plugin, client or server**: Vanilla version checking.
+## Example
+
+Lets take a look at how this interacts over two devices, a dedicated server and a client. In all examples the compatibility level is `EveryoneMustHaveMod` and the versions strictness is `Minor`.
 
 **Clientside NetworkCompatibility plugin, none server**: Client Version mismatch from additional plugin:<br>![NetworkCompatibilityClientHasAdditionalMod](../images/utils/NetworkCompatClientsideAdditional.png)
 
@@ -61,7 +63,7 @@ Some examples which **need** version synchronicity with the server and other cli
 - New and removed items
 - Changed items (for example newly added upgrades)
 
-If your mod does any of the above we encourage you to set the NetWorkCompatibility attribute appropriately.
+If your mod does any of the above we encourage you to set the NetworkCompatibility attribute to `EveryoneMustHaveMod` and the version strictness accordingly.
 Our suggestion is to set it to `Minor` which still gives you the flexibility to add unrelated changes without needing the server or clients to upgrade.
 
 But whatever strictness you choose, you need to increase your version accordingly to make sure clients and servers can work together.
