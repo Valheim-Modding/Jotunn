@@ -592,5 +592,18 @@ namespace Jotunn.Utils
             ObjectDB.instance.m_recipes.Remove(d);
             ItemManager.Instance.AddItem(recipe);
         }
+
+        /// <summary>
+        ///     Registers a <see cref="GameObject"/> as a prefab, but does not add it to any spawn tables. Only use with prebuilt assets.
+        /// </summary>
+        /// <param name="prefabName">Case sensitive name of the new mob.</param>
+        /// <param name="mobName">Token name of the new mob.</param>
+        public void LoadMob(string prefabName, string mobName)
+        {
+            GameObject mob = assetBundle.LoadAsset<GameObject>(prefabName);
+            ItemData Entity = mob.GetComponent<Humanoid>();
+            Entity.m_name = mobName;
+            PrefabManager.Instance.AddPrefab(mob);
+        }
     }
 }
