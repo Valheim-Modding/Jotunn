@@ -538,7 +538,7 @@ namespace Jotunn.Utils
         /// <param name="minStationLevel">Level of the <see cref="CraftingStation"/> required for crafting this item.</param>
         /// <param name="amount">Amount of this item that <see cref="RequirementConfig"/> will return.</param>
         /// <param name="inputs">Recipe config as a <see cref="RequirementConfig"/></param>
-        public void AddRecipe(GameObject prefabNew, bool fixRefs = false, string craftingStation = "",
+        public void AddRecipe(string prefabNew, bool fixRefs = false, string craftingStation = "",
             string repairStation = "", int minStationLevel = 1, int amount = 1,
             params RequirementConfig[] inputs)
         {
@@ -555,7 +555,7 @@ namespace Jotunn.Utils
         /// <param name="craftingStation">Case sensitive name of the <see cref="CraftingStation"/> required for crafting this item.</param>
         /// <param name="isAllowedInDungeons">Amount of this item that <see cref="RequirementConfig"/> will return.</param>
         /// <param name="inputs">Recipe config as a <see cref="RequirementConfig"/></param>
-        public void AddPieceRequirements(GameObject pieceName, string pieceTable, string craftingStation,
+        public void AddPieceRequirements(string pieceName, string pieceTable, string craftingStation,
             bool isAllowedInDungeons = false, params RequirementConfig[] inputs)
         {
             var piece = new CustomPiece(pieceName,
