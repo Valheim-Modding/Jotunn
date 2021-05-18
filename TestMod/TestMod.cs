@@ -60,6 +60,7 @@ namespace TestMod
             AddItemsWithConfigs();
             AddMockedItems();
             AddEmptyItems();
+            AddItemsWithVariants();
             AddInvalidItems();
 
             // Add custom items cloned from vanilla items
@@ -497,6 +498,22 @@ namespace TestMod
             }
         }
 
+        // Test the variant config for items
+        private void AddItemsWithVariants()
+        {
+            Sprite var1 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var1.jpg");
+            Sprite var2 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var2.jpg");
+            CustomItem CI = new CustomItem("item_lulvariants", false, new ItemConfig
+            {
+                Icons = new Sprite[]
+                {
+                    var1, var2
+                }
+            });
+            ItemManager.Instance.AddItem(CI);
+        }
+
+        // Add items / pieces with errors on purpose to test error handling
         private void AddInvalidItems()
         {
             CustomItem CI = new CustomItem("item_faulty", false);
