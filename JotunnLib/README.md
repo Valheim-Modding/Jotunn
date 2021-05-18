@@ -14,7 +14,7 @@ Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/). 
 
 _If you're using a mod installer, you can likely ignore this section_  
 
-For a more in-depth installation guide, please check out the [manual installation guide](https://valheim-modding.github.io/Jotunn/home/installation.html) in our documentation.  
+For a more in-depth installation guide, please check out the [manual installation guide](https://valheim-modding.github.io/Jotunn/guides/installation.html) in our documentation.  
 
 However, here is a quick run-down:
 
