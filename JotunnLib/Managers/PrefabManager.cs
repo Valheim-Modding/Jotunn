@@ -170,7 +170,7 @@ namespace Jotunn.Managers
                 return null;
             }
 
-            var newPrefab = GameObject.Instantiate(prefab, PrefabContainer.transform);
+            var newPrefab = GameObject.Instantiate(prefab, PrefabContainer.transform, false);
             newPrefab.name = name;
 
             return newPrefab;
