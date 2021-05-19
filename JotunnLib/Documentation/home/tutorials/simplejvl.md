@@ -52,58 +52,7 @@ LoadMob(string prefabName, string mobName)
 ```
 Registers any GameObject as a prefab, but does not add it to any spawn tables. Only to be used with prebuilt assets... for now.
 
-### Overloads
-There are also 2 overload constructors, for usage in fine tuning your items.
-```cs
-    AddItem(
-            string prefabName, string name, string description,
-            string ammoType = "arrow", int armor = 0, Material armorMaterial = null,
-            int armorPerLevel = 0, StatusEffect attackStatusEffect = null, int backstabBonus = 2,
-            PieceTable buildPieces = null, bool canBeRepaired = true, bool destroyBroken = false,
-            bool centerCamera = false,
-            int blunt = 0, int chop = 0, int fire = 0, int frost = 0, int lightning = 0,
-            int pickaxe = 0, int pierce = 0, int poison = 0, int slash = 0, int spirit = 0,
-            int bluntPerLevel = 0, int chopPerLevel = 0, int firePerLevel = 0, int frostPerLevel = 0, int lightningPerLevel = 0,
-            int pickaxePerLevel = 0, int piercePerLevel = 0, int poisonPerLevel = 0, int slashPerLevel = 0, int spiritPerLevel = 0,
-            float secondaryAtkDmg = 1,
-            int deflectionForce = 0, int deflectionForcePerLevel = 0,
-            bool dodgeable = true, int holdStaminaDrain = 0, int maxDurability = 1, int maxQuality = 4,
-            int maxStackSize = 1, int movementModifier = 0, bool questItem = false,
-            GameObject spawnOnHit = null, GameObject spawnOnHitTerrain = null, bool teleportable = true,
-            int value = 0, int variants = 0, int weight = 0, bool blockable = true, int blockPower = 0,
-            int blockPowerPerLevel = 0, int equipDuration = 2, StatusEffect equipStatusEffect = null,
-            StatusEffect consumeStatusEffect = null, float food = 0, int foodBurnTime = 0,
-            int foodRegen = 0, int foodStamina = 0, string setName = "", int setSize = 0,
-            StatusEffect setStatusEffect = null, int durabilityDrain = 1, int durabilityPerLevel = 50,
-            bool useDurability = true, float useDurabilityDrain = 0
-            )`
-```
-All are optional besides the first three. Target a parameter to avoid using commas., see examples below.
-```cs
-    AddClonedItem(
-            string prefabNew, string prefabOld, string name, string description,
-            string ammoType = "arrow", int armor = 0, Material armorMaterial = null,
-            int armorPerLevel = 0, StatusEffect attackStatusEffect = null, int backstabBonus = 2,
-            PieceTable buildPieces = null, bool canBeRepaired = true, bool destroyBroken = false,
-            bool centerCamera = false, int blunt = 0, int chop = 0, int fire = 0, int frost = 0,
-            int lightning = 0, int pickaxe = 0, int pierce = 0, int poison = 0, int slash = 0,
-            int spirit = 0, int bluntPerLevel = 0, int chopPerLevel = 0, int firePerLevel = 0,
-            int frostPerLevel = 0, int lightningPerLevel = 0, int pickaxePerLevel = 0,
-            int piercePerLevel = 0, int poisonPerLevel = 0, int slashPerLevel = 0, int spiritPerLevel = 0,
-            float secondaryAtkDmg = 1, int deflectionForce = 0, int deflectionForcePerLevel = 0,
-            bool dodgeable = true, int holdStaminaDrain = 0, int maxDurability = 1, int maxQuality = 4,
-            int maxStackSize = 1, int movementModifier = 0, bool questItem = false,
-            GameObject spawnOnHit = null, GameObject spawnOnHitTerrain = null, bool teleportable = true,
-            int value = 0, int variants = 0, int weight = 0, bool blockable = true, int blockPower = 0,
-            int blockPowerPerLevel = 0, int equipDuration = 2, StatusEffect equipStatusEffect = null,
-            StatusEffect consumeStatusEffect = null, float food = 0, int foodBurnTime = 0,
-            int foodRegen = 0, int foodStamina = 0, string setName = "", int setSize = 0,
-            StatusEffect setStatusEffect = null, int durabilityDrain = 1, int durabilityPerLevel = 50,
-            bool useDurability = true, float useDurabilityDrain = 0
-            )
-```
-All are optional besides the first four. Target a parameter to avoid using commas., see examples below.
-## Using SimpleJVL
+## Usage
 # How it works
 The methods within this librarry are almost entirely wrappers.
 Use them in place of stretches of code when repeating tasks that are needed for assets.
@@ -115,11 +64,7 @@ simpleJVL.Method(params)
 ## Item Creation
 **Example Item:**
 ```cs
-simpleJVL.AddItem(prefabNew: "ExampleItem.prefab", name: "Example Item", description: "An Example Item");
-```
-**Example Item with 32 fire damage:**
-```cs
-simpleJVL.AddItem(prefabNew: "ExampleItem.prefab", name: "Example Item", description: "An Example Item", fire: 32);
+simpleJVL.AddItem( "ExampleItem.prefab", "Example Item", "An Example Item");
 ```
 **Example 2: Bone Bolt**
 ```cs
@@ -160,6 +105,6 @@ ItemManager.Instance.AddItemConversion(blastConversion);
 ```
 We can simply use;
 ```cs
-// Notice that this method simply does the previous method for you, using parameters within the constructore rather than nesting them.
-simpleJVL.AddConversion("blastfurnace", "CookedMeat", "CookedLoxMeat")
+// Notice that this method simply does the previous method for you, using parameters within the constructor rather than nesting them.
+simpleJVL.AddConversion("blastfurnace", "Iron", "Steel")
 ```
