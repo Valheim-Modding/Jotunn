@@ -161,14 +161,7 @@ namespace Jotunn.Configs
 
             var recipe = ScriptableObject.CreateInstance<Recipe>();
 
-            var name = Name;
-            if (string.IsNullOrEmpty(name))
-            {
-                name = "Recipe_" + Item;
-            }
-
-            recipe.name = name;
-
+            recipe.name = "Recipe_" + Item;
             recipe.m_item = Mock<ItemDrop>.Create(Item);
             recipe.m_amount = Amount;
             recipe.m_enabled = Enabled;
