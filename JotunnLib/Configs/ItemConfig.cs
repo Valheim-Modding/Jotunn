@@ -59,6 +59,11 @@ namespace Jotunn.Configs
         public Sprite[] Icons { get; set; } = null;
 
         /// <summary>
+        ///     Texture holding the variants different styles.
+        /// </summary>
+        public Texture2D StyleTex { get; set; } = null;
+
+        /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
         public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
@@ -101,8 +106,28 @@ namespace Jotunn.Configs
             // Set icons if provided
             if (Icons != null && Icons.Length > 0)
             {
-                itemDrop.m_itemData.m_shared.m_variants = Icons.Length;
                 itemDrop.m_itemData.m_shared.m_icons = Icons;
+
+                // Set variants if a StyleTex is provided
+                if (StyleTex != null)
+                {
+                    itemDrop.m_itemData.m_shared.m_variants = Icons.Length;
+
+                    Renderer[] renderer = prefab.GetComponentsInChildren<Renderer>();
+                    foreach (var rend in renderer)
+                    {
+                        if (rend.materials != null)
+                        {
+                            foreach (var mat in rend.materials)
+                            {
+                                if (mat.GetTexture("_StyleTex") != null)
+                                {
+                                    mat.SetTexture("_StyleTex", StyleTex);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -130,7 +155,7 @@ namespace Jotunn.Configs
         {
             if (Item == null)
             {
-                Logger.LogError($"No item set in recipe config");
+                Logger.LogError($"No item set in item config");
                 return null;
             }
 
