@@ -7,6 +7,13 @@ namespace Jotunn.Entities
     /// </summary>
     public static class MockRequirement
     {
+        /// <summary>
+        ///     Creates a mocked Piece.Requirement
+        /// </summary>
+        /// <param name="name">Prefab name</param>
+        /// <param name="amount">Amount</param>
+        /// <param name="recover">Whether the resource is returned after deconstruction</param>
+        /// <returns></returns>
         public static Piece.Requirement Create(string name, int amount = 1, bool recover = true)
         {
             var requirement = new Piece.Requirement
@@ -20,6 +27,12 @@ namespace Jotunn.Entities
             return requirement;
         }
 
+        /// <summary>
+        ///     Creates a mocked Piece.Requirement array
+        /// </summary>
+        /// <param name="requirements">List of prefab names and amounts</param>
+        /// <param name="recover">Whether the resources are returned after deconstruction</param>
+        /// <returns></returns>
         public static Piece.Requirement[] CreateArray(Dictionary<string, int> requirements, bool recover = true)
         {
             List<Piece.Requirement> list = new List<Piece.Requirement>();

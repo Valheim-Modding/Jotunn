@@ -331,7 +331,7 @@ namespace Jotunn.InGameConfig
         }
 
         /// <summary>
-        ///     Set the properties of the ConfigBound<T>
+        ///     Set the properties of the <see cref="ConfigBound{T}"/>
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="binding"></param>

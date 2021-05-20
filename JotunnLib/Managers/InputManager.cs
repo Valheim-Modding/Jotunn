@@ -12,6 +12,9 @@ namespace Jotunn.Managers
     public class InputManager : IManager
     {
         private static InputManager _instance;
+        /// <summary>
+        ///     Singleton instance
+        /// </summary>
         public static InputManager Instance
         {
             get
@@ -22,7 +25,9 @@ namespace Jotunn.Managers
         }
         internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
 
-
+        /// <summary>
+        ///     Initialize the manager
+        /// </summary>
         public void Init()
         {
             On.ZInput.Reset += RegisterCustomInputs;
@@ -30,6 +35,11 @@ namespace Jotunn.Managers
             On.ZInput.GetButtonUp += ZInput_GetButtonUp;
         }
 
+        /// <summary>
+        ///     Add a custom button binding via config
+        /// </summary>
+        /// <param name="modguid"></param>
+        /// <param name="button"></param>
         public void AddButton(string modguid, ButtonConfig button)
         {
             if (Buttons.ContainsKey(button.Name + "!" + modguid))
@@ -43,6 +53,15 @@ namespace Jotunn.Managers
             Buttons.Add(button.Name, button);
         }
 
+        /// <summary>
+        ///     Add a custom button binding
+        /// </summary>
+        /// <param name="modguid"></param>
+        /// <param name="name"></param>
+        /// <param name="key"></param>
+        /// <param name="repeatDelay"></param>
+        /// <param name="repeatInterval"></param>
+        [Obsolete("Use ButtonConfig instead")]
         public void AddButton(
             string modguid,
             string name,
@@ -66,6 +85,16 @@ namespace Jotunn.Managers
             });
         }
 
+        /// <summary>
+        ///     Add a custom button binding
+        /// </summary>
+        /// <param name="modguid"></param>
+        /// <param name="name"></param>
+        /// <param name="axis"></param>
+        /// <param name="inverted"></param>
+        /// <param name="repeatDelay"></param>
+        /// <param name="repeatInterval"></param>
+        [Obsolete("Use ButtonConfig instead")]
         public void AddButton(
             string modguid,
             string name,

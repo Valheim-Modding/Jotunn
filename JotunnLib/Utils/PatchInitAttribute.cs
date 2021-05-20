@@ -20,6 +20,10 @@ namespace Jotunn.Utils
         /// </summary>
         public int Priority { get; set; }
 
+        /// <summary>
+        ///     Patch Init Attribute
+        /// </summary>
+        /// <param name="priority"><see cref="Priority"/></param>
         public PatchInitAttribute(int priority)
         {
             Priority = priority;

@@ -91,7 +91,9 @@ public sealed class ConfigurationManagerAttributes
     /// </summary>
     public bool? IsAdvanced;
 
-
+    /// <summary>
+    ///     Whether a config is only writable by admins and gets overwritten on connecting clients
+    /// </summary>
     public bool IsAdminOnly
     {
         get => isAdminOnly;
@@ -105,6 +107,9 @@ public sealed class ConfigurationManagerAttributes
         }
     }
 
+    /// <summary>
+    ///     Welp
+    /// </summary>
     public bool UnlockSetting
     {
         get => unlockSetting;

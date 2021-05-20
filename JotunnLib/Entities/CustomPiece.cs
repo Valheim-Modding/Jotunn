@@ -190,16 +190,19 @@ namespace Jotunn.Entities
             return false;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             return obj.GetHashCode() == GetHashCode();
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return PiecePrefab.name.GetStableHashCode();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return PiecePrefab.name;

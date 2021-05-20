@@ -1,4 +1,4 @@
-﻿/**
+﻿/*
  * Adapted from:
  * http://wiki.unity3d.com/index.php?title=ObjImporter
  */
@@ -11,6 +11,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 public static class ObjImporter
 {

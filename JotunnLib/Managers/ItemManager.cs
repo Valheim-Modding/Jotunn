@@ -207,11 +207,12 @@ namespace Jotunn.Managers
             return true;
         }
 
+        /*
         /// <summary>
         ///     Adds item conversions defined in a JSON file at given path, relative to BepInEx/plugins
         /// </summary>
         /// <param name="path">JSON file path, relative to BepInEx/plugins folder</param>
-       /* public void AddItemConversionsFromJson(string path)
+        public void AddItemConversionsFromJson(string path)
         {
             string json = AssetUtils.LoadText(path);
 

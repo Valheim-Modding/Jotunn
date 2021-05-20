@@ -21,6 +21,9 @@ namespace Jotunn.Managers
     public class GUIManager : IManager, IPointerClickHandler
     {
         private static GUIManager _instance;
+        /// <summary>
+        ///     Singleton instance
+        /// </summary>
         public static GUIManager Instance
         {
             get
@@ -115,6 +118,10 @@ namespace Jotunn.Managers
         /// </summary>
         private bool GUIInStart = true;
 
+        /// <summary>
+        ///     Event receiver for pointer click events
+        /// </summary>
+        /// <param name="eventData"></param>
         public void OnPointerClick(PointerEventData eventData)
         {
 #if DEBUG
@@ -122,6 +129,9 @@ namespace Jotunn.Managers
 #endif
         }
 
+        /// <summary>
+        ///     Initialize the manager
+        /// </summary>
         public void Init()
         {
             GUIContainer = new GameObject("GUI");
@@ -571,12 +581,21 @@ namespace Jotunn.Managers
             return newButton;
         }
 
-        public void FixPixelMultiplier(Image img)
+        internal void FixPixelMultiplier(Image img)
         {
             img.pixelsPerUnitMultiplier = SceneManager.GetActiveScene().name == "start" ? 1.0f : 2f;
         }
 
-
+        /// <summary>
+        ///     Creates a Valheim style woodpanel
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="anchorMin"></param>
+        /// <param name="anchorMax"></param>
+        /// <param name="position"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
         public GameObject CreateWoodpanel(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f, float height = 0f)
         {
             var basepanel = PrefabManager.Instance.GetPrefab("BaseWoodpanel");
@@ -608,7 +627,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas-a5f4e704_0 atlas.
+        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas atlas.
         /// </summary>
         /// <param name="rect">Rect on atlas texture</param>
         /// <param name="pivot">pivot</param>
@@ -624,7 +643,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas-a5f4e704 atlas (not much used ingame or old
+        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas atlas (not much used ingame or old
         ///     textures).
         /// </summary>
         /// <param name="rect">Rect on atlas texture</param>
@@ -945,10 +964,7 @@ namespace Jotunn.Managers
         /// <summary>
         /// Create toggle field
         /// </summary>
-        /// <param name="text"></param>
         /// <param name="parent"></param>
-        /// <param name="anchorMin"></param>
-        /// <param name="anchorMax"></param>
         /// <param name="position"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
@@ -992,7 +1008,6 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="text"></param>
         /// <param name="parent"></param>
-        /// <param name="position"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>

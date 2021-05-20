@@ -226,6 +226,7 @@ namespace TestMod
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         // Add custom key bindings
         private void AddInputs()
         {

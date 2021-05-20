@@ -8,6 +8,11 @@ namespace Jotunn.Utils
     /// </summary>
     public static class HashUtils
     {
+        /// <summary>
+        ///     Compute a SHA256 hash from a given string
+        /// </summary>
+        /// <param name="rawData"></param>
+        /// <returns></returns>
         public static string ComputeSha256Hash(string rawData)
         {
             using var sha256 = SHA256.Create();

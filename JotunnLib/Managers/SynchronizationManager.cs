@@ -19,6 +19,9 @@ namespace Jotunn.Managers
         private BaseUnityPlugin configurationManager;
         internal bool configurationManagerWindowShown;
         private static SynchronizationManager _instance;
+        /// <summary>
+        ///     Singleton instance
+        /// </summary>
         public static SynchronizationManager Instance
         {
             get
@@ -28,6 +31,9 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Indicator if the current player has admin status on the current world, always true on local games
+        /// </summary>
         public bool PlayerIsAdmin { get; private set; }
 
 
