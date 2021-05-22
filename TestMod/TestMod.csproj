@@ -471,6 +471,7 @@
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">
       <Project>{a6082a59-38be-4cab-9078-2c8fcda65b8f}</Project>
       <Name>JotunnLib</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
