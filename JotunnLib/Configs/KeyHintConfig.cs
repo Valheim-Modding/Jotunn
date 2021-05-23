@@ -51,7 +51,7 @@ namespace Jotunn.Configs
             string ret = Item;
             if (!string.IsNullOrEmpty(Piece))
             {
-                ret = $"{ret}!{Piece}";
+                ret = $"{ret}:{Piece}";
             }
             return ret;
         }
