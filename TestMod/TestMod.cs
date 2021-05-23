@@ -185,7 +185,7 @@ namespace TestMod
             Config.Bind(JotunnTestModConfigSection, "IntegerValue1", 200,
                 new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
-                new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+                new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow}));
 
             // Add client config to test ModCompatibility
             EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
