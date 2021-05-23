@@ -164,9 +164,15 @@ namespace TestMod
                     {
                         bez = item.m_shared.m_name;
                     }
+
+                    Piece piece = Player.m_localPlayer.m_buildPieces?.GetSelectedPiece();
+                    if (piece != null)
+                    {
+                        bez = bez + "!" + piece.name;
+                    }
                 }
 
-                GUI.Label(new Rect(10, 10, 100, 25), bez);
+                GUI.Label(new Rect(10, 10, 500, 25), bez);
             }
         }
 
