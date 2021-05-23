@@ -168,7 +168,7 @@ namespace TestMod
                     Piece piece = Player.m_localPlayer.m_buildPieces?.GetSelectedPiece();
                     if (piece != null)
                     {
-                        bez = bez + "!" + piece.name;
+                        bez = bez + ":" + piece.name;
                     }
                 }
 
@@ -423,13 +423,53 @@ namespace TestMod
                 });
             PieceManager.Instance.AddPiece(placebp);
 
-            // Add localizations
+            // Add localizations from the asset bundle
             var textAssets = blueprintRuneBundle.LoadAllAssets<TextAsset>();
             foreach (var textAsset in textAssets)
             {
                 var lang = textAsset.name.Replace(".json", null);
                 LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
             }
+
+            // Override "default" KeyHint with an empty config
+            KeyHintConfig KHC_base = new KeyHintConfig
+            {
+                Item = "BlueprintTestRune"
+            };
+            GUIManager.Instance.AddKeyHint(KHC_base);
+
+            // Add custom KeyHints for specific pieces
+            KeyHintConfig KHC_make = new KeyHintConfig
+            {
+                Item = "BlueprintTestRune",
+                Piece = "make_testblueprint",
+                ButtonConfigs = new[]
+                {
+                    // Override vanilla "Attack" key text
+                    new ButtonConfig { Name = "Attack", HintToken = "$bprune_make" }
+                }
+            };
+            GUIManager.Instance.AddKeyHint(KHC_make);
+
+            KeyHintConfig KHC_piece = new KeyHintConfig
+            {
+                Item = "BlueprintTestRune",
+                Piece = "piece_testblueprint",
+                ButtonConfigs = new[]
+                {
+                    // Override vanilla "Attack" key text
+                    new ButtonConfig { Name = "Attack", HintToken = "$bprune_piece" }
+                }
+            };
+            GUIManager.Instance.AddKeyHint(KHC_piece);
+
+            // Add additional localization manually
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            {
+                Translations = {
+                    {"bprune_make", "Capture Blueprint"}, {"bprune_piece", "Place Blueprint"}
+                }
+            });
 
             // Don't forget to unload the bundle to free the resources
             blueprintRuneBundle.Unload(false);
