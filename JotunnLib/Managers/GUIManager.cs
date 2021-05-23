@@ -467,6 +467,15 @@ namespace Jotunn.Managers
                 return;
             }
 
+            // First disable all custom key hints
+            foreach (RectTransform transform in KeyHintContainer)
+            {
+                if (KeyHints.ContainsKey(transform.name))
+                {
+                    transform.gameObject?.SetActive(false);
+                }
+            }
+
             // Needs the current equipped item name
             ItemDrop.ItemData item = null;
             try
@@ -482,15 +491,6 @@ namespace Jotunn.Managers
             if (string.IsNullOrEmpty(prefabName))
             {
                 return;
-            }
-
-            // First disable all custom key hints
-            foreach (RectTransform transform in KeyHintContainer)
-            {
-                if (KeyHints.ContainsKey(transform.name))
-                {
-                    transform.gameObject?.SetActive(false);
-                }
             }
 
             // Check if that item has a custom key hint and display it instead the vanilla one
