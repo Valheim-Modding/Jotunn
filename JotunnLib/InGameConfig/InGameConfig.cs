@@ -19,6 +19,9 @@ using Object = UnityEngine.Object;
 
 namespace Jotunn.InGameConfig
 {
+    /// <summary>
+    ///     An ingame GUI for BepInEx config files
+    /// </summary>
     public class InGameConfig
     {
         /// <summary>
