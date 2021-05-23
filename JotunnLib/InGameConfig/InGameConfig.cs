@@ -218,7 +218,7 @@ namespace Jotunn.InGameConfig
                         if (entry.Value.SettingType == typeof(bool))
                         {
                             // Create toggle element
-                            var go = CreateToggleElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                            var go = CreateToggleElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
                                 entryAttributes.EntryColor, entry.Value.Description.Description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
                                 entry.Key.Section, entry.Key.Key, innerWidth);
                             SetProperties(go.GetComponent<ConfigBoundBoolean>(), entry);
@@ -233,7 +233,7 @@ namespace Jotunn.InGameConfig
                             }
 
                             // Create input field int
-                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
                                 entryAttributes.EntryColor, description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section,
                                 entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundInt>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
@@ -255,7 +255,7 @@ namespace Jotunn.InGameConfig
                             }
 
                             // Create input field float
-                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
                                 entryAttributes.EntryColor, description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section,
                                 entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundFloat>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
@@ -270,7 +270,7 @@ namespace Jotunn.InGameConfig
                         else if (entry.Value.SettingType == typeof(KeyCode))
                         {
                             // Create key binder
-                            var go = CreateKeybindElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                            var go = CreateKeybindElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
                                 entry.Value.Description.Description, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             go.GetComponent<ConfigBoundKeyCode>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             SetProperties(go.GetComponent<ConfigBoundKeyCode>(), entry);
@@ -278,7 +278,7 @@ namespace Jotunn.InGameConfig
                         else if (entry.Value.SettingType == typeof(string))
                         {
                             // Create input field string
-                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
                                 entryAttributes.EntryColor, entry.Value.Description.Description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
                                 entry.Key.Section, entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundString>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
@@ -288,7 +288,7 @@ namespace Jotunn.InGameConfig
                         else if (entry.Value.SettingType == typeof(Color))
                         {
                             // Create input field string
-                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
                                 entryAttributes.EntryColor, entry.Value.Description.Description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
                                 entry.Key.Section, entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundColor>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
@@ -299,6 +299,12 @@ namespace Jotunn.InGameConfig
                     }
                 }
             }
+            var textServer = GUIManager.Instance.CreateText("(*) designates server values.", configTab.transform.Find("Scroll View/Viewport/Content"), new Vector2(0f, 1f),
+                new Vector2(0f, 1f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black,
+                configTab.GetComponent<RectTransform>().rect.width, 50, false);
+            textServer.GetComponent<RectTransform>().pivot = new Vector2(0f, 1f);
+            textServer.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
+            textServer.AddComponent<LayoutElement>().preferredHeight = 40f;
         }
 
 
@@ -550,7 +556,7 @@ namespace Jotunn.InGameConfig
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
 
             // Add this keybinding to the list in Settings to utilize valheim's keybind dialog
-            Settings.instance.m_keys.Add(new Settings.KeySetting {m_keyName = key + "!" + modguid, m_keyTransform = result.GetComponent<RectTransform>()});
+            Settings.instance.m_keys.Add(new Settings.KeySetting { m_keyName = key + "!" + modguid, m_keyTransform = result.GetComponent<RectTransform>() });
 
             // Create description text
             var desc = GUIManager.Instance.CreateText(description, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
