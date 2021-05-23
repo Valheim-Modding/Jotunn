@@ -515,15 +515,16 @@ namespace Jotunn.InGameConfig
             desc.GetComponent<Text>().fontSize = 12;
             desc.GetComponent<Text>().text = description;
             desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(result.transform.Find("Text").gameObject.GetHeight() + 3f));
-            desc.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, desc.GetComponent<Text>().preferredHeight);
+            desc.SetToTextHeight();
+
 
             result.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
+                -desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
 
             // and add a layout element
             var layoutElement = result.AddComponent<LayoutElement>();
             layoutElement.preferredHeight =
-                Math.Max(38f, desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight) + 15f;
+                Math.Max(38f, -desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight) + 15f;
             result.SetHeight(layoutElement.preferredHeight);
 
             // Bind to config entry
