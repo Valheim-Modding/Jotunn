@@ -218,8 +218,8 @@ namespace Jotunn.InGameConfig
                         if (entry.Value.SettingType == typeof(bool))
                         {
                             // Create toggle element
-                            var go = CreateToggleElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
-                                entryAttributes.EntryColor, entry.Value.Description.Description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
+                            var go = CreateToggleElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                                entryAttributes.EntryColor, entry.Value.Description.Description+ (entryAttributes.IsAdminOnly ? " (Admin)" : ""), entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
                                 entry.Key.Section, entry.Key.Key, innerWidth);
                             SetProperties(go.GetComponent<ConfigBoundBoolean>(), entry);
                         }
@@ -233,8 +233,8 @@ namespace Jotunn.InGameConfig
                             }
 
                             // Create input field int
-                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
-                                entryAttributes.EntryColor, description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section,
+                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                                entryAttributes.EntryColor, description+ (entryAttributes.IsAdminOnly ? " (Admin)" : ""), entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section,
                                 entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundInt>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Integer;
@@ -255,8 +255,8 @@ namespace Jotunn.InGameConfig
                             }
 
                             // Create input field float
-                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
-                                entryAttributes.EntryColor, description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section,
+                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                                entryAttributes.EntryColor, description+ (entryAttributes.IsAdminOnly ? " (Admin)" : ""), entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section,
                                 entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundFloat>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Decimal;
@@ -270,16 +270,16 @@ namespace Jotunn.InGameConfig
                         else if (entry.Value.SettingType == typeof(KeyCode))
                         {
                             // Create key binder
-                            var go = CreateKeybindElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
-                                entry.Value.Description.Description, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                            var go = CreateKeybindElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                                entry.Value.Description.Description+ (entryAttributes.IsAdminOnly ? " (Admin)" : ""), mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             go.GetComponent<ConfigBoundKeyCode>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             SetProperties(go.GetComponent<ConfigBoundKeyCode>(), entry);
                         }
                         else if (entry.Value.SettingType == typeof(string))
                         {
                             // Create input field string
-                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
-                                entryAttributes.EntryColor, entry.Value.Description.Description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
+                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                                entryAttributes.EntryColor, entry.Value.Description.Description+ (entryAttributes.IsAdminOnly ? " (Admin)" : ""), entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
                                 entry.Key.Section, entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundString>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.None;
@@ -288,8 +288,8 @@ namespace Jotunn.InGameConfig
                         else if (entry.Value.SettingType == typeof(Color))
                         {
                             // Create input field string
-                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + (entryAttributes.IsAdminOnly ? "*" : "") + ":",
-                                entryAttributes.EntryColor, entry.Value.Description.Description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
+                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                                entryAttributes.EntryColor, entry.Value.Description.Description+ (entryAttributes.IsAdminOnly ? " (Admin)" : ""), entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
                                 entry.Key.Section, entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundColor>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.None;
@@ -299,12 +299,6 @@ namespace Jotunn.InGameConfig
                     }
                 }
             }
-            var textServer = GUIManager.Instance.CreateText("(*) designates server values.", configTab.transform.Find("Scroll View/Viewport/Content"), new Vector2(0f, 1f),
-                new Vector2(0f, 1f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black,
-                configTab.GetComponent<RectTransform>().rect.width, 50, false);
-            textServer.GetComponent<RectTransform>().pivot = new Vector2(0f, 1f);
-            textServer.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
-            textServer.AddComponent<LayoutElement>().preferredHeight = 40f;
         }
 
 
