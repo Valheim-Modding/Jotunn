@@ -285,6 +285,17 @@ namespace Jotunn.InGameConfig
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.None;
                             SetProperties(go.GetComponent<ConfigBoundString>(), entry);
                         }
+                        else if (entry.Value.SettingType == typeof(Color))
+                        {
+                            // Create input field string
+                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                                entryAttributes.EntryColor, entry.Value.Description.Description, entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
+                                entry.Key.Section, entry.Key.Key, innerWidth);
+                            go.AddComponent<ConfigBoundColor>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.None;
+                            go.transform.Find("Input").GetComponent<InputField>().contentType = InputField.ContentType.Alphanumeric;
+                            SetProperties(go.GetComponent<ConfigBoundColor>(), entry);
+                        }
                     }
                 }
             }
@@ -338,6 +349,12 @@ namespace Jotunn.InGameConfig
                 if (childString != null)
                 {
                     childString.WriteBack();
+                }
+
+                var childColor = configTab.transform.Find("Scroll View/Viewport/Content").GetChild(i).gameObject.GetComponent<ConfigBoundColor>();
+                if (childColor != null)
+                {
+                    childColor.WriteBack();
                 }
             }
 
@@ -635,8 +652,8 @@ namespace Jotunn.InGameConfig
             public override void SetValueInConfig(bool value)
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                entry.BoxedValue = value;
+                var entry = pluginConfig[Section, Key] as ConfigEntry<bool>;
+                entry.Value = value;
             }
 
             public override bool GetValue()
@@ -675,8 +692,8 @@ namespace Jotunn.InGameConfig
             public override void SetValueInConfig(int value)
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                entry.BoxedValue = value;
+                var entry = pluginConfig[Section, Key] as ConfigEntry<int>;
+                entry.Value = value;
             }
 
             public override int GetValue()
@@ -723,8 +740,8 @@ namespace Jotunn.InGameConfig
             public override void SetValueInConfig(float value)
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                entry.BoxedValue = value;
+                var entry = pluginConfig[Section, Key] as ConfigEntry<float>;
+                entry.Value = value;
             }
 
             public override float GetValue()
@@ -771,8 +788,8 @@ namespace Jotunn.InGameConfig
             public override void SetValueInConfig(KeyCode value)
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                entry.BoxedValue = value;
+                var entry = pluginConfig[Section, Key] as ConfigEntry<KeyCode>;
+                entry.Value = value;
             }
 
             public override KeyCode GetValue()
@@ -828,8 +845,8 @@ namespace Jotunn.InGameConfig
             public override void SetValueInConfig(string value)
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                entry.BoxedValue = value;
+                var entry = pluginConfig[Section, Key] as ConfigEntry<string>;
+                entry.Value = value;
             }
 
             public override string GetValue()
@@ -851,6 +868,82 @@ namespace Jotunn.InGameConfig
             {
                 gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
                 gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
+            }
+        }
+
+        internal class ConfigBoundColor : ConfigBound<Color>
+        {
+            internal override Color GetValueFromConfig()
+            {
+                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
+                var entry = pluginConfig[Section, Key] as ConfigEntry<Color>;
+                return (Color)entry.BoxedValue;
+            }
+
+            public override void SetValueInConfig(Color value)
+            {
+                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
+                var entry = pluginConfig[Section, Key] as ConfigEntry<Color>;
+                entry.Value = value;
+            }
+
+            public override Color GetValue()
+            {
+                var col = gameObject.transform.Find("Input").GetComponent<InputField>().text;
+                try
+                {
+                    return ColorFromString(col);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogWarning(e.Message);
+                    var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
+                    var entry = pluginConfig[Section, Key] as ConfigEntry<Color>;
+                    Logger.LogWarning($"Using default value ({(Color)entry.DefaultValue}) instead.");
+                    return (Color)entry.DefaultValue;
+                }
+            }
+
+            internal override void SetValue(Color value)
+            {
+                gameObject.transform.Find("Input").GetComponent<InputField>().text = StringFromColor(value);
+            }
+
+            public override void SetEnabled(bool enabled)
+            {
+                gameObject.transform.Find("Input").GetComponent<InputField>().enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
+                gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
+            }
+
+            private string StringFromColor(Color col)
+            {
+                var r = (int)(col.r * 255f);
+                var g = (int)(col.g * 255f);
+                var b = (int)(col.b * 255f);
+                var a = (int)(col.a * 255f);
+
+                return $"{r:x2}{g:x2}{b:x2}{a:x2}".ToUpper();
+            }
+
+            private Color ColorFromString(string str)
+            {
+                long fromHex = 0;
+                if (long.TryParse(str.Trim().ToLower(), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out fromHex))
+                {
+                    var r = (int)(fromHex >> 24);
+                    var g = (int)((fromHex >> 16) & 0xff);
+                    var b = (int)((fromHex >> 8) & 0xff);
+                    var a = (int)(fromHex & 0xff);
+                    var result = new Color(r / 255f, g / 255f, b / 255f, a / 255f);
+                    return result;
+                }
+
+                throw new ArgumentException($"'{str}' is no valid color value");
             }
         }
     }
