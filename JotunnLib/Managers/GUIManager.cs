@@ -437,7 +437,7 @@ namespace Jotunn.Managers
         /// <returns>true if the custom key hint config was added to the manager.</returns>
         public bool AddKeyHint(KeyHintConfig hintConfig)
         {
-            if (hintConfig.Item == null || hintConfig.ButtonConfigs.Length == 0)
+            if (hintConfig.Item == null)
             {
                 Logger.LogWarning($"Key hint config {hintConfig} is not valid");
                 return false;
@@ -502,23 +502,23 @@ namespace Jotunn.Managers
             catch (Exception) { }
 
             // Try to get a KeyHint for the item and piece selected or just the item without a piece
-            KeyHintConfig keyHint = null;
+            KeyHintConfig hintConfig = null;
             if (!string.IsNullOrEmpty(pieceName))
             {
-                KeyHints.TryGetValue($"{prefabName}!{pieceName}", out keyHint);
+                KeyHints.TryGetValue($"{prefabName}:{pieceName}", out hintConfig);
             }
-            if (keyHint == null)
+            if (hintConfig == null)
             {
-                KeyHints.TryGetValue(prefabName, out keyHint);
+                KeyHints.TryGetValue(prefabName, out hintConfig);
             }
-            if (keyHint == null)
+            if (hintConfig == null)
             {
                 return;
             }
 
             // Display the Keyhint instead the vanilla one
-            var hint = KeyHintContainer.Find(keyHint.Item)?.gameObject;
-            if (hint == null)
+            var hintObject = KeyHintContainer.Find(hintConfig.ToString())?.gameObject;
+            if (hintObject == null)
             {
                 return;
             }
@@ -527,7 +527,7 @@ namespace Jotunn.Managers
             self.m_combatHints.SetActive(false);
                     
             // Update bound keys
-            foreach (var buttonConfig in keyHint.ButtonConfigs)
+            foreach (var buttonConfig in hintConfig.ButtonConfigs)
             {
                 string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
                 if (key[0].Equals(LocalizationManager.TokenFirstChar))
@@ -537,12 +537,12 @@ namespace Jotunn.Managers
 
                 if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                 {
-                    hint.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
+                    hintObject.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
                 }
             }
 
-            hint.SetActive(true);
-            hint.GetComponent<UIInputHint>()?.Update();
+            hintObject.SetActive(true);
+            hintObject.GetComponent<UIInputHint>()?.Update();
         }
 
         /// <summary>
