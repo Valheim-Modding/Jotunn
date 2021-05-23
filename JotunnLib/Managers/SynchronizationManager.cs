@@ -23,7 +23,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Event, triggered after server configuration is applied to client
         /// </summary>
-        public event Action ConfigurationSynchronized;
+        public static event Action ConfigurationSynchronized;
 
         /// <summary>
         ///     Singleton instance
