@@ -19,6 +19,12 @@ namespace Jotunn.Managers
         private BaseUnityPlugin configurationManager;
         internal bool configurationManagerWindowShown;
         private static SynchronizationManager _instance;
+
+        /// <summary>
+        ///     Event, triggered after server configuration is applied to client
+        /// </summary>
+        public event Action ConfigurationSynchronized;
+
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -240,6 +246,8 @@ namespace Jotunn.Managers
                 {
                     Logger.LogDebug("Received configuration data from server");
                     ApplyConfigZPackage(configPkg);
+
+                    ConfigurationSynchronized?.SafeInvoke();
                 }
             }
 
