@@ -15,6 +15,12 @@ namespace Jotunn.Configs
         public string Item { get; set; } = null;
 
         /// <summary>
+        ///     If not null the KeyHint will also be bound to a specific <see cref="global::Piece"/>
+        ///     which must be selected for building.
+        /// </summary>
+        public string Piece { get; set; } = null;
+
+        /// <summary>
         ///     Array of <see cref="ButtonConfig"/>s used for this key hint.
         /// </summary>
         public ButtonConfig[] ButtonConfigs { get; set; } = new ButtonConfig[0];
@@ -37,6 +43,17 @@ namespace Jotunn.Configs
         public static List<KeyHintConfig> ListFromJson(string json)
         {
             return SimpleJson.SimpleJson.DeserializeObject<List<KeyHintConfig>>(json);
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            string ret = Item;
+            if (!string.IsNullOrEmpty(Piece))
+            {
+                ret = $"{ret}:{Piece}";
+            }
+            return ret;
         }
     }
 }
