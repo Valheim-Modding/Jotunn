@@ -66,9 +66,9 @@ namespace TestMod
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 
             // Test config sync event
-            SynchronizationManager.ConfigurationSynchronized += () =>
+            SynchronizationManager.ConfigurationSynchronized += (o, e) =>
             {
-                Jotunn.Logger.LogMessage("Config sync event received");
+                Jotunn.Logger.LogMessage((e.InitialSynchronization ? "Initial " : "") + $"Config sync event received");
             };
 
             // Get current version for the mod compatibility test
@@ -197,7 +197,7 @@ namespace TestMod
             Config.Bind(JotunnTestModConfigSection, "IntegerValue1", 200,
                 new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
-                new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow}));
+                new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
 
             // Add client config to test ModCompatibility
             EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
@@ -205,6 +205,9 @@ namespace TestMod
 
             // Add a client side custom input key for the EvilSword
             Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+
+            Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
+                new ConfigDescription("Server side Color", null, new ConfigurationManagerAttributes() {IsAdminOnly = true}));
         }
 
         // React on changed settings
@@ -377,13 +380,13 @@ namespace TestMod
             var steel_prefab = steelingot.LoadAsset<GameObject>("Steel");
             var ingot = new CustomItem(steel_prefab, fixReference: false);
             var blastConversion = new CustomItemConversion(new SmelterConversionConfig
-            { 
+            {
                 Station = "blastfurnace", // Let's specify something other than default here 
                 FromItem = "Iron",
                 ToItem = "Steel" // This is our custom prefabs name we have loaded just above 
             });
             ItemManager.Instance.AddItem(ingot);
-            ItemManager.Instance.AddItemConversion(blastConversion); 
+            ItemManager.Instance.AddItemConversion(blastConversion);
         }
 
 
