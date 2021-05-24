@@ -66,7 +66,7 @@ namespace TestMod
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 
             // Test config sync event
-            SynchronizationManager.ConfigurationSynchronized += (o, e) =>
+            SynchronizationManager.OnConfigurationSynchronized += (o, e) =>
             {
                 Jotunn.Logger.LogMessage((e.InitialSynchronization ? "Initial " : "") + $"Config sync event received");
             };
