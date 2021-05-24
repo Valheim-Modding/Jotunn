@@ -49,7 +49,7 @@ namespace TestMod
         private void Awake()
         {
             // Change Logger extra
-            Jotunn.Logger.LogFormatExtra = DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo);
+            Jotunn.Logger.ShowDate = true;
             
             // Create stuff
             CreateConfigValues();

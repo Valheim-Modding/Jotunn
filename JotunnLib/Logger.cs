@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System;
+using System.Globalization;
 
 namespace Jotunn
 {
@@ -12,9 +13,9 @@ namespace Jotunn
     public class Logger
     {
         /// <summary>
-        ///     Additional format prepended to the log entries header (between the severity/class and the text)
+        ///     Add DateTime to the log output
         /// </summary>
-        public static string LogFormatExtra;
+        public static bool ShowDate = false;
 
         private static Logger instance;
 
@@ -66,9 +67,9 @@ namespace Jotunn
 
         private static void Log(LogLevel level, object data)
         {
-            if (!string.IsNullOrEmpty(LogFormatExtra))
+            if (ShowDate)
             {
-                instance.GetLogger().Log(level, $"[{LogFormatExtra}] {data}");
+                instance.GetLogger().Log(level, $"[{DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo)}] {data}");
             }
             else
             {
