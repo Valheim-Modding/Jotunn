@@ -66,9 +66,16 @@ namespace TestMod
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 
             // Test config sync event
-            SynchronizationManager.OnConfigurationSynchronized += (o, e) =>
+            SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
             {
-                Jotunn.Logger.LogMessage((e.InitialSynchronization ? "Initial " : "") + $"Config sync event received");
+                if (attr.InitialSynchronization)
+                {
+                    Jotunn.Logger.LogMessage("Initial Config sync event received");
+                }
+                else
+                {
+                    Jotunn.Logger.LogMessage("Config sync event received");
+                }
             };
 
             // Get current version for the mod compatibility test
