@@ -84,3 +84,41 @@ The resulting KeyHints look like this
 ![Custom Key Hints](../images/data/EvilSwordKeyHints.png)
 
 Note that all texts are tokenized and translated ingame. The translations are also provided by Jötunn. Read the [tutorial on Localizations](localization.md) for more information on that topic.
+
+### Other use cases
+
+It is also possible to have "empty" KeyHints which override the vanilla hints to none or KeyHints per item and building piece for tools.
+
+```cs
+// Override "default" KeyHint with an empty config
+KeyHintConfig KHC_base = new KeyHintConfig
+{
+    Item = "BlueprintTestRune"
+};
+GUIManager.Instance.AddKeyHint(KHC_base);
+
+// Add custom KeyHints for specific pieces
+KeyHintConfig KHC_make = new KeyHintConfig
+{
+    Item = "BlueprintTestRune",
+    Piece = "make_testblueprint",
+    ButtonConfigs = new[]
+    {
+        // Override vanilla "Attack" key text
+        new ButtonConfig { Name = "Attack", HintToken = "$bprune_make" }
+    }
+};
+GUIManager.Instance.AddKeyHint(KHC_make);
+
+KeyHintConfig KHC_piece = new KeyHintConfig
+{
+    Item = "BlueprintTestRune",
+    Piece = "piece_testblueprint",
+    ButtonConfigs = new[]
+    {
+        // Override vanilla "Attack" key text
+        new ButtonConfig { Name = "Attack", HintToken = "$bprune_piece" }
+    }
+};
+GUIManager.Instance.AddKeyHint(KHC_piece);
+```
