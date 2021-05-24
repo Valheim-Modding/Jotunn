@@ -47,6 +47,7 @@ if ($Target.Equals("Debug")) {
     $plug = New-Item -Type Directory -Path "$ValheimPath\BepInEx\plugins\$name" -Force
     Write-Host "Copy $TargetAssembly to $plug"
     Copy-Item -Path "$TargetPath\$name.dll" -Destination "$plug" -Force
+    Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$plug" -Force
     Copy-Item -Path "$TargetPath\$name.xml" -Destination "$plug" -Force
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$plug" -Force
     
@@ -73,6 +74,7 @@ if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     $thunder = New-Item -Type Directory -Path "$package\Thunderstore\package"
     $thunder.CreateSubdirectory('plugins')
     Copy-Item -Path "$TargetPath\$name.dll" -Destination "$thunder\plugins\"
+    Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$thunder\plugins\"
     Copy-Item -Path "$TargetPath\$name.xml" -Destination "$thunder\plugins\"
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$thunder\plugins\"
     Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder\README.md"
@@ -86,6 +88,7 @@ if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     New-Item -Type Directory -Path "$package\Nexusmods" -Force
     $nexus = New-Item -Type Directory -Path "$package\Nexusmods\package"
     Copy-Item -Path "$TargetPath\$name.dll" -Destination "$nexus\"
+    Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$nexus\"
     Copy-Item -Path "$TargetPath\$name.xml" -Destination "$nexus\"
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$nexus\"
     Copy-Item -Path "$ProjectPath\README.md" -Destination "$nexus\README"
