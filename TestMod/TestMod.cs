@@ -48,8 +48,8 @@ namespace TestMod
         // Load, create and init your custom mod stuff
         private void Awake()
         {
-            // Change Logger extra
-            Jotunn.Logger.ShowDate = true;
+            // Show DateTime on Logs
+            //Jotunn.Logger.ShowDate = true;
             
             // Create stuff
             CreateConfigValues();
