@@ -423,8 +423,7 @@
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsCorlib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsManaged.props" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnLib\bin\$(ConfigurationName)\$(TargetFramework)\Jotunn.dll.mdb" Pack="true" PackagePath="lib/$(TargetFramework)" />
-    <Content Include="$(SolutionDir)JotunnLib\bin\$(ConfigurationName)\$(TargetFramework)\Jotunn.pdb" Pack="true" PackagePath="lib/$(TargetFramework)" />
+    <Content Include="$(TargetDir)Jotunn.pdb" Pack="true" PackagePath="lib/$(TargetFramework)" />
     <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png" Pack="true" PackagePath="images" />
   </ItemGroup>
 </Project>
