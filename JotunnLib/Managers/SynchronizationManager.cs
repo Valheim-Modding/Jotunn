@@ -186,8 +186,7 @@ namespace Jotunn.Managers
                     ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_Jotunn_ApplyConfig), zPackage);
 
                     // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
-                    var handler = OnConfigurationSynchronized;
-                    handler?.Invoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
+                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
 
                 }
                 // If it is a local instance, send it to all connected peers
@@ -237,7 +236,6 @@ namespace Jotunn.Managers
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
 
-
         /// <summary>
         ///     Apply a partial config to server and send to other clients.
         /// </summary>
@@ -252,8 +250,7 @@ namespace Jotunn.Managers
                     Logger.LogDebug("Received configuration data from server");
                     ApplyConfigZPackage(configPkg);
 
-                    var handler = OnConfigurationSynchronized;
-                    handler?.Invoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
+                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
                 }
             }
 
@@ -370,8 +367,7 @@ namespace Jotunn.Managers
                     Logger.LogDebug("Received configuration from server");
                     ApplyConfigZPackage(configPkg);
 
-                    var handler = OnConfigurationSynchronized;
-                    handler?.Invoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = true });
+                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = true });
                 }
             }
 
