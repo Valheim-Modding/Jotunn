@@ -65,6 +65,16 @@ namespace TestMod
             // Add custom items cloned from vanilla items
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 
+            // Test config sync event
+            SynchronizationManager.ConfigurationSynchronized += () =>
+            {
+                Jotunn.Logger.LogMessage("Config sync event received");
+                var prefab = PrefabManager.Instance.GetPrefab("BlueprintTestRune").GetComponent<ItemDrop>();
+                prefab.m_itemData.m_shared.m_name = "Hnglblarf";
+                this.Config.TryGetEntry<int>("JotunnTest", "IntegerValue1", out var cfg);
+                prefab.m_itemData.m_shared.m_weight = (float)cfg.Value;
+            };
+
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();

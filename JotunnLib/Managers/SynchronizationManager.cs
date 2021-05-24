@@ -180,14 +180,18 @@ namespace Jotunn.Managers
             {
                 var zPackage = GenerateConfigZPackage(valuesToSend);
 
-                // Send values to server if it isn't a local instance
-                if (!ZNet.instance.IsLocalInstance())
+                // Send values to server if it is a client instance
+                if (ZNet.instance.IsClientInstance())
                 {
                     ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_Jotunn_ApplyConfig), zPackage);
+
+                    // Also fire event that admin config was changed locally, since the RPC does not come back th the sender
+                    ConfigurationSynchronized?.SafeInvoke();
+
                 }
-                else
+                // If it is a local instance, send it to all connected peers
+                if (ZNet.instance.IsLocalInstance())
                 {
-                    // If it is a local instance, send it to all connected peers
                     foreach (var peer in ZNet.instance.m_peers)
                     {
                         ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_Jotunn_ApplyConfig), zPackage);
@@ -363,6 +367,8 @@ namespace Jotunn.Managers
                 {
                     Logger.LogDebug("Received configuration from server");
                     ApplyConfigZPackage(configPkg);
+                    
+                    ConfigurationSynchronized?.SafeInvoke();
                 }
             }
 
