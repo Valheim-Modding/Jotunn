@@ -363,6 +363,8 @@ namespace Jotunn.Managers
                 {
                     Logger.LogDebug("Received configuration from server");
                     ApplyConfigZPackage(configPkg);
+                    
+                    ConfigurationSynchronized?.SafeInvoke();
                 }
             }
 

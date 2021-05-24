@@ -65,6 +65,12 @@ namespace TestMod
             // Add custom items cloned from vanilla items
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 
+            // Test config sync event
+            SynchronizationManager.ConfigurationSynchronized += () =>
+            {
+                Jotunn.Logger.LogMessage("Config sync event received");
+            };
+
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
