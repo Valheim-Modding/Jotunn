@@ -23,7 +23,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Event, triggered after server configuration is applied to client
         /// </summary>
-        public static event Action ConfigurationSynchronized;
+        public static event EventHandler<ConfigurationSynchronizationEventArgs> OnConfigurationSynchronized;
 
         /// <summary>
         ///     Singleton instance
@@ -124,7 +124,7 @@ namespace Jotunn.Managers
         {
             // Read configuration manager's DisplayingWindow property
             var pi = configurationManager.GetType().GetProperty("DisplayingWindow");
-            configurationManagerWindowShown = (bool) pi.GetValue(configurationManager, null);
+            configurationManagerWindowShown = (bool)pi.GetValue(configurationManager, null);
 
             // Did window open or close?
             if (configurationManagerWindowShown)
@@ -158,8 +158,8 @@ namespace Jotunn.Managers
                 {
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
                     if (cx.Description.Tags.Any(x =>
-                        x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes) x).IsAdminOnly &&
-                        ((ConfigurationManagerAttributes) x).UnlockSetting))
+                        x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly &&
+                        ((ConfigurationManagerAttributes)x).UnlockSetting))
                     {
                         var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
                         valuesToSend.Add(value);
@@ -167,7 +167,7 @@ namespace Jotunn.Managers
 
                     if (cx.SettingType == typeof(KeyCode))
                     {
-                        ZInput.instance.Setbutton(cd.Key + "!" + plugin.Value.Info.Metadata.GUID, (KeyCode) cx.BoxedValue);
+                        ZInput.instance.Setbutton(cd.Key + "!" + plugin.Value.Info.Metadata.GUID, (KeyCode)cx.BoxedValue);
                     }
                 }
             }
@@ -185,8 +185,8 @@ namespace Jotunn.Managers
                 {
                     ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_Jotunn_ApplyConfig), zPackage);
 
-                    // Also fire event that admin config was changed locally, since the RPC does not come back th the sender
-                    ConfigurationSynchronized?.SafeInvoke();
+                    // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
+                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
 
                 }
                 // If it is a local instance, send it to all connected peers
@@ -236,7 +236,6 @@ namespace Jotunn.Managers
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
 
-
         /// <summary>
         ///     Apply a partial config to server and send to other clients.
         /// </summary>
@@ -251,7 +250,7 @@ namespace Jotunn.Managers
                     Logger.LogDebug("Received configuration data from server");
                     ApplyConfigZPackage(configPkg);
 
-                    ConfigurationSynchronized?.SafeInvoke();
+                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
                 }
             }
 
@@ -321,8 +320,8 @@ namespace Jotunn.Managers
                 foreach (var configDefinition in plugin.Value.Config.Keys)
                 {
                     var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
-                    var configAttribute = (ConfigurationManagerAttributes) configEntry.Description.Tags.FirstOrDefault(x =>
-                        x is ConfigurationManagerAttributes {IsAdminOnly: true});
+                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags.FirstOrDefault(x =>
+                       x is ConfigurationManagerAttributes { IsAdminOnly: true });
                     if (configAttribute != null)
                     {
                         configAttribute.UnlockSetting = true;
@@ -343,8 +342,8 @@ namespace Jotunn.Managers
                 foreach (var configDefinition in plugin.Value.Config.Keys)
                 {
                     var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
-                    var configAttribute = (ConfigurationManagerAttributes) configEntry.Description.Tags.FirstOrDefault(x =>
-                        x is ConfigurationManagerAttributes {IsAdminOnly: true});
+                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags.FirstOrDefault(x =>
+                       x is ConfigurationManagerAttributes { IsAdminOnly: true });
                     if (configAttribute != null)
                     {
                         configAttribute.IsAdminOnly = true;
@@ -367,8 +366,8 @@ namespace Jotunn.Managers
                 {
                     Logger.LogDebug("Received configuration from server");
                     ApplyConfigZPackage(configPkg);
-                    
-                    ConfigurationSynchronized?.SafeInvoke();
+
+                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = true });
                 }
             }
 
@@ -467,7 +466,7 @@ namespace Jotunn.Managers
                 foreach (var cd in plugin.Value.Config.Keys)
                 {
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
-                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes) x).IsAdminOnly))
+                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly))
                     {
                         var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
                         values.Add(value);
