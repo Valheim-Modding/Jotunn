@@ -68,10 +68,6 @@ namespace Jotunn
             Logger.LogInfo("Jotunn v" + Version + " loaded successfully");
         }
 
-
-        /// <summary>
-        ///     Initialize patches
-        /// </summary>
         private void Start()
         {
             InitializePatches();

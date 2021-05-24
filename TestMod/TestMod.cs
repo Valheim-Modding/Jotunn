@@ -11,6 +11,7 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
+using System.Globalization;
 
 namespace TestMod
 {
@@ -47,6 +48,10 @@ namespace TestMod
         // Load, create and init your custom mod stuff
         private void Awake()
         {
+            // Change Logger extra
+            Jotunn.Logger.ShowDate = true;
+            
+            // Create stuff
             CreateConfigValues();
             LoadAssets();
             AddInputs();
