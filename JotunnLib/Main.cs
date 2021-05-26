@@ -57,6 +57,7 @@ namespace Jotunn
                 MockManager.Instance,
                 GUIManager.Instance,
                 //SaveManager.Instance,  // Temporarely disabled, causes FPS issues in the current implementation
+                //ZoneManager.Instance,  // Had some problems reported, needs more tests
                 SynchronizationManager.Instance
             };
             foreach (IManager manager in managers)
