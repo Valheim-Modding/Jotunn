@@ -1,4 +1,5 @@
 ﻿using Jotunn.Entities;
+using Jotunn.Managers;
 using UnityEngine;
 
 namespace Jotunn.Configs
@@ -16,12 +17,12 @@ namespace Jotunn.Configs
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
-        ///     Whether this piece is buildable or not.
+        ///     Whether this piece is buildable or not. Defaults to <c>true</c>.
         /// </summary>
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        ///     Can this piece be built in dungeons?
+        ///     Can this piece be built in dungeons? Defaults to <c>false</c>.
         /// </summary>
         public bool AllowedInDungeons { get; set; } = false;
 
@@ -29,6 +30,14 @@ namespace Jotunn.Configs
         ///     The name of the piece table where this piece will be added.
         /// </summary>
         public string PieceTable { get; set; } = string.Empty;
+
+        /// <summary>
+        ///     The name of the category this piece will appear on. If categories are disabled on the 
+        ///     target <see cref="global::PieceTable"/>, this setting will be ignored.<br />
+        ///     If categories are enabled but the given category can't be found, a new 
+        ///     <see cref="global::Piece.PieceCategory"/> will be added to the table.
+        /// </summary>
+        public string Category { get; set; } = string.Empty;
 
         /// <summary>
         ///     The name of the crafting station prefab which needs to be in close proximity to build this piece.
@@ -51,7 +60,7 @@ namespace Jotunn.Configs
         public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
 
         /// <summary>
-        ///     Converts the RequirementConfigs to Valheim style Piece.Requirements
+        ///     Converts the RequirementConfigs to Valheim style <see cref="global::Piece.Requirement"/> array.
         /// </summary>
         /// <returns>The Valheim Piece.Requirement array</returns>
         public Piece.Requirement[] GetRequirements()
@@ -107,6 +116,11 @@ namespace Jotunn.Configs
                 }
                 
                 stationExt.m_craftingStation = Mock<CraftingStation>.Create(ExtendStation);
+            }
+
+            if (!string.IsNullOrEmpty(Category))
+            {
+                piece.m_category = PieceManager.Instance.AddPieceCategory(Category);
             }
         }
     }

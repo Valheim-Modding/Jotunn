@@ -64,7 +64,7 @@ namespace TestMod
             AddCustomItemAndConversion();
             AddItemsWithConfigs();
             AddMockedItems();
-            AddEmptyItems();
+            AddEmptyPiece();
             AddInvalidItems();
 
             // Add custom items cloned from vanilla items
@@ -542,8 +542,8 @@ namespace TestMod
             }
         }
 
-        // Add a custom item from an "empty" prefab
-        private void AddEmptyItems()
+        // Add a custom piece from an "empty" prefab
+        private void AddEmptyPiece()
         {
             CustomPiece CP = new CustomPiece("piece_lul", "Hammer");
             if (CP != null)
@@ -553,10 +553,11 @@ namespace TestMod
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
 
-                // Test station extension, do it manually cause there is no config on empty pieces atm
+                // Add a config manually cause there is no config param on the empty piece constructor atm
                 var cfg = new PieceConfig
                 {
-                    ExtendStation = "piece_workbench"
+                    ExtendStation = "piece_workbench", // Test station extension
+                    Category = "Lulzies"  // Test custom category
                 };
                 cfg.Apply(prefab);
                 CP.FixReference = true;
