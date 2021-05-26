@@ -7,6 +7,9 @@ namespace Jotunn.Utils
     /// </summary>
     public static class Paths
     {
+        /// <summary>
+        ///     Path to the game's save path
+        /// </summary>
         public static string JotunnFolder
         {
             get
@@ -16,8 +19,14 @@ namespace Jotunn.Utils
             }
         }
 
+        /// <summary>
+        ///     Path to the custom item folder
+        /// </summary>
         public static string CustomItemDataFolder => Path.Combine(JotunnFolder, "CustomItemData");
 
+        /// <summary>
+        ///     Path to the global translation folder
+        /// </summary>
         public static string LanguageTranslationsFolder => BepInEx.Paths.PluginPath;
     }
 }

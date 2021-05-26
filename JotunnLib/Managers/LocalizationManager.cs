@@ -131,6 +131,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Registers a new Localization for a language.
         /// </summary>
+        /// <param name="language">The language added</param>
         /// <param name="localization">The localization for a language</param>
         public void AddLocalization(string language, Dictionary<string, string> localization)
         {
@@ -157,7 +158,6 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Add localization config to existing localizations
         /// </summary>
-        /// <param name="self"></param>
         /// <param name="config"></param>
         public void AddLocalization(LocalizationConfig config)
         {
@@ -306,6 +306,11 @@ namespace Jotunn.Managers
             LoadJsonLanguageFile(language, fileContent);
         }
 
+        /// <summary>
+        ///     Tries to translate a word with <see cref="Localization"/>, handles null and tokenized input
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
         public string TryTranslate(string word)
         {
             var toTranslate = word;

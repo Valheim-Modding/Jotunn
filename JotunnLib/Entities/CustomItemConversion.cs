@@ -104,16 +104,19 @@ namespace Jotunn.Entities
             return Config.Station != null && Config.FromItem != null && Config.ToItem != null;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             return obj.GetHashCode() == GetHashCode();
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return ToString().GetStableHashCode();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return $"({Type}) {Config.FromItem} -> {Config.ToItem}";

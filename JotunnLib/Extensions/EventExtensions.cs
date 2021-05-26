@@ -56,5 +56,25 @@ namespace Jotunn
                 }
             }
         }
+
+        public static void SafeInvoke<TEventArg>(this EventHandler<TEventArg> events, object sender, TEventArg arg1)
+        {
+            if (events == null)
+            {
+                return;
+            }
+
+            foreach (EventHandler<TEventArg> @event in events.GetInvocationList())
+            {
+                try
+                {
+                    @event(sender, arg1);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e);
+                }
+            }
+        }
     }
 }

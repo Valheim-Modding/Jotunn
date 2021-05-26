@@ -25,7 +25,9 @@ namespace Jotunn.Utils
 
         private static Dictionary<string, ZPackage> clientVersions = new Dictionary<string, ZPackage>();
 
-
+        /// <summary>
+        ///     Initialize Patches
+        /// </summary>
         [PatchInit(-1000)]
         public static void InitPatch()
         {
@@ -34,6 +36,9 @@ namespace Jotunn.Utils
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
 
+        /// <summary>
+        ///     Initialize early running patches
+        /// </summary>
         [PatchInit(int.MaxValue - 1000)]
         public static void InitPatchEarly()
         {

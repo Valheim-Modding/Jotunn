@@ -11,6 +11,7 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
+using System.Globalization;
 
 namespace TestMod
 {
@@ -47,6 +48,10 @@ namespace TestMod
         // Load, create and init your custom mod stuff
         private void Awake()
         {
+            // Show DateTime on Logs
+            //Jotunn.Logger.ShowDate = true;
+            
+            // Create stuff
             CreateConfigValues();
             LoadAssets();
             AddInputs();
@@ -67,6 +72,19 @@ namespace TestMod
 
             // Clone an item with variants and replace them
             ItemManager.OnVanillaItemsAvailable += AddCloneWithVariants;
+
+            // Test config sync event
+            SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
+            {
+                if (attr.InitialSynchronization)
+                {
+                    Jotunn.Logger.LogMessage("Initial Config sync event received");
+                }
+                else
+                {
+                    Jotunn.Logger.LogMessage("Config sync event received");
+                }
+            };
 
             // Get current version for the mod compatibility test
             currentVersion = new System.Version(Info.Metadata.Version.ToString());
@@ -167,9 +185,15 @@ namespace TestMod
                     {
                         bez = item.m_shared.m_name;
                     }
+
+                    Piece piece = Player.m_localPlayer.m_buildPieces?.GetSelectedPiece();
+                    if (piece != null)
+                    {
+                        bez = bez + ":" + piece.name;
+                    }
                 }
 
-                GUI.Label(new Rect(10, 10, 100, 25), bez);
+                GUI.Label(new Rect(10, 10, 500, 25), bez);
             }
         }
 
@@ -188,7 +212,7 @@ namespace TestMod
             Config.Bind(JotunnTestModConfigSection, "IntegerValue1", 200,
                 new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
-                new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+                new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
 
             // Add client config to test ModCompatibility
             EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
@@ -196,6 +220,9 @@ namespace TestMod
 
             // Add a client side custom input key for the EvilSword
             Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+
+            Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
+                new ConfigDescription("Server side Color", null, new ConfigurationManagerAttributes() {IsAdminOnly = true}));
         }
 
         // React on changed settings
@@ -229,6 +256,7 @@ namespace TestMod
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         // Add custom key bindings
         private void AddInputs()
         {
@@ -367,13 +395,13 @@ namespace TestMod
             var steel_prefab = steelingot.LoadAsset<GameObject>("Steel");
             var ingot = new CustomItem(steel_prefab, fixReference: false);
             var blastConversion = new CustomItemConversion(new SmelterConversionConfig
-            { 
+            {
                 Station = "blastfurnace", // Let's specify something other than default here 
                 FromItem = "Iron",
                 ToItem = "Steel" // This is our custom prefabs name we have loaded just above 
             });
             ItemManager.Instance.AddItem(ingot);
-            ItemManager.Instance.AddItemConversion(blastConversion); 
+            ItemManager.Instance.AddItemConversion(blastConversion);
         }
 
 
@@ -419,13 +447,53 @@ namespace TestMod
                 });
             PieceManager.Instance.AddPiece(placebp);
 
-            // Add localizations
+            // Add localizations from the asset bundle
             var textAssets = blueprintRuneBundle.LoadAllAssets<TextAsset>();
             foreach (var textAsset in textAssets)
             {
                 var lang = textAsset.name.Replace(".json", null);
                 LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
             }
+
+            // Override "default" KeyHint with an empty config
+            KeyHintConfig KHC_base = new KeyHintConfig
+            {
+                Item = "BlueprintTestRune"
+            };
+            GUIManager.Instance.AddKeyHint(KHC_base);
+
+            // Add custom KeyHints for specific pieces
+            KeyHintConfig KHC_make = new KeyHintConfig
+            {
+                Item = "BlueprintTestRune",
+                Piece = "make_testblueprint",
+                ButtonConfigs = new[]
+                {
+                    // Override vanilla "Attack" key text
+                    new ButtonConfig { Name = "Attack", HintToken = "$bprune_make" }
+                }
+            };
+            GUIManager.Instance.AddKeyHint(KHC_make);
+
+            KeyHintConfig KHC_piece = new KeyHintConfig
+            {
+                Item = "BlueprintTestRune",
+                Piece = "piece_testblueprint",
+                ButtonConfigs = new[]
+                {
+                    // Override vanilla "Attack" key text
+                    new ButtonConfig { Name = "Attack", HintToken = "$bprune_piece" }
+                }
+            };
+            GUIManager.Instance.AddKeyHint(KHC_piece);
+
+            // Add additional localization manually
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            {
+                Translations = {
+                    {"bprune_make", "Capture Blueprint"}, {"bprune_piece", "Place Blueprint"}
+                }
+            });
 
             // Don't forget to unload the bundle to free the resources
             blueprintRuneBundle.Unload(false);

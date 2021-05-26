@@ -59,10 +59,21 @@ namespace Jotunn.Utils
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly)]
     public class NetworkCompatibilityAttribute: Attribute
     {
+        /// <summary>
+        ///     Compatibility Level
+        /// </summary>
         public CompatibilityLevel EnforceModOnClients { get; set; }
 
+        /// <summary>
+        ///     Version Strictness
+        /// </summary>
         public VersionStrictness EnforceSameVersion { get; set; }
 
+        /// <summary>
+        ///     Network Compatibility Attribute
+        /// </summary>
+        /// <param name="enforceMod"></param>
+        /// <param name="enforceVersion"></param>
         public NetworkCompatibilityAttribute(CompatibilityLevel enforceMod, VersionStrictness enforceVersion)
         {
             EnforceModOnClients = enforceMod;

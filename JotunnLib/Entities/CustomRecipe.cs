@@ -58,16 +58,19 @@ namespace Jotunn.Entities
             return Recipe != null && Recipe.IsValid() && Recipe.m_item != null;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             return obj.GetHashCode() == GetHashCode();
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return Recipe.name.GetStableHashCode();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return Recipe.name;

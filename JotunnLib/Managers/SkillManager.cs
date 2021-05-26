@@ -26,6 +26,9 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Initialize the manager
+        /// </summary>
         public void Init()
         {
             On.Skills.Awake += RegisterCustomSkills;

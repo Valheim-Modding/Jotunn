@@ -1,6 +1,8 @@
 ﻿using BepInEx.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System;
+using System.Globalization;
 
 namespace Jotunn
 {
@@ -10,12 +12,18 @@ namespace Jotunn
     /// </summary>
     public class Logger
     {
+        /// <summary>
+        ///     Add DateTime to the log output
+        /// </summary>
+        public static bool ShowDate = false;
+
         private static Logger instance;
-        
+
         private readonly Dictionary<string, ManualLogSource> logger = new Dictionary<string, ManualLogSource>();
 
-        private Logger() { }
-
+        /// <summary>
+        ///     Singleton init
+        /// </summary>
         internal static void Init()
         {
             if (instance == null)
@@ -24,6 +32,9 @@ namespace Jotunn
             }
         }
 
+        /// <summary>
+        ///     Remove and clear all Logger instances
+        /// </summary>
         internal static void Destroy()
         {
             LogDebug("Destroying Logger");
@@ -36,14 +47,17 @@ namespace Jotunn
             instance.logger.Clear();
         }
 
+        /// <summary>
+        ///     Get or create a <see cref="ManualLogSource"/> with the callers <see cref="Type.FullName"/>
+        /// </summary>
+        /// <returns>A BepInEx <see cref="ManualLogSource"/></returns>
         private ManualLogSource GetLogger()
         {
-            var type = new StackFrame(2).GetMethod().DeclaringType;
+            var type = new StackFrame(3).GetMethod().DeclaringType;
 
             ManualLogSource ret;
             if (!logger.TryGetValue(type.FullName, out ret))
             {
-                //ret = BepInEx.Logging.Logger.CreateLogSource(type.Namespace);
                 ret = BepInEx.Logging.Logger.CreateLogSource(type.FullName);
                 logger.Add(type.FullName, ret);
             }
@@ -51,34 +65,52 @@ namespace Jotunn
             return ret;
         }
 
-        public static void LogFatal(object data)
+        private static void Log(LogLevel level, object data)
         {
-            instance.GetLogger().LogFatal(data);
+            if (ShowDate)
+            {
+                instance.GetLogger().Log(level, $"[{DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo)}] {data}");
+            }
+            else
+            {
+                instance.GetLogger().Log(level, data);
+            }
         }
 
-        public static void LogError(object data)
-        {
-            instance.GetLogger().LogError(data);
-        }
+        /// <summary>
+        ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Fatal"/> level.
+        /// </summary>
+        /// <param name="data">Data to log</param>
+        public static void LogFatal(object data) => Log(LogLevel.Fatal, data);
 
-        public static void LogWarning(object data)
-        {
-            instance.GetLogger().LogWarning(data);
-        }
+        /// <summary>
+        ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Fatal"/> level.
+        /// </summary>
+        /// <param name="data">Data to log</param>
+        public static void LogError(object data) => Log(LogLevel.Error, data);
 
-        public static void LogMessage(object data)
-        {
-            instance.GetLogger().LogMessage(data);
-        }
+        /// <summary>
+        ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Warning"/> level.
+        /// </summary>
+        /// <param name="data">Data to log</param>
+        public static void LogWarning(object data) => Log(LogLevel.Warning, data);
 
-        public static void LogInfo(object data)
-        {
-            instance.GetLogger().LogInfo(data);
-        }
+        /// <summary>
+        ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Message"/> level.
+        /// </summary>
+        /// <param name="data">Data to log</param>
+        public static void LogMessage(object data) => Log(LogLevel.Message, data);
 
-        public static void LogDebug(object data)
-        {
-            instance.GetLogger().LogDebug(data);
-        }
+        /// <summary>
+        ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Info"/> level.
+        /// </summary>
+        /// <param name="data">Data to log</param>
+        public static void LogInfo(object data) => Log(LogLevel.Info, data);
+
+        /// <summary>
+        ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Debug"/> level.
+        /// </summary>
+        /// <param name="data">Data to log</param>
+        public static void LogDebug(object data) => Log(LogLevel.Debug, data);
     }
 }

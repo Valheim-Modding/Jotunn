@@ -15,6 +15,11 @@ namespace Jotunn
     /// </summary>
     public static class GameObjectExtension
     {
+        /// <summary>
+        ///     Check for validity
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static bool IsValid(this GameObject self)
         {
             try
@@ -45,8 +50,18 @@ namespace Jotunn
     /// </summary>
     public static class ItemDropExtension
     {
+        /// <summary>
+        ///     m_itemData.m_shared.m_name
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static string TokenName(this ItemDrop self) => self.m_itemData.m_shared.m_name;
 
+        /// <summary>
+        ///     Check for validity
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static bool IsValid(this ItemDrop self)
         {
             try
@@ -73,6 +88,11 @@ namespace Jotunn
     /// </summary>
     public static class ItemDataExtension
     {
+        /// <summary>
+        ///     m_shared.m_name
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static string TokenName(this ItemDrop.ItemData self) => self.m_shared.m_name;
 
         internal const int LinesToNextEntry = 9;
@@ -157,6 +177,11 @@ namespace Jotunn
     /// </summary>
     public static class RecipeExtension
     {
+        /// <summary>
+        ///     Check for validity
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static bool IsValid(this Recipe self)
         {
             try
@@ -187,8 +212,18 @@ namespace Jotunn
     /// </summary>
     public static class PieceExtension
     {
+        /// <summary>
+        ///     m_name
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static string TokenName(this Piece self) => self.m_name;
 
+        /// <summary>
+        ///     Check for validity
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static bool IsValid(this Piece self)
         {
             try
@@ -215,8 +250,18 @@ namespace Jotunn
     /// </summary>
     public static class StatusEffectExtension
     {
+        /// <summary>
+        ///     m_name
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static string TokenName(this StatusEffect self) => self.m_name;
 
+        /// <summary>
+        ///     Check for validity
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static bool IsValid(this StatusEffect self)
         {
             try

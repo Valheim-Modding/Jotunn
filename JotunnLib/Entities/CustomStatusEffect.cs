@@ -39,16 +39,19 @@ namespace Jotunn.Entities
             return StatusEffect != null && StatusEffect.IsValid();
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             return obj.GetHashCode() == GetHashCode();
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return StatusEffect.name.GetStableHashCode();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return StatusEffect.name;

@@ -50,6 +50,7 @@ namespace Jotunn.Entities
         ///     Can fix references for <see cref="Entities.Mock{T}"/>s.
         /// </summary>
         /// <param name="itemPrefab">The prefab for this custom item.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="itemConfig">The recipe config for this custom item.</param>
         public CustomItem(GameObject itemPrefab, bool fixReference, ItemConfig itemConfig)
         {
@@ -155,16 +156,19 @@ namespace Jotunn.Entities
             return false;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             return obj.GetHashCode() == GetHashCode();
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return ItemPrefab.name.GetStableHashCode();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return ItemPrefab.name;

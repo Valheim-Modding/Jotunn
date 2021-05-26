@@ -399,11 +399,15 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <DocumentationFile>bin\Debug\$(TargetFramework)\Jotunn.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>bin\Release\$(TargetFramework)\Jotunn.xml</DocumentationFile>
   </PropertyGroup>
   
   <ItemGroup>
@@ -419,6 +423,7 @@
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsCorlib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsManaged.props" Pack="true" PackagePath="build" />
+    <Content Include="$(TargetDir)Jotunn.pdb" Pack="true" PackagePath="lib/$(TargetFramework)" />
     <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png" Pack="true" PackagePath="images" />
   </ItemGroup>
 </Project>

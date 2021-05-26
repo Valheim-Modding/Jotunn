@@ -1,4 +1,7 @@
-﻿/// <summary>
+﻿using Jotunn.Managers;
+using UnityEngine;
+
+/// <summary>
 ///     Class that specifies how a setting should be displayed inside the ConfigurationManager settings window.
 ///     
 ///     Usage:
@@ -27,6 +30,16 @@
 #pragma warning disable 0169, 0414, 0649
 public sealed class ConfigurationManagerAttributes
 {
+
+    /// <summary>
+    /// ctor
+    /// </summary>
+    public ConfigurationManagerAttributes()
+    {
+        EntryColor = new Color(1f, 0.631f, 0.235f, 1f); // Valheim orange
+        DescriptionColor = Color.white;
+    }
+
     /// <summary>
     /// Should the setting be shown as a percentage (only use with value range settings).
     /// </summary>
@@ -91,7 +104,9 @@ public sealed class ConfigurationManagerAttributes
     /// </summary>
     public bool? IsAdvanced;
 
-
+    /// <summary>
+    ///     Whether a config is only writable by admins and gets overwritten on connecting clients
+    /// </summary>
     public bool IsAdminOnly
     {
         get => isAdminOnly;
@@ -105,6 +120,9 @@ public sealed class ConfigurationManagerAttributes
         }
     }
 
+    /// <summary>
+    ///     Welp
+    /// </summary>
     public bool UnlockSetting
     {
         get => unlockSetting;
@@ -118,6 +136,10 @@ public sealed class ConfigurationManagerAttributes
             unlockSetting = value;
         }
     }
+
+    public Color EntryColor { get; set; }
+
+    public Color DescriptionColor { get; set; }
 
     /// <summary>
     ///     Custom converter from setting type to string for the built-in editor textboxes.

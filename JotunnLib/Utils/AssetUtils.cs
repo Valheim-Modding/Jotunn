@@ -12,12 +12,16 @@ namespace Jotunn.Utils
     /// </summary>
     public static class AssetUtils
     {
+        /// <summary>
+        ///     Path separator for AssetBundles
+        /// </summary>
         public const char AssetBundlePathSeparator = '$';
 
         /// <summary>
         ///     Loads a <see cref="Texture2D"/> from file at runtime.
         /// </summary>
         /// <param name="texturePath">Texture path relative to "plugins" BepInEx folder</param>
+        /// <param name="relativePath">Is the given path relative</param>
         /// <returns>Texture2D loaded, or null if invalid path</returns>
         public static Texture2D LoadTexture(string texturePath, bool relativePath = true)
         {
@@ -48,7 +52,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Loads a <see cref="Sprite"/> from file at runtime.
         /// </summary>
-        /// <param name="texturePath">Texture path relative to "plugins" BepInEx folder</param>
+        /// <param name="spritePath">Texture path relative to "plugins" BepInEx folder</param>
         /// <returns>Texture2D loaded, or null if invalid path</returns>
         public static Sprite LoadSpriteFromFile(string spritePath)
         {
@@ -100,6 +104,7 @@ namespace Jotunn.Utils
         ///     Load an assembly-embedded <see cref="AssetBundle" />
         /// </summary>
         /// <param name="bundleName">Name of the bundle</param>
+        /// <param name="resourceAssembly">Executing assembly</param>
         /// <returns></returns>
         public static AssetBundle LoadAssetBundleFromResources(string bundleName, Assembly resourceAssembly)
         {
@@ -129,20 +134,30 @@ namespace Jotunn.Utils
             return ret;
         }
 
+        /// <summary>
+        ///     Loads the contents of a file as a char string
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static string LoadText(string path)
         {
             string absPath = Path.Combine(BepInEx.Paths.PluginPath, path);
 
             if (!File.Exists(absPath))
             {
-                Logger.LogError($"Error, failed to register skill from non-existant path: ${absPath}");
+                Logger.LogError($"Error, failed to load contents from non-existant path: ${absPath}");
                 return null;
             }
 
             return File.ReadAllText(absPath);
         }
         
-        internal static Sprite LoadSprite(string assetPath)
+        /// <summary>
+        ///     Loads a <see cref="Sprite"/> from a file path or an asset bundle (separated by <see cref="AssetBundlePathSeparator"/>)
+        /// </summary>
+        /// <param name="assetPath"></param>
+        /// <returns></returns>
+        public static Sprite LoadSprite(string assetPath)
         {
             string path = Path.Combine(BepInEx.Paths.PluginPath, assetPath);
 
@@ -160,7 +175,9 @@ namespace Jotunn.Utils
 
                 // TODO: This is very likely going to need some caching for asset bundles
                 AssetBundle bundle = AssetBundle.LoadFromFile(bundlePath);
-                return bundle.LoadAsset<Sprite>(assetName);
+                Sprite ret = bundle.LoadAsset<Sprite>(assetName);
+                bundle.Unload(false);
+                return ret;
             }
 
             // Load texture and create sprite

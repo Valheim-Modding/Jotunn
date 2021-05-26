@@ -20,7 +20,7 @@ namespace Jotunn
         /// <summary>
         ///     The current version of the Jotunn library.
         /// </summary>
-        public const string Version = "2.0.10";
+        public const string Version = "2.0.11";
 
         /// <summary>
         ///     The name of the library.
@@ -68,10 +68,6 @@ namespace Jotunn
             Logger.LogInfo("Jotunn v" + Version + " loaded successfully");
         }
 
-
-        /// <summary>
-        ///     Initialize patches
-        /// </summary>
         private void Start()
         {
             InitializePatches();
@@ -88,12 +84,13 @@ namespace Jotunn
 
         private void OnGUI()
         {
+#if DEBUG
             // Display version in main menu
             if (SceneManager.GetActiveScene().name == "start")
             {
                 GUI.Label(new Rect(Screen.width - 100, 5, 100, 25), "Jotunn v" + Version);
             }
-
+#endif
             // Fake MonoBehaviour event for GUIManager
             GUIManager.Instance.OnGUI();
         }

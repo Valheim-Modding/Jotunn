@@ -9,13 +9,16 @@ Jötunn itself does not provide any implementations or abstractions for persisen
 ### Synced Configurations
 We can sync a client configuration with the server by:
 - ensuring that the [BaseUnityPlugin](xref:BepInEx.BaseUnityPlugin) has a [NetworkCompatibilityAttribute](xref:Jotunn.Utils.NetworkCompatibilityAttribute) enabled
+
 ```cs
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     [BepInDependency(Jotunn.Main.ModGuid)]
     internal class JotunnModExample : BaseUnityPlugin
 ```
+
 - and then setting the `IsAdminOnly` flag on the configuration like so:
+
 ```cs
 // Create some sample configuration values to check server sync
 private void CreateConfigValues()
@@ -39,7 +42,7 @@ Here we have implemented some BepInEx configuration attributes to act as a showc
 
 To access the configuration entries either use properties or cast the boxed value to the value type:
 
-```
+```cs
 private ConfigEntry<int> configurationEntry1;
 
 public void Awake2()
@@ -62,3 +65,20 @@ If you set `Value` it behaves different to setting `BoxedValue`.
 
 Setting `Value` will apply value ranges (defined in the `ConfigurationManagerAttributes` via `AcceptableValueRange` for example) while `BoxedValue` will have no checks.
 
+### Config synced event
+
+Jötunn provides an event in the SynchronizationManager you can subscribe to: [SynchronizationManager.OnConfigurationSynchronized](xref:Jotunn.Managers.SynchronizationManager.OnConfigurationSynchronized). It fires when configuration is synced from a server to the client. Upon connection there is always an initial sync event. If configuration is changed and distributed during a game session, the event is fired every time you receive or send configuration. This applies to server side configuration only (i.e. `AdminOnly = true`). To distinguish between the initial and recurring config sync use the [ConfigurationSynchronizationEventArgs](xref:Jotunn.Utils.ConfigurationSynchronizationEventArgs).
+
+```cs
+SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
+{
+    if (attr.InitialSynchronization)
+    {
+        Jotunn.Logger.LogMessage("Initial Config sync event received");
+    }
+    else
+    {
+        Jotunn.Logger.LogMessage("Config sync event received");
+    }
+};
+```
