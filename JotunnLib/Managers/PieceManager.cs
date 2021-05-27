@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
 {
@@ -292,11 +293,11 @@ namespace Jotunn.Managers
 
             foreach (var category in PieceCategories)
             {
-                GameObject newTab = UnityEngine.Object.Instantiate(root.transform.Find("Misc")?.gameObject, root.transform);
+                GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], root.transform);
                 newTab.name = category.Key;
                 
                 UIInputHandler component = newTab.GetComponent<UIInputHandler>();
-                component.m_onLeftDown = (Action<UIInputHandler>)Delegate.Combine(component.m_onLeftDown, new Action<UIInputHandler>(Hud.instance.OnLeftClickCategory));
+                component.m_onLeftDown += Hud.instance.OnLeftClickCategory;
                 
                 newNames.Add(category.Key);
                 newTabs.Add(newTab);
