@@ -261,7 +261,7 @@ namespace Jotunn.Managers
                 // All piece tables using categories
                 foreach (var table in PieceTables.Values.Where(x => x.m_useCategories))
                 {
-                    // Add empty lists up to the custom categories index
+                    // Add empty lists up to the custom categories index and for every custom category
                     if (table.m_availablePieces.Count < (int)PieceCategoryMax)
                     {
                         for (int i = table.m_availablePieces.Count; i < (int)PieceCategoryMax;  i++)
@@ -270,19 +270,13 @@ namespace Jotunn.Managers
                         }
                     }
 
-                    // Add an empty "category piece list" for each custom category
-                    foreach (var category in PieceCategories)
-                    {
-                        table.m_availablePieces.Add(new List<Piece>());
-                    }
-
                     // Resize selectedPiece array
                     Array.Resize(ref table.m_selectedPiece, table.m_availablePieces.Count);
                 }
 
+                // Add UI stuff to the scene loaded hook, ingameGui is not loaded yet
                 SceneManager.sceneLoaded += CreateCategoryTabs;
             }
-            //_GameMain/GUI/PixelFix/IngameGui(Clone)/HUD/hudroot/BuildHud/bar/SelectionWindow/Categories
         }
 
         private void CreateCategoryTabs(Scene scene, LoadSceneMode mode)
