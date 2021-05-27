@@ -43,6 +43,8 @@ namespace Jotunn.Managers
         internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new();
 
         private Piece.PieceCategory PieceCategoryMax = Piece.PieceCategory.Max;
+        private const float PieceCategorySize = 540f;
+        private const float PieceCategoryTabSize = 120f;
 
         /// <summary>
         ///     Creates the piece table container and registers all hooks.
@@ -287,11 +289,13 @@ namespace Jotunn.Managers
         {
             // Get the GUI elements
             GameObject root = Hud.instance.m_pieceCategoryRoot;
+            root.AddComponent<RectMask2D>();
+            root.SetWidth(PieceCategorySize);
 
+            // Append tabs and their names to the GUI for every custom category
             List<string> newNames = new List<string>(Hud.instance.m_buildCategoryNames);
             List<GameObject> newTabs = new List<GameObject>(Hud.instance.m_pieceCategoryTabs);
 
-            // Add tabs to the GUI for every custom category
             foreach (var category in PieceCategories)
             {
                 GameObject newTab = UnityEngine.Object.Instantiate(root.transform.Find("Misc")?.gameObject, root.transform);
@@ -304,29 +308,29 @@ namespace Jotunn.Managers
                 newTabs.Add(newTab);
             }
 
+            // Reorder tabs
+            float offset = 0f;
+            foreach (GameObject go in newTabs)
+            {
+                go.SetMiddleLeft();
+                go.SetHeight(30f);
+                RectTransform tf = (go.transform as RectTransform);
+                tf.anchoredPosition = new Vector2(offset, 0f);
+                offset += PieceCategoryTabSize;
+            }
+
             // Replace the HUD arrays
             Hud.instance.m_buildCategoryNames = newNames.ToList();
             Hud.instance.m_pieceCategoryTabs = newTabs.ToArray();
 
-            // Reorder tabs
-            float offset = 0f;
-            foreach (RectTransform tf in root.transform)
-            {
-                tf.anchoredPosition = new Vector2(offset, 0f);
-                offset += 120f;
-            }
-/*
-            // Reorder Tabs
-            var layout = root.AddComponent<HorizontalLayoutGroup>();
-            layout.childForceExpandWidth = true;
-            layout.spacing = 20;
-*/
+            // Delete ourself
             SceneManager.sceneLoaded -= CreateCategoryTabs;
 
             // Register hooks for categories
             On.PieceTable.SetCategory += PieceTable_SetCustomCategory;
             On.PieceTable.NextCategory += PieceTable_NextCategory;
             On.PieceTable.PrevCategory += PieceTable_PrevCategory;
+            On.Hud.OnLeftClickCategory += Hud_OnLeftClickCategory;
         }
 
         private void PieceTable_SetCustomCategory(On.PieceTable.orig_SetCategory orig, PieceTable self, int index)
@@ -363,7 +367,7 @@ namespace Jotunn.Managers
             {
                 self.m_selectedCategory--;
 
-                if (self.m_selectedCategory < Piece.PieceCategory.Misc)
+                if (self.m_selectedCategory < 0)
                 {
                     self.m_selectedCategory = PieceCategoryMax - 1;
                 }
@@ -372,22 +376,33 @@ namespace Jotunn.Managers
             PieceCategoryScroll(self.m_selectedCategory);
         }
 
+        private void Hud_OnLeftClickCategory(On.Hud.orig_OnLeftClickCategory orig, Hud self, UIInputHandler ih)
+        {
+            orig(self, ih);
+
+            PieceCategoryScroll(Player.m_localPlayer.m_buildPieces.m_selectedCategory);
+        }
+
         private void PieceCategoryScroll(Piece.PieceCategory selectedCategory)
         {
             var tab = Hud.instance.m_pieceCategoryTabs[(int)selectedCategory];
 
-            if ((tab.transform as RectTransform).anchoredPosition.x < 120)
+            float minX = (tab.transform as RectTransform).anchoredPosition.x;
+            if (minX < 0f)
             {
+                float offsetX = selectedCategory == 0 ? minX * -1 : PieceCategoryTabSize;
                 foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                 {
-                    (go.transform as RectTransform).anchoredPosition += new Vector2(120f, 0);
+                    (go.transform as RectTransform).anchoredPosition += new Vector2(offsetX, 0);
                 }
             }
-            if ((tab.transform as RectTransform).anchoredPosition.x > 480)
+            float maxX = (tab.transform as RectTransform).anchoredPosition.x + PieceCategoryTabSize;
+            if (maxX > PieceCategorySize)
             {
+                float offsetX = selectedCategory == PieceCategoryMax - 1 ? maxX - PieceCategorySize : PieceCategoryTabSize;
                 foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                 {
-                    (go.transform as RectTransform).anchoredPosition -= new Vector2(120f, 0);
+                    (go.transform as RectTransform).anchoredPosition -= new Vector2(offsetX, 0);
                 }
             }
         }
@@ -445,16 +460,11 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main")
+            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
             {
-                var isValid = self.IsValid();
-
-                if (isValid)
-                {
-                    LoadPieceTables();
-                    CreatePieceCategories();
-                    RegisterInPieceTables();
-                }
+                LoadPieceTables();
+                CreatePieceCategories();
+                RegisterInPieceTables();
             }
         }
 
