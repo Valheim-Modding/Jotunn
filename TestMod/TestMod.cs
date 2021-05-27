@@ -64,7 +64,7 @@ namespace TestMod
             AddCustomItemAndConversion();
             AddItemsWithConfigs();
             AddMockedItems();
-            AddEmptyPiece();
+            AddEmptyPiecesAndCategories();
             AddInvalidItems();
 
             // Add custom items cloned from vanilla items
@@ -290,8 +290,13 @@ namespace TestMod
                 }
             });
 
-            // Add translations for the custom piece in AddEmptyItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") { Translations = { { "piece_lul", "Lulz" } } });
+            // Add translations for the custom piece in AddEmptyPiecesAndCategories
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") 
+            {
+                Translations = {
+                    { "piece_lul", "Lulz" }, { "piece_lel", "Lölz" }
+                } 
+            });
         }
 
         // Register new console commands
@@ -543,7 +548,7 @@ namespace TestMod
         }
 
         // Add a custom piece from an "empty" prefab
-        private void AddEmptyPiece()
+        private void AddEmptyPiecesAndCategories()
         {
             CustomPiece CP = new CustomPiece("piece_lul", "Hammer");
             if (CP != null)
@@ -552,6 +557,27 @@ namespace TestMod
                 piece.m_icon = testSprite;
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
+
+                // Add a config manually cause there is no config param on the empty piece constructor atm
+                var cfg = new PieceConfig
+                {
+                    ExtendStation = "piece_workbench", // Test station extension
+                    Category = "Lulzies"  // Test custom category
+                };
+                cfg.Apply(prefab);
+                CP.FixReference = true;
+
+                PieceManager.Instance.AddPiece(CP);
+            }
+
+            CP = new CustomPiece("piece_lel", "Hammer");
+            if (CP != null)
+            {
+                var piece = CP.Piece;
+                piece.m_icon = testSprite;
+                var prefab = CP.PiecePrefab;
+                prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
+                prefab.GetComponent<MeshRenderer>().material.color = Color.grey;
 
                 // Add a config manually cause there is no config param on the empty piece constructor atm
                 var cfg = new PieceConfig
