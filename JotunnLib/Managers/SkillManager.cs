@@ -156,14 +156,16 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            Logger.LogInfo($"---- Registering custom skills ----");
-
-            foreach (var pair in Skills)
+            if (Skills.Count > 0)
             {
-                self.m_skills.Add(pair.Value.ToSkillDef());
-                Logger.LogInfo($"Registered skill {pair.Value.Name} | ID: {pair.Value.Identifier}");
-            }
+                Logger.LogInfo($"---- Registering custom skills ----");
 
+                foreach (var pair in Skills)
+                {
+                    self.m_skills.Add(pair.Value.ToSkillDef());
+                    Logger.LogInfo($"Registered skill {pair.Value.Name} | ID: {pair.Value.Identifier}");
+                }
+            }
         }
 
         private void SkillsDialog_Setup(On.SkillsDialog.orig_Setup orig, SkillsDialog self, Player player)
