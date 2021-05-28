@@ -237,7 +237,7 @@ namespace Jotunn.Managers
             {
                 Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
 
-                List<CustomPiece> toDelete = new();
+                List<CustomPiece> toDelete = new List<CustomPiece>();
 
                 foreach (var customPiece in Pieces)
                 {

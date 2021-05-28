@@ -323,7 +323,7 @@ namespace Jotunn.Managers
             {
                 Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
 
-                List<CustomItem> toDelete = new();
+                List<CustomItem> toDelete = new List<CustomItem>();
 
                 foreach (var customItem in Items)
                 {
@@ -369,7 +369,7 @@ namespace Jotunn.Managers
             {
                 Logger.LogInfo($"---- Adding custom recipes to {objectDB} ----");
 
-                List<CustomRecipe> toDelete = new();
+                List<CustomRecipe> toDelete = new List<CustomRecipe>();
 
                 foreach (var customRecipe in Recipes)
                 {
@@ -416,7 +416,7 @@ namespace Jotunn.Managers
             {
                 Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
 
-                List<CustomStatusEffect> toDelete = new();
+                List<CustomStatusEffect> toDelete = new List<CustomStatusEffect>();
 
                 foreach (var customStatusEffect in StatusEffects)
                 {
@@ -455,7 +455,7 @@ namespace Jotunn.Managers
             {
                 Logger.LogInfo($"---- Adding custom item conversions ----");
 
-                List<CustomItemConversion> toDelete = new();
+                List<CustomItemConversion> toDelete = new List<CustomItemConversion>();
 
                 foreach (var conversion in ItemConversions)
                 {
