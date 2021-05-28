@@ -117,11 +117,11 @@ namespace Jotunn.Managers
         {
             var result = orig(self, language);
             
-            Logger.LogInfo($"---- Adding tokens for language '{language}' ----");
-
             // Only if we have translations for this language
             if (Localizations.ContainsKey(language))
             {
+                Logger.LogInfo($"---- Adding tokens for language '{language}' ----");
+
                 AddTokens(self, language);
             }
 
