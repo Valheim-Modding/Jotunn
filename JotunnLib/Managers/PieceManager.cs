@@ -191,7 +191,21 @@ namespace Jotunn.Managers
                 return;
             }
 
+            RemovePiece(piece);
+        }
+
+        /// <summary>
+        ///     Remove a custom piece by its ref.
+        /// </summary>
+        /// <param name="piece"><see cref="CustomPiece"/> to remove.</param>
+        public void RemovePiece(CustomPiece piece)
+        {
             Pieces.Remove(piece);
+
+            if (piece.PiecePrefab && PrefabManager.Instance.GetPrefab(piece.PiecePrefab.name))
+            {
+                PrefabManager.Instance.RemovePrefab(piece.PiecePrefab.name);
+            }
         }
 
         /// <summary>
@@ -219,47 +233,58 @@ namespace Jotunn.Managers
 
         private void RegisterInPieceTables()
         {
-            Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
-
-            foreach (var customPiece in Pieces)
+            if (Pieces.Count > 0)
             {
-                try
+                Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
+
+                List<CustomPiece> toDelete = new();
+
+                foreach (var customPiece in Pieces)
                 {
-                    // Fix references if needed
-                    if (customPiece.FixReference)
+                    try
                     {
-                        customPiece.PiecePrefab.FixReferences();
-                        customPiece.FixReference = false;
-                    }
+                        // Fix references if needed
+                        if (customPiece.FixReference)
+                        {
+                            customPiece.PiecePrefab.FixReferences();
+                            customPiece.FixReference = false;
+                        }
 
-                    // Assign vfx_ExtensionConnection for StationExtensions
-                    var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
-                    if (extension != null && !extension.m_connectionPrefab)
-                    {
-                        extension.m_connectionPrefab = PrefabManager.Cache.GetPrefab<GameObject>("vfx_ExtensionConnection");
-                    }
+                        // Assign vfx_ExtensionConnection for StationExtensions
+                        var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
+                        if (extension != null && !extension.m_connectionPrefab)
+                        {
+                            extension.m_connectionPrefab = PrefabManager.Cache.GetPrefab<GameObject>("vfx_ExtensionConnection");
+                        }
 
-                    // Assign the piece to the actual PieceTable if not already in there
-                    var pieceTable = GetPieceTable(customPiece.PieceTable);
-                    if (pieceTable == null)
-                    {
-                        throw new Exception($"Could not find piecetable {customPiece.PieceTable}");
+                        // Assign the piece to the actual PieceTable if not already in there
+                        var pieceTable = GetPieceTable(customPiece.PieceTable);
+                        if (pieceTable == null)
+                        {
+                            throw new Exception($"Could not find piecetable {customPiece.PieceTable}");
+                        }
+                        if (pieceTable.m_pieces.Contains(customPiece.PiecePrefab))
+                        {
+                            Logger.LogInfo($"Already added piece {customPiece}");
+                        }
+                        else
+                        {
+                            pieceTable.m_pieces.Add(customPiece.PiecePrefab);
+                            Logger.LogInfo($"Added piece {customPiece} | Token: {customPiece.Piece.TokenName()}");
+                        }
                     }
-                    if (pieceTable.m_pieces.Contains(customPiece.PiecePrefab))
+                    catch (Exception ex)
                     {
-                        Logger.LogInfo($"Already added piece {customPiece}");
-                    }
-                    else
-                    {
-                        pieceTable.m_pieces.Add(customPiece.PiecePrefab);
-                        Logger.LogInfo($"Added piece {customPiece} | Token: {customPiece.Piece.TokenName()}");
+                        Logger.LogError($"Error while adding piece {customPiece}: {ex}");
+                        toDelete.Add(customPiece);
                     }
                 }
-                catch (Exception ex)
-                {
-                    Logger.LogError($"Error while adding piece {customPiece}: {ex}");
-                }
 
+                // Delete custom pieces with errors
+                foreach (var piece in toDelete)
+                {
+                    RemovePiece(piece);
+                }
             }
         }
 
@@ -267,15 +292,10 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main")
+            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
             {
-                var isValid = self.IsValid();
-
-                if (isValid)
-                {
-                    LoadPieceTables();
-                    RegisterInPieceTables();
-                }
+                LoadPieceTables();
+                RegisterInPieceTables();
             }
         }
 

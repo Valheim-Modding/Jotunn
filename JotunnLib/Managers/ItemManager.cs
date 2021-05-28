@@ -6,6 +6,7 @@ using Jotunn.Entities;
 using Jotunn.Configs;
 using UnityEngine.SceneManagement;
 using MonoMod.RuntimeDetour;
+using System.Linq;
 
 namespace Jotunn.Managers
 {
@@ -116,6 +117,51 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Get a custom item by its name.
+        /// </summary>
+        /// <param name="itemName">Name of the item to search.</param>
+        /// <returns></returns>
+        public CustomItem GetItem(string itemName)
+        {
+            return Items.FirstOrDefault(x => x.ItemPrefab.name.Equals(itemName));
+        }
+
+        /// <summary>
+        ///     Remove a custom item by its name. Removes the custom recipe, too.
+        /// </summary>
+        /// <param name="itemName">Name of the item to remove.</param>
+        public void RemoveItem(string itemName)
+        {
+            var item = GetItem(itemName);
+            if (item == null)
+            {
+                Logger.LogWarning($"Could not remove item {itemName}: Not found");
+                return;
+            }
+
+            RemoveItem(item);
+        }
+
+        /// <summary>
+        ///     Remove a custom item by its ref. Removes the custom recipe, too.
+        /// </summary>
+        /// <param name="item"><see cref="CustomItem"/> to remove.</param>
+        public void RemoveItem(CustomItem item)
+        {
+            Items.Remove(item);
+
+            if (item.ItemPrefab)
+            {
+                PrefabManager.Instance.RemovePrefab(item.ItemPrefab.name);
+            }
+            
+            if (item.Recipe != null)
+            {
+                RemoveRecipe(item.Recipe);
+            }
+        }
+
+        /// <summary>
         ///     Add a <see cref="CustomRecipe"/> to the game.<br />
         ///     Checks if the custom recipe is unique and adds it to the list of custom recipes.<br />
         ///     Custom recipes are added to the current <see cref="ObjectDB"/> on every <see cref="ObjectDB.Awake"/>.
@@ -158,6 +204,47 @@ namespace Jotunn.Managers
             foreach (RecipeConfig recipe in recipes)
             {
                 AddRecipe(new CustomRecipe(recipe));
+            }
+        }
+
+        /// <summary>
+        ///     Get a custom recipe by its name.
+        /// </summary>
+        /// <param name="recipeName">Name of the recipe to search.</param>
+        /// <returns></returns>
+        public CustomRecipe GetRecipe(string recipeName)
+        {
+            return Recipes.FirstOrDefault(x => x.Recipe.name.Equals(recipeName));
+        }
+
+        /// <summary>
+        ///     Remove a custom recipe by its name. Removes it from the manager and the <see cref="ObjectDB"/>, if instantiated.
+        /// </summary>
+        /// <param name="recipeName">Name of the recipe to remove.</param>
+        public void RemoveRecipe(string recipeName)
+        {
+            var recipe = GetRecipe(recipeName);
+            if (recipe == null)
+            {
+                Logger.LogWarning($"Could not remove recipe {recipeName}: Not found");
+                return;
+            }
+
+            RemoveRecipe(recipe);
+        }
+
+        /// <summary>
+        ///     Remove a custom recipe by its ref. Removes it from the manager and the <see cref="ObjectDB"/>, if instantiated.
+        /// </summary>
+        /// <param name="recipe"><see cref="CustomRecipe"/> to remove.</param>
+        public void RemoveRecipe(CustomRecipe recipe)
+        {
+            Recipes.Remove(recipe);
+            
+            if (recipe.Recipe != null && ObjectDB.instance != null &&
+                ObjectDB.instance.m_recipes.Contains(recipe.Recipe))
+            {
+                ObjectDB.instance.m_recipes.Remove(recipe.Recipe);
             }
         }
 
@@ -232,173 +319,221 @@ namespace Jotunn.Managers
 
         private void RegisterCustomItems(ObjectDB objectDB)
         {
-            Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
-
-            foreach (var customItem in Items)
+            if (Items.Count > 0)
             {
-                try
-                {
-                    var itemDrop = customItem.ItemDrop;
-                    if (customItem.FixReference)
-                    {
-                        customItem.ItemPrefab.FixReferences();
-                        itemDrop.m_itemData.m_shared.FixReferences();
-                        customItem.FixReference = false;
-                    }
-                    if (!itemDrop.m_itemData.m_dropPrefab)
-                    {
-                        itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
-                    }
-                    objectDB.m_items.Add(customItem.ItemPrefab);
+                Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
 
-                    Logger.LogInfo($"Added item {customItem} | Token: {customItem.ItemDrop.TokenName()}");
-                }
-                catch (Exception ex)
+                List<CustomItem> toDelete = new();
+
+                foreach (var customItem in Items)
                 {
-                    Logger.LogError($"Error while adding item {customItem}: {ex}");
+                    try
+                    {
+                        var itemDrop = customItem.ItemDrop;
+                        if (customItem.FixReference)
+                        {
+                            customItem.ItemPrefab.FixReferences();
+                            itemDrop.m_itemData.m_shared.FixReferences();
+                            customItem.FixReference = false;
+                        }
+                        if (!itemDrop.m_itemData.m_dropPrefab)
+                        {
+                            itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
+                        }
+                        objectDB.m_items.Add(customItem.ItemPrefab);
+
+                        Logger.LogInfo($"Added item {customItem} | Token: {customItem.ItemDrop.TokenName()}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Error while adding item {customItem}: {ex}");
+                        toDelete.Add(customItem);
+                    }
                 }
+
+                // Delete custom items with errors
+                foreach (var item in toDelete)
+                {
+                    RemoveItem(item);
+                }
+
+                Logger.LogInfo("Updating item hashes");
+
+                objectDB.UpdateItemHashes();
             }
-
-            Logger.LogInfo("Updating item hashes");
-
-            objectDB.UpdateItemHashes();
         }
 
         private void RegisterCustomRecipes(ObjectDB objectDB)
         {
-            Logger.LogInfo($"---- Adding custom recipes to {objectDB} ----");
-
-            foreach (var customRecipe in Recipes)
+            if (Recipes.Count > 0)
             {
-                try
+                Logger.LogInfo($"---- Adding custom recipes to {objectDB} ----");
+
+                List<CustomRecipe> toDelete = new();
+
+                foreach (var customRecipe in Recipes)
                 {
-                    var recipe = customRecipe.Recipe;
-
-                    if (customRecipe.FixReference)
+                    try
                     {
-                        recipe.FixReferences();
-                        customRecipe.FixReference = false;
-                    }
+                        var recipe = customRecipe.Recipe;
 
-                    if (customRecipe.FixRequirementReferences)
-                    {
-                        foreach (var requirement in recipe.m_resources)
+                        if (customRecipe.FixReference)
                         {
-                            requirement.FixReferences();
+                            recipe.FixReferences();
+                            customRecipe.FixReference = false;
                         }
-                        customRecipe.FixRequirementReferences = false;
-                    }
-                    objectDB.m_recipes.Add(recipe);
 
-                    Logger.LogInfo($"Added recipe for {recipe.m_item.TokenName()}");
+                        if (customRecipe.FixRequirementReferences)
+                        {
+                            foreach (var requirement in recipe.m_resources)
+                            {
+                                requirement.FixReferences();
+                            }
+                            customRecipe.FixRequirementReferences = false;
+                        }
+                        objectDB.m_recipes.Add(recipe);
+
+                        Logger.LogInfo($"Added recipe for {recipe.m_item.TokenName()}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Error while adding recipe {customRecipe}: {ex}");
+                        toDelete.Add(customRecipe);
+                    }
                 }
-                catch (Exception ex)
+
+                // Delete custom recipes with errors
+                foreach(var recipe in toDelete)
                 {
-                    Logger.LogError($"Error while adding recipe {customRecipe}: {ex}");
+                    Recipes.Remove(recipe);
                 }
             }
         }
 
         private void RegisterCustomStatusEffects(ObjectDB objectDB)
         {
-            Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
-
-            foreach (var customStatusEffect in StatusEffects)
+            if (StatusEffects.Count > 0)
             {
-                try
+                Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
+
+                List<CustomStatusEffect> toDelete = new();
+
+                foreach (var customStatusEffect in StatusEffects)
                 {
-                    var statusEffect = customStatusEffect.StatusEffect;
-                    if (customStatusEffect.FixReference)
+                    try
                     {
-                        statusEffect.FixReferences();
-                        customStatusEffect.FixReference = false;
+                        var statusEffect = customStatusEffect.StatusEffect;
+                        if (customStatusEffect.FixReference)
+                        {
+                            statusEffect.FixReferences();
+                            customStatusEffect.FixReference = false;
+                        }
+
+                        objectDB.m_StatusEffects.Add(statusEffect);
+
+                        Logger.LogInfo($"Added status effect {customStatusEffect}");
+
                     }
-
-                    objectDB.m_StatusEffects.Add(statusEffect);
-
-                    Logger.LogInfo($"Added status effect {customStatusEffect}");
-
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Error while adding status effect {customStatusEffect}: {ex}");
+                        toDelete.Add(customStatusEffect);
+                    }
                 }
-                catch (Exception ex)
+
+                // Delete status effects with errors
+                foreach (var statusEffect in toDelete)
                 {
-                    Logger.LogError($"Error while adding status effect {customStatusEffect}: {ex}");
+                    StatusEffects.Remove(statusEffect);
                 }
             }
         }
 
         private void RegisterCustomItemConversions()
         {
-            Logger.LogInfo($"---- Adding custom item conversions ----");
-
-            foreach (var conversion in ItemConversions)
+            if (ItemConversions.Count > 0)
             {
-                try
+                Logger.LogInfo($"---- Adding custom item conversions ----");
+
+                List<CustomItemConversion> toDelete = new();
+
+                foreach (var conversion in ItemConversions)
                 {
-                    // Try to get the station prefab
-                    GameObject stationPrefab = PrefabManager.Instance.GetPrefab(conversion.Config.Station);
-                    if (!stationPrefab)
+                    try
                     {
-                        throw new Exception($"Invalid station prefab {conversion.Config.Station}");
-                    }
+                        // Try to get the station prefab
+                        GameObject stationPrefab = PrefabManager.Instance.GetPrefab(conversion.Config.Station);
+                        if (!stationPrefab)
+                        {
+                            throw new Exception($"Invalid station prefab {conversion.Config.Station}");
+                        }
 
-                    // Fix references if needed
-                    if (conversion.fixReference)
+                        // Fix references if needed
+                        if (conversion.fixReference)
+                        {
+                            conversion.ItemConversion.FixReferences();
+                            conversion.fixReference = false;
+                        }
+
+                        // Sure, make three almost identical classes but dont have a common base class, Iron Gate
+                        switch (conversion.Type)
+                        {
+                            case CustomItemConversion.ConversionType.CookingStation:
+                                var cookStation = stationPrefab.GetComponent<CookingStation>();
+                                var cookConversion = (CookingStation.ItemConversion)conversion.ItemConversion;
+
+                                if (cookStation.m_conversion.Exists(c => c.m_from == cookConversion.m_from))
+                                {
+                                    Logger.LogInfo($"Already added conversion ${conversion}");
+                                    continue;
+                                }
+
+                                cookStation.m_conversion.Add(cookConversion);
+
+                                break;
+                            case CustomItemConversion.ConversionType.Fermenter:
+                                var fermenterStation = stationPrefab.GetComponent<Fermenter>();
+                                var fermenterConversion = (Fermenter.ItemConversion)conversion.ItemConversion;
+
+                                if (fermenterStation.m_conversion.Exists(c => c.m_from == fermenterConversion.m_from))
+                                {
+                                    Logger.LogInfo($"Already added conversion ${conversion}");
+                                    continue;
+                                }
+
+                                fermenterStation.m_conversion.Add(fermenterConversion);
+
+                                break;
+                            case CustomItemConversion.ConversionType.Smelter:
+                                var smelterStation = stationPrefab.GetComponent<Smelter>();
+                                var smelterConversion = (Smelter.ItemConversion)conversion.ItemConversion;
+
+                                if (smelterStation.m_conversion.Exists(c => c.m_from == smelterConversion.m_from))
+                                {
+                                    Logger.LogInfo($"Already added conversion ${conversion}");
+                                    continue;
+                                }
+
+                                smelterStation.m_conversion.Add(smelterConversion);
+
+                                break;
+                            default:
+                                throw new Exception($"Unknown conversion type");
+                        }
+
+                        Logger.LogInfo($"Added item conversion {conversion}");
+                    }
+                    catch (Exception ex)
                     {
-                        conversion.ItemConversion.FixReferences();
-                        conversion.fixReference = false;
+                        Logger.LogError($"Error while adding item conversion {conversion}: {ex}");
+                        toDelete.Add(conversion);
                     }
-
-                    // Sure, make three almost identical classes but dont have a common base class, Iron Gate
-                    switch (conversion.Type)
-                    {
-                        case CustomItemConversion.ConversionType.CookingStation:
-                            var cookStation = stationPrefab.GetComponent<CookingStation>();
-                            var cookConversion = (CookingStation.ItemConversion)conversion.ItemConversion;
-                            
-                            if (cookStation.m_conversion.Exists(c => c.m_from == cookConversion.m_from))
-                            {
-                                Logger.LogInfo($"Already added conversion ${conversion}");
-                                continue;
-                            }
-
-                            cookStation.m_conversion.Add(cookConversion);
-
-                            break;
-                        case CustomItemConversion.ConversionType.Fermenter:
-                            var fermenterStation = stationPrefab.GetComponent<Fermenter>();
-                            var fermenterConversion = (Fermenter.ItemConversion)conversion.ItemConversion;
-
-                            if (fermenterStation.m_conversion.Exists(c => c.m_from == fermenterConversion.m_from))
-                            {
-                                Logger.LogInfo($"Already added conversion ${conversion}");
-                                continue;
-                            }
-
-                            fermenterStation.m_conversion.Add(fermenterConversion);
-
-                            break;
-                        case CustomItemConversion.ConversionType.Smelter:
-                            var smelterStation = stationPrefab.GetComponent<Smelter>();
-                            var smelterConversion = (Smelter.ItemConversion)conversion.ItemConversion;
-
-                            if (smelterStation.m_conversion.Exists(c => c.m_from == smelterConversion.m_from))
-                            {
-                                Logger.LogInfo($"Already added conversion ${conversion}");
-                                continue;
-                            }
-
-                            smelterStation.m_conversion.Add(smelterConversion);
-
-                            break;
-                        default:
-                            throw new Exception($"Unknown conversion type");
-                    }
-
-                    Logger.LogInfo($"Added item conversion {conversion}");
                 }
-                catch (Exception ex)
+
+                // Delete item conversionswith errors
+                foreach (var itemConversion in toDelete)
                 {
-                    Logger.LogError($"Error while adding item conversion {conversion}: {ex}");
+                    ItemConversions.Remove(itemConversion);
                 }
             }
         }
