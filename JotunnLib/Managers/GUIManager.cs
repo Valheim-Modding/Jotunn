@@ -396,7 +396,14 @@ namespace Jotunn.Managers
 
             foreach (var buttonConfig in config.ButtonConfigs)
             {
-                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                string key;
+                if(buttonConfig.Key == KeyCode.None)
+                {
+                    key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                } else
+                {
+                    key = buttonConfig.Key.ToString();
+                }
                 if (key[0].Equals(LocalizationManager.TokenFirstChar))
                 {
                     key = LocalizationManager.Instance.TryTranslate(key);
@@ -561,7 +568,15 @@ namespace Jotunn.Managers
             // Update bound keys
             foreach (var buttonConfig in hintConfig.ButtonConfigs)
             {
-                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                string key;
+                if (buttonConfig.Key == KeyCode.None)
+                {
+                    key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                }
+                else
+                {
+                    key = buttonConfig.Key.ToString();
+                }
                 if (key[0].Equals(LocalizationManager.TokenFirstChar))
                 {
                     key = LocalizationManager.Instance.TryTranslate(key);
