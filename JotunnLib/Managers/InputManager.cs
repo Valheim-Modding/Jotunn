@@ -157,22 +157,25 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            Logger.LogInfo("---- Registering custom inputs ----");
-
-            foreach (var pair in Buttons)
+            if (Buttons.Count > 0)
             {
-                var btn = pair.Value;
+                Logger.LogInfo("---- Registering custom inputs ----");
 
-                if (btn.Axis != null && btn.Axis.Length > 0)
+                foreach (var pair in Buttons)
                 {
-                    self.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
-                }
-                else
-                {
-                    self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
-                }
+                    var btn = pair.Value;
 
-                Logger.LogInfo($"Registered input {pair.Key}");
+                    if (btn.Axis != null && btn.Axis.Length > 0)
+                    {
+                        self.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
+                    }
+                    else
+                    {
+                        self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
+                    }
+
+                    Logger.LogInfo($"Registered input {pair.Key}");
+                }
             }
         }
     }

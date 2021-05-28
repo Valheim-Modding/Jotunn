@@ -227,7 +227,21 @@ namespace Jotunn.Managers
                 return;
             }
 
+            RemovePiece(piece);
+        }
+
+        /// <summary>
+        ///     Remove a custom piece by its ref.
+        /// </summary>
+        /// <param name="piece"><see cref="CustomPiece"/> to remove.</param>
+        public void RemovePiece(CustomPiece piece)
+        {
             Pieces.Remove(piece);
+
+            if (piece.PiecePrefab && PrefabManager.Instance.GetPrefab(piece.PiecePrefab.name))
+            {
+                PrefabManager.Instance.RemovePrefab(piece.PiecePrefab.name);
+            }
         }
 
         /// <summary>
@@ -416,6 +430,8 @@ namespace Jotunn.Managers
             {
                 Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
 
+                List<CustomPiece> toDelete = new List<CustomPiece>();
+
                 foreach (var customPiece in Pieces)
                 {
                     try
@@ -453,8 +469,14 @@ namespace Jotunn.Managers
                     catch (Exception ex)
                     {
                         Logger.LogError($"Error while adding piece {customPiece}: {ex}");
+                        toDelete.Add(customPiece);
                     }
+                }
 
+                // Delete custom pieces with errors
+                foreach (var piece in toDelete)
+                {
+                    RemovePiece(piece);
                 }
             }
         }

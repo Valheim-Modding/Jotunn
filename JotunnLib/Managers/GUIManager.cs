@@ -357,18 +357,27 @@ namespace Jotunn.Managers
                 GUIContainer.GetComponent<RectTransform>().rect.height / 2f);
         }
 
+        /// <summary>
+        ///     Create custom KeyHint objects for every config added.
+        /// </summary>
         private void RegisterKeyHints()
         {
-            // Create custom key hints
-            Logger.LogInfo($"---- Adding custom key hints ----");
-
-            // Create hint objects for all configs
-            foreach (var entry in KeyHints)
+            if (KeyHints.Count > 0)
             {
-                CreateKeyHintObject(entry.Value);
+                Logger.LogInfo($"---- Adding custom key hints ----");
+
+                // Create hint objects for all configs
+                foreach (var entry in KeyHints)
+                {
+                    CreateKeyHintObject(entry.Value);
+                }
             }
         }
 
+        /// <summary>
+        ///     Copy vanilla BuildHints object and create a custom one from a KeyHintConfig.
+        /// </summary>
+        /// <param name="config"></param>
         private void CreateKeyHintObject(KeyHintConfig config)
         {
             // Clone BuildHints and add it under KeyHints to get the position right
