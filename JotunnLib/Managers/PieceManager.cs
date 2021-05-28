@@ -253,6 +253,9 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Create custom piece categories in every table.
+        /// </summary>
         private void CreatePieceCategories()
         {
             if (PieceCategories.Count > 0)
@@ -280,6 +283,11 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Create new tabs on the ingame GUI for every custom category.
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <param name="mode"></param>
         private void CreateCategoryTabs(Scene scene, LoadSceneMode mode)
         {
             // Get the GUI elements
