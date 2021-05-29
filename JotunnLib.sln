@@ -25,6 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{
 		CHANGELOG.md = CHANGELOG.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		publish.ps1 = publish.ps1
+		README.bbcode = README.bbcode
 		README.md = README.md
 	EndProjectSection
 EndProject
