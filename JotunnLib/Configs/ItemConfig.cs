@@ -37,6 +37,11 @@ namespace Jotunn.Configs
         public bool Enabled { get; set; } = true;
 
         /// <summary>
+        ///     The name of the piece table prefab this item uses to build pieces.
+        /// </summary>
+        public string PieceTable { get; set; } = string.Empty;
+
+        /// <summary>
         ///     The name of the crafting station prefab where this recipe can be crafted.<br/>
         ///     Can be set to <c>null</c> to have the recipe be craftable without a crafting station.
         /// </summary>
@@ -81,15 +86,15 @@ namespace Jotunn.Configs
                 return;
             }
 
-            // Set the items name from the prefab
-            Item = prefab.name;
-
             var shared = itemDrop.m_itemData.m_shared;
             if (shared == null)
             {
                 Logger.LogError($"ItemDrop has no SharedData component");
                 return;
             }
+
+            // Set the Item to the prefab name
+            Item = prefab.name;
 
             // Set the name and description if provided
             if (!string.IsNullOrEmpty(Name))
@@ -105,6 +110,12 @@ namespace Jotunn.Configs
             if (string.IsNullOrEmpty(shared.m_name))
             {
                 shared.m_name = $"${prefab.name}";
+            }
+
+            // Add a piece table if provided
+            if (!string.IsNullOrEmpty(PieceTable))
+            {
+                shared.m_buildPieces = Mock<PieceTable>.Create(PieceTable);
             }
 
             // Set icons if provided
