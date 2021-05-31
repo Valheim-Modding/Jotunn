@@ -40,13 +40,13 @@ namespace Jotunn.Configs
         ///     The name of the crafting station prefab where this recipe can be crafted.<br/>
         ///     Can be set to <c>null</c> to have the recipe be craftable without a crafting station.
         /// </summary>
-        public string CraftingStation { get; set; } = null;
+        public string CraftingStation { get; set; } = string.Empty;
 
         /// <summary>
         ///     The name of the crafting station prefab where this item can be repaired.<br/>
         ///     Can be set to <c>null</c> to have the item be repairable without a crafting station.
         /// </summary>
-        public string RepairStation { get; set; } = null;
+        public string RepairStation { get; set; } = string.Empty;
 
         /// <summary>
         ///     The minimum required level for the crafting station. Defaults to <c>0</c>.
@@ -166,12 +166,12 @@ namespace Jotunn.Configs
             recipe.m_amount = Amount;
             recipe.m_enabled = Enabled;
 
-            if (CraftingStation != null)
+            if (!string.IsNullOrEmpty(CraftingStation))
             {
                 recipe.m_craftingStation = Mock<CraftingStation>.Create(CraftingStation);
             }
 
-            if (RepairStation != null)
+            if (!string.IsNullOrEmpty(RepairStation))
             {
                 recipe.m_craftingStation = Mock<CraftingStation>.Create(RepairStation);
             }

@@ -9,9 +9,7 @@ This project was originally derived from the base structure of [JötunnLib](http
 Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/). We have gone to great lengths to ensure there is ample documentation to facilitate the developers learning experience.
 
 #### Installation
-_If you're using a mod installer, you can likely ignore this section_  
-
-For a more in-depth installation guide, please check out the [manual installation guide](https://valheim-modding.github.io/Jotunn/guides/installation.html) in our documentation.  
+_If you're using a mod installer, you can likely ignore this section._ For a more in-depth installation guide, please check out the [manual installation guide](https://valheim-modding.github.io/Jotunn/guides/installation.html) in our documentation.  
 
 However, here is a quick run-down:
 
@@ -24,10 +22,7 @@ This is a dependency for Jötunn. Download [MMHookGen](https://valheim.thunderst
 3. **Install Jötunn**
 Download from either Nexus/Thunderstore, extract the ZIP, and put the `Jotunn.dll` file inside the `plugins` folder in your Valheim install.
 
-That's it, launch the game and mod away!  
-You can tell it worked by either looking at the console output, or if you see `Jotunn Vx.x.x` in the top-right corner of the main menu.
-
-________________
+That's it, launch the game and mod away!
 
 ## Features
 JVL provides three distinct groups of features. Entities, which abstract the game's own entities into easy-to-use interfaces. Managers, which act as interfaces between the entities and native collections or subsystems. Utilities, which are there to aid in generic/common functions that can span many different areas.
@@ -54,35 +49,19 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 #### Utilities
 - **Asset Helpers** - Methods to facilitate referencing and loading of assets.
 - **Bone Reorderer** - Fixes bone ordering issues on `SkinnedMeshRenderer`'s that have been ripped and imported into unity.
-- **NetworkCompatibility** - Allows plugins to define their own version requirements for clients connected to the server. Ensures a customisable level of interoperability with clients of differing mod configurations on a plugin-by-plugin basis.
+- **Network Compatibility** - Allows plugins to define their own version requirements for clients connected to the server. Ensures a customisable level of interoperability with clients of differing mod configurations on a plugin-by-plugin basis.
 - **Config Synchronisation** - Allows administrators to adjust configuration values via an in game menu. Config setting is synced to connected clients.
 - **SimpleJSON** - We have imported SimpleJSON into our library at the request of developers who would simply prefer to have this dependency taken care of already. We use the MIT Licensed [SimpleJSON](https://simplejson.readthedocs.io/en/latest/)
-
-## Roadmap
-- **v2.1.0**
-  * Facilitate custom adjustment of bone attachments
-  * Provide a more meaningful and interopable solution to mod interopable keybindings (resolve mod bind conflicts/standardise an interface)
-  * TODO: cooking recipes?!??! this is not currently possible?
-  * Implement item variations into codable enmtity abstractions to minimise asset workflow.
-  * Custom piecetable category/tabs
-  * Check our [v1.1 milestones](https://github.com/Valheim-Modding/Jotunn/milestone/2) for a more up to date list of features currently in development, or suggest your own features for inclusion by creating a new [feature request](https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D)
 
 ## Bugs, Support, Contributions
 Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/) before requesting [support via discord](https://discord.gg/DdUt6g7gyA). If there are any mod interoperability issues developers experience (not just exclusive JVL issues), we would like to hear from you! If we can facilitate better mod interoperability by providing a common interface, or exposing native valheim objects, including a utility which you have created, then please feel free to create a new [feature request](https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D) or [pull request](https://github.com/Valheim-Modding/Jotunn/pulls).
 
+## Roadmap
+Check our [milestones](https://github.com/Valheim-Modding/Jotunn/milestone/2) for a more up to date list of features currently in development, or suggest your own features for inclusion by creating a new [feature request](https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D)
+
 ## Changelog
 
-- **v2.0.0**
-  * Merged VL's Entity abstractions: `CustomItem`, `CustomPiece`, `CustomRecipe`
-  * Implemented JL's Entity Configs into the `Custom` abstractions
-  * Merged VL's runtime `FixReference` resolver into JVL, split out MockManager to be responsible for prefabs that it resolves.
-  * Merged VL's Localization implementation into JVL
-  * Refactored JL's patch system to use Monomod's hookgen.
-  * Deprecated JL's EventManager in favour of Monomod's event subscriptions (Why implement a feature that already exists?)
-  * Refactored JL's and VL's recipe interfaces to provide a consistent developer experience by generalising requirements and providing consistently named abstraction interfaces to piece and item collections.
-  * Implemented GUIManager, which facilitates usage of Synchronised configurations
-  * Implemented NetworkCompatibility attribute.
-  * Implemented custom keybind/hints 
+See the full [Changelog](https://github.com/Valheim-Modding/Jotunn/blob/dev/CHANGELOG.md).
 
 ## Contributors to Jötunn, the Valheim Library
 
