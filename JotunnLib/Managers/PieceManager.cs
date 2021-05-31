@@ -38,10 +38,10 @@ namespace Jotunn.Managers
         internal GameObject PieceTableContainer;
         internal List<CustomPiece> Pieces = new();
 
-        internal readonly Dictionary<string, PieceTable> PieceTables = new();
-        internal readonly Dictionary<string, string> PieceTableNameMap = new();
+        internal readonly Dictionary<string, PieceTable> PieceTables = new Dictionary<string, PieceTable>();
+        internal readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>();
 
-        internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new();
+        internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
 
         private Piece.PieceCategory PieceCategoryMax = Piece.PieceCategory.Max;
         private const float PieceCategorySize = 540f;
