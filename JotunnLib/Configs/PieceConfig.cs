@@ -1,4 +1,5 @@
-﻿using Jotunn.Entities;
+﻿using System;
+using Jotunn.Entities;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -12,7 +13,12 @@ namespace Jotunn.Configs
     public class PieceConfig
     {
         /// <summary>
-        ///     The description of your piece.
+        ///     The name for your piece. Should be tokenized.
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        ///     The description of your piece. Should be tokenized.
         /// </summary>
         public string Description { get; set; } = string.Empty;
 
@@ -60,9 +66,9 @@ namespace Jotunn.Configs
         public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
 
         /// <summary>
-        ///     Converts the RequirementConfigs to Valheim style <see cref="global::Piece.Requirement"/> array.
+        ///     Converts the <see cref="RequirementConfig"/>s to Valheim style <see cref="Piece.Requirement"/> array.
         /// </summary>
-        /// <returns>The Valheim Piece.Requirement array</returns>
+        /// <returns>The Valheim <see cref="global::Piece.Requirement"/> array</returns>
         public Piece.Requirement[] GetRequirements()
         {
             Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];
@@ -91,6 +97,12 @@ namespace Jotunn.Configs
             piece.enabled = Enabled;
             piece.m_allowedInDungeons = AllowedInDungeons;
             
+            // Set name if given
+            if (!string.IsNullOrEmpty(Name))
+            {
+                piece.m_name = Name;
+            }
+
             // Set icon if overriden
             if (Icon != null)
             {
