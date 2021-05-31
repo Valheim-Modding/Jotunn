@@ -447,7 +447,6 @@
     <Compile Include="ConsoleCommands\BetterSpawnCommand.cs" />
     <Compile Include="ConsoleCommands\PrintItemsCommand.cs" />
     <Compile Include="ConsoleCommands\TpCommand.cs" />
-    <Compile Include="MaorBuilds.cs" />
     <Compile Include="PatchInit\TestPatchInitialization.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="TestMod.cs" />
