@@ -14,15 +14,15 @@ namespace Jotunn.Configs
         /// <summary>
         ///     The unique name for your item.
         /// </summary>
-        public string Name { get; set; } = null;
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         ///     The name of the item prefab that this recipe should create. Is automatically set in <see cref="CustomItem"/>.
         /// </summary>
-        internal string Item { get; set; }
+        internal string Item { get; set; } = string.Empty;
 
         /// <summary>
-        ///     The amount of <see cref="Item"/> that will be created from the recipe.
+        ///     The amount of <see cref="Item"/> that will be created from the recipe. Defaults to <c>1</c>.
         /// </summary>
         public int Amount { get; set; } = 1;
 
@@ -35,18 +35,18 @@ namespace Jotunn.Configs
         ///     The name of the crafting station prefab where this recipe can be crafted.<br/>
         ///     Can be set to <c>null</c> to have the recipe be craftable without a crafting station.
         /// </summary>
-        public string CraftingStation { get; set; } = null;
+        public string CraftingStation { get; set; } = string.Empty;
 
         /// <summary>
         ///     The name of the crafting station prefab where this item can be repaired.<br/>
         ///     Can be set to <c>null</c> to have the recipe be repairable without a crafting station.
         /// </summary>
-        public string RepairStation { get; set; } = null;
+        public string RepairStation { get; set; } = string.Empty;
 
         /// <summary>
         ///     The minimum required level for the crafting station. Defaults to <c>0</c>.
         /// </summary>
-        public int MinStationLevel { get; set; }
+        public int MinStationLevel { get; set; } = 0;
 
         /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
@@ -95,12 +95,12 @@ namespace Jotunn.Configs
             recipe.m_amount = Amount;
             recipe.m_enabled = Enabled;
 
-            if (CraftingStation != null)
+            if (!string.IsNullOrEmpty(CraftingStation))
             {
                 recipe.m_craftingStation = Mock<CraftingStation>.Create(CraftingStation);
             }
 
-            if (RepairStation != null)
+            if (!string.IsNullOrEmpty(RepairStation))
             {
                 recipe.m_craftingStation = Mock<CraftingStation>.Create(RepairStation);
             }

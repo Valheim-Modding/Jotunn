@@ -21,7 +21,7 @@ namespace Jotunn.Configs
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        ///     Can this piece be built in dungeons?
+        ///     Can this piece be built in dungeons? Defaults to <c>false</c>.
         /// </summary>
         public bool AllowedInDungeons { get; set; } = false;
 

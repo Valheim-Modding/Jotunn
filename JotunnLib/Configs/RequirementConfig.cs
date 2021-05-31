@@ -10,7 +10,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Name of the item prefab of this requirement.
         /// </summary>
-        public string Item { get; set; } = null;
+        public string Item { get; set; } = string.Empty;
 
         /// <summary>
         ///     Amount that is needed to fulfill the requirement. Defaults to 1.
