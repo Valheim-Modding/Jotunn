@@ -294,7 +294,8 @@ namespace TestMod
             LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") 
             {
                 Translations = {
-                    { "piece_lul", "Lulz" }, { "piece_lel", "Lölz" }
+                    { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
+                    { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
                 } 
             });
         }
@@ -547,51 +548,48 @@ namespace TestMod
             }
         }
 
-        // Add a custom piece from an "empty" prefab
+        // Add custom pieces from an "empty" prefab
         private void AddEmptyPiecesAndCategories()
         {
-            CustomPiece CP = new CustomPiece("piece_lul", "Hammer");
+            CustomPiece CP = new CustomPiece("piece_lul", true, new PieceConfig
+            {
+                Name = "$piece_lul",
+                Description = "$piece_lul_description",
+                Icon = testSprite,
+                PieceTable = "Hammer",
+                ExtendStation = "piece_workbench", // Test station extension
+                Category = "Lulzies"  // Test custom category
+            });
+
             if (CP != null)
             {
-                var piece = CP.Piece;
-                piece.m_icon = testSprite;
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
-
-                // Add a config manually cause there is no config param on the empty piece constructor atm
-                var cfg = new PieceConfig
-                {
-                    ExtendStation = "piece_workbench", // Test station extension
-                    Category = "Lulzies"  // Test custom category
-                };
-                cfg.Apply(prefab);
-                CP.FixReference = true;
 
                 PieceManager.Instance.AddPiece(CP);
             }
 
-            CP = new CustomPiece("piece_lel", "Hammer");
+            CP = new CustomPiece("piece_lel", true, new PieceConfig
+            {
+                Name = "$piece_lel",
+                Description = "$piece_lel_description",
+                Icon = testSprite,
+                PieceTable = "Hammer",
+                ExtendStation = "piece_workbench", // Test station extension
+                Category = "Lulzies"  // Test custom category
+            });
+
             if (CP != null)
             {
-                var piece = CP.Piece;
-                piece.m_icon = testSprite;
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
                 prefab.GetComponent<MeshRenderer>().material.color = Color.grey;
-
-                // Add a config manually cause there is no config param on the empty piece constructor atm
-                var cfg = new PieceConfig
-                {
-                    ExtendStation = "piece_workbench", // Test station extension
-                    Category = "Lulzies"  // Test custom category
-                };
-                cfg.Apply(prefab);
-                CP.FixReference = true;
 
                 PieceManager.Instance.AddPiece(CP);
             }
         }
 
+        // Add invalid entities
         private void AddInvalidItems()
         {
             CustomItem CI = new CustomItem("item_faulty", false);
@@ -614,24 +612,18 @@ namespace TestMod
                 ItemManager.Instance.AddRecipe(CR);
             }
 
-            CustomPiece CP = new CustomPiece("piece_fukup", "Hammer");
+            CustomPiece CP = new CustomPiece("piece_fukup", false, new PieceConfig
+            {
+                Icon = testSprite,
+                PieceTable = "Hammer",
+                Requirements = new RequirementConfig[]
+                {
+                    new RequirementConfig { Item = "StillNotThereResource", Amount = 99 }
+                }
+            });
+
             if (CP != null)
             {
-                var piece = CP.Piece;
-                piece.m_icon = testSprite;
-                var prefab = CP.PiecePrefab;
-
-                // Test faulty resource, do it manually cause there is no config on empty pieces atm
-                var cfg = new PieceConfig
-                {
-                    Requirements = new RequirementConfig[]
-                    {
-                        new RequirementConfig { Item = "StillNotThereResource", Amount = 99 }
-                    }
-                };
-                cfg.Apply(prefab);
-                CP.FixReference = true;
-
                 PieceManager.Instance.AddPiece(CP);
             }
         }

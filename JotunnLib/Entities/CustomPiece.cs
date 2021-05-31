@@ -34,7 +34,7 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Custom piece from a prefab.<br />
         ///     Will be added to the <see cref="global::PieceTable"/> provided by name.<br />
-        ///     Can fix references from <see cref="Entities.Mock{T}"/>s or not.
+        ///     Can fix references from <see cref="Mock{T}"/>s or not.
         /// </summary>
         /// <param name="piecePrefab">The prefab for this custom piece.</param>
         /// <param name="pieceTable">
@@ -69,7 +69,7 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Custom piece from a prefab loaded from an <see cref="AssetBundle"/>.<br />
         ///     Will be added to the <see cref="global::PieceTable"/> provided by name.<br />
-        ///     Can fix references from <see cref="Entities.Mock{T}"/>s or not.
+        ///     Can fix references from <see cref="Mock{T}"/>s or not.
         /// </summary>
         /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
         /// <param name="assetName">Name of the prefab in the bundle.</param>
@@ -90,8 +90,8 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
-        ///     Custom piece from a prefab loaded from an <see cref="AssetBundle"/> with a PieceConfig attached.<br />
-        ///     Will be added to the <see cref="global::PieceTable"/> provided by name.
+        ///     Custom piece from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="PieceConfig"/> attached.<br />
+        ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
         /// </summary>
         /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
         /// <param name="assetName">Name of the prefab in the bundle.</param>
@@ -115,16 +115,15 @@ namespace Jotunn.Entities
 
         /// <summary>
         ///     Custom piece created as an "empty" primitive.<br />
-        ///     Will be added to the <see cref="global::PieceTable"/> provided by name.<br />
-        ///     At least the name and the icon of the ItemDrop must be edited after creation.
+        ///     Will be added to the <see cref="global::PieceTable"/> provided by name.
         /// </summary>
         /// <param name="name">Name of the new prefab. Must be unique.</param>
+        /// <param name="addZNetView">If true a ZNetView component will be added to the prefab for network sync.</param>
         /// <param name = "pieceTable" >
         ///     Name of the <see cref="global::PieceTable"/> the custom piece should be added to.
         ///     Can by the "internal" or the <see cref="GameObject"/>s name (e.g. "_PieceTableHammer" or "Hammer")
         /// </param>
-        /// <param name="addZNetView">If true a ZNetView component will be added to the prefab for network sync.</param>
-        public CustomPiece(string name, string pieceTable, bool addZNetView = true)
+        public CustomPiece(string name, bool addZNetView, string pieceTable)
         {
             PiecePrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             if (PiecePrefab)
@@ -140,6 +139,26 @@ namespace Jotunn.Entities
                 }
             }
             PieceTable = pieceTable;
+        }
+
+        /// <summary>
+        ///     Custom piece created as an "empty" primitive with a <see cref="PieceConfig"/> attached.<br />
+        ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
+        /// </summary>
+        /// <param name="name">Name of the new prefab. Must be unique.</param>
+        /// <param name="addZNetView">If true a ZNetView component will be added to the prefab for network sync.</param>
+        /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
+        public CustomPiece(string name, bool addZNetView, PieceConfig pieceConfig)
+        {
+            PiecePrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
+            if (PiecePrefab)
+            {
+                Piece = PiecePrefab.AddComponent<Piece>();
+                PieceTable = pieceConfig.PieceTable;
+
+                pieceConfig.Apply(PiecePrefab);
+            }
+            FixReference = true;
         }
 
         /// <summary>
@@ -160,6 +179,25 @@ namespace Jotunn.Entities
                 Piece = PiecePrefab.GetComponent<Piece>();
             }
             PieceTable = pieceTable;
+        }
+
+        /// <summary>
+        ///     Custom piece created as a copy of a vanilla Valheim prefab with a <see cref="PieceConfig"/> attached.<br />
+        ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
+        /// </summary>
+        /// <param name="name">The new name of the prefab after cloning.</param>
+        /// <param name="baseName">The name of the base prefab the custom item is cloned from.</param>
+        /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
+        public CustomPiece(string name, string baseName, PieceConfig pieceConfig)
+        {
+            PiecePrefab = PrefabManager.Instance.CreateClonedPrefab(name, baseName);
+            if (PiecePrefab)
+            {
+                Piece = PiecePrefab.GetComponent<Piece>();
+                PieceTable = pieceConfig.PieceTable;
+
+                pieceConfig.Apply(PiecePrefab);
+            }
         }
 
         /// <summary>
