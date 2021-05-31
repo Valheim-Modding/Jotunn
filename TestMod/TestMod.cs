@@ -60,18 +60,18 @@ namespace TestMod
             AddSkills();
             AddRecipes();
             AddStatusEffects();
-            AddItemConversions();
-            AddCustomItemAndConversion();
+            AddVanillaItemConversions();
+            AddCustomItemConversion();
             AddItemsWithConfigs();
             AddMockedItems();
-            AddEmptyPiecesAndCategories();
-            AddInvalidItems();
+            AddPieceCategories();
+            AddInvalidEntities();
 
             // Add custom items cloned from vanilla items
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 
             // Clone an item with variants and replace them
-            ItemManager.OnVanillaItemsAvailable += AddCloneWithVariants;
+            ItemManager.OnVanillaItemsAvailable += AddVariants;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -356,7 +356,7 @@ namespace TestMod
         }
 
         // Add item conversions (cooking or smelter recipes)
-        private void AddItemConversions()
+        private void AddVanillaItemConversions()
         {
             // Add an item conversion for the CookingStation. The items must have an "attach" child GameObject to display it on the station.
             var cookConversion = new CustomItemConversion(new CookingConversionConfig
@@ -396,7 +396,7 @@ namespace TestMod
         }
 
         // Add custom item conversion (gives a steel ingot to smelter)
-        private void AddCustomItemAndConversion()
+        private void AddCustomItemConversion()
         {
             var steel_prefab = steelingot.LoadAsset<GameObject>("Steel");
             var ingot = new CustomItem(steel_prefab, fixReference: false);
@@ -565,8 +565,8 @@ namespace TestMod
             }
         }
 
-        // Add custom pieces from an "empty" prefab
-        private void AddEmptyPiecesAndCategories()
+        // Add custom pieces from an "empty" prefab with new piece categories
+        private void AddPieceCategories()
         {
             CustomPiece CP = new CustomPiece("piece_lul", true, new PieceConfig
             {
@@ -607,7 +607,7 @@ namespace TestMod
         }
 
         // Add items / pieces with errors on purpose to test error handling
-        private void AddInvalidItems()
+        private void AddInvalidEntities()
         {
             CustomItem CI = new CustomItem("item_faulty", false);
             if (CI != null)
@@ -704,7 +704,7 @@ namespace TestMod
         }
 
         // Test the variant config for items
-        private void AddCloneWithVariants()
+        private void AddVariants()
         {
             try
             {
@@ -729,7 +729,7 @@ namespace TestMod
             finally
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
-                ItemManager.OnVanillaItemsAvailable -= AddCloneWithVariants;
+                ItemManager.OnVanillaItemsAvailable -= AddVariants;
             }
         }
 

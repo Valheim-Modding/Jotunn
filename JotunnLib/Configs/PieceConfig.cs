@@ -66,22 +66,6 @@ namespace Jotunn.Configs
         public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
 
         /// <summary>
-        ///     Converts the <see cref="RequirementConfig"/>s to Valheim style <see cref="Piece.Requirement"/> array.
-        /// </summary>
-        /// <returns>The Valheim <see cref="global::Piece.Requirement"/> array</returns>
-        public Piece.Requirement[] GetRequirements()
-        {
-            Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];
-
-            for (int i = 0; i < reqs.Length; i++)
-            {
-                reqs[i] = Requirements[i].GetRequirement();
-            }
-
-            return reqs;
-        }
-
-        /// <summary>
         ///     Apply this configs values to a piece GameObject.
         /// </summary>
         /// <param name="prefab"></param>
@@ -134,6 +118,22 @@ namespace Jotunn.Configs
             {
                 piece.m_category = PieceManager.Instance.AddPieceCategory(Category);
             }
+        }
+
+        /// <summary>
+        ///     Converts the <see cref="RequirementConfig"/>s to Valheim style <see cref="Piece.Requirement"/> array.
+        /// </summary>
+        /// <returns>The Valheim <see cref="global::Piece.Requirement"/> array</returns>
+        public Piece.Requirement[] GetRequirements()
+        {
+            Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];
+
+            for (int i = 0; i < reqs.Length; i++)
+            {
+                reqs[i] = Requirements[i].GetRequirement();
+            }
+
+            return reqs;
         }
     }
 }
