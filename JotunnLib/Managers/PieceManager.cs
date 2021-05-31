@@ -416,7 +416,15 @@ namespace Jotunn.Managers
 
         private void RegisterCustomPieceTables()
         {
+            if (PieceTables.Count > 0)
+            {
+                Logger.LogInfo($"---- Adding custom piece tables ----");
 
+                foreach (var customPieceTable in PieceTables)
+                {
+
+                }
+            }
         }
 
         private void RegisterCustomPieces()
