@@ -68,6 +68,10 @@ namespace Jotunn.Configs
         /// </summary>
         public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
 
+        /// <summary>
+        ///     Apply this config's values to a GameObject's ItemDrop.
+        /// </summary>
+        /// <param name="prefab"></param>
         public void Apply(GameObject prefab)
         {
             var itemDrop = prefab.GetComponent<ItemDrop>();
