@@ -106,12 +106,9 @@ namespace Jotunn.Entities
                 PieceTable = pieceConfig.PieceTable;
 
                 pieceConfig.Apply(piecePrefab);
+                FixReference = true;
             }
-            FixReference = true;
         }
-
-        //TODO: constructors for cloned / empty prefabs with configs.
-
 
         /// <summary>
         ///     Custom piece created as an "empty" primitive.<br />
@@ -129,14 +126,7 @@ namespace Jotunn.Entities
             if (PiecePrefab)
             {
                 Piece = PiecePrefab.AddComponent<Piece>();
-                if (name[0] != LocalizationManager.TokenFirstChar)
-                {
-                    Piece.m_name = LocalizationManager.TokenFirstChar + name;
-                }
-                else
-                {
-                    Piece.m_name = name;
-                }
+                Piece.m_name = name;
             }
             PieceTable = pieceTable;
         }
@@ -157,8 +147,8 @@ namespace Jotunn.Entities
                 PieceTable = pieceConfig.PieceTable;
 
                 pieceConfig.Apply(PiecePrefab);
+                FixReference = true;
             }
-            FixReference = true;
         }
 
         /// <summary>
@@ -197,6 +187,7 @@ namespace Jotunn.Entities
                 PieceTable = pieceConfig.PieceTable;
 
                 pieceConfig.Apply(PiecePrefab);
+                FixReference = true;
             }
         }
 
