@@ -77,7 +77,7 @@ if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$thunder\plugins\"
     Copy-Item -Path "$TargetPath\$name.xml" -Destination "$thunder\plugins\"
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$thunder\plugins\"
-    Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder\README.md"
+    Copy-Item -Path "$ProjectPath\..\README.md" -Destination "$thunder\README.md"
     Copy-Item -Path "$ProjectPath\manifest.json" -Destination "$thunder\manifest.json"
     Remove-Item -Path "$package\Thunderstore\$name-$version.zip" -Force
     Copy-Item -Path "$(Get-Location)\resources\JVL_Logo_256x256.png" -Destination "$thunder\icon.png"
@@ -91,7 +91,7 @@ if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$nexus\"
     Copy-Item -Path "$TargetPath\$name.xml" -Destination "$nexus\"
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$nexus\"
-    Copy-Item -Path "$ProjectPath\README.md" -Destination "$nexus\README"
+    Copy-Item -Path "$ProjectPath\..\README.md" -Destination "$nexus\README"
     Remove-Item -Path "$package\Nexusmods\$name-$version.zip" -Force
     Invoke-Expression "& `"$(Get-Location)\libraries\7za.exe`" a `"$package\Nexusmods\$name-$version.zip`" `"$nexus\*`""
     $nexus.Delete($true)

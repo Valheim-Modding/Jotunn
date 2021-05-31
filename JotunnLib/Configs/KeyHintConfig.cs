@@ -12,13 +12,13 @@ namespace Jotunn.Configs
         ///     Item for which the KeyHint should be displayed when equipped.<br />
         ///     Must be the name of the prefab as registered in the <see cref="ItemManager"/>.
         /// </summary>
-        public string Item { get; set; } = null;
+        public string Item { get; set; } = string.Empty;
 
         /// <summary>
-        ///     If not null the KeyHint will also be bound to a specific <see cref="global::Piece"/>
-        ///     which must be selected for building.
+        ///     If not null or empty the KeyHint will also be bound to a specific 
+        ///     <see cref="global::Piece"/> which must be selected for building.
         /// </summary>
-        public string Piece { get; set; } = null;
+        public string Piece { get; set; } = string.Empty;
 
         /// <summary>
         ///     Array of <see cref="ButtonConfig"/>s used for this key hint.
