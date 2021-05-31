@@ -13,12 +13,12 @@ namespace Jotunn.Configs
     public class PieceConfig
     {
         /// <summary>
-        ///     The name for your piece. Should be tokenized.
+        ///     The name for your piece. May be tokenized.
         /// </summary>
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        ///     The description of your piece. Should be tokenized.
+        ///     The description of your piece. May be tokenized.
         /// </summary>
         public string Description { get; set; } = string.Empty;
 
