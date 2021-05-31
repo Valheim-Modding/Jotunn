@@ -55,6 +55,7 @@ namespace Jotunn.Managers
             // Create PieceTable Container
             PieceTableContainer = new GameObject("PieceTables");
             PieceTableContainer.transform.parent = Main.RootObject.transform;
+            PieceTableContainer.SetActive(false);
 
             // Setup Hooks
             On.ObjectDB.Awake += RegisterCustomData;
