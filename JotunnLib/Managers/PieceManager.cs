@@ -36,9 +36,11 @@ namespace Jotunn.Managers
         public static event Action OnPiecesRegistered;
 
         internal GameObject PieceTableContainer;
-        internal List<CustomPiece> Pieces = new();
 
-        internal readonly Dictionary<string, PieceTable> PieceTables = new Dictionary<string, PieceTable>();
+        internal readonly List<CustomPiece> Pieces = new List<CustomPiece>();
+        internal readonly List<CustomPieceTable> PieceTables = new List<CustomPieceTable>();
+
+        internal readonly Dictionary<string, PieceTable> PieceTableMap = new Dictionary<string, PieceTable>();
         internal readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>();
 
         internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
@@ -70,50 +72,30 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Add a new <see cref="PieceTable"/> from <see cref="GameObject"/>.
+        ///     Add a <see cref="CustomPieceTable"/> to the game.<br />
+        ///     Checks if the custom piece table is valid and unique and adds it to the list of custom piece tables.
         /// </summary>
-        /// <param name="prefab">The prefab of the <see cref="PieceTable"/></param>
-        public void AddPieceTable(GameObject prefab)
+        /// <param name="customPieceTable">The custom piece table to add.</param>
+        /// <returns>true if the custom piece table was added to the manager.</returns>
+        public bool AddPieceTable(CustomPieceTable customPieceTable)
         {
-            if (PieceTables.ContainsKey(prefab.name))
+            if (!customPieceTable.IsValid())
             {
-                Logger.LogWarning($"Piece table {prefab.name} already added");
-                return;
+                Logger.LogWarning($"Custom piece {customPieceTable} is not valid");
+                return false;
+            }
+            if (PieceTables.Contains(customPieceTable))
+            {
+                Logger.LogWarning($"Piece table {customPieceTable} already added");
+                return false;
             }
 
-            var table = prefab.GetComponent<PieceTable>();
+            customPieceTable.PieceTablePrefab.transform.parent = PieceTableContainer.transform;
 
-            if (table == null)
-            {
-                Logger.LogError($"Prefab {prefab.name} has no PieceTable attached");
-                return;
-            }
+            PieceTables.Add(customPieceTable);
+            PieceTableMap.Add(customPieceTable.ToString(), customPieceTable.PieceTable);
 
-            prefab.transform.parent = PieceTableContainer.transform;
-
-            PieceTables.Add(prefab.name, table);
-
-            //TODO: get the name of the item which has this table attached and add it to the name map
-        }
-
-        /// <summary>
-        ///     Add a new <see cref="PieceTable"/> from string.<br />
-        ///     Creates a <see cref="GameObject"/> with a <see cref="PieceTable"/> component and adds it to the manager.
-        /// </summary>
-        /// <param name="name">Name of the new piece table.</param>
-        public void AddPieceTable(string name)
-        {
-            if (PieceTables.ContainsKey(name))
-            {
-                Logger.LogWarning($"Piece table {name} already added");
-                return;
-            }
-
-            GameObject obj = new GameObject(name);
-            obj.transform.parent = PieceTableContainer.transform;
-
-            PieceTable table = obj.AddComponent<PieceTable>();
-            PieceTables.Add(name, table);
+            return true;
         }
 
         /// <summary>
@@ -128,14 +110,14 @@ namespace Jotunn.Managers
         /// <returns>PieceTable prefab</returns>
         public PieceTable GetPieceTable(string name)
         {
-            if (PieceTables.ContainsKey(name))
+            if (PieceTableMap.ContainsKey(name))
             {
-                return PieceTables[name];
+                return PieceTableMap[name];
             }
 
             if (PieceTableNameMap.ContainsKey(name))
             {
-                return PieceTables[PieceTableNameMap[name]];
+                return PieceTableMap[PieceTableNameMap[name]];
             }
 
             //return PrefabManager.Cache.GetPrefab<PieceTable>(name);
@@ -179,6 +161,7 @@ namespace Jotunn.Managers
         /// <returns>true if the custom piece was added to the manager.</returns>
         public bool AddPiece(CustomPiece customPiece)
         {
+            // Assert
             if (!customPiece.IsValid())
             {
                 Logger.LogWarning($"Custom piece {customPiece} is not valid");
@@ -237,6 +220,12 @@ namespace Jotunn.Managers
         /// <param name="piece"><see cref="CustomPiece"/> to remove.</param>
         public void RemovePiece(CustomPiece piece)
         {
+            if (!Pieces.Contains(piece))
+            {
+                Logger.LogWarning($"Could not remove piece {piece}: Not found");
+                return;
+            }
+
             Pieces.Remove(piece);
 
             if (piece.PiecePrefab && PrefabManager.Instance.GetPrefab(piece.PiecePrefab.name))
@@ -256,9 +245,9 @@ namespace Jotunn.Managers
 
                 if (table != null)
                 {
-                    if (!PieceTables.ContainsKey(table.name))
+                    if (!PieceTableMap.ContainsKey(table.name))
                     {
-                        PieceTables.Add(table.name, table);
+                        PieceTableMap.Add(table.name, table);
                     }
                     if (!PieceTableNameMap.ContainsKey(item.name))
                     {
@@ -278,7 +267,7 @@ namespace Jotunn.Managers
                 Logger.LogInfo($"---- Adding custom piece categories ----");
 
                 // All piece tables using categories
-                foreach (var table in PieceTables.Values.Where(x => x.m_useCategories))
+                foreach (var table in PieceTableMap.Values.Where(x => x.m_useCategories))
                 {
                     // Add empty lists up to the custom categories index and for every custom category
                     if (table.m_availablePieces.Count < (int)PieceCategoryMax)
@@ -425,7 +414,12 @@ namespace Jotunn.Managers
             }
         }
 
-        private void RegisterInPieceTables()
+        private void RegisterCustomPieceTables()
+        {
+
+        }
+
+        private void RegisterCustomPieces()
         {
             if (Pieces.Count > 0)
             {
@@ -490,7 +484,7 @@ namespace Jotunn.Managers
             {
                 LoadPieceTables();
                 CreatePieceCategories();
-                RegisterInPieceTables();
+                RegisterCustomPieces();
             }
         }
 

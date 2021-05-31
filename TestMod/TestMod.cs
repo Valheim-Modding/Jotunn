@@ -413,7 +413,19 @@ namespace TestMod
         {
             // Add a custom piece table
             var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
-            PieceManager.Instance.AddPieceTable(table_prefab);
+            CustomPieceTable rune_table = new CustomPieceTable(table_prefab,
+                new PieceTableConfig
+                {
+                    CanRemovePieces = false,
+                    UseCategories = true,
+                    UseCustomCategories = true,
+                    CustomCategories = new string[]
+                    {
+                        "Make", "Place"
+                    }
+                }
+            );
+            PieceManager.Instance.AddPieceTable(rune_table);
 
             // Create and add a custom item
             var rune_prefab = blueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
@@ -433,7 +445,8 @@ namespace TestMod
             var makebp = new CustomPiece(makebp_prefab,
                 new PieceConfig
                 {
-                    PieceTable = "_BlueprintTestTable"
+                    PieceTable = "_BlueprintTestTable",
+                    Category = "Make"
                 });
             PieceManager.Instance.AddPiece(makebp);
 
@@ -442,6 +455,7 @@ namespace TestMod
                 new PieceConfig
                 {
                     PieceTable = "_BlueprintTestTable",
+                    Category = "Place",
                     AllowedInDungeons = true,
                     Requirements = new[]
                     {
