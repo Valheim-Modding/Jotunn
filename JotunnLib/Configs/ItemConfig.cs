@@ -12,24 +12,34 @@ namespace Jotunn.Configs
     public class ItemConfig
     {
         /// <summary>
-        ///     The unique name for your item.
+        ///     The unique name for your item. May be tokenized.
         /// </summary>
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        ///     The name of the item prefab that this recipe should create. Is automatically set in <see cref="CustomItem"/>.
+        ///     The description of your item. May be tokenized.
         /// </summary>
-        internal string Item { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
-        ///     The amount of <see cref="Item"/> that will be created from the recipe. Defaults to <c>1</c>.
+        ///     The name of the item prefab. Is automatically set in <see cref="CustomItem"/>.
+        /// </summary>
+        internal string Item { get; set; }
+
+        /// <summary>
+        ///     The amount of <see cref="Item"/> that will be created when crafting this item. Defaults to <c>1</c>.
         /// </summary>
         public int Amount { get; set; } = 1;
 
         /// <summary>
-        ///     Whether this item is craftable or not.
+        ///     Whether this item is craftable or not. Defaults to <c>true</c>.
         /// </summary>
         public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        ///     The name of the piece table prefab this item uses to build pieces.
+        /// </summary>
+        public string PieceTable { get; set; } = string.Empty;
 
         /// <summary>
         ///     The name of the crafting station prefab where this recipe can be crafted.<br/>
@@ -39,7 +49,7 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     The name of the crafting station prefab where this item can be repaired.<br/>
-        ///     Can be set to <c>null</c> to have the recipe be repairable without a crafting station.
+        ///     Can be set to <c>null</c> to have the item be repairable without a crafting station.
         /// </summary>
         public string RepairStation { get; set; } = string.Empty;
 
@@ -49,9 +59,92 @@ namespace Jotunn.Configs
         public int MinStationLevel { get; set; } = 0;
 
         /// <summary>
+        ///     Icons for this item. If more than one icon is added, this item automatically has variants.
+        /// </summary>
+        public Sprite[] Icons { get; set; } = null;
+
+        /// <summary>
+        ///     Texture holding the variants different styles.
+        /// </summary>
+        public Texture2D StyleTex { get; set; } = null;
+
+        /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
         public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
+
+        /// <summary>
+        ///     Apply this config's values to a GameObject's ItemDrop.
+        /// </summary>
+        /// <param name="prefab"></param>
+        public void Apply(GameObject prefab)
+        {
+            var itemDrop = prefab.GetComponent<ItemDrop>();
+            if (itemDrop == null)
+            {
+                Logger.LogError($"GameObject has no ItemDrop attached");
+                return;
+            }
+
+            var shared = itemDrop.m_itemData.m_shared;
+            if (shared == null)
+            {
+                Logger.LogError($"ItemDrop has no SharedData component");
+                return;
+            }
+
+            // Set the Item to the prefab name
+            Item = prefab.name;
+
+            // Set the name and description if provided
+            if (!string.IsNullOrEmpty(Name))
+            {
+                shared.m_name = Name;
+            }
+            if (!string.IsNullOrEmpty(Description))
+            {
+                shared.m_description = Description;
+            }
+
+            // If there is still no m_name, add a token from the prefabs name
+            if (string.IsNullOrEmpty(shared.m_name))
+            {
+                shared.m_name = $"${prefab.name}";
+            }
+
+            // Add a piece table if provided
+            if (!string.IsNullOrEmpty(PieceTable))
+            {
+                shared.m_buildPieces = Mock<PieceTable>.Create(PieceTable);
+            }
+
+            // Set icons if provided
+            if (Icons != null && Icons.Length > 0)
+            {
+                itemDrop.m_itemData.m_shared.m_icons = Icons;
+
+                // Set variants if a StyleTex is provided
+                if (StyleTex != null)
+                {
+                    itemDrop.m_itemData.m_shared.m_variants = Icons.Length;
+
+                    Renderer[] renderer = prefab.GetComponentsInChildren<Renderer>();
+                    foreach (var rend in renderer)
+                    {
+                        if (rend.materials != null)
+                        {
+                            foreach (var mat in rend.materials)
+                            {
+                                if (mat.GetTexture("_StyleTex") != null)
+                                {
+                                    mat.SetTexture("_StyleTex", StyleTex);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         ///     Converts the RequirementConfigs to Valheim style Piece.Requirements
@@ -77,20 +170,13 @@ namespace Jotunn.Configs
         {
             if (Item == null)
             {
-                Logger.LogError($"No item set in recipe config");
+                Logger.LogError($"No item set in item config");
                 return null;
             }
 
             var recipe = ScriptableObject.CreateInstance<Recipe>();
 
-            var name = Name;
-            if (string.IsNullOrEmpty(name))
-            {
-                name = "Recipe_" + Item;
-            }
-
-            recipe.name = name;
-
+            recipe.name = "Recipe_" + Item;
             recipe.m_item = Mock<ItemDrop>.Create(Item);
             recipe.m_amount = Amount;
             recipe.m_enabled = Enabled;

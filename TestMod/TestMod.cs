@@ -70,6 +70,9 @@ namespace TestMod
             // Add custom items cloned from vanilla items
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 
+            // Clone an item with variants and replace them
+            ItemManager.OnVanillaItemsAvailable += AddCloneWithVariants;
+
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
             {
@@ -603,7 +606,7 @@ namespace TestMod
             }
         }
 
-        // Add invalid entities
+        // Add items / pieces with errors on purpose to test error handling
         private void AddInvalidItems()
         {
             CustomItem CI = new CustomItem("item_faulty", false);
@@ -691,12 +694,42 @@ namespace TestMod
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogError($"Error while adding cloned item: {ex.Message}");
+                Jotunn.Logger.LogError($"Error while adding cloned item: {ex}");
             }
             finally
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
                 ItemManager.OnVanillaItemsAvailable -= AddClonedItems;
+            }
+        }
+
+        // Test the variant config for items
+        private void AddCloneWithVariants()
+        {
+            try
+            {
+                Sprite var1 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var1.png");
+                Sprite var2 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var2.png");
+                Texture2D styleTex = AssetUtils.LoadTexture("TestMod/Assets/test_varpaint.png");
+                CustomItem CI = new CustomItem("item_lulvariants", "ShieldWood", new ItemConfig
+                {
+                    Name = "lulz Shield",
+                    Icons = new Sprite[]
+                    {
+                        var1, var2
+                    },
+                    StyleTex = styleTex
+                });
+                ItemManager.Instance.AddItem(CI);
+            }
+            catch (Exception ex)
+            {
+                Jotunn.Logger.LogError($"Error while adding variant item: {ex}");
+            }
+            finally
+            {
+                // You want that to run only once, Jotunn has the item cached for the game session
+                ItemManager.OnVanillaItemsAvailable -= AddCloneWithVariants;
             }
         }
 
