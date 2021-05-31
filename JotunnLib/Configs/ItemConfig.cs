@@ -135,7 +135,7 @@ namespace Jotunn.Configs
                         {
                             foreach (var mat in rend.materials)
                             {
-                                if (mat.GetTexture("_StyleTex") != null)
+                                if (mat.HasProperty("_StyleTex"))
                                 {
                                     mat.SetTexture("_StyleTex", StyleTex);
                                 }
