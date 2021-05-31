@@ -79,6 +79,7 @@ namespace Jotunn.Managers
         /// <returns>true if the custom piece table was added to the manager.</returns>
         public bool AddPieceTable(CustomPieceTable customPieceTable)
         {
+            // Assert
             if (!customPieceTable.IsValid())
             {
                 Logger.LogWarning($"Custom piece {customPieceTable} is not valid");
@@ -90,8 +91,13 @@ namespace Jotunn.Managers
                 return false;
             }
 
+            // Set Container as parent to add the prefab to the DontDestroyOnLoad scene
             customPieceTable.PieceTablePrefab.transform.parent = PieceTableContainer.transform;
 
+            // Add the prefab to the PrefabManager
+            PrefabManager.Instance.AddPrefab(customPieceTable.PieceTablePrefab);
+
+            // Add the custom table to the PieceManager
             PieceTables.Add(customPieceTable);
             PieceTableMap.Add(customPieceTable.ToString(), customPieceTable.PieceTable);
 
