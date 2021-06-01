@@ -105,6 +105,30 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Add a new <see cref="PieceTable"/> from <see cref="GameObject"/>.<br />
+        ///     Creates a <see cref="CustomPieceTable"/> and adds it to the manager.
+        /// </summary>
+        /// <param name="prefab">The <see cref="GameObject"/> to add.</param>
+        [Obsolete("Use CustomPieceTable instead")]
+        public void AddPieceTable(GameObject prefab)
+        {
+            AddPieceTable(new CustomPieceTable(prefab));
+        }
+
+        /// <summary>
+        ///     Add a new <see cref="PieceTable"/> from string.<br />
+        ///     Creates a <see cref="CustomPieceTable"/> and adds it to the manager.
+        /// </summary>
+        /// <param name="name">Name of the new piece table.</param>
+        [Obsolete("Use CustomPieceTable instead")]
+        public void AddPieceTable(string name)
+        {
+            GameObject obj = new GameObject(name);
+            obj.AddComponent<PieceTable>();
+            AddPieceTable(new CustomPieceTable(obj));
+        }
+
+        /// <summary>
         ///     Get a <see cref="global::PieceTable"/> by name.<br /><br />
         ///     Search hierarchy:<br />
         ///     <list type="number">
