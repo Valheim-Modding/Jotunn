@@ -35,13 +35,12 @@ namespace Jotunn.Managers
         /// </summary>
         public static event Action OnPiecesRegistered;
 
-        internal GameObject PieceTableContainer;
-
         internal readonly List<CustomPiece> Pieces = new List<CustomPiece>();
         internal readonly List<CustomPieceTable> PieceTables = new List<CustomPieceTable>();
 
         internal readonly Dictionary<string, PieceTable> PieceTableMap = new Dictionary<string, PieceTable>();
         internal readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>();
+        internal readonly Dictionary<string, string> PieceTableCategoryMap = new Dictionary<string, string>();
 
         internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
 
@@ -54,11 +53,6 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            // Create PieceTable Container
-            PieceTableContainer = new GameObject("PieceTables");
-            PieceTableContainer.transform.parent = Main.RootObject.transform;
-            PieceTableContainer.SetActive(false);
-
             // Setup Hooks
             On.ObjectDB.Awake += RegisterCustomData;
             On.Player.Load += ReloadKnownRecipes;
@@ -91,11 +85,17 @@ namespace Jotunn.Managers
                 return false;
             }
 
-            // Set Container as parent to add the prefab to the DontDestroyOnLoad scene
-            customPieceTable.PieceTablePrefab.transform.parent = PieceTableContainer.transform;
-
             // Add the prefab to the PrefabManager
             PrefabManager.Instance.AddPrefab(customPieceTable.PieceTablePrefab);
+
+            // Create all custom categories on that table
+            if (customPieceTable.Categories.Length > 0)
+            {
+                foreach (var category in customPieceTable.Categories)
+                {
+                    AddPieceCategory(category);
+                }
+            }
 
             // Add the custom table to the PieceManager
             PieceTables.Add(customPieceTable);
