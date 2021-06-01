@@ -53,7 +53,7 @@ namespace Jotunn.Managers
             }
 
             // Read value from config
-            buttonConfig.Key = entry.Value ;
+            buttonConfig.Key = entry.Value;
             buttonConfig.Name += "!" + modGuid;
             Buttons.Add(buttonConfig.Name, buttonConfig);
         }

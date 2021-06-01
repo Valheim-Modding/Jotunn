@@ -12,6 +12,7 @@ using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
 using System.Globalization;
+using Jotunn.InGameConfig;
 
 namespace TestMod
 {
@@ -42,6 +43,8 @@ namespace TestMod
         private CustomStatusEffect evilSwordEffect;
 
         private Skills.SkillType testSkill;
+
+        private ConfigEntry<KeyCode> evilSwordAttackButtonConfigEntry;
 
         private ConfigEntry<bool> EnableVersionMismatch;
 
@@ -119,9 +122,9 @@ namespace TestMod
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (evilSwordSpecial != null && MessageHud.instance != null)
+                if (evilSwordAttackButtonConfigEntry != null && MessageHud.instance != null)
                 {
-                    if (ZInput.GetButtonDown(evilSwordSpecial.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                    if (ZInput.GetButtonDown(evilSwordAttackButtonConfigEntry.GetBoundButtonName()) && MessageHud.instance.m_msgQeue.Count == 0)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
@@ -222,7 +225,12 @@ namespace TestMod
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
-            Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+            evilSwordAttackButtonConfigEntry = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword", null, new object[] { new ButtonConfig()
+            {
+                Name = "EvilSwordSpecialAttack",
+                Key = KeyCode.B,
+                HintToken = "$evilsword_beevil"
+            } }));
 
             Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
                 new ConfigDescription("Server side Color", null, new ConfigurationManagerAttributes() {IsAdminOnly = true}));
@@ -275,7 +283,9 @@ namespace TestMod
                 Key = (KeyCode)Config[JotunnTestModConfigSection, "EvilSwordSpecialAttack"].BoxedValue,
                 HintToken = "$evilsword_beevil"
             };
-            InputManager.Instance.AddButton(ModGUID, evilSwordSpecial);
+            
+            // Add evil sword special button, defined in CreateConfigValues
+            InputManager.Instance.AddButton(ModGUID, evilSwordAttackButtonConfigEntry);
 
             // Add a key binding to test skill raising
             InputManager.Instance.AddButton(ModGUID, "TestMod_RaiseSkill", KeyCode.Home);

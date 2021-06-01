@@ -1106,5 +1106,14 @@ namespace Jotunn.InGameConfig
             return buttonConfig?.Name.Split('!')[0];
         }
 
+        public static ButtonConfig GetButtonConfig(this ConfigEntryBase ceb)
+        {
+            if (ceb.SettingType != typeof(KeyCode))
+            {
+                return null;
+            }
+
+            return ceb.Description.Tags.FirstOrDefault(x => x is ButtonConfig) as ButtonConfig;
+        }
     }
 }
