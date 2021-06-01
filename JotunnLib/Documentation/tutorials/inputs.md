@@ -13,15 +13,17 @@ private void AddInputs()
 
     // Add key bindings backed by a config value
     // Create a ButtonConfig to also add it as a custom key hint in AddClonedItems
-    evilSwordSpecial = new ButtonConfig
+    var evilSwordAttackButtonConfigEntry = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword", null, new ButtonConfig
     {
         Name = "EvilSwordSpecialAttack",
         Key = (KeyCode)Config["Client config", "EvilSwordSpecialAttack"].BoxedValue,
         HintToken = "$evilsword_beevil"
-    };
-    InputManager.Instance.AddButton(PluginGUID, evilSwordSpecial);
+    }));
+    InputManager.Instance.AddButton(PluginGUID, evilSwordAttackButtonConfigEntry);
 }
 ```
+
+This will create the configuration entry and add the button to the input manager. For configurable buttons it is mandatory to use this method. See [here](xref:config.md).
 
 Now, to use our input, we can use the `ZInput` class provided by Valheim.
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
+using Jotunn.InGameConfig;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -157,6 +158,7 @@ namespace Jotunn.Managers
                 foreach (var cd in plugin.Value.Config.Keys)
                 {
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
+                    string buttonName = cx.GetBoundButtonName();
                     if (cx.Description.Tags.Any(x =>
                         x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly &&
                         ((ConfigurationManagerAttributes)x).UnlockSetting))
@@ -167,7 +169,7 @@ namespace Jotunn.Managers
 
                     if (cx.SettingType == typeof(KeyCode))
                     {
-                        ZInput.instance.Setbutton(cd.Key + "!" + plugin.Value.Info.Metadata.GUID, (KeyCode)cx.BoxedValue);
+                        ZInput.instance.Setbutton($"{buttonName}!{plugin.Value.Info.Metadata.GUID}", (KeyCode) cx.BoxedValue);
                     }
                 }
             }

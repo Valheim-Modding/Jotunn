@@ -34,11 +34,23 @@ private void CreateConfigValues()
     Config.Bind("JotunnLibTest", "KeycodeValue", KeyCode.F10, new ConfigDescription("Server side Keycode", null, new ConfigurationManagerAttributes {IsAdminOnly = true}));
             
     // Add a client side custom input key for the EvilSword
-    Config.Bind("JotunnLibTest", "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+    evilSwordAttackButtonConfigEntry = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword", null, new ButtonConfig
+    {
+        Name = "EvilSwordSpecialAttack",
+        HintToken = "$evilsword_beevil"
+    }));
 }
 ```
 
 Here we have implemented some BepInEx configuration attributes to act as a showcase for what BepInEx has to offer, as well as our own implementation of synced attributes. This allows admins defined in the servers adminlist.txt to change the values on the fly, however clients without admin have no control over this configs.
+
+---
+**Important:**
+
+Configurable buttons (the KeyCode configuration entries) need to be implemented like the EvilSwordSpecialAttack above. Add the `ButtonConfig` as a `Tag` in the `ConfigDescription`. You don't have to provide the KeyCode, since the default value is set by the configuration entry and it will be automatically read from the configuration.
+See [here](xref:inputs.md) for information on how to add to the InputManager.
+
+---
 
 To access the configuration entries either use properties or cast the boxed value to the value type:
 

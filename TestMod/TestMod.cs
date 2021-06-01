@@ -214,6 +214,9 @@ namespace TestMod
             Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
                 new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
 
+            Config.Bind(JotunnTestModConfigSection, "InvisibleInt", 150,
+                new ConfigDescription("Invisible int, testing browsable=false", null, new ConfigurationManagerAttributes() {Browsable = false}));
+
             // Add client config to test ModCompatibility
             EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
             Config.SettingChanged += Config_SettingChanged;
