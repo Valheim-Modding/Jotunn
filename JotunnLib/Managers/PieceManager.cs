@@ -1,4 +1,5 @@
-﻿using Jotunn.Entities;
+﻿using Jotunn.Configs;
+using Jotunn.Entities;
 using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
@@ -44,6 +45,9 @@ namespace Jotunn.Managers
 
         internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private Piece.PieceCategory PieceCategoryMax = Piece.PieceCategory.Max;
+        
+        private const float PieceCategorySize = 540f;
+        private const float PieceCategoryTabSize = 120f;
 
         /// <summary>
         ///     Creates the piece table container and registers all hooks.
@@ -121,7 +125,7 @@ namespace Jotunn.Managers
         [Obsolete("Use CustomPieceTable instead")]
         public void AddPieceTable(GameObject prefab)
         {
-            AddPieceTable(new CustomPieceTable(prefab));
+            AddPieceTable(new CustomPieceTable(prefab, new PieceTableConfig()));
         }
 
         /// <summary>
@@ -134,7 +138,7 @@ namespace Jotunn.Managers
         {
             GameObject obj = new GameObject(name);
             obj.AddComponent<PieceTable>();
-            AddPieceTable(new CustomPieceTable(obj));
+            AddPieceTable(new CustomPieceTable(obj, new PieceTableConfig()));
         }
 
         /// <summary>
@@ -159,7 +163,6 @@ namespace Jotunn.Managers
                 return PieceTableMap[PieceTableNameMap[name]];
             }
 
-            //return PrefabManager.Cache.GetPrefab<PieceTable>(name);
             return null;
         }
 
@@ -168,8 +171,8 @@ namespace Jotunn.Managers
         ///     gets assigned a random integer for internal use. If you pass a vanilla category
         ///     the actual integer value of the enum is returned. 
         /// </summary>
-        /// <param name="table"></param>
-        /// <param name="name"></param>
+        /// <param name="table">Prefab or item name of the PieceTable.</param>
+        /// <param name="name">Name of the category.</param>
         /// <returns>int value of the vanilla or custom category</returns>
         public Piece.PieceCategory AddPieceCategory(string table, string name)
         {
@@ -314,12 +317,12 @@ namespace Jotunn.Managers
         /// </summary>
         private void CreatePieceTableCategories()
         {
-            if (PieceTableCategoriesMap.Count > 0)
+            if (PieceCategories.Count > 0)
             {
                 Logger.LogInfo($"---- Adding custom piece table categories ----");
 
                 // All piece tables using categories
-                foreach (var table in PieceTableMap.Values.Where(x => x.m_useCategories))
+                foreach (var table in PieceTableMap.Values)
                 {
                     // Create category map if not present
                     PieceTableCategoriesMap.TryGetValue(table.name, out var categories);
@@ -329,12 +332,34 @@ namespace Jotunn.Managers
                         PieceTableCategoriesMap.Add(table.name, categories);
                     }
 
+                    // Add shortcut categories to actual table (e.g. categories added to "Hammer" must be added to "_HammerPieceTable")
+                    if (PieceTableNameMap.ContainsValue(table.name)) 
+                    {
+                        string tableItemName = PieceTableNameMap.Single(x => x.Value.Equals(table.name)).Key;
+                        if (PieceTableCategoriesMap.ContainsKey(tableItemName))
+                        {
+                            foreach (var cat in PieceTableCategoriesMap[tableItemName])
+                            {
+                                if (!categories.ContainsKey(cat.Key))
+                                {
+                                    categories.Add(cat.Key, cat.Value);
+                                }
+                            }
+                            PieceTableCategoriesMap.Remove(tableItemName);
+                        }
+                    }
+
                     // Add vanilla categories for vanilla tables
-                    if (PieceTables.Count(x => x.PieceTable.name.Equals(table.name)) == 0)
+                    CustomPieceTable customTable = PieceTables.FirstOrDefault(x => x.PieceTable.name.Equals(table.name));
+                    if (customTable == null)
                     {
                         for (int i = 0; i < (int)Piece.PieceCategory.Max; i++)
                         {
-                            categories.Add(Enum.GetName(typeof(Piece.PieceCategory), i), (Piece.PieceCategory)i);
+                            string categoryName = Enum.GetName(typeof(Piece.PieceCategory), i);
+                            if (!categories.ContainsKey(categoryName))
+                            {
+                                categories.Add(categoryName, (Piece.PieceCategory)i);
+                            }
                         }
                     }
 
@@ -350,13 +375,70 @@ namespace Jotunn.Managers
                     // Resize selectedPiece array
                     Array.Resize(ref table.m_selectedPiece, table.m_availablePieces.Count);
 
-                    Logger.LogInfo($"Added categories for table {table}");
+                    Logger.LogInfo($"Added categories for table {table.name}");
                 }
+
+                // Hook sceneLoaded for generation of custom piece category tabs
+                SceneManager.sceneLoaded += CreateCategoryTabs;
 
                 // Hook piece table GUI toogle
                 On.Hud.TogglePieceSelection += Hud_TogglePieceSelection;
             }
         }
+
+        /// <summary>
+        ///     Create tabs for the ingame GUI for every piece table category.
+        /// </summary>
+        private void CreateCategoryTabs(Scene scene, LoadSceneMode loadSceneMode)
+        {
+            if (scene.name == "main")
+            {
+                // Get the GUI elements
+                GameObject root = Hud.instance.m_pieceCategoryRoot;
+                if (root.GetComponent<RectMask2D>() == null)
+                {
+                    root.AddComponent<RectMask2D>();
+                    root.SetWidth(PieceCategorySize);
+                }
+                List<string> newNames = new List<string>(Hud.instance.m_buildCategoryNames);
+                List<GameObject> newTabs = new List<GameObject>(Hud.instance.m_pieceCategoryTabs);
+
+                // Append tabs and their names to the GUI for every custom category not already added
+                foreach (var category in PieceCategories)
+                {
+                    if (!newNames.Contains(category.Key))
+                    {
+                        GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], root.transform);
+                        newTab.name = category.Key;
+
+                        UIInputHandler component = newTab.GetComponent<UIInputHandler>();
+                        component.m_onLeftDown += Hud.instance.OnLeftClickCategory;
+
+                        newNames.Add(category.Key);
+                        newTabs.Add(newTab);
+                    }
+                }
+
+                // Reorder tabs
+                float offset = 0f;
+                foreach (GameObject go in newTabs)
+                {
+                    go.SetMiddleLeft();
+                    go.SetHeight(30f);
+                    RectTransform tf = (go.transform as RectTransform);
+                    tf.anchoredPosition = new Vector2(offset, 0f);
+                    offset += PieceCategoryTabSize;
+                }
+
+                // Replace the HUD arrays
+                Hud.instance.m_buildCategoryNames = newNames.ToList();
+                Hud.instance.m_pieceCategoryTabs = newTabs.ToArray();
+
+                // Remove ourself from the SceneManager
+                SceneManager.sceneLoaded -= CreateCategoryTabs;
+            }
+        }
+
 
         /// <summary>
         ///     Hook for piece table GUI toggle. Only active when custom categories were added.
@@ -473,80 +555,48 @@ namespace Jotunn.Managers
 
         internal class PieceTableCategories : Dictionary<string, Piece.PieceCategory>
         {
-            private static GameObject baseTab;
-
-            private const float PieceCategorySize = 540f;
-            private const float PieceCategoryTabSize = 120f;
-
-            private Piece.PieceCategory PieceCategoryMax = 0;
-
             internal void Toggle(bool active)
             {
                 if (active)
                 {
-                    CreateCategoryTabs();
-                    On.PieceTable.SetCategory += PieceTable_SetCustomCategory;
+                    // Activate all tabs for this categories
+                    foreach (GameObject tab in Hud.instance.m_pieceCategoryTabs)
+                    {
+                        tab.SetActive(Keys.Contains(tab.name));
+                    }
+
+                    // Reorder tabs
+                    ReorderActiveTabs();
+
+                    // Hook navigation
+                    On.PieceTable.SetCategory += PieceTable_SetCategory;
                     On.PieceTable.NextCategory += PieceTable_NextCategory;
                     On.PieceTable.PrevCategory += PieceTable_PrevCategory;
                     On.Hud.OnLeftClickCategory += Hud_OnLeftClickCategory;
                 }
                 else
                 {
-                    On.PieceTable.SetCategory -= PieceTable_SetCustomCategory;
+                    // Activate all vanilla tabs
+                    foreach (GameObject tab in Hud.instance.m_pieceCategoryTabs)
+                    {
+                        tab.SetActive(Enum.GetNames(typeof(Piece.PieceCategory)).Contains(tab.name));
+                    }
+
+                    // Reorder tabs
+                    ReorderActiveTabs();
+
+                    // Remove hooks
+                    On.PieceTable.SetCategory -= PieceTable_SetCategory;
                     On.PieceTable.NextCategory -= PieceTable_NextCategory;
                     On.PieceTable.PrevCategory -= PieceTable_PrevCategory;
                     On.Hud.OnLeftClickCategory -= Hud_OnLeftClickCategory;
                 }
             }
 
-            /// <summary>
-            ///     Create tabs for the ingame GUI for every piece table with categories.
-            /// </summary>
-            private void CreateCategoryTabs()
+            private void ReorderActiveTabs()
             {
-                // Get the GUI elements
-                GameObject root = Hud.instance.m_pieceCategoryRoot;
-                if (root.GetComponent<RectMask2D>() == null)
-                {
-                    root.AddComponent<RectMask2D>();
-                    root.SetWidth(PieceCategorySize);
-                }
-
-                // Save baseTab prefab
-                if (!baseTab)
-                {
-                    baseTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0]);
-                    baseTab.SetActive(false);
-                }
-
-                // Remove previous category tabs
-                foreach (var tab in Hud.instance.m_pieceCategoryTabs)
-                {
-                    Object.DestroyImmediate(tab);
-                }
-
-                // Append tabs and their names to the GUI for every custom category
-                //List<string> newNames = new List<string>(Hud.instance.m_buildCategoryNames);
-                //List<GameObject> newTabs = new List<GameObject>(Hud.instance.m_pieceCategoryTabs);
-                List<string> newNames = new List<string>(Count);
-                List<GameObject> newTabs = new List<GameObject>(Count);
-
-                foreach (var category in this)
-                {
-                    GameObject newTab = Object.Instantiate(baseTab, root.transform);
-                    newTab.SetActive(true);
-                    newTab.name = category.Key;
-
-                    UIInputHandler component = newTab.GetComponent<UIInputHandler>();
-                    component.m_onLeftDown += Hud.instance.OnLeftClickCategory;
-
-                    newNames.Add(category.Key);
-                    newTabs.Add(newTab);
-                }
-
-                // Reorder tabs
                 float offset = 0f;
-                foreach (GameObject go in newTabs)
+                foreach (GameObject go in Hud.instance.m_pieceCategoryTabs.Where(x => x.activeSelf))
                 {
                     go.SetMiddleLeft();
                     go.SetHeight(30f);
@@ -554,13 +604,9 @@ namespace Jotunn.Managers
                     tf.anchoredPosition = new Vector2(offset, 0f);
                     offset += PieceCategoryTabSize;
                 }
-
-                // Replace the HUD arrays
-                Hud.instance.m_buildCategoryNames = newNames.ToList();
-                Hud.instance.m_pieceCategoryTabs = newTabs.ToArray();
             }
 
-            private void PieceTable_SetCustomCategory(On.PieceTable.orig_SetCategory orig, PieceTable self, int index)
+            private void PieceTable_SetCategory(On.PieceTable.orig_SetCategory orig, PieceTable self, int index)
             {
                 orig(self, index);
 
@@ -579,7 +625,7 @@ namespace Jotunn.Managers
                 {
                     self.m_selectedCategory++;
 
-                    if (self.m_selectedCategory == PieceCategoryMax)
+                    if (self.m_selectedCategory == Instance.PieceCategoryMax)
                     {
                         self.m_selectedCategory = 0;
                     }
@@ -596,7 +642,7 @@ namespace Jotunn.Managers
 
                     if (self.m_selectedCategory < 0)
                     {
-                        self.m_selectedCategory = PieceCategoryMax - 1;
+                        self.m_selectedCategory = Instance.PieceCategoryMax - 1;
                     }
                 }
 
@@ -626,7 +672,7 @@ namespace Jotunn.Managers
                 float maxX = (tab.transform as RectTransform).anchoredPosition.x + PieceCategoryTabSize;
                 if (maxX > PieceCategorySize)
                 {
-                    float offsetX = selectedCategory == PieceCategoryMax - 1 ? maxX - PieceCategorySize : PieceCategoryTabSize;
+                    float offsetX = selectedCategory == Instance.PieceCategoryMax - 1 ? maxX - PieceCategorySize : PieceCategoryTabSize;
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
                         (go.transform as RectTransform).anchoredPosition -= new Vector2(offsetX, 0);
