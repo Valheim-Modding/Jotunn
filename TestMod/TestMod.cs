@@ -420,7 +420,7 @@ namespace TestMod
                 new PieceTableConfig
                 {
                     CanRemovePieces = false,
-                    UseCategories = true,
+                    UseCategories = false,
                     UseCustomCategories = true,
                     CustomCategories = new string[]
                     {
