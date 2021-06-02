@@ -173,25 +173,33 @@ namespace Jotunn.Managers
         /// <returns>int value of the vanilla or custom category</returns>
         public Piece.PieceCategory AddPieceCategory(string table, string name)
         {
+            Piece.PieceCategory categoryID;
+
+            // Get or create global category ID
             if (Enum.IsDefined(typeof(Piece.PieceCategory), name))
             {
-                return (Piece.PieceCategory)Enum.Parse(typeof(Piece.PieceCategory), name);
-            }
-
-            if (PieceCategories.ContainsKey(name))
+                categoryID = (Piece.PieceCategory)Enum.Parse(typeof(Piece.PieceCategory), name);
+            } 
+            else if (PieceCategories.ContainsKey(name))
             {
-                return PieceCategories[name];
+                categoryID = PieceCategories[name];
+            }
+            else
+            {
+                categoryID = PieceCategories.Count() + Piece.PieceCategory.Max;
+                PieceCategories.Add(name, categoryID);
+                PieceCategoryMax++;
             }
 
-            Piece.PieceCategory categoryID = PieceCategories.Count() + Piece.PieceCategory.Max;
-            PieceCategories.Add(name, categoryID);
-            PieceCategoryMax++;
-
+            // Add category to table map
             if (!PieceTableCategoriesMap.ContainsKey(table))
             {
                 PieceTableCategoriesMap.Add(table, new PieceTableCategories());
             }
-            PieceTableCategoriesMap[table].Add(name, categoryID);
+            if (!PieceTableCategoriesMap[table].ContainsKey(name))
+            {
+                PieceTableCategoriesMap[table].Add(name, categoryID);
+            }
 
             return categoryID;
         }
