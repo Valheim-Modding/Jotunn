@@ -37,7 +37,7 @@ namespace Jotunn.Entities
         public CustomPieceTable(GameObject pieceTablePrefab, PieceTableConfig config)
         {
             PieceTablePrefab = pieceTablePrefab;
-            config.Apply(PieceTablePrefab);
+            config.Apply(pieceTablePrefab);
             PieceTable = pieceTablePrefab.GetComponent<PieceTable>();
             Categories = config.GetCategories();
         }
@@ -45,8 +45,8 @@ namespace Jotunn.Entities
         public CustomPieceTable(string name, PieceTableConfig config)
         {
             PieceTablePrefab = new GameObject(name);
-            config.Apply(PieceTablePrefab);
             PieceTable = PieceTablePrefab.AddComponent<PieceTable>();
+            config.Apply(PieceTablePrefab);
             Categories = config.GetCategories();
         }
 
