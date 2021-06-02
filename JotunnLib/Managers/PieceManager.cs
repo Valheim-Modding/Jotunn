@@ -125,7 +125,7 @@ namespace Jotunn.Managers
         [Obsolete("Use CustomPieceTable instead")]
         public void AddPieceTable(GameObject prefab)
         {
-            AddPieceTable(new CustomPieceTable(prefab, new PieceTableConfig()));
+            AddPieceTable(new CustomPieceTable(prefab));
         }
 
         /// <summary>
@@ -382,7 +382,31 @@ namespace Jotunn.Managers
                 SceneManager.sceneLoaded += CreateCategoryTabs;
 
                 // Hook piece table GUI toogle
-                On.Hud.TogglePieceSelection += Hud_TogglePieceSelection;
+                On.Hud.TogglePieceSelection += (On.Hud.orig_TogglePieceSelection orig, Hud self) =>
+                {
+                    TogglePieceCategories();
+                    orig(self);
+                };
+            }
+        }
+
+        /// <summary>
+        ///     Hook for piece table toggle. Only active when custom categories were added.
+        /// </summary>
+        private void TogglePieceCategories()
+        {
+            // Get currently selected tool and toggle PieceTableCategories
+            try
+            {
+                var table = Player.m_localPlayer.m_buildPieces;
+                if (table != null && PieceTableCategoriesMap.ContainsKey(table.name))
+                {
+                    PieceTableCategoriesMap[table.name].Toggle(!Hud.instance.m_pieceSelectionWindow.activeSelf);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Error toggling piece selection window: {ex}");
             }
         }
 
@@ -437,29 +461,6 @@ namespace Jotunn.Managers
                 // Remove ourself from the SceneManager
                 SceneManager.sceneLoaded -= CreateCategoryTabs;
             }
-        }
-
-
-        /// <summary>
-        ///     Hook for piece table GUI toggle. Only active when custom categories were added.
-        /// </summary>
-        private void Hud_TogglePieceSelection(On.Hud.orig_TogglePieceSelection orig, Hud self)
-        {
-            // Get currently selected tool and toggle PieceTableCategories
-            try
-            {
-                var table = Player.m_localPlayer.m_buildPieces;
-                if (table != null && PieceTableCategoriesMap.ContainsKey(table.name))
-                {
-                    PieceTableCategoriesMap[table.name].Toggle(!Hud.instance.m_pieceSelectionWindow.activeSelf);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Error toggling piece selection window: {ex}");
-            }
-
-            orig(self);
         }
 
         private void RegisterInPieceTables()
@@ -623,12 +624,16 @@ namespace Jotunn.Managers
             {
                 if (self.m_useCategories)
                 {
-                    self.m_selectedCategory++;
+                    do 
+                    { 
+                        self.m_selectedCategory++;
 
-                    if (self.m_selectedCategory == Instance.PieceCategoryMax)
-                    {
-                        self.m_selectedCategory = 0;
-                    }
+                        if (self.m_selectedCategory == Instance.PieceCategoryMax)
+                        {
+                            self.m_selectedCategory = 0;
+                        }
+                    } 
+                    while (!Values.Contains(self.m_selectedCategory));
                 }
 
                 PieceCategoryScroll(self.m_selectedCategory);
@@ -638,12 +643,16 @@ namespace Jotunn.Managers
             {
                 if (self.m_useCategories)
                 {
-                    self.m_selectedCategory--;
-
-                    if (self.m_selectedCategory < 0)
+                    do
                     {
-                        self.m_selectedCategory = Instance.PieceCategoryMax - 1;
+                        self.m_selectedCategory--;
+
+                        if (self.m_selectedCategory < 0)
+                        {
+                            self.m_selectedCategory = Instance.PieceCategoryMax - 1;
+                        }
                     }
+                    while (!Values.Contains(self.m_selectedCategory));
                 }
 
                 PieceCategoryScroll(self.m_selectedCategory);
