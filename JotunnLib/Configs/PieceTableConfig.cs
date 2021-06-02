@@ -57,10 +57,7 @@ namespace Jotunn.Configs
             }
 
             // Use categories at all?
-            if (UseCategories || UseCustomCategories)
-            {
-                table.m_useCategories = UseCategories;
-            }
+            table.m_useCategories = UseCategories || UseCustomCategories;
 
             // Can remove pieces?
             table.m_canRemovePieces = CanRemovePieces;
