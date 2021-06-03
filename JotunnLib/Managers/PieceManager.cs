@@ -400,6 +400,9 @@ namespace Jotunn.Managers
                 {
                     root.AddComponent<RectMask2D>();
                     root.SetWidth(PieceCategorySize);
+
+                    Transform border = root.transform.Find("TabBorder");
+                    border.SetParent(root.transform.parent, true);
                 }
                 List<string> newNames = new List<string>(Hud.instance.m_buildCategoryNames);
                 List<GameObject> newTabs = new List<GameObject>(Hud.instance.m_pieceCategoryTabs);
@@ -425,8 +428,7 @@ namespace Jotunn.Managers
                 foreach (GameObject go in newTabs)
                 {
                     go.SetMiddleLeft();
-                    go.SetHeight(30f);
-                    RectTransform tf = (go.transform as RectTransform);
+                    RectTransform tf = go.transform as RectTransform;
                     tf.anchoredPosition = new Vector2(offset, 0f);
                     offset += PieceCategoryTabSize;
                 }
