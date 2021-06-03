@@ -381,43 +381,14 @@ namespace Jotunn.Managers
                 // Hook sceneLoaded for generation of custom category tabs
                 SceneManager.sceneLoaded += CreateCategoryTabs;
 
-                // Hooks for custom category tab toggle
-                /*On.Hud.TogglePieceSelection += (On.Hud.orig_TogglePieceSelection orig, Hud self) =>
-                {
-                    TogglePieceCategories();
-                    orig(self);
-                };*/
-                On.Hud.UpdateBuild += (On.Hud.orig_UpdateBuild orig, Hud self, Player player, bool forceUpdateAllBuildStatuses) =>
-                {
-                    TogglePieceCategories();
-                    orig(self, player, forceUpdateAllBuildStatuses);
-                };
-            }
-        }
-
-        /// <summary>
-        ///     Hook for piece table toggle. Only active when custom categories were added.
-        /// </summary>
-        private void TogglePieceCategories()
-        {
-            // Get currently selected tool and toggle PieceTableCategories
-            try
-            {
-                var table = Player.m_localPlayer.m_buildPieces;
-                if (table != null && PieceTableCategoriesMap.ContainsKey(table.name))
-                {
-                    PieceTableCategoriesMap[table.name].Toggle(Hud.instance.m_pieceSelectionWindow.activeSelf);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Error toggling piece selection window: {ex}");
+                // Hook for custom category tab toggle
+                On.Hud.UpdateBuild += TogglePieceCategories;
             }
         }
 
         /// <summary>
         ///     Create tabs for the ingame GUI for every piece table category.
-        ///     Just executes when custom piece table categories were added.
+        ///     Only executes when custom piece table categories were added.
         /// </summary>
         private void CreateCategoryTabs(Scene scene, LoadSceneMode loadSceneMode)
         {
@@ -469,6 +440,32 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Hook for piece table toggle. Only active when custom categories were added.
+        /// </summary>
+        private void TogglePieceCategories(On.Hud.orig_UpdateBuild orig, Hud self, Player player, bool forceUpdateAllBuildStatuses)
+        {
+            // Get currently selected tool and toggle PieceTableCategories
+            try
+            {
+                var table = Player.m_localPlayer.m_buildPieces;
+                if (table != null && PieceTableCategoriesMap.ContainsKey(table.name))
+                {
+                    PieceTableCategoriesMap[table.name].Toggle(Hud.instance.m_pieceSelectionWindow.activeSelf);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Error toggling piece selection window: {ex}");
+            }
+
+            orig(self, player, forceUpdateAllBuildStatuses);
+        }
+
+        /// <summary>
+        ///     Adds all custom pieces to their respective piece tables,
+        ///     removes erroneous ones from the manager.
+        /// </summary>
         private void RegisterInPieceTables()
         {
             if (Pieces.Count > 0)
@@ -714,7 +711,7 @@ namespace Jotunn.Managers
                 float maxX = (tab.transform as RectTransform).anchoredPosition.x + PieceCategoryTabSize;
                 if (maxX > PieceCategorySize)
                 {
-                    float offsetX = selectedCategory == Instance.PieceCategoryMax - 1 ? maxX - PieceCategorySize : PieceCategoryTabSize;
+                    float offsetX = selectedCategory == Values.Max() ? maxX - PieceCategorySize : PieceCategoryTabSize;
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
                         (go.transform as RectTransform).anchoredPosition -= new Vector2(offsetX, 0);
