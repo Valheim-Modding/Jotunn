@@ -564,6 +564,8 @@ namespace Jotunn.Managers
         {
             private static PieceTableCategories currentActive;
 
+            private Piece.PieceCategory lastCategory = Piece.PieceCategory.All;
+
             internal void Toggle(bool isActive)
             {
                 if (isActive && (currentActive == null || currentActive != this))
@@ -582,6 +584,18 @@ namespace Jotunn.Managers
 
                     // Reorder tabs
                     ReorderActiveTabs();
+
+                    // Set last selected category
+                    if (lastCategory == Piece.PieceCategory.All)
+                    {
+                        Piece.PieceCategory firstCategory = Values.Min();
+                        Player.m_localPlayer.m_buildPieces.m_selectedCategory = firstCategory;
+                        PieceCategoryScroll(firstCategory);
+                    }
+                    else
+                    {
+                        PieceCategoryScroll(lastCategory);
+                    }
 
                     // Hook navigation
                     On.PieceTable.SetCategory += PieceTable_SetCategory;
@@ -686,6 +700,7 @@ namespace Jotunn.Managers
             private void PieceCategoryScroll(Piece.PieceCategory selectedCategory)
             {
                 var tab = Hud.instance.m_pieceCategoryTabs[(int)selectedCategory];
+                lastCategory = selectedCategory;
 
                 float minX = (tab.transform as RectTransform).anchoredPosition.x;
                 if (minX < 0f)
