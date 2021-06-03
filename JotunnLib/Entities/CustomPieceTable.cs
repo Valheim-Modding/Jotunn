@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Jotunn.Configs;
+﻿using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -25,15 +23,29 @@ namespace Jotunn.Entities
         ///     Will not be added again to the prefab when replaced.
         /// </summary>
         public PieceTable PieceTable { get; set; } = null;
-        
+
+        /// <summary>
+        ///     String array of categories used on the <see cref="global::PieceTable"/>. 
+        ///     Will be ignored when m_useCategories is false.<br />
+        ///     All categories provided here will be used and displayed on the <see cref="Hud"/>.
+        /// </summary>
         public string[] Categories { get; set; } = new string[0];
 
+        /// <summary>
+        ///     Custom piece table from a prefab.
+        /// </summary>
+        /// <param name="pieceTablePrefab">The prefab for this custom piece table.</param>
         public CustomPieceTable(GameObject pieceTablePrefab)
         {
             PieceTablePrefab = pieceTablePrefab;
             PieceTable = pieceTablePrefab.GetComponent<PieceTable>();
         }
 
+        /// <summary>
+        ///     Custom piece table from a prefab with a <see cref="PieceTableConfig"/> attached.
+        /// </summary>
+        /// <param name="pieceTablePrefab">The prefab for this custom piece table.</param>
+        /// <param name="config">The <see cref="PieceTableConfig"/> for this custom piece table.</param>
         public CustomPieceTable(GameObject pieceTablePrefab, PieceTableConfig config)
         {
             PieceTablePrefab = pieceTablePrefab;
@@ -42,6 +54,11 @@ namespace Jotunn.Entities
             Categories = config.GetCategories();
         }
 
+        /// <summary>
+        ///     "Empty" custom piece table with a <see cref="PieceTableConfig"/> attached.
+        /// </summary>
+        /// <param name="name">The name of the custom piece table.</param>
+        /// <param name="config">The <see cref="PieceTableConfig"/> for this custom piece table.</param>
         public CustomPieceTable(string name, PieceTableConfig config)
         {
             PieceTablePrefab = new GameObject(name);
