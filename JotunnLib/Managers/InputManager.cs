@@ -13,10 +13,12 @@ namespace Jotunn.Managers
     public class InputManager : IManager
     {
         private static InputManager _instance;
-        
+
         // Internal holder for all buttons added via Jotunn
         internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
-        
+
+        internal static Dictionary<ConfigEntryBase, ButtonConfig> ButtonToConfigDict = new Dictionary<ConfigEntryBase, ButtonConfig>();
+
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -43,19 +45,29 @@ namespace Jotunn.Managers
         /// Add Button to Valheim
         /// </summary>
         /// <param name="modGuid">Mod GUID</param>
-        /// <param name="entry">KeyCode configuration entry</param>
-        public void AddButton(string modGuid, ConfigEntry<KeyCode> entry)
+        /// <param name="configurationEntry">KeyCode configuration entry</param>
+        public void AddButton(string modGuid, ButtonConfig buttonConfig, ConfigEntry<KeyCode> configurationEntry)
         {
-            ButtonConfig buttonConfig = entry.Description.Tags.FirstOrDefault(x => x is ButtonConfig) as ButtonConfig;
             if (buttonConfig == null)
             {
-                throw new Exception($"Configuration entry {entry.Definition.Section}.{entry.Definition.Key} needs to have a ButtonConfig Tag.");
+                throw new ArgumentNullException(nameof(buttonConfig));
+            }
+
+            if (configurationEntry == null)
+            {
+                throw new ArgumentNullException(nameof(configurationEntry));
+            }
+
+            if (string.IsNullOrEmpty(modGuid))
+            {
+                throw new ArgumentException($"{nameof(modGuid)} can not be empty or null", nameof(modGuid));
             }
 
             // Read value from config
-            buttonConfig.Key = entry.Value;
+            buttonConfig.Key = configurationEntry.Value;
             buttonConfig.Name += "!" + modGuid;
             Buttons.Add(buttonConfig.Name, buttonConfig);
+            ButtonToConfigDict.Add(configurationEntry, buttonConfig);
         }
 
         /// <summary>
@@ -65,6 +77,16 @@ namespace Jotunn.Managers
         /// <param name="button">Button config</param>
         public void AddButton(string modGuid, ButtonConfig button)
         {
+            if (button == null)
+            {
+                throw new ArgumentNullException(nameof(button));
+            }
+
+            if (string.IsNullOrEmpty(modGuid))
+            {
+                throw new ArgumentException($"{nameof(modGuid)} can not be empty or null", nameof(modGuid));
+            }
+
             if (Buttons.ContainsKey(button.Name + "!" + modGuid))
             {
                 Logger.LogError($"Cannot have duplicate button: {button.Name} (Mod {modGuid})");
@@ -72,7 +94,6 @@ namespace Jotunn.Managers
             }
 
             button.Name += "!" + modGuid;
-
             Buttons.Add(button.Name, button);
         }
 
