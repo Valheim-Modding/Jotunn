@@ -378,14 +378,19 @@ namespace Jotunn.Managers
                     Logger.LogInfo($"Added categories for table {table.name}");
                 }
 
-                // Hook sceneLoaded for generation of custom piece category tabs
+                // Hook sceneLoaded for generation of custom category tabs
                 SceneManager.sceneLoaded += CreateCategoryTabs;
 
-                // Hook piece table GUI toogle
-                On.Hud.TogglePieceSelection += (On.Hud.orig_TogglePieceSelection orig, Hud self) =>
+                // Hooks for custom category tab toggle
+                /*On.Hud.TogglePieceSelection += (On.Hud.orig_TogglePieceSelection orig, Hud self) =>
                 {
                     TogglePieceCategories();
                     orig(self);
+                };*/
+                On.Hud.UpdateBuild += (On.Hud.orig_UpdateBuild orig, Hud self, Player player, bool forceUpdateAllBuildStatuses) =>
+                {
+                    TogglePieceCategories();
+                    orig(self, player, forceUpdateAllBuildStatuses);
                 };
             }
         }
@@ -401,7 +406,7 @@ namespace Jotunn.Managers
                 var table = Player.m_localPlayer.m_buildPieces;
                 if (table != null && PieceTableCategoriesMap.ContainsKey(table.name))
                 {
-                    PieceTableCategoriesMap[table.name].Toggle(!Hud.instance.m_pieceSelectionWindow.activeSelf);
+                    PieceTableCategoriesMap[table.name].Toggle(Hud.instance.m_pieceSelectionWindow.activeSelf);
                 }
             }
             catch (Exception ex)
@@ -412,6 +417,7 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Create tabs for the ingame GUI for every piece table category.
+        ///     Just executes when custom piece table categories were added.
         /// </summary>
         private void CreateCategoryTabs(Scene scene, LoadSceneMode loadSceneMode)
         {
@@ -556,10 +562,18 @@ namespace Jotunn.Managers
 
         internal class PieceTableCategories : Dictionary<string, Piece.PieceCategory>
         {
-            internal void Toggle(bool active)
+            private static PieceTableCategories currentActive;
+
+            internal void Toggle(bool isActive)
             {
-                if (active)
+                if (isActive && (currentActive == null || currentActive != this))
                 {
+                    // Deactivate current active
+                    if (currentActive != null && currentActive != this)
+                    {
+                        currentActive.Toggle(false);
+                    }
+
                     // Activate all tabs for this categories
                     foreach (GameObject tab in Hud.instance.m_pieceCategoryTabs)
                     {
@@ -574,8 +588,10 @@ namespace Jotunn.Managers
                     On.PieceTable.NextCategory += PieceTable_NextCategory;
                     On.PieceTable.PrevCategory += PieceTable_PrevCategory;
                     On.Hud.OnLeftClickCategory += Hud_OnLeftClickCategory;
+
+                    currentActive = this;
                 }
-                else
+                if (!isActive && currentActive != null && currentActive == this)
                 {
                     // Activate all vanilla tabs
                     foreach (GameObject tab in Hud.instance.m_pieceCategoryTabs)
@@ -591,6 +607,8 @@ namespace Jotunn.Managers
                     On.PieceTable.NextCategory -= PieceTable_NextCategory;
                     On.PieceTable.PrevCategory -= PieceTable_PrevCategory;
                     On.Hud.OnLeftClickCategory -= Hud_OnLeftClickCategory;
+
+                    currentActive = null;
                 }
             }
 
