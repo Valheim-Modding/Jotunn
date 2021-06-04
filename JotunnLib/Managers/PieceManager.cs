@@ -64,18 +64,6 @@ namespace Jotunn.Managers
             {
                 On.ObjectDB.Awake += InvokeOnPiecesRegistered;
             }
-
-            /*// Setup vanilla tables
-            PieceTableNameMap.Add("Hammer", "_HammerPieceTable");
-            PieceTableCategoriesMap.Add("_HammerPieceTable", new PieceTableCategories
-            {
-                { Piece.PieceCategory.Misc.ToString(), Piece.PieceCategory.Misc },
-                { Piece.PieceCategory.Crafting.ToString(), Piece.PieceCategory.Crafting },
-                { Piece.PieceCategory.Building.ToString(), Piece.PieceCategory.Building },
-                { Piece.PieceCategory.Furniture.ToString(), Piece.PieceCategory.Furniture }
-            });
-            PieceTableNameMap.Add("Hoe", "_HoePieceTable");
-            PieceTableNameMap.Add("Cultivator", "_CultivatorPieceTable");*/
         }
 
         /// <summary>
