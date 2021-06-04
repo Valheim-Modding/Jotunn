@@ -45,56 +45,33 @@ namespace Jotunn.Managers
         /// Add Button to Valheim
         /// </summary>
         /// <param name="modGuid">Mod GUID</param>
-        /// <param name="configurationEntry">KeyCode configuration entry</param>
-        public void AddButton(string modGuid, ButtonConfig buttonConfig, ConfigEntry<KeyCode> configurationEntry)
+        /// <param name="buttonConfig">Button config</param>
+        public void AddButton(string modGuid, ButtonConfig buttonConfig)
         {
             if (buttonConfig == null)
             {
                 throw new ArgumentNullException(nameof(buttonConfig));
             }
 
-            if (configurationEntry == null)
-            {
-                throw new ArgumentNullException(nameof(configurationEntry));
-            }
-
             if (string.IsNullOrEmpty(modGuid))
             {
                 throw new ArgumentException($"{nameof(modGuid)} can not be empty or null", nameof(modGuid));
             }
 
-            // Read value from config
-            buttonConfig.Key = configurationEntry.Value;
-            buttonConfig.Name += "!" + modGuid;
-            Buttons.Add(buttonConfig.Name, buttonConfig);
-            ButtonToConfigDict.Add(configurationEntry, buttonConfig);
-        }
-
-        /// <summary>
-        /// Add Button to Valheim
-        /// </summary>
-        /// <param name="modGuid">Mod GUID</param>
-        /// <param name="button">Button config</param>
-        public void AddButton(string modGuid, ButtonConfig button)
-        {
-            if (button == null)
+            if (Buttons.ContainsKey(buttonConfig.Name + "!" + modGuid))
             {
-                throw new ArgumentNullException(nameof(button));
-            }
-
-            if (string.IsNullOrEmpty(modGuid))
-            {
-                throw new ArgumentException($"{nameof(modGuid)} can not be empty or null", nameof(modGuid));
-            }
-
-            if (Buttons.ContainsKey(button.Name + "!" + modGuid))
-            {
-                Logger.LogError($"Cannot have duplicate button: {button.Name} (Mod {modGuid})");
+                Logger.LogError($"Cannot have duplicate button: {buttonConfig.Name} (Mod {modGuid})");
                 return;
             }
 
-            button.Name += "!" + modGuid;
-            Buttons.Add(button.Name, button);
+            if (buttonConfig.Config != null)
+            {
+                buttonConfig.Key = buttonConfig.Config.Value;
+                ButtonToConfigDict.Add(buttonConfig.Config, buttonConfig);
+            }
+
+            buttonConfig.Name += "!" + modGuid;
+            Buttons.Add(buttonConfig.Name, buttonConfig);
         }
 
         /// <summary>

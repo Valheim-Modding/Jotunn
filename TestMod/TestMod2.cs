@@ -28,13 +28,14 @@ namespace TestMod
         public void Awake()
         {
             // Add a client side custom input key for the EvilSword
-            var btn2 = Config.Bind(JotunnTestModConfigSection, "AttackWithEvilSword", KeyCode.Z, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+            var btn2 = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.Z, new ConfigDescription("Key to unleash evil with the Evil Sword"));
 
             InputManager.Instance.AddButton(ModGUID, new ButtonConfig
             {
                 Name = "EvilSwordSpecialAttack",
+                Config = btn2,
                 HintToken = "$evilsword_beevil"
-            }, btn2);
+            });
 
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }

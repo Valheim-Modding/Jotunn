@@ -11,8 +11,6 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
-using System.Globalization;
-using Jotunn.InGameConfig;
 
 namespace TestMod
 {
@@ -275,12 +273,12 @@ namespace TestMod
             evilSwordSpecial = new ButtonConfig
             {
                 Name = "EvilSwordSpecialAttack",
-                Key = (KeyCode)Config[JotunnTestModConfigSection, "EvilSwordSpecialAttack"].BoxedValue,
+                Config = evilSwordAttackButtonConfigEntry,
                 HintToken = "$evilsword_beevil"
             };
             
-            // Add evil sword special button, defined in CreateConfigValues
-            InputManager.Instance.AddButton(ModGUID, evilSwordSpecial, evilSwordAttackButtonConfigEntry);
+            // Add evil sword special button
+            InputManager.Instance.AddButton(ModGUID, evilSwordSpecial);
 
             // Add a key binding to test skill raising
             InputManager.Instance.AddButton(ModGUID, "TestMod_RaiseSkill", KeyCode.Home);
