@@ -73,8 +73,7 @@ private static void RecipeEvilSword(ItemDrop itemDrop)
 }
 ```
 
-
-## Instantiating items from prefabs, RecipeConfig's
+## Instantiating items from prefabs
 
 In the previous examples we saw that its possible to easily clone existing items and customise our recipe's required for the items, however these examples are rather verbose, and requires a fair amount of setup. In order to better facilitate configurations such as these, we have introduced `*Config` abstractions such as the [RecipeConfig](xref:Jotunn.Configs.RecipeConfig) and [RequirementConfig](xref:Jotunn.Configs.RequirementConfig), which exposes common properties such as the ItemDrop, CraftingStation, and Resources.
 

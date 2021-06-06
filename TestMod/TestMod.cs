@@ -422,7 +422,7 @@ namespace TestMod
         // Add new Items with item Configs
         private void AddItemsWithConfigs()
         {
-            // Add a custom piece table
+            // Add a custom piece table with custom categories
             var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
             CustomPieceTable rune_table = new CustomPieceTable(table_prefab,
                 new PieceTableConfig
