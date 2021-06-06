@@ -293,13 +293,21 @@ namespace TestMod
                 }
             });
 
-            // Add translations for the custom piece in AddEmptyPiecesAndCategories
+            // Add translations for the custom piece in AddPieceCategories
             LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") 
             {
                 Translations = {
                     { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
                     { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
                 } 
+            });
+
+            // Add translations for the custom variant in AddClonedItems
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            {
+                Translations = {
+                    { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
+                }
             });
         }
 
@@ -713,7 +721,12 @@ namespace TestMod
                 Texture2D styleTex = AssetUtils.LoadTexture("TestMod/Assets/test_varpaint.png");
                 CustomItem CI = new CustomItem("item_lulvariants", "ShieldWood", new ItemConfig
                 {
-                    Name = "lulz Shield",
+                    Name = "$lulz_shield",
+                    Description = "$lulz_shield_desc",
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig{ Item = "Wood", Amount = 1 }
+                    },
                     Icons = new Sprite[]
                     {
                         var1, var2
