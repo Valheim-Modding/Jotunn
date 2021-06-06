@@ -1,5 +1,12 @@
 ﻿# Changelog
 
+## Version 2.0.12
+* Disabled SaveManager for now to counter lags
+* Added removal of erroneous entities from managers
+* Added better handling of empty strings in configs
+* Removed output of managers when no custom entities got added
+* Added global changelog on github (https://github.com/Valheim-Modding/Jotunn/blob/dev/CHANGELOG.md)
+
 ## Version 2.0.11
 * Added support for Color type configurations in the mod settings GUI
 * Added visual indicator for server side configurations in the mod settings GUI
