@@ -439,7 +439,7 @@ namespace Jotunn.Managers
             try
             {
                 var table = Player.m_localPlayer.m_buildPieces;
-                if (table != null && PieceTableCategoriesMap.ContainsKey(table.name))
+                if (table != null && table.m_useCategories && PieceTableCategoriesMap.ContainsKey(table.name))
                 {
                     PieceTableCategoriesMap[table.name].Toggle(Hud.instance.m_pieceSelectionWindow.activeSelf);
                 }
