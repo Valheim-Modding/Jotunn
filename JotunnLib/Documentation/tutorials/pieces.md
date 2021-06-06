@@ -27,8 +27,8 @@ After loading our custom item, we will load a piece table GameObject from our ex
 ```cs
 private void CreateRunePieceTable()
 {
-    GameObject pieceTablePrefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
-    CustomPieceTable CPT = new CustomPieceTable(pieceTablePrefab);
+    GameObject tablePrefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
+    CustomPieceTable CPT = new CustomPieceTable(tablePrefab);
     PieceManager.Instance.AddPieceTable(CPT);
 }
 ```
@@ -84,7 +84,7 @@ As you can see in the screenshot the name and description are not yet localized.
 
 With [PieceConfig's](xref:Jotunn.Configs.PieceConfig) it is possible to add your pieces to a vanilla or even custom piece table category. For this example we create "empty" pieces (GameObjects with just a cube model and a Piece component) and add them to a new category "Lulzies" on the Hammer.
 
-```cs// Makes this piece a station extension
+```cs
 // Implementation of custom pieces from an "empty" prefab with new piece categories
 private void AddPieceCategories()
 {
