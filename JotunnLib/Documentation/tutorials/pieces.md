@@ -1,16 +1,15 @@
 ﻿# Pieces and PieceTables
 
-##### Note: _This example requires [assets](asset-loading.md) to be loaded, as well as [localizations](localization.md)._
+_Pieces_ in Valheim are anything that can be built in the game, through means such as the Hammer, Cultivator, Hoe or your own custom tool items. This includes things such as plant sapplings, the workbench, and walls. In order for a prefab to be a _piece_, it must have the `Piece` component attached to the prefab.
 
-## Pieces
-_Pieces_ in Valheim are anything that can be built in the game, through means such as the Hammer, Cultivator, Hoe or your own custom tool items. This includes things such as plant sapplings, the workbench, and walls. Custom pieces are handled by the [PieceManager](xref:Jotunn.Managers.PieceManager) singleton.  
+_Piece Tables_ in Valheim are connecting the buildable pieces to the tools used for building. They also define the build categories and if a tool can remove pieces again. In vanilla Valheim you only can use four building categories or none on a piece table. Jötunn adds the ability to use custom categories on vanilla tools or completely own categories on custom tool items. In order for a prefab to be a _piece table_, it must have the `PieceTable` component attached to the prefab.
 
-**Note:** You **must** only use names of existing prefabs (either ones you created or default Valheim ones). This can be prefabs that have already been registered by another mod, or that already exist in the game.  
+Custom pieces and piece tables are handled by the [PieceManager](xref:Jotunn.Managers.PieceManager) singleton.
 
-In order for a prefab to be a _piece_, it must have the `Piece` component attached to the prefab.
+This example requires [assets](asset-loading.md) to be loaded. The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
 
-## Piece Tables
-_Piece Tables_ in Valheim are connecting the buildable pieces to the tools used for building. They also define the build categories and if a tool can remove pieces again. In vanilla Valheim you only can use four building categories or none on a piece table. Jötunn adds the ability to use custom categories on vanilla tools or completely own categories on custom tool items.
+> [!NOTE]
+> You **must** only use names of existing prefabs. This can be prefabs you created, that have already been registered by another mod, or that already exist in the game.
 
 ## Creating custom pieces with prefabs
 

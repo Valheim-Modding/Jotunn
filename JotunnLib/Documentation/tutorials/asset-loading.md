@@ -1,35 +1,18 @@
-﻿# Loading Assets, the Jötunn way
+﻿# Loading Assets
 
-Inside of our `Awake` in our `BaseUnityPlugin` we will invoke a new method `LoadAssets();` which will load the prefabs from our asset bundles and resources into our plugin. To facilitate this we will first need to define some fields as such:
+_Assets_ are resources imported into the game besides the dll file holding our plugin code. They can be images, localization files or complete asset bundles exported from Unity to import into the game. There are two different ways of loading your assets, commonly known as _side loaded_ and _embedded_.
 
-```cs
-public AssetBundle TestAssets;
-public AssetBundle BlueprintRuneBundle;
-public Skills.SkillType TestSkillType = 0;
-private Texture2D testTex;
-private Sprite testSprite;
-private GameObject backpackPrefab;
-private AssetBundle embeddedResourceBundle;
-```
-
-To acquire the references we will be using here you may [download](https://github.com/Valheim-Modding/JotunnModExample/blob/master/JotunnModExample/assets.zip) them and place inside your project root: 
-
-![Assets Extraction](../images/data/AssetsExtraction.png)
-
-Next, we must import our assets into our project, and ensure they are packed into, or with our plugin. There are a number of ways to do this, such as:
-
+**Note**: The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
 
 ### Side loading
 
 Side loading would be where the assets are packaged alongside your plugin.dll. 
 
-You may have noticed that we include a postbuild command to copy the `Assets` directory into the games plugin directory. Although this allows for easy development iteration though being able to change assets without recompilation, it is not so easily distributable to users, and must be packaged side by side with your released plugin, and exposes your assets to being directly modified by the user.
+You may have noticed that we include a postbuild command into the [example mod](https://github.com/Valheim-Modding/JotunnModExample) to copy the `Assets` directory into the games plugin directory. Although this allows for easy development iteration though being able to change assets without recompilation, it is not so easily distributable to users, and must be packaged side by side with your released plugin, and exposes your assets to being directly modified by the user.
 
-`<Exec Command="xcopy &quot;$(ProjectDir)Assets&quot; &quot;$(VALHEIM_INSTALL)\BepInEx\plugins\JotunnModExample\Assets\&quot; /S /Y" />`
+The example mod's post build action is a simple XCOPY command: `<Exec Command="xcopy &quot;$(ProjectDir)Assets&quot; &quot;$(VALHEIM_INSTALL)\BepInEx\plugins\JotunnModExample\Assets\&quot; /S /Y" />`
 
 ### Embedded resource
-
-Right click our solution, then add a new directory named `AssetsEmbedded`. Right click the directory and select `Add existing` and select the files we placed inside from the download link provided.
 
 Another option is to embed our resources inside the binary itself. You may do this by right clicking a folder inside of your project, and add an existing item. Once it has been added, right click the item, select properties, and set the build action to embedded resource:
 
@@ -37,7 +20,8 @@ Another option is to embed our resources inside the binary itself. You may do th
 
 
 ### Referencing our assets
-In order to load our resources, we can utilise Jötunn's [AssetUtils](xref:Jotunn.Utils.AssetUtils) helper methods, such as [LoadTexture](xref:Jotunn.Utils.AssetUtils.LoadTexture(System.String,System.Boolean)), [LoadAssetBundle](xref:Jotunn.Utils.AssetUtils.LoadAssetBundle(System.String)), [LoadAssetBundleFromResources](xref:Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources(System.String,System.Reflection.Assembly)). The method bellow showcases a number of ways to load your assets into various forms of objects.
+
+In order to load our resources, we can utilise Jötunn's [AssetUtils](xref:Jotunn.Utils.AssetUtils) helper methods, such as [LoadTexture](xref:Jotunn.Utils.AssetUtils.LoadTexture(System.String,System.Boolean)), [LoadAssetBundle](xref:Jotunn.Utils.AssetUtils.LoadAssetBundle(System.String)), [LoadAssetBundleFromResources](xref:Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources(System.String,System.Reflection.Assembly)). The method below showcases a number of ways to load your assets into various forms of objects.
 
 ```cs
 private void LoadAssets()
@@ -49,10 +33,6 @@ private void LoadAssets()
     // Load asset bundle from the filesystem
     testAssets = AssetUtils.LoadAssetBundle("JotunnModExample/Assets/jotunnlibtest");
     Jotunn.Logger.LogInfo(testAssets);
-
-    // Load asset bundle from the filesystem
-    blueprintRuneBundle = AssetUtils.LoadAssetBundle("JotunnModExample/Assets/testblueprints");
-    Jotunn.Logger.LogInfo(blueprintRuneBundle);
 
     // Load asset bundle from embedded resources
     embeddedResourceBundle = AssetUtils.LoadAssetBundleFromResources("eviesbackpacks", typeof(JotunnModExample).Assembly);
