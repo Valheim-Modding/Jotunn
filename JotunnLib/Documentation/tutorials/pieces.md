@@ -134,6 +134,9 @@ private void AddPieceCategories()
 
 The result is a new category added to the piece table of the Hammer:<br />
 ![Custom Vanilla Categories](../images/data/customVanillaCategories.png)
+<br />
+One of the pieces placed in the world:<br />
+![Piece Stub Placed](../images/data/pieceStubPlaced.png)
 
 ## Example creating completely new categories using PieceTableConfigs
 
