@@ -90,7 +90,7 @@ namespace Jotunn.Managers
             PrefabManager.Instance.AddPrefab(customPieceTable.PieceTablePrefab);
 
             // Create all custom categories on that table
-            if (customPieceTable.Categories.Length > 0)
+            if (customPieceTable.Categories != null)
             {
                 foreach (var category in customPieceTable.Categories)
                 {
