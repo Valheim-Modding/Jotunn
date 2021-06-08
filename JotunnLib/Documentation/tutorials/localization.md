@@ -56,6 +56,14 @@ private void AddLocalizations()
             { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
         }
     });
+
+    // Add translations for the custom item in AddVariants
+    LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+    {
+        Translations = {
+            { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
+        }
+    });
 }
 ```
 ![Evil Sword Localizations](../images/data/EvilSwordLocalizations.png)
