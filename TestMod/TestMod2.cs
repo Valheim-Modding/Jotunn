@@ -36,16 +36,6 @@ namespace TestMod
                 Config = btn2,
                 HintToken = "$evilsword_beevil"
             });
-
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-        }
-
-        private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
-        {
-            foreach (var tex in Resources.FindObjectsOfTypeAll<Texture2D>())
-            {
-                Logger.LogWarning($"Texture {tex.name}");
-            }
         }
     }
 }
