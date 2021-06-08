@@ -50,18 +50,6 @@ namespace Jotunn.InGameConfig
         {
             On.FejdStartup.OnButtonSettings += FejdStartup_OnButtonSettings;
             On.Menu.OnSettings += Menu_OnSettings;
-            On.ZInput.EndBindKey += ZInput_EndBindKey;
-        }
-
-        private static bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
-        {
-            var result = orig(self);
-            if (result && ZInput.m_binding != null)
-            {
-                keyInBinding.SetOtherButtons(ZInput.m_binding.m_key);
-            }
-
-            return result;
         }
 
         // Create our tab and cache configuration values for later synchronization
@@ -913,28 +901,6 @@ namespace Jotunn.InGameConfig
                     keyInBinding = this;
                     Settings.instance.OpenBindDialog(buttonName + "!" + ModGUID);
                 });
-            }
-
-            internal void SetOtherButtons(KeyCode newKeyCode)
-            {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                var buttonName = entry.GetBoundButtonName();
-
-                if (configurationKeybindings.ContainsKey(buttonName))
-                {
-                    foreach (var button in configurationKeybindings[buttonName])
-                    {
-                        var cbkc = gameObject.transform.parent.gameObject.GetComponentsInChildren<ConfigBoundKeyCode>().FirstOrDefault(x =>
-                            x.ModGUID == button.Item1 && x.Section == button.Item2.Section && x.Key == button.Item2.Key);
-                        if (cbkc != null)
-                        {
-                            ZInput.instance.m_buttons[$"{buttonName}!{cbkc.ModGUID}"].m_key = newKeyCode;
-                        }
-                    }
-
-                    Settings.instance.UpdateBindings();
-                }
             }
 
             public override void SetEnabled(bool enabled)
