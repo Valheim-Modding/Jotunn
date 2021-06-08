@@ -3,7 +3,7 @@ Localizations are string conversions for language tokens that are bound to in-ga
 
 JVL provides a number of different methods to interface with our localization system, to allow both developers as well as the community at large to provide localizations for both custom items, as well as non supported languages.
 
-**Note**: This example requires [assets](asset-loading.md) to be loaded.
+**Note**: This example requires [assets](asset-loading.md) to be loaded. The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
 
 ## Preparing your assets
 In order to facilitate our localizations, we must prepare our assets to ensure they are able to accept our localization strings. The game follows the convention that language tokens are prefixed with a `$` to signify the string is a token due for replacement. Common properties which accept tokens are things such as names, descriptions, and flavourtext. The following name thereafter must be unique, but can follow any format the user desires.
@@ -26,26 +26,45 @@ All .json files within such a directory will be iterated through and localizatio
 Localizations may also be hardcoded into your plugin by invoking the [AddLocalization](xref:Jotunn.Managers.LocalizationManager.AddLocalization(Jotunn.Configs.LocalizationConfig)) method.
 
 ```cs
-// Add translations for the custom item in AddClonedItems
-LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+private void AddLocalizations()
 {
-    Translations = {
-        {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the ight"},
-        {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
-        {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
-        {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
-        {"evilsword_effectstop", "You feel nice again"}
-    }
-});
-
-// Add translations for the custom piece in addEmptyItems
-LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
-{
-    Translations =
+    // Add translations for our custom skill
+    LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
     {
-        { "piece_lul", "Lulz" }
-    }
-});
+        Translations = {
+            {"skill_TestingSkill", "TestLocalizedSkillName" }
+        }
+    });
+
+    // Add translations for the custom item in AddClonedItems
+    LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+    {
+        Translations = {
+            {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
+            {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
+            {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
+            {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
+            {"evilsword_effectstop", "You feel nice again"}
+        }
+    });
+
+    // Add translations for the custom piece in AddPieceCategories
+    LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+    {
+        Translations = {
+            { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
+            { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
+        }
+    });
+
+    // Add translations for the custom item in AddVariants
+    LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+    {
+        Translations = {
+            { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
+        }
+    });
+}
 ```
 ![Evil Sword Localizations](../images/data/EvilSwordLocalizations.png)
 
@@ -54,11 +73,14 @@ LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
 It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime via [AddJson](xref:Jotunn.Managers.LocalizationManager.AddJson(System.String,System.String)). In this example, we use our filenames to provide the language which we wish to add the translations for:
 
 ```cs
-TextAsset[] textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
-foreach (var textAsset in textAssets)
+private void BlueprintRuneLocalizations()
 {
-    var lang = textAsset.name.Replace(".json", null);
-    LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
+    TextAsset[] textAssets = blueprintRuneBundle.LoadAllAssets<TextAsset>();
+    foreach (var textAsset in textAssets)
+    {
+        var lang = textAsset.name.Replace(".json", null);
+        LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
+    }
 }
 ```
 ![Blueprint Rune Localizations](../images/data/blueprintRuneLocalizations.png)

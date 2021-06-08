@@ -299,13 +299,21 @@ namespace TestMod
                 }
             });
 
-            // Add translations for the custom piece in AddEmptyPiecesAndCategories
+            // Add translations for the custom piece in AddPieceCategories
             LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") 
             {
                 Translations = {
                     { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
                     { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
                 } 
+            });
+
+            // Add translations for the custom variant in AddClonedItems
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            {
+                Translations = {
+                    { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
+                }
             });
         }
 
@@ -420,13 +428,13 @@ namespace TestMod
         // Add new Items with item Configs
         private void AddItemsWithConfigs()
         {
-            // Add a custom piece table
+            // Add a custom piece table with custom categories
             var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
             CustomPieceTable rune_table = new CustomPieceTable(table_prefab,
                 new PieceTableConfig
                 {
                     CanRemovePieces = false,
-                    UseCategories = true,
+                    UseCategories = false,
                     UseCustomCategories = true,
                     CustomCategories = new string[]
                     {
@@ -719,7 +727,12 @@ namespace TestMod
                 Texture2D styleTex = AssetUtils.LoadTexture("TestMod/Assets/test_varpaint.png");
                 CustomItem CI = new CustomItem("item_lulvariants", "ShieldWood", new ItemConfig
                 {
-                    Name = "lulz Shield",
+                    Name = "$lulz_shield",
+                    Description = "$lulz_shield_desc",
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig{ Item = "Wood", Amount = 1 }
+                    },
                     Icons = new Sprite[]
                     {
                         var1, var2

@@ -31,6 +31,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **CustomItem** - Represents ingame items such as weapons, tools and consumables.
 - **CustomRecipe** - Represents ingame recipes for managing crafting and upgrading of items.
 - **CustomPiece** - Represent ingame building pieces.
+- **CustomPieceTable** - Represent ingame building tables. Support for custom categories included.
 - **CustomStatusEffect** - Represents ingame status effects from weapon hit effects to guardian powers.
 - **CustomItemConversion** - Represents ingame item conversions for the CookingStation, Fermenter and Smelter in one abstraction.
 - **Mocks** - Fake any vanilla prefab and use it in your custom assets - Jötunn resolves the references to the vanilla objects at runtime.

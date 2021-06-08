@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Jotunn.Configs
@@ -12,14 +9,33 @@ namespace Jotunn.Configs
     /// </summary>
     public class PieceTableConfig
     {
+        /// <summary>
+        ///     Indicator if the <see cref="PieceTable"/> uses the vanilla categories. Defaults to <c>true</c>.
+        /// </summary>
         public bool UseCategories { get; set; } = true;
-        
+
+        /// <summary>
+        ///     Indicator if the <see cref="PieceTable"/> uses custom categories. Defaults to <c>false</c>.
+        /// </summary>
         public bool UseCustomCategories { get; set; } = false;
 
+        /// <summary>
+        ///     Array of custom categories the <see cref="PieceTable"/> uses. 
+        ///     Will be ignored when <see cref="UseCustomCategories"/> is false.
+        /// </summary>
         public string[] CustomCategories { get; set; } = new string[0];
 
+        /// <summary>
+        ///     Indicator if the <see cref="PieceTable"/> can also remove pieces. Defaults to <c>true</c>.
+        /// </summary>
         public bool CanRemovePieces { get; set; } = true;
 
+        /// <summary>
+        ///     Creates the final categories array for this <see cref="PieceTable"/>. 
+        ///     Adds vanilla categories when <see cref="UseCategories"/> is true.
+        ///     Adds custom categories when <see cref="UseCustomCategories"/> is true.
+        /// </summary>
+        /// <returns>Array of category strings.</returns>
         public string[] GetCategories()
         {
             List<string> categories = new List<string>();
@@ -57,10 +73,7 @@ namespace Jotunn.Configs
             }
 
             // Use categories at all?
-            if (UseCategories || UseCustomCategories)
-            {
-                table.m_useCategories = UseCategories;
-            }
+            table.m_useCategories = UseCategories || UseCustomCategories;
 
             // Can remove pieces?
             table.m_canRemovePieces = CanRemovePieces;

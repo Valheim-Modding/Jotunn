@@ -137,8 +137,14 @@ public sealed class ConfigurationManagerAttributes
         }
     }
 
+    /// <summary>
+    ///     Color of the entry text
+    /// </summary>
     public Color EntryColor { get; set; }
 
+    /// <summary>
+    ///     Color of the description text
+    /// </summary>
     public Color DescriptionColor { get; set; }
 
     /// <summary>

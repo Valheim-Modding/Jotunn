@@ -473,7 +473,9 @@ namespace Jotunn.InGameConfig
         /// </summary>
         /// <param name="parent">parent transform</param>
         /// <param name="labelname">Label text</param>
+        /// <param name="labelColor">Color of the label</param>
         /// <param name="description">Description text</param>
+        /// <param name="descriptionColor">Color of the description text</param>
         /// <param name="guid">module GUID</param>
         /// <param name="section">Section</param>
         /// <param name="key">Key</param>
@@ -553,7 +555,9 @@ namespace Jotunn.InGameConfig
         /// </summary>
         /// <param name="parent">parent transform</param>
         /// <param name="labelname">label text</param>
-        /// <param name="description">description text</param>
+        /// <param name="labelColor">Color of the label</param>
+        /// <param name="description">Description text</param>
+        /// <param name="descriptionColor">Color of the description text</param>
         /// <param name="modguid">module GUID</param>
         /// <param name="section">section</param>
         /// <param name="key">key</param>
