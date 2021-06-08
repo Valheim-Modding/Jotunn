@@ -328,10 +328,6 @@ namespace Jotunn.InGameConfig
                                             continue;
                                         }
 
-                                        // Set others to the first's value
-                                        // commented out atm because the actual config values are still different at runtime when nobody sets them in the GUI
-                                        // buttons.Item3.BoxedValue = entry.Value.BoxedValue;
-
                                         // Add modguid as text
                                         duplicateKeybindingText += $"{buttons.Item1}, ";
                                     }
