@@ -81,14 +81,13 @@ namespace Jotunn.Utils
                 return null;
             }
 
-            if (!InputManager.ButtonToConfigDict.Keys.Contains(configurationEntry))
+            InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig);
+            if (buttonConfig != null)
             {
-                return null;
+                return buttonConfig.Name.Split('!')[0];
             }
 
-            var buttonConfig = InputManager.ButtonToConfigDict[configurationEntry];
-
-            return buttonConfig.Name.Split('!')[0];
+            return configurationEntry.Definition.Key;
         }
 
 

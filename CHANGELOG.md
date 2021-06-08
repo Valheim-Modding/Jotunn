@@ -8,7 +8,6 @@
 * Added support for tokenized piece names and descriptions via PieceConfig
 * Added item variations via ItemConfig
 * Added possibility to directly link a BepInEx ConfigEntry to a ButtonConfig
-  * **Warning: If your mod previously added config bound KeyCodes to a ButtonConfig there will be issues with the InGameSettings GUI**
 
 ## Version 2.0.12
 * Disabled SaveManager for now to counter lags

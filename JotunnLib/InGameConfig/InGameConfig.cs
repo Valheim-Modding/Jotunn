@@ -302,7 +302,7 @@ namespace Jotunn.InGameConfig
                             // Create key binder
                             var buttonName = entry.Value.GetBoundButtonName();
                             var buttonText = $"{entry.Value.Description.Description}{Environment.NewLine}This key is bound to button '{buttonName}'.";
-                            if (!string.IsNullOrEmpty(buttonName))
+                            if (!string.IsNullOrEmpty(buttonName) && configurationKeybindings.ContainsKey(buttonName))
                             {
                                 var duplicateKeybindingText = "";
                                 if (configurationKeybindings[entry.Value.GetBoundButtonName()].Count > 1)
