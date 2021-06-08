@@ -58,6 +58,11 @@ namespace Jotunn.Managers
                 throw new ArgumentException($"{nameof(modGuid)} can not be empty or null", nameof(modGuid));
             }
 
+            if ((buttonConfig.Config == null) && (buttonConfig.Key == KeyCode.None) && string.IsNullOrEmpty(buttonConfig.Axis))
+            {
+                throw new ArgumentException($"{nameof(buttonConfig)} needs either Key, Axis or Config set.", nameof(buttonConfig));
+            }
+
             if (Buttons.ContainsKey(buttonConfig.Name + "!" + modGuid))
             {
                 Logger.LogError($"Cannot have duplicate button: {buttonConfig.Name} (Mod {modGuid})");
