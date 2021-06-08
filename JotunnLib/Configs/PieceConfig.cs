@@ -1,4 +1,6 @@
-﻿using Jotunn.Entities;
+﻿using System;
+using Jotunn.Entities;
+using Jotunn.Managers;
 using UnityEngine;
 
 namespace Jotunn.Configs
@@ -11,12 +13,17 @@ namespace Jotunn.Configs
     public class PieceConfig
     {
         /// <summary>
-        ///     The description of your piece.
+        ///     The name for your piece. May be tokenized.
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        ///     The description of your piece. May be tokenized.
         /// </summary>
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
-        ///     Whether this piece is buildable or not.
+        ///     Whether this piece is buildable or not. Defaults to <c>true</c>.
         /// </summary>
         public bool Enabled { get; set; } = true;
 
@@ -29,6 +36,14 @@ namespace Jotunn.Configs
         ///     The name of the piece table where this piece will be added.
         /// </summary>
         public string PieceTable { get; set; } = string.Empty;
+
+        /// <summary>
+        ///     The name of the category this piece will appear on. If categories are disabled on the 
+        ///     target <see cref="global::PieceTable"/>, this setting will be ignored.<br />
+        ///     If categories are enabled but the given category can't be found, a new 
+        ///     <see cref="global::Piece.PieceCategory"/> will be added to the table.
+        /// </summary>
+        public string Category { get; set; } = string.Empty;
 
         /// <summary>
         ///     The name of the crafting station prefab which needs to be in close proximity to build this piece.
@@ -51,22 +66,6 @@ namespace Jotunn.Configs
         public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
 
         /// <summary>
-        ///     Converts the RequirementConfigs to Valheim style Piece.Requirements
-        /// </summary>
-        /// <returns>The Valheim Piece.Requirement array</returns>
-        public Piece.Requirement[] GetRequirements()
-        {
-            Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];
-
-            for (int i = 0; i < reqs.Length; i++)
-            {
-                reqs[i] = Requirements[i].GetRequirement();
-            }
-
-            return reqs;
-        }
-
-        /// <summary>
         ///     Apply this configs values to a piece GameObject.
         /// </summary>
         /// <param name="prefab"></param>
@@ -82,6 +81,12 @@ namespace Jotunn.Configs
             piece.enabled = Enabled;
             piece.m_allowedInDungeons = AllowedInDungeons;
             
+            // Set name if given
+            if (!string.IsNullOrEmpty(Name))
+            {
+                piece.m_name = Name;
+            }
+
             // Set icon if overriden
             if (Icon != null)
             {
@@ -108,6 +113,27 @@ namespace Jotunn.Configs
                 
                 stationExt.m_craftingStation = Mock<CraftingStation>.Create(ExtendStation);
             }
+
+            if (!string.IsNullOrEmpty(Category))
+            {
+                piece.m_category = PieceManager.Instance.AddPieceCategory(PieceTable, Category);
+            }
+        }
+
+        /// <summary>
+        ///     Converts the <see cref="RequirementConfig"/>s to Valheim style <see cref="Piece.Requirement"/> array.
+        /// </summary>
+        /// <returns>The Valheim <see cref="global::Piece.Requirement"/> array</returns>
+        public Piece.Requirement[] GetRequirements()
+        {
+            Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];
+
+            for (int i = 0; i < reqs.Length; i++)
+            {
+                reqs[i] = Requirements[i].GetRequirement();
+            }
+
+            return reqs;
         }
     }
 }

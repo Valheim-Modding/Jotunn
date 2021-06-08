@@ -60,15 +60,18 @@ namespace TestMod
             AddSkills();
             AddRecipes();
             AddStatusEffects();
-            AddItemConversions();
-            AddCustomItemAndConversion();
+            AddVanillaItemConversions();
+            AddCustomItemConversion();
             AddItemsWithConfigs();
             AddMockedItems();
-            AddEmptyItems();
-            AddInvalidItems();
+            AddPieceCategories();
+            AddInvalidEntities();
 
             // Add custom items cloned from vanilla items
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
+
+            // Clone an item with variants and replace them
+            ItemManager.OnVanillaItemsAvailable += AddVariants;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -290,8 +293,22 @@ namespace TestMod
                 }
             });
 
-            // Add translations for the custom piece in AddEmptyItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") { Translations = { { "piece_lul", "Lulz" } } });
+            // Add translations for the custom piece in AddPieceCategories
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") 
+            {
+                Translations = {
+                    { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
+                    { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
+                } 
+            });
+
+            // Add translations for the custom variant in AddClonedItems
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            {
+                Translations = {
+                    { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
+                }
+            });
         }
 
         // Register new console commands
@@ -347,7 +364,7 @@ namespace TestMod
         }
 
         // Add item conversions (cooking or smelter recipes)
-        private void AddItemConversions()
+        private void AddVanillaItemConversions()
         {
             // Add an item conversion for the CookingStation. The items must have an "attach" child GameObject to display it on the station.
             var cookConversion = new CustomItemConversion(new CookingConversionConfig
@@ -387,7 +404,7 @@ namespace TestMod
         }
 
         // Add custom item conversion (gives a steel ingot to smelter)
-        private void AddCustomItemAndConversion()
+        private void AddCustomItemConversion()
         {
             var steel_prefab = steelingot.LoadAsset<GameObject>("Steel");
             var ingot = new CustomItem(steel_prefab, fixReference: false);
@@ -405,9 +422,21 @@ namespace TestMod
         // Add new Items with item Configs
         private void AddItemsWithConfigs()
         {
-            // Add a custom piece table
+            // Add a custom piece table with custom categories
             var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
-            PieceManager.Instance.AddPieceTable(table_prefab);
+            CustomPieceTable rune_table = new CustomPieceTable(table_prefab,
+                new PieceTableConfig
+                {
+                    CanRemovePieces = false,
+                    UseCategories = false,
+                    UseCustomCategories = true,
+                    CustomCategories = new string[]
+                    {
+                        "Make", "Place"
+                    }
+                }
+            );
+            PieceManager.Instance.AddPieceTable(rune_table);
 
             // Create and add a custom item
             var rune_prefab = blueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
@@ -427,7 +456,8 @@ namespace TestMod
             var makebp = new CustomPiece(makebp_prefab,
                 new PieceConfig
                 {
-                    PieceTable = "_BlueprintTestTable"
+                    PieceTable = "_BlueprintTestTable",
+                    Category = "Make"
                 });
             PieceManager.Instance.AddPiece(makebp);
 
@@ -436,6 +466,7 @@ namespace TestMod
                 new PieceConfig
                 {
                     PieceTable = "_BlueprintTestTable",
+                    Category = "Place",
                     AllowedInDungeons = true,
                     Requirements = new[]
                     {
@@ -542,30 +573,49 @@ namespace TestMod
             }
         }
 
-        // Add a custom item from an "empty" prefab
-        private void AddEmptyItems()
+        // Add custom pieces from an "empty" prefab with new piece categories
+        private void AddPieceCategories()
         {
-            CustomPiece CP = new CustomPiece("piece_lul", "Hammer");
+            CustomPiece CP = new CustomPiece("piece_lul", true, new PieceConfig
+            {
+                Name = "$piece_lul",
+                Description = "$piece_lul_description",
+                Icon = testSprite,
+                PieceTable = "Hammer",
+                ExtendStation = "piece_workbench", // Test station extension
+                Category = "Lulzies"  // Test custom category
+            });
+
             if (CP != null)
             {
-                var piece = CP.Piece;
-                piece.m_icon = testSprite;
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
 
-                // Test station extension, do it manually cause there is no config on empty pieces atm
-                var cfg = new PieceConfig
-                {
-                    ExtendStation = "piece_workbench"
-                };
-                cfg.Apply(prefab);
-                CP.FixReference = true;
+                PieceManager.Instance.AddPiece(CP);
+            }
+
+            CP = new CustomPiece("piece_lel", true, new PieceConfig
+            {
+                Name = "$piece_lel",
+                Description = "$piece_lel_description",
+                Icon = testSprite,
+                PieceTable = "Hammer",
+                ExtendStation = "piece_workbench", // Test station extension
+                Category = "Lulzies"  // Test custom category
+            });
+
+            if (CP != null)
+            {
+                var prefab = CP.PiecePrefab;
+                prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
+                prefab.GetComponent<MeshRenderer>().material.color = Color.grey;
 
                 PieceManager.Instance.AddPiece(CP);
             }
         }
 
-        private void AddInvalidItems()
+        // Add items / pieces with errors on purpose to test error handling
+        private void AddInvalidEntities()
         {
             CustomItem CI = new CustomItem("item_faulty", false);
             if (CI != null)
@@ -587,24 +637,18 @@ namespace TestMod
                 ItemManager.Instance.AddRecipe(CR);
             }
 
-            CustomPiece CP = new CustomPiece("piece_fukup", "Hammer");
+            CustomPiece CP = new CustomPiece("piece_fukup", false, new PieceConfig
+            {
+                Icon = testSprite,
+                PieceTable = "Hammer",
+                Requirements = new RequirementConfig[]
+                {
+                    new RequirementConfig { Item = "StillNotThereResource", Amount = 99 }
+                }
+            });
+
             if (CP != null)
             {
-                var piece = CP.Piece;
-                piece.m_icon = testSprite;
-                var prefab = CP.PiecePrefab;
-
-                // Test faulty resource, do it manually cause there is no config on empty pieces atm
-                var cfg = new PieceConfig
-                {
-                    Requirements = new RequirementConfig[]
-                    {
-                        new RequirementConfig { Item = "StillNotThereResource", Amount = 99 }
-                    }
-                };
-                cfg.Apply(prefab);
-                CP.FixReference = true;
-
                 PieceManager.Instance.AddPiece(CP);
             }
         }
@@ -658,12 +702,47 @@ namespace TestMod
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogError($"Error while adding cloned item: {ex.Message}");
+                Jotunn.Logger.LogError($"Error while adding cloned item: {ex}");
             }
             finally
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
                 ItemManager.OnVanillaItemsAvailable -= AddClonedItems;
+            }
+        }
+
+        // Test the variant config for items
+        private void AddVariants()
+        {
+            try
+            {
+                Sprite var1 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var1.png");
+                Sprite var2 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var2.png");
+                Texture2D styleTex = AssetUtils.LoadTexture("TestMod/Assets/test_varpaint.png");
+                CustomItem CI = new CustomItem("item_lulvariants", "ShieldWood", new ItemConfig
+                {
+                    Name = "$lulz_shield",
+                    Description = "$lulz_shield_desc",
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig{ Item = "Wood", Amount = 1 }
+                    },
+                    Icons = new Sprite[]
+                    {
+                        var1, var2
+                    },
+                    StyleTex = styleTex
+                });
+                ItemManager.Instance.AddItem(CI);
+            }
+            catch (Exception ex)
+            {
+                Jotunn.Logger.LogError($"Error while adding variant item: {ex}");
+            }
+            finally
+            {
+                // You want that to run only once, Jotunn has the item cached for the game session
+                ItemManager.OnVanillaItemsAvailable -= AddVariants;
             }
         }
 

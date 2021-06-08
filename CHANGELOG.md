@@ -1,5 +1,14 @@
 ﻿# Changelog
 
+## Version 2.1.0
+* Added new entity CustomPieceTable
+* Added custom piece table categories per table via PieceTableConfig
+* Added custom piece table categories per piece via PieceConfig
+* Added piece table reference for custom tools via ItemConfig
+* Added support for tokenized piece names and descriptions via PieceConfig
+* Added item variations via ItemConfig
+* Restructured and expanded item / piece documentation
+
 ## Version 2.0.12
 * Disabled SaveManager for now to counter lags
 * Added removal of erroneous entities from managers

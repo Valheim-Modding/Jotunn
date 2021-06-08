@@ -21,8 +21,11 @@
 
 - name: Item conversions
   href: item-conversions.md
+  
+- name: Item variants
+  href: item-variants.md
 
-- name: Pieces
+- name: Pieces and PieceTables
   href: pieces.md
 
 - name: Skills

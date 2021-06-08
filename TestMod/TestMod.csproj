@@ -455,17 +455,20 @@
   <ItemGroup>
     <None Include="app.config" />
     <EmbeddedResource Include="AssetsEmbedded\steel" />
-    <None Include="Assets\blueprints" />
     <None Include="Assets\jotunnlibtest" />
     <EmbeddedResource Include="AssetsEmbedded\capeironbackpack" />
     <None Include="Assets\recipes.json" />
     <None Include="Assets\skills.json" />
+    <None Include="Assets\testblueprints" />
     <None Include="Assets\Translations\English\backpack.english.json" />
     <None Include="Assets\Translations\English\translations.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\test_tex.jpg" />
     <Content Include="Assets\reee.png" />
+    <Content Include="Assets\test_var1.png" />
+    <Content Include="Assets\test_var2.png" />
+    <Content Include="Assets\test_varpaint.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">
