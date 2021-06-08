@@ -13,11 +13,19 @@ using UnityEngine;
 
 namespace Jotunn.Utils
 {
+    /// <summary>
+    ///     Extends <see cref="ConfigEntryBase"/> with convenience functions.
+    /// </summary>
     public static class ConfigEntryBaseExtension
     {
-        public static bool IsVisible(this ConfigEntryBase ceb)
+        /// <summary>
+        ///     Check, if this config entry is "visible"
+        /// </summary>
+        /// <param name="configurationEntry"></param>
+        /// <returns></returns>
+        public static bool IsVisible(this ConfigEntryBase configurationEntry)
         {
-            var cma = ceb.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
+            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
             if (cma != null)
             {
                 // if configuration manager attribute is set, check if browsable is not false
@@ -46,7 +54,7 @@ namespace Jotunn.Utils
                 return false;
             }
 
-            var buttonConfig = InputManager.ButtonToConfigDict[configurationEntry];
+            InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig);
             if (buttonConfig != null)
             {
                 return !string.IsNullOrEmpty(buttonConfig.Name);
@@ -101,8 +109,10 @@ namespace Jotunn.Utils
             {
                 return null;
             }
+            
+            InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig);
 
-            return InputManager.ButtonToConfigDict[configurationEntry];
+            return buttonConfig;
         }
     }
 }
