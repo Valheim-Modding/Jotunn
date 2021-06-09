@@ -6,7 +6,7 @@ Jötunn itself does not provide any implementations or abstractions for persisen
 
 ![Config Manager UI](../images/utils/ConfigManagerUI.png)
 
-### Synced Configurations
+## Synced Configurations
 
 We can sync a client configuration with the server by:
 - ensuring that the [BaseUnityPlugin](xref:BepInEx.BaseUnityPlugin) has a [NetworkCompatibilityAttribute](xref:Jotunn.Utils.NetworkCompatibilityAttribute) enabled
@@ -60,7 +60,30 @@ public void Awake2()
 
 **Note**: Setting then `Value` property behaves differently to setting the `BoxedValue` property: Setting `Value` will apply value ranges (defined in the `ConfigurationManagerAttributes` via `AcceptableValueRange` for example) while `BoxedValue` will have no checks.
 
-### Config synced event
+## Additional config attributes
+
+Besides the `IsAdminOnly` attribute, Jötunn provides several additional custom attributes for config entries:
+
+* EntryColor: Changes the default color of the config key in the settings GUI for that entry.
+* DescriptionColor: Changes the default color of the description text in the settings GUI for that entry.
+* Browsable: When set to `false`, that entry is not accessible through the settings GUI but will be created in the file and also synced, when `IsAdminOnly` is set to `true`.
+
+```cs
+private void CreateConfigValues()
+{
+    Config.SaveOnConfigSet = true;
+
+    // Colored text configs
+    Config.Bind("Client config", "ColoredValue", false,
+        new ConfigDescription("Colored key and description text", null, new ConfigurationManagerAttributes { EntryColor = Color.blue, DescriptionColor = Color.yellow }));
+
+    // Invisible configs
+    Config.Bind("Client config", "InvisibleInt", 150,
+        new ConfigDescription("Invisible int, testing browsable=false", null, new ConfigurationManagerAttributes() { Browsable = false }));
+}
+```
+
+## Config synced event
 
 Jötunn provides an event in the SynchronizationManager you can subscribe to: [SynchronizationManager.OnConfigurationSynchronized](xref:Jotunn.Managers.SynchronizationManager.OnConfigurationSynchronized). It fires when configuration is synced from a server to the client. Upon connection there is always an initial sync event. If configuration is changed and distributed during a game session, the event is fired every time you receive or send configuration. This applies to server side configuration only (i.e. `AdminOnly = true`). To distinguish between the initial and recurring config sync use the [ConfigurationSynchronizationEventArgs](xref:Jotunn.Utils.ConfigurationSynchronizationEventArgs).
 
