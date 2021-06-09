@@ -7,7 +7,8 @@
 * Added piece table reference for custom tools via ItemConfig
 * Added support for tokenized piece names and descriptions via PieceConfig
 * Added item variations via ItemConfig
-* Restructured and expanded item / piece documentation
+* Added possibility to directly link a BepInEx ConfigEntry to a ButtonConfig
+* Added colored and invisible config entries
 
 ## Version 2.0.12
 * Disabled SaveManager for now to counter lags

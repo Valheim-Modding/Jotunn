@@ -11,7 +11,6 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
-using System.Globalization;
 
 namespace TestMod
 {
@@ -42,6 +41,9 @@ namespace TestMod
         private CustomStatusEffect evilSwordEffect;
 
         private Skills.SkillType testSkill;
+
+        private ConfigEntry<KeyCode> evilSwordSpecialConfig;
+        private ButtonConfig evilSwordSpecialButton;
 
         private ConfigEntry<bool> EnableVersionMismatch;
 
@@ -211,18 +213,26 @@ namespace TestMod
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "IntegerValue1", 200,
                 new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            // Test Color value support
+            Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
+                new ConfigDescription("Server side Color", null, new ConfigurationManagerAttributes() { IsAdminOnly = true }));
+            
+            // Test colored text configs
             Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
                 new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
+
+            // Test invisible configs
+            Config.Bind(JotunnTestModConfigSection, "InvisibleInt", 150,
+                new ConfigDescription("Invisible int, testing browsable=false", null, new ConfigurationManagerAttributes() {Browsable = false}));
 
             // Add client config to test ModCompatibility
             EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
-            Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+            evilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
 
-            Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
-                new ConfigDescription("Server side Color", null, new ConfigurationManagerAttributes() {IsAdminOnly = true}));
         }
 
         // React on changed settings
@@ -265,11 +275,11 @@ namespace TestMod
             InputManager.Instance.AddButton(ModGUID, "TestMod_GUIManagerTest", KeyCode.F8);
 
             // Add key bindings backed by a config value
-            // Create a ButtonConfig to also add it as a custom key hint in AddClonedItem
+            // The HintToken is used for the custom KeyHint of the EvilSword
             evilSwordSpecial = new ButtonConfig
             {
                 Name = "EvilSwordSpecialAttack",
-                Key = (KeyCode)Config[JotunnTestModConfigSection, "EvilSwordSpecialAttack"].BoxedValue,
+                Config = evilSwordSpecialConfig,
                 HintToken = "$evilsword_beevil"
             };
             InputManager.Instance.AddButton(ModGUID, evilSwordSpecial);

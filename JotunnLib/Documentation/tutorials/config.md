@@ -4,9 +4,10 @@ Jötunn itself does not provide any implementations or abstractions for persisen
 
 **Hint:** `IsAdminOnly` is provided via JVL, not BepInEx.
 
-![Config Manager U I](../images/utils/ConfigManagerUI.png)
+![Config Manager UI](../images/utils/ConfigManagerUI.png)
 
-### Synced Configurations
+## Synced Configurations
+
 We can sync a client configuration with the server by:
 - ensuring that the [BaseUnityPlugin](xref:BepInEx.BaseUnityPlugin) has a [NetworkCompatibilityAttribute](xref:Jotunn.Utils.NetworkCompatibilityAttribute) enabled
 
@@ -27,14 +28,10 @@ private void CreateConfigValues()
 
     // Add server config which gets pushed to all clients connecting and can only be edited by admins
     // In local/single player games the player is always considered the admin
-    Config.Bind("JotunnLibTest", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes {IsAdminOnly = true}));
-    Config.Bind("JotunnLibTest", "FloatValue1", 750f, new ConfigDescription("Server side float", new AcceptableValueRange<float>(500, 1000), new ConfigurationManagerAttributes {IsAdminOnly = true}));
-    Config.Bind("JotunnLibTest", "IntegerValue1", 200, new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes {IsAdminOnly = true}));
-    Config.Bind("JotunnLibTest", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes {IsAdminOnly = true}));
-    Config.Bind("JotunnLibTest", "KeycodeValue", KeyCode.F10, new ConfigDescription("Server side Keycode", null, new ConfigurationManagerAttributes {IsAdminOnly = true}));
-            
-    // Add a client side custom input key for the EvilSword
-    Config.Bind("JotunnLibTest", "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+    Config.Bind("Server config", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+    Config.Bind("Server config", "FloatValue1", 750f, new ConfigDescription("Server side float", new AcceptableValueRange<float>(0f, 1000f), new ConfigurationManagerAttributes { IsAdminOnly = true }));
+    Config.Bind("Server config", "IntegerValue1", 200, new ConfigDescription("Server side integer", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+    Config.Bind("Server config", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
 }
 ```
 
@@ -61,11 +58,32 @@ public void Awake2()
 }
 ```
 
-If you set `Value` it behaves different to setting `BoxedValue`.
+**Note**: Setting then `Value` property behaves differently to setting the `BoxedValue` property: Setting `Value` will apply value ranges (defined in the `ConfigurationManagerAttributes` via `AcceptableValueRange` for example) while `BoxedValue` will have no checks.
 
-Setting `Value` will apply value ranges (defined in the `ConfigurationManagerAttributes` via `AcceptableValueRange` for example) while `BoxedValue` will have no checks.
+## Additional config attributes
 
-### Config synced event
+Besides the `IsAdminOnly` attribute, Jötunn provides several additional custom attributes for config entries:
+
+* EntryColor: Changes the default color of the config key in the settings GUI for that entry.
+* DescriptionColor: Changes the default color of the description text in the settings GUI for that entry.
+* Browsable: When set to `false`, that entry is not accessible through the settings GUI but will be created in the file and also synced, when `IsAdminOnly` is set to `true`.
+
+```cs
+private void CreateConfigValues()
+{
+    Config.SaveOnConfigSet = true;
+
+    // Colored text configs
+    Config.Bind("Client config", "ColoredValue", false,
+        new ConfigDescription("Colored key and description text", null, new ConfigurationManagerAttributes { EntryColor = Color.blue, DescriptionColor = Color.yellow }));
+
+    // Invisible configs
+    Config.Bind("Client config", "InvisibleInt", 150,
+        new ConfigDescription("Invisible int, testing browsable=false", null, new ConfigurationManagerAttributes() { Browsable = false }));
+}
+```
+
+## Config synced event
 
 Jötunn provides an event in the SynchronizationManager you can subscribe to: [SynchronizationManager.OnConfigurationSynchronized](xref:Jotunn.Managers.SynchronizationManager.OnConfigurationSynchronized). It fires when configuration is synced from a server to the client. Upon connection there is always an initial sync event. If configuration is changed and distributed during a game session, the event is fired every time you receive or send configuration. This applies to server side configuration only (i.e. `AdminOnly = true`). To distinguish between the initial and recurring config sync use the [ConfigurationSynchronizationEventArgs](xref:Jotunn.Utils.ConfigurationSynchronizationEventArgs).
 
