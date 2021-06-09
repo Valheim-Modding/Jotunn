@@ -4,9 +4,10 @@ Jötunn itself does not provide any implementations or abstractions for persisen
 
 **Hint:** `IsAdminOnly` is provided via JVL, not BepInEx.
 
-![Config Manager U I](../images/utils/ConfigManagerUI.png)
+![Config Manager UI](../images/utils/ConfigManagerUI.png)
 
 ### Synced Configurations
+
 We can sync a client configuration with the server by:
 - ensuring that the [BaseUnityPlugin](xref:BepInEx.BaseUnityPlugin) has a [NetworkCompatibilityAttribute](xref:Jotunn.Utils.NetworkCompatibilityAttribute) enabled
 
@@ -27,30 +28,14 @@ private void CreateConfigValues()
 
     // Add server config which gets pushed to all clients connecting and can only be edited by admins
     // In local/single player games the player is always considered the admin
-    Config.Bind("JotunnLibTest", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes {IsAdminOnly = true}));
-    Config.Bind("JotunnLibTest", "FloatValue1", 750f, new ConfigDescription("Server side float", new AcceptableValueRange<float>(500, 1000), new ConfigurationManagerAttributes {IsAdminOnly = true}));
-    Config.Bind("JotunnLibTest", "IntegerValue1", 200, new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes {IsAdminOnly = true}));
-    Config.Bind("JotunnLibTest", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes {IsAdminOnly = true}));
-    Config.Bind("JotunnLibTest", "KeycodeValue", KeyCode.F10, new ConfigDescription("Server side Keycode", null, new ConfigurationManagerAttributes {IsAdminOnly = true}));
-            
-    // Add a client side custom input key for the EvilSword
-    evilSwordAttackButtonConfigEntry = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword", null, new ButtonConfig
-    {
-        Name = "EvilSwordSpecialAttack",
-        HintToken = "$evilsword_beevil"
-    }));
+    Config.Bind("Server config", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+    Config.Bind("Server config", "FloatValue1", 750f, new ConfigDescription("Server side float", new AcceptableValueRange<float>(0f, 1000f), new ConfigurationManagerAttributes { IsAdminOnly = true }));
+    Config.Bind("Server config", "IntegerValue1", 200, new ConfigDescription("Server side integer", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+    Config.Bind("Server config", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
 }
 ```
 
 Here we have implemented some BepInEx configuration attributes to act as a showcase for what BepInEx has to offer, as well as our own implementation of synced attributes. This allows admins defined in the servers adminlist.txt to change the values on the fly, however clients without admin have no control over this configs.
-
----
-**Important:**
-
-Configurable buttons (the KeyCode configuration entries) need to be implemented like the EvilSwordSpecialAttack above. Add the `ButtonConfig` as a `Tag` in the `ConfigDescription`. You don't have to provide the KeyCode, since the default value is set by the configuration entry and it will be automatically read from the configuration.
-See [here](xref:inputs.md) for information on how to add to the InputManager.
-
----
 
 To access the configuration entries either use properties or cast the boxed value to the value type:
 
@@ -73,9 +58,7 @@ public void Awake2()
 }
 ```
 
-If you set `Value` it behaves different to setting `BoxedValue`.
-
-Setting `Value` will apply value ranges (defined in the `ConfigurationManagerAttributes` via `AcceptableValueRange` for example) while `BoxedValue` will have no checks.
+**Note**: Setting then `Value` property behaves differently to setting the `BoxedValue` property: Setting `Value` will apply value ranges (defined in the `ConfigurationManagerAttributes` via `AcceptableValueRange` for example) while `BoxedValue` will have no checks.
 
 ### Config synced event
 

@@ -42,7 +42,8 @@ namespace TestMod
 
         private Skills.SkillType testSkill;
 
-        private ConfigEntry<KeyCode> evilSwordAttackButtonConfigEntry;
+        private ConfigEntry<KeyCode> evilSwordSpecialConfig;
+        private ButtonConfig evilSwordSpecialButton;
 
         private ConfigEntry<bool> EnableVersionMismatch;
 
@@ -215,6 +216,7 @@ namespace TestMod
             Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
                 new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
 
+            // Test invisible configs
             Config.Bind(JotunnTestModConfigSection, "InvisibleInt", 150,
                 new ConfigDescription("Invisible int, testing browsable=false", null, new ConfigurationManagerAttributes() {Browsable = false}));
 
@@ -223,8 +225,9 @@ namespace TestMod
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
-            evilSwordAttackButtonConfigEntry = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+            evilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
 
+            // Test Color support
             Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
                 new ConfigDescription("Server side Color", null, new ConfigurationManagerAttributes() {IsAdminOnly = true}));
         }
@@ -269,15 +272,13 @@ namespace TestMod
             InputManager.Instance.AddButton(ModGUID, "TestMod_GUIManagerTest", KeyCode.F8);
 
             // Add key bindings backed by a config value
-            // Create a ButtonConfig to also add it as a custom key hint in AddClonedItem
+            // The HintToken is used for the custom KeyHint of the EvilSword
             evilSwordSpecial = new ButtonConfig
             {
                 Name = "EvilSwordSpecialAttack",
-                Config = evilSwordAttackButtonConfigEntry,
+                Config = evilSwordSpecialConfig,
                 HintToken = "$evilsword_beevil"
             };
-            
-            // Add evil sword special button
             InputManager.Instance.AddButton(ModGUID, evilSwordSpecial);
 
             // Add a key binding to test skill raising
