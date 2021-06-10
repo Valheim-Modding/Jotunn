@@ -9,6 +9,7 @@
 * Added item variations via ItemConfig
 * Added possibility to directly link a BepInEx ConfigEntry to a ButtonConfig
 * Added colored and invisible config entries
+* Added option to CustomButton to ignore custom inputs when a GUI is open (e.g. chat, console)
 
 ## Version 2.0.12
 * Disabled SaveManager for now to counter lags

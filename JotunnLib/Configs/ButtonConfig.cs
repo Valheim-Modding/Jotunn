@@ -51,5 +51,10 @@ namespace Jotunn.Configs
         ///     Token for translating the key hint text.
         /// </summary>
         public string HintToken { get; set; } = null;
+
+        /// <summary>
+        ///     Should this button react on key presses when a Valheim GUI is open? Defaults to <c>false</c>.
+        /// </summary>
+        public bool ActiveInGUI { get; set; } = false;
     }
 }

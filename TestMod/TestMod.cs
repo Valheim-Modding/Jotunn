@@ -33,17 +33,18 @@ namespace TestMod
 
         private System.Version currentVersion;
 
+        private ButtonConfig showButtonButton;
+        private ButtonConfig showMenuButton;
         private bool showButton;
         private bool showMenu;
         private GameObject testPanel;
 
-        private ButtonConfig evilSwordSpecial;
-        private CustomStatusEffect evilSwordEffect;
-
+        private ButtonConfig raiseSkillButton;
         private Skills.SkillType testSkill;
 
         private ConfigEntry<KeyCode> evilSwordSpecialConfig;
         private ButtonConfig evilSwordSpecialButton;
+        private CustomStatusEffect evilSwordEffect;
 
         private ConfigEntry<bool> EnableVersionMismatch;
 
@@ -104,26 +105,26 @@ namespace TestMod
                 // Custom buttons need to be added to the InputManager before we can poll them.
                 // GetButtonDown will only return true ONCE, right after our button is pressed.
                 // If we hold the button down, it won't spam toggle our menu.
-                if (ZInput.GetButtonDown("TestMod_Menu"))
+                if (ZInput.GetButtonDown(showMenuButton.Name))
                 {
                     showMenu = !showMenu;
                 }
 
-                if (ZInput.GetButtonDown("TestMod_GUIManagerTest"))
+                if (ZInput.GetButtonDown(showButtonButton.Name))
                 {
                     showButton = !showButton;
                 }
 
                 // Raise the test skill
-                if (Player.m_localPlayer != null && ZInput.GetButtonDown("TestMod_RaiseSkill"))
+                if (Player.m_localPlayer != null && ZInput.GetButtonDown(raiseSkillButton.Name))
                 {
                     Player.m_localPlayer.RaiseSkill(testSkill, 1f);
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (evilSwordSpecial != null && MessageHud.instance != null)
+                if (evilSwordSpecialButton != null && MessageHud.instance != null)
                 {
-                    if (ZInput.GetButtonDown(evilSwordSpecial.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                    if (ZInput.GetButtonDown(evilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
@@ -266,26 +267,28 @@ namespace TestMod
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
         // Add custom key bindings
         private void AddInputs()
         {
             // Add key bindings on the fly
-            InputManager.Instance.AddButton(ModGUID, "TestMod_Menu", KeyCode.Insert);
-            InputManager.Instance.AddButton(ModGUID, "TestMod_GUIManagerTest", KeyCode.F8);
+            showButtonButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Insert, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, showButtonButton);
+            showMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.Home, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, showMenuButton);
 
             // Add key bindings backed by a config value
             // The HintToken is used for the custom KeyHint of the EvilSword
-            evilSwordSpecial = new ButtonConfig
+            evilSwordSpecialButton = new ButtonConfig
             {
                 Name = "EvilSwordSpecialAttack",
                 Config = evilSwordSpecialConfig,
                 HintToken = "$evilsword_beevil"
             };
-            InputManager.Instance.AddButton(ModGUID, evilSwordSpecial);
+            InputManager.Instance.AddButton(ModGUID, evilSwordSpecialButton);
 
             // Add a key binding to test skill raising
-            InputManager.Instance.AddButton(ModGUID, "TestMod_RaiseSkill", KeyCode.Home);
+            raiseSkillButton = new ButtonConfig { Name = "TestMod_RaiseSkill", Key = KeyCode.PageUp };
+            InputManager.Instance.AddButton(ModGUID, raiseSkillButton);
         }
 
         // Adds localizations with configs
@@ -703,7 +706,7 @@ namespace TestMod
                         // Override vanilla "Attack" key text
                         new ButtonConfig { Name = "Attack", HintToken = "$evilsword_shwing" },
                         // New custom input
-                        evilSwordSpecial,
+                        evilSwordSpecialButton,
                         // Override vanilla "Mouse Wheel" text
                         new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
                     }
