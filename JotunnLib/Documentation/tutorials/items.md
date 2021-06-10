@@ -12,7 +12,7 @@ This example requires [assets](asset-loading.md) to be loaded. The code snippets
 In this example, we will clone a resource and a weapon which the user may equip. In order to do this, we will need to reference already instantiated game assets. One method of doing so is by using the event provided by Jötunn. The event is fired when the vanilla items are in memory and thus clonable (more precisely in the start scene before the initial ObjectDB is cloned).
 
 ```cs
-private voic Awake()
+private void Awake()
 {
     ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 }
