@@ -36,7 +36,7 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            On.ZInput.Reset += RegisterCustomInputs;
+            On.ZInput.Load += RegisterCustomInputs;
             On.ZInput.GetButtonDown += ZInput_GetButtonDown;
             On.ZInput.GetButtonUp += ZInput_GetButtonUp;
         }
@@ -122,7 +122,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private void RegisterCustomInputs(On.ZInput.orig_Reset orig, ZInput self)
+        private void RegisterCustomInputs(On.ZInput.orig_Load orig, ZInput self)
         {
             orig(self);
 
