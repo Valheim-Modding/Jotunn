@@ -489,3 +489,5 @@ input:checked + .slider:before {
     text-overflow: ellipsis;
   }
 }
+
+.hljs-tag{color:#63a35c !important}
