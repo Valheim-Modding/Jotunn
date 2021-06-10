@@ -513,6 +513,12 @@ namespace Jotunn.Managers
                 }
             }
 
+            // Don't show hints when chat window is visible
+            if (Chat.instance.IsChatDialogWindowVisible())
+            {
+                return;
+            }
+
             // Get the current equipped item name
             ItemDrop.ItemData item = null;
             try
