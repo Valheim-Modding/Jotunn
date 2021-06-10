@@ -8,7 +8,7 @@ Valheim items can be equipment, resources, or building pieces. In this tutorial 
 In this example, we will clone a resource and a weapon which the use may equip. In order to do this, we will need to reference already instantiated game assets. One method of doing so is by using the event provided by Jotunn, the event is fired when the vanilla items are in memory and thus clonable :
 
 ```cs
-private voic Awake()
+private void Awake()
 {
     ItemManager.OnVanillaItemsAvailable += AddClonedItems;
 }
