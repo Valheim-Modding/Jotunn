@@ -46,7 +46,7 @@ namespace Jotunn
     }
 
     /// <summary>
-    ///     Extends ItemDrop with a TokenName and a check if the ItemDrop is valid so it can be added to the game.
+    ///     Extends ItemDrop with a TokenName
     /// </summary>
     public static class ItemDropExtension
     {
@@ -56,31 +56,6 @@ namespace Jotunn
         /// <param name="self"></param>
         /// <returns></returns>
         public static string TokenName(this ItemDrop self) => self.m_itemData.m_shared.m_name;
-
-        /// <summary>
-        ///     Check for validity
-        /// </summary>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static bool IsValid(this ItemDrop self)
-        {
-            try
-            {
-                var hasIcon = self.m_itemData.m_shared.m_icons.Length > 0;
-                if (!hasIcon)
-                {
-                    throw new Exception($"ItemDrop must have atleast one icon !");
-                }
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e);
-
-                return false;
-            }
-        }
     }
 
     /// <summary>
@@ -208,7 +183,7 @@ namespace Jotunn
     }
 
     /// <summary>
-    ///     Extends Piece with a TokenName and a check if the Piece is valid so it can be added to the game.
+    ///     Extends Piece with a TokenName
     /// </summary>
     public static class PieceExtension
     {
@@ -218,31 +193,6 @@ namespace Jotunn
         /// <param name="self"></param>
         /// <returns></returns>
         public static string TokenName(this Piece self) => self.m_name;
-
-        /// <summary>
-        ///     Check for validity
-        /// </summary>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static bool IsValid(this Piece self)
-        {
-            try
-            {
-                var hasIcon = self.m_icon != null;
-                if (!hasIcon)
-                {
-                    throw new Exception($"Piece must have an icon !");
-                }
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e);
-
-                return false;
-            }
-        }
     }
 
     /// <summary>

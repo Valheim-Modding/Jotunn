@@ -193,12 +193,39 @@ namespace Jotunn.Entities
 
         /// <summary>
         ///     Checks if a custom piece is valid (i.e. has a prefab, a target PieceTable is set,
-        ///     has a <see cref="global::Piece"/> component and that component has an icon set).
+        ///     has a <see cref="global::Piece"/> component and that component has an icon).
         /// </summary>
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return PiecePrefab && PiecePrefab.IsValid() && Piece && Piece.IsValid() && !string.IsNullOrEmpty(PieceTable);
+            bool valid = true;
+
+            if (!PiecePrefab)
+            {
+                Logger.LogError($"CustomPiece {this} has no prefab");
+                valid = false;
+            }
+            if (!PiecePrefab.IsValid())
+            {
+                valid = false;
+            }
+            if (Piece == null)
+            {
+                Logger.LogError($"CustomPiece {this} has no Piece component");
+                valid = false;
+            }
+            if (Piece.m_icon == null)
+            {
+                Logger.LogError($"CustomPiece {this} has no icon");
+                valid = false;
+            }
+            if (string.IsNullOrEmpty(PieceTable))
+            {
+                Logger.LogError($"CustomPiece {this} has no PieceTable");
+                valid = false;
+            }
+
+            return valid;
         }
 
         /// <summary>

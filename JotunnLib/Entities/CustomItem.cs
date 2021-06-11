@@ -141,13 +141,34 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
-        ///     Checks if a custom item is valid (i.e. has a prefab, has an <see cref="ItemDrop"/> 
-        ///     component with at least one icon).
+        ///     Checks if a custom item is valid (i.e. has a prefab, an <see cref="ItemDrop"/> and an icon, if it should be craftable).
         /// </summary>
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return ItemPrefab && ItemPrefab.IsValid() && ItemDrop && ItemDrop.IsValid();
+            bool valid = true;
+
+            if (!ItemPrefab)
+            {
+                Logger.LogError($"CustomItem {this} has no prefab");
+                valid = false;
+            }
+            if (!ItemPrefab.IsValid())
+            {
+                valid = false;
+            }
+            if (ItemDrop == null)
+            {
+                Logger.LogError($"CustomItem {this} has no ItemDrop component");
+                valid = false;
+            }
+            if (Recipe != null && ItemDrop.m_itemData.m_shared.m_icons.Length == 0)
+            {
+                Logger.LogError($"CustomItem {this} has no icon");
+                valid = false;
+            }
+
+            return valid;
         }
 
         /// <summary>
