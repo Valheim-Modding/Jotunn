@@ -185,4 +185,79 @@ Disable the `New` GameObject, and enable the `SpinningWheel_Destruction` GameObj
 These parts usually have the Worn version of the material, which distorts the mesh a bit, update all materials to the new version to get a good look at all parts
 ![Kitbash Spinning Wheel Exploded New Mats](../images/data/kitbashSpinningWheelExplodedNewMats.png)
 
+We can now use these smaller parts for our kitbash, along with the new material:
+![Kitbash Spinning Wheel Wheel Part](../images/data/kitbashSpinningWheelWheelPart.png)
+```cs
+new KitbashSourceConfig
+{
+    sourcePrefab = "piece_spinning_wheel",
+    sourcePath = "SpinningWheel_Destruction/SpinningWheel_Destruction.002_SpinningWheel_Broken.018",
+    materials = new string[]{
+        "SpinningWheel_mat",
+        "TearChanal_mat"
+    }
+},
+```
 ### Materials
+Any material can be used, it does not have to be associated with the original mesh (many materials will map terribly though :D)
+
+Drag & drop Materials onto the mesh to "paint" your kitbashed GameObject
+![Kitbash Change Material](../images/data/kitbashChangeMaterial.png)
+
+Add the `materials` property to your KitbashSourceConfig:
+```cs
+new KitbashSourceConfig
+{
+    name = "eye_1",
+    sourcePrefab = "Ruby",
+    sourcePath = "attach/model",
+    position = new Vector3(0.528f, 0.1613345f, -0.253f),
+    rotation = Quaternion.Euler(0, 180, 0f),
+    scale = new Vector3(0.02473f, 0.05063999f, 0.05064f),
+    materials = new string[]{ "antifreezegland" }
+},
+```
+
+### Target parent
+If you're using a more complicated skeleton, make sure that the master copy GameObject (in the ripped Unity project) is set up exactly the same as your skeleton in the AssetBundle (notice the gameObjects `collider`, `new` and `pivot`):
+![Kitbash Skeleton Master Copy](../images/data/kitbashSkeletonMasterCopy.png)
+
+You can now paste the parts into for example `pivot` to add the parts to the rotating pivot.
+The Transform values are relative to the parent GameObject, so make sure that all positions are **exactly** the same as your skeleton.
+
+Use the `targetParentPath` field to set the target:
+```cs
+ new KitbashSourceConfig
+{
+    sourcePrefab = "guard_stone",
+    sourcePath = "new/default",
+    targetParentPath = "new/pivot",
+    position = new Vector3(0, 0.0591f ,0),
+    rotation = Quaternion.identity,
+    scale = Vector3.one * 0.2f,
+    materials = new string[]{
+        "bronze",
+        "obsidian_nosnow"
+    }
+},
+```
+
+### Collider
+The gear, like all (?) exploded parts, has no Collider, so currently, our `piece_odin_statue` will clip into the table a bit, as only the Ward mesh is used to place it.
+To fix this, we can use a custom Collider, and remove the mesh collider, to save on processing power.
+
+In the master copy, update the values of the Collider so they match close enough (don't worry too much about pixel perfect accuracy here, try it in game to check how it feels to run into)
+![Kitbash Collider](../images/data/kitbashCollider.png)
+
+Once you are happy with the collider, copy the values from your master copy into your skeleton.
+![Kitbash Collider Skeleton](../images/data/kitbashColliderSkeleton.png)
+
+We still need to get rid of the MeshCollider that is attached to the `new/default` of the Ward:
+```cs
+kitbashObject.KitbashApplied += () =>
+{
+    //We've added a CapsuleCollider to the skeleton, this is no longer needed
+    Object.Destroy(kitbashObject.Prefab.transform.Find("new/default").GetComponent<MeshCollider>());
+};
+```
+
