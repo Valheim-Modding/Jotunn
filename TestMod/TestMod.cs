@@ -11,6 +11,7 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace TestMod
 {
@@ -67,7 +68,6 @@ namespace TestMod
             AddItemsWithConfigs();
             AddMockedItems();
             AddKitbashedPieces();
-            AddPieceCategories();
             AddInvalidEntities();
 
             // Add custom items cloned from vanilla items
@@ -588,7 +588,7 @@ namespace TestMod
         private void AddKitbashedPieces()
         {
             //A simple kitbash piece, we will begin with the "empty" prefab as the base
-            var simpleKitbashPiece = new CustomPiece("piece_simple_kitbash", "Hammer"); 
+            var simpleKitbashPiece = new CustomPiece("piece_simple_kitbash", true, "Hammer"); 
             var piece = simpleKitbashPiece.Piece;
             piece.m_icon = testSprite; 
             simpleKitbashPiece.FixReference = true;
