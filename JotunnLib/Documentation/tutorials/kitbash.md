@@ -246,6 +246,8 @@ Use the `targetParentPath` field to set the target:
 },
 ```
 
+⚠️ If there are multiple materials for a MeshRenderer, make sure to use the correct order!
+
 ### Collider
 The gear, like all (?) exploded parts, has no Collider, so currently, our `piece_odin_statue` will clip into the table a bit, as only the Ward mesh is used to place it.
 To fix this, we can use a custom Collider, and remove the mesh collider, to save on processing power.
