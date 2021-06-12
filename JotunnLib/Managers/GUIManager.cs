@@ -405,14 +405,7 @@ namespace Jotunn.Managers
 
             foreach (var buttonConfig in config.ButtonConfigs)
             {
-                string key;
-                if(buttonConfig.Key == KeyCode.None)
-                {
-                    key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
-                } else
-                {
-                    key = GetBoundKeyString(buttonConfig.Key);
-                }
+                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
                 if (key[0].Equals(LocalizationManager.TokenFirstChar))
                 {
                     key = LocalizationManager.Instance.TryTranslate(key);
@@ -577,15 +570,7 @@ namespace Jotunn.Managers
             // Update bound keys
             foreach (var buttonConfig in hintConfig.ButtonConfigs)
             {
-                string key;
-                if (buttonConfig.Key == KeyCode.None)
-                {
-                    key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
-                }
-                else
-                {
-                    key = GetBoundKeyString(buttonConfig.Key);
-                }
+                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
                 if (key[0].Equals(LocalizationManager.TokenFirstChar))
                 {
                     key = LocalizationManager.Instance.TryTranslate(key);
@@ -599,41 +584,6 @@ namespace Jotunn.Managers
 
             hintObject.SetActive(true);
             hintObject.GetComponent<UIInputHint>()?.Update();
-        }
-
-        private string GetBoundKeyString(KeyCode key)
-        {
-            switch (key)
-            {
-                case KeyCode.Comma:
-                    return ",";
-                case KeyCode.Period:
-                    return ".";
-                case KeyCode.Mouse0:
-                    return "$button_mouse0";
-                case KeyCode.Mouse1:
-                    return "$button_mouse1";
-                case KeyCode.Mouse2:
-                    return "$button_mouse2";
-                case KeyCode.Space:
-                    return "$button_space";
-                case KeyCode.LeftShift:
-                    return "$button_lshift";
-                case KeyCode.RightShift:
-                    return "$button_rshift";
-                case KeyCode.LeftAlt:
-                    return "$button_lalt";
-                case KeyCode.RightAlt:
-                    return "$button_ralt";
-                case KeyCode.LeftControl:
-                    return "$button_lctrl";
-                case KeyCode.RightControl:
-                    return "$button_rctrl";
-                case KeyCode.Return:
-                    return "$button_return";
-                default:
-                    return key.ToString();
-            }
         }
 
         /// <summary>

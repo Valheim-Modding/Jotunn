@@ -29,11 +29,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnTests", "JotunnTests\JotunnTests.csproj", "{9A4223CD-EF00-41B0-8D5C-C8817FF4BE1E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A6082A59-38BE-4CAB-9078-2C8FCDA65B8F} = {A6082A59-38BE-4CAB-9078-2C8FCDA65B8F}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
