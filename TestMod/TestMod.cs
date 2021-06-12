@@ -66,6 +66,7 @@ namespace TestMod
             AddCustomItemConversion();
             AddItemsWithConfigs();
             AddMockedItems();
+            AddKitbashedPieces();
             AddPieceCategories();
             AddInvalidEntities();
 
@@ -583,8 +584,102 @@ namespace TestMod
             }
         }
 
-        // Add custom pieces from an "empty" prefab with new piece categories
-        private void AddPieceCategories()
+        //Adds Kitbashed pieces
+        private void AddKitbashedPieces()
+        {
+            //A simple kitbash piece, we will begin with the "empty" prefab as the base
+            var simpleKitbashPiece = new CustomPiece("piece_simple_kitbash", "Hammer"); 
+            var piece = simpleKitbashPiece.Piece;
+            piece.m_icon = testSprite; 
+            simpleKitbashPiece.FixReference = true;
+            PieceManager.Instance.AddPiece(simpleKitbashPiece);
+            KitbashManager.Instance.Kitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
+                layer = "piece",
+                KitbashSources = new List<KitbashSourceConfig>
+                {
+                    new KitbashSourceConfig
+                    {
+                        name = "eye_1",
+                        sourcePrefab = "Ruby",
+                        sourcePath = "attach/model",
+                        position = new Vector3(0.528f, 0.1613345f, -0.253f),
+                        rotation = Quaternion.Euler(0, 180, 0f),
+                        scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+                    },
+                    new KitbashSourceConfig
+                    {
+                        name = "eye_2",
+                        sourcePrefab = "Ruby",
+                        sourcePath = "attach/model",
+                        position = new Vector3(0.528f, 0.1613345f, 0.253f),
+                        rotation = Quaternion.Euler(0, 180, 0f),
+                        scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+                    },
+                    new KitbashSourceConfig
+                    {
+                        name = "mouth",
+                        sourcePrefab = "draugr_bow",
+                        sourcePath = "attach/bow",
+                        position = new Vector3(0.53336f, -0.315f, -0.001953f),
+                        rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
+                        scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
+                    }
+                }
+            }); 
+
+            //A more complex Kitbash piece, this has a prepared GameObject for Kitbash to build upon
+            AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash", typeof(TestMod).Assembly);
+            try
+            { 
+                KitbashObject kitbashObject = KitbashManager.Instance.Kitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
+                {
+                    layer = "piece",
+                    KitbashSources = new List<KitbashSourceConfig>
+                    {
+                        new KitbashSourceConfig
+                        {
+                            sourcePrefab = "piece_artisanstation",
+                            sourcePath = "ArtisanTable_Destruction/ArtisanTable_Destruction.007_ArtisanTable.019",
+                            targetParentPath = "new",
+                            position = new Vector3(-1.185f, -0.465f, 1.196f),
+                            rotation = Quaternion.Euler(-90f, 0, 0),
+                            scale = Vector3.one,materials = new string[]{
+                                "obsidian_nosnow",
+                                "bronze"
+                            }
+                        },
+                        new KitbashSourceConfig
+                        {
+                            sourcePrefab = "guard_stone",
+                            sourcePath = "new/default",
+                            targetParentPath = "new/pivot",
+                            position = new Vector3(0, 0.0591f ,0),
+                            rotation = Quaternion.identity,
+                            scale = Vector3.one * 0.2f,
+                            materials = new string[]{
+                                "bronze",
+                                "obsidian_nosnow"
+                            }
+                        },
+                    }
+                });
+                PieceManager.Instance.AddPiece(new CustomPiece(kitbashObject.Prefab, new PieceConfig
+                {
+                    PieceTable = "Hammer",
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig { Item = "Obsidian" , Recover = true},
+                        new RequirementConfig { Item = "Bronze", Recover = true }
+                    }
+                }));
+            } finally
+            {
+                kitbashAssetBundle.Unload(false);
+            }
+        }
+
+        // Add a custom item from an "empty" prefab
+        private void AddEmptyItems()
         {
             CustomPiece CP = new CustomPiece("piece_lul", true, new PieceConfig
             {
