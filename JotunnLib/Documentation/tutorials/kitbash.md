@@ -138,3 +138,51 @@ KitbashManager.Instance.Kitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfi
 
 That's it! We can now place our kitbashed piece in game!
 ![Kitbash Simple In Game](../images/data/kitbashSimpleInGame.png)
+
+## Advanced kitbash piece
+### Skeleton prefab
+We can add a lot more features to the Kitbashed object if we start with a skeleton created in Unity (a separate project from the ripped project!)
+![Kitbash Odin Statue Skeleton](../images/data/kitbashOdinStatueSkeleton.png)
+
+Here we have prepared quite a few things:
+- Collider
+  - Not all parts that we copy have attached colliders, sometimes we need to prepare additional ones
+- ZNetView
+- Piece
+  - We don't need to add the required resources here, we can do this in `CustomPiece` later, or use [JVMmocks_](./asset-mocking.md)
+- WearNTear
+- Animator
+  - The animator animates an empty GameObject called `pivot`, we can later add parts to this to make them also rotate along.
+
+### Loading the skeleton
+See [Asset creation - AssetBundle ](./asset-creation.md#assetbundle) on how to create the AssetBundle
+```cs 
+AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash", typeof(TestMod).Assembly);
+try
+{ 
+    KitbashObject kitbashObject = KitbashManager.Instance.Kitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
+    {
+        layer = "piece",
+        KitbashSources = new List<KitbashSourceConfig>
+        {
+            ...
+        }
+    }); 
+    //get the kitbashed prefab using kitbashObject.Prefab
+} finally
+{
+    kitbashAssetBundle.Unload(false);
+}
+```
+
+### Using exploded pieces
+Many of the Pieces in Valheim have a special animation when destroying them, where they break up into many parts, for example, the Spinning Wheel:
+![Kitbash Spinning Wheel New](../images/data/kitbashSpinningWheelNew.png)
+
+Disable the `New` GameObject, and enable the `SpinningWheel_Destruction` GameObject instead
+![Kitbash Spinning Wheel Exploded](../images/data/kitbashSpinningWheelExploded.png)
+
+These parts usually have the Worn version of the material, which distorts the mesh a bit, update all materials to the new version to get a good look at all parts
+![Kitbash Spinning Wheel Exploded New Mats](../images/data/kitbashSpinningWheelExplodedNewMats.png)
+
+### Materials
