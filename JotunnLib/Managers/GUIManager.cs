@@ -122,7 +122,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Indicates if the PixelFix must be created for the start or main scene.
         /// </summary>
-        private bool GUIInStart = true;
+        private bool GUIInStart = false;
 
         /// <summary>
         ///     Event receiver for pointer click events
