@@ -180,13 +180,17 @@ Many of the Pieces in Valheim have a special animation when destroying them, whe
 ![Kitbash Spinning Wheel New](../images/data/kitbashSpinningWheelNew.png)
 
 Disable the `New` GameObject, and enable the `SpinningWheel_Destruction` GameObject instead
+
 ![Kitbash Spinning Wheel Exploded](../images/data/kitbashSpinningWheelExploded.png)
 
 These parts usually have the Worn version of the material, which distorts the mesh a bit, update all materials to the new version to get a good look at all parts
+
 ![Kitbash Spinning Wheel Exploded New Mats](../images/data/kitbashSpinningWheelExplodedNewMats.png)
 
 We can now use these smaller parts for our kitbash, along with the new material:
+
 ![Kitbash Spinning Wheel Wheel Part](../images/data/kitbashSpinningWheelWheelPart.png)
+
 ```cs
 new KitbashSourceConfig
 {
