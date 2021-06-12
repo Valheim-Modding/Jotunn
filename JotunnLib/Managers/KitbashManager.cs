@@ -119,7 +119,7 @@ namespace Jotunn.Managers
             }
             GameObject kitBashObject = Object.Instantiate(sourceGameObject, parentTransform);
 
-            kitBashObject.name = config.name;
+            kitBashObject.name = config.name ?? sourceGameObject.name;
             kitBashObject.transform.localPosition = config.position;
             kitBashObject.transform.localRotation = config.rotation;
             kitBashObject.transform.localScale = config.scale;

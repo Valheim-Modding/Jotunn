@@ -261,7 +261,7 @@ We still need to get rid of the MeshCollider that is attached to the `new/defaul
 kitbashObject.KitbashApplied += () =>
 {
     //We've added a CapsuleCollider to the skeleton, this is no longer needed
-    Object.Destroy(kitbashObject.Prefab.transform.Find("new/default").GetComponent<MeshCollider>());
+    Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
 };
 ```
 

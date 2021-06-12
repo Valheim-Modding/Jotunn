@@ -666,7 +666,7 @@ namespace TestMod
                 kitbashObject.KitbashApplied += () =>
                 {
                     //We've added a CapsuleCollider to the skeleton, this is no longer needed
-                    Object.Destroy(kitbashObject.Prefab.transform.Find("new/default").GetComponent<MeshCollider>());
+                    Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
                 };
                 PieceManager.Instance.AddPiece(new CustomPiece(kitbashObject.Prefab, new PieceConfig
                 {
