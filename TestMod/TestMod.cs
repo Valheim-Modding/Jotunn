@@ -593,7 +593,7 @@ namespace TestMod
             simpleKitbashPiece.Piece.m_icon = testSprite;
             PieceManager.Instance.AddPiece(simpleKitbashPiece);
 
-            // Now apply our KitBash to the piece
+            // Now apply our Kitbash to the piece
             KitbashManager.Instance.AddKitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
                 Layer = "piece",
                 KitbashSources = new List<KitbashSourceConfig>

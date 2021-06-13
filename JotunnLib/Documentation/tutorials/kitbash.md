@@ -8,10 +8,10 @@ You will need the ripped Unity project, follow [these instructions](https://gith
 
 Prefabs you want to import from an AssetBundle should not be created in the ripped project, but in your own Unity project, to avoid accidentally importing copyrighted assets!
  
-## KitBashing the ripped Unity project
+## Kitbashing the ripped Unity project
 
 Create an empty GameObject to assemble your master copy.
-This object will be used as reference for position, rotation and scale of the KitBashSourceConfigs.
+This object will be used as reference for position, rotation and scale of the KitbashSourceConfigs.
 
 ### Simple kitbash piece
 

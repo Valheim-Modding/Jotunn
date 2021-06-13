@@ -27,25 +27,25 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Internal list of objects to which KitBashing should be applied.
+        ///     Internal list of objects to which Kitbashing should be applied.
         /// </summary>
-        private readonly List<KitbashObject> KitBashObjects = new List<KitbashObject>();
+        private readonly List<KitbashObject> KitbashObjects = new List<KitbashObject>();
 
         /// <summary>
         ///     Registers all hooks.
         /// </summary>
         public void Init()
         {
-            ItemManager.OnKitbashItemsAvailable += ApplyKitBashes;
+            ItemManager.OnKitbashItemsAvailable += ApplyKitbashes;
         }
 
         /// <summary>
         ///     Register a prefab with a KitbashConfig to be applied when the vanilla prefabs are available
         /// </summary>
         /// <param name="prefab">Prefab to add kitbashed parts to</param>
-        /// <param name="kitBashConfig">KitbashConfig to apply to the prefab</param>
+        /// <param name="kitbashConfig">KitbashConfig to apply to the prefab</param>
         /// <returns>The KitbashObject container for this prefab</returns>
-        public KitbashObject AddKitbash(GameObject prefab, KitbashConfig kitBashConfig)
+        public KitbashObject AddKitbash(GameObject prefab, KitbashConfig kitbashConfig)
         {
             if(prefab.transform.parent == null)
             {
@@ -53,35 +53,35 @@ namespace Jotunn.Managers
                 prefab = Object.Instantiate(prefab, PrefabManager.Instance.PrefabContainer.transform);
                 prefab.name = name;
             }
-            KitbashObject kitBashObject = new KitbashObject
+            KitbashObject kitbashObject = new KitbashObject
             {
-                Config = kitBashConfig,
+                Config = kitbashConfig,
                 Prefab = prefab
             };
-            KitBashObjects.Add(kitBashObject);
-            return kitBashObject;
+            KitbashObjects.Add(kitbashObject);
+            return kitbashObject;
         }
 
         /// <summary>
-        ///     Apply all KitBashs to the objects registered in the manager.
+        ///     Apply all Kitbashs to the objects registered in the manager.
         /// </summary>
-        private void ApplyKitBashes()
+        private void ApplyKitbashes()
         {
-            if (KitBashObjects.Count > 0)
+            if (KitbashObjects.Count > 0)
             {
-                Logger.LogInfo($"---- Applying KitBash in {KitBashObjects.Count} objects ----");
+                Logger.LogInfo($"---- Applying Kitbash in {KitbashObjects.Count} objects ----");
 
-                foreach (KitbashObject kitBashObject in KitBashObjects)
+                foreach (KitbashObject kitbashObject in KitbashObjects)
                 {
                     try
                     {
-                        if (kitBashObject.Config.FixReferences)
+                        if (kitbashObject.Config.FixReferences)
                         {
-                            kitBashObject.Prefab.FixReferences();
+                            kitbashObject.Prefab.FixReferences();
                         }
-                        ApplyKitbash(kitBashObject);
+                        ApplyKitbash(kitbashObject);
                             
-                        Logger.LogInfo($"Kitbash for {kitBashObject} applied");
+                        Logger.LogInfo($"Kitbash for {kitbashObject} applied");
                     }
                     catch (Exception e)
                     {
@@ -89,33 +89,33 @@ namespace Jotunn.Managers
                     }
                 }
 
-                ItemManager.OnKitbashItemsAvailable -= ApplyKitBashes;
+                ItemManager.OnKitbashItemsAvailable -= ApplyKitbashes;
             }
         }
 
         /// <summary>
         ///     Apply kitbash to a single object.
         /// </summary>
-        /// <param name="kitBashObject"></param>
+        /// <param name="kitbashObject"></param>
         /// <returns></returns>
-        private bool ApplyKitbash(KitbashObject kitBashObject)
+        private bool ApplyKitbash(KitbashObject kitbashObject)
         {
-            foreach (KitbashSourceConfig config in kitBashObject.Config.KitbashSources)
+            foreach (KitbashSourceConfig config in kitbashObject.Config.KitbashSources)
             {
-                if (!Instance.Kitbash(kitBashObject.Prefab, config))
+                if (!Instance.Kitbash(kitbashObject.Prefab, config))
                 {
                     return false;
                 }
             }
-            if (kitBashObject.Config.Layer != null)
+            if (kitbashObject.Config.Layer != null)
             {
-                int layer = LayerMask.NameToLayer(kitBashObject.Config.Layer);
-                foreach (Transform transform in kitBashObject.Prefab.GetComponentsInChildren<Transform>())
+                int layer = LayerMask.NameToLayer(kitbashObject.Config.Layer);
+                foreach (Transform transform in kitbashObject.Prefab.GetComponentsInChildren<Transform>())
                 {
                     transform.gameObject.layer = layer;
                 }
             }
-            kitBashObject.OnKitbashApplied?.SafeInvoke();
+            kitbashObject.OnKitbashApplied?.SafeInvoke();
             return true;
         }
 
@@ -144,12 +144,12 @@ namespace Jotunn.Managers
                 Logger.LogWarning($"Target parent not found for {config}");
                 return false;
             }
-            GameObject kitBashObject = Object.Instantiate(sourceGameObject, parentTransform);
+            GameObject kitbashObject = Object.Instantiate(sourceGameObject, parentTransform);
 
-            kitBashObject.name = config.Name ?? sourceGameObject.name;
-            kitBashObject.transform.localPosition = config.Position;
-            kitBashObject.transform.localRotation = config.Rotation;
-            kitBashObject.transform.localScale = config.Scale;
+            kitbashObject.name = config.Name ?? sourceGameObject.name;
+            kitbashObject.transform.localPosition = config.Position;
+            kitbashObject.transform.localRotation = config.Rotation;
+            kitbashObject.transform.localScale = config.Scale;
 
             if (config.Materials != null)
             {
@@ -161,7 +161,7 @@ namespace Jotunn.Managers
                     return false;
                 }
                    
-                SkinnedMeshRenderer[] targetSkinnedMeshRenderers = kitBashObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+                SkinnedMeshRenderer[] targetSkinnedMeshRenderers = kitbashObject.GetComponentsInChildren<SkinnedMeshRenderer>();
 
                 foreach (SkinnedMeshRenderer targetSkinnedMeshRenderer in targetSkinnedMeshRenderers)
                 {
@@ -169,7 +169,7 @@ namespace Jotunn.Managers
                     targetSkinnedMeshRenderer.materials = sourceMaterials;
                 }
 
-                MeshRenderer[] targetMeshRenderers = kitBashObject.GetComponentsInChildren<MeshRenderer>();
+                MeshRenderer[] targetMeshRenderers = kitbashObject.GetComponentsInChildren<MeshRenderer>();
                 foreach (MeshRenderer targetMeshRenderer in targetMeshRenderers)
                 {
                     targetMeshRenderer.sharedMaterials = sourceMaterials;
