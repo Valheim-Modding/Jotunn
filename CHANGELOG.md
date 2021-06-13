@@ -9,8 +9,9 @@
 * Added item variations via ItemConfig
 * Added possibility to directly link a BepInEx ConfigEntry to a ButtonConfig
 * Added colored and invisible config entries
-* Added KitbashManager to allow KitBashing (https://valheim-modding.github.io/Jotunn/tutorials/kitbash.html)
+* Added KitbashManager to allow Kitbashing (https://valheim-modding.github.io/Jotunn/tutorials/kitbash.html)
 * Added option to CustomButton to ignore custom inputs when a GUI is open (e.g. chat, console)
+* Added event in GUIManager when the PixelFix got recreated and custom GUI can be added
 
 ## Version 2.0.12
 * Disabled SaveManager for now to counter lags
