@@ -25,5 +25,14 @@ namespace Jotunn.Entities
         /// </summary>
         public KitbashConfig Config { get; internal set; }
 
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            if (Prefab)
+            {
+                return Prefab.name;
+            }
+            return base.ToString();
+        }
     }
 }

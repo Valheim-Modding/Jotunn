@@ -81,7 +81,7 @@ namespace Jotunn.Managers
                         }
                         ApplyKitbash(kitBashObject);
                             
-                        Logger.LogInfo($"Kitbash for {kitBashObject.Prefab} applied");
+                        Logger.LogInfo($"Kitbash for {kitBashObject} applied");
                     }
                     catch (Exception e)
                     {
