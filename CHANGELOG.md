@@ -9,6 +9,7 @@
 * Added item variations via ItemConfig
 * Added possibility to directly link a BepInEx ConfigEntry to a ButtonConfig
 * Added colored and invisible config entries
+* Added KitbashManager to allow KitBashing (https://valheim-modding.github.io/Jotunn/tutorials/kitbash.html)
 
 ## Version 2.0.12
 * Disabled SaveManager for now to counter lags

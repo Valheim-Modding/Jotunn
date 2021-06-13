@@ -457,6 +457,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <EmbeddedResource Include="AssetsEmbedded\steel" />
+    <EmbeddedResource Include="AssetsEmbedded\kitbash" />
     <None Include="Assets\jotunnlibtest" />
     <EmbeddedResource Include="AssetsEmbedded\capeironbackpack" />
     <None Include="Assets\recipes.json" />
