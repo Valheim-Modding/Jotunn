@@ -46,6 +46,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **Piece Manager** - Very similar to the Item Manager, abstracting implementation details of configurations for pieces/recipe's.
 - **Prefab Manager** - Provides a cache of prefabs registered through other managers, mostly developers will only query the cache for prefabs added via other managers.
 - **Skill Manager** - Facilitates additional custom skills.
+- **KitbashManager** - Create custom assets with individual pieces from vanilla prefabs.
 
 #### Utilities
 - **Asset Helpers** - Methods to facilitate referencing and loading of assets.
@@ -89,3 +90,5 @@ These people have been integral to pushing JVL out of the door, and without them
 *GoldenJude#8965*: [github](https://github.com/GoldenJude), [nexus](https://www.nexusmods.com/users/48864143?tab=user+files)
 
 *zarboz#7828*: [github](https://github.com/sbtoonz), [thunderstore](https://valheim.thunderstore.io/package/sbtoonz/), [nexus](https://www.nexusmods.com/users/4057483)
+
+*MarcoPogo#6095*: [github](https://github.com/MathiasDecrock)
