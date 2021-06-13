@@ -1,5 +1,6 @@
 ﻿using System;
 using Jotunn.Configs;
+using Jotunn.Managers;
 using UnityEngine;
 
 namespace Jotunn.Entities

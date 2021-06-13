@@ -37,6 +37,12 @@ namespace Jotunn.Managers
         public static event Action OnVanillaItemsAvailable;
 
         /// <summary>
+        ///     Internal event that gets fired after <see cref="OnVanillaItemsAvailable"/> did run.
+        ///     On this point all mods should have their items and pieces registered with the managers.
+        /// </summary>
+        internal static event Action OnKitbashItemsAvailable;
+
+        /// <summary>
         ///     Event that gets fired after all items were added to the ObjectDB on the FejdStartup screen.
         ///     Your code will execute every time a new ObjectDB is copied (on every menu start).
         ///     If you want to execute just once you will need to unregister from the event after execution.
@@ -547,6 +553,8 @@ namespace Jotunn.Managers
         private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             OnVanillaItemsAvailable?.SafeInvoke();
+
+            OnKitbashItemsAvailable?.SafeInvoke();
 
             orig(self, other);
 

@@ -10,10 +10,9 @@ namespace Jotunn.Managers
     /// <summary>
     ///     Manager for handling Kitbashed objects
     /// </summary>
-    public class KitbashManager
+    public class KitbashManager : IManager
     {   
         private static KitbashManager _instance;
-        private readonly List<KitbashObject> kitBashObjects = new List<KitbashObject>();
 
         /// <summary>
         ///     The singleton instance of this manager.
@@ -27,62 +26,17 @@ namespace Jotunn.Managers
             }
         }
 
-        private KitbashManager()
-        {  
-            PieceManager.OnPiecesRegistered += ApplyKitBashes;
-        }
+        /// <summary>
+        ///     Internal list of objects to which KitBashing should be applied.
+        /// </summary>
+        private readonly List<KitbashObject> KitBashObjects = new List<KitbashObject>();
 
-        private void ApplyKitBashes()
+        /// <summary>
+        ///     Registers all hooks.
+        /// </summary>
+        public void Init()
         {
-            try
-            { 
-                if (kitBashObjects.Count == 0)
-                {
-                    return;
-                }
-                Jotunn.Logger.LogDebug("Applying KitBash in " + kitBashObjects.Count + " objects");
-                foreach (KitbashObject kitBashObject in kitBashObjects)
-                {
-                    try
-                    {
-                        if (kitBashObject.Config.FixReferences)
-                        {
-                            kitBashObject.Prefab.FixReferences();
-                        }
-                        ApplyKitbash(kitBashObject);
-                    }
-                    catch (Exception e)
-                    {
-                        Jotunn.Logger.LogError(e);
-                    }
-                }
-            }
-            finally
-            {
-                PieceManager.OnPiecesRegistered -= ApplyKitBashes;
-            }
-        }
-
-        private bool ApplyKitbash(KitbashObject kitBashObject)
-        {
-            Jotunn.Logger.LogDebug("Applying Kitbash for " + kitBashObject.Prefab);
-            foreach (KitbashSourceConfig config in kitBashObject.Config.KitbashSources)
-            {
-                if (!KitbashManager.Instance.Kitbash(kitBashObject.Prefab, config))
-                {
-                    return false;
-                }
-            }
-            if (kitBashObject.Config.Layer != null)
-            {
-                int layer = LayerMask.NameToLayer(kitBashObject.Config.Layer);
-                foreach(Transform transform in kitBashObject.Prefab.GetComponentsInChildren<Transform>())
-                {
-                    transform.gameObject.layer = layer;
-                }
-            }
-            kitBashObject.OnKitbashApplied?.Invoke();
-            return true;
+            ItemManager.OnKitbashItemsAvailable += ApplyKitBashes;
         }
 
         /// <summary>
@@ -91,7 +45,7 @@ namespace Jotunn.Managers
         /// <param name="prefab">Prefab to add kitbashed parts to</param>
         /// <param name="kitBashConfig">KitbashConfig to apply to the prefab</param>
         /// <returns>The KitbashObject container for this prefab</returns>
-        public KitbashObject Kitbash(GameObject prefab, KitbashConfig kitBashConfig)
+        public KitbashObject AddKitbash(GameObject prefab, KitbashConfig kitBashConfig)
         {
             if(prefab.transform.parent == null)
             {
@@ -104,16 +58,82 @@ namespace Jotunn.Managers
                 Config = kitBashConfig,
                 Prefab = prefab
             };
-            kitBashObjects.Add(kitBashObject);
+            KitBashObjects.Add(kitBashObject);
             return kitBashObject;
+        }
+
+        /// <summary>
+        ///     Apply all KitBashs to the objects registered in the manager.
+        /// </summary>
+        private void ApplyKitBashes()
+        {
+            if (KitBashObjects.Count > 0)
+            {
+                Logger.LogInfo($"---- Applying KitBash in {KitBashObjects.Count} objects ----");
+
+                foreach (KitbashObject kitBashObject in KitBashObjects)
+                {
+                    try
+                    {
+                        if (kitBashObject.Config.FixReferences)
+                        {
+                            kitBashObject.Prefab.FixReferences();
+                        }
+                        ApplyKitbash(kitBashObject);
+                            
+                        Logger.LogInfo($"Kitbash for {kitBashObject.Prefab} applied");
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError(e);
+                    }
+                }
+
+                ItemManager.OnKitbashItemsAvailable -= ApplyKitBashes;
+            }
+        }
+
+        /// <summary>
+        ///     Apply kitbash to a single object.
+        /// </summary>
+        /// <param name="kitBashObject"></param>
+        /// <returns></returns>
+        private bool ApplyKitbash(KitbashObject kitBashObject)
+        {
+            foreach (KitbashSourceConfig config in kitBashObject.Config.KitbashSources)
+            {
+                if (!Instance.Kitbash(kitBashObject.Prefab, config))
+                {
+                    return false;
+                }
+            }
+            if (kitBashObject.Config.Layer != null)
+            {
+                int layer = LayerMask.NameToLayer(kitBashObject.Config.Layer);
+                foreach (Transform transform in kitBashObject.Prefab.GetComponentsInChildren<Transform>())
+                {
+                    transform.gameObject.layer = layer;
+                }
+            }
+            kitBashObject.OnKitbashApplied?.SafeInvoke();
+            return true;
         }
 
         private bool Kitbash(GameObject kitbashedPrefab, KitbashSourceConfig config)
         {
+            // Try to load a custom prefab
             GameObject sourcePrefab = PrefabManager.Instance.GetPrefab(config.SourcePrefab);
+
+            // If not custom, try to get a vanilla prefab from the cache
             if (!sourcePrefab)
             {
-                Jotunn.Logger.LogWarning("No prefab found for " + config);
+                sourcePrefab = PrefabManager.Cache.GetPrefab<GameObject>(config.SourcePrefab);
+            }
+
+            // If no prefab is found, warn and return
+            if (!sourcePrefab)
+            {
+                Logger.LogWarning($"No prefab found for {config}");
                 return false;
             }
             GameObject sourceGameObject = sourcePrefab.transform.Find(config.SourcePath).gameObject;
@@ -121,7 +141,7 @@ namespace Jotunn.Managers
             Transform parentTransform = config.TargetParentPath != null ? kitbashedPrefab.transform.Find(config.TargetParentPath) : kitbashedPrefab.transform;
             if (parentTransform == null)
             {
-                Jotunn.Logger.LogWarning("Target parent not found for " + config);
+                Logger.LogWarning($"Target parent not found for {config}");
                 return false;
             }
             GameObject kitBashObject = Object.Instantiate(sourceGameObject, parentTransform);
@@ -137,7 +157,7 @@ namespace Jotunn.Managers
 
                 if (sourceMaterials == null)
                 {
-                    Jotunn.Logger.LogWarning("No materials for " + config);
+                    Logger.LogWarning($"No materials found for {config}");
                     return false;
                 }
                    

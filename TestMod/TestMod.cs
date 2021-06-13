@@ -584,16 +584,17 @@ namespace TestMod
             }
         }
 
-        //Adds Kitbashed pieces
+        // Adds Kitbashed pieces
         private void AddKitbashedPieces()
         {
-            //A simple kitbash piece, we will begin with the "empty" prefab as the base
-            var simpleKitbashPiece = new CustomPiece("piece_simple_kitbash", true, "Hammer"); 
-            var piece = simpleKitbashPiece.Piece;
-            piece.m_icon = testSprite; 
+            // A simple kitbash piece, we will begin with the "empty" prefab as the base
+            var simpleKitbashPiece = new CustomPiece("piece_simple_kitbash", true, "Hammer");
             simpleKitbashPiece.FixReference = true;
+            simpleKitbashPiece.Piece.m_icon = testSprite;
             PieceManager.Instance.AddPiece(simpleKitbashPiece);
-            KitbashManager.Instance.Kitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
+
+            // Now apply our KitBash to the piece
+            KitbashManager.Instance.AddKitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
                 Layer = "piece",
                 KitbashSources = new List<KitbashSourceConfig>
                 {
@@ -627,11 +628,11 @@ namespace TestMod
                 }
             }); 
 
-            //A more complex Kitbash piece, this has a prepared GameObject for Kitbash to build upon
+            // A more complex Kitbash piece, this has a prepared GameObject for Kitbash to build upon
             AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash", typeof(TestMod).Assembly);
             try
             { 
-                KitbashObject kitbashObject = KitbashManager.Instance.Kitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
+                KitbashObject kitbashObject = KitbashManager.Instance.AddKitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
                 {
                     Layer = "piece",
                     KitbashSources = new List<KitbashSourceConfig>
@@ -665,7 +666,7 @@ namespace TestMod
                 });
                 kitbashObject.OnKitbashApplied += () =>
                 {
-                    //We've added a CapsuleCollider to the skeleton, this is no longer needed
+                    // We've added a CapsuleCollider to the skeleton, this is no longer needed
                     Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
                 };
                 PieceManager.Instance.AddPiece(new CustomPiece(kitbashObject.Prefab, new PieceConfig
