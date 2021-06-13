@@ -7,6 +7,9 @@ using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
 {
+    /// <summary>
+    ///     Manager for handling Kitbashed objects
+    /// </summary>
     public class KitbashManager
     {   
         private static KitbashManager _instance;
@@ -70,9 +73,9 @@ namespace Jotunn.Managers
                     return false;
                 }
             }
-            if (kitBashObject.Config.layer != null)
+            if (kitBashObject.Config.Layer != null)
             {
-                int layer = LayerMask.NameToLayer(kitBashObject.Config.layer);
+                int layer = LayerMask.NameToLayer(kitBashObject.Config.Layer);
                 foreach(Transform transform in kitBashObject.Prefab.GetComponentsInChildren<Transform>())
                 {
                     transform.gameObject.layer = layer;
@@ -82,6 +85,12 @@ namespace Jotunn.Managers
             return true;
         }
 
+        /// <summary>
+        ///     Register a prefab with a KitbashConfig to be applied when the vanilla prefabs are available
+        /// </summary>
+        /// <param name="prefab">Prefab to add kitbashed parts to</param>
+        /// <param name="kitBashConfig">KitbashConfig to apply to the prefab</param>
+        /// <returns>The KitbashObject container for this prefab</returns>
         public KitbashObject Kitbash(GameObject prefab, KitbashConfig kitBashConfig)
         {
             if(prefab.transform.parent == null)
@@ -101,15 +110,15 @@ namespace Jotunn.Managers
 
         private bool Kitbash(GameObject kitbashedPrefab, KitbashSourceConfig config)
         {
-            GameObject sourcePrefab = PrefabManager.Instance.GetPrefab(config.sourcePrefab);
+            GameObject sourcePrefab = PrefabManager.Instance.GetPrefab(config.SourcePrefab);
             if (!sourcePrefab)
             {
                 Jotunn.Logger.LogWarning("No prefab found for " + config);
                 return false;
             }
-            GameObject sourceGameObject = sourcePrefab.transform.Find(config.sourcePath).gameObject;
+            GameObject sourceGameObject = sourcePrefab.transform.Find(config.SourcePath).gameObject;
 
-            Transform parentTransform = config.targetParentPath != null ? kitbashedPrefab.transform.Find(config.targetParentPath) : kitbashedPrefab.transform;
+            Transform parentTransform = config.TargetParentPath != null ? kitbashedPrefab.transform.Find(config.TargetParentPath) : kitbashedPrefab.transform;
             if (parentTransform == null)
             {
                 Jotunn.Logger.LogWarning("Target parent not found for " + config);
@@ -117,12 +126,12 @@ namespace Jotunn.Managers
             }
             GameObject kitBashObject = Object.Instantiate(sourceGameObject, parentTransform);
 
-            kitBashObject.name = config.name ?? sourceGameObject.name;
-            kitBashObject.transform.localPosition = config.position;
-            kitBashObject.transform.localRotation = config.rotation;
-            kitBashObject.transform.localScale = config.scale;
+            kitBashObject.name = config.Name ?? sourceGameObject.name;
+            kitBashObject.transform.localPosition = config.Position;
+            kitBashObject.transform.localRotation = config.Rotation;
+            kitBashObject.transform.localScale = config.Scale;
 
-            if (config.materials != null)
+            if (config.Materials != null)
             {
                 Material[] sourceMaterials = GetSourceMaterials(config);
 
@@ -153,10 +162,10 @@ namespace Jotunn.Managers
 
         private Material[] GetSourceMaterials(KitbashSourceConfig config)
         {
-            Material[] result = new Material[config.materials.Length];
-            for (int i = 0; i < config.materials.Length; i++)
+            Material[] result = new Material[config.Materials.Length];
+            for (int i = 0; i < config.Materials.Length; i++)
             {
-                result[i] = (Material) PrefabManager.Cache.GetPrefab(typeof(Material), config.materials[i]);
+                result[i] = (Material) PrefabManager.Cache.GetPrefab(typeof(Material), config.Materials[i]);
             }
             return result;
         }

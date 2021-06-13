@@ -594,35 +594,35 @@ namespace TestMod
             simpleKitbashPiece.FixReference = true;
             PieceManager.Instance.AddPiece(simpleKitbashPiece);
             KitbashManager.Instance.Kitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
-                layer = "piece",
+                Layer = "piece",
                 KitbashSources = new List<KitbashSourceConfig>
                 {
                     new KitbashSourceConfig
                     {
-                        name = "eye_1",
-                        sourcePrefab = "Ruby",
-                        sourcePath = "attach/model",
-                        position = new Vector3(0.528f, 0.1613345f, -0.253f),
-                        rotation = Quaternion.Euler(0, 180, 0f),
-                        scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+                        Name = "eye_1",
+                        SourcePrefab = "Ruby",
+                        SourcePath = "attach/model",
+                        Position = new Vector3(0.528f, 0.1613345f, -0.253f),
+                        Rotation = Quaternion.Euler(0, 180, 0f),
+                        Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
                     },
                     new KitbashSourceConfig
                     {
-                        name = "eye_2",
-                        sourcePrefab = "Ruby",
-                        sourcePath = "attach/model",
-                        position = new Vector3(0.528f, 0.1613345f, 0.253f),
-                        rotation = Quaternion.Euler(0, 180, 0f),
-                        scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+                        Name = "eye_2",
+                        SourcePrefab = "Ruby",
+                        SourcePath = "attach/model",
+                        Position = new Vector3(0.528f, 0.1613345f, 0.253f),
+                        Rotation = Quaternion.Euler(0, 180, 0f),
+                        Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
                     },
                     new KitbashSourceConfig
                     {
-                        name = "mouth",
-                        sourcePrefab = "draugr_bow",
-                        sourcePath = "attach/bow",
-                        position = new Vector3(0.53336f, -0.315f, -0.001953f),
-                        rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
-                        scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
+                        Name = "mouth",
+                        SourcePrefab = "draugr_bow",
+                        SourcePath = "attach/bow",
+                        Position = new Vector3(0.53336f, -0.315f, -0.001953f),
+                        Rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
+                        Scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
                     }
                 }
             }); 
@@ -633,30 +633,30 @@ namespace TestMod
             { 
                 KitbashObject kitbashObject = KitbashManager.Instance.Kitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
                 {
-                    layer = "piece",
+                    Layer = "piece",
                     KitbashSources = new List<KitbashSourceConfig>
                     {
                         new KitbashSourceConfig
                         {
-                            sourcePrefab = "piece_artisanstation",
-                            sourcePath = "ArtisanTable_Destruction/ArtisanTable_Destruction.007_ArtisanTable.019",
-                            targetParentPath = "new",
-                            position = new Vector3(-1.185f, -0.465f, 1.196f),
-                            rotation = Quaternion.Euler(-90f, 0, 0),
-                            scale = Vector3.one,materials = new string[]{
+                            SourcePrefab = "piece_artisanstation",
+                            SourcePath = "ArtisanTable_Destruction/ArtisanTable_Destruction.007_ArtisanTable.019",
+                            TargetParentPath = "new",
+                            Position = new Vector3(-1.185f, -0.465f, 1.196f),
+                            Rotation = Quaternion.Euler(-90f, 0, 0),
+                            Scale = Vector3.one,Materials = new string[]{
                                 "obsidian_nosnow",
                                 "bronze"
                             }
                         },
                         new KitbashSourceConfig
                         {
-                            sourcePrefab = "guard_stone",
-                            sourcePath = "new/default",
-                            targetParentPath = "new/pivot",
-                            position = new Vector3(0, 0.0591f ,0),
-                            rotation = Quaternion.identity,
-                            scale = Vector3.one * 0.2f,
-                            materials = new string[]{
+                            SourcePrefab = "guard_stone",
+                            SourcePath = "new/default",
+                            TargetParentPath = "new/pivot",
+                            Position = new Vector3(0, 0.0591f ,0),
+                            Rotation = Quaternion.identity,
+                            Scale = Vector3.one * 0.2f,
+                            Materials = new string[]{
                                 "bronze",
                                 "obsidian_nosnow"
                             }

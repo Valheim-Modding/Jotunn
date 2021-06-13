@@ -36,9 +36,9 @@ Create a new `KitbashSourceConfig` for each time you copy a part, so you don't f
 ```cs
 new KitbashSourceConfig
 {
-    name = "eye_1",
-    sourcePrefab = "Ruby",
-    sourcePath = "attach/model"
+    Name = "eye_1",
+    SourcePrefab = "Ruby",
+    SourcePath = "attach/model"
 }
 ```
 
@@ -51,12 +51,12 @@ Once everything is in position, add the position, rotation and scale of the Game
 ```cs
 new KitbashSourceConfig
 {
-    name = "eye_1",
-    sourcePrefab = "Ruby",
-    sourcePath = "attach/model",
-    position = new Vector3(0.528f, 0.1613345f, -0.253f),
-    rotation = Quaternion.Euler(0, 180, 0f),
-    scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+    Name = "eye_1",
+    SourcePrefab = "Ruby",
+    SourcePath = "attach/model",
+    Position = new Vector3(0.528f, 0.1613345f, -0.253f),
+    Rotation = Quaternion.Euler(0, 180, 0f),
+    Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
 }
 ```
 
@@ -69,9 +69,9 @@ In this case the visuals are in 2 pieces, we need both `bow` and its child `Cube
 ```cs
 new KitbashSourceConfig
 {
-    name = "mouth",
-    sourcePrefab = "draugr_bow",
-    sourcePath = "attach/bow",
+    Name = "mouth",
+    SourcePrefab = "draugr_bow",
+    SourcePath = "attach/bow",
 }
 ```
 
@@ -82,12 +82,12 @@ Again, paste the `bow` into `simple_kitbash` and position it until we have creat
 ```cs
 new KitbashSourceConfig
 {
-    name = "mouth",
-    sourcePrefab = "draugr_bow",
-    sourcePath = "attach/bow",
-    position = new Vector3(0.53336f, -0.315f, -0.001953f),
-    rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
-    scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
+    Name = "mouth",
+    SourcePrefab = "draugr_bow",
+    SourcePath = "attach/bow",
+    Position = new Vector3(0.53336f, -0.315f, -0.001953f),
+    Rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
+    Scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
 }
 ```
 
@@ -105,30 +105,30 @@ KitbashManager.Instance.Kitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfi
     {
         new KitbashSourceConfig
         {
-            name = "eye_1",
-            sourcePrefab = "Ruby",
-            sourcePath = "attach/model",
-            position = new Vector3(0.528f, 0.1613345f, -0.253f),
-            rotation = Quaternion.Euler(0, 180, 0f),
-            scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+            Name = "eye_1",
+            SourcePrefab = "Ruby",
+            SourcePath = "attach/model",
+            Position = new Vector3(0.528f, 0.1613345f, -0.253f),
+            Rotation = Quaternion.Euler(0, 180, 0f),
+            Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
         },
         new KitbashSourceConfig
         {
-            name = "eye_2",
-            sourcePrefab = "Ruby",
-            sourcePath = "attach/model",
-            position = new Vector3(0.528f, 0.1613345f, 0.253f),
-            rotation = Quaternion.Euler(0, 180, 0f),
-            scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+            Name = "eye_2",
+            SourcePrefab = "Ruby",
+            SourcePath = "attach/model",
+            Position = new Vector3(0.528f, 0.1613345f, 0.253f),
+            Rotation = Quaternion.Euler(0, 180, 0f),
+            Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
         },
         new KitbashSourceConfig
         {
-            name = "mouth",
-            sourcePrefab = "draugr_bow",
-            sourcePath = "attach/bow",
-            position = new Vector3(0.53336f, -0.315f, -0.001953f),
-            rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
-            scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
+            Name = "mouth",
+            SourcePrefab = "draugr_bow",
+            SourcePath = "attach/bow",
+            Position = new Vector3(0.53336f, -0.315f, -0.001953f),
+            Rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
+            Scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
         }
     }
 }); 
@@ -166,7 +166,7 @@ try
 { 
     KitbashObject kitbashObject = KitbashManager.Instance.Kitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
     {
-        layer = "piece",
+        Layer = "piece",
         KitbashSources = new List<KitbashSourceConfig>
         {
             ...
@@ -200,9 +200,9 @@ We can now use these smaller parts for our kitbash, along with the new material:
 ```cs
 new KitbashSourceConfig
 {
-    sourcePrefab = "piece_spinning_wheel",
-    sourcePath = "SpinningWheel_Destruction/SpinningWheel_Destruction.002_SpinningWheel_Broken.018",
-    materials = new string[]{
+    SourcePrefab = "piece_spinning_wheel",
+    SourcePath = "SpinningWheel_Destruction/SpinningWheel_Destruction.002_SpinningWheel_Broken.018",
+    Materials = new string[]{
         "SpinningWheel_mat",
         "TearChanal_mat"
     }
@@ -215,17 +215,17 @@ Drag & drop Materials onto the mesh to "paint" your kitbashed GameObject
 <br />
 ![Kitbash Change Material](../images/data/kitbashChangeMaterial.png)
 
-Add the `materials` property to your KitbashSourceConfig:
+Add the `Materials` property to your KitbashSourceConfig:
 ```cs
 new KitbashSourceConfig
 {
-    name = "eye_1",
-    sourcePrefab = "Ruby",
-    sourcePath = "attach/model",
-    position = new Vector3(0.528f, 0.1613345f, -0.253f),
-    rotation = Quaternion.Euler(0, 180, 0f),
-    scale = new Vector3(0.02473f, 0.05063999f, 0.05064f),
-    materials = new string[]{ "antifreezegland" }
+    Name = "eye_1",
+    SourcePrefab = "Ruby",
+    SourcePath = "attach/model",
+    Position = new Vector3(0.528f, 0.1613345f, -0.253f),
+    Rotation = Quaternion.Euler(0, 180, 0f),
+    Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f),
+    Materials = new string[]{ "antifreezegland" }
 },
 ```
 
@@ -237,18 +237,18 @@ If you're using a more complicated skeleton, make sure that the master copy Game
 You can now paste the parts into for example `pivot` to add the parts to the rotating pivot.
 The Transform values are relative to the parent GameObject, so make sure that all positions are **exactly** the same as your skeleton.
 
-Use the `targetParentPath` field to set the target:
+Use the `TargetParentPath` property to set the target:
 
 ```cs
  new KitbashSourceConfig
 {
-    sourcePrefab = "guard_stone",
-    sourcePath = "new/default",
-    targetParentPath = "new/pivot",
-    position = new Vector3(0, 0.0591f ,0),
-    rotation = Quaternion.identity,
-    scale = Vector3.one * 0.2f,
-    materials = new string[]{
+    SourcePrefab = "guard_stone",
+    SourcePath = "new/default",
+    TargetParentPath = "new/pivot",
+    Position = new Vector3(0, 0.0591f ,0),
+    Rotation = Quaternion.identity,
+    Scale = Vector3.one * 0.2f,
+    Materials = new string[]{
         "bronze",
         "obsidian_nosnow"
     }
@@ -272,7 +272,7 @@ Once you are happy with the collider, copy the values from your master copy into
 We still need to get rid of the MeshCollider that is attached to the `new/default` of the Ward:
 
 ```cs
-kitbashObject.KitbashApplied += () =>
+kitbashObject.OnKitbashApplied += () =>
 {
     //We've added a CapsuleCollider to the skeleton, this is no longer needed
     Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
