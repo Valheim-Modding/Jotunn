@@ -9,45 +9,49 @@
 
 - name: Asset Mocking
   href: asset-mocking.md
-
+  
+- name: KitBashing
+  href: kitbash.md
+  
+- name: Bone Reorder
+  href: bonereorder.md
+  
 - name: Items
   href: items.md
   
+- name: Pieces and PieceTables
+  href: pieces.md
+
 - name: Recipes
   href: recipes.md
   
-- name: Status effects
-  href: status-effects.md
-
 - name: Item conversions
   href: item-conversions.md
   
 - name: Item variants
   href: item-variants.md
-
-- name: Pieces and PieceTables
-  href: pieces.md
+  
+- name: Status effects
+  href: status-effects.md
 
 - name: Skills
   href: skills.md
   
-- name: Inputs
-  href: inputs.md
+- name: Console Commands
+  href: console-commands.md
   
 - name: Localization
   href: localization.md
-
+  
+- name: Inputs
+  href: inputs.md
+  
 - name: GUI
   href: gui.md
   
-- name: Console Commands
-  href: console-commands.md
-
 - name: Network Compatibility
   href: networkcompatibility.md
 
 - name: Config Sync
   href: config.md
   
-- name: Bone Reorder
-  href: bonereorder.md
