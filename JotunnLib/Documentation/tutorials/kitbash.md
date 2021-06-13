@@ -22,9 +22,11 @@ For the first example, we won't be using AssetBundles, only the ripped Unity pro
 * Rename your new GameObject to `simple_kitbash` and add a Cube (**3D Object > Cube**).
 
 You should now have something like this:
+<br />
 ![Kitbash Simple Kitbash Base](../images/data/kitbashSimpleKitbashBase.png)
 
 We can now start adding other pieces from vanilla assets! Open a prefab and look for the lowest (in the hierarchy) GameObject that has everything that you want. For example, the Ruby:
+<br />
 ![Kitbash Ruby Source](../images/data/kitbashRubySource.png)
 
 We don't need every GameObject in this prefab, we only want the visual (MeshRenderer) and usually also any Colliders. For the Ruby this means that we should copy the `model` gameObject, right click and select **Copy**.
@@ -43,6 +45,7 @@ new KitbashSourceConfig
 Go back to `simple_kitbash` and paste the copied GameObject. Unity seems to paste 50 units above the source location, so either zoom out or edit that manually to see the pasted part. Move & scale the GameObject however you want, you can edit all properties of the Transform.
 
 Once everything is in position, add the position, rotation and scale of the GameObject in the KitbashSourceConfig:
+<br />
 ![Kitbash Ruby Transform](../images/data/kitbashRubyTransform.png)
 
 ```cs
@@ -58,6 +61,7 @@ new KitbashSourceConfig
 ```
 
 You can also have entire trees of GameObjects as the source, for example the Draugr Bow:
+<br />
 ![Kitbash Draugr Bow Source](../images/data/kitbashDraugrBowSource.png)
 
 In this case the visuals are in 2 pieces, we need both `bow` and its child `Cube` (the drawstring). To do this, we simply use the parent `bow` as the source, the child will be copied along, just like in the Unity editor.
@@ -72,6 +76,7 @@ new KitbashSourceConfig
 ```
 
 Again, paste the `bow` into `simple_kitbash` and position it until we have created our masterpiece
+<br />
 ![Kitbash Draugr Bow Transform](../images/data/kitbashDraugrBowTransform.png)
 
 ```cs
@@ -130,6 +135,7 @@ KitbashManager.Instance.Kitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfi
 ```
 
 That's it! We can now place our kitbashed piece in game!
+<br />
 ![Kitbash Simple In Game](../images/data/kitbashSimpleInGame.png)
 
 ## Advanced kitbash piece
@@ -137,6 +143,7 @@ That's it! We can now place our kitbashed piece in game!
 ### Skeleton prefab
 
 We can add a lot more features to the Kitbashed object if we start with a skeleton created in Unity (again in a separate project from the ripped project!)
+<br />
 ![Kitbash Odin Statue Skeleton](../images/data/kitbashOdinStatueSkeleton.png)
 
 Here we have prepared quite a few things:
@@ -175,15 +182,19 @@ try
 ### Using exploded pieces
 
 Many of the Pieces in Valheim have a special animation when destroying them, where they break up into many parts, for example, the Spinning Wheel:
+<br />
 ![Kitbash Spinning Wheel New](../images/data/kitbashSpinningWheelNew.png)
 
 Disable the `New` GameObject, and enable the `SpinningWheel_Destruction` GameObject instead
+<br />
 ![Kitbash Spinning Wheel Exploded](../images/data/kitbashSpinningWheelExploded.png)
 
 These parts usually have the Worn version of the material, which distorts the mesh a bit, update all materials to the new version to get a good look at all parts
+<br />
 ![Kitbash Spinning Wheel Exploded New Mats](../images/data/kitbashSpinningWheelExplodedNewMats.png)
 
 We can now use these smaller parts for our kitbash, along with the new material:
+<br />
 ![Kitbash Spinning Wheel Wheel Part](../images/data/kitbashSpinningWheelWheelPart.png)
 
 ```cs
@@ -201,6 +212,7 @@ new KitbashSourceConfig
 Any material can be used, it does not have to be associated with the original mesh (many materials will map terribly though :D)
 
 Drag & drop Materials onto the mesh to "paint" your kitbashed GameObject
+<br />
 ![Kitbash Change Material](../images/data/kitbashChangeMaterial.png)
 
 Add the `materials` property to your KitbashSourceConfig:
@@ -219,6 +231,7 @@ new KitbashSourceConfig
 
 ### Target parent
 If you're using a more complicated skeleton, make sure that the master copy GameObject (in the ripped Unity project) is set up exactly the same as your skeleton in the AssetBundle (notice the gameObjects `collider`, `new` and `pivot`):
+<br />
 ![Kitbash Skeleton Master Copy](../images/data/kitbashSkeletonMasterCopy.png)
 
 You can now paste the parts into for example `pivot` to add the parts to the rotating pivot.
@@ -249,9 +262,11 @@ The gear, like all (?) exploded parts, has no Collider, so currently, our `piece
 To fix this, we can use a custom Collider, and remove the mesh collider, to save on processing power.
 
 In the master copy, update the values of the Collider so they match close enough (don't worry too much about pixel perfect accuracy here, try it in game to check how it feels to run into)
+<br />
 ![Kitbash Collider](../images/data/kitbashCollider.png)
 
 Once you are happy with the collider, copy the values from your master copy into your skeleton.
+<br />
 ![Kitbash Collider Skeleton](../images/data/kitbashColliderSkeleton.png)
 
 We still need to get rid of the MeshCollider that is attached to the `new/default` of the Ward:
