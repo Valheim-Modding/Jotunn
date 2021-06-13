@@ -11,6 +11,7 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace TestMod
 {
@@ -67,7 +68,7 @@ namespace TestMod
             AddCustomItemConversion();
             AddItemsWithConfigs();
             AddMockedItems();
-            AddPieceCategories();
+            AddKitbashedPieces();
             AddInvalidEntities();
 
             // Add custom items cloned from vanilla items
@@ -586,8 +587,108 @@ namespace TestMod
             }
         }
 
-        // Add custom pieces from an "empty" prefab with new piece categories
-        private void AddPieceCategories()
+        // Adds Kitbashed pieces
+        private void AddKitbashedPieces()
+        {
+            // A simple kitbash piece, we will begin with the "empty" prefab as the base
+            var simpleKitbashPiece = new CustomPiece("piece_simple_kitbash", true, "Hammer");
+            simpleKitbashPiece.FixReference = true;
+            simpleKitbashPiece.Piece.m_icon = testSprite;
+            PieceManager.Instance.AddPiece(simpleKitbashPiece);
+
+            // Now apply our Kitbash to the piece
+            KitbashManager.Instance.AddKitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
+                Layer = "piece",
+                KitbashSources = new List<KitbashSourceConfig>
+                {
+                    new KitbashSourceConfig
+                    {
+                        Name = "eye_1",
+                        SourcePrefab = "Ruby",
+                        SourcePath = "attach/model",
+                        Position = new Vector3(0.528f, 0.1613345f, -0.253f),
+                        Rotation = Quaternion.Euler(0, 180, 0f),
+                        Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+                    },
+                    new KitbashSourceConfig
+                    {
+                        Name = "eye_2",
+                        SourcePrefab = "Ruby",
+                        SourcePath = "attach/model",
+                        Position = new Vector3(0.528f, 0.1613345f, 0.253f),
+                        Rotation = Quaternion.Euler(0, 180, 0f),
+                        Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+                    },
+                    new KitbashSourceConfig
+                    {
+                        Name = "mouth",
+                        SourcePrefab = "draugr_bow",
+                        SourcePath = "attach/bow",
+                        Position = new Vector3(0.53336f, -0.315f, -0.001953f),
+                        Rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
+                        Scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
+                    }
+                }
+            }); 
+
+            // A more complex Kitbash piece, this has a prepared GameObject for Kitbash to build upon
+            AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash", typeof(TestMod).Assembly);
+            try
+            { 
+                KitbashObject kitbashObject = KitbashManager.Instance.AddKitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
+                {
+                    Layer = "piece",
+                    KitbashSources = new List<KitbashSourceConfig>
+                    {
+                        new KitbashSourceConfig
+                        {
+                            SourcePrefab = "piece_artisanstation",
+                            SourcePath = "ArtisanTable_Destruction/ArtisanTable_Destruction.007_ArtisanTable.019",
+                            TargetParentPath = "new",
+                            Position = new Vector3(-1.185f, -0.465f, 1.196f),
+                            Rotation = Quaternion.Euler(-90f, 0, 0),
+                            Scale = Vector3.one,Materials = new string[]{
+                                "obsidian_nosnow",
+                                "bronze"
+                            }
+                        },
+                        new KitbashSourceConfig
+                        {
+                            SourcePrefab = "guard_stone",
+                            SourcePath = "new/default",
+                            TargetParentPath = "new/pivot",
+                            Position = new Vector3(0, 0.0591f ,0),
+                            Rotation = Quaternion.identity,
+                            Scale = Vector3.one * 0.2f,
+                            Materials = new string[]{
+                                "bronze",
+                                "obsidian_nosnow"
+                            }
+                        },
+                    }
+                });
+                kitbashObject.OnKitbashApplied += () =>
+                {
+                    // We've added a CapsuleCollider to the skeleton, this is no longer needed
+                    Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
+                };
+                PieceManager.Instance.AddPiece(new CustomPiece(kitbashObject.Prefab, new PieceConfig
+                {
+                    PieceTable = "Hammer",
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig { Item = "Obsidian" , Recover = true},
+                        new RequirementConfig { Item = "Bronze", Recover = true }
+                    }
+                }));
+            } finally
+            {
+                kitbashAssetBundle.Unload(false);
+            }
+        }
+
+        // Add a custom item from an "empty" prefab
+        private void AddEmptyItems()
         {
             CustomPiece CP = new CustomPiece("piece_lul", true, new PieceConfig
             {

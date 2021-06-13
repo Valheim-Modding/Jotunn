@@ -55,6 +55,7 @@ namespace Jotunn
                 ItemManager.Instance,
                 PieceManager.Instance,
                 MockManager.Instance,
+                KitbashManager.Instance,
                 GUIManager.Instance,
                 //SaveManager.Instance,  // Temporarely disabled, causes FPS issues in the current implementation
                 //ZoneManager.Instance,  // Had some problems reported, needs more tests
