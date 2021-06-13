@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jotunn;
 using Jotunn.Configs;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -32,6 +31,13 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+
+        /// <summary>
+        ///     Event that gets fired every time the Unity scene changed and a new PixelFix
+        ///     object was created. Subscribe to this event to create your custom GUI objects
+        ///     and add them as a child to the <see cref="PixelFix"/>.
+        /// </summary>
+        public static event Action OnPixelFixCreated;
 
         /// <summary>
         ///     GUI container with automatic scaling for high res displays.
@@ -116,7 +122,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Indicates if the PixelFix must be created for the start or main scene.
         /// </summary>
-        private bool GUIInStart = true;
+        private bool GUIInStart = false;
 
         /// <summary>
         ///     Event receiver for pointer click events
@@ -316,6 +322,8 @@ namespace Jotunn.Managers
                 GUIContainer.SetActive(true);
                 CreatePixelFix();
                 GUIInStart = true;
+
+                OnPixelFixCreated?.SafeInvoke();
             }
             if (scene.name == "main" && GUIInStart)
             {
@@ -340,6 +348,8 @@ namespace Jotunn.Managers
 
                 // Create all custom KeyHints
                 RegisterKeyHints();
+
+                OnPixelFixCreated?.SafeInvoke();
             }
         }
 
@@ -511,6 +521,12 @@ namespace Jotunn.Managers
                 {
                     transform.gameObject?.SetActive(false);
                 }
+            }
+
+            // Don't show hints when chat window is visible
+            if (Chat.instance.IsChatDialogWindowVisible())
+            {
+                return;
             }
 
             // Get the current equipped item name

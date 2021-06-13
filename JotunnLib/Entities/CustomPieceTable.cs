@@ -73,7 +73,24 @@ namespace Jotunn.Entities
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return PieceTablePrefab && PieceTable != null;
+            bool valid = true;
+
+            if (!PieceTablePrefab)
+            {
+                Logger.LogError($"CustomPieceTable {this} has no prefab");
+                valid = false;
+            }
+            if (!PieceTablePrefab.IsValid())
+            {
+                valid = false;
+            }
+            if (PieceTable == null)
+            {
+                Logger.LogError($"CustomPieceTable {this} has no PieceTable component");
+                valid = false;
+            }
+            
+            return valid;
         }
 
         /// <inheritdoc/>

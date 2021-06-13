@@ -43,7 +43,8 @@ private void AddInputs()
     showGUIButton = new ButtonConfig
     {
         Name = "JotunnModExample_Menu",
-        Key = KeyCode.Insert
+        Key = KeyCode.Insert,
+        ActiveInGUI = true    // Enable this button also when in GUI (e.g. the console)
     };
     InputManager.Instance.AddButton(PluginGUID, showGUIButton);
 
