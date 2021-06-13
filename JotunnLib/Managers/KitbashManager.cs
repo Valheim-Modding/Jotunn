@@ -1,7 +1,5 @@
-﻿using Jotunn;
-using Jotunn.Configs;
+﻿using Jotunn.Configs;
 using Jotunn.Entities;
-using Jotunn.Managers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -80,7 +78,7 @@ namespace Jotunn.Managers
                     transform.gameObject.layer = layer;
                 }
             }
-            kitBashObject.KitbashApplied?.Invoke();
+            kitBashObject.OnKitbashApplied?.Invoke();
             return true;
         }
 

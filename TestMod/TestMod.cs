@@ -663,7 +663,7 @@ namespace TestMod
                         },
                     }
                 });
-                kitbashObject.KitbashApplied += () =>
+                kitbashObject.OnKitbashApplied += () =>
                 {
                     //We've added a CapsuleCollider to the skeleton, this is no longer needed
                     Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
