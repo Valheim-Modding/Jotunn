@@ -124,12 +124,6 @@ namespace Jotunn.Managers
             // Try to load a custom prefab
             GameObject sourcePrefab = PrefabManager.Instance.GetPrefab(config.SourcePrefab);
 
-            // If not custom, try to get a vanilla prefab from the cache
-            if (!sourcePrefab)
-            {
-                sourcePrefab = PrefabManager.Cache.GetPrefab<GameObject>(config.SourcePrefab);
-            }
-
             // If no prefab is found, warn and return
             if (!sourcePrefab)
             {

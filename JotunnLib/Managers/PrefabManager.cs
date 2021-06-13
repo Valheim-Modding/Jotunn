@@ -129,14 +129,8 @@ namespace Jotunn.Managers
                 return null;
             }
 
-            // Try to get the prefab in local Dictionary or ZNetScene (if available)
+            // Try to get the prefab
             GameObject prefab = GetPrefab(baseName);
-
-            // Try to get the prefab from the PrefabCache
-            if (!prefab)
-            {
-                prefab = Cache.GetPrefab<GameObject>(baseName);
-            }
             if (!prefab)
             {
                 Logger.LogError($"Failed to clone prefab, can not find base prefab with name: {baseName}");
@@ -181,7 +175,8 @@ namespace Jotunn.Managers
         ///     Search hierarchy:
         ///     <list type="number">
         ///         <item>Custom prefab with the exact name</item>
-        ///         <item>Vanilla prefab with the exact name if <see cref="ZNetScene"/> is already instantiated</item>
+        ///         <item>Vanilla prefab with the exact name from <see cref="ZNetScene"/> if already instantiated</item>
+        ///         <item>Vanilla prefab from the prefab cache</item>
         ///     </list>
         /// </summary>
         /// <param name="name">Name of the prefab to search for.</param>
@@ -195,16 +190,14 @@ namespace Jotunn.Managers
 
             if (ZNetScene.instance)
             {
-                foreach (GameObject obj in ZNetScene.instance.m_prefabs)
+                int hash = name.GetStableHashCode();
+                if (ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))
                 {
-                    if (obj.name == name)
-                    {
-                        return obj;
-                    }
+                    return ZNetScene.instance.GetPrefab(hash);
                 }
             }
 
-            return null;
+            return Cache.GetPrefab<GameObject>(name);
         }
 
         /// <summary>
@@ -232,18 +225,12 @@ namespace Jotunn.Managers
             {
                 //TODO: remove all clones, too
 
-                GameObject del = null;
-                foreach (GameObject obj in ZNetScene.instance.m_prefabs)
+                int hash = name.GetStableHashCode();
+                if (ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))
                 {
-                    if (obj.name == name)
-                    {
-                        break;
-                    }
-                }
-
-                if (del)
-                {
+                    GameObject del = ZNetScene.instance.GetPrefab(hash);
                     ZNetScene.instance.m_prefabs.Remove(del);
+                    ZNetScene.instance.m_namedPrefabs.Remove(hash);
                     ZNetScene.instance.Destroy(del);
                 }
             }
