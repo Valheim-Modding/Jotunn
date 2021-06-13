@@ -14,13 +14,13 @@ namespace Jotunn.Configs
         public List<KitbashSourceConfig> KitbashSources = new List<KitbashSourceConfig>();
 
         /// <summary>
-        ///     The layer of the prefab, all Kitbashed parts will be set to this layer
+        ///     Optional: The layer of the prefab, all Kitbashed parts will be set to this layer
         /// </summary>
         public string Layer { get; set; }
 
         /// <summary>
         ///     Whether to <see cref="PrefabExtension.FixReferences(UnityEngine.GameObject)">fix references</see> on the prefab
         /// </summary>
-        public bool FixReferences { get; internal set; }
+        public bool FixReferences { get; set; }
     }
 }

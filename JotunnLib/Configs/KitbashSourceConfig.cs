@@ -9,11 +9,13 @@ namespace Jotunn.Configs
     public class KitbashSourceConfig
     {
         /// <summary>
-        ///     Name of the pasted GameObject
+        ///     An optional name of the pasted GameObject<br/>
+        ///     Defaults to the source name
         /// </summary>
         public string Name { get; set; }
         /// <summary>
-        ///     Target parent of the pasted GameObject
+        ///     Target parent of the pasted GameObject <br/>
+        ///     Defaults to the root of the prefab
         /// </summary>
         public string TargetParentPath { get; set; }
         /// <summary>
@@ -25,19 +27,23 @@ namespace Jotunn.Configs
         /// </summary>
         public string SourcePath { get; set; }
         /// <summary>
-        ///     Position of the pasted GameObject
+        ///     Position of the pasted GameObject<br/>
+        ///     Defaults to <see cref="Vector3.zero"/>
         /// </summary>
         public Vector3 Position { get; set; } = Vector3.zero;
         /// <summary>
-        ///     Rotation of the pasted GameObject
+        ///     Rotation of the pasted GameObject<br/>
+        ///     Defaults to <see cref="Quaternion.identity"/> (no rotation)
         /// </summary>
         public Quaternion Rotation { get; set; } = Quaternion.identity;
         /// <summary>
-        ///     Scale of the pasted GameObject
+        ///     Scale of the pasted GameObject<br/>
+        ///     Defaults to <see cref="Vector3.one"/> (no rescale)
         /// </summary>
         public Vector3 Scale { get; set; } = Vector3.one;
         /// <summary>
-        ///     A list of Materials to set on the pasted GameObject
+        ///     An optional list of Materials to set on the pasted GameObject<br/>
+        ///     Defaults to the original materials
         /// </summary>
         public string[] Materials { get; set; } 
     }
