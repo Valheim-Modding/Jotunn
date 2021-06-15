@@ -69,6 +69,7 @@ namespace TestMod
             AddItemsWithConfigs();
             AddMockedItems();
             AddKitbashedPieces();
+            AddPieceCategories();
             AddInvalidEntities();
 
             // Add custom items cloned from vanilla items
@@ -687,8 +688,8 @@ namespace TestMod
             }
         }
 
-        // Add a custom item from an "empty" prefab
-        private void AddEmptyItems()
+        // Add custom pieces from an "empty" prefab with new piece categories
+        private void AddPieceCategories()
         {
             CustomPiece CP = new CustomPiece("piece_lul", true, new PieceConfig
             {
