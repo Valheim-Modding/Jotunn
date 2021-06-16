@@ -155,8 +155,6 @@ namespace Jotunn.Managers
             GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
             GUIContainer.AddComponent<GuiScaler>().UpdateScale();
 
-            CreatePixelFix();
-
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             On.KeyHints.UpdateHints += ShowCustomKeyHint;
         }
@@ -340,6 +338,8 @@ namespace Jotunn.Managers
                         PixelFix.transform.SetParent(gui.transform, false);
                         GUIContainer.SetActive(false);
                         GUIInStart = false;
+                        
+                        OnPixelFixCreated?.SafeInvoke();
                     }
                 }
 
@@ -348,8 +348,6 @@ namespace Jotunn.Managers
 
                 // Create all custom KeyHints
                 RegisterKeyHints();
-
-                OnPixelFixCreated?.SafeInvoke();
             }
         }
 
