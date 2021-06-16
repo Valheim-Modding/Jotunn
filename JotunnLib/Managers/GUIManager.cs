@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Jotunn.Configs;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -139,27 +137,37 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            GUIContainer = new GameObject("GUI");
-            GUIContainer.transform.SetParent(Main.RootObject.transform);
-            GUIContainer.layer = UILayer; // UI
-            var canvas = GUIContainer.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 1;
-            GUIContainer.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            GUIContainer.AddComponent<GraphicRaycaster>();
-            GUIContainer.AddComponent<CanvasScaler>();
-            GUIContainer.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-            GUIContainer.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-            GUIContainer.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-            GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
-            GUIContainer.AddComponent<GuiScaler>().UpdateScale();
+            // Dont init on a dedicated server
+            if (!IsHeadless())
+            {
+                GUIContainer = new GameObject("GUI");
+                GUIContainer.transform.SetParent(Main.RootObject.transform);
+                GUIContainer.layer = UILayer; // UI
+                var canvas = GUIContainer.AddComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.sortingOrder = 1;
+                GUIContainer.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                GUIContainer.AddComponent<GraphicRaycaster>();
+                GUIContainer.AddComponent<CanvasScaler>();
+                GUIContainer.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+                GUIContainer.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+                GUIContainer.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
+                GUIContainer.AddComponent<GuiScaler>().UpdateScale();
 
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-            On.KeyHints.UpdateHints += ShowCustomKeyHint;
+                SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+                On.KeyHints.UpdateHints += ShowCustomKeyHint;
+            }
         }
 
         internal void OnGUI()
         {
+            // No resource loading on a headless server
+            if (IsHeadless())
+            {
+                return;
+            }
+
             // Load valheim GUI assets
             if (needsLoad && SceneManager.GetActiveScene().name == "start" && SceneManager.GetActiveScene().isLoaded)
             {
