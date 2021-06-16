@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Jotunn.Configs;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
-using Object = UnityEngine.Object;
 using Toggle = UnityEngine.UI.Toggle;
 
 namespace Jotunn.Managers
@@ -17,7 +18,7 @@ namespace Jotunn.Managers
     ///     Manager for handling anything GUI related. Provides Valheim style 
     ///     GUI elements as well as an anchor for custom GUI prefabs.
     /// </summary>
-    public class GUIManager : IManager, IPointerClickHandler
+    public class GUIManager : IManager
     {
         private static GUIManager _instance;
         /// <summary>
@@ -125,14 +126,12 @@ namespace Jotunn.Managers
         private bool GUIInStart = false;
 
         /// <summary>
-        ///     Event receiver for pointer click events
+        ///     Detect headless mode (aka dedicated server)
         /// </summary>
-        /// <param name="eventData"></param>
-        public void OnPointerClick(PointerEventData eventData)
+        /// <returns></returns>
+        public static bool IsHeadless()
         {
-#if DEBUG
-            Logger.LogMessage(eventData.GetObjectString());
-#endif
+            return SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
         }
 
         /// <summary>
@@ -162,7 +161,6 @@ namespace Jotunn.Managers
         internal void OnGUI()
         {
             // Load valheim GUI assets
-
             if (needsLoad && SceneManager.GetActiveScene().name == "start" && SceneManager.GetActiveScene().isLoaded)
             {
                 try
