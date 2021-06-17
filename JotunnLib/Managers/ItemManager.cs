@@ -370,7 +370,8 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Register a single item in the current ObjectDB.
-        ///     Also adds the prefab to the <see cref="ZNetScene"/> if necessary.
+        ///     Also adds the prefab to the <see cref="PrefabManager"/> and <see cref="ZNetScene"/> if necessary.<br />
+        ///     No mock references are fixed.
         /// </summary>
         /// <param name="prefab"><see cref="GameObject"/> with an <see cref="ItemDrop"/> component to add to the <see cref="ObjectDB"/></param>
         public void RegisterItemInObjectDB(GameObject prefab)
