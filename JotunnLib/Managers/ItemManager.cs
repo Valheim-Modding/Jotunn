@@ -346,9 +346,8 @@ namespace Jotunn.Managers
                         {
                             itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
                         }
-                        objectDB.m_items.Add(customItem.ItemPrefab);
 
-                        Logger.LogInfo($"Added item {customItem} | Token: {customItem.ItemDrop.TokenName()}");
+                        RegisterItemInObjectDB(customItem.ItemPrefab);
                     }
                     catch (Exception ex)
                     {
@@ -367,6 +366,45 @@ namespace Jotunn.Managers
 
                 objectDB.UpdateItemHashes();
             }
+        }
+
+        /// <summary>
+        ///     Register a single item in the current ObjectDB.
+        ///     Also adds the prefab to the <see cref="ZNetScene"/> if necessary.
+        /// </summary>
+        /// <param name="prefab"><see cref="GameObject"/> with an <see cref="ItemDrop"/> component to add to the <see cref="ObjectDB"/></param>
+        public void RegisterItemInObjectDB(GameObject prefab)
+        {
+            var itemDrop = prefab.GetComponent<ItemDrop>();
+            if (itemDrop == null)
+            {
+                throw new Exception($"Prefab {prefab.name} has no ItemDrop component attached");
+            }
+
+            var objectDB = ObjectDB.instance;
+            if (objectDB == null)
+            {
+                throw new Exception($"ObjectDB is not instantiated");
+            }
+
+            var hash = prefab.name.GetStableHashCode();
+            if (objectDB.m_itemByHash.ContainsKey(hash))
+            {
+                Logger.LogInfo($"Already added item {prefab.name}");
+            }
+            else
+            {
+                if (!PrefabManager.Instance.Prefabs.ContainsKey(prefab.name))
+                {
+                    PrefabManager.Instance.AddPrefab(prefab);
+                    PrefabManager.Instance.RegisterToZNetScene(prefab);
+                }
+
+                objectDB.m_items.Add(prefab);
+                objectDB.m_itemByHash.Add(hash, prefab);
+            }
+
+            Logger.LogInfo($"Added item {prefab.name} | Token: {itemDrop.TokenName()}");
         }
 
         private void RegisterCustomRecipes(ObjectDB objectDB)
