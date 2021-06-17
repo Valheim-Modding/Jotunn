@@ -517,7 +517,8 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            if (SceneManager.GetActiveScene().name == "main")
             {
                 LoadPieceTables();
                 CreatePieceTableCategories();
@@ -529,7 +530,8 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            if (SceneManager.GetActiveScene().name == "main")
             {
                 OnPiecesRegistered?.SafeInvoke();
             }

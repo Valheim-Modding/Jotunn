@@ -560,15 +560,15 @@ namespace Jotunn.Managers
 
             if (SceneManager.GetActiveScene().name == "start")
             {
-                var isValid = self.IsValid();
-                ItemDropMockFix.Switch(!isValid);
+                /*var isValid = self.IsValid();
+                ItemDropMockFix.Switch(!isValid);*/
 
-                if (isValid)
-                {
+                /*if (isValid)
+                {*/
                     RegisterCustomItems(self);
 
                     self.UpdateItemHashes();
-                }
+                //}
             }
         }
 
@@ -576,7 +576,8 @@ namespace Jotunn.Managers
         {
             orig(self, other);
 
-            if (SceneManager.GetActiveScene().name == "start" && self.IsValid())
+            //if (SceneManager.GetActiveScene().name == "start" && self.IsValid())
+            if (SceneManager.GetActiveScene().name == "start")
             {
                 OnItemsRegisteredFejd?.SafeInvoke();
             }
@@ -593,25 +594,26 @@ namespace Jotunn.Managers
 
             if (SceneManager.GetActiveScene().name == "main")
             {
-                var isValid = self.IsValid();
-                ItemDropMockFix.Switch(!isValid);
+                /*var isValid = self.IsValid();
+                ItemDropMockFix.Switch(!isValid);*/
 
-                if (isValid)
-                {
+                /*if (isValid)
+                {*/
                     RegisterCustomItems(self);
                     RegisterCustomRecipes(self);
                     RegisterCustomStatusEffects(self);
                     RegisterCustomItemConversions();
 
                     self.UpdateItemHashes();
-                }
+                //}
             }
         }
         private void InvokeOnItemsRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            if (SceneManager.GetActiveScene().name == "main")
             {
                 OnItemsRegistered?.SafeInvoke();
             }

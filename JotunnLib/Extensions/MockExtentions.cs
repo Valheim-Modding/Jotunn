@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace Jotunn
 {
-    internal static class ItemDropMockFix
+    /*internal static class ItemDropMockFix
     {
         private static bool _enabled;
 
@@ -46,7 +46,7 @@ namespace Jotunn
         {
             return self.m_items.Count > 0;
         }
-    }
+    }*/
 
     /// <summary>
     ///     Extends prefab GameObjects with functionality related to the mocking system.
