@@ -529,6 +529,10 @@ namespace Jotunn.Managers
                 if (!PrefabManager.Instance.Prefabs.ContainsKey(prefab.name))
                 {
                     PrefabManager.Instance.AddPrefab(prefab);
+                }
+                var hash = prefab.name.GetStableHashCode();
+                if (ZNetScene.instance != null && !ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))
+                {
                     PrefabManager.Instance.RegisterToZNetScene(prefab);
                 }
 
