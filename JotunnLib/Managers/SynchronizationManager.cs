@@ -232,7 +232,7 @@ namespace Jotunn.Managers
             var clientId = ZNet.instance.m_peers.FirstOrDefault(x => x.m_socket.GetHostName() == entry)?.m_uid;
             if (clientId != null)
             {
-                Logger.LogMessage($"Sending admin status to {entry}/{clientId} ({(admin ? "is admin" : "is no admin")})");
+                Logger.LogInfo($"Sending admin status to {entry}/{clientId} ({(admin ? "is admin" : "is no admin")})");
                 ZRoutedRpc.instance.InvokeRoutedRPC((long)clientId, nameof(RPC_Jotunn_IsAdmin), admin);
             }
         }
@@ -372,7 +372,7 @@ namespace Jotunn.Managers
             {
                 if (configPkg != null && configPkg.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
                 {
-                    Logger.LogDebug("Received configuration data from server");
+                    Logger.LogInfo("Received configuration data from server");
                     ApplyConfigZPackage(configPkg);
 
                     OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
@@ -384,7 +384,7 @@ namespace Jotunn.Managers
                 // Is package not empty and is sender admin?
                 if (configPkg != null && configPkg.Size() > 0 && ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
                 {
-                    Logger.LogDebug($"Received configuration data from client {sender}");
+                    Logger.LogInfo($"Received configuration data from client {sender}");
 
                     // Send to all other clients
                     foreach (var peer in ZNet.instance.m_peers.Where(x => x.m_uid != sender))
@@ -408,6 +408,8 @@ namespace Jotunn.Managers
             // Client Receive
             if (ZNet.instance.IsClientInstance())
             {
+                Logger.LogInfo($"Received admin status from server: {(isAdmin ? "Admin" : "no admin")}");
+
                 Instance.PlayerIsAdmin = isAdmin;
 
                 // If player is admin, unlock the configuration values
@@ -493,7 +495,7 @@ namespace Jotunn.Managers
                 // Validate the message is from the server and not another client.
                 if (configPkg != null && configPkg.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
                 {
-                    Logger.LogDebug("Received configuration from server");
+                    Logger.LogInfo("Received configuration data from server");
                     ApplyConfigZPackage(configPkg);
 
                     OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = true });
@@ -505,7 +507,7 @@ namespace Jotunn.Managers
                 var peer = ZNet.instance.m_peers.FirstOrDefault(x => x.m_uid == sender);
                 if (peer != null)
                 {
-                    Logger.LogMessage($"Sending configuration data to peer #{sender}");
+                    Logger.LogInfo($"Sending configuration data to peer #{sender}");
 
                     var values = GetSyncConfigValues();
 
@@ -523,7 +525,7 @@ namespace Jotunn.Managers
         /// <param name="configPkg"></param>
         internal void ApplyConfigZPackage(ZPackage configPkg)
         {
-            Logger.LogMessage("Applying configuration data package");
+            Logger.LogDebug("Applying configuration data package");
 
             var loadedPlugins = BepInExUtils.GetDependentPlugins();
 
