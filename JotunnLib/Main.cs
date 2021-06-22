@@ -45,7 +45,7 @@ namespace Jotunn
             RootObject = new GameObject("_JotunnRoot");
             GameObject.DontDestroyOnLoad(RootObject);
 
-            managers = new List<IManager>() 
+            managers = new List<IManager>()
             {
                 LocalizationManager.Instance,
                 CommandManager.Instance,
@@ -82,6 +82,13 @@ namespace Jotunn
             { // Set a breakpoint here to break on F6 key press
             }
 #endif
+            if (ZNet.instance != null)
+            {
+                if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
+                {
+                    SynchronizationManager.Instance.AdminListUpdate();
+                }
+            }
         }
 
         private void OnGUI()

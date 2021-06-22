@@ -20,6 +20,8 @@ namespace Jotunn.Managers
         private BaseUnityPlugin configurationManager;
         internal bool configurationManagerWindowShown;
         private static SynchronizationManager _instance;
+        private static Dictionary<string, bool> lastAdminStates = new Dictionary<string, bool>();
+        private double m_lastLoadCheckTime;
 
         /// <summary>
         ///     Event, triggered after server configuration is applied to client
@@ -56,6 +58,8 @@ namespace Jotunn.Managers
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
 
             On.Menu.IsVisible += Menu_IsVisible;
+            On.SyncedList.Load += SyncedList_Load;
+            On.SyncedList.Save += SyncedList_Save;
 
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
             if (!configurationManager)
@@ -85,6 +89,91 @@ namespace Jotunn.Managers
         private bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
         {
             return orig() | configurationManagerWindowShown;
+        }
+
+        private void SyncedList_Save(On.SyncedList.orig_Save orig, SyncedList self)
+        {
+            orig(self);
+
+            // Check if it really is the admin list
+            if (self == ZNet.instance.m_adminList)
+            {
+                SynchronizeAdminStatus();
+            }
+        }
+
+        private void SyncedList_Load(On.SyncedList.orig_Load orig, SyncedList self)
+        {
+            orig(self);
+
+            // Check if it really is the admin list
+            if (self == ZNet.instance.m_adminList)
+            {
+                SynchronizeAdminStatus();
+            }
+        }
+
+        private void SynchronizeAdminStatus()
+        {
+            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
+            {
+                List<string> adminListCopy = ZNet.instance.m_adminList.m_list.ToList();
+                foreach (var entry in adminListCopy)
+                {
+                    // Admin state added, but not in cache list yet
+                    if (!lastAdminStates.ContainsKey(entry))
+                    {
+                        // Send RPC, new entry found
+                        SendAdminStateToClient(entry, true);
+
+                        lastAdminStates.Add(entry, true);
+                    }
+                    // Admin state added and already in cache list
+                    else
+                    {
+                        if (lastAdminStates[entry] == false)
+                        {
+                            // Send RPC, new entry found
+                            SendAdminStateToClient(entry, true);
+                        }
+                    }
+                }
+
+                foreach (var entry in lastAdminStates.Keys.ToList())
+                {
+                    // Admin state removed
+                    if (!adminListCopy.Contains(entry))
+                    {
+                        // If cached state is true
+                        if (lastAdminStates[entry])
+                        {
+                            // Send RPC, new entry found
+                            SendAdminStateToClient(entry, false);
+                        }
+
+                        lastAdminStates.Remove(entry);
+                    }
+                }
+            }
+        }
+
+        private void SendAdminStateToClient(string entry, bool admin)
+        {
+            var clientId = ZNet.instance.m_peers.FirstOrDefault(x => x.m_socket.GetHostName() == entry)?.m_uid;
+            if (clientId != null)
+            {
+                Logger.LogMessage($"Sending admin status to {entry}/{clientId} ({(admin ? "is admin" : "is no admin")})");
+                ZRoutedRpc.instance.InvokeRoutedRPC((long)clientId, nameof(RPC_Jotunn_IsAdmin), admin);
+            }
+        }
+
+        internal void AdminListUpdate()
+        {
+            if (Time.realtimeSinceStartup - this.m_lastLoadCheckTime >= 10.0f)
+            {
+                ZNet.instance.m_adminList.GetList();
+                m_lastLoadCheckTime = Time.realtimeSinceStartup;
+            }
         }
 
         /// <summary>
@@ -165,7 +254,7 @@ namespace Jotunn.Managers
 
                     if (cx.SettingType == typeof(KeyCode))
                     {
-                        ZInput.instance.Setbutton($"{buttonName}!{plugin.Value.Info.Metadata.GUID}", (KeyCode) cx.BoxedValue);
+                        ZInput.instance.Setbutton($"{buttonName}!{plugin.Value.Info.Metadata.GUID}", (KeyCode)cx.BoxedValue);
                     }
                 }
             }
@@ -287,6 +376,10 @@ namespace Jotunn.Managers
                 if (isAdmin)
                 {
                     UnlockConfigurationEntries();
+                }
+                else
+                {
+                    LockConfigurationEntries();
                 }
             }
 
