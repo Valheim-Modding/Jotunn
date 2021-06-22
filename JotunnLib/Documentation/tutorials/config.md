@@ -8,17 +8,7 @@ Jötunn itself does not provide any implementations or abstractions for persisen
 
 ## Synced Configurations
 
-We can sync a client configuration with the server by:
-- ensuring that the [BaseUnityPlugin](xref:BepInEx.BaseUnityPlugin) has a [NetworkCompatibilityAttribute](xref:Jotunn.Utils.NetworkCompatibilityAttribute) enabled
-
-```cs
-    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
-    [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-    [BepInDependency(Jotunn.Main.ModGuid)]
-    internal class JotunnModExample : BaseUnityPlugin
-```
-
-- and then setting the `IsAdminOnly` flag on the configuration like so:
+We can sync a client configuration with the server by setting the `IsAdminOnly` flag on the configuration like so:
 
 ```cs
 // Create some sample configuration values to check server sync
@@ -58,7 +48,18 @@ public void Awake2()
 }
 ```
 
-**Note**: Setting then `Value` property behaves differently to setting the `BoxedValue` property: Setting `Value` will apply value ranges (defined in the `ConfigurationManagerAttributes` via `AcceptableValueRange` for example) while `BoxedValue` will have no checks.
+> [!NOTE]
+> Setting the `Value` property behaves differently to setting the `BoxedValue` property: Setting `Value` will apply value ranges (defined in the `ConfigurationManagerAttributes` via `AcceptableValueRange` for example) while `BoxedValue` will have no checks.
+
+## Synced admin status
+
+Upon connection to a server, Jötunn checks the admin status of the connecting player on that server, given that Jötunn is installed on both sides. The admin status of a player is determined by the adminlist.txt file of Valheim. If the player has admin status on a server, that player is able to change configuration values declared as `IsAdminOnly` as described before. If that status changes on the server because of changes on the adminlist.txt, Jötunn will automatically synchronize that change to any affected client. This unlocks or locks the players ability to change admin configuration. Mods using Jötunn can query the admin status locally and dont need to rely on a RPC call to check the players status on the connected server. The current admin status of a player can be read from [SynchronizationManager.PlayerIsAdmin](xref:Jotunn.Managers.SynchronizationManager.PlayerIsAdmin).
+
+> [!NOTE]
+> When starting a local game the local player always gains admin status regardless of any given adminlist.txt values.
+
+> [!NOTE]
+> At the start scene / main menu the player is not an admin per default. This means that admin only configuration can never be changed in the main menu.
 
 ## Additional config attributes
 
