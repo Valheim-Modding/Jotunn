@@ -9,13 +9,16 @@
 * Added item variations via ItemConfig
 * Added possibility to directly link a BepInEx ConfigEntry to a ButtonConfig
 * Added colored and invisible config entries
-* Added KitbashManager to allow Kitbashing (https://valheim-modding.github.io/Jotunn/tutorials/kitbash.html)
+* Added KitbashManager to allow Kitbashing
 * Added option to CustomButton to ignore custom inputs when a GUI is open (e.g. chat, console)
 * Added event in GUIManager when the PixelFix got recreated and custom GUI can be added
 * Added static function to the GUIManager to detect a headless/dedicated server before ZNet is instantiated
-* Don't create hooks on certain managers when running on a dedicated server (GUI, Input)
+* Removed game hooks on certain managers when running on a dedicated server (GUI, Input)
 * Added registering of prefabs "on the fly" to the game in ItemManager and PieceManager
-* SynchronizationManager.PlayerIsAdmin gets updated continuously instead of just on first connect
+* SynchronizationManager.PlayerIsAdmin gets synced with the server status when changed
+* Removed icon enforcement for CustomItems without a Recipe (e.g. monster drops)
+* Localization falls back to english when no translation is found in the users language
+* Plenty of new and revised documentation at https://valheim-modding.github.io/Jotunn
 
 ## Version 2.0.12
 * Disabled SaveManager for now to counter lags
