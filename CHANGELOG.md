@@ -1,9 +1,9 @@
 ﻿# Changelog
 
 ## Version 2.1.0
-* Added new entity CustomPieceTable
-* Added custom piece table categories per table via PieceTableConfig
-* Added custom piece table categories per piece via PieceConfig
+* Added new entity CustomPieceTable and corresponding PieceTableConfig
+* Added custom piece categories per table via PieceTableConfig
+* Added custom piece categories per piece via PieceConfig
 * Added piece table reference for custom tools via ItemConfig
 * Added support for tokenized piece names and descriptions via PieceConfig
 * Added item variations via ItemConfig
@@ -15,6 +15,7 @@
 * Added static function to the GUIManager to detect a headless/dedicated server before ZNet is instantiated
 * Don't create hooks on certain managers when running on a dedicated server (GUI, Input)
 * Added registering of prefabs "on the fly" to the game in ItemManager and PieceManager
+* SynchronizationManager.PlayerIsAdmin gets updated continuously instead of just on first connect
 
 ## Version 2.0.12
 * Disabled SaveManager for now to counter lags

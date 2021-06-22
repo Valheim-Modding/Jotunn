@@ -135,7 +135,7 @@ namespace Jotunn.InGameConfig
                 Settings.instance.OnOk();
 
                 // After applying ingame values, lets synchronize any changed (and unlocked) values
-                SynchronizationManager.Instance.SynchronizeToServer();
+                SynchronizationManager.Instance.SynchronizeChangedConfig();
 
                 // remove reference to gameobject
                 settingsRoot = null;
