@@ -82,6 +82,10 @@ namespace Jotunn
             { // Set a breakpoint here to break on F6 key press
             }
 #endif
+            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
+            {
+                SynchronizationManager.Instance.AdminListUpdate();
+            }
         }
 
         private void OnGUI()
