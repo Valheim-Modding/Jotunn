@@ -375,6 +375,10 @@ namespace Jotunn.Managers
                 {
                     UnlockConfigurationEntries();
                 }
+                else
+                {
+                    LockConfigurationEntries();
+                }
             }
 
             // Server Receive
