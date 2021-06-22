@@ -117,7 +117,8 @@ namespace Jotunn.Managers
         {
             if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
             {
-                foreach (var entry in ZNet.instance.m_adminList.m_list)
+                List<string> adminListCopy = ZNet.instance.m_adminList.m_list.ToList();
+                foreach (var entry in adminListCopy)
                 {
                     // Admin state added, but not in cache list yet
                     if (!lastAdminStates.ContainsKey(entry))
@@ -141,7 +142,7 @@ namespace Jotunn.Managers
                 foreach (var entry in lastAdminStates.Keys.ToList())
                 {
                     // Admin state removed
-                    if (!ZNet.instance.m_adminList.Contains(entry))
+                    if (!adminListCopy.Contains(entry))
                     {
                         // If cached state is true
                         if (lastAdminStates[entry])
@@ -161,13 +162,14 @@ namespace Jotunn.Managers
             var clientId = ZNet.instance.m_peers.FirstOrDefault(x => x.m_socket.GetHostName() == entry)?.m_uid;
             if (clientId != null)
             {
-                ZRoutedRpc.instance.InvokeRoutedRPC((long) clientId, nameof(RPC_Jotunn_IsAdmin), admin);
+                Logger.LogMessage($"Sending admin status to {entry}/{clientId} ({(admin ? "is admin" : "is no admin")})");
+                ZRoutedRpc.instance.InvokeRoutedRPC((long)clientId, nameof(RPC_Jotunn_IsAdmin), admin);
             }
         }
 
         internal void AdminListUpdate()
         {
-            if (Time.realtimeSinceStartup - this.m_lastLoadCheckTime <= 10.0f)
+            if (Time.realtimeSinceStartup - this.m_lastLoadCheckTime >= 10.0f)
             {
                 ZNet.instance.m_adminList.GetList();
                 m_lastLoadCheckTime = Time.realtimeSinceStartup;
@@ -252,7 +254,7 @@ namespace Jotunn.Managers
 
                     if (cx.SettingType == typeof(KeyCode))
                     {
-                        ZInput.instance.Setbutton($"{buttonName}!{plugin.Value.Info.Metadata.GUID}", (KeyCode) cx.BoxedValue);
+                        ZInput.instance.Setbutton($"{buttonName}!{plugin.Value.Info.Metadata.GUID}", (KeyCode)cx.BoxedValue);
                     }
                 }
             }
