@@ -52,6 +52,6 @@
 - name: Network Compatibility
   href: networkcompatibility.md
 
-- name: Config Sync
+- name: Config / Sync
   href: config.md
   
