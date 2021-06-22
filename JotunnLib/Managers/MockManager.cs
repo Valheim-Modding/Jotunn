@@ -1,9 +1,4 @@
-﻿using Jotunn.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Jotunn.Managers
@@ -70,7 +65,8 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            if (SceneManager.GetActiveScene().name == "main")
             {
                 if (MockPrefabContainer.transform.childCount > 0)
                 {

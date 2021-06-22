@@ -138,7 +138,7 @@ namespace Jotunn.Managers
         ///     </list>
         /// </summary>
         /// <param name="name">Prefab or item name of the PieceTable</param>
-        /// <returns>PieceTable prefab</returns>
+        /// <returns><see cref="PieceTable"/> component</returns>
         public PieceTable GetPieceTable(string name)
         {
             if (PieceTableMap.ContainsKey(name))
@@ -453,8 +453,8 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Adds all custom pieces to their respective piece tables,
-        ///     removes erroneous ones from the manager.
+        ///     Registers all custom pieces to their respective piece tables.
+        ///     Removes erroneous ones from the manager.
         /// </summary>
         private void RegisterInPieceTables()
         {
@@ -483,20 +483,7 @@ namespace Jotunn.Managers
                         }
 
                         // Assign the piece to the actual PieceTable if not already in there
-                        var pieceTable = GetPieceTable(customPiece.PieceTable);
-                        if (pieceTable == null)
-                        {
-                            throw new Exception($"Could not find piecetable {customPiece.PieceTable}");
-                        }
-                        if (pieceTable.m_pieces.Contains(customPiece.PiecePrefab))
-                        {
-                            Logger.LogInfo($"Already added piece {customPiece}");
-                        }
-                        else
-                        {
-                            pieceTable.m_pieces.Add(customPiece.PiecePrefab);
-                            Logger.LogInfo($"Added piece {customPiece} | Token: {customPiece.Piece.TokenName()}");
-                        }
+                        RegisterPieceInPieceTable(customPiece.PiecePrefab, customPiece.PieceTable);
                     }
                     catch (Exception ex)
                     {
@@ -513,11 +500,60 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Register a single piece prefab into a piece table by name.<br />
+        ///     Also adds the prefab to the <see cref="PrefabManager"/> and <see cref="ZNetScene"/> if necessary.<br />
+        ///     Custom categories can be referenced if they have been added to the manager before.<br />
+        ///     No mock references are fixed.
+        /// </summary>
+        /// <param name="prefab"><see cref="GameObject"/> with a <see cref="Piece"/> component to add to the table</param>
+        /// <param name="pieceTable">Prefab or item name of the PieceTable</param>
+        /// <param name="category">Optional category string, does not create new custom categories</param>
+        public void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category = null)
+        {
+            var piece = prefab.GetComponent<Piece>();
+            if (piece == null)
+            {
+                throw new Exception($"Prefab {prefab.name} has no Piece component attached");
+            }
+            
+            var table = GetPieceTable(pieceTable);
+            if (table == null)
+            {
+                throw new Exception($"Could not find PieceTable {pieceTable}");
+            }
+            
+            if (table.m_pieces.Contains(prefab))
+            {
+                Logger.LogInfo($"Already added piece {prefab.name}");
+            }
+            else
+            {
+                if (!PrefabManager.Instance.Prefabs.ContainsKey(prefab.name))
+                {
+                    PrefabManager.Instance.AddPrefab(prefab);
+                }
+                var hash = prefab.name.GetStableHashCode();
+                if (ZNetScene.instance != null && !ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))
+                {
+                    PrefabManager.Instance.RegisterToZNetScene(prefab);
+                }
+                if (!string.IsNullOrEmpty(category))
+                {
+                    piece.m_category = AddPieceCategory(pieceTable, category);
+                }
+
+                table.m_pieces.Add(prefab);
+                Logger.LogInfo($"Added piece {prefab.name} | Token: {piece.TokenName()}");
+            }
+        }
+
         private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            if (SceneManager.GetActiveScene().name == "main")
             {
                 LoadPieceTables();
                 CreatePieceTableCategories();
@@ -529,7 +565,8 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            if (SceneManager.GetActiveScene().name == "main")
             {
                 OnPiecesRegistered?.SafeInvoke();
             }

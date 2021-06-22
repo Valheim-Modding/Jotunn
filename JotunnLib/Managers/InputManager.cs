@@ -36,9 +36,13 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            On.ZInput.Load += RegisterCustomInputs;
-            On.ZInput.GetButtonDown += ZInput_GetButtonDown;
-            On.ZInput.GetButtonUp += ZInput_GetButtonUp;
+            // Dont init on a dedicated server
+            if (!GUIManager.IsHeadless())
+            {
+                On.ZInput.Load += RegisterCustomInputs;
+                On.ZInput.GetButtonDown += ZInput_GetButtonDown;
+                On.ZInput.GetButtonUp += ZInput_GetButtonUp;
+            }
         }
 
         /// <summary>

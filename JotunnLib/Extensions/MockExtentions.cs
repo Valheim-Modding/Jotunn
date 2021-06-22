@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace Jotunn
 {
-    internal static class ItemDropMockFix
+    /*internal static class ItemDropMockFix
     {
         private static bool _enabled;
 
@@ -46,7 +46,7 @@ namespace Jotunn
         {
             return self.m_items.Count > 0;
         }
-    }
+    }*/
 
     /// <summary>
     ///     Extends prefab GameObjects with functionality related to the mocking system.
@@ -230,6 +230,13 @@ namespace Jotunn
                     }
                     else if (enumeratedType?.IsClass == true)
                     {
+                        var isDict = fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+                        if (isDict)
+                        {
+                            Logger.LogWarning($"Not fixing potential mock references for field {field.Name} : Dictionary is not supported.");
+                            continue;
+                        }
+
                         var currentValues = (IEnumerable<object>)field.GetValue(objectToFix);
                         foreach (var value in currentValues)
                         {
@@ -271,6 +278,13 @@ namespace Jotunn
                     var isEnumerableOfUnityObjects = enumeratedType?.IsSameOrSubclass(typeof(Object)) == true;
                     if (isEnumerableOfUnityObjects)
                     {
+                        var isDict = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+                        if (isDict)
+                        {
+                            Logger.LogWarning($"Not fixing potential mock references for field {property.Name} : Dictionary is not supported.");
+                            continue;
+                        }
+
                         var currentValues = (IEnumerable<Object>)property.GetValue(objectToFix, null);
                         if (currentValues != null)
                         {
@@ -310,6 +324,13 @@ namespace Jotunn
                     }
                     else if (enumeratedType?.IsClass == true)
                     {
+                        var isDict = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+                        if (isDict)
+                        {
+                            Logger.LogWarning($"Not fixing potential mock references for field {property.Name} : Dictionary is not supported.");
+                            continue;
+                        }
+
                         var currentValues = (IEnumerable<object>)property.GetValue(objectToFix, null);
                         foreach (var value in currentValues)
                         {

@@ -87,10 +87,6 @@ namespace Jotunn.Managers
             return orig() | configurationManagerWindowShown;
         }
 
-        internal void Start()
-        {
-        }
-
         /// <summary>
         ///     Hook ConfigurationManager's DisplayingWindowChanged to be able to react on window open/close.
         /// </summary>

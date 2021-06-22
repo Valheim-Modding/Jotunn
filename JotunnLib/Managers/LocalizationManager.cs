@@ -86,8 +86,12 @@ namespace Jotunn.Managers
             Localization.instance.m_languages.Clear();
             Localization.instance.m_languages.AddRange(tmplist);
 
+            Localization.instance.SetupLanguage(DefaultLanguage);
             string lang = PlayerPrefs.GetString("language", DefaultLanguage);
-            Localization.instance.SetupLanguage(lang);
+            if (lang != DefaultLanguage)
+            {
+                Localization.instance.SetupLanguage(lang);
+            }
 
             On.Localization.LoadLanguages -= Localization_LoadLanguages;
             On.Localization.SetupLanguage -= Localization_SetupLanguage;

@@ -12,6 +12,9 @@
 * Added KitbashManager to allow Kitbashing (https://valheim-modding.github.io/Jotunn/tutorials/kitbash.html)
 * Added option to CustomButton to ignore custom inputs when a GUI is open (e.g. chat, console)
 * Added event in GUIManager when the PixelFix got recreated and custom GUI can be added
+* Added static function to the GUIManager to detect a headless/dedicated server before ZNet is instantiated
+* Don't create hooks on certain managers when running on a dedicated server (GUI, Input)
+* Added registering of prefabs "on the fly" to the game in ItemManager and PieceManager
 
 ## Version 2.0.12
 * Disabled SaveManager for now to counter lags
