@@ -60,7 +60,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/) before requesting [support via discord](https://discord.gg/DdUt6g7gyA). If there are any mod interoperability issues developers experience (not just exclusive JVL issues), we would like to hear from you! If we can facilitate better mod interoperability by providing a common interface, or exposing native valheim objects, including a utility which you have created, then please feel free to create a new [feature request](https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D) or [pull request](https://github.com/Valheim-Modding/Jotunn/pulls).
 
 ## Roadmap
-Check our [milestones](https://github.com/Valheim-Modding/Jotunn/milestone/2) for a more up to date list of features currently in development, or suggest your own features for inclusion by creating a new [feature request](https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D)
+Check our [projects](https://github.com/Valheim-Modding/Jotunn/projects) for a more up to date list of features currently in development, or suggest your own features for inclusion by creating a new [feature request](https://github.com/Valheim-Modding/Jotunn/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D)
 
 ## Changelog
 
@@ -92,4 +92,4 @@ These people have been integral to pushing JVL out of the door, and without them
 
 *zarboz#7828*: [github](https://github.com/sbtoonz), [thunderstore](https://valheim.thunderstore.io/package/sbtoonz/), [nexus](https://www.nexusmods.com/users/4057483)
 
-*MarcoPogo#6095*: [github](https://github.com/MathiasDecrock)
+*MarcoPogo#6095*: [github](https://github.com/MathiasDecrock), [nexus](https://www.nexusmods.com/users/3030830?tab=user+files)
