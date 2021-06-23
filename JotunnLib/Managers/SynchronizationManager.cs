@@ -19,9 +19,11 @@ namespace Jotunn.Managers
         private BaseUnityPlugin configurationManager;
         internal bool configurationManagerWindowShown;
         private static SynchronizationManager _instance;
+        private static Dictionary<string, bool> lastAdminStates = new Dictionary<string, bool>();
+        private double m_lastLoadCheckTime;
 
         /// <summary>
-        ///     Event, triggered after server configuration is applied to client
+        ///     Event triggered after server configuration is applied to client
         /// </summary>
         public static event EventHandler<ConfigurationSynchronizationEventArgs> OnConfigurationSynchronized;
 
@@ -38,7 +40,8 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Indicator if the current player has admin status on the current world, always true on local games
+        ///     Clientside indicator if the current player has admin status on 
+        ///     the current world, always true on local games
         /// </summary>
         public bool PlayerIsAdmin { get; private set; }
 
@@ -55,12 +58,49 @@ namespace Jotunn.Managers
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
 
             On.Menu.IsVisible += Menu_IsVisible;
+            On.SyncedList.Load += SyncedList_Load;
+            On.SyncedList.Save += SyncedList_Save;
 
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
             if (!configurationManager)
             {
                 HookConfigurationManager();
             }
+        }
+
+        /// <summary>
+        ///     Timer method for refreshing the ZNet admin list, polls the list every 10 seconds
+        /// </summary>
+        internal void AdminListUpdate()
+        {
+            if (Time.realtimeSinceStartup - this.m_lastLoadCheckTime >= 10.0f)
+            {
+                ZNet.instance.m_adminList.GetList();
+                m_lastLoadCheckTime = Time.realtimeSinceStartup;
+            }
+        }
+
+        /// <summary>
+        ///     Hook <see cref="Game.Start"/> to register RPCs
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        private void Game_Start(On.Game.orig_Start orig, Game self)
+        {
+            orig(self);
+            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_IsAdmin), new Action<long, bool>(RPC_Jotunn_IsAdmin));
+            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_ConfigSync), new Action<long, ZPackage>(RPC_Jotunn_ConfigSync));
+            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_ApplyConfig), new Action<long, ZPackage>(RPC_Jotunn_ApplyConfig));
+
+            if (ZNet.instance != null && ZNet.instance.IsLocalInstance())
+            {
+                Logger.LogDebug("Player is in local instance, lets make him admin");
+                Instance.PlayerIsAdmin = true;
+                UnlockConfigurationEntries();
+            }
+
+            // Add event to be notified on logout
+            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
 
         /// <summary>
@@ -80,14 +120,121 @@ namespace Jotunn.Managers
             SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
         }
 
-        // Hook Menu.IsVisible to unlock cursor properly and disable camera rotation
-        private bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
+        /// <summary>
+        ///     Hook ZNet.RPC_PeerInfo on client to query the server for admin status
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="rpc"></param>
+        /// <param name="pkg"></param>
+        private void ZNet_RPC_PeerInfo(On.ZNet.orig_RPC_PeerInfo orig, ZNet self, ZRpc rpc, ZPackage pkg)
         {
-            return orig() | configurationManagerWindowShown;
+            orig(self, rpc, pkg);
+
+            if (ZNet.instance.IsClientInstance())
+            {
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_Jotunn_IsAdmin), false);
+            }
         }
 
-        internal void Start()
+        /// <summary>
+        ///     Hook <see cref="SyncedList.Save"/> to synchronize the admin status to the clients
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        private void SyncedList_Save(On.SyncedList.orig_Save orig, SyncedList self)
         {
+            orig(self);
+
+            // Check if it really is the admin list
+            if (self == ZNet.instance.m_adminList)
+            {
+                SynchronizeAdminStatus();
+            }
+        }
+
+        /// <summary>
+        ///     Hook <see cref="SyncedList.Load"/> to synchronize the admin status to the clients
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        private void SyncedList_Load(On.SyncedList.orig_Load orig, SyncedList self)
+        {
+            orig(self);
+
+            // Check if it really is the admin list
+            if (self == ZNet.instance.m_adminList)
+            {
+                SynchronizeAdminStatus();
+            }
+        }
+
+        /// <summary>
+        ///     Checks the ZNet.m_instance.m_adminList against the cached list and send any
+        ///     changes to the corresponding clients.
+        /// </summary>
+        private void SynchronizeAdminStatus()
+        {
+            if (ZNet.instance == null)
+            {
+                return;
+            }
+            
+            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
+            {
+                List<string> adminListCopy = ZNet.instance.m_adminList.m_list.ToList();
+                foreach (var entry in adminListCopy)
+                {
+                    // Admin state added, but not in cache list yet
+                    if (!lastAdminStates.ContainsKey(entry))
+                    {
+                        // Send RPC, new entry found
+                        SendAdminStateToClient(entry, true);
+
+                        lastAdminStates.Add(entry, true);
+                    }
+                    // Admin state added and already in cache list
+                    else
+                    {
+                        if (lastAdminStates[entry] == false)
+                        {
+                            // Send RPC, new entry found
+                            SendAdminStateToClient(entry, true);
+                        }
+                    }
+                }
+
+                foreach (var entry in lastAdminStates.Keys.ToList())
+                {
+                    // Admin state removed
+                    if (!adminListCopy.Contains(entry))
+                    {
+                        // If cached state is true
+                        if (lastAdminStates[entry])
+                        {
+                            // Send RPC, new entry found
+                            SendAdminStateToClient(entry, false);
+                        }
+
+                        lastAdminStates.Remove(entry);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Sends the current admin state of a player on a server to the client
+        /// </summary>
+        /// <param name="entry">Socket host name of the peer</param>
+        /// <param name="admin">Admin state to send to the client</param>
+        private void SendAdminStateToClient(string entry, bool admin)
+        {
+            var clientId = ZNet.instance.m_peers.FirstOrDefault(x => x.m_socket.GetHostName() == entry)?.m_uid;
+            if (clientId != null)
+            {
+                Logger.LogInfo($"Sending admin status to {entry}/{clientId} ({(admin ? "is admin" : "is no admin")})");
+                ZRoutedRpc.instance.InvokeRoutedRPC((long)clientId, nameof(RPC_Jotunn_IsAdmin), admin);
+            }
         }
 
         /// <summary>
@@ -116,11 +263,21 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Hook <see cref="Menu.IsVisible"/> to unlock cursor properly and disable camera rotation
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <returns></returns>
+        private bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
+        {
+            return orig() | configurationManagerWindowShown;
+        }
+
+        /// <summary>
         ///     Window display state changed event.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        internal void ConfigurationManager_DisplayingWindowChanged(object sender, object e)
+        private void ConfigurationManager_DisplayingWindowChanged(object sender, object e)
         {
             // Read configuration manager's DisplayingWindow property
             var pi = configurationManager.GetType().GetProperty("DisplayingWindow");
@@ -134,7 +291,7 @@ namespace Jotunn.Managers
             }
             else
             {
-                SynchronizeToServer();
+                SynchronizeChangedConfig();
             }
         }
 
@@ -146,7 +303,10 @@ namespace Jotunn.Managers
             cachedConfigValues = GetSyncConfigValues();
         }
 
-        internal void SynchronizeToServer()
+        /// <summary>
+        ///     Syncs the changed configuration of a client to the server
+        /// </summary>
+        internal void SynchronizeChangedConfig()
         {
             // Lets compare and send to server, if applicable
             var loadedPlugins = BepInExUtils.GetDependentPlugins();
@@ -157,6 +317,7 @@ namespace Jotunn.Managers
                 foreach (var cd in plugin.Value.Config.Keys)
                 {
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
+                    string buttonName = cx.GetBoundButtonName();
                     if (cx.Description.Tags.Any(x =>
                         x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly &&
                         ((ConfigurationManagerAttributes)x).UnlockSetting))
@@ -167,7 +328,7 @@ namespace Jotunn.Managers
 
                     if (cx.SettingType == typeof(KeyCode))
                     {
-                        ZInput.instance.Setbutton(cd.Key + "!" + plugin.Value.Info.Metadata.GUID, (KeyCode)cx.BoxedValue);
+                        ZInput.instance.Setbutton($"{buttonName}!{plugin.Value.Info.Metadata.GUID}", (KeyCode)cx.BoxedValue);
                     }
                 }
             }
@@ -201,42 +362,6 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     On RPC_PeerInfo on client, also ask server for admin status.
-        /// </summary>
-        /// <param name="orig"></param>
-        /// <param name="self"></param>
-        /// <param name="rpc"></param>
-        /// <param name="pkg"></param>
-        private void ZNet_RPC_PeerInfo(On.ZNet.orig_RPC_PeerInfo orig, ZNet self, ZRpc rpc, ZPackage pkg)
-        {
-            orig(self, rpc, pkg);
-
-            if (ZNet.instance.IsClientInstance())
-            {
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_Jotunn_IsAdmin), false);
-            }
-        }
-
-        // Register RPCs
-        internal void Game_Start(On.Game.orig_Start orig, Game self)
-        {
-            orig(self);
-            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_IsAdmin), new Action<long, bool>(RPC_Jotunn_IsAdmin));
-            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_ConfigSync), new Action<long, ZPackage>(RPC_Jotunn_ConfigSync));
-            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_ApplyConfig), new Action<long, ZPackage>(RPC_Jotunn_ApplyConfig));
-
-            if (ZNet.instance != null && ZNet.instance.IsLocalInstance())
-            {
-                Logger.LogDebug("Player is in local instance, lets make him admin");
-                Instance.PlayerIsAdmin = true;
-                UnlockConfigurationEntries();
-            }
-
-            // Add event to be notified on logout
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-        }
-
-        /// <summary>
         ///     Apply a partial config to server and send to other clients.
         /// </summary>
         /// <param name="sender"></param>
@@ -247,7 +372,7 @@ namespace Jotunn.Managers
             {
                 if (configPkg != null && configPkg.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
                 {
-                    Logger.LogDebug("Received configuration data from server");
+                    Logger.LogInfo("Received configuration data from server");
                     ApplyConfigZPackage(configPkg);
 
                     OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
@@ -259,7 +384,7 @@ namespace Jotunn.Managers
                 // Is package not empty and is sender admin?
                 if (configPkg != null && configPkg.Size() > 0 && ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
                 {
-                    Logger.LogDebug($"Received configuration data from client {sender}");
+                    Logger.LogInfo($"Received configuration data from client {sender}");
 
                     // Send to all other clients
                     foreach (var peer in ZNet.instance.m_peers.Where(x => x.m_uid != sender))
@@ -283,12 +408,18 @@ namespace Jotunn.Managers
             // Client Receive
             if (ZNet.instance.IsClientInstance())
             {
+                Logger.LogInfo($"Received admin status from server: {(isAdmin ? "Admin" : "no admin")}");
+
                 Instance.PlayerIsAdmin = isAdmin;
 
                 // If player is admin, unlock the configuration values
                 if (isAdmin)
                 {
                     UnlockConfigurationEntries();
+                }
+                else
+                {
+                    LockConfigurationEntries();
                 }
             }
 
@@ -364,7 +495,7 @@ namespace Jotunn.Managers
                 // Validate the message is from the server and not another client.
                 if (configPkg != null && configPkg.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
                 {
-                    Logger.LogDebug("Received configuration from server");
+                    Logger.LogInfo("Received configuration data from server");
                     ApplyConfigZPackage(configPkg);
 
                     OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = true });
@@ -376,7 +507,7 @@ namespace Jotunn.Managers
                 var peer = ZNet.instance.m_peers.FirstOrDefault(x => x.m_uid == sender);
                 if (peer != null)
                 {
-                    Logger.LogMessage($"Sending configuration data to peer #{sender}");
+                    Logger.LogInfo($"Sending configuration data to peer #{sender}");
 
                     var values = GetSyncConfigValues();
 
@@ -394,7 +525,7 @@ namespace Jotunn.Managers
         /// <param name="configPkg"></param>
         internal void ApplyConfigZPackage(ZPackage configPkg)
         {
-            Logger.LogMessage("Applying configuration data package");
+            Logger.LogDebug("Applying configuration data package");
 
             var loadedPlugins = BepInExUtils.GetDependentPlugins();
 

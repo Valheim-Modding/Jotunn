@@ -34,6 +34,14 @@ namespace Jotunn.InGameConfig
         /// </summary>
         private static GameObject configTab;
 
+        internal static ConfigBoundKeyCode keyInBinding;
+
+        /// <summary>
+        ///     Cache keybinds
+        /// </summary>
+        internal static Dictionary<string, List<Tuple<string, ConfigDefinition, ConfigEntryBase>>> configurationKeybindings =
+            new Dictionary<string, List<Tuple<string, ConfigDefinition, ConfigEntryBase>>>();
+
         /// <summary>
         ///     Hook into settings setup
         /// </summary>
@@ -127,7 +135,7 @@ namespace Jotunn.InGameConfig
                 Settings.instance.OnOk();
 
                 // After applying ingame values, lets synchronize any changed (and unlocked) values
-                SynchronizationManager.Instance.SynchronizeToServer();
+                SynchronizationManager.Instance.SynchronizeChangedConfig();
 
                 // remove reference to gameobject
                 settingsRoot = null;
@@ -169,12 +177,31 @@ namespace Jotunn.InGameConfig
 
             var innerWidth = configTab.GetComponent<RectTransform>().rect.width - 25f;
 
+            // Reset keybinding cache
+            configurationKeybindings.Clear();
+
+            foreach (var mod in BepInExUtils.GetDependentPlugins(true))
+            {
+                foreach (var kv in GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible() && x.Value.IsButtonBound()))
+                {
+                    var buttonName = kv.Value.GetBoundButtonName();
+                    if (!string.IsNullOrEmpty(buttonName))
+                    {
+                        if (!configurationKeybindings.ContainsKey(buttonName))
+                        {
+                            configurationKeybindings.Add(buttonName, new List<Tuple<string, ConfigDefinition, ConfigEntryBase>>());
+                        }
+
+                        configurationKeybindings[buttonName].Add(new Tuple<string, ConfigDefinition, ConfigEntryBase>(mod.Key, kv.Key, kv.Value));
+                    }
+                }
+            }
+
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true))
             {
                 // Create a header if there are any relevant configuration entries
-                // TODO: dont count hidden ones
-                if (GetConfigurationEntries(mod.Value).GroupBy(x => x.Key.Section).Any())
+                if (GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible()).GroupBy(x => x.Key.Section).Any())
                 {
                     // Create module header Text element
                     var text = GUIManager.Instance.CreateText(mod.Key, configTab.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
@@ -186,8 +213,7 @@ namespace Jotunn.InGameConfig
                 }
 
                 // Iterate over all configuration entries (grouped by their sections)
-                // TODO: again, don't show hidden ones, helper function!
-                foreach (var kv in GetConfigurationEntries(mod.Value).GroupBy(x => x.Key.Section))
+                foreach (var kv in GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible()).GroupBy(x => x.Key.Section))
                 {
                     // Create section header Text element
                     var sectiontext = GUIManager.Instance.CreateText("Section " + kv.Key, configTab.transform.Find("Scroll View/Viewport/Content"),
@@ -222,8 +248,9 @@ namespace Jotunn.InGameConfig
                         {
                             // Create toggle element
                             var go = CreateToggleElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entryAttributes.EntryColor, entry.Value.Description.Description+ (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""), entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
-                                entry.Key.Section, entry.Key.Key, innerWidth);
+                                entryAttributes.EntryColor,
+                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             SetProperties(go.GetComponent<ConfigBoundBoolean>(), entry);
                         }
                         else if (entry.Value.SettingType == typeof(int))
@@ -237,8 +264,8 @@ namespace Jotunn.InGameConfig
 
                             // Create input field int
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entryAttributes.EntryColor, description+ (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""), entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section,
-                                entry.Key.Key, innerWidth);
+                                entryAttributes.EntryColor, description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundInt>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Integer;
                             SetProperties(go.GetComponent<ConfigBoundInt>(), entry);
@@ -259,8 +286,8 @@ namespace Jotunn.InGameConfig
 
                             // Create input field float
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entryAttributes.EntryColor, description+ (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""), entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section,
-                                entry.Key.Key, innerWidth);
+                                entryAttributes.EntryColor, description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundFloat>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Decimal;
                             SetProperties(go.GetComponent<ConfigBoundFloat>(), entry);
@@ -273,8 +300,33 @@ namespace Jotunn.InGameConfig
                         else if (entry.Value.SettingType == typeof(KeyCode))
                         {
                             // Create key binder
-                            var go = CreateKeybindElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entry.Value.Description.Description+ (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""), mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                            var buttonName = entry.Value.GetBoundButtonName();
+                            var buttonText = $"{entry.Value.Description.Description}{Environment.NewLine}This key is bound to button '{buttonName}'.";
+                            if (!string.IsNullOrEmpty(buttonName) && configurationKeybindings.ContainsKey(buttonName))
+                            {
+                                var duplicateKeybindingText = "";
+                                if (configurationKeybindings[entry.Value.GetBoundButtonName()].Count > 1)
+                                {
+                                    duplicateKeybindingText += $"{Environment.NewLine}Other mods using this button: {Environment.NewLine}";
+                                    foreach (var buttons in configurationKeybindings[buttonName])
+                                    {
+                                        // If it is the same config entry, just skip it
+                                        if (buttons.Item2 == entry.Key && buttons.Item1 == mod.Key)
+                                        {
+                                            continue;
+                                        }
+
+                                        // Add modguid as text
+                                        duplicateKeybindingText += $"{buttons.Item1}, ";
+                                    }
+
+                                    // add to buttonText, but without last ', '
+                                    buttonText += duplicateKeybindingText.Trim(' ').TrimEnd(',');
+                                }
+                            }
+
+                            var go = CreateKeybindElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":", buttonText,
+                                mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, buttonName, innerWidth);
                             go.GetComponent<ConfigBoundKeyCode>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             SetProperties(go.GetComponent<ConfigBoundKeyCode>(), entry);
                         }
@@ -282,8 +334,9 @@ namespace Jotunn.InGameConfig
                         {
                             // Create input field string
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entryAttributes.EntryColor, entry.Value.Description.Description+ (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""), entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
-                                entry.Key.Section, entry.Key.Key, innerWidth);
+                                entryAttributes.EntryColor,
+                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundString>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.None;
                             SetProperties(go.GetComponent<ConfigBoundString>(), entry);
@@ -292,8 +345,9 @@ namespace Jotunn.InGameConfig
                         {
                             // Create input field string
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entryAttributes.EntryColor, entry.Value.Description.Description+ (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""), entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID,
-                                entry.Key.Section, entry.Key.Key, innerWidth);
+                                entryAttributes.EntryColor,
+                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             go.AddComponent<ConfigBoundColor>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.None;
                             go.transform.Find("Input").GetComponent<InputField>().contentType = InputField.ContentType.Alphanumeric;
@@ -407,7 +461,9 @@ namespace Jotunn.InGameConfig
         /// </summary>
         /// <param name="parent">parent transform</param>
         /// <param name="labelname">Label text</param>
+        /// <param name="labelColor">Color of the label</param>
         /// <param name="description">Description text</param>
+        /// <param name="descriptionColor">Color of the description text</param>
         /// <param name="guid">module GUID</param>
         /// <param name="section">Section</param>
         /// <param name="key">Key</param>
@@ -487,7 +543,9 @@ namespace Jotunn.InGameConfig
         /// </summary>
         /// <param name="parent">parent transform</param>
         /// <param name="labelname">label text</param>
-        /// <param name="description">description text</param>
+        /// <param name="labelColor">Color of the label</param>
+        /// <param name="description">Description text</param>
+        /// <param name="descriptionColor">Color of the description text</param>
         /// <param name="modguid">module GUID</param>
         /// <param name="section">section</param>
         /// <param name="key">key</param>
@@ -548,23 +606,37 @@ namespace Jotunn.InGameConfig
         /// <param name="width">width</param>
         /// <returns></returns>
         private static GameObject CreateKeybindElement(Transform parent, string labelname, string description, string modguid, string section, string key,
-            float width)
+            string buttonName, float width)
         {
             // Create label and keybind button
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
 
             // Add this keybinding to the list in Settings to utilize valheim's keybind dialog
-            Settings.instance.m_keys.Add(new Settings.KeySetting { m_keyName = key + "!" + modguid, m_keyTransform = result.GetComponent<RectTransform>() });
+            Settings.instance.m_keys.Add(new Settings.KeySetting
+            {
+                m_keyName = $"{buttonName}!{modguid}", m_keyTransform = result.GetComponent<RectTransform>()
+            });
 
             // Create description text
-            var desc = GUIManager.Instance.CreateText(description, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black, width - 150f, 0, false);
-            desc.name = "Description";
-            desc.SetUpperLeft().SetToTextHeight();
-            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(result.GetComponent<RectTransform>().rect.height + 3f));
+            var idx = 0;
+            var lastPosition = new Vector2(0, -result.GetComponent<RectTransform>().rect.height - 3f);
+            GameObject desc = null;
+            foreach (var part in description.Split(Environment.NewLine[0]))
+            {
+                var p2 = part.Trim();
+                desc = GUIManager.Instance.CreateText(p2, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
+                    GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black, width - 150f, 0, false);
+                desc.name = $"Description{idx}";
+                desc.SetUpperLeft().SetToTextHeight();
+
+                desc.GetComponent<RectTransform>().anchoredPosition = lastPosition;
+                lastPosition = new Vector2(0, lastPosition.y - desc.GetHeight() - 3);
+
+                idx++;
+            }
 
             // set height and add the layout element
-            result.SetHeight(result.GetComponent<RectTransform>().rect.height + desc.GetComponent<Text>().preferredHeight + 15f);
+            result.SetHeight(-desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
             result.AddComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
 
             // and add the config binding
@@ -813,13 +885,22 @@ namespace Jotunn.InGameConfig
 
             internal override void SetValue(KeyCode value)
             {
+                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
+                var entry = pluginConfig[Section, Key];
+                var buttonName = entry.GetBoundButtonName();
                 gameObject.transform.Find("Button/Text").GetComponent<Text>().text = value.ToString();
             }
 
             public void Awake()
             {
-                gameObject.transform.Find("Button").GetComponent<Button>().onClick
-                    .AddListener(() => { Settings.instance.OpenBindDialog(Key + "!" + ModGUID); });
+                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
+                var entry = pluginConfig[Section, Key];
+                var buttonName = entry.GetBoundButtonName();
+                gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    keyInBinding = this;
+                    Settings.instance.OpenBindDialog(buttonName + "!" + ModGUID);
+                });
             }
 
             public override void SetEnabled(bool enabled)

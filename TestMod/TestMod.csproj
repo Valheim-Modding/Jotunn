@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Debug\TestMod.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -451,21 +452,26 @@
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="TestMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestMod2.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <EmbeddedResource Include="AssetsEmbedded\steel" />
-    <None Include="Assets\blueprints" />
+    <EmbeddedResource Include="AssetsEmbedded\kitbash" />
     <None Include="Assets\jotunnlibtest" />
     <EmbeddedResource Include="AssetsEmbedded\capeironbackpack" />
     <None Include="Assets\recipes.json" />
     <None Include="Assets\skills.json" />
+    <None Include="Assets\testblueprints" />
     <None Include="Assets\Translations\English\backpack.english.json" />
     <None Include="Assets\Translations\English\translations.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\test_tex.jpg" />
     <Content Include="Assets\reee.png" />
+    <Content Include="Assets\test_var1.png" />
+    <Content Include="Assets\test_var2.png" />
+    <Content Include="Assets\test_varpaint.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">

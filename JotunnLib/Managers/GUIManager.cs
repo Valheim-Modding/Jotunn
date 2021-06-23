@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jotunn;
 using Jotunn.Configs;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
-using Object = UnityEngine.Object;
 using Toggle = UnityEngine.UI.Toggle;
 
 namespace Jotunn.Managers
@@ -18,7 +16,7 @@ namespace Jotunn.Managers
     ///     Manager for handling anything GUI related. Provides Valheim style 
     ///     GUI elements as well as an anchor for custom GUI prefabs.
     /// </summary>
-    public class GUIManager : IManager, IPointerClickHandler
+    public class GUIManager : IManager
     {
         private static GUIManager _instance;
         /// <summary>
@@ -32,6 +30,13 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+
+        /// <summary>
+        ///     Event that gets fired every time the Unity scene changed and a new PixelFix
+        ///     object was created. Subscribe to this event to create your custom GUI objects
+        ///     and add them as a child to the <see cref="PixelFix"/>.
+        /// </summary>
+        public static event Action OnPixelFixCreated;
 
         /// <summary>
         ///     GUI container with automatic scaling for high res displays.
@@ -116,17 +121,15 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Indicates if the PixelFix must be created for the start or main scene.
         /// </summary>
-        private bool GUIInStart = true;
+        private bool GUIInStart = false;
 
         /// <summary>
-        ///     Event receiver for pointer click events
+        ///     Detect headless mode (aka dedicated server)
         /// </summary>
-        /// <param name="eventData"></param>
-        public void OnPointerClick(PointerEventData eventData)
+        /// <returns></returns>
+        public static bool IsHeadless()
         {
-#if DEBUG
-            Logger.LogMessage(eventData.GetObjectString());
-#endif
+            return SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
         }
 
         /// <summary>
@@ -134,31 +137,38 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            GUIContainer = new GameObject("GUI");
-            GUIContainer.transform.SetParent(Main.RootObject.transform);
-            GUIContainer.layer = UILayer; // UI
-            var canvas = GUIContainer.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 1;
-            GUIContainer.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            GUIContainer.AddComponent<GraphicRaycaster>();
-            GUIContainer.AddComponent<CanvasScaler>();
-            GUIContainer.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-            GUIContainer.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-            GUIContainer.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-            GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
-            GUIContainer.AddComponent<GuiScaler>().UpdateScale();
+            // Dont init on a dedicated server
+            if (!IsHeadless())
+            {
+                GUIContainer = new GameObject("GUI");
+                GUIContainer.transform.SetParent(Main.RootObject.transform);
+                GUIContainer.layer = UILayer; // UI
+                var canvas = GUIContainer.AddComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.sortingOrder = 1;
+                GUIContainer.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                GUIContainer.AddComponent<GraphicRaycaster>();
+                GUIContainer.AddComponent<CanvasScaler>();
+                GUIContainer.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+                GUIContainer.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+                GUIContainer.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
+                GUIContainer.AddComponent<GuiScaler>().UpdateScale();
 
-            CreatePixelFix();
-
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-            On.KeyHints.UpdateHints += ShowCustomKeyHint;
+                SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+                On.KeyHints.UpdateHints += ShowCustomKeyHint;
+            }
         }
 
         internal void OnGUI()
         {
-            // Load valheim GUI assets
+            // No resource loading on a headless server
+            if (IsHeadless())
+            {
+                return;
+            }
 
+            // Load valheim GUI assets
             if (needsLoad && SceneManager.GetActiveScene().name == "start" && SceneManager.GetActiveScene().isLoaded)
             {
                 try
@@ -316,6 +326,8 @@ namespace Jotunn.Managers
                 GUIContainer.SetActive(true);
                 CreatePixelFix();
                 GUIInStart = true;
+
+                OnPixelFixCreated?.SafeInvoke();
             }
             if (scene.name == "main" && GUIInStart)
             {
@@ -332,6 +344,8 @@ namespace Jotunn.Managers
                         PixelFix.transform.SetParent(gui.transform, false);
                         GUIContainer.SetActive(false);
                         GUIInStart = false;
+                        
+                        OnPixelFixCreated?.SafeInvoke();
                     }
                 }
 
@@ -511,6 +525,12 @@ namespace Jotunn.Managers
                 {
                     transform.gameObject?.SetActive(false);
                 }
+            }
+
+            // Don't show hints when chat window is visible
+            if (Chat.instance.IsChatDialogWindowVisible())
+            {
+                return;
             }
 
             // Get the current equipped item name

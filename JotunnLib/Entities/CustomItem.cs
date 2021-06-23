@@ -51,14 +51,18 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="itemPrefab">The prefab for this custom item.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
-        /// <param name="itemConfig">The recipe config for this custom item.</param>
+        /// <param name="itemConfig">The item config for this custom item.</param>
         public CustomItem(GameObject itemPrefab, bool fixReference, ItemConfig itemConfig)
         {
             ItemPrefab = itemPrefab;
             ItemDrop = itemPrefab.GetComponent<ItemDrop>();
             FixReference = fixReference;
 
-            itemConfig.Item = ItemPrefab.name;
+            itemConfig.Apply(ItemPrefab);
+            if (!string.IsNullOrEmpty(itemConfig.PieceTable))
+            {
+                FixReference = true;
+            }
             Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
         }
 
@@ -80,20 +84,23 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
-        ///     Custom item created as an "empty" primitive with a <see cref="global::Recipe"/> made from a <see cref="ItemConfig"/>.<br />
-        ///     At least the name and the Icon of the <see cref="global::ItemDrop"/> must be edited after creation.
+        ///     Custom item created as an "empty" primitive with a <see cref="global::Recipe"/> made from a <see cref="ItemConfig"/>.
         /// </summary>
         /// <param name="name">Name of the new prefab. Must be unique.</param>
         /// <param name="addZNetView">If true a ZNetView component will be added to the prefab for network sync.</param>
-        /// <param name="itemConfig">The recipe config for this custom item.</param>
+        /// <param name="itemConfig">The item config for this custom item.</param>
         public CustomItem(string name, bool addZNetView, ItemConfig itemConfig)
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             if (ItemPrefab)
             {
                 ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
-
-                itemConfig.Item = name;
+                ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
+                itemConfig.Apply(ItemPrefab);
+                if (!string.IsNullOrEmpty(itemConfig.PieceTable))
+                {
+                    FixReference = true;
+                }
                 Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
             }
         }
@@ -117,27 +124,51 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="name">The new name of the prefab after cloning.</param>
         /// <param name="basePrefabName">The name of the base prefab the custom item is cloned from.</param>
-        /// <param name="itemConfig">The recipe config for this custom item.</param>
+        /// <param name="itemConfig">The item config for this custom item.</param>
         public CustomItem(string name, string basePrefabName, ItemConfig itemConfig)
         {
             ItemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
             if (ItemPrefab)
             {
                 ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
-
-                itemConfig.Item = name;
+                itemConfig.Apply(ItemPrefab);
+                if (!string.IsNullOrEmpty(itemConfig.PieceTable))
+                {
+                    FixReference = true;
+                }
                 Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
             }
         }
 
         /// <summary>
-        ///     Checks if a custom item is valid (i.e. has a prefab, has an <see cref="ItemDrop"/> 
-        ///     component with at least one icon).
+        ///     Checks if a custom item is valid (i.e. has a prefab, an <see cref="ItemDrop"/> and an icon, if it should be craftable).
         /// </summary>
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
         {
-            return ItemPrefab && ItemPrefab.IsValid() && ItemDrop && ItemDrop.IsValid();
+            bool valid = true;
+
+            if (!ItemPrefab)
+            {
+                Logger.LogError($"CustomItem {this} has no prefab");
+                valid = false;
+            }
+            if (!ItemPrefab.IsValid())
+            {
+                valid = false;
+            }
+            if (ItemDrop == null)
+            {
+                Logger.LogError($"CustomItem {this} has no ItemDrop component");
+                valid = false;
+            }
+            if (Recipe != null && ItemDrop.m_itemData.m_shared.m_icons.Length == 0)
+            {
+                Logger.LogError($"CustomItem {this} has no icon");
+                valid = false;
+            }
+
+            return valid;
         }
 
         /// <summary>

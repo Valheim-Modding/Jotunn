@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using BepInEx.Configuration;
+using UnityEngine;
 
 namespace Jotunn.Configs
 {
@@ -26,6 +27,12 @@ namespace Jotunn.Configs
         public KeyCode Key { get; set; }
 
         /// <summary>
+        ///     BepInEx configuration entry of a KeyCode that should be used. Sets the <see cref="Key"/>
+        ///     value of this config when added to the InputManager.
+        /// </summary>
+        public ConfigEntry<KeyCode> Config { get; set; }
+
+        /// <summary>
         ///     Should the Axis value be inverted?
         /// </summary>
         public bool Inverted { get; set; } = false;
@@ -44,5 +51,10 @@ namespace Jotunn.Configs
         ///     Token for translating the key hint text.
         /// </summary>
         public string HintToken { get; set; } = null;
+
+        /// <summary>
+        ///     Should this button react on key presses when a Valheim GUI is open? Defaults to <c>false</c>.
+        /// </summary>
+        public bool ActiveInGUI { get; set; } = false;
     }
 }

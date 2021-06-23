@@ -28,8 +28,10 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - [b]CustomItem[/b] - Represents ingame items such as weapons, tools and consumables.
 - [b]CustomRecipe[/b] - Represents ingame recipes for managing crafting and upgrading of items.
 - [b]CustomPiece[/b] - Represent ingame building pieces.
+- [b]CustomPieceTable[/b] - Represent ingame building tables. Support for custom categories included.
 - [b]CustomStatusEffect[/b] - Represents ingame status effects from weapon hit effects to guardian powers.
 - [b]CustomItemConversion[/b] - Represents ingame item conversions for the CookingStation, Fermenter and Smelter in one abstraction.
+- [b]KitbashObject[/b] - Represents a custom object assembled from various other prefabs' components.
 - [b]Mocks[/b] - Fake any vanilla prefab and use it in your custom assets - Jötunn resolves the references to the vanilla objects at runtime.
 - [b]Config classes[/b] - There are many more abstractions beside the main entities which allow for easy creation of things like key bindings, custom commands, skills and more.
 
@@ -42,6 +44,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - [b]Piece Manager[/b] - Very similar to the Item Manager, abstracting implementation details of configurations for pieces/recipe's.
 - [b]Prefab Manager[/b] - Provides a cache of prefabs registered through other managers, mostly developers will only query the cache for prefabs added via other managers.
 - [b]Skill Manager[/b] - Facilitates additional custom skills.
+- [b]Kitbash Manager[/b] - Create custom assets with individual pieces from vanilla prefabs.
 
 [size=4][b]Utilities[/b][/size]
 - [b]Asset Helpers[/b] - Methods to facilitate referencing and loading of assets.
@@ -74,3 +77,4 @@ These people have been integral to pushing JVL out of the door, and without them
 - Cinnabun#0451: [url=https://github.com/capnbubs]github[/url]
 - GoldenJude#8965: [url=https://github.com/GoldenJude]github[/url], [url=https://www.nexusmods.com/users/48864143?tab=user+files]nexus[/url]
 - zarboz#7828: [url=https://github.com/sbtoonz]github[/url], [url=https://valheim.thunderstore.io/package/sbtoonz/]thunderstore[/url], [url=https://www.nexusmods.com/users/4057483]nexus[/url]
+- MarcoPogo#6095: [url=https://github.com/MathiasDecrock]github[/url]

@@ -11,7 +11,7 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
-using System.Globalization;
+using Object = UnityEngine.Object;
 
 namespace TestMod
 {
@@ -34,14 +34,18 @@ namespace TestMod
 
         private System.Version currentVersion;
 
+        private ButtonConfig showButtonButton;
+        private ButtonConfig showMenuButton;
         private bool showButton;
         private bool showMenu;
         private GameObject testPanel;
 
-        private ButtonConfig evilSwordSpecial;
-        private CustomStatusEffect evilSwordEffect;
-
+        private ButtonConfig raiseSkillButton;
         private Skills.SkillType testSkill;
+
+        private ConfigEntry<KeyCode> evilSwordSpecialConfig;
+        private ButtonConfig evilSwordSpecialButton;
+        private CustomStatusEffect evilSwordEffect;
 
         private ConfigEntry<bool> EnableVersionMismatch;
 
@@ -60,15 +64,19 @@ namespace TestMod
             AddSkills();
             AddRecipes();
             AddStatusEffects();
-            AddItemConversions();
-            AddCustomItemAndConversion();
+            AddVanillaItemConversions();
+            AddCustomItemConversion();
             AddItemsWithConfigs();
             AddMockedItems();
-            AddEmptyItems();
-            AddInvalidItems();
+            AddKitbashedPieces();
+            AddPieceCategories();
+            AddInvalidEntities();
 
             // Add custom items cloned from vanilla items
             ItemManager.OnVanillaItemsAvailable += AddClonedItems;
+
+            // Clone an item with variants and replace them
+            ItemManager.OnVanillaItemsAvailable += AddVariants;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -99,26 +107,26 @@ namespace TestMod
                 // Custom buttons need to be added to the InputManager before we can poll them.
                 // GetButtonDown will only return true ONCE, right after our button is pressed.
                 // If we hold the button down, it won't spam toggle our menu.
-                if (ZInput.GetButtonDown("TestMod_Menu"))
+                if (ZInput.GetButtonDown(showMenuButton.Name))
                 {
                     showMenu = !showMenu;
                 }
 
-                if (ZInput.GetButtonDown("TestMod_GUIManagerTest"))
+                if (ZInput.GetButtonDown(showButtonButton.Name))
                 {
                     showButton = !showButton;
                 }
 
                 // Raise the test skill
-                if (Player.m_localPlayer != null && ZInput.GetButtonDown("TestMod_RaiseSkill"))
+                if (Player.m_localPlayer != null && ZInput.GetButtonDown(raiseSkillButton.Name))
                 {
                     Player.m_localPlayer.RaiseSkill(testSkill, 1f);
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (evilSwordSpecial != null && MessageHud.instance != null)
+                if (evilSwordSpecialButton != null && MessageHud.instance != null)
                 {
-                    if (ZInput.GetButtonDown(evilSwordSpecial.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                    if (ZInput.GetButtonDown(evilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
@@ -208,18 +216,26 @@ namespace TestMod
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "IntegerValue1", 200,
                 new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            // Test Color value support
+            Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
+                new ConfigDescription("Server side Color", null, new ConfigurationManagerAttributes() { IsAdminOnly = true }));
+            
+            // Test colored text configs
             Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
                 new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
+
+            // Test invisible configs
+            Config.Bind(JotunnTestModConfigSection, "InvisibleInt", 150,
+                new ConfigDescription("Invisible int, testing browsable=false", null, new ConfigurationManagerAttributes() {Browsable = false}));
 
             // Add client config to test ModCompatibility
             EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
-            Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+            evilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
 
-            Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
-                new ConfigDescription("Server side Color", null, new ConfigurationManagerAttributes() {IsAdminOnly = true}));
         }
 
         // React on changed settings
@@ -253,26 +269,28 @@ namespace TestMod
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
         // Add custom key bindings
         private void AddInputs()
         {
             // Add key bindings on the fly
-            InputManager.Instance.AddButton(ModGUID, "TestMod_Menu", KeyCode.Insert);
-            InputManager.Instance.AddButton(ModGUID, "TestMod_GUIManagerTest", KeyCode.F8);
+            showButtonButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Insert, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, showButtonButton);
+            showMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.Home, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, showMenuButton);
 
             // Add key bindings backed by a config value
-            // Create a ButtonConfig to also add it as a custom key hint in AddClonedItem
-            evilSwordSpecial = new ButtonConfig
+            // The HintToken is used for the custom KeyHint of the EvilSword
+            evilSwordSpecialButton = new ButtonConfig
             {
                 Name = "EvilSwordSpecialAttack",
-                Key = (KeyCode)Config[JotunnTestModConfigSection, "EvilSwordSpecialAttack"].BoxedValue,
+                Config = evilSwordSpecialConfig,
                 HintToken = "$evilsword_beevil"
             };
-            InputManager.Instance.AddButton(ModGUID, evilSwordSpecial);
+            InputManager.Instance.AddButton(ModGUID, evilSwordSpecialButton);
 
             // Add a key binding to test skill raising
-            InputManager.Instance.AddButton(ModGUID, "TestMod_RaiseSkill", KeyCode.Home);
+            raiseSkillButton = new ButtonConfig { Name = "TestMod_RaiseSkill", Key = KeyCode.PageUp };
+            InputManager.Instance.AddButton(ModGUID, raiseSkillButton);
         }
 
         // Adds localizations with configs
@@ -290,8 +308,22 @@ namespace TestMod
                 }
             });
 
-            // Add translations for the custom piece in AddEmptyItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") { Translations = { { "piece_lul", "Lulz" } } });
+            // Add translations for the custom piece in AddPieceCategories
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") 
+            {
+                Translations = {
+                    { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
+                    { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
+                } 
+            });
+
+            // Add translations for the custom variant in AddClonedItems
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            {
+                Translations = {
+                    { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
+                }
+            });
         }
 
         // Register new console commands
@@ -347,7 +379,7 @@ namespace TestMod
         }
 
         // Add item conversions (cooking or smelter recipes)
-        private void AddItemConversions()
+        private void AddVanillaItemConversions()
         {
             // Add an item conversion for the CookingStation. The items must have an "attach" child GameObject to display it on the station.
             var cookConversion = new CustomItemConversion(new CookingConversionConfig
@@ -387,7 +419,7 @@ namespace TestMod
         }
 
         // Add custom item conversion (gives a steel ingot to smelter)
-        private void AddCustomItemAndConversion()
+        private void AddCustomItemConversion()
         {
             var steel_prefab = steelingot.LoadAsset<GameObject>("Steel");
             var ingot = new CustomItem(steel_prefab, fixReference: false);
@@ -405,9 +437,21 @@ namespace TestMod
         // Add new Items with item Configs
         private void AddItemsWithConfigs()
         {
-            // Add a custom piece table
+            // Add a custom piece table with custom categories
             var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
-            PieceManager.Instance.AddPieceTable(table_prefab);
+            CustomPieceTable rune_table = new CustomPieceTable(table_prefab,
+                new PieceTableConfig
+                {
+                    CanRemovePieces = false,
+                    UseCategories = false,
+                    UseCustomCategories = true,
+                    CustomCategories = new string[]
+                    {
+                        "Make", "Place"
+                    }
+                }
+            );
+            PieceManager.Instance.AddPieceTable(rune_table);
 
             // Create and add a custom item
             var rune_prefab = blueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
@@ -427,7 +471,8 @@ namespace TestMod
             var makebp = new CustomPiece(makebp_prefab,
                 new PieceConfig
                 {
-                    PieceTable = "_BlueprintTestTable"
+                    PieceTable = "_BlueprintTestTable",
+                    Category = "Make"
                 });
             PieceManager.Instance.AddPiece(makebp);
 
@@ -436,6 +481,7 @@ namespace TestMod
                 new PieceConfig
                 {
                     PieceTable = "_BlueprintTestTable",
+                    Category = "Place",
                     AllowedInDungeons = true,
                     Requirements = new[]
                     {
@@ -542,30 +588,149 @@ namespace TestMod
             }
         }
 
-        // Add a custom item from an "empty" prefab
-        private void AddEmptyItems()
+        // Adds Kitbashed pieces
+        private void AddKitbashedPieces()
         {
-            CustomPiece CP = new CustomPiece("piece_lul", "Hammer");
+            // A simple kitbash piece, we will begin with the "empty" prefab as the base
+            var simpleKitbashPiece = new CustomPiece("piece_simple_kitbash", true, "Hammer");
+            simpleKitbashPiece.FixReference = true;
+            simpleKitbashPiece.Piece.m_icon = testSprite;
+            PieceManager.Instance.AddPiece(simpleKitbashPiece);
+
+            // Now apply our Kitbash to the piece
+            KitbashManager.Instance.AddKitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
+                Layer = "piece",
+                KitbashSources = new List<KitbashSourceConfig>
+                {
+                    new KitbashSourceConfig
+                    {
+                        Name = "eye_1",
+                        SourcePrefab = "Ruby",
+                        SourcePath = "attach/model",
+                        Position = new Vector3(0.528f, 0.1613345f, -0.253f),
+                        Rotation = Quaternion.Euler(0, 180, 0f),
+                        Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+                    },
+                    new KitbashSourceConfig
+                    {
+                        Name = "eye_2",
+                        SourcePrefab = "Ruby",
+                        SourcePath = "attach/model",
+                        Position = new Vector3(0.528f, 0.1613345f, 0.253f),
+                        Rotation = Quaternion.Euler(0, 180, 0f),
+                        Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+                    },
+                    new KitbashSourceConfig
+                    {
+                        Name = "mouth",
+                        SourcePrefab = "draugr_bow",
+                        SourcePath = "attach/bow",
+                        Position = new Vector3(0.53336f, -0.315f, -0.001953f),
+                        Rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
+                        Scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
+                    }
+                }
+            }); 
+
+            // A more complex Kitbash piece, this has a prepared GameObject for Kitbash to build upon
+            AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash", typeof(TestMod).Assembly);
+            try
+            { 
+                KitbashObject kitbashObject = KitbashManager.Instance.AddKitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
+                {
+                    Layer = "piece",
+                    KitbashSources = new List<KitbashSourceConfig>
+                    {
+                        new KitbashSourceConfig
+                        {
+                            SourcePrefab = "piece_artisanstation",
+                            SourcePath = "ArtisanTable_Destruction/ArtisanTable_Destruction.007_ArtisanTable.019",
+                            TargetParentPath = "new",
+                            Position = new Vector3(-1.185f, -0.465f, 1.196f),
+                            Rotation = Quaternion.Euler(-90f, 0, 0),
+                            Scale = Vector3.one,Materials = new string[]{
+                                "obsidian_nosnow",
+                                "bronze"
+                            }
+                        },
+                        new KitbashSourceConfig
+                        {
+                            SourcePrefab = "guard_stone",
+                            SourcePath = "new/default",
+                            TargetParentPath = "new/pivot",
+                            Position = new Vector3(0, 0.0591f ,0),
+                            Rotation = Quaternion.identity,
+                            Scale = Vector3.one * 0.2f,
+                            Materials = new string[]{
+                                "bronze",
+                                "obsidian_nosnow"
+                            }
+                        },
+                    }
+                });
+                kitbashObject.OnKitbashApplied += () =>
+                {
+                    // We've added a CapsuleCollider to the skeleton, this is no longer needed
+                    Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
+                };
+                PieceManager.Instance.AddPiece(new CustomPiece(kitbashObject.Prefab, new PieceConfig
+                {
+                    PieceTable = "Hammer",
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig { Item = "Obsidian" , Recover = true},
+                        new RequirementConfig { Item = "Bronze", Recover = true }
+                    }
+                }));
+            } finally
+            {
+                kitbashAssetBundle.Unload(false);
+            }
+        }
+
+        // Add custom pieces from an "empty" prefab with new piece categories
+        private void AddPieceCategories()
+        {
+            CustomPiece CP = new CustomPiece("piece_lul", true, new PieceConfig
+            {
+                Name = "$piece_lul",
+                Description = "$piece_lul_description",
+                Icon = testSprite,
+                PieceTable = "Hammer",
+                ExtendStation = "piece_workbench", // Test station extension
+                Category = "Lulzies"  // Test custom category
+            });
+
             if (CP != null)
             {
-                var piece = CP.Piece;
-                piece.m_icon = testSprite;
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
 
-                // Test station extension, do it manually cause there is no config on empty pieces atm
-                var cfg = new PieceConfig
-                {
-                    ExtendStation = "piece_workbench"
-                };
-                cfg.Apply(prefab);
-                CP.FixReference = true;
+                PieceManager.Instance.AddPiece(CP);
+            }
+
+            CP = new CustomPiece("piece_lel", true, new PieceConfig
+            {
+                Name = "$piece_lel",
+                Description = "$piece_lel_description",
+                Icon = testSprite,
+                PieceTable = "Hammer",
+                ExtendStation = "piece_workbench", // Test station extension
+                Category = "Lulzies"  // Test custom category
+            });
+
+            if (CP != null)
+            {
+                var prefab = CP.PiecePrefab;
+                prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
+                prefab.GetComponent<MeshRenderer>().material.color = Color.grey;
 
                 PieceManager.Instance.AddPiece(CP);
             }
         }
 
-        private void AddInvalidItems()
+        // Add items / pieces with errors on purpose to test error handling
+        private void AddInvalidEntities()
         {
             CustomItem CI = new CustomItem("item_faulty", false);
             if (CI != null)
@@ -587,24 +752,18 @@ namespace TestMod
                 ItemManager.Instance.AddRecipe(CR);
             }
 
-            CustomPiece CP = new CustomPiece("piece_fukup", "Hammer");
+            CustomPiece CP = new CustomPiece("piece_fukup", false, new PieceConfig
+            {
+                Icon = testSprite,
+                PieceTable = "Hammer",
+                Requirements = new RequirementConfig[]
+                {
+                    new RequirementConfig { Item = "StillNotThereResource", Amount = 99 }
+                }
+            });
+
             if (CP != null)
             {
-                var piece = CP.Piece;
-                piece.m_icon = testSprite;
-                var prefab = CP.PiecePrefab;
-
-                // Test faulty resource, do it manually cause there is no config on empty pieces atm
-                var cfg = new PieceConfig
-                {
-                    Requirements = new RequirementConfig[]
-                    {
-                        new RequirementConfig { Item = "StillNotThereResource", Amount = 99 }
-                    }
-                };
-                cfg.Apply(prefab);
-                CP.FixReference = true;
-
                 PieceManager.Instance.AddPiece(CP);
             }
         }
@@ -649,7 +808,7 @@ namespace TestMod
                         // Override vanilla "Attack" key text
                         new ButtonConfig { Name = "Attack", HintToken = "$evilsword_shwing" },
                         // New custom input
-                        evilSwordSpecial,
+                        evilSwordSpecialButton,
                         // Override vanilla "Mouse Wheel" text
                         new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
                     }
@@ -658,12 +817,47 @@ namespace TestMod
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogError($"Error while adding cloned item: {ex.Message}");
+                Jotunn.Logger.LogError($"Error while adding cloned item: {ex}");
             }
             finally
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
                 ItemManager.OnVanillaItemsAvailable -= AddClonedItems;
+            }
+        }
+
+        // Test the variant config for items
+        private void AddVariants()
+        {
+            try
+            {
+                Sprite var1 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var1.png");
+                Sprite var2 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var2.png");
+                Texture2D styleTex = AssetUtils.LoadTexture("TestMod/Assets/test_varpaint.png");
+                CustomItem CI = new CustomItem("item_lulvariants", "ShieldWood", new ItemConfig
+                {
+                    Name = "$lulz_shield",
+                    Description = "$lulz_shield_desc",
+                    Requirements = new RequirementConfig[]
+                    {
+                        new RequirementConfig{ Item = "Wood", Amount = 1 }
+                    },
+                    Icons = new Sprite[]
+                    {
+                        var1, var2
+                    },
+                    StyleTex = styleTex
+                });
+                ItemManager.Instance.AddItem(CI);
+            }
+            catch (Exception ex)
+            {
+                Jotunn.Logger.LogError($"Error while adding variant item: {ex}");
+            }
+            finally
+            {
+                // You want that to run only once, Jotunn has the item cached for the game session
+                ItemManager.OnVanillaItemsAvailable -= AddVariants;
             }
         }
 

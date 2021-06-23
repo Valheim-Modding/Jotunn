@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Jotunn.Managers;
 using UnityEngine;
@@ -108,7 +106,7 @@ namespace Jotunn.Utils
                     rpc.Invoke("Error", 3);
                     return;
                 }
-                catch (KeyNotFoundException ex)
+                catch (KeyNotFoundException)
                 {
                     // Vanilla client trying to connect?
                     // Check mods, if there are some installed on the server which need also to be on the client

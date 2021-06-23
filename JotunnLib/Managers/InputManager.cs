@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx.Configuration;
 using UnityEngine;
 using Jotunn.Configs;
 
@@ -12,6 +13,12 @@ namespace Jotunn.Managers
     public class InputManager : IManager
     {
         private static InputManager _instance;
+
+        // Internal holder for all buttons added via Jotunn
+        internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
+
+        internal static Dictionary<ConfigEntryBase, ButtonConfig> ButtonToConfigDict = new Dictionary<ConfigEntryBase, ButtonConfig>();
+
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -23,137 +30,103 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
-        internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
 
         /// <summary>
         ///     Initialize the manager
         /// </summary>
         public void Init()
         {
-            On.ZInput.Reset += RegisterCustomInputs;
-            On.ZInput.GetButtonDown += ZInput_GetButtonDown;
-            On.ZInput.GetButtonUp += ZInput_GetButtonUp;
+            // Dont init on a dedicated server
+            if (!GUIManager.IsHeadless())
+            {
+                On.ZInput.Load += RegisterCustomInputs;
+                On.ZInput.GetButtonDown += ZInput_GetButtonDown;
+                On.ZInput.GetButtonUp += ZInput_GetButtonUp;
+            }
         }
 
         /// <summary>
-        ///     Add a custom button binding via config
+        /// Add Button to Valheim
         /// </summary>
-        /// <param name="modguid"></param>
-        /// <param name="button"></param>
-        public void AddButton(string modguid, ButtonConfig button)
+        /// <param name="modGuid">Mod GUID</param>
+        /// <param name="buttonConfig">Button config</param>
+        public void AddButton(string modGuid, ButtonConfig buttonConfig)
         {
-            if (Buttons.ContainsKey(button.Name + "!" + modguid))
+            if (buttonConfig == null)
             {
-                Logger.LogError("Cannot have duplicate button: " + button.Name);
+                throw new ArgumentNullException(nameof(buttonConfig));
+            }
+
+            if (string.IsNullOrEmpty(modGuid))
+            {
+                throw new ArgumentException($"{nameof(modGuid)} can not be empty or null", nameof(modGuid));
+            }
+
+            if ((buttonConfig.Config == null) && (buttonConfig.Key == KeyCode.None) && string.IsNullOrEmpty(buttonConfig.Axis))
+            {
+                throw new ArgumentException($"{nameof(buttonConfig)} needs either Key, Axis or Config set.", nameof(buttonConfig));
+            }
+
+            if (Buttons.ContainsKey(buttonConfig.Name + "!" + modGuid))
+            {
+                Logger.LogError($"Cannot have duplicate button: {buttonConfig.Name} (Mod {modGuid})");
                 return;
             }
 
-            button.Name += "!" + modguid;
-
-            Buttons.Add(button.Name, button);
-        }
-
-        /// <summary>
-        ///     Add a custom button binding
-        /// </summary>
-        /// <param name="modguid"></param>
-        /// <param name="name"></param>
-        /// <param name="key"></param>
-        /// <param name="repeatDelay"></param>
-        /// <param name="repeatInterval"></param>
-        [Obsolete("Use ButtonConfig instead")]
-        public void AddButton(
-            string modguid,
-            string name,
-            KeyCode key,
-            float repeatDelay = 0.0f,
-            float repeatInterval = 0.0f)
-        {
-
-            if (Buttons.ContainsKey(name + "!" + modguid))
+            if (buttonConfig.Config != null)
             {
-                Logger.LogError("Cannot have duplicate button: " + name);
-                return;
+                buttonConfig.Key = buttonConfig.Config.Value;
+                ButtonToConfigDict.Add(buttonConfig.Config, buttonConfig);
             }
 
-            Buttons.Add(name + "!" + modguid, new ButtonConfig()
-            {
-                Name = name + "!" + modguid,
-                Key = key,
-                RepeatDelay = repeatDelay,
-                RepeatInterval = repeatInterval
-            });
+            buttonConfig.Name += "!" + modGuid;
+            Buttons.Add(buttonConfig.Name, buttonConfig);
         }
 
-        /// <summary>
-        ///     Add a custom button binding
-        /// </summary>
-        /// <param name="modguid"></param>
-        /// <param name="name"></param>
-        /// <param name="axis"></param>
-        /// <param name="inverted"></param>
-        /// <param name="repeatDelay"></param>
-        /// <param name="repeatInterval"></param>
-        [Obsolete("Use ButtonConfig instead")]
-        public void AddButton(
-            string modguid,
-            string name,
-            string axis,
-            bool inverted = false,
-            float repeatDelay = 0.0f,
-            float repeatInterval = 0.0f)
+        private bool TakeInput(string name)
         {
-            if (Buttons.ContainsKey(name + "!" + modguid))
+            if (Player.m_localPlayer == null)
             {
-                Logger.LogError("Cannot have duplicate button: " + name);
-                return;
+                return true;
             }
 
-            Buttons.Add(name + "!" + modguid, new ButtonConfig()
+            var button = Buttons.FirstOrDefault(x => x.Key.Equals(name));
+            if (button.Key == null)
             {
-                Name = name + "!" + modguid,
-                Axis = axis,
-                Inverted = inverted,
-                RepeatDelay = repeatDelay,
-                RepeatInterval = repeatInterval
-            });
-        }
+                return true;
+            }
+            if (button.Value.ActiveInGUI)
+            {
+                return true;
+            }
 
+            return Player.m_localPlayer.TakeInput();
+        }
         private bool ZInput_GetButtonUp(On.ZInput.orig_GetButtonUp orig, string name)
         {
-            var result = orig(name);
-            if (!result)
+            if (orig(name))
             {
-                foreach (var buttonDef in ZInput.instance.m_buttons.Where(x => x.Key.StartsWith(name + "!")))
-                {
-                    if (Time.inFixedTimeStep ? buttonDef.Value.m_upFixed : buttonDef.Value.m_up)
-                    {
-                        return true;
-                    }
-                }
+                return TakeInput(name);
             }
-
-            return result;
+            else
+            {
+                return false;
+            }
         }
 
         private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
         {
-            var result = orig(name);
-            if (!result)
+            if (orig(name))
             {
-                foreach (var def in ZInput.instance.m_buttons.Where(x => x.Key.StartsWith(name + "!")))
-                {
-                    if (Time.inFixedTimeStep ? def.Value.m_downFixed : def.Value.m_down)
-                    {
-                        return true;
-                    }
-                }
+                return TakeInput(name);
             }
-
-            return result;
+            else
+            {
+                return false;
+            }
         }
 
-        private void RegisterCustomInputs(On.ZInput.orig_Reset orig, ZInput self)
+        private void RegisterCustomInputs(On.ZInput.orig_Load orig, ZInput self)
         {
             orig(self);
 
@@ -165,7 +138,7 @@ namespace Jotunn.Managers
                 {
                     var btn = pair.Value;
 
-                    if (btn.Axis != null && btn.Axis.Length > 0)
+                    if (!string.IsNullOrEmpty(btn.Axis))
                     {
                         self.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
                     }

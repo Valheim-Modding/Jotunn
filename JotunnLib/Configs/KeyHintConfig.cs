@@ -25,26 +25,6 @@ namespace Jotunn.Configs
         /// </summary>
         public ButtonConfig[] ButtonConfigs { get; set; } = new ButtonConfig[0];
 
-        /// <summary>
-        ///     Loads a single KeyHintConfig from a JSON string
-        /// </summary>
-        /// <param name="json">JSON text</param>
-        /// <returns>Loaded KeyHintConfig</returns>
-        public static KeyHintConfig FromJson(string json)
-        {
-            return SimpleJson.SimpleJson.DeserializeObject<KeyHintConfig>(json);
-        }
-
-        /// <summary>
-        ///     Loads a list of KeyHintConfigs from a JSON string
-        /// </summary>
-        /// <param name="json">JSON text</param>
-        /// <returns>Loaded list of KeyHintConfigs</returns>
-        public static List<KeyHintConfig> ListFromJson(string json)
-        {
-            return SimpleJson.SimpleJson.DeserializeObject<List<KeyHintConfig>>(json);
-        }
-
         /// <inheritdoc/>
         public override string ToString()
         {

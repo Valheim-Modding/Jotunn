@@ -2,5 +2,9 @@
   "skill_test": "Test Skill",
   "skill_test_desc": "A test skill from the test mod",
   "steelbar": "A ingot of steel",
-  "steelbar_description": "A cold bar of steel to craft new items with"
+  "steelbar_description": "A cold bar of steel to craft new items with",
+  "piece_simple_kitbash": "Kitbash Example",
+  "piece_simple_kitbash_description": "A simple Kitbash example",
+  "piece_odin_statue": "Odin statue",
+  "piece_odin_statue_desc": "Keeps a watchful eye while you sleep"
 }

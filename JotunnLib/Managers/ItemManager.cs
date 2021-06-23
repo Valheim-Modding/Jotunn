@@ -37,6 +37,12 @@ namespace Jotunn.Managers
         public static event Action OnVanillaItemsAvailable;
 
         /// <summary>
+        ///     Internal event that gets fired after <see cref="OnVanillaItemsAvailable"/> did run.
+        ///     On this point all mods should have their items and pieces registered with the managers.
+        /// </summary>
+        internal static event Action OnKitbashItemsAvailable;
+
+        /// <summary>
         ///     Event that gets fired after all items were added to the ObjectDB on the FejdStartup screen.
         ///     Your code will execute every time a new ObjectDB is copied (on every menu start).
         ///     If you want to execute just once you will need to unregister from the event after execution.
@@ -340,9 +346,8 @@ namespace Jotunn.Managers
                         {
                             itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
                         }
-                        objectDB.m_items.Add(customItem.ItemPrefab);
 
-                        Logger.LogInfo($"Added item {customItem} | Token: {customItem.ItemDrop.TokenName()}");
+                        RegisterItemInObjectDB(customItem.ItemPrefab);
                     }
                     catch (Exception ex)
                     {
@@ -361,6 +366,49 @@ namespace Jotunn.Managers
 
                 objectDB.UpdateItemHashes();
             }
+        }
+
+        /// <summary>
+        ///     Register a single item in the current ObjectDB.
+        ///     Also adds the prefab to the <see cref="PrefabManager"/> and <see cref="ZNetScene"/> if necessary.<br />
+        ///     No mock references are fixed.
+        /// </summary>
+        /// <param name="prefab"><see cref="GameObject"/> with an <see cref="ItemDrop"/> component to add to the <see cref="ObjectDB"/></param>
+        public void RegisterItemInObjectDB(GameObject prefab)
+        {
+            var itemDrop = prefab.GetComponent<ItemDrop>();
+            if (itemDrop == null)
+            {
+                throw new Exception($"Prefab {prefab.name} has no ItemDrop component attached");
+            }
+
+            var objectDB = ObjectDB.instance;
+            if (objectDB == null)
+            {
+                throw new Exception($"ObjectDB is not instantiated");
+            }
+
+            var hash = prefab.name.GetStableHashCode();
+            if (objectDB.m_itemByHash.ContainsKey(hash))
+            {
+                Logger.LogInfo($"Already added item {prefab.name}");
+            }
+            else
+            {
+                if (!PrefabManager.Instance.Prefabs.ContainsKey(prefab.name))
+                {
+                    PrefabManager.Instance.AddPrefab(prefab);
+                }
+                if (ZNetScene.instance != null && !ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))
+                {
+                    PrefabManager.Instance.RegisterToZNetScene(prefab);
+                }
+
+                objectDB.m_items.Add(prefab);
+                objectDB.m_itemByHash.Add(hash, prefab);
+            }
+
+            Logger.LogInfo($"Added item {prefab.name} | Token: {itemDrop.TokenName()}");
         }
 
         private void RegisterCustomRecipes(ObjectDB objectDB)
@@ -548,19 +596,21 @@ namespace Jotunn.Managers
         {
             OnVanillaItemsAvailable?.SafeInvoke();
 
+            OnKitbashItemsAvailable?.SafeInvoke();
+
             orig(self, other);
 
             if (SceneManager.GetActiveScene().name == "start")
             {
-                var isValid = self.IsValid();
-                ItemDropMockFix.Switch(!isValid);
+                /*var isValid = self.IsValid();
+                ItemDropMockFix.Switch(!isValid);*/
 
-                if (isValid)
-                {
+                /*if (isValid)
+                {*/
                     RegisterCustomItems(self);
 
                     self.UpdateItemHashes();
-                }
+                //}
             }
         }
 
@@ -568,7 +618,8 @@ namespace Jotunn.Managers
         {
             orig(self, other);
 
-            if (SceneManager.GetActiveScene().name == "start" && self.IsValid())
+            //if (SceneManager.GetActiveScene().name == "start" && self.IsValid())
+            if (SceneManager.GetActiveScene().name == "start")
             {
                 OnItemsRegisteredFejd?.SafeInvoke();
             }
@@ -585,25 +636,26 @@ namespace Jotunn.Managers
 
             if (SceneManager.GetActiveScene().name == "main")
             {
-                var isValid = self.IsValid();
-                ItemDropMockFix.Switch(!isValid);
+                /*var isValid = self.IsValid();
+                ItemDropMockFix.Switch(!isValid);*/
 
-                if (isValid)
-                {
+                /*if (isValid)
+                {*/
                     RegisterCustomItems(self);
                     RegisterCustomRecipes(self);
                     RegisterCustomStatusEffects(self);
                     RegisterCustomItemConversions();
 
                     self.UpdateItemHashes();
-                }
+                //}
             }
         }
         private void InvokeOnItemsRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
+            if (SceneManager.GetActiveScene().name == "main")
             {
                 OnItemsRegistered?.SafeInvoke();
             }

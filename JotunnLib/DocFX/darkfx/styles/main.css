@@ -1,4 +1,4 @@
-:root, body.dark-theme {
+﻿:root, body.dark-theme {
   --color-foreground: #ccd5dc;
   --color-navbar: #66666d;
   --color-breadcrumb: #999;
@@ -254,11 +254,23 @@ pre {
 code {
   background: var(--color-background-dark) !important;
   border-radius: 2px;
-  color: #9a9a9a;
+  color: var(--color-foreground);
 }
 
 .hljs {
   color: var(--color-foreground);
+}
+
+.hljs-tag{
+  color:#63a35c !important;
+}
+
+.hljs-keyword {
+  color: rgb(68, 146, 210) !important;
+}
+
+.hljs-string {
+  color: rgb(206, 113, 75) !important;
 }
 
 .toc .nav>li.active>.expand-stub::before, .toc .nav>li.in>.expand-stub::before, .toc .nav>li.in.active>.expand-stub::before, .toc .nav>li.filtered>.expand-stub::before {
