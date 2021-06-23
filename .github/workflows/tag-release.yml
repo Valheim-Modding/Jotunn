@@ -25,7 +25,7 @@ jobs:
         run: |
           echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
           echo ::set-output name=VERSION_NUMBER::${GITHUB_REF/refs\/tags\/v/}
-          echo ::set-output name=VERSION_NUMBER_RCLESS::${GITHUB_REF/refs\/tags\/v(.*)-?.*/$1}
+          echo ::set-output name=VERSION_NUMBER_RCLESS::${GITHUB_REF/refs\/tags\/v(.*)-?.*/$2}
 
       - name: Install NuGet
         uses: nuget/setup-nuget@v1
