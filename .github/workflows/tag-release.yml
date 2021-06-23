@@ -96,7 +96,7 @@ jobs:
 
       - name: Update Main.cs version
         run: |
-          cat JotunnLib/Main.cs | sed -e 's/public const string Version = ".*";/public const string Version = "${{ steps.get_version.outputs.VERSION_NUMBER }}";/' > JotunnLib/Main.tmp && mv JotunnLib/Main.tmp JotunnLib/Main.cs
+          cat JotunnLib/Main.cs | sed -e 's/public const string Version = ".*";/public const string Version = "${{ steps.get_version.outputs.VERSION_NUMBER/-.*// }}";/' > JotunnLib/Main.tmp && mv JotunnLib/Main.tmp JotunnLib/Main.cs
 
       - name: Push version update to prod
         run: |
