@@ -188,7 +188,7 @@ namespace Jotunn.Configs
 
             if (!string.IsNullOrEmpty(RepairStation))
             {
-                recipe.m_craftingStation = Mock<CraftingStation>.Create(RepairStation);
+                recipe.m_repairStation = Mock<CraftingStation>.Create(RepairStation);
             }
 
             recipe.m_minStationLevel = MinStationLevel;
