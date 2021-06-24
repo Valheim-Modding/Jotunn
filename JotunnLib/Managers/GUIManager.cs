@@ -327,7 +327,7 @@ namespace Jotunn.Managers
                 CreatePixelFix();
                 GUIInStart = true;
 
-                OnPixelFixCreated?.SafeInvoke();
+                InvokeOnPixelFixCreated();
             }
             if (scene.name == "main" && GUIInStart)
             {
@@ -338,14 +338,14 @@ namespace Jotunn.Managers
                     GameObject gui = root.transform.Find("GUI/PixelFix").gameObject;
                     if (gui != null)
                     {
-                        GameObject.Destroy(PixelFix);
+                        GameObject.DestroyImmediate(PixelFix);
                         PixelFix = new GameObject("GUIFix", typeof(RectTransform));
                         PixelFix.layer = UILayer; // UI
                         PixelFix.transform.SetParent(gui.transform, false);
                         GUIContainer.SetActive(false);
                         GUIInStart = false;
-                        
-                        OnPixelFixCreated?.SafeInvoke();
+
+                        InvokeOnPixelFixCreated();
                     }
                 }
 
@@ -355,6 +355,11 @@ namespace Jotunn.Managers
                 // Create all custom KeyHints
                 RegisterKeyHints();
             }
+        }
+
+        private void InvokeOnPixelFixCreated()
+        {
+            OnPixelFixCreated?.SafeInvoke();
         }
 
         private void CreatePixelFix()
