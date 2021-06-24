@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Jotunn
 {
@@ -8,7 +9,7 @@ namespace Jotunn
     internal static class EventExtensions
     {
         /// <summary>
-        ///     Try catch the delegate chain so that it doesnt break on the first failing Delegate.
+        ///     try/catch the delegate chain so that it doesnt break on the first failing Delegate.
         /// </summary>
         /// <param name="events"></param>
         public static void SafeInvoke(this Action events)
@@ -26,13 +27,13 @@ namespace Jotunn
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e);
+                    Logger.LogWarning($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {@event.Method.DeclaringType.Name}.{@event.Method.Name}:\n{e}");
                 }
             }
         }
 
         /// <summary>
-        ///     Try catch the delegate chain so that it doesnt break on the first failing Delegate.
+        ///     try/catch the delegate chain so that it doesnt break on the first failing Delegate.
         /// </summary>
         /// <typeparam name="TArg1"></typeparam>
         /// <param name="events"></param>
@@ -52,11 +53,18 @@ namespace Jotunn
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e);
+                    Logger.LogWarning($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {@event.Method.DeclaringType.Name}.{@event.Method.Name}:\n{e}");
                 }
             }
         }
 
+        /// <summary>
+        ///     try/catch the delegate chain so that it doesnt break on the first failing Delegate.
+        /// </summary>
+        /// <typeparam name="TEventArg"></typeparam>
+        /// <param name="events"></param>
+        /// <param name="sender"></param>
+        /// <param name="arg1"></param>
         public static void SafeInvoke<TEventArg>(this EventHandler<TEventArg> events, object sender, TEventArg arg1)
         {
             if (events == null)
@@ -72,7 +80,7 @@ namespace Jotunn
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e);
+                    Logger.LogWarning($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {@event.Method.DeclaringType.Name}.{@event.Method.Name}:\n{e}");
                 }
             }
         }

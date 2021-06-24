@@ -594,9 +594,9 @@ namespace Jotunn.Managers
         /// <param name="other"></param>
         private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
-            OnVanillaItemsAvailable?.SafeInvoke();
-
-            OnKitbashItemsAvailable?.SafeInvoke();
+            InvokeOnVanillaItemsAvailable();
+            
+            InvokeOnKitbashItemsAvailable();
 
             orig(self, other);
 
@@ -607,11 +607,21 @@ namespace Jotunn.Managers
 
                 /*if (isValid)
                 {*/
-                    RegisterCustomItems(self);
+                RegisterCustomItems(self);
 
-                    self.UpdateItemHashes();
+                self.UpdateItemHashes();
                 //}
             }
+        }
+
+        private void InvokeOnVanillaItemsAvailable()
+        {
+            OnVanillaItemsAvailable?.SafeInvoke();
+        }
+
+        private void InvokeOnKitbashItemsAvailable()
+        {
+            OnKitbashItemsAvailable?.SafeInvoke();
         }
 
         private void InvokeOnItemsRegisteredFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
