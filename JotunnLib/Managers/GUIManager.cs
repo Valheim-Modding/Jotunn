@@ -133,6 +133,44 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Block all input except GUI
+        /// </summary>
+        /// <param name="state"></param>
+        public static void BlockInput(bool state)
+        {
+            if (!IsHeadless())
+            {
+                if (state)
+                {
+                    On.Player.TakeInput += Player_TakeInput;
+                    On.PlayerController.TakeInput += PlayerController_TakeInput;
+                }
+                else
+                {
+                    On.Player.TakeInput -= Player_TakeInput;
+                    On.PlayerController.TakeInput -= PlayerController_TakeInput;
+                }
+                if (GameCamera.instance)
+                {
+                    GameCamera.instance.m_mouseCapture = !state;
+                    GameCamera.instance.UpdateMouseCapture();
+                }
+            }
+        }
+
+        private static bool PlayerController_TakeInput(On.PlayerController.orig_TakeInput orig, PlayerController self)
+        {
+            orig(self);
+            return false;
+        }
+
+        private static bool Player_TakeInput(On.Player.orig_TakeInput orig, Player self)
+        {
+            orig(self);
+            return false;
+        }
+
+        /// <summary>
         ///     Initialize the manager
         /// </summary>
         public void Init()
