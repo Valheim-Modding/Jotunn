@@ -73,7 +73,7 @@ namespace Jotunn
             RootObject.AddComponent<DebugUtils.ZoneCounter>();
 #endif
 
-            Logger.LogInfo("Jotunn v" + Version + " loaded successfully");
+            Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
         }
 
         private void Start()
