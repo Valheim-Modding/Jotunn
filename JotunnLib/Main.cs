@@ -92,12 +92,6 @@ namespace Jotunn
             }
         }
 
-        private void OnGUI()
-        {
-            // Fake MonoBehaviour event for GUIManager
-            GUIManager.Instance.OnGUI();
-        }
-
         /// <summary>
         ///     Invoke patch initialization methods for all loaded mods.
         /// </summary>
