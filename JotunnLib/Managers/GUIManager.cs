@@ -324,7 +324,6 @@ namespace Jotunn.Managers
 
                     PrefabManager.Instance.AddPrefab(button);
 
-
                     // Base woodpanel prefab
 
                     var woodpanel = new GameObject("BaseWoodpanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -339,7 +338,6 @@ namespace Jotunn.Managers
                     woodpanel.layer = UILayer; // UI
 
                     PrefabManager.Instance.AddPrefab(woodpanel);
-
                 }
                 catch (Exception ex)
                 {
