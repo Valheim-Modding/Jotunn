@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using BepInEx;
 using Jotunn.Managers;
 using Jotunn.Utils;
@@ -41,10 +40,11 @@ namespace Jotunn
             // Initialize Logger
             Jotunn.Logger.Init();
 
-            // Create and initialize all managers
+            // Root Container for GameObjects in the DontDestroyOnLoad scene
             RootObject = new GameObject("_JotunnRoot");
-            GameObject.DontDestroyOnLoad(RootObject);
+            DontDestroyOnLoad(RootObject);
 
+            // Create and initialize all managers
             managers = new List<IManager>()
             {
                 LocalizationManager.Instance,
@@ -63,9 +63,15 @@ namespace Jotunn
             };
             foreach (IManager manager in managers)
             {
+                Logger.LogInfo("Initializing " + manager.GetType().Name);
                 manager.Init();
-                Logger.LogInfo("Initialized " + manager.GetType().Name);
             }
+
+#if DEBUG
+            // Enable some helper on DEBUG build
+            RootObject.AddComponent<DebugUtils.DebugHelper>();
+            RootObject.AddComponent<DebugUtils.ZoneCounter>();
+#endif
 
             Logger.LogInfo("Jotunn v" + Version + " loaded successfully");
         }
@@ -77,11 +83,6 @@ namespace Jotunn
 
         private void Update()
         {
-#if DEBUG
-            if (Input.GetKeyDown(KeyCode.F6))
-            { // Set a breakpoint here to break on F6 key press
-            }
-#endif
             if (ZNet.instance != null)
             {
                 if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
@@ -93,13 +94,6 @@ namespace Jotunn
 
         private void OnGUI()
         {
-#if DEBUG
-            // Display version in main menu
-            if (SceneManager.GetActiveScene().name == "start")
-            {
-                GUI.Label(new Rect(Screen.width - 100, 5, 100, 25), "Jotunn v" + Version);
-            }
-#endif
             // Fake MonoBehaviour event for GUIManager
             GUIManager.Instance.OnGUI();
         }
@@ -141,7 +135,7 @@ namespace Jotunn
             // Invoke the method
             foreach (Tuple<MethodInfo, int> tuple in types.OrderBy(x => x.Item2))
             {
-                Logger.LogInfo($"Applying patches in {tuple.Item1.DeclaringType.Name}.{tuple.Item1.Name}");
+                Jotunn.Logger.LogInfo($"Applying patches in {tuple.Item1.DeclaringType.Name}.{tuple.Item1.Name}");
                 tuple.Item1.Invoke(null, null);
             }
         }
