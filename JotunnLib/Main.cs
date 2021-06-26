@@ -24,7 +24,7 @@ namespace Jotunn
         /// <summary>
         ///     The name of the library.
         /// </summary>
-        public const string ModName = "Jotunn";
+        public const string ModName = "Jötunn";
 
         /// <summary>
         ///     The BepInEx plugin Mod GUID being used (com.jotunn.jotunn).
