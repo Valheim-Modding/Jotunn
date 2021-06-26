@@ -114,11 +114,6 @@ namespace Jotunn.Managers
         private RectTransform KeyHintContainer;
 
         /// <summary>
-        ///     Indicates if the initial resource load needs to be performed.
-        /// </summary>
-        private bool needsLoad = true;
-
-        /// <summary>
         ///     Indicates if the PixelFix must be created for the start or main scene.
         /// </summary>
         private bool GUIInStart = false;
@@ -133,11 +128,53 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Block all input except GUI
+        /// </summary>
+        /// <param name="state"></param>
+        public static void BlockInput(bool state)
+        {
+            if (!IsHeadless() && SceneManager.GetActiveScene().name == "main")
+            {
+                if (state)
+                {
+                    On.Player.TakeInput += Player_TakeInput;
+                    On.PlayerController.TakeInput += PlayerController_TakeInput;
+                    On.Menu.IsVisible += Menu_IsVisible;
+                }
+                else
+                {
+                    On.Player.TakeInput -= Player_TakeInput;
+                    On.PlayerController.TakeInput -= PlayerController_TakeInput;
+                    On.Menu.IsVisible -= Menu_IsVisible;
+                }
+                if (GameCamera.instance)
+                {
+                    GameCamera.instance.m_mouseCapture = !state;
+                    GameCamera.instance.UpdateMouseCapture();
+                }
+            }
+        }
+        private static bool PlayerController_TakeInput(On.PlayerController.orig_TakeInput orig, PlayerController self)
+        {
+            orig(self);
+            return false;
+        }
+        private static bool Player_TakeInput(On.Player.orig_TakeInput orig, Player self)
+        {
+            orig(self);
+            return false;
+        }
+        private static bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
+        {
+            return true;
+        }
+
+        /// <summary>
         ///     Initialize the manager
         /// </summary>
         public void Init()
         {
-            // Dont init on a dedicated server
+            // Dont init on a headless server
             if (!IsHeadless())
             {
                 GUIContainer = new GameObject("GUI");
@@ -155,12 +192,13 @@ namespace Jotunn.Managers
                 GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
                 GUIContainer.AddComponent<GuiScaler>().UpdateScale();
 
+                SceneManager.sceneLoaded += InitialLoad;
                 SceneManager.sceneLoaded += SceneManager_sceneLoaded;
                 On.KeyHints.UpdateHints += ShowCustomKeyHint;
             }
         }
 
-        internal void OnGUI()
+        internal void InitialLoad(Scene scene, LoadSceneMode loadMode)
         {
             // No resource loading on a headless server
             if (IsHeadless())
@@ -169,7 +207,7 @@ namespace Jotunn.Managers
             }
 
             // Load valheim GUI assets
-            if (needsLoad && SceneManager.GetActiveScene().name == "start" && SceneManager.GetActiveScene().isLoaded)
+            if (scene.name == "start")
             {
                 try
                 {
@@ -233,7 +271,7 @@ namespace Jotunn.Managers
 
                     // Base prefab for a valheim style button
                     var button = new GameObject("BaseButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx));
-                    button.transform.SetParent(PixelFix.transform, false);
+                    //button.transform.SetParent(PixelFix.transform, false);
 
                     var txt = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Outline));
                     txt.transform.SetParent(button.transform);
@@ -290,7 +328,6 @@ namespace Jotunn.Managers
 
                     PrefabManager.Instance.AddPrefab(button);
 
-
                     // Base woodpanel prefab
 
                     var woodpanel = new GameObject("BaseWoodpanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -305,7 +342,6 @@ namespace Jotunn.Managers
                     woodpanel.layer = UILayer; // UI
 
                     PrefabManager.Instance.AddPrefab(woodpanel);
-
                 }
                 catch (Exception ex)
                 {
@@ -313,7 +349,7 @@ namespace Jotunn.Managers
                 }
                 finally
                 {
-                    needsLoad = false;
+                    SceneManager.sceneLoaded -= InitialLoad;
                 }
             }
         }

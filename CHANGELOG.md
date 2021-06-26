@@ -12,7 +12,8 @@
 * Added KitbashManager to allow Kitbashing
 * Added option to CustomButton to ignore custom inputs when a GUI is open (e.g. chat, console)
 * Added event in GUIManager when the PixelFix got recreated and custom GUI can be added
-* Added static function to the GUIManager to detect a headless/dedicated server before ZNet is instantiated
+* Added static method to the GUIManager to block all input except GUI
+* Added static method to the GUIManager to detect a headless/dedicated server before ZNet is instantiated
 * Removed game hooks on certain managers when running on a dedicated server (GUI, Input)
 * Added registering of prefabs "on the fly" to the game in ItemManager and PieceManager
 * SynchronizationManager.PlayerIsAdmin gets synced with the server status when changed
