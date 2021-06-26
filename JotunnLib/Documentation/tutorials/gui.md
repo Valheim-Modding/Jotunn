@@ -6,6 +6,10 @@ To add custom GUI elements to the game it is necessary to add the prefabs or gen
 
 Valheim creates new clones of the whole menu and ingame GUI everytime the scene changes from start to main and vice versa. So if you dont want to create and draw on your own canvas, you have to add your custom stuff to the right path on every scene change, too. Additionally, Valheim implemented a scaling feature for high resolution display (4K output or high DPI screens) called the PixelFix. Both concepts can be accessed easily via shortcuts through Jötunn. You can subscribe to the event [GUIManager.OnPixelFixCreated](xref:Jotunn.Managers.GUIManager.OnPixelFixCreated) which gets called everytime the scene changed and Jötunn has created and resolved the current PixelFix path in the scene. In that event call you can load / create your custom GUI components and add them in the transform hierarchy of the [GUIManager.PixelFix](xref:Jotunn.Managers.GUIManager.PixelFix) GameObject.
 
+## Block input for GUI
+
+When drawing GUI elements Valheim does not stop interpreting the Mouse/Keyboard inputs in any way per default. So if you want to interact with your GUI, you would have to interrupt the receiving of input for the player, camera, etc. Jötunn provides a shortcut to enable or disable player and camera input as the convenient method [GUIManager.BlockInput(bool)](xref:Jotunn.Managers.GUIManager.BlockInput(System.Boolean)). When passing `true`, all input to the player is intercepted and the mouse is released from the camera so you can actually click on your custom GUI elements. You **must** call the method passing `false` again to release the input yourself upon closing your GUI components. Jötunn does not handle the release automatically.
+
 ## Determine a headless instance
 
 A dedicated server running without GUI is commonly referred to as a headless server. Valheim provides methods in ZNet to determine if the current instance is a dedicated server, a "local" server (aka local game that others can connect to) or a client to another server. Jötunn also provides shortcuts to these via [ZNetExtension](xref:Jotunn.ZNetExtension). Problem is that both approaches require ZNet to be instantiated which is not the case on your mods Awake(). If you need that information early on, the GUIManager provides a method for that: [GUIManager.IsHeadless()](xref:Jotunn.Managers.GUIManager.IsHeadless) returns true if the current game instance is a dedicated/headless server without relying on ZNet. Jötunn also does not register GUI or Input hooks in that case to save on unnecessarily allocated resources.
@@ -70,4 +74,3 @@ The [GUIManager](xref:Jotunn.Managers.GUIManager) also comes with some useful in
 - Font AveriaSerif
 - Font AveriaSerifBold (the default Valheim font)
 - Color ValheimOrange
-
