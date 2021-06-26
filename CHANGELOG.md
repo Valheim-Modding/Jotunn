@@ -19,6 +19,7 @@
 * SynchronizationManager.PlayerIsAdmin gets synced with the server status when changed
 * Removed icon enforcement for CustomItems without a Recipe (e.g. monster drops)
 * Localization falls back to english when no translation is found in the users language
+* Fixed a bug in ItemConfig where the RepairStation was added as the CraftingStation
 * Plenty of new and revised documentation at https://valheim-modding.github.io/Jotunn
 
 ## Version 2.0.12
