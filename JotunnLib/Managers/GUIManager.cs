@@ -133,17 +133,19 @@ namespace Jotunn.Managers
         /// <param name="state"></param>
         public static void BlockInput(bool state)
         {
-            if (!IsHeadless())
+            if (!IsHeadless() && SceneManager.GetActiveScene().name == "main")
             {
                 if (state)
                 {
                     On.Player.TakeInput += Player_TakeInput;
                     On.PlayerController.TakeInput += PlayerController_TakeInput;
+                    On.Menu.IsVisible += Menu_IsVisible;
                 }
                 else
                 {
                     On.Player.TakeInput -= Player_TakeInput;
                     On.PlayerController.TakeInput -= PlayerController_TakeInput;
+                    On.Menu.IsVisible -= Menu_IsVisible;
                 }
                 if (GameCamera.instance)
                 {
@@ -152,17 +154,19 @@ namespace Jotunn.Managers
                 }
             }
         }
-
         private static bool PlayerController_TakeInput(On.PlayerController.orig_TakeInput orig, PlayerController self)
         {
             orig(self);
             return false;
         }
-
         private static bool Player_TakeInput(On.Player.orig_TakeInput orig, Player self)
         {
             orig(self);
             return false;
+        }
+        private static bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
+        {
+            return true;
         }
 
         /// <summary>
