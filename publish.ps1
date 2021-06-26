@@ -48,7 +48,7 @@ if ($Target.Equals("Debug")) {
     Write-Host "Copy $TargetAssembly to $plug"
     Copy-Item -Path "$TargetPath\$name.dll" -Destination "$plug" -Force
     Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$plug" -Force
-    Copy-Item -Path "$TargetPath\$name.xml" -Destination "$plug" -Force
+    Copy-Item -Path "$TargetPath\$name.xml" -Destination "$plug" -Force -ErrorAction SilentlyContinue
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$plug" -Force
     
     $mono = "$ValheimPath\MonoBleedingEdge\EmbedRuntime";
