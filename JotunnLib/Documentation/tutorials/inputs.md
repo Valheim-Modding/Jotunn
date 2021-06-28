@@ -12,12 +12,12 @@ You can have key bindings defined "on the fly" which binds a specific key to an 
 
 ```cs
 // Fixed buttons
-private ButtonConfig showGUIButton;
-private ButtonConfig raiseSkillButton;
+private ButtonConfig ShowGUIButton;
+private ButtonConfig RaiseSkillButton;
 
 // Variable button backed by a config
-private ConfigEntry<KeyCode> evilSwordSpecialConfig;
-private ButtonConfig evilSwordSpecialButton;
+private ConfigEntry<KeyCode> EvilSwordSpecialConfig;
+private ButtonConfig EvilSwordSpecialButton;
 ```
 
 For the configuration backed button, you will need to create the configuration binding *before* creating and adding the actual button. For more information on configuration bindings see [our configuration tutorial](config.md).
@@ -29,7 +29,7 @@ private void CreateConfigValues()
     Config.SaveOnConfigSet = true;
 
     // Add a client side custom input key for the EvilSword
-    evilSwordSpecialConfig = Config.Bind("Client config", "EvilSword Special Attack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+    EvilSwordSpecialConfig = Config.Bind("Client config", "EvilSword Special Attack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
 }
 ```
 
@@ -40,30 +40,30 @@ To actually register your custom inputs to the game, instantiate all [ButtonConf
 private void AddInputs()
 {
     // Add key bindings on the fly
-    showGUIButton = new ButtonConfig
+    ShowGUIButton = new ButtonConfig
     {
         Name = "JotunnModExample_Menu",
         Key = KeyCode.Insert,
         ActiveInGUI = true    // Enable this button also when in GUI (e.g. the console)
     };
-    InputManager.Instance.AddButton(PluginGUID, showGUIButton);
+    InputManager.Instance.AddButton(PluginGUID, ShowGUIButton);
 
-    raiseSkillButton = new ButtonConfig
+    RaiseSkillButton = new ButtonConfig
     {
         Name = "JotunnExampleMod_RaiseSkill",
         Key = KeyCode.Home
     };
-    InputManager.Instance.AddButton(PluginGUID, raiseSkillButton);
+    InputManager.Instance.AddButton(PluginGUID, RaiseSkillButton);
 
     // Add key bindings backed by a config value
     // The HintToken is used for the custom KeyHint of the EvilSword
-    evilSwordSpecialButton = new ButtonConfig
+    EvilSwordSpecialButton = new ButtonConfig
     {
         Name = "EvilSwordSpecialAttack",
-        Config = evilSwordSpecialConfig,
+        Config = EvilSwordSpecialConfig,
         HintToken = "$evilsword_beevil"
     };
-    InputManager.Instance.AddButton(PluginGUID, evilSwordSpecialButton);
+    InputManager.Instance.AddButton(PluginGUID, EvilSwordSpecialButton);
 }
 ```
 
@@ -81,22 +81,22 @@ private void Update()
     {
         // Check if our button is pressed. This will only return true ONCE, right after our button is pressed.
         // If we hold the button down, it won't spam toggle our menu.
-        if (ZInput.GetButtonDown(showGUIButton.Name))
+        if (ZInput.GetButtonDown(ShowGUIButton.Name))
         {
-            showGUI = !showGUI;
+            TogglePanel();
         }
 
         // Raise the test skill
-        if (Player.m_localPlayer != null && ZInput.GetButtonDown(raiseSkillButton.Name))
+        if (Player.m_localPlayer != null && ZInput.GetButtonDown(RaiseSkillButton.Name))
         {
-            Player.m_localPlayer.RaiseSkill(testSkill, 1f);
+            Player.m_localPlayer.RaiseSkill(TestSkill, 1f);
         }
 
         // Use the name of the ButtonConfig to identify the button pressed
         // without knowing what key the user bound to this button in his configuration.
-        if (evilSwordSpecialButton != null && MessageHud.instance != null)
+        if (EvilSwordSpecialButton != null && MessageHud.instance != null)
         {
-            if (ZInput.GetButtonDown(evilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+            if (ZInput.GetButtonDown(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
             {
                 MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
             }
@@ -126,7 +126,7 @@ private void KeyHintsEvilSword()
             // Override vanilla "Attack" key text
             new ButtonConfig { Name = "Attack", HintToken = "$evilsword_shwing" },
             // User our custom button defined earlier, syncs with the backing config value
-            evilSwordSpecialButton,
+            EvilSwordSpecialButton,
             // Override vanilla "Mouse ScrollWheel" text
             new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
         }

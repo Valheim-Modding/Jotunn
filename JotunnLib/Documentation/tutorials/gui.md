@@ -74,3 +74,55 @@ The [GUIManager](xref:Jotunn.Managers.GUIManager) also comes with some useful in
 - Font AveriaSerif
 - Font AveriaSerifBold (the default Valheim font)
 - Color ValheimOrange
+
+## Example
+
+In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use a [custom button](inputs.md) to toggle a simple panel with a button on it. That button also gets a listener added to close the panel again. Also the input is blocked for the player and camera while the panel is active so we can actually use the mouse and cant control the player any more.
+
+```cs
+// Toggle our test panel with button
+private void TogglePanel()
+{
+    // Create the panel if it does not exist
+    if (TestPanel == null)
+    {
+        if (GUIManager.Instance == null)
+        {
+            Logger.LogError("GUIManager instance is null");
+            return;
+        }
+
+        if (GUIManager.PixelFix == null)
+        {
+            Logger.LogError("GUIManager pixelfix is null");
+            return;
+        }
+
+        // Create the panel object
+        TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0, 0), 850, 600);
+        TestPanel.SetActive(false);
+
+        // Create the button object
+        GameObject buttonObject = GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform,
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 250, 100);
+        buttonObject.SetActive(true);
+
+        // Add a listener to the button to close the panel again
+        Button button = buttonObject.GetComponent<Button>();
+        button.onClick.AddListener(() =>
+        {
+            TogglePanel();
+        });
+    }
+
+    // Switch the current state
+    bool state = !TestPanel.activeSelf;
+            
+    // Set the active state of the panel
+    TestPanel.SetActive(state);
+
+    // Disable input for the player and camera while displaying the GUI
+    GUIManager.BlockInput(state);
+}
+```
