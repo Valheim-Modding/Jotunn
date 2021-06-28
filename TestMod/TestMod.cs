@@ -12,6 +12,7 @@ using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using UnityEngine.UI;
 
 namespace TestMod
 {
@@ -34,11 +35,10 @@ namespace TestMod
 
         private System.Version CurrentVersion;
 
-        private ButtonConfig ToggleButtonButton;
-        private ButtonConfig ToggleMenuButton;
-        private bool ToggleButton;
-        private bool ToggleMenu;
+        private ButtonConfig TogglePanelButton;
         private GameObject TestPanel;
+        private ButtonConfig ToggleMenuButton;
+        private bool ToggleMenu;
 
         private ButtonConfig RaiseSkillButton;
         private Skills.SkillType TestSkill;
@@ -112,9 +112,11 @@ namespace TestMod
                     ToggleMenu = !ToggleMenu;
                 }
 
-                if (ZInput.GetButtonDown(ToggleButtonButton.Name))
+                // To show GUI which does not get created every time OnGUI() is called,
+                // we have a togger method defined.
+                if (ZInput.GetButtonDown(TogglePanelButton.Name))
                 {
-                    ToggleButton = !ToggleButton;
+                    TogglePanel();
                 }
 
                 // Raise the test skill
@@ -134,44 +136,13 @@ namespace TestMod
             }
         }
 
-        // Called every frame for rendering and handling GUI events
+        // Called every frame for rendering GUI
         private void OnGUI()
         {
-            // Display our GUI if enabled
+            // Render our GUI if enabled
             if (ToggleMenu)
             {
                 GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
-            }
-
-            if (ToggleButton)
-            {
-                if (TestPanel == null)
-                {
-                    if (GUIManager.Instance == null)
-                    {
-                        Logger.LogError("GUIManager instance is null");
-                        return;
-                    }
-
-                    if (GUIManager.PixelFix == null)
-                    {
-                        Logger.LogError("GUIManager pixelfix is null");
-                        return;
-                    }
-
-                    TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                        new Vector2(0, 0), 850, 600);
-
-                    GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform, new Vector2(0.5f, 0.5f),
-                        new Vector2(0.5f, 0.5f), new Vector2(0, 0), 250, 100).SetActive(true);
-                    if (TestPanel == null)
-                    {
-                        return;
-                    }
-                }
-
-                TestPanel.SetActive(!TestPanel.activeSelf);
-                ToggleButton = false;
             }
 
             // Displays the current equiped tool/weapon
@@ -200,6 +171,44 @@ namespace TestMod
 
                 GUI.Label(new Rect(10, 10, 500, 25), bez);
             }
+        }
+
+        // Toggle our test panel with button
+        private void TogglePanel()
+        {
+            // Create the panel once
+            if (TestPanel == null)
+            {
+                if (GUIManager.Instance == null)
+                {
+                    Logger.LogError("GUIManager instance is null");
+                    return;
+                }
+
+                if (GUIManager.PixelFix == null)
+                {
+                    Logger.LogError("GUIManager pixelfix is null");
+                    return;
+                }
+
+                TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    new Vector2(0, 0), 850, 600);
+                TestPanel.SetActive(false);
+
+                GameObject buttonObject = GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform, 
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 250, 100);
+                buttonObject.SetActive(true);
+
+                Button button = buttonObject.GetComponent<Button>();
+                button.onClick.AddListener(() =>
+                {
+                    TogglePanel();
+                });
+            }
+
+            bool state = !TestPanel.activeSelf;
+            TestPanel.SetActive(state);
+            GUIManager.BlockInput(state);
         }
 
         // Create persistent configurations for the mod
@@ -273,8 +282,8 @@ namespace TestMod
         private void AddInputs()
         {
             // Add key bindings on the fly
-            ToggleButtonButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Insert, ActiveInGUI = true };
-            InputManager.Instance.AddButton(ModGUID, ToggleButtonButton);
+            TogglePanelButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Insert, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, TogglePanelButton);
             ToggleMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.Home, ActiveInGUI = true };
             InputManager.Instance.AddButton(ModGUID, ToggleMenuButton);
 
