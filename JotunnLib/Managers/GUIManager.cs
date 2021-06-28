@@ -128,13 +128,24 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Global indicator if the input is currently blocked to avoid being
+        ///     stuck in the block when the method is called twice.
+        /// </summary>
+        private static bool InputBlocked = false;
+
+        /// <summary>
         ///     Block all input except GUI
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="state">Indicator if the input should be blocked or released</param>
         public static void BlockInput(bool state)
         {
             if (!IsHeadless() && SceneManager.GetActiveScene().name == "main")
             {
+                if (state == InputBlocked)
+                {
+                    return;
+                }
+
                 if (state)
                 {
                     On.Player.TakeInput += Player_TakeInput;
@@ -152,6 +163,7 @@ namespace Jotunn.Managers
                     GameCamera.instance.m_mouseCapture = !state;
                     GameCamera.instance.UpdateMouseCapture();
                 }
+                InputBlocked = state;
             }
         }
         private static bool PlayerController_TakeInput(On.PlayerController.orig_TakeInput orig, PlayerController self)
