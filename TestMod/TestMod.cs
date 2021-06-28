@@ -25,27 +25,27 @@ namespace TestMod
         private const string ModVersion = "0.1.0";
         private const string JotunnTestModConfigSection = "JotunnTest";
 
-        private Sprite testSprite;
-        private Texture2D testTex;
+        private Sprite TestSprite;
+        private Texture2D TestTex;
 
-        private AssetBundle blueprintRuneBundle;
-        private AssetBundle testAssets;
-        private AssetBundle steelingot;
+        private AssetBundle BlueprintRuneBundle;
+        private AssetBundle TestAssets;
+        private AssetBundle Steelingot;
 
-        private System.Version currentVersion;
+        private System.Version CurrentVersion;
 
-        private ButtonConfig showButtonButton;
-        private ButtonConfig showMenuButton;
-        private bool showButton;
-        private bool showMenu;
-        private GameObject testPanel;
+        private ButtonConfig ToggleButtonButton;
+        private ButtonConfig ToggleMenuButton;
+        private bool ToggleButton;
+        private bool ToggleMenu;
+        private GameObject TestPanel;
 
-        private ButtonConfig raiseSkillButton;
-        private Skills.SkillType testSkill;
+        private ButtonConfig RaiseSkillButton;
+        private Skills.SkillType TestSkill;
 
-        private ConfigEntry<KeyCode> evilSwordSpecialConfig;
-        private ButtonConfig evilSwordSpecialButton;
-        private CustomStatusEffect evilSwordEffect;
+        private ConfigEntry<KeyCode> EvilSwordSpecialConfig;
+        private ButtonConfig EvilSwordSpecialButton;
+        private CustomStatusEffect EvilSwordEffect;
 
         private ConfigEntry<bool> EnableVersionMismatch;
 
@@ -92,7 +92,7 @@ namespace TestMod
             };
 
             // Get current version for the mod compatibility test
-            currentVersion = new System.Version(Info.Metadata.Version.ToString());
+            CurrentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
         }
 
@@ -107,26 +107,26 @@ namespace TestMod
                 // Custom buttons need to be added to the InputManager before we can poll them.
                 // GetButtonDown will only return true ONCE, right after our button is pressed.
                 // If we hold the button down, it won't spam toggle our menu.
-                if (ZInput.GetButtonDown(showMenuButton.Name))
+                if (ZInput.GetButtonDown(ToggleMenuButton.Name))
                 {
-                    showMenu = !showMenu;
+                    ToggleMenu = !ToggleMenu;
                 }
 
-                if (ZInput.GetButtonDown(showButtonButton.Name))
+                if (ZInput.GetButtonDown(ToggleButtonButton.Name))
                 {
-                    showButton = !showButton;
+                    ToggleButton = !ToggleButton;
                 }
 
                 // Raise the test skill
-                if (Player.m_localPlayer != null && ZInput.GetButtonDown(raiseSkillButton.Name))
+                if (Player.m_localPlayer != null && ZInput.GetButtonDown(RaiseSkillButton.Name))
                 {
-                    Player.m_localPlayer.RaiseSkill(testSkill, 1f);
+                    Player.m_localPlayer.RaiseSkill(TestSkill, 1f);
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (evilSwordSpecialButton != null && MessageHud.instance != null)
+                if (EvilSwordSpecialButton != null && MessageHud.instance != null)
                 {
-                    if (ZInput.GetButtonDown(evilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                    if (ZInput.GetButtonDown(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
@@ -138,14 +138,14 @@ namespace TestMod
         private void OnGUI()
         {
             // Display our GUI if enabled
-            if (showMenu)
+            if (ToggleMenu)
             {
                 GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
             }
 
-            if (showButton)
+            if (ToggleButton)
             {
-                if (testPanel == null)
+                if (TestPanel == null)
                 {
                     if (GUIManager.Instance == null)
                     {
@@ -159,19 +159,19 @@ namespace TestMod
                         return;
                     }
 
-                    testPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                         new Vector2(0, 0), 850, 600);
 
-                    GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", testPanel.transform, new Vector2(0.5f, 0.5f),
+                    GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform, new Vector2(0.5f, 0.5f),
                         new Vector2(0.5f, 0.5f), new Vector2(0, 0), 250, 100).SetActive(true);
-                    if (testPanel == null)
+                    if (TestPanel == null)
                     {
                         return;
                     }
                 }
 
-                testPanel.SetActive(!testPanel.activeSelf);
-                showButton = false;
+                TestPanel.SetActive(!TestPanel.activeSelf);
+                ToggleButton = false;
             }
 
             // Displays the current equiped tool/weapon
@@ -234,7 +234,7 @@ namespace TestMod
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
-            evilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+            EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
 
         }
 
@@ -251,19 +251,19 @@ namespace TestMod
         private void LoadAssets()
         {
             // Load texture
-            testTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
-            testSprite = Sprite.Create(testTex, new Rect(0f, 0f, testTex.width, testTex.height), Vector2.zero);
+            TestTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
+            TestSprite = Sprite.Create(TestTex, new Rect(0f, 0f, TestTex.width, TestTex.height), Vector2.zero);
 
             // Load asset bundle from filesystem
-            testAssets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
-            Jotunn.Logger.LogInfo(testAssets);
+            TestAssets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
+            Jotunn.Logger.LogInfo(TestAssets);
 
             // Load asset bundle from filesystem
-            blueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/testblueprints");
-            Jotunn.Logger.LogInfo(blueprintRuneBundle);
+            BlueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/testblueprints");
+            Jotunn.Logger.LogInfo(BlueprintRuneBundle);
 
             // Load Steel ingot from streamed resource
-            steelingot = AssetUtils.LoadAssetBundleFromResources("steel", typeof(TestMod).Assembly);
+            Steelingot = AssetUtils.LoadAssetBundleFromResources("steel", typeof(TestMod).Assembly);
 
             // Embedded Resources
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
@@ -273,24 +273,24 @@ namespace TestMod
         private void AddInputs()
         {
             // Add key bindings on the fly
-            showButtonButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Insert, ActiveInGUI = true };
-            InputManager.Instance.AddButton(ModGUID, showButtonButton);
-            showMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.Home, ActiveInGUI = true };
-            InputManager.Instance.AddButton(ModGUID, showMenuButton);
+            ToggleButtonButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Insert, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, ToggleButtonButton);
+            ToggleMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.Home, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, ToggleMenuButton);
 
             // Add key bindings backed by a config value
             // The HintToken is used for the custom KeyHint of the EvilSword
-            evilSwordSpecialButton = new ButtonConfig
+            EvilSwordSpecialButton = new ButtonConfig
             {
                 Name = "EvilSwordSpecialAttack",
-                Config = evilSwordSpecialConfig,
+                Config = EvilSwordSpecialConfig,
                 HintToken = "$evilsword_beevil"
             };
-            InputManager.Instance.AddButton(ModGUID, evilSwordSpecialButton);
+            InputManager.Instance.AddButton(ModGUID, EvilSwordSpecialButton);
 
             // Add a key binding to test skill raising
-            raiseSkillButton = new ButtonConfig { Name = "TestMod_RaiseSkill", Key = KeyCode.PageUp };
-            InputManager.Instance.AddButton(ModGUID, raiseSkillButton);
+            RaiseSkillButton = new ButtonConfig { Name = "TestMod_RaiseSkill", Key = KeyCode.PageUp };
+            InputManager.Instance.AddButton(ModGUID, RaiseSkillButton);
         }
 
         // Adds localizations with configs
@@ -341,12 +341,12 @@ namespace TestMod
         private void AddSkills()
         {
             // Test adding a skill with a texture
-            testSkill = SkillManager.Instance.AddSkill(new SkillConfig()
+            TestSkill = SkillManager.Instance.AddSkill(new SkillConfig()
             {
                 Identifier = "com.jotunn.testmod.testskill_code",
                 Name = "Testing Skill From Code",
                 Description = "A testing skill (but from code)!",
-                Icon = testSprite
+                Icon = TestSprite
             });
 
             // Test adding skills from JSON
@@ -374,8 +374,8 @@ namespace TestMod
             effect.m_stopMessageType = MessageHud.MessageType.Center;
             effect.m_stopMessage = "$evilsword_effectstop";
 
-            evilSwordEffect = new CustomStatusEffect(effect, fixReference: false);  // We dont need to fix refs here, because no mocks were used
-            ItemManager.Instance.AddStatusEffect(evilSwordEffect);
+            EvilSwordEffect = new CustomStatusEffect(effect, fixReference: false);  // We dont need to fix refs here, because no mocks were used
+            ItemManager.Instance.AddStatusEffect(EvilSwordEffect);
         }
 
         // Add item conversions (cooking or smelter recipes)
@@ -421,7 +421,7 @@ namespace TestMod
         // Add custom item conversion (gives a steel ingot to smelter)
         private void AddCustomItemConversion()
         {
-            var steel_prefab = steelingot.LoadAsset<GameObject>("Steel");
+            var steel_prefab = Steelingot.LoadAsset<GameObject>("Steel");
             var ingot = new CustomItem(steel_prefab, fixReference: false);
             var blastConversion = new CustomItemConversion(new SmelterConversionConfig
             {
@@ -438,7 +438,7 @@ namespace TestMod
         private void AddItemsWithConfigs()
         {
             // Add a custom piece table with custom categories
-            var table_prefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
+            var table_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
             CustomPieceTable rune_table = new CustomPieceTable(table_prefab,
                 new PieceTableConfig
                 {
@@ -454,7 +454,7 @@ namespace TestMod
             PieceManager.Instance.AddPieceTable(rune_table);
 
             // Create and add a custom item
-            var rune_prefab = blueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
+            var rune_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
             var rune = new CustomItem(rune_prefab, fixReference: false,  // Prefab did not use mocked refs so no need to fix them
                 new ItemConfig
                 {
@@ -467,7 +467,7 @@ namespace TestMod
             ItemManager.Instance.AddItem(rune);
 
             // Create and add custom pieces
-            var makebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
+            var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
             var makebp = new CustomPiece(makebp_prefab,
                 new PieceConfig
                 {
@@ -476,7 +476,7 @@ namespace TestMod
                 });
             PieceManager.Instance.AddPiece(makebp);
 
-            var placebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
+            var placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
             var placebp = new CustomPiece(placebp_prefab,
                 new PieceConfig
                 {
@@ -491,7 +491,7 @@ namespace TestMod
             PieceManager.Instance.AddPiece(placebp);
 
             // Add localizations from the asset bundle
-            var textAssets = blueprintRuneBundle.LoadAllAssets<TextAsset>();
+            var textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
             foreach (var textAsset in textAssets)
             {
                 var lang = textAsset.name.Replace(".json", null);
@@ -539,7 +539,7 @@ namespace TestMod
             });
 
             // Don't forget to unload the bundle to free the resources
-            blueprintRuneBundle.Unload(false);
+            BlueprintRuneBundle.Unload(false);
         }
 
         // Add new items with mocked prefabs
@@ -594,7 +594,7 @@ namespace TestMod
             // A simple kitbash piece, we will begin with the "empty" prefab as the base
             var simpleKitbashPiece = new CustomPiece("piece_simple_kitbash", true, "Hammer");
             simpleKitbashPiece.FixReference = true;
-            simpleKitbashPiece.Piece.m_icon = testSprite;
+            simpleKitbashPiece.Piece.m_icon = TestSprite;
             PieceManager.Instance.AddPiece(simpleKitbashPiece);
 
             // Now apply our Kitbash to the piece
@@ -695,7 +695,7 @@ namespace TestMod
             {
                 Name = "$piece_lul",
                 Description = "$piece_lul_description",
-                Icon = testSprite,
+                Icon = TestSprite,
                 PieceTable = "Hammer",
                 ExtendStation = "piece_workbench", // Test station extension
                 Category = "Lulzies"  // Test custom category
@@ -704,7 +704,7 @@ namespace TestMod
             if (CP != null)
             {
                 var prefab = CP.PiecePrefab;
-                prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
+                prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
 
                 PieceManager.Instance.AddPiece(CP);
             }
@@ -713,7 +713,7 @@ namespace TestMod
             {
                 Name = "$piece_lel",
                 Description = "$piece_lel_description",
-                Icon = testSprite,
+                Icon = TestSprite,
                 PieceTable = "Hammer",
                 ExtendStation = "piece_workbench", // Test station extension
                 Category = "Lulzies"  // Test custom category
@@ -722,7 +722,7 @@ namespace TestMod
             if (CP != null)
             {
                 var prefab = CP.PiecePrefab;
-                prefab.GetComponent<MeshRenderer>().material.mainTexture = testTex;
+                prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
                 prefab.GetComponent<MeshRenderer>().material.color = Color.grey;
 
                 PieceManager.Instance.AddPiece(CP);
@@ -737,7 +737,7 @@ namespace TestMod
             {
                 CI.ItemDrop.m_itemData.m_shared.m_icons = new Sprite[]
                 {
-                    testSprite
+                    TestSprite
                 };
                 ItemManager.Instance.AddItem(CI);
 
@@ -754,7 +754,7 @@ namespace TestMod
 
             CustomPiece CP = new CustomPiece("piece_fukup", false, new PieceConfig
             {
-                Icon = testSprite,
+                Icon = TestSprite,
                 PieceTable = "Hammer",
                 Requirements = new RequirementConfig[]
                 {
@@ -784,7 +784,7 @@ namespace TestMod
                 itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
 
                 // Add our custom status effect to it
-                itemDrop.m_itemData.m_shared.m_equipStatusEffect = evilSwordEffect.StatusEffect;
+                itemDrop.m_itemData.m_shared.m_equipStatusEffect = EvilSwordEffect.StatusEffect;
 
                 // Create and add a recipe for the copied item
                 var recipe = ScriptableObject.CreateInstance<Recipe>();
@@ -808,7 +808,7 @@ namespace TestMod
                         // Override vanilla "Attack" key text
                         new ButtonConfig { Name = "Attack", HintToken = "$evilsword_shwing" },
                         // New custom input
-                        evilSwordSpecialButton,
+                        EvilSwordSpecialButton,
                         // Override vanilla "Mouse Wheel" text
                         new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
                     }
@@ -874,7 +874,7 @@ namespace TestMod
             }
             else
             {
-                propinfo.SetValue(Info.Metadata, currentVersion, null);
+                propinfo.SetValue(Info.Metadata, CurrentVersion, null);
             }
         }
     }
