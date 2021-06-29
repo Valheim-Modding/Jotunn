@@ -1,4 +1,6 @@
-﻿namespace Jotunn
+﻿using Jotunn.Managers;
+
+namespace Jotunn
 {
     /// <summary>
     ///     Extends ZNet with a clear diversion between local, client and server instances.
@@ -72,6 +74,17 @@
             }
 
             return ZNetInstanceType.Server;
+        }
+
+        /// <summary>
+        ///     Determine if a peer uid is in the admin list on the current <see cref="ZNet"/>
+        /// </summary>
+        /// <param name="znet"></param>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public static bool IsAdmin(this ZNet znet, long uid)
+        {
+            return znet.m_adminList.Contains(znet.GetPeer(uid).m_socket.GetHostName());
         }
     }
 }

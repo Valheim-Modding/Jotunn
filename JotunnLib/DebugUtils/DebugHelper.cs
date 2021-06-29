@@ -5,6 +5,16 @@ namespace Jotunn.DebugUtils
 {
     internal class DebugHelper : MonoBehaviour
     {
+        private void Awake()
+        {
+            On.ZNet.Awake += ZNet_Awake;
+        }
+
+        private void ZNet_Awake(On.ZNet.orig_Awake orig, ZNet self)
+        {
+            Logger.LogDebug($"ZNet awoken. IsServer: {self.IsServer()} IsDedicated: {self.IsDedicated()}");
+            orig(self);
+        }
 
         private void Update()
         {
