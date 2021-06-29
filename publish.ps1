@@ -57,6 +57,21 @@ if ($Target.Equals("Debug")) {
         Copy-Item -Path "$mono\mono-2.0-bdwgc.dll" -Destination "$mono\mono-2.0-bdwgc.dll.orig" -Force
     }
     Copy-Item -Path "$(Get-Location)\libraries\Debug\mono-2.0-bdwgc.dll" -Destination "$mono" -Force
+    
+    $dedi = "$ValheimPath\..\Valheim dedicated server"
+    if (Test-Path -Path "$dedi") {
+      if (Get-Process -Name 'valheim_server' -ErrorAction Ignore) {
+        Write-Host "Dedicated server is running, plugin will not be updated"
+      }
+      else {
+        $dediplug = New-Item -Type Directory -Path "$dedi\BepInEx\plugins\$name" -Force
+        Write-Host "Copy $TargetAssembly to $dediplug"
+        Copy-Item -Path "$TargetPath\$name.dll" -Destination "$dediplug" -Force
+        Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$dediplug" -Force
+        Copy-Item -Path "$TargetPath\$name.xml" -Destination "$dediplug" -Force -ErrorAction SilentlyContinue
+        Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$dediplug"
+      }
+    }
 
     # set dnspy debugger env
     #$dnspy = '--debugger-agent=transport=dt_socket,server=y,address=127.0.0.1:56000,suspend=y,no-hide-debugger'
