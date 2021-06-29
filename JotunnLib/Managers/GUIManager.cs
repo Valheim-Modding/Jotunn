@@ -178,6 +178,7 @@ namespace Jotunn.Managers
         }
         private static bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
         {
+            orig();
             return true;
         }
 
