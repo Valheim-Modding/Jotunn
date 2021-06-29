@@ -9,8 +9,8 @@ This project was originally derived from the base structure of [JötunnLib](http
 Please refer to our [documentation](https://valheim-modding.github.io/Jotunn/). We have gone to great lengths to ensure there is ample documentation to facilitate the developers learning experience.
 
 #### Installation
-_If you're using a mod installer, you can likely ignore this section._ For a more in-depth installation guide, please check out the [manual installation guide](https://valheim-modding.github.io/Jotunn/guides/installation.html) in our documentation.  
-
+_If you're using a mod installer, you can likely ignore this section._  
+For a more in-depth installation guide, please check out the [manual installation guide](https://valheim-modding.github.io/Jotunn/guides/installation.html) in our documentation.  
 However, here is a quick run-down:
 
 1. **Install BepInEx**  
