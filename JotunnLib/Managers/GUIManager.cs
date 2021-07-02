@@ -474,6 +474,10 @@ namespace Jotunn.Managers
             foreach (var buttonConfig in config.ButtonConfigs)
             {
                 string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                if (key.Contains("MISSING"))
+                {
+                    key = buttonConfig.Name;
+                }
                 if (key[0].Equals(LocalizationManager.TokenFirstChar))
                 {
                     key = LocalizationManager.Instance.TryTranslate(key);
@@ -509,7 +513,7 @@ namespace Jotunn.Managers
                 uihint.m_gamepadHint = gp.gameObject;
             }*/
 
-            Logger.LogInfo($"Added key hints for Item : {config.ToString()}");
+            Logger.LogInfo($"Added key hints for Item : {config}");
         }
 
         /// <summary>
@@ -645,11 +649,14 @@ namespace Jotunn.Managers
             foreach (var buttonConfig in hintConfig.ButtonConfigs)
             {
                 string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
+                if (key.Contains("MISSING"))
+                {
+                    key = buttonConfig.Name;
+                }
                 if (key[0].Equals(LocalizationManager.TokenFirstChar))
                 {
                     key = LocalizationManager.Instance.TryTranslate(key);
                 }
-
                 if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                 {
                     hintObject.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
