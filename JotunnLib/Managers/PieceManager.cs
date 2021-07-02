@@ -312,58 +312,65 @@ namespace Jotunn.Managers
                 // All piece tables using categories
                 foreach (var table in PieceTableMap.Values)
                 {
-                    // Create category map if not present
-                    PieceTableCategoriesMap.TryGetValue(table.name, out var categories);
-                    if (categories == null)
+                    try
                     {
-                        categories = new PieceTableCategories();
-                        PieceTableCategoriesMap.Add(table.name, categories);
-                    }
-
-                    // Add shortcut categories to actual table (e.g. categories added to "Hammer" must be added to "_HammerPieceTable")
-                    if (PieceTableNameMap.ContainsValue(table.name)) 
-                    {
-                        string tableItemName = PieceTableNameMap.Single(x => x.Value.Equals(table.name)).Key;
-                        if (PieceTableCategoriesMap.ContainsKey(tableItemName))
+                        // Create category map if not present
+                        PieceTableCategoriesMap.TryGetValue(table.name, out var categories);
+                        if (categories == null)
                         {
-                            foreach (var cat in PieceTableCategoriesMap[tableItemName])
+                            categories = new PieceTableCategories();
+                            PieceTableCategoriesMap.Add(table.name, categories);
+                        }
+
+                        // Remap shortcut categories to actual table (e.g. categories added to "Hammer" must be added to "_HammerPieceTable")
+                        if (PieceTableNameMap.ContainsValue(table.name))
+                        {
+                            string tableItemName = PieceTableNameMap.FirstOrDefault(x => x.Value.Equals(table.name)).Key;
+                            if (PieceTableCategoriesMap.ContainsKey(tableItemName))
                             {
-                                if (!categories.ContainsKey(cat.Key))
+                                foreach (var cat in PieceTableCategoriesMap[tableItemName])
                                 {
-                                    categories.Add(cat.Key, cat.Value);
+                                    if (!categories.ContainsKey(cat.Key))
+                                    {
+                                        categories.Add(cat.Key, cat.Value);
+                                    }
+                                }
+                                PieceTableCategoriesMap.Remove(tableItemName);
+                            }
+                        }
+
+                        // Add vanilla categories for vanilla tables
+                        CustomPieceTable customTable = PieceTables.FirstOrDefault(x => x.PieceTable.name.Equals(table.name));
+                        if (customTable == null)
+                        {
+                            for (int i = 0; i < (int)Piece.PieceCategory.Max; i++)
+                            {
+                                string categoryName = Enum.GetName(typeof(Piece.PieceCategory), i);
+                                if (!categories.ContainsKey(categoryName))
+                                {
+                                    categories.Add(categoryName, (Piece.PieceCategory)i);
                                 }
                             }
-                            PieceTableCategoriesMap.Remove(tableItemName);
                         }
-                    }
 
-                    // Add vanilla categories for vanilla tables
-                    CustomPieceTable customTable = PieceTables.FirstOrDefault(x => x.PieceTable.name.Equals(table.name));
-                    if (customTable == null)
-                    {
-                        for (int i = 0; i < (int)Piece.PieceCategory.Max; i++)
+                        // Add empty lists up to the max categories count
+                        if (table.m_availablePieces.Count < (int)PieceCategoryMax)
                         {
-                            string categoryName = Enum.GetName(typeof(Piece.PieceCategory), i);
-                            if (!categories.ContainsKey(categoryName))
+                            for (int i = table.m_availablePieces.Count; i < (int)PieceCategoryMax; i++)
                             {
-                                categories.Add(categoryName, (Piece.PieceCategory)i);
+                                table.m_availablePieces.Add(new List<Piece>());
                             }
                         }
-                    }
 
-                    // Add empty lists up to the max categories count
-                    if (table.m_availablePieces.Count < (int)PieceCategoryMax)
+                        // Resize selectedPiece array
+                        Array.Resize(ref table.m_selectedPiece, table.m_availablePieces.Count);
+
+                        Logger.LogInfo($"Added categories for table {table.name}");
+                    }
+                    catch (Exception ex)
                     {
-                        for (int i = table.m_availablePieces.Count; i < (int)PieceCategoryMax; i++)
-                        {
-                            table.m_availablePieces.Add(new List<Piece>());
-                        }
+                        Logger.LogError($"Error while adding categories for table {table.name}: {ex}");
                     }
-
-                    // Resize selectedPiece array
-                    Array.Resize(ref table.m_selectedPiece, table.m_availablePieces.Count);
-
-                    Logger.LogInfo($"Added categories for table {table.name}");
                 }
 
                 // Hook sceneLoaded for generation of custom category tabs
