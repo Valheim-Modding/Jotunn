@@ -2,6 +2,7 @@
 
 ## Version 2.1.1
 * Fixed some errors with custom piece table categories
+* Custom KeyHints for "missing keys" fallback to the provided button name
 
 ## Version 2.1.0
 * Added new entity CustomPieceTable and corresponding PieceTableConfig
