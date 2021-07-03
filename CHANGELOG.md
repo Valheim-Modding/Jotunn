@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.1.2
+* Fixed first category selection on custom tables
+
 ## Version 2.1.1
 * Fixed some errors with custom piece table categories
 * Custom KeyHints for "missing keys" fallback to the provided button name
