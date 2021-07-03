@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.1.1
+* Fixed some errors with custom piece table categories
+
 ## Version 2.1.0
 * Added new entity CustomPieceTable and corresponding PieceTableConfig
 * Added custom piece categories per table via PieceTableConfig
