@@ -455,7 +455,7 @@ namespace Jotunn.Managers
             {
                 Logger.LogError($"Error toggling piece selection window: {ex}");
             }
-
+            
             orig(self, player, forceUpdateAllBuildStatuses);
         }
 
@@ -621,6 +621,7 @@ namespace Jotunn.Managers
                     {
                         Piece.PieceCategory firstCategory = Values.Min();
                         Player.m_localPlayer.m_buildPieces.m_selectedCategory = firstCategory;
+                        Player.m_localPlayer.m_buildPieces.SetSelected(new Vector2Int(0, 0));
                         PieceCategoryScroll(firstCategory);
                     }
                     else
