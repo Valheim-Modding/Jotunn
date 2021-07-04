@@ -578,7 +578,7 @@ namespace Jotunn.Managers
                     }
                 }
 
-                // Delete item conversionswith errors
+                // Delete item conversions with errors
                 foreach (var itemConversion in toDelete)
                 {
                     ItemConversions.Remove(itemConversion);
@@ -602,15 +602,9 @@ namespace Jotunn.Managers
 
             if (SceneManager.GetActiveScene().name == "start")
             {
-                /*var isValid = self.IsValid();
-                ItemDropMockFix.Switch(!isValid);*/
-
-                /*if (isValid)
-                {*/
                 RegisterCustomItems(self);
 
                 self.UpdateItemHashes();
-                //}
             }
         }
 
@@ -628,7 +622,6 @@ namespace Jotunn.Managers
         {
             orig(self, other);
 
-            //if (SceneManager.GetActiveScene().name == "start" && self.IsValid())
             if (SceneManager.GetActiveScene().name == "start")
             {
                 OnItemsRegisteredFejd?.SafeInvoke();
@@ -646,25 +639,18 @@ namespace Jotunn.Managers
 
             if (SceneManager.GetActiveScene().name == "main")
             {
-                /*var isValid = self.IsValid();
-                ItemDropMockFix.Switch(!isValid);*/
+                RegisterCustomItems(self);
+                RegisterCustomRecipes(self);
+                RegisterCustomStatusEffects(self);
+                RegisterCustomItemConversions();
 
-                /*if (isValid)
-                {*/
-                    RegisterCustomItems(self);
-                    RegisterCustomRecipes(self);
-                    RegisterCustomStatusEffects(self);
-                    RegisterCustomItemConversions();
-
-                    self.UpdateItemHashes();
-                //}
+                self.UpdateItemHashes();
             }
         }
         private void InvokeOnItemsRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
 
-            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
             if (SceneManager.GetActiveScene().name == "main")
             {
                 OnItemsRegistered?.SafeInvoke();
@@ -686,7 +672,10 @@ namespace Jotunn.Managers
                 return;
             }
 
-            self.UpdateKnownRecipesList();
+            if (Items.Count > 0 || Recipes.Count() > 0)
+            {
+                self.UpdateKnownRecipesList();
+            }
         }
     }
 }

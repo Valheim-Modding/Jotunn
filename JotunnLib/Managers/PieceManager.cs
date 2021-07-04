@@ -562,7 +562,6 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
             if (SceneManager.GetActiveScene().name == "main")
             {
                 LoadPieceTables();
@@ -575,7 +574,6 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
             if (SceneManager.GetActiveScene().name == "main")
             {
                 OnPiecesRegistered?.SafeInvoke();
@@ -591,7 +589,10 @@ namespace Jotunn.Managers
                 return;
             }
 
-            self.UpdateKnownRecipesList();
+            if (Pieces.Count() > 0)
+            {
+                self.UpdateKnownRecipesList();
+            }
         }
 
         internal class PieceTableCategories : Dictionary<string, Piece.PieceCategory>
