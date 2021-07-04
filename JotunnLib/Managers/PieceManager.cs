@@ -624,7 +624,6 @@ namespace Jotunn.Managers
                     {
                         Piece.PieceCategory firstCategory = Values.Min();
                         Player.m_localPlayer.m_buildPieces.m_selectedCategory = firstCategory;
-                        Player.m_localPlayer.m_buildPieces.SetSelected(new Vector2Int(0, 0));
                         PieceCategoryScroll(firstCategory);
                     }
                     else
@@ -689,18 +688,25 @@ namespace Jotunn.Managers
 
             private void PieceTable_NextCategory(On.PieceTable.orig_NextCategory orig, PieceTable self)
             {
+                var oldCat = self.m_selectedCategory;
+                orig(self);
+
                 if (self.m_useCategories)
                 {
-                    do 
-                    { 
-                        self.m_selectedCategory++;
-
-                        if (self.m_selectedCategory == Instance.PieceCategoryMax)
+                    if (self.m_selectedCategory != oldCat)
+                    {
+                        self.m_selectedCategory = oldCat;
+                        do
                         {
-                            self.m_selectedCategory = 0;
+                            self.m_selectedCategory++;
+
+                            if (self.m_selectedCategory == Instance.PieceCategoryMax)
+                            {
+                                self.m_selectedCategory = 0;
+                            }
                         }
-                    } 
-                    while (!Values.Contains(self.m_selectedCategory));
+                        while (!Values.Contains(self.m_selectedCategory));
+                    }
                 }
 
                 PieceCategoryScroll(self.m_selectedCategory);
@@ -708,18 +714,25 @@ namespace Jotunn.Managers
 
             private void PieceTable_PrevCategory(On.PieceTable.orig_PrevCategory orig, PieceTable self)
             {
+                var oldCat = self.m_selectedCategory;
+                orig(self);
+
                 if (self.m_useCategories)
                 {
-                    do
+                    if (self.m_selectedCategory != oldCat)
                     {
-                        self.m_selectedCategory--;
-
-                        if (self.m_selectedCategory < 0)
+                        self.m_selectedCategory = oldCat;
+                        do
                         {
-                            self.m_selectedCategory = Instance.PieceCategoryMax - 1;
+                            self.m_selectedCategory--;
+
+                            if (self.m_selectedCategory < 0)
+                            {
+                                self.m_selectedCategory = Instance.PieceCategoryMax - 1;
+                            }
                         }
+                        while (!Values.Contains(self.m_selectedCategory));
                     }
-                    while (!Values.Contains(self.m_selectedCategory));
                 }
 
                 PieceCategoryScroll(self.m_selectedCategory);

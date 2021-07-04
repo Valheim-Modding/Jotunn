@@ -2,6 +2,7 @@
 
 ## Version 2.1.2
 * Fixed first category selection on custom tables
+* Fixed compatibility with mods hooking prev/next category with HarmonyX (e.g. BuildExpansion)
 
 ## Version 2.1.1
 * Fixed some errors with custom piece table categories
