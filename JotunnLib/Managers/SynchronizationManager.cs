@@ -326,9 +326,10 @@ namespace Jotunn.Managers
                         valuesToSend.Add(value);
                     }
 
-                    if (cx.SettingType == typeof(KeyCode))
+                    string buttonModName = $"{buttonName}!{plugin.Value.Info.Metadata.GUID}";
+                    if (cx.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.ContainsKey(buttonModName))
                     {
-                        ZInput.instance.Setbutton($"{buttonName}!{plugin.Value.Info.Metadata.GUID}", (KeyCode)cx.BoxedValue);
+                        ZInput.instance.Setbutton(buttonModName, (KeyCode)cx.BoxedValue);
                     }
                 }
             }
