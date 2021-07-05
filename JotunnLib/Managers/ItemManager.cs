@@ -351,7 +351,7 @@ namespace Jotunn.Managers
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Error while adding item {customItem}: {ex}");
+                        Logger.LogWarning($"Error caught while adding item {customItem}: {ex}");
                         toDelete.Add(customItem);
                     }
                 }
@@ -445,7 +445,7 @@ namespace Jotunn.Managers
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Error while adding recipe {customRecipe}: {ex}");
+                        Logger.LogWarning($"Error caught while adding recipe {customRecipe}: {ex}");
                         toDelete.Add(customRecipe);
                     }
                 }
@@ -484,7 +484,7 @@ namespace Jotunn.Managers
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Error while adding status effect {customStatusEffect}: {ex}");
+                        Logger.LogWarning($"Error caught while adding status effect {customStatusEffect}: {ex}");
                         toDelete.Add(customStatusEffect);
                     }
                 }
