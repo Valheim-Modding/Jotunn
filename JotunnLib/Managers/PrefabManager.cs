@@ -243,10 +243,10 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            Logger.LogInfo($"---- Adding custom prefabs to {self} ----");
-
-            if (self && Instance.Prefabs.Count > 0)
+            if (Instance.Prefabs.Count > 0)
             {
+                Logger.LogInfo($"---- Adding custom prefabs to {self} ----");
+
                 foreach (var prefab in Instance.Prefabs)
                 {
                     RegisterToZNetScene(prefab.Value);

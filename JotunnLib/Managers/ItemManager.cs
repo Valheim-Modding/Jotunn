@@ -69,7 +69,7 @@ namespace Jotunn.Managers
         {
             On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
             On.ObjectDB.Awake += RegisterCustomData;
-            On.Player.Load += ReloadKnownRecipes;
+            On.Player.OnSpawned += ReloadKnownRecipes;
 
             // Fire events as a late action in the detour so all mods can load before
             // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
@@ -573,7 +573,7 @@ namespace Jotunn.Managers
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Error while adding item conversion {conversion}: {ex}");
+                        Logger.LogWarning($"Error caught while adding item conversion {conversion}: {ex}");
                         toDelete.Add(conversion);
                     }
                 }
@@ -658,23 +658,24 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Hook on <see cref="Player.Load"/> to refresh recipes for the custom items.
+        ///     Hook on <see cref="Player.OnSpawned"/> to refresh recipes for the custom items.
         /// </summary>
         /// <param name="orig"></param>
         /// <param name="self"></param>
-        /// <param name="pkg"></param>
-        private void ReloadKnownRecipes(On.Player.orig_Load orig, Player self, ZPackage pkg)
+        private void ReloadKnownRecipes(On.Player.orig_OnSpawned orig, Player self)
         {
-            orig(self, pkg);
-
-            if (Game.instance == null)
-            {
-                return;
-            }
+            orig(self);
 
             if (Items.Count > 0 || Recipes.Count() > 0)
             {
-                self.UpdateKnownRecipesList();
+                try
+                {
+                    self.UpdateKnownRecipesList();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning($"Exception caught while reloading player recipes: {ex}");
+                }
             }
         }
     }
