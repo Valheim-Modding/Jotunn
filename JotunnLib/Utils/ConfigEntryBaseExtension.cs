@@ -84,7 +84,8 @@ namespace Jotunn.Utils
             InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig);
             if (buttonConfig != null)
             {
-                return buttonConfig.Name.Split('!')[0];
+                //return buttonConfig.Name.Split('!')[0];
+                return buttonConfig.Name;
             }
 
             return configurationEntry.Definition.Key;

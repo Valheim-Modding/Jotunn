@@ -297,15 +297,15 @@ namespace Jotunn.InGameConfig
                                     go.GetComponent<ConfigBoundFloat>().IsValid() ? Color.white : Color.red;
                             });
                         }
-                        else if (entry.Value.SettingType == typeof(KeyCode))
+                        else if (entry.Value.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
                         {
                             // Create key binder
                             var buttonName = entry.Value.GetBoundButtonName();
-                            var buttonText = $"{entry.Value.Description.Description}{Environment.NewLine}This key is bound to button '{buttonName}'.";
+                            var buttonText = $"{entry.Value.Description.Description}{Environment.NewLine}This key is bound to button '{buttonName.Split('!')[0]}'.";
                             if (!string.IsNullOrEmpty(buttonName) && configurationKeybindings.ContainsKey(buttonName))
                             {
                                 var duplicateKeybindingText = "";
-                                if (configurationKeybindings[entry.Value.GetBoundButtonName()].Count > 1)
+                                if (configurationKeybindings[buttonName].Count > 1)
                                 {
                                     duplicateKeybindingText += $"{Environment.NewLine}Other mods using this button: {Environment.NewLine}";
                                     foreach (var buttons in configurationKeybindings[buttonName])
@@ -603,6 +603,7 @@ namespace Jotunn.InGameConfig
         /// <param name="modguid">module GUID</param>
         /// <param name="section">section</param>
         /// <param name="key">key</param>
+        /// ´<param name="buttonName">buttonName</param>
         /// <param name="width">width</param>
         /// <returns></returns>
         private static GameObject CreateKeybindElement(Transform parent, string labelname, string description, string modguid, string section, string key,
@@ -614,7 +615,9 @@ namespace Jotunn.InGameConfig
             // Add this keybinding to the list in Settings to utilize valheim's keybind dialog
             Settings.instance.m_keys.Add(new Settings.KeySetting
             {
-                m_keyName = $"{buttonName}!{modguid}", m_keyTransform = result.GetComponent<RectTransform>()
+                //m_keyName = $"{buttonName}!{modguid}", m_keyTransform = result.GetComponent<RectTransform>()
+                m_keyName = buttonName,
+                m_keyTransform = result.GetComponent<RectTransform>()
             });
 
             // Create description text
@@ -899,7 +902,7 @@ namespace Jotunn.InGameConfig
                 gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() =>
                 {
                     keyInBinding = this;
-                    Settings.instance.OpenBindDialog(buttonName + "!" + ModGUID);
+                    Settings.instance.OpenBindDialog(buttonName);
                 });
             }
 

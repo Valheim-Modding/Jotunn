@@ -1153,9 +1153,9 @@ namespace Jotunn.Managers
             GameObject input = new GameObject("KeyBinding", typeof(RectTransform), typeof(LayoutElement)).SetUpperLeft().SetSize(width, height);
             input.GetComponent<LayoutElement>().preferredWidth = width;
 
-
             GameObject label = CreateText(text, input.transform, new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), AveriaSerifBold, 16, ValheimOrange, true,
                 Color.black, width - 150f, 0f, false);
+            label.GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
             label.SetUpperLeft().SetToTextHeight();
             input.SetHeight(label.GetHeight());
 

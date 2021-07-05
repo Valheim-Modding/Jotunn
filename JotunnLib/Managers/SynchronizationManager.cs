@@ -317,7 +317,6 @@ namespace Jotunn.Managers
                 foreach (var cd in plugin.Value.Config.Keys)
                 {
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
-                    string buttonName = cx.GetBoundButtonName();
                     if (cx.Description.Tags.Any(x =>
                         x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly &&
                         ((ConfigurationManagerAttributes)x).UnlockSetting))
@@ -326,10 +325,10 @@ namespace Jotunn.Managers
                         valuesToSend.Add(value);
                     }
 
-                    string buttonModName = $"{buttonName}!{plugin.Value.Info.Metadata.GUID}";
-                    if (cx.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.ContainsKey(buttonModName))
+                    string buttonName = cx.GetBoundButtonName();
+                    if (cx.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.ContainsKey(buttonName))
                     {
-                        ZInput.instance.Setbutton(buttonModName, (KeyCode)cx.BoxedValue);
+                        ZInput.instance.Setbutton(buttonName, (KeyCode)cx.BoxedValue);
                     }
                 }
             }
