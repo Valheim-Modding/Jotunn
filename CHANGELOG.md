@@ -5,6 +5,7 @@
 * Fixed KeyCode settings display
 * Fixed constant NRE when another mod throws at sceneLoaded
 * Added tokens of items and pieces to the table dumps
+* Added method to query registered custom piece category names
 
 ## Version 2.1.2
 * Fixed first category selection on custom tables
