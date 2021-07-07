@@ -576,6 +576,12 @@ namespace Jotunn.Managers
                 return;
             }
 
+            // If something went wrong, dont NRE every Update
+            if (KeyHintContainer == null)
+            {
+                return;
+            }
+
             // First disable all custom key hints
             foreach (RectTransform transform in KeyHintContainer)
             {
