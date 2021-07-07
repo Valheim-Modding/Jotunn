@@ -1,5 +1,11 @@
 ﻿# Changelog
 
+## Version 2.1.3
+* Fixed KeyCode configs without backing ButtonConfig
+* Fixed KeyCode settings display
+* Fixed constant NRE when another mod throws at sceneLoaded
+* Added tokens of items and pieces to the table dumps
+
 ## Version 2.1.2
 * Fixed first category selection on custom tables
 * Fixed compatibility with mods hooking prev/next category with HarmonyX (e.g. BuildExpansion)

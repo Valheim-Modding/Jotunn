@@ -177,7 +177,7 @@ Draugr_ragdoll|<ul><li>Transform</li><li>ZNetView</li><li>Ragdoll</li><li>VisEqu
 Draugr_Ranged|<ul><li>Transform</li><li>CapsuleCollider</li><li>Rigidbody</li><li>Humanoid</li><li>ZNetView</li><li>ZSyncTransform</li><li>ZSyncAnimation</li><li>MonsterAI</li><li>CharacterDrop</li><li>VisEquipment</li><li>FootStep</li></ul>|
 Draugr_ranged_ragdoll|<ul><li>Transform</li><li>ZNetView</li><li>Ragdoll</li><li>VisEquipment</li></ul>|
 draugr_sword|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform</li><li>ItemDrop</li></ul>|
-dungeon_forestcrypt_door|<ul><li>Transform</li><li>ZNetView</li><li>WearNTear</li><li>LODGroup</li><li>Door</li><li>Animator</li></ul>|
+dungeon_forestcrypt_door|<ul><li>Transform</li><li>ZNetView</li><li>WearNTear</li><li>LODGroup</li><li>Door</li><li>Animator</li><li>StaticTarget</li></ul>|
 dungeon_sunkencrypt_irongate|<ul><li>Transform</li><li>ZNetView</li><li>WearNTear</li><li>LODGroup</li><li>Door</li><li>Animator</li></ul>|
 Eikthyr|<ul><li>Transform</li><li>CapsuleCollider</li><li>Rigidbody</li><li>Humanoid</li><li>CharacterDrop</li><li>ZNetView</li><li>ZSyncTransform</li><li>ZSyncAnimation</li><li>RandomAnimation</li><li>MonsterAI</li><li>FootStep</li></ul>|
 eikthyr_ragdoll|<ul><li>Transform</li><li>Ragdoll</li><li>ZNetView</li></ul>|
@@ -292,8 +292,8 @@ goblin_pole_small|<ul><li>Transform</li><li>BoxCollider</li><li>ZNetView</li><li
 goblin_roof_45d|<ul><li>Transform</li><li>ZNetView</li><li>WearNTear</li><li>LODGroup</li><li>DropOnDestroyed</li></ul>|
 goblin_roof_45d_corner|<ul><li>Transform</li><li>ZNetView</li><li>WearNTear</li><li>LODGroup</li><li>DropOnDestroyed</li></ul>|
 goblin_roof_cap|<ul><li>Transform</li><li>ZNetView</li><li>WearNTear</li><li>LODGroup</li><li>DropOnDestroyed</li><li>MeshCollider</li></ul>|
-goblin_stairs|<ul><li>Transform</li><li>Piece</li><li>ZNetView</li><li>WearNTear</li></ul>|
-goblin_stepladder|<ul><li>Transform</li><li>Piece</li><li>ZNetView</li><li>WearNTear</li></ul>|
+goblin_stairs|<ul><li>Transform</li><li>ZNetView</li><li>WearNTear</li></ul>|
+goblin_stepladder|<ul><li>Transform</li><li>ZNetView</li><li>WearNTear</li></ul>|
 goblin_totempole|<ul><li>Transform</li><li>BoxCollider</li><li>ZNetView</li><li>WearNTear</li><li>LODGroup</li><li>DropOnDestroyed</li><li>Pickable</li></ul>|
 goblin_woodwall_1m|<ul><li>Transform</li><li>BoxCollider</li><li>ZNetView</li><li>WearNTear</li><li>LODGroup</li><li>DropOnDestroyed</li></ul>|
 goblin_woodwall_2m|<ul><li>Transform</li><li>BoxCollider</li><li>ZNetView</li><li>WearNTear</li><li>LODGroup</li><li>DropOnDestroyed</li></ul>|

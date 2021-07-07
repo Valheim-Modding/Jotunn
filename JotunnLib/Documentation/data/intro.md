@@ -1,13 +1,13 @@
-﻿# Conceptual documentation
-This section contains information about how Valheim itself works, as well as how Jotunn interfaces with the game. There likely will not be many code examples here, but rather high level overviews of how various systems work.  
+﻿# Valheim Data
 
-For code examples and tutorials, checkout the [tutorials section](../tutorials/overview.md).
+This section contains lists of things in Valheim such as:
 
-In addition to the inner workings of components, it will contain lists of things in Valheim such as:
-- All of the prefabs, their names, their components
-- All of the items
-- All of the recipes
-- All localizations
-- All RPCs
+- Prefabs, their names, their components
+- Items
+- Recipes
+- Pieces
+- English localizations of those
+- Sprites
+- RPCs
 
-_Note: Like other sections, this one is all WIP. It will be updated as time goes on_
+These dumps are automatically created with [JotunnDoc](https://github.com/Valheim-Modding/Jotunn/tree/dev/JotunnDoc).
