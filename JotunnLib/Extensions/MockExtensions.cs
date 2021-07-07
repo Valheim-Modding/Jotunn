@@ -1,53 +1,14 @@
-﻿using Jotunn.Managers;
-using Jotunn.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Jotunn
 {
-    /*internal static class ItemDropMockFix
-    {
-        private static bool _enabled;
-
-        internal static void Switch(bool enable)
-        {
-            if (enable)
-            {
-                if (!_enabled)
-                {
-                    On.ItemDrop.Awake += SilenceErrors;
-                    _enabled = enable;
-                }
-            }
-            else
-            {
-                On.ItemDrop.Awake -= SilenceErrors;
-                _enabled = enable;
-            }
-        }
-
-        private static void SilenceErrors(On.ItemDrop.orig_Awake orig, ItemDrop self)
-        {
-            try
-            {
-                orig(self);
-            }
-            catch (Exception)
-            {
-
-            }
-        }
-
-        internal static bool IsValid(this ObjectDB self)
-        {
-            return self.m_items.Count > 0;
-        }
-    }*/
-
     /// <summary>
     ///     Extends prefab GameObjects with functionality related to the mocking system.
     /// </summary>
@@ -97,7 +58,6 @@ namespace Jotunn
 
                     if (!ret)
                     {
-                        //Logger.LogError($"Mock prefab {unityObjectName} could not be resolved");
                         throw new Exception($"Mock prefab {unityObjectName} could not be resolved");
                     }
 
