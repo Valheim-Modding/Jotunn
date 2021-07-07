@@ -196,6 +196,15 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Get a list of all custom piece category names
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetPieceCategories()
+        {
+            return PieceCategories.Keys.ToList();
+        }
+
+        /// <summary>
         ///     Add a <see cref="CustomPiece"/> to the game.<br />
         ///     Checks if the custom piece is valid and unique and adds it to the list of custom pieces.<br />
         ///     Custom pieces are added to their respective <see cref="PieceTable"/>s after <see cref="ObjectDB.Awake"/>.
