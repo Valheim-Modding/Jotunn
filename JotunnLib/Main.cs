@@ -60,6 +60,7 @@ namespace Jotunn
                 //SaveManager.Instance,  // Temporarely disabled, causes FPS issues in the current implementation
                 //ZoneManager.Instance,  // Had some problems reported, needs more tests
                 SynchronizationManager.Instance
+                
             };
             foreach (IManager manager in managers)
             {
@@ -72,7 +73,6 @@ namespace Jotunn
             RootObject.AddComponent<DebugUtils.DebugHelper>();
             RootObject.AddComponent<DebugUtils.ZoneCounter>();
 #endif
-
             Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
         }
 

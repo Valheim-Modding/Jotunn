@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -9,24 +10,45 @@ namespace Jotunn.Utils
 {
     class ColorWheel
     {
+        private static Color m_color { get; set; }
+        //the next thing to do in here is to only run LoadColorWheelAsset if this class is used in any way... not sure how to do that
+        internal static void LoadColorWheelAsset()
+        {
+            var stream = typeof(ColorWheel).Assembly.GetManifestResourceStream("Jotunn.Assets.JotunnColorWheel");
+            if (stream == null)
+            {
+#if DEBUG
+                Debug.LogError($"Colorwheel not loaded from stream {stream}");
+#endif
+            }
+            else
+            {
+                AssetBundle.LoadFromStream(stream);
+            }
+        }
 
-        private static Color m_color;
+        //Add some framework for loading the Colormanager on screen in any scenario, Leave it up to end user how they dictate restrictions on this item showing
+
         /// <summary>
         /// <code name="ChooseColorButtonClick()">Invoke this void and pass it Color to alter the color using the wheel</code>
         /// <param name="color"> this is the paramter to pass while invoking ChooseColorButtonClick it is a Unity Color type</param>
         /// </summary>
-        public static void ChooseColorButtonClick(Color color)
+        public void ChooseColorButtonClick(Color color)
         {
 
-            ColorPicker.Create(color, $"Choose the color!", SetColor, ColorFinished, true);
+            ColorPicker.Create(color,
+#if DEBUG
+                $"Choose the color!",
+#endif
+                SetColor, ColorFinished, true);
             m_color = color;
         }
-        public static void SetColor(Color currentColor)
+        private void SetColor(Color currentColor)
         {
             m_color = currentColor;
         }
 
-        public static void ColorFinished(Color finishedColor)
+        private void ColorFinished(Color finishedColor)
         {
 #if DEBUG
             Debug.Log("You chose the color " + ColorUtility.ToHtmlStringRGBA(finishedColor));
