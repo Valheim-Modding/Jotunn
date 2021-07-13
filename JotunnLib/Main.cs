@@ -73,6 +73,7 @@ namespace Jotunn
             RootObject.AddComponent<DebugUtils.DebugHelper>();
             RootObject.AddComponent<DebugUtils.ZoneCounter>();
 #endif
+            ColorWheel.LoadColorWheelAsset();
             Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
         }
 
