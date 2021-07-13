@@ -10,6 +10,8 @@ namespace Jotunn.Utils
 {
     class ColorWheel
     {
+        private static GameObject ColorMenu;
+        private static GameObject menu;
         private static Color m_color { get; set; }
         //the next thing to do in here is to only run LoadColorWheelAsset if this class is used in any way... not sure how to do that
         internal static void LoadColorWheelAsset()
@@ -23,12 +25,35 @@ namespace Jotunn.Utils
             }
             else
             {
-                AssetBundle.LoadFromStream(stream);
+               AssetBundle asset =  AssetBundle.LoadFromStream(stream);
+               ColorMenu = asset.LoadAsset<GameObject>("JotunnColorWheel");
             }
         }
 
         //Add some framework for loading the Colormanager on screen in any scenario, Leave it up to end user how they dictate restrictions on this item showing
-
+        internal static void DisplayColorButtons()
+        {
+            try
+            {
+                if (ZNetScene.instance != null)
+                {
+                    if (menu is null)
+                    {
+                        menu = Main.Instantiate(ColorMenu);
+                        menu.name = "JotunnColorMenu";
+                        menu.transform.SetSiblingIndex(menu.transform.GetSiblingIndex() - 4);
+                    }
+                    else
+                    {
+                        menu.SetActive(!menu.activeSelf);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"Issue displaying ColorInterface: {ex}");
+            }
+        }
         /// <summary>
         /// <code name="ChooseColorButtonClick()">Invoke this void and pass it Color to alter the color using the wheel</code>
         /// <param name="color"> this is the paramter to pass while invoking ChooseColorButtonClick it is a Unity Color type</param>
