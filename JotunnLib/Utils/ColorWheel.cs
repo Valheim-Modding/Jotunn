@@ -17,7 +17,7 @@ namespace Jotunn.Utils
         //the next thing to do in here is to only run LoadColorWheelAsset if this class is used in any way... not sure how to do that
         internal static void LoadColorWheelAsset()
         {
-            var stream = typeof(ColorWheel).Assembly.GetManifestResourceStream("Jotunn.Assets.JotunnColorWheel");
+            var stream = typeof(ColorWheel).Assembly.GetManifestResourceStream("Jotunn.Assets.jotunncolorwheel");
             if (stream == null)
             {
 #if DEBUG

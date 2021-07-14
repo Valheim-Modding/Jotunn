@@ -432,6 +432,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <EmbeddedResource Include="Assets\JotunnColorWheel" />
+    <EmbeddedResource Include="Assets\jotunncolorwheel" />
   </ItemGroup>
 </Project>
