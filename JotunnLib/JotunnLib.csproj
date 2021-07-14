@@ -15,6 +15,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\jotunncolorwheel" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="HarmonyX" Version="2.4.2" />
     <PackageReference Include="MonoMod" Version="21.4.21.3" />
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="5.9.0">
@@ -426,5 +429,9 @@
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsManaged.props" Pack="true" PackagePath="build" />
     <Content Include="$(TargetDir)Jotunn.pdb" Pack="true" PackagePath="lib/$(TargetFramework)" />
     <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png" Pack="true" PackagePath="images" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\JotunnColorWheel" />
   </ItemGroup>
 </Project>
