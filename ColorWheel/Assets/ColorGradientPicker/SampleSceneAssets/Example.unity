@@ -185,7 +185,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
@@ -5114,7 +5114,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!1 &1346005922
 GameObject:
@@ -5208,7 +5208,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1346005927
 MonoBehaviour:
@@ -5314,7 +5314,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1832772226
 MonoBehaviour:
@@ -5328,7 +5328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f24ee73d747cef4eb3b453d2dc11ba7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1001 &5600755799660895083
+--- !u!1001 &1862797266
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -5340,17 +5340,7 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1543934558986644168, guid: 216f2609ea9cc13468343966b132009f,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1543934560019093284, guid: 216f2609ea9cc13468343966b132009f,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1543934560063928267, guid: 216f2609ea9cc13468343966b132009f,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -5373,7 +5363,7 @@ PrefabInstance:
     - target: {fileID: 5600755799511142176, guid: 216f2609ea9cc13468343966b132009f,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5600755799511142176, guid: 216f2609ea9cc13468343966b132009f,
         type: 3}
@@ -5468,18 +5458,28 @@ PrefabInstance:
     - target: {fileID: 5600755799511142188, guid: 216f2609ea9cc13468343966b132009f,
         type: 3}
       propertyPath: m_Name
-      value: Canvas
+      value: JotunnColorWheel
       objectReference: {fileID: 0}
     - target: {fileID: 5600755800140218504, guid: 216f2609ea9cc13468343966b132009f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1832772226}
+    - target: {fileID: 5600755800140218504, guid: 216f2609ea9cc13468343966b132009f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChooseColorButtonClick
+      objectReference: {fileID: 0}
     - target: {fileID: 5600755800210843472, guid: 216f2609ea9cc13468343966b132009f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1346005927}
+    - target: {fileID: 5600755800210843472, guid: 216f2609ea9cc13468343966b132009f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChooseGradientButtonClick
+      objectReference: {fileID: 0}
     - target: {fileID: 6496708065459801721, guid: 216f2609ea9cc13468343966b132009f,
         type: 3}
       propertyPath: m_AnchorMax.x
