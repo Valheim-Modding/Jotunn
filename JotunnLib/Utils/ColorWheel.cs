@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Jotunn.Utils
 {
@@ -31,7 +32,11 @@ namespace Jotunn.Utils
         }
 
         //Add some framework for loading the Colormanager on screen in any scenario, Leave it up to end user how they dictate restrictions on this item showing
-        internal static void DisplayColorButtons()
+        /// <summary>
+        /// Pass your Color to this structure in order to allow the "Choose Color" button to manipulate your UnityEngine Color 
+        /// </summary>
+        /// <param name="color"></param>
+         private static void DisplayColorButtons(Color color)
         {
             try
             {
@@ -42,6 +47,12 @@ namespace Jotunn.Utils
                         menu = Main.Instantiate(ColorMenu);
                         menu.name = "JotunnColorMenu";
                         menu.transform.SetSiblingIndex(menu.transform.GetSiblingIndex() - 4);
+                        var ColorButton = menu.transform.Find("ChooseColor").GetComponent<Button>();
+                        ColorButton.onClick.AddListener((() =>
+                        {
+                            ColorPicker.Create(color, $"Setting the Color for {color}", ColorWheel.SetColor,
+                                ColorWheel.ColorFinished, true);
+                        }));
                     }
                     else
                     {
@@ -54,26 +65,13 @@ namespace Jotunn.Utils
                 Debug.LogWarning($"Issue displaying ColorInterface: {ex}");
             }
         }
-        /// <summary>
-        /// <code name="ChooseColorButtonClick()">Invoke this void and pass it Color to alter the color using the wheel</code>
-        /// <param name="color"> this is the paramter to pass while invoking ChooseColorButtonClick it is a Unity Color type</param>
-        /// </summary>
-        public void ChooseColorButtonClick(Color color)
-        {
 
-            ColorPicker.Create(color,
-#if DEBUG
-                $"Choose the color!",
-#endif
-                SetColor, ColorFinished, true);
-            m_color = color;
-        }
-        private void SetColor(Color currentColor)
+        private static void SetColor(Color currentColor)
         {
             m_color = currentColor;
         }
 
-        private void ColorFinished(Color finishedColor)
+        private static void ColorFinished(Color finishedColor)
         {
 #if DEBUG
             Debug.Log("You chose the color " + ColorUtility.ToHtmlStringRGBA(finishedColor));
