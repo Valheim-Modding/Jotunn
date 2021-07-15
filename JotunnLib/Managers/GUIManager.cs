@@ -267,79 +267,11 @@ namespace Jotunn.Managers
                         throw new Exception("Fonts not found");
                     }
 
-                    // GUI components (ouch, my memory hurts... :))
-                    GameObject ingameGui = null;
-                    var gameobjects = Resources.FindObjectsOfTypeAll(typeof(GameObject));
-                    foreach (var obj in gameobjects)
-                    {
-                        if (obj.name.Equals("IngameGui"))
-                        {
-                            ingameGui = (GameObject)obj;
-                            break;
-                        }
-                    }
-
-                    if (ingameGui == null)
-                    {
-                        throw new Exception("GameObjects not found");
-                    }
-
                     // Base prefab for a valheim style button
                     var button = new GameObject("BaseButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx));
-                    //button.transform.SetParent(PixelFix.transform, false);
-
-                    var txt = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Outline));
-                    txt.transform.SetParent(button.transform);
-                    txt.transform.localScale = new Vector3(1f, 1f, 1f);
-
-                    txt.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-                    txt.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-                    txt.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 140f);
-                    txt.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 38f);
-                    txt.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0f);
-
-                    txt.GetComponent<Text>().font = AveriaSerifBold;
-                    txt.GetComponent<Text>().fontSize = 16;
-                    txt.GetComponent<Text>().color = new Color(1f, 0.631f, 0.235f, 1f);
-                    txt.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-
-                    txt.GetComponent<Outline>().effectColor = new Color(0f, 0f, 0f, 1f);
-                    var sprite2 = GetSprite("button");
-                    if (sprite2 == null)
-                    {
-                        Logger.LogError("Could not find 'button' sprite");
-                    }
-                    button.GetComponent<Image>().sprite = sprite2;
-                    button.GetComponent<Image>().type = Image.Type.Sliced;
-                    button.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
-
-                    button.GetComponent<Button>().image = button.GetComponent<Image>();
-
-                    button.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-                    button.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-                    button.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-                    button.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 140);
-                    button.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 38);
-                    button.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-
-                    button.GetComponent<ButtonSfx>().m_sfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_button");
-                    button.GetComponent<ButtonSfx>().m_selectSfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_select");
-
-                    var tinter = new ColorBlock()
-                    {
-                        disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
-                        fadeDuration = 0.1f,
-                        normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                        highlightedColor = new Color(1.3f, 1.3f, 1.3f, 1f),
-                        pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
-                        selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                        colorMultiplier = 1f
-                    };
-
-                    button.GetComponent<Button>().colors = tinter;
-
+                    ApplyButtonStyle(button.GetComponent<Button>());
                     button.SetActive(false);
-                    button.layer = UILayer; // UI
+                    button.layer = UILayer;
 
                     PrefabManager.Instance.AddPrefab(button);
 
@@ -353,7 +285,7 @@ namespace Jotunn.Managers
                     woodpanel.GetComponent<Image>().type = Image.Type.Sliced;
                     woodpanel.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
 
-                    woodpanel.layer = UILayer; // UI
+                    woodpanel.layer = UILayer;
 
                     PrefabManager.Instance.AddPrefab(woodpanel);
 
@@ -380,12 +312,7 @@ namespace Jotunn.Managers
                     }
                     foreach (Button pickerButton in colorPicker.GetComponentsInChildren<Button>(true))
                     {
-                        pickerButton.GetComponent<Image>().sprite = GetSprite("button");
-                        pickerButton.GetComponent<Image>().type = Image.Type.Sliced;
-                        pickerButton.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
-                        ButtonSfx pickerSfx = pickerButton.gameObject.AddComponent<ButtonSfx>();
-                        pickerSfx.m_sfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_button");
-                        pickerSfx.m_selectSfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_select");
+                        ApplyButtonStyle(pickerButton);
                     }
 
                     PrefabManager.Instance.AddPrefab(colorPicker);
@@ -410,12 +337,7 @@ namespace Jotunn.Managers
                     }
                     foreach (Button pickerButton in gradientPicker.GetComponentsInChildren<Button>(true))
                     {
-                        pickerButton.GetComponent<Image>().sprite = GetSprite("button");
-                        pickerButton.GetComponent<Image>().type = Image.Type.Sliced;
-                        pickerButton.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
-                        ButtonSfx pickerSfx = pickerButton.gameObject.AddComponent<ButtonSfx>();
-                        pickerSfx.m_sfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_button");
-                        pickerSfx.m_selectSfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_select");
+                        ApplyButtonStyle(pickerButton);
                     }
 
                     PrefabManager.Instance.AddPrefab(gradientPicker);
@@ -797,102 +719,6 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Create a new button (Valheim style).
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="parent"></param>
-        /// <param name="anchorMin"></param>
-        /// <param name="anchorMax"></param>
-        /// <param name="position"></param>
-        /// <param name="width">Set width if > 0</param>
-        /// <param name="height">Set height if > 0</param>
-        /// <returns>new Button gameobject</returns>
-        public GameObject CreateButton(string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f,
-            float height = 0f)
-        {
-            var baseButton = PrefabManager.Instance.GetPrefab("BaseButton");
-
-            if (baseButton == null)
-            {
-                Logger.LogError("BaseButton is null");
-                return null;
-            }
-
-            var newButton = GameObject.Instantiate(baseButton, parent, false);
-
-            newButton.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-
-            // Set text
-            newButton.GetComponentInChildren<Text>().text = text;
-
-            // Set positions and anchors
-            ((RectTransform)newButton.transform).anchoredPosition = position;
-            ((RectTransform)newButton.transform).anchorMin = anchorMin;
-            ((RectTransform)newButton.transform).anchorMax = anchorMax;
-
-            if (width > 0f)
-            {
-                ((RectTransform)newButton.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-                newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-            }
-
-            if (height > 0f)
-            {
-                ((RectTransform)newButton.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-                newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-            }
-
-            FixPixelMultiplier(newButton.GetComponent<Image>());
-
-            return newButton;
-        }
-
-        internal void FixPixelMultiplier(Image img)
-        {
-            img.pixelsPerUnitMultiplier = SceneManager.GetActiveScene().name == "start" ? 1.0f : 2f;
-        }
-
-        /// <summary>
-        ///     Creates a Valheim style woodpanel
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="anchorMin"></param>
-        /// <param name="anchorMax"></param>
-        /// <param name="position"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <returns></returns>
-        public GameObject CreateWoodpanel(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f, float height = 0f)
-        {
-            var basepanel = PrefabManager.Instance.GetPrefab("BaseWoodpanel");
-
-            if (basepanel == null)
-            {
-                Logger.LogError("BasePanel is null");
-            }
-
-            var newPanel = GameObject.Instantiate(basepanel, parent, false);
-            newPanel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-
-            // Set positions and anchors
-            ((RectTransform)newPanel.transform).anchoredPosition = position;
-            ((RectTransform)newPanel.transform).anchorMin = anchorMin;
-            ((RectTransform)newPanel.transform).anchorMax = anchorMax;
-
-            if (width > 0f)
-            {
-                ((RectTransform)newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-            }
-
-            if (height > 0f)
-            {
-                ((RectTransform)newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-            }
-
-            return newPanel;
-        }
-
-        /// <summary>
         ///     Creates and displays a Valheim style ColorPicker
         /// </summary>
         /// <param name="anchorMin"></param>
@@ -978,6 +804,95 @@ namespace Jotunn.Managers
                 ((RectTransform)newGradient.transform).anchorMax = anchorMax;
             }
             GradientPicker.Create(original, message, onGradientChanged, onGradientSelected);
+        }
+
+        /// <summary>
+        ///     Create a new button (Valheim style).
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="parent"></param>
+        /// <param name="anchorMin"></param>
+        /// <param name="anchorMax"></param>
+        /// <param name="position"></param>
+        /// <param name="width">Set width if > 0</param>
+        /// <param name="height">Set height if > 0</param>
+        /// <returns>new Button gameobject</returns>
+        public GameObject CreateButton(string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f,
+            float height = 0f)
+        {
+            var baseButton = PrefabManager.Instance.GetPrefab("BaseButton");
+
+            if (baseButton == null)
+            {
+                Logger.LogError("BaseButton is null");
+                return null;
+            }
+
+            var newButton = GameObject.Instantiate(baseButton, parent, false);
+
+            newButton.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+
+            // Set text
+            newButton.GetComponentInChildren<Text>().text = text;
+
+            // Set positions and anchors
+            ((RectTransform)newButton.transform).anchoredPosition = position;
+            ((RectTransform)newButton.transform).anchorMin = anchorMin;
+            ((RectTransform)newButton.transform).anchorMax = anchorMax;
+
+            if (width > 0f)
+            {
+                ((RectTransform)newButton.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            }
+
+            if (height > 0f)
+            {
+                ((RectTransform)newButton.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            }
+
+            return newButton;
+        }
+
+        /// <summary>
+        ///     Creates a Valheim style woodpanel
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="anchorMin"></param>
+        /// <param name="anchorMax"></param>
+        /// <param name="position"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public GameObject CreateWoodpanel(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f, float height = 0f)
+        {
+            var basepanel = PrefabManager.Instance.GetPrefab("BaseWoodpanel");
+
+            if (basepanel == null)
+            {
+                Logger.LogError("BasePanel is null");
+            }
+
+            var newPanel = GameObject.Instantiate(basepanel, parent, false);
+            newPanel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+
+            // Set positions and anchors
+            ((RectTransform)newPanel.transform).anchoredPosition = position;
+            ((RectTransform)newPanel.transform).anchorMin = anchorMin;
+            ((RectTransform)newPanel.transform).anchorMax = anchorMax;
+
+            if (width > 0f)
+            {
+                ((RectTransform)newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            }
+
+            if (height > 0f)
+            {
+                ((RectTransform)newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            }
+
+            return newPanel;
         }
 
         /// <summary>
@@ -1259,7 +1174,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        /// Create key binding field
+        ///     Create key binding field
         /// </summary>
         /// <param name="text"></param>
         /// <param name="parent"></param>
@@ -1299,6 +1214,78 @@ namespace Jotunn.Managers
             bindString.transform.SetParent(button.transform, false);
 
             return input;
+        }
+
+        /// <summary>
+        ///     Apply valheim style to a button component
+        /// </summary>
+        /// <param name="button"></param>
+        public void ApplyButtonStyle(Button button)
+        {
+            GameObject go = button.gameObject;
+
+            // image
+            if (!go.TryGetComponent<Image>(out var image))
+            {
+                image = go.AddComponent<Image>();
+            }
+            var sprite = GetSprite("button");
+            if (sprite == null)
+            {
+                Logger.LogError("Could not find 'button' sprite");
+            }
+            image.sprite = sprite;
+            image.type = Image.Type.Sliced;
+            image.pixelsPerUnitMultiplier = 2f;
+            go.GetComponent<Button>().image = image;
+
+            // SFX
+            if (!go.TryGetComponent<ButtonSfx>(out var sfx))
+            {
+                sfx = go.AddComponent<ButtonSfx>();
+            }
+            sfx.m_sfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_button");
+            sfx.m_selectSfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_select");
+
+            // Colors
+            var tinter = new ColorBlock()
+            {
+                disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
+                fadeDuration = 0.1f,
+                normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+                highlightedColor = new Color(1.3f, 1.3f, 1.3f, 1f),
+                pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
+                selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+                colorMultiplier = 1f
+            };
+            go.GetComponent<Button>().colors = tinter;
+
+            // Text GO
+            var txt = go.GetComponentInChildren<Text>()?.gameObject;
+            if (!txt)
+            {
+                txt = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Outline));
+                txt.transform.SetParent(go.transform);
+                txt.transform.localScale = new Vector3(1f, 1f, 1f);
+
+                txt.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+                txt.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+                txt.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 140f);
+                txt.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 38f);
+                txt.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0f);
+            }
+
+            txt.GetComponent<Text>().font = AveriaSerifBold;
+            txt.GetComponent<Text>().fontSize = 16;
+            txt.GetComponent<Text>().color = new Color(1f, 0.631f, 0.235f, 1f);
+            txt.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+
+            // Text Outline
+            if (!txt.TryGetComponent<Outline>(out var outline))
+            {
+                outline = txt.AddComponent<Outline>();
+            }
+            outline.effectColor = new Color(0f, 0f, 0f, 1f);
         }
 
         /// <summary>
