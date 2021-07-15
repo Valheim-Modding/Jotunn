@@ -371,11 +371,8 @@ namespace Jotunn.Managers
                     {
                         pickerTxt.font = AveriaSerifBold;
                         pickerTxt.color = ValheimOrange;
-                        if (pickerTxt.GetComponentsInParent<InputField>(true) == null)
-                        {
-                            var outline = pickerTxt.gameObject.AddComponent<Outline>();
-                            outline.effectColor = Color.black;
-                        }
+                        var outline = pickerTxt.gameObject.AddComponent<Outline>();
+                        outline.effectColor = Color.black;
                     }
                     foreach (InputField pickerInput in colorPicker.GetComponentsInChildren<InputField>(true))
                     {
@@ -404,11 +401,8 @@ namespace Jotunn.Managers
                     {
                         pickerTxt.font = AveriaSerifBold;
                         pickerTxt.color = ValheimOrange;
-                        if (pickerTxt.GetComponentsInParent<InputField>(true) == null)
-                        {
-                            var outline = pickerTxt.gameObject.AddComponent<Outline>();
-                            outline.effectColor = Color.black;
-                        }
+                        var outline = pickerTxt.gameObject.AddComponent<Outline>();
+                        outline.effectColor = Color.black;
                     }
                     foreach (InputField pickerInput in gradientPicker.GetComponentsInChildren<InputField>(true))
                     {

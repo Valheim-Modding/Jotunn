@@ -5,21 +5,21 @@ namespace TestMod
 {
     internal class ColorChanger : MonoBehaviour
     {
-        private Renderer renderer;
+        private Renderer r;
 
         void Start()
         {
-            renderer = GetComponent<Renderer>();
-            renderer.sharedMaterial = renderer.material;
+            r = GetComponentInChildren<Renderer>();
+            r.sharedMaterial = r.material;
             GUIManager.Instance.CreateColorPicker(
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                renderer.sharedMaterial.color, "Choose your poison", SetColor, ColorChosen, true);
+                r.sharedMaterial.color, "Choose your poison", SetColor, ColorChosen, true);
             GUIManager.BlockInput(true);
         }
 
         private void SetColor(Color currentColor)
         {
-            renderer.sharedMaterial.color = currentColor;
+            r.sharedMaterial.color = currentColor;
         }
 
         private void ColorChosen(Color finalColor)

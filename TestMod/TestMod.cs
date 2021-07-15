@@ -14,6 +14,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Jotunn.GUI;
 
 namespace TestMod
 {
@@ -246,29 +247,27 @@ namespace TestMod
             {
                 GUIManager.Instance.CreateColorPicker(
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                    GUIManager.Instance.ValheimOrange, "Choose your poison", ColorChanged, ColorPicked, true);
+                    GUIManager.Instance.ValheimOrange, "Choose your poison", null, null, true);
             }
 
-            if (SceneManager.GetActiveScene().name == "main")
+            if (SceneManager.GetActiveScene().name == "main" && ColorPicker.done)
             {
-                Piece hovered = Player.m_localPlayer.GetHoverObject()?.GetComponent<Piece>();
-                if (hovered)
+                var hovered = Player.m_localPlayer.GetHoverObject();
+                var current = hovered.GetComponentInChildren<Renderer>();
+                if (current != null)
                 {
-                    hovered.gameObject.AddComponent<ColorChanger>();
+                    current.gameObject.AddComponent<ColorChanger>();
+                } 
+                else 
+                {
+                    var parent = hovered.transform.parent.gameObject.GetComponentInChildren<Renderer>();
+                    if (parent != null)
+                    {
+                        parent.gameObject.AddComponent<ColorChanger>();
+                    }
                 }
             }
 
-        }
-
-        private void ColorChanged(Color c)
-        {
-            Jotunn.Logger.LogDebug($"Color changed: {c}");
-        }
-
-        private void ColorPicked(Color c)
-        {
-            Jotunn.Logger.LogDebug($"Color picked: {c}");
-            GUIManager.BlockInput(false);
         }
 
         // Create a new GradientPicker
@@ -280,21 +279,30 @@ namespace TestMod
                 return;
             }
 
-            GUIManager.Instance.CreateGradientPicker(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                new Gradient(), "Gradiwut?", GradientChanged, GradientPicked);
+            if (SceneManager.GetActiveScene().name == "start")
+            {
+                GUIManager.Instance.CreateGradientPicker(
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                    new Gradient(), "Gradiwut?", null, null);
+            }
 
-            GUIManager.BlockInput(true);
-        }
-
-        private void GradientChanged(Gradient c)
-        {
-            Jotunn.Logger.LogDebug($"Gradient changed: {c}");
-        }
-
-        private void GradientPicked(Gradient c)
-        {
-            Jotunn.Logger.LogDebug($"Gradient picked: {c}");
-            GUIManager.BlockInput(false);
+            if (SceneManager.GetActiveScene().name == "main" && GradientPicker.done)
+            {
+                var hovered = Player.m_localPlayer.GetHoverObject();
+                var current = hovered.GetComponentInChildren<Renderer>();
+                if (current != null)
+                {
+                    current.gameObject.AddComponent<GradientChanger>();
+                }
+                else
+                {
+                    var parent = hovered.transform.parent.gameObject.GetComponentInChildren<Renderer>();
+                    if (parent != null)
+                    {
+                        parent.gameObject.AddComponent<GradientChanger>();
+                    }
+                }
+            }
         }
 
         // Create persistent configurations for the mod
