@@ -443,6 +443,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorChanger.cs" />
     <Compile Include="ConsoleCommands\ListPlayersCommand.cs" />
     <Compile Include="ConsoleCommands\RaiseSkillCommand.cs" />
     <Compile Include="ConsoleCommands\SkinColorCommand.cs" />

@@ -13,6 +13,7 @@ using TestMod.ConsoleCommands;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace TestMod
 {
@@ -158,28 +159,36 @@ namespace TestMod
                 GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
             }
 
-            // Displays the current equiped tool/weapon
+            // Displays the current equiped tool/weapon and hover object
             if (Player.m_localPlayer)
             {
-                var bez = "nothing";
+                var bez = "Tool: ";
 
                 var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
                 if (item != null)
                 {
                     if (item.m_dropPrefab)
                     {
-                        bez = item.m_dropPrefab.name;
+                        bez += item.m_dropPrefab.name;
                     }
                     else
                     {
-                        bez = item.m_shared.m_name;
+                        bez += item.m_shared.m_name;
                     }
 
                     Piece piece = Player.m_localPlayer.m_buildPieces?.GetSelectedPiece();
                     if (piece != null)
                     {
-                        bez = bez + ":" + piece.name;
+                        bez += ":" + piece.name;
                     }
+                }
+
+                bez += " | Hover: ";
+
+                var hover = Player.m_localPlayer.GetHoverObject();
+                if (hover && hover.name != null)
+                {
+                    bez += hover.name;
                 }
 
                 GUI.Label(new Rect(10, 10, 500, 25), bez);
@@ -224,7 +233,7 @@ namespace TestMod
             GUIManager.BlockInput(state);
         }
 
-        // Create a new ColorPicker
+        // Create a new ColorPicker when hovering a piece
         private void CreateColorPicker()
         {
             if (GUIManager.Instance == null)
@@ -233,10 +242,22 @@ namespace TestMod
                 return;
             }
 
-            GUIManager.Instance.CreateColorPicker(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.ValheimOrange, "Waht messge", ColorChanged, ColorPicked, true);
+            if (SceneManager.GetActiveScene().name == "start")
+            {
+                GUIManager.Instance.CreateColorPicker(
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                    GUIManager.Instance.ValheimOrange, "Choose your poison", ColorChanged, ColorPicked, true);
+            }
 
-            GUIManager.BlockInput(true);
+            if (SceneManager.GetActiveScene().name == "main")
+            {
+                Piece hovered = Player.m_localPlayer.GetHoverObject()?.GetComponent<Piece>();
+                if (hovered)
+                {
+                    hovered.gameObject.AddComponent<ColorChanger>();
+                }
+            }
+
         }
 
         private void ColorChanged(Color c)
@@ -260,7 +281,7 @@ namespace TestMod
             }
 
             GUIManager.Instance.CreateGradientPicker(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                new Gradient(), "Waht messge", GradientChanged, GradientPicked);
+                new Gradient(), "Gradiwut?", GradientChanged, GradientPicked);
 
             GUIManager.BlockInput(true);
         }
