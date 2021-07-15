@@ -36,6 +36,7 @@ namespace TestMod
         private System.Version CurrentVersion;
 
         private ButtonConfig CreateColorPickerButton;
+        private ButtonConfig CreateGradientPickerButton;
         private ButtonConfig TogglePanelButton;
         private GameObject TestPanel;
         private ButtonConfig ToggleMenuButton;
@@ -125,6 +126,10 @@ namespace TestMod
                 if (ZInput.GetButtonDown(CreateColorPickerButton.Name))
                 {
                     CreateColorPicker();
+                }
+                if (ZInput.GetButtonDown(CreateGradientPickerButton.Name))
+                {
+                    CreateGradientPicker();
                 }
 
                 // Raise the test skill
@@ -228,14 +233,8 @@ namespace TestMod
                 return;
             }
 
-            if (GUIManager.PixelFix == null)
-            {
-                Jotunn.Logger.LogError("GUIManager pixelfix is null");
-                return;
-            }
-
-            GUIManager.Instance.CreateColorPicker(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0, 0), GUIManager.Instance.ValheimOrange, "Waht messge", ColorChanged, ColorPicked, true);
+            GUIManager.Instance.CreateColorPicker(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                GUIManager.Instance.ValheimOrange, "Waht messge", ColorChanged, ColorPicked, true);
 
             GUIManager.BlockInput(true);
         }
@@ -248,6 +247,32 @@ namespace TestMod
         private void ColorPicked(Color c)
         {
             Jotunn.Logger.LogDebug($"Color picked: {c}");
+            GUIManager.BlockInput(false);
+        }
+
+        // Create a new GradientPicker
+        private void CreateGradientPicker()
+        {
+            if (GUIManager.Instance == null)
+            {
+                Jotunn.Logger.LogError("GUIManager instance is null");
+                return;
+            }
+
+            GUIManager.Instance.CreateGradientPicker(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                new Gradient(), "Waht messge", GradientChanged, GradientPicked);
+
+            GUIManager.BlockInput(true);
+        }
+
+        private void GradientChanged(Gradient c)
+        {
+            Jotunn.Logger.LogDebug($"Gradient changed: {c}");
+        }
+
+        private void GradientPicked(Gradient c)
+        {
+            Jotunn.Logger.LogDebug($"Gradient picked: {c}");
             GUIManager.BlockInput(false);
         }
 
@@ -322,12 +347,15 @@ namespace TestMod
         private void AddInputs()
         {
             // Add key bindings on the fly
-            TogglePanelButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Insert, ActiveInGUI = true };
-            InputManager.Instance.AddButton(ModGUID, TogglePanelButton);
-            CreateColorPickerButton = new ButtonConfig { Name = "TestMod_Wheel", Key = KeyCode.Delete, ActiveInGUI = true };
-            InputManager.Instance.AddButton(ModGUID, CreateColorPickerButton);
-            ToggleMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.Home, ActiveInGUI = true };
+            ToggleMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.PageDown, ActiveInGUI = true };
             InputManager.Instance.AddButton(ModGUID, ToggleMenuButton);
+            TogglePanelButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Home, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, TogglePanelButton);
+
+            CreateColorPickerButton = new ButtonConfig { Name = "TestMod_Color", Key = KeyCode.Insert, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, CreateColorPickerButton);
+            CreateGradientPickerButton = new ButtonConfig { Name = "TestMod_Gradient", Key = KeyCode.Delete, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, CreateGradientPickerButton);
 
             // Add key bindings backed by a config value
             // The HintToken is used for the custom KeyHint of the EvilSword

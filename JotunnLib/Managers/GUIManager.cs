@@ -357,8 +357,10 @@ namespace Jotunn.Managers
 
                     PrefabManager.Instance.AddPrefab(woodpanel);
 
-                    // ColorWheel prefab
+                    // colorpicker bundle
                     AssetBundle colorWheelBundle = AssetUtils.LoadAssetBundleFromResources("colorpicker", typeof(Main).Assembly);
+
+                    // ColorPicker prefab
                     GameObject colorPicker = colorWheelBundle.LoadAsset<GameObject>("ColorPicker");
 
                     // Setting some vanilla styles
@@ -389,7 +391,43 @@ namespace Jotunn.Managers
                         pickerSfx.m_selectSfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_select");
                     }
 
+                    colorPicker.SetActive(false);
                     PrefabManager.Instance.AddPrefab(colorPicker);
+
+                    // GradientPicker prefab
+                    GameObject gradientPicker = colorWheelBundle.LoadAsset<GameObject>("GradientPicker");
+
+                    // Setting some vanilla styles
+                    gradientPicker.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
+                    gradientPicker.GetComponent<Image>().type = Image.Type.Sliced;
+                    gradientPicker.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+                    foreach (Text pickerTxt in gradientPicker.GetComponentsInChildren<Text>(true))
+                    {
+                        pickerTxt.font = AveriaSerifBold;
+                        pickerTxt.color = ValheimOrange;
+                        if (pickerTxt.GetComponentsInParent<InputField>(true) == null)
+                        {
+                            var outline = pickerTxt.gameObject.AddComponent<Outline>();
+                            outline.effectColor = Color.black;
+                        }
+                    }
+                    foreach (InputField pickerInput in gradientPicker.GetComponentsInChildren<InputField>(true))
+                    {
+                        ApplyInputFieldStyle(pickerInput);
+                    }
+                    foreach (Button pickerButton in gradientPicker.GetComponentsInChildren<Button>(true))
+                    {
+                        pickerButton.GetComponent<Image>().sprite = GetSprite("button");
+                        pickerButton.GetComponent<Image>().type = Image.Type.Sliced;
+                        pickerButton.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+                        ButtonSfx pickerSfx = pickerButton.gameObject.AddComponent<ButtonSfx>();
+                        pickerSfx.m_sfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_button");
+                        pickerSfx.m_selectSfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_select");
+                    }
+
+                    gradientPicker.SetActive(false);
+                    PrefabManager.Instance.AddPrefab(gradientPicker);
+
                     colorWheelBundle.Unload(false);
                 }
                 catch (Exception ex)
@@ -686,7 +724,7 @@ namespace Jotunn.Managers
 
             self.m_buildHints.SetActive(false);
             self.m_combatHints.SetActive(false);
-                    
+
             // Update bound keys
             foreach (var buttonConfig in hintConfig.ButtonConfigs)
             {
@@ -863,34 +901,79 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Creates a Valheim style ColorWheel
+        ///     Creates and displays a Valheim style ColorWheel
         /// </summary>
-        /// <param name="parent"></param>
         /// <param name="anchorMin"></param>
         /// <param name="anchorMax"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public GameObject CreateColorPicker(
-            Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
-            Color original, string message, ColorPicker.ColorEvent onColorChanged, ColorPicker.ColorEvent onColorSelected, bool useAlpha = false)
+        public void CreateColorPicker(
+            Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
+            Color original, string message, ColorPicker.ColorEvent onColorChanged,
+            ColorPicker.ColorEvent onColorSelected, bool useAlpha = false)
         {
-            var wheel = PrefabManager.Instance.GetPrefab("ColorPicker");
+            if (PixelFix == null)
+            {
+                Logger.LogError("GUIManager PixelFix is null");
+                return;
+            }
+
+            GameObject wheel = PrefabManager.Instance.GetPrefab("ColorPicker");
 
             if (wheel == null)
             {
                 Logger.LogError("ColorPicker is null");
             }
 
-            var newWheel = GameObject.Instantiate(wheel, parent, false);
-            newWheel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-            ColorPicker.Create(ValheimOrange, message, onColorChanged, onColorSelected, useAlpha);
+            if (PixelFix.transform.Find("ColorPicker") == null)
+            {
+                GameObject newWheel = GameObject.Instantiate(wheel, PixelFix.transform, false);
+                newWheel.name = "ColorPicker";
+                newWheel.SetActive(true);
+                newWheel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+                ((RectTransform)newWheel.transform).anchoredPosition = position;
+                ((RectTransform)newWheel.transform).anchorMin = anchorMin;
+                ((RectTransform)newWheel.transform).anchorMax = anchorMax;
+            }
+            ColorPicker.Create(original, message, onColorChanged, onColorSelected, useAlpha);
+        }
 
-            // Set positions and anchors
-            ((RectTransform)newWheel.transform).anchoredPosition = position;
-            ((RectTransform)newWheel.transform).anchorMin = anchorMin;
-            ((RectTransform)newWheel.transform).anchorMax = anchorMax;
+        /// <summary>
+        ///     Creates and displays a Valheim style ColorWheel
+        /// </summary>
+        /// <param name="anchorMin"></param>
+        /// <param name="anchorMax"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public void CreateGradientPicker(
+            Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
+            Gradient original, string message, GradientPicker.GradientEvent onGradientChanged,
+            GradientPicker.GradientEvent onGradientSelected)
+        {
+            if (PixelFix == null)
+            {
+                Logger.LogError("GUIManager PixelFix is null");
+                return;
+            }
 
-            return newWheel;
+            GameObject wheel = PrefabManager.Instance.GetPrefab("GradientPicker");
+
+            if (wheel == null)
+            {
+                Logger.LogError("GradientPicker is null");
+            }
+
+            if (PixelFix.transform.Find("GradientPicker") == null)
+            {
+                GameObject newWheel = GameObject.Instantiate(wheel, PixelFix.transform, false);
+                newWheel.name = "GradientPicker";
+                newWheel.SetActive(true);
+                newWheel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+                ((RectTransform)newWheel.transform).anchoredPosition = position;
+                ((RectTransform)newWheel.transform).anchorMin = anchorMin;
+                ((RectTransform)newWheel.transform).anchorMax = anchorMax;
+            }
+            GradientPicker.Create(original, message, onGradientChanged, onGradientSelected);
         }
 
         /// <summary>
