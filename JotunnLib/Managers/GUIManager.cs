@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jotunn.Configs;
+using Jotunn.GUI;
+using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -342,7 +344,6 @@ namespace Jotunn.Managers
                     PrefabManager.Instance.AddPrefab(button);
 
                     // Base woodpanel prefab
-
                     var woodpanel = new GameObject("BaseWoodpanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
                     woodpanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
                     woodpanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
@@ -355,6 +356,41 @@ namespace Jotunn.Managers
                     woodpanel.layer = UILayer; // UI
 
                     PrefabManager.Instance.AddPrefab(woodpanel);
+
+                    // ColorWheel prefab
+                    AssetBundle colorWheelBundle = AssetUtils.LoadAssetBundleFromResources("colorpicker", typeof(Main).Assembly);
+                    GameObject colorPicker = colorWheelBundle.LoadAsset<GameObject>("ColorPicker");
+
+                    // Setting some vanilla styles
+                    colorPicker.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
+                    colorPicker.GetComponent<Image>().type = Image.Type.Sliced;
+                    colorPicker.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+                    foreach (Text pickerTxt in colorPicker.GetComponentsInChildren<Text>(true))
+                    {
+                        pickerTxt.font = AveriaSerifBold;
+                        pickerTxt.color = ValheimOrange;
+                        if (pickerTxt.GetComponentsInParent<InputField>(true) == null)
+                        {
+                            var outline = pickerTxt.gameObject.AddComponent<Outline>();
+                            outline.effectColor = Color.black;
+                        }
+                    }
+                    foreach (InputField pickerInput in colorPicker.GetComponentsInChildren<InputField>(true))
+                    {
+                        ApplyInputFieldStyle(pickerInput);
+                    }
+                    foreach (Button pickerButton in colorPicker.GetComponentsInChildren<Button>(true))
+                    {
+                        pickerButton.GetComponent<Image>().sprite = GetSprite("button");
+                        pickerButton.GetComponent<Image>().type = Image.Type.Sliced;
+                        pickerButton.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+                        ButtonSfx pickerSfx = pickerButton.gameObject.AddComponent<ButtonSfx>();
+                        pickerSfx.m_sfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_button");
+                        pickerSfx.m_selectSfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_select");
+                    }
+
+                    PrefabManager.Instance.AddPrefab(colorPicker);
+                    colorWheelBundle.Unload(false);
                 }
                 catch (Exception ex)
                 {
@@ -674,6 +710,63 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Get a sprite by name.
+        /// </summary>
+        /// <param name="spriteName"></param>
+        /// <returns>The sprite with given name</returns>
+        public Sprite GetSprite(string spriteName)
+        {
+            if (Sprites.ContainsKey(spriteName))
+            {
+                return Sprites[spriteName];
+            }
+
+            var sprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault(x => x.name == spriteName);
+            if (sprite != null)
+            {
+                Sprites.Add(spriteName, sprite);
+                return sprite;
+            }
+
+            Logger.LogError($"Sprite {spriteName} not found.");
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas atlas.
+        /// </summary>
+        /// <param name="rect">Rect on atlas texture</param>
+        /// <param name="pivot">pivot</param>
+        /// <param name="pixelsPerUnit"></param>
+        /// <param name="extrude"></param>
+        /// <param name="meshType"></param>
+        /// <param name="slice"></param>
+        /// <returns>The newly created sprite</returns>
+        public Sprite CreateSpriteFromAtlas(Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
+            SpriteMeshType meshType = SpriteMeshType.FullRect, Vector4 slice = new Vector4())
+        {
+            return Sprite.Create(TextureAtlas, rect, pivot, pixelsPerUnit, extrude, meshType, slice);
+        }
+
+        /// <summary>
+        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas atlas (not much used ingame or old
+        ///     textures).
+        /// </summary>
+        /// <param name="rect">Rect on atlas texture</param>
+        /// <param name="pivot">pivot</param>
+        /// <param name="pixelsPerUnit"></param>
+        /// <param name="extrude"></param>
+        /// <param name="meshType"></param>
+        /// <param name="slice"></param>
+        /// <returns>The newly created sprite</returns>
+        public Sprite CreateSpriteFromAtlas2(Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
+            SpriteMeshType meshType = SpriteMeshType.FullRect, Vector4 slice = new Vector4())
+        {
+            return Sprite.Create(TextureAtlas2, rect, pivot, pixelsPerUnit, extrude, meshType, slice);
+        }
+
+        /// <summary>
         ///     Create a new button (Valheim style).
         /// </summary>
         /// <param name="text"></param>
@@ -770,102 +863,34 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas atlas.
+        ///     Creates a Valheim style ColorWheel
         /// </summary>
-        /// <param name="rect">Rect on atlas texture</param>
-        /// <param name="pivot">pivot</param>
-        /// <param name="pixelsPerUnit"></param>
-        /// <param name="extrude"></param>
-        /// <param name="meshType"></param>
-        /// <param name="slice"></param>
-        /// <returns>The newly created sprite</returns>
-        public Sprite CreateSpriteFromAtlas(Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
-            SpriteMeshType meshType = SpriteMeshType.FullRect, Vector4 slice = new Vector4())
+        /// <param name="parent"></param>
+        /// <param name="anchorMin"></param>
+        /// <param name="anchorMax"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public GameObject CreateColorPicker(
+            Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
+            Color original, string message, ColorPicker.ColorEvent onColorChanged, ColorPicker.ColorEvent onColorSelected, bool useAlpha = false)
         {
-            return Sprite.Create(TextureAtlas, rect, pivot, pixelsPerUnit, extrude, meshType, slice);
-        }
+            var wheel = PrefabManager.Instance.GetPrefab("ColorPicker");
 
-        /// <summary>
-        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas atlas (not much used ingame or old
-        ///     textures).
-        /// </summary>
-        /// <param name="rect">Rect on atlas texture</param>
-        /// <param name="pivot">pivot</param>
-        /// <param name="pixelsPerUnit"></param>
-        /// <param name="extrude"></param>
-        /// <param name="meshType"></param>
-        /// <param name="slice"></param>
-        /// <returns>The newly created sprite</returns>
-        public Sprite CreateSpriteFromAtlas2(Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
-            SpriteMeshType meshType = SpriteMeshType.FullRect, Vector4 slice = new Vector4())
-        {
-            return Sprite.Create(TextureAtlas2, rect, pivot, pixelsPerUnit, extrude, meshType, slice);
-        }
-
-        /// <summary>
-        ///     Get a sprite by name.
-        /// </summary>
-        /// <param name="spriteName"></param>
-        /// <returns>The sprite with given name</returns>
-        public Sprite GetSprite(string spriteName)
-        {
-            if (Sprites.ContainsKey(spriteName))
+            if (wheel == null)
             {
-                return Sprites[spriteName];
+                Logger.LogError("ColorPicker is null");
             }
 
-            var sprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault(x => x.name == spriteName);
-            if (sprite != null)
-            {
-                Sprites.Add(spriteName, sprite);
-                return sprite;
-            }
+            var newWheel = GameObject.Instantiate(wheel, parent, false);
+            newWheel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+            ColorPicker.Create(ValheimOrange, message, onColorChanged, onColorSelected, useAlpha);
 
-            Logger.LogError($"Sprite {spriteName} not found.");
+            // Set positions and anchors
+            ((RectTransform)newWheel.transform).anchoredPosition = position;
+            ((RectTransform)newWheel.transform).anchorMin = anchorMin;
+            ((RectTransform)newWheel.transform).anchorMax = anchorMax;
 
-            return null;
-        }
-
-        /// <summary>
-        ///     Apply Valheim style to an inputfield component.
-        /// </summary>
-        /// <param name="field"></param>
-        public void ApplyInputFieldStyle(InputField field)
-        {
-            var go = field.gameObject;
-
-            go.GetComponent<Image>().sprite = CreateSpriteFromAtlas(new Rect(0, 2048 - 156, 139, 36), new Vector2(0.5f, 0.5f), 50f, 0, SpriteMeshType.FullRect,
-                new Vector4(5, 5, 5, 5));
-            go.transform.Find("Placeholder").GetComponent<Text>().font = AveriaSerifBold;
-            go.transform.Find("Text").GetComponent<Text>().font = AveriaSerifBold;
-            go.transform.Find("Text").GetComponent<Text>().color = new Color(1, 1, 1, 1);
-        }
-
-        /// <summary>
-        ///     Apply Valheim style to a toggle.
-        /// </summary>
-        /// <param name="toggle"></param>
-        public void ApplyToogleStyle(Toggle toggle)
-        {
-            var tinter = new ColorBlock
-            {
-                colorMultiplier = 1f,
-                disabledColor = new Color(0.784f, 0.784f, 0.784f, 0.502f),
-                fadeDuration = 0.1f,
-                highlightedColor = new Color(1f, 1f, 1f, 1f),
-                normalColor = new Color(0.61f, 0.61f, 0.61f, 1f),
-                pressedColor = new Color(0.784f, 0.784f, 0.784f, 1f),
-                selectedColor = new Color(1f, 1f, 1f, 1f)
-            };
-            toggle.toggleTransition = Toggle.ToggleTransition.Fade;
-            toggle.colors = tinter;
-
-            toggle.gameObject.transform.Find("Background").GetComponent<Image>().sprite = GetSprite("checkbox");
-
-            toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().color = new Color(1f, 0.678f, 0.103f, 1f);
-
-            toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().sprite = GetSprite("checkbox_marker");
-            toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().maskable = true;
+            return newWheel;
         }
 
         /// <summary>
@@ -1187,6 +1212,48 @@ namespace Jotunn.Managers
             bindString.transform.SetParent(button.transform, false);
 
             return input;
+        }
+
+        /// <summary>
+        ///     Apply Valheim style to an inputfield component.
+        /// </summary>
+        /// <param name="field"></param>
+        public void ApplyInputFieldStyle(InputField field)
+        {
+            var go = field.gameObject;
+
+            go.GetComponent<Image>().sprite = CreateSpriteFromAtlas(new Rect(0, 2048 - 156, 139, 36), new Vector2(0.5f, 0.5f), 50f, 0, SpriteMeshType.FullRect,
+                new Vector4(5, 5, 5, 5));
+            go.transform.Find("Placeholder").GetComponent<Text>().font = AveriaSerifBold;
+            go.transform.Find("Text").GetComponent<Text>().font = AveriaSerifBold;
+            go.transform.Find("Text").GetComponent<Text>().color = new Color(1, 1, 1, 1);
+        }
+
+        /// <summary>
+        ///     Apply Valheim style to a toggle component.
+        /// </summary>
+        /// <param name="toggle"></param>
+        public void ApplyToogleStyle(Toggle toggle)
+        {
+            var tinter = new ColorBlock
+            {
+                colorMultiplier = 1f,
+                disabledColor = new Color(0.784f, 0.784f, 0.784f, 0.502f),
+                fadeDuration = 0.1f,
+                highlightedColor = new Color(1f, 1f, 1f, 1f),
+                normalColor = new Color(0.61f, 0.61f, 0.61f, 1f),
+                pressedColor = new Color(0.784f, 0.784f, 0.784f, 1f),
+                selectedColor = new Color(1f, 1f, 1f, 1f)
+            };
+            toggle.toggleTransition = Toggle.ToggleTransition.Fade;
+            toggle.colors = tinter;
+
+            toggle.gameObject.transform.Find("Background").GetComponent<Image>().sprite = GetSprite("checkbox");
+
+            toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().color = new Color(1f, 0.678f, 0.103f, 1f);
+
+            toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().sprite = GetSprite("checkbox_marker");
+            toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().maskable = true;
         }
     }
 }

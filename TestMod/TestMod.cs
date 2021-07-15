@@ -35,6 +35,7 @@ namespace TestMod
 
         private System.Version CurrentVersion;
 
+        private ButtonConfig CreateColorPickerButton;
         private ButtonConfig TogglePanelButton;
         private GameObject TestPanel;
         private ButtonConfig ToggleMenuButton;
@@ -117,6 +118,13 @@ namespace TestMod
                 if (ZInput.GetButtonDown(TogglePanelButton.Name))
                 {
                     TogglePanel();
+                }
+
+                // To show GUI which does not get created every time OnGUI() is called,
+                // we have a togger method defined.
+                if (ZInput.GetButtonDown(CreateColorPickerButton.Name))
+                {
+                    CreateColorPicker();
                 }
 
                 // Raise the test skill
@@ -211,6 +219,38 @@ namespace TestMod
             GUIManager.BlockInput(state);
         }
 
+        // Create a new ColorPicker
+        private void CreateColorPicker()
+        {
+            if (GUIManager.Instance == null)
+            {
+                Jotunn.Logger.LogError("GUIManager instance is null");
+                return;
+            }
+
+            if (GUIManager.PixelFix == null)
+            {
+                Jotunn.Logger.LogError("GUIManager pixelfix is null");
+                return;
+            }
+
+            GUIManager.Instance.CreateColorPicker(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0, 0), GUIManager.Instance.ValheimOrange, "Waht messge", ColorChanged, ColorPicked, true);
+
+            GUIManager.BlockInput(true);
+        }
+
+        private void ColorChanged(Color c)
+        {
+            Jotunn.Logger.LogDebug($"Color changed: {c}");
+        }
+
+        private void ColorPicked(Color c)
+        {
+            Jotunn.Logger.LogDebug($"Color picked: {c}");
+            GUIManager.BlockInput(false);
+        }
+
         // Create persistent configurations for the mod
         private void CreateConfigValues()
         {
@@ -284,6 +324,8 @@ namespace TestMod
             // Add key bindings on the fly
             TogglePanelButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Insert, ActiveInGUI = true };
             InputManager.Instance.AddButton(ModGUID, TogglePanelButton);
+            CreateColorPickerButton = new ButtonConfig { Name = "TestMod_Wheel", Key = KeyCode.Delete, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, CreateColorPickerButton);
             ToggleMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.Home, ActiveInGUI = true };
             InputManager.Instance.AddButton(ModGUID, ToggleMenuButton);
 

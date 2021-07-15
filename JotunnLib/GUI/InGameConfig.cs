@@ -17,7 +17,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace Jotunn.InGameConfig
+namespace Jotunn.GUI
 {
     /// <summary>
     ///     An ingame GUI for BepInEx config files
@@ -103,7 +103,7 @@ namespace Jotunn.InGameConfig
             for (var i = 0; i < numChildren; i++)
             {
                 settingsRoot.transform.Find("panel/TabButtons").GetChild(i).GetComponent<RectTransform>().anchoredPosition = new Vector2(
-                    ((width - (numChildren * 100f)) / 2f) + (i * 100f) + 50f,
+                    (width - numChildren * 100f) / 2f + i * 100f + 50f,
                     settingsRoot.transform.Find("panel/TabButtons").GetChild(i).GetComponent<RectTransform>().anchoredPosition.y);
             }
 
@@ -1024,8 +1024,8 @@ namespace Jotunn.InGameConfig
                 if (long.TryParse(str.Trim().ToLower(), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out fromHex))
                 {
                     var r = (int)(fromHex >> 24);
-                    var g = (int)((fromHex >> 16) & 0xff);
-                    var b = (int)((fromHex >> 8) & 0xff);
+                    var g = (int)(fromHex >> 16 & 0xff);
+                    var b = (int)(fromHex >> 8 & 0xff);
                     var a = (int)(fromHex & 0xff);
                     var result = new Color(r / 255f, g / 255f, b / 255f, a / 255f);
                     return result;
