@@ -391,7 +391,6 @@ namespace Jotunn.Managers
                         pickerSfx.m_selectSfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_select");
                     }
 
-                    colorPicker.SetActive(false);
                     PrefabManager.Instance.AddPrefab(colorPicker);
 
                     // GradientPicker prefab
@@ -425,7 +424,6 @@ namespace Jotunn.Managers
                         pickerSfx.m_selectSfxPrefab = (GameObject)gameobjects.FirstOrDefault(x => x.name == "sfx_gui_select");
                     }
 
-                    gradientPicker.SetActive(false);
                     PrefabManager.Instance.AddPrefab(gradientPicker);
 
                     colorWheelBundle.Unload(false);
@@ -901,7 +899,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Creates and displays a Valheim style ColorWheel
+        ///     Creates and displays a Valheim style ColorPicker
         /// </summary>
         /// <param name="anchorMin"></param>
         /// <param name="anchorMax"></param>
@@ -918,28 +916,27 @@ namespace Jotunn.Managers
                 return;
             }
 
-            GameObject wheel = PrefabManager.Instance.GetPrefab("ColorPicker");
+            GameObject color = PrefabManager.Instance.GetPrefab("ColorPicker");
 
-            if (wheel == null)
+            if (color == null)
             {
                 Logger.LogError("ColorPicker is null");
             }
 
             if (PixelFix.transform.Find("ColorPicker") == null)
             {
-                GameObject newWheel = GameObject.Instantiate(wheel, PixelFix.transform, false);
-                newWheel.name = "ColorPicker";
-                newWheel.SetActive(true);
-                newWheel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-                ((RectTransform)newWheel.transform).anchoredPosition = position;
-                ((RectTransform)newWheel.transform).anchorMin = anchorMin;
-                ((RectTransform)newWheel.transform).anchorMax = anchorMax;
+                GameObject newcolor = GameObject.Instantiate(color, PixelFix.transform, false);
+                newcolor.name = "ColorPicker";
+                newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+                ((RectTransform)newcolor.transform).anchoredPosition = position;
+                ((RectTransform)newcolor.transform).anchorMin = anchorMin;
+                ((RectTransform)newcolor.transform).anchorMax = anchorMax;
             }
             ColorPicker.Create(original, message, onColorChanged, onColorSelected, useAlpha);
         }
 
         /// <summary>
-        ///     Creates and displays a Valheim style ColorWheel
+        ///     Creates and displays a Valheim style GradientPicker
         /// </summary>
         /// <param name="anchorMin"></param>
         /// <param name="anchorMax"></param>
@@ -956,22 +953,35 @@ namespace Jotunn.Managers
                 return;
             }
 
-            GameObject wheel = PrefabManager.Instance.GetPrefab("GradientPicker");
+            GameObject color = PrefabManager.Instance.GetPrefab("ColorPicker");
 
-            if (wheel == null)
+            if (color == null)
+            {
+                Logger.LogError("ColorPicker is null");
+            }
+
+            GameObject gradient = PrefabManager.Instance.GetPrefab("GradientPicker");
+
+            if (gradient == null)
             {
                 Logger.LogError("GradientPicker is null");
             }
 
+            if (PixelFix.transform.Find("ColorPicker") == null)
+            {
+                GameObject newcolor = GameObject.Instantiate(color, PixelFix.transform, false);
+                newcolor.name = "ColorPicker";
+                newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+            }
+
             if (PixelFix.transform.Find("GradientPicker") == null)
             {
-                GameObject newWheel = GameObject.Instantiate(wheel, PixelFix.transform, false);
-                newWheel.name = "GradientPicker";
-                newWheel.SetActive(true);
-                newWheel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-                ((RectTransform)newWheel.transform).anchoredPosition = position;
-                ((RectTransform)newWheel.transform).anchorMin = anchorMin;
-                ((RectTransform)newWheel.transform).anchorMax = anchorMax;
+                GameObject newGradient = GameObject.Instantiate(gradient, PixelFix.transform, false);
+                newGradient.name = "GradientPicker";
+                newGradient.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+                ((RectTransform)newGradient.transform).anchoredPosition = position;
+                ((RectTransform)newGradient.transform).anchorMin = anchorMin;
+                ((RectTransform)newGradient.transform).anchorMax = anchorMax;
             }
             GradientPicker.Create(original, message, onGradientChanged, onGradientSelected);
         }

@@ -79,7 +79,7 @@ namespace Jotunn.GUI
                 onCS = onColorSelected;
                 useA = useAlpha;
                 instance.gameObject.SetActive(true);
-                instance.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = message;
+                instance.transform.GetChild(0).GetComponent<Text>().text = message;
                 instance.aComponent.gameObject.SetActive(useAlpha);
                 instance.RecalculateMenu(true);
                 instance.hexaComponent.placeholder.GetComponent<Text>().text = "RRGGBB" + (useAlpha ? "AA" : "");

@@ -84,7 +84,7 @@ namespace Jotunn.GUI
                 onGC = onGradientChanged;
                 onGS = onGradientSelected;
                 instance.transform.parent.gameObject.SetActive(true);
-                instance.transform.parent.GetChild(0).GetChild(0).GetComponent<Text>().text = message;
+                instance.transform.parent.GetChild(0).GetComponent<Text>().text = message;
                 instance.Setup();
                 return true;
             }
