@@ -249,7 +249,7 @@ namespace Jotunn.GUI
                             // Create toggle element
                             var go = CreateToggleElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
                                 entryAttributes.EntryColor,
-                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
+                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
                                 entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             SetProperties(go.GetComponent<ConfigBoundBoolean>(), entry);
                         }
@@ -264,8 +264,8 @@ namespace Jotunn.GUI
 
                             // Create input field int
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entryAttributes.EntryColor, description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
-                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                                entryAttributes.EntryColor, description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, innerWidth);
                             go.AddComponent<ConfigBoundInt>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Integer;
                             SetProperties(go.GetComponent<ConfigBoundInt>(), entry);
@@ -286,8 +286,8 @@ namespace Jotunn.GUI
 
                             // Create input field float
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entryAttributes.EntryColor, description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
-                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                                entryAttributes.EntryColor, description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, innerWidth);
                             go.AddComponent<ConfigBoundFloat>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Decimal;
                             SetProperties(go.GetComponent<ConfigBoundFloat>(), entry);
@@ -307,7 +307,7 @@ namespace Jotunn.GUI
                                 var duplicateKeybindingText = "";
                                 if (configurationKeybindings[buttonName].Count > 1)
                                 {
-                                    duplicateKeybindingText += $"{Environment.NewLine}Other mods using this button: {Environment.NewLine}";
+                                    duplicateKeybindingText += $"{Environment.NewLine}Other mods using this button:{Environment.NewLine}";
                                     foreach (var buttons in configurationKeybindings[buttonName])
                                     {
                                         // If it is the same config entry, just skip it
@@ -335,8 +335,8 @@ namespace Jotunn.GUI
                             // Create input field string
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
                                 entryAttributes.EntryColor,
-                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
-                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, innerWidth);
                             go.AddComponent<ConfigBoundString>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.None;
                             SetProperties(go.GetComponent<ConfigBoundString>(), entry);
@@ -346,8 +346,8 @@ namespace Jotunn.GUI
                             // Create input field string
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
                                 entryAttributes.EntryColor,
-                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
-                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, innerWidth);
                             go.AddComponent<ConfigBoundColor>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.None;
                             go.transform.Find("Input").GetComponent<InputField>().contentType = InputField.ContentType.Alphanumeric;
@@ -358,6 +358,19 @@ namespace Jotunn.GUI
             }
         }
 
+        /// <summary>
+        ///     Get all config entries of a module
+        /// </summary>
+        /// <param name="module"></param>
+        /// <returns></returns>
+        private static IEnumerable<KeyValuePair<ConfigDefinition, ConfigEntryBase>> GetConfigurationEntries(BaseUnityPlugin module)
+        {
+            var enumerator = module.Config.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                yield return enumerator.Current;
+            }
+        }
 
         /// <summary>
         ///     SaveSettings Hook
@@ -464,13 +477,9 @@ namespace Jotunn.GUI
         /// <param name="labelColor">Color of the label</param>
         /// <param name="description">Description text</param>
         /// <param name="descriptionColor">Color of the description text</param>
-        /// <param name="guid">module GUID</param>
-        /// <param name="section">Section</param>
-        /// <param name="key">Key</param>
         /// <param name="width">Width</param>
         /// <returns></returns>
-        private static GameObject CreateTextInputField(Transform parent, string labelname, Color labelColor, string description, Color descriptionColor,
-            string guid, string section, string key, float width)
+        private static GameObject CreateTextInputField(Transform parent, string labelname, Color labelColor, string description, Color descriptionColor, float width)
         {
             // Create the outer gameobject first
             var result = new GameObject("TextField", typeof(RectTransform), typeof(LayoutElement));
@@ -522,20 +531,6 @@ namespace Jotunn.GUI
             // set the preferred height on the layout element
             result.GetComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
             return result;
-        }
-
-        /// <summary>
-        ///     Get all config entries of a module
-        /// </summary>
-        /// <param name="module"></param>
-        /// <returns></returns>
-        private static IEnumerable<KeyValuePair<ConfigDefinition, ConfigEntryBase>> GetConfigurationEntries(BaseUnityPlugin module)
-        {
-            var enumerator = module.Config.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                yield return enumerator.Current;
-            }
         }
 
         /// <summary>
@@ -1020,7 +1015,7 @@ namespace Jotunn.GUI
 
             private Color ColorFromString(string str)
             {
-                long fromHex = 0;
+                long fromHex;
                 if (long.TryParse(str.Trim().ToLower(), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out fromHex))
                 {
                     var r = (int)(fromHex >> 24);
