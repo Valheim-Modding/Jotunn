@@ -5,6 +5,7 @@ using Jotunn.Configs;
 using Jotunn.GUI;
 using Jotunn.Utils;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -289,7 +290,7 @@ namespace Jotunn.Managers
 
                     PrefabManager.Instance.AddPrefab(woodpanel);
 
-                    // colorpicker bundle
+                    // Color and Gradient picker
                     AssetBundle colorWheelBundle = AssetUtils.LoadAssetBundleFromResources("colorpicker", typeof(Main).Assembly);
 
                     // ColorPicker prefab
@@ -856,16 +857,32 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Creates a Valheim style woodpanel
+        ///     Creates a Valheim style woodpanel which is draggable per default
         /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="anchorMin"></param>
-        /// <param name="anchorMax"></param>
-        /// <param name="position"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <returns></returns>
+        /// <param name="parent">Parent <see cref="Transform"/></param>
+        /// <param name="anchorMin">Minimal anchor</param>
+        /// <param name="anchorMax">Maximal anchor</param>
+        /// <param name="position">Anchored position</param>
+        /// <param name="width">Optional width</param>
+        /// <param name="height">Optional height</param>
+        /// <returns>A <see cref="GameObject"/> as a Valheim style woodpanel</returns>
         public GameObject CreateWoodpanel(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f, float height = 0f)
+        {
+            return CreateWoodpanel(parent, anchorMin, anchorMax, position, width, height, true);
+        }
+
+        /// <summary>
+        ///     Creates a Valheim style woodpanel, can optionally be draggable
+        /// </summary>
+        /// <param name="parent">Parent <see cref="Transform"/></param>
+        /// <param name="anchorMin">Minimal anchor</param>
+        /// <param name="anchorMax">Maximal anchor</param>
+        /// <param name="position">Anchored position</param>
+        /// <param name="width">Optional width</param>
+        /// <param name="height">Optional height</param>
+        /// <param name="draggable">Optional flag if the panel should be draggable (default true)</param>
+        /// <returns>A <see cref="GameObject"/> as a Valheim style woodpanel</returns>
+        public GameObject CreateWoodpanel(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f, float height = 0f, bool draggable = true)
         {
             var basepanel = PrefabManager.Instance.GetPrefab("BaseWoodpanel");
 
@@ -877,26 +894,43 @@ namespace Jotunn.Managers
             var newPanel = GameObject.Instantiate(basepanel, parent, false);
             newPanel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
 
-            // Set positions and anchors
-            ((RectTransform)newPanel.transform).anchoredPosition = position;
-            ((RectTransform)newPanel.transform).anchorMin = anchorMin;
-            ((RectTransform)newPanel.transform).anchorMax = anchorMax;
+            var tf = (RectTransform)newPanel.transform;
 
+            // Set positions and anchors
+            tf.anchoredPosition = position;
+            tf.anchorMin = anchorMin;
+            tf.anchorMax = anchorMax;
+
+            // Set dimensions
             if (width > 0f)
             {
-                ((RectTransform)newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             }
-
             if (height > 0f)
             {
-                ((RectTransform)newPanel.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            }
+
+            // Add draggable component
+            if (draggable)
+            {
+                DragWindowCntrl drag = newPanel.AddComponent<DragWindowCntrl>();
+                EventTrigger trigger = newPanel.AddComponent<EventTrigger>();
+                EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
+                beginDragEntry.eventID = EventTriggerType.BeginDrag;
+                beginDragEntry.callback.AddListener((data) => { drag.BeginDrag(); });
+                trigger.triggers.Add(beginDragEntry);
+                EventTrigger.Entry dragEntry = new EventTrigger.Entry();
+                dragEntry.eventID = EventTriggerType.Drag;
+                dragEntry.callback.AddListener((data) => { drag.Drag(); });
+                trigger.triggers.Add(dragEntry);
             }
 
             return newPanel;
         }
 
         /// <summary>
-        /// Create a Gameobject with a Text (and optional Outline and ContentSizeFitter) component
+        ///     Create a <see cref="GameObject"/> with a Text (and optional Outline and ContentSizeFitter) component
         /// </summary>
         /// <param name="text">Text to show</param>
         /// <param name="parent">Parent transform</param>
@@ -911,31 +945,37 @@ namespace Jotunn.Managers
         /// <param name="width">Width</param>
         /// <param name="height">Height</param>
         /// <param name="addContentSizeFitter">Add ContentSizeFitter</param>
-        /// <returns></returns>
-        public GameObject CreateText(string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Font font, int fontSize, Color color, bool outline, Color outlineColor, float width, float height, bool addContentSizeFitter)
+        /// <returns>A text <see cref="GameObject"/></returns>
+        public GameObject CreateText(
+            string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
+            Font font, int fontSize, Color color, bool outline, Color outlineColor, 
+            float width, float height, bool addContentSizeFitter)
         {
             GameObject go = new GameObject("Text", typeof(RectTransform), typeof(Text));
+
             if (outline)
             {
                 go.AddComponent<Outline>().effectColor = outlineColor;
             }
 
-            go.GetComponent<RectTransform>().anchorMin = anchorMin;
-            go.GetComponent<RectTransform>().anchorMax = anchorMax;
-            go.GetComponent<RectTransform>().anchoredPosition = position;
+            var tf = go.GetComponent<RectTransform>();
+            tf.anchorMin = anchorMin;
+            tf.anchorMax = anchorMax;
+            tf.anchoredPosition = position;
             if (!addContentSizeFitter)
             {
-                go.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-                go.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
             }
             else
             {
                 go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             }
-            go.GetComponent<Text>().font = font;
-            go.GetComponent<Text>().color = color;
-            go.GetComponent<Text>().fontSize = fontSize;
-            go.GetComponent<Text>().text = text;
+            var txt = go.GetComponent<Text>();
+            txt.font = font;
+            txt.color = color;
+            txt.fontSize = fontSize;
+            txt.text = text;
 
             go.transform.SetParent(parent, false);
 
@@ -944,7 +984,7 @@ namespace Jotunn.Managers
 
 
         /// <summary>
-        /// Create a complete scroll view
+        ///     Create a complete scroll view
         /// </summary>
         /// <param name="parent">parent transform</param>
         /// <param name="showHorizontalScrollbar">show horizontal scrollbar</param>
@@ -956,10 +996,13 @@ namespace Jotunn.Managers
         /// <param name="width">rect width</param>
         /// <param name="height">rect height</param>
         /// <returns></returns>
-        public GameObject CreateScrollView(Transform parent, bool showHorizontalScrollbar, bool showVerticalScrollbar, float handleSize, float handleDistanceToBorder, ColorBlock handleColors, Color slidingAreaBackgroundColor, float width, float height)
+        public GameObject CreateScrollView(
+            Transform parent, bool showHorizontalScrollbar, bool showVerticalScrollbar, float handleSize, 
+            float handleDistanceToBorder, ColorBlock handleColors, Color slidingAreaBackgroundColor, 
+            float width, float height)
         {
+            GameObject canvas = new GameObject("Canvas", typeof(RectTransform), typeof(CanvasGroup), typeof(GraphicRaycaster));
 
-            GameObject canvas = new GameObject("Canvas", typeof(RectTransform), /*typeof(Canvas), */typeof(CanvasGroup), typeof(GraphicRaycaster));
             canvas.GetComponent<Canvas>().sortingOrder = 0;
             canvas.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
             canvas.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
@@ -967,22 +1010,19 @@ namespace Jotunn.Managers
             canvas.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
             canvas.GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
             canvas.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
 
             canvas.GetComponent<CanvasGroup>().interactable = true;
             canvas.GetComponent<CanvasGroup>().ignoreParentGroups = true;
             canvas.GetComponent<CanvasGroup>().blocksRaycasts = true;
             canvas.GetComponent<CanvasGroup>().alpha = 1f;
 
-            //canvas.transform.localScale = new Vector3(2,2,2);
-            canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-            canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-
 
             canvas.transform.SetParent(parent, false);
 
             // Create scrollView
             GameObject scrollView = new GameObject("Scroll View", typeof(Image), typeof(ScrollRect), typeof(Mask)).SetUpperRight();
-            //scrollView.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 0);
             scrollView.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             scrollView.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
 
@@ -1132,7 +1172,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        /// Create toggle field
+        ///     Create toggle field
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="position"></param>
