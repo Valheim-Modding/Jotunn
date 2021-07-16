@@ -1264,7 +1264,7 @@ namespace Jotunn.Managers
         {
             GameObject go = button.gameObject;
 
-            // image
+            // Image
             if (!go.TryGetComponent<Image>(out var image))
             {
                 image = go.AddComponent<Image>();
