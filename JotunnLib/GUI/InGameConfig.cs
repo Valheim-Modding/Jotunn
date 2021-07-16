@@ -17,7 +17,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace Jotunn.InGameConfig
+namespace Jotunn.GUI
 {
     /// <summary>
     ///     An ingame GUI for BepInEx config files
@@ -85,6 +85,8 @@ namespace Jotunn.InGameConfig
 
             // Hook SaveSettings to be notified when OK was pressed
             On.Settings.SaveSettings += Settings_SaveSettings;
+            On.Settings.OnBack += Settings_OnBack;
+            On.Settings.OnOk += Settings_OnOk;
 
             // Copy the Misc tab button
             var tabButtonCopy = Object.Instantiate(settingsRoot.transform.Find("panel/TabButtons/Misc").gameObject,
@@ -103,7 +105,7 @@ namespace Jotunn.InGameConfig
             for (var i = 0; i < numChildren; i++)
             {
                 settingsRoot.transform.Find("panel/TabButtons").GetChild(i).GetComponent<RectTransform>().anchoredPosition = new Vector2(
-                    ((width - (numChildren * 100f)) / 2f) + (i * 100f) + 50f,
+                    (width - numChildren * 100f) / 2f + i * 100f + 50f,
                     settingsRoot.transform.Find("panel/TabButtons").GetChild(i).GetComponent<RectTransform>().anchoredPosition.y);
             }
 
@@ -249,7 +251,7 @@ namespace Jotunn.InGameConfig
                             // Create toggle element
                             var go = CreateToggleElement(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
                                 entryAttributes.EntryColor,
-                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
+                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
                                 entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
                             SetProperties(go.GetComponent<ConfigBoundBoolean>(), entry);
                         }
@@ -264,8 +266,8 @@ namespace Jotunn.InGameConfig
 
                             // Create input field int
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entryAttributes.EntryColor, description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
-                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                                entryAttributes.EntryColor, description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, innerWidth);
                             go.AddComponent<ConfigBoundInt>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Integer;
                             SetProperties(go.GetComponent<ConfigBoundInt>(), entry);
@@ -286,8 +288,8 @@ namespace Jotunn.InGameConfig
 
                             // Create input field float
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
-                                entryAttributes.EntryColor, description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
-                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                                entryAttributes.EntryColor, description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, innerWidth);
                             go.AddComponent<ConfigBoundFloat>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.Decimal;
                             SetProperties(go.GetComponent<ConfigBoundFloat>(), entry);
@@ -307,7 +309,7 @@ namespace Jotunn.InGameConfig
                                 var duplicateKeybindingText = "";
                                 if (configurationKeybindings[buttonName].Count > 1)
                                 {
-                                    duplicateKeybindingText += $"{Environment.NewLine}Other mods using this button: {Environment.NewLine}";
+                                    duplicateKeybindingText += $"{Environment.NewLine}Other mods using this button:{Environment.NewLine}";
                                     foreach (var buttons in configurationKeybindings[buttonName])
                                     {
                                         // If it is the same config entry, just skip it
@@ -335,29 +337,56 @@ namespace Jotunn.InGameConfig
                             // Create input field string
                             var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
                                 entryAttributes.EntryColor,
-                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
-                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
+                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, innerWidth);
                             go.AddComponent<ConfigBoundString>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                             go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.None;
                             SetProperties(go.GetComponent<ConfigBoundString>(), entry);
                         }
                         else if (entry.Value.SettingType == typeof(Color))
                         {
-                            // Create input field string
-                            var go = CreateTextInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
+                            // Create input field string with color picker
+                            var go = CreateColorInputField(configTab.transform.Find("Scroll View/Viewport/Content"), entry.Key.Key + ":",
                                 entryAttributes.EntryColor,
-                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? "\n(Server side setting)" : ""),
-                                entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, innerWidth);
-                            go.AddComponent<ConfigBoundColor>().SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                            go.transform.Find("Input").GetComponent<InputField>().characterValidation = InputField.CharacterValidation.None;
-                            go.transform.Find("Input").GetComponent<InputField>().contentType = InputField.ContentType.Alphanumeric;
-                            SetProperties(go.GetComponent<ConfigBoundColor>(), entry);
+                                entry.Value.Description.Description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
+                                entryAttributes.DescriptionColor, innerWidth);
+                            var conf = go.AddComponent<ConfigBoundColor>();
+                            conf.Register();
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            conf.input.characterValidation = InputField.CharacterValidation.None;
+                            conf.input.contentType = InputField.ContentType.Alphanumeric;
+                            SetProperties(conf, entry);
                         }
                     }
                 }
             }
         }
 
+        /// <summary>
+        ///     Get all config entries of a module
+        /// </summary>
+        /// <param name="module"></param>
+        /// <returns></returns>
+        private static IEnumerable<KeyValuePair<ConfigDefinition, ConfigEntryBase>> GetConfigurationEntries(BaseUnityPlugin module)
+        {
+            var enumerator = module.Config.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                yield return enumerator.Current;
+            }
+        }
+
+        private static void Settings_OnOk(On.Settings.orig_OnOk orig, Settings self)
+        {
+            try { ColorPicker.Done(); } catch (Exception) { }
+            orig(self);
+        }
+
+        private static void Settings_OnBack(On.Settings.orig_OnBack orig, Settings self)
+        {
+            try { ColorPicker.Cancel(); } catch (Exception) { }
+            orig(self);
+        }
 
         /// <summary>
         ///     SaveSettings Hook
@@ -464,13 +493,9 @@ namespace Jotunn.InGameConfig
         /// <param name="labelColor">Color of the label</param>
         /// <param name="description">Description text</param>
         /// <param name="descriptionColor">Color of the description text</param>
-        /// <param name="guid">module GUID</param>
-        /// <param name="section">Section</param>
-        /// <param name="key">Key</param>
         /// <param name="width">Width</param>
         /// <returns></returns>
-        private static GameObject CreateTextInputField(Transform parent, string labelname, Color labelColor, string description, Color descriptionColor,
-            string guid, string section, string key, float width)
+        private static GameObject CreateTextInputField(Transform parent, string labelname, Color labelColor, string description, Color descriptionColor, float width)
         {
             // Create the outer gameobject first
             var result = new GameObject("TextField", typeof(RectTransform), typeof(LayoutElement));
@@ -525,17 +550,101 @@ namespace Jotunn.InGameConfig
         }
 
         /// <summary>
-        ///     Get all config entries of a module
+        ///     Create a text input field and a ColorPicker button (used for Color)
         /// </summary>
-        /// <param name="module"></param>
+        /// <param name="parent">parent transform</param>
+        /// <param name="labelname">Label text</param>
+        /// <param name="labelColor">Color of the label</param>
+        /// <param name="description">Description text</param>
+        /// <param name="descriptionColor">Color of the description text</param>
+        /// <param name="width">Width</param>
         /// <returns></returns>
-        private static IEnumerable<KeyValuePair<ConfigDefinition, ConfigEntryBase>> GetConfigurationEntries(BaseUnityPlugin module)
+        private static GameObject CreateColorInputField(Transform parent, string labelname, Color labelColor, string description, Color descriptionColor, float width)
         {
-            var enumerator = module.Config.GetEnumerator();
-            while (enumerator.MoveNext())
+            // Create the outer gameobject first
+            var result = new GameObject("TextField", typeof(RectTransform), typeof(LayoutElement));
+            result.SetWidth(width);
+            result.transform.SetParent(parent, false);
+
+            // create the label text
+            var label = GUIManager.Instance.CreateText(labelname, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
+                GUIManager.Instance.AveriaSerifBold, 16, labelColor, true, Color.black, width - 150f, 0, false);
+            label.SetUpperLeft().SetToTextHeight();
+
+            // create the description text
+            var desc = GUIManager.Instance.CreateText(description, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
+                GUIManager.Instance.AveriaSerifBold, 12, descriptionColor, true, Color.black, width - 150f, 0, false).SetUpperLeft();
+            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(label.GetHeight() + 3f));
+            desc.SetToTextHeight();
+
+            // calculate combined height
+            result.SetHeight(label.GetHeight() + 3f + desc.GetHeight() + 15f);
+
+            // Add a layout component
+            var layout = new GameObject("Layout", typeof(RectTransform), typeof(LayoutElement)).SetUpperRight().SetSize(140f, label.GetHeight() + 6f);
+            layout.transform.SetParent(result.transform, false);
+
+            // Add the input field element
+            var field = new GameObject("Input", typeof(RectTransform), typeof(Image), typeof(InputField)).SetUpperLeft().SetSize(100f, label.GetHeight() + 6f);
+            field.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("text_field");
+            field.GetComponent<Image>().type = Image.Type.Sliced;
+            field.transform.SetParent(layout.transform, false);
+
+            var inputField = field.GetComponent<InputField>();
+
+            var text = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleLeft().SetHeight(label.GetHeight() + 6f)
+                .SetWidth(130f);
+            inputField.textComponent = text.GetComponent<Text>();
+            text.transform.SetParent(field.transform, false);
+            text.GetComponent<RectTransform>().anchoredPosition = new Vector2(5, 0);
+            text.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
+            text.GetComponent<Text>().font = GUIManager.Instance.AveriaSerifBold;
+
+            // create the placeholder element
+            var placeholder = new GameObject("Placeholder", typeof(RectTransform), typeof(Text)).SetMiddleLeft().SetHeight(label.GetHeight() + 6f)
+                .SetWidth(130f);
+            inputField.placeholder = placeholder.GetComponent<Text>();
+            placeholder.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
+            placeholder.GetComponent<Text>().text = "";
+            placeholder.GetComponent<Text>().font = GUIManager.Instance.AveriaSerifBold;
+            placeholder.GetComponent<Text>().fontStyle = FontStyle.Italic;
+            placeholder.GetComponent<Text>().color = Color.gray;
+            placeholder.transform.SetParent(field.transform, false);
+            placeholder.GetComponent<RectTransform>().anchoredPosition = new Vector2(5, 0);
+
+            // Add the ColorPicker button
+            var button = new GameObject("Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx)).SetUpperRight().SetSize(30f, label.GetHeight() + 6f);
+            button.transform.SetParent(layout.transform, false);
+
+            // Image
+            var image = button.GetComponent<Image>();
+            var sprite = GUIManager.Instance.GetSprite("button");
+            image.sprite = sprite;
+            image.type = Image.Type.Sliced;
+            image.pixelsPerUnitMultiplier = 2f;
+            button.GetComponent<Button>().image = image;
+
+            // SFX
+            var sfx = button.GetComponent<ButtonSfx>();
+            sfx.m_sfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_button");
+            sfx.m_selectSfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_select");
+
+            // Colors
+            var tinter = new ColorBlock()
             {
-                yield return enumerator.Current;
-            }
+                disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
+                fadeDuration = 0.1f,
+                normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+                highlightedColor = new Color(1.3f, 1.3f, 1.3f, 1f),
+                pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
+                selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+                colorMultiplier = 1f
+            };
+            button.GetComponent<Button>().colors = tinter;
+
+            // set the preferred height on the layout element
+            result.GetComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
+            return result;
         }
 
         /// <summary>
@@ -961,6 +1070,16 @@ namespace Jotunn.InGameConfig
 
         internal class ConfigBoundColor : ConfigBound<Color>
         {
+            internal InputField input;
+            internal Button button;
+
+            internal void Register()
+            {
+                input = gameObject.transform.Find("Layout/Input").GetComponent<InputField>();
+                button = gameObject.transform.Find("Layout/Button").GetComponent<Button>();
+                button.onClick.AddListener(ShowColorPicker);
+            }
+
             internal override Color GetValueFromConfig()
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
@@ -977,7 +1096,7 @@ namespace Jotunn.InGameConfig
 
             public override Color GetValue()
             {
-                var col = gameObject.transform.Find("Input").GetComponent<InputField>().text;
+                var col = input.text;
                 try
                 {
                     return ColorFromString(col);
@@ -994,18 +1113,39 @@ namespace Jotunn.InGameConfig
 
             internal override void SetValue(Color value)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().text = StringFromColor(value);
+                input.text = StringFromColor(value);
             }
 
             public override void SetEnabled(bool enabled)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().enabled = enabled;
+                input.enabled = enabled;
+                button.enabled = enabled;
+                if (enabled)
+                {
+                    button.onClick.AddListener(ShowColorPicker);
+                }
+                else
+                {
+                    button.onClick.RemoveAllListeners();
+                }
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
-                gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
+                input.readOnly = readOnly;
+                input.textComponent.color = readOnly ? Color.grey : Color.white;
+                button.enabled = !readOnly;
+            }
+
+            private void ShowColorPicker()
+            {
+                if (!ColorPicker.done)
+                {
+                    ColorPicker.Cancel();
+                }
+                GUIManager.Instance.CreateColorPicker(
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    GetValue(), Key, SetValue, null, true);
             }
 
             private string StringFromColor(Color col)
@@ -1020,12 +1160,12 @@ namespace Jotunn.InGameConfig
 
             private Color ColorFromString(string str)
             {
-                long fromHex = 0;
+                long fromHex;
                 if (long.TryParse(str.Trim().ToLower(), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out fromHex))
                 {
                     var r = (int)(fromHex >> 24);
-                    var g = (int)((fromHex >> 16) & 0xff);
-                    var b = (int)((fromHex >> 8) & 0xff);
+                    var g = (int)(fromHex >> 16 & 0xff);
+                    var b = (int)(fromHex >> 8 & 0xff);
                     var a = (int)(fromHex & 0xff);
                     var result = new Color(r / 255f, g / 255f, b / 255f, a / 255f);
                     return result;

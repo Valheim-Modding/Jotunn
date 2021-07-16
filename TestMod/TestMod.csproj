@@ -443,12 +443,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorChanger.cs" />
     <Compile Include="ConsoleCommands\ListPlayersCommand.cs" />
     <Compile Include="ConsoleCommands\RaiseSkillCommand.cs" />
     <Compile Include="ConsoleCommands\SkinColorCommand.cs" />
     <Compile Include="ConsoleCommands\BetterSpawnCommand.cs" />
     <Compile Include="ConsoleCommands\PrintItemsCommand.cs" />
     <Compile Include="ConsoleCommands\TpCommand.cs" />
+    <Compile Include="GradientChanger.cs" />
     <Compile Include="PatchInit\TestPatchInitialization.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
     <Compile Include="TestMod.cs" />

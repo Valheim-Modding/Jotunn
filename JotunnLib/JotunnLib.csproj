@@ -15,6 +15,29 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Unity\Library\**" />
+    <Compile Remove="Unity\Logs\**" />
+    <Compile Remove="Unity\Packages\**" />
+    <Compile Remove="Unity\Temp\**" />
+    <Compile Remove="Unity\Build\**" />
+    <EmbeddedResource Remove="Unity\Library\**" />
+    <EmbeddedResource Remove="Unity\Logs\**" />
+    <EmbeddedResource Remove="Unity\Packages\**" />
+    <EmbeddedResource Remove="Unity\Temp\**" />
+    <EmbeddedResource Remove="Unity\Build\**" />
+    <None Remove="Unity\Library\**" />
+    <None Remove="Unity\Logs\**" />
+    <None Remove="Unity\Packages\**" />
+    <None Remove="Unity\Temp\**" />
+    <None Remove="Unity\Build\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Unity\AssetBundles\AssetBundles*" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Unity\AssetBundles\colorpicker" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="HarmonyX" Version="2.4.2" />
     <PackageReference Include="MonoMod" Version="21.4.21.3" />
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="5.9.0">
@@ -426,5 +449,9 @@
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsManaged.props" Pack="true" PackagePath="build" />
     <Content Include="$(TargetDir)Jotunn.pdb" Pack="true" PackagePath="lib/$(TargetFramework)" />
     <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png" Pack="true" PackagePath="images" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="Unity\AssetBundles\colorpicker" />
   </ItemGroup>
 </Project>

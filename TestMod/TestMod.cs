@@ -13,6 +13,8 @@ using TestMod.ConsoleCommands;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using Jotunn.GUI;
 
 namespace TestMod
 {
@@ -35,6 +37,8 @@ namespace TestMod
 
         private System.Version CurrentVersion;
 
+        private ButtonConfig CreateColorPickerButton;
+        private ButtonConfig CreateGradientPickerButton;
         private ButtonConfig TogglePanelButton;
         private GameObject TestPanel;
         private ButtonConfig ToggleMenuButton;
@@ -119,6 +123,17 @@ namespace TestMod
                     TogglePanel();
                 }
 
+                // To show GUI which does not get created every time OnGUI() is called,
+                // we have a togger method defined.
+                if (ZInput.GetButtonDown(CreateColorPickerButton.Name))
+                {
+                    CreateColorPicker();
+                }
+                if (ZInput.GetButtonDown(CreateGradientPickerButton.Name))
+                {
+                    CreateGradientPicker();
+                }
+
                 // Raise the test skill
                 if (Player.m_localPlayer != null && ZInput.GetButtonDown(RaiseSkillButton.Name))
                 {
@@ -145,28 +160,36 @@ namespace TestMod
                 GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
             }
 
-            // Displays the current equiped tool/weapon
+            // Displays the current equiped tool/weapon and hover object
             if (Player.m_localPlayer)
             {
-                var bez = "nothing";
+                var bez = "Tool: ";
 
                 var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
                 if (item != null)
                 {
                     if (item.m_dropPrefab)
                     {
-                        bez = item.m_dropPrefab.name;
+                        bez += item.m_dropPrefab.name;
                     }
                     else
                     {
-                        bez = item.m_shared.m_name;
+                        bez += item.m_shared.m_name;
                     }
 
                     Piece piece = Player.m_localPlayer.m_buildPieces?.GetSelectedPiece();
                     if (piece != null)
                     {
-                        bez = bez + ":" + piece.name;
+                        bez += ":" + piece.name;
                     }
+                }
+
+                bez += " | Hover: ";
+
+                var hover = Player.m_localPlayer.GetHoverObject();
+                if (hover && hover.name != null)
+                {
+                    bez += hover.name;
                 }
 
                 GUI.Label(new Rect(10, 10, 500, 25), bez);
@@ -209,6 +232,77 @@ namespace TestMod
             bool state = !TestPanel.activeSelf;
             TestPanel.SetActive(state);
             GUIManager.BlockInput(state);
+        }
+
+        // Create a new ColorPicker when hovering a piece
+        private void CreateColorPicker()
+        {
+            if (GUIManager.Instance == null)
+            {
+                Jotunn.Logger.LogError("GUIManager instance is null");
+                return;
+            }
+
+            if (SceneManager.GetActiveScene().name == "start")
+            {
+                GUIManager.Instance.CreateColorPicker(
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                    GUIManager.Instance.ValheimOrange, "Choose your poison", null, null, true);
+            }
+
+            if (SceneManager.GetActiveScene().name == "main" && ColorPicker.done)
+            {
+                var hovered = Player.m_localPlayer.GetHoverObject();
+                var current = hovered.GetComponentInChildren<Renderer>();
+                if (current != null)
+                {
+                    current.gameObject.AddComponent<ColorChanger>();
+                } 
+                else 
+                {
+                    var parent = hovered.transform.parent.gameObject.GetComponentInChildren<Renderer>();
+                    if (parent != null)
+                    {
+                        parent.gameObject.AddComponent<ColorChanger>();
+                    }
+                }
+            }
+
+        }
+
+        // Create a new GradientPicker
+        private void CreateGradientPicker()
+        {
+            if (GUIManager.Instance == null)
+            {
+                Jotunn.Logger.LogError("GUIManager instance is null");
+                return;
+            }
+
+            if (SceneManager.GetActiveScene().name == "start")
+            {
+                GUIManager.Instance.CreateGradientPicker(
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                    new Gradient(), "Gradiwut?", null, null);
+            }
+
+            if (SceneManager.GetActiveScene().name == "main" && GradientPicker.done)
+            {
+                var hovered = Player.m_localPlayer.GetHoverObject();
+                var current = hovered.GetComponentInChildren<Renderer>();
+                if (current != null)
+                {
+                    current.gameObject.AddComponent<GradientChanger>();
+                }
+                else
+                {
+                    var parent = hovered.transform.parent.gameObject.GetComponentInChildren<Renderer>();
+                    if (parent != null)
+                    {
+                        parent.gameObject.AddComponent<GradientChanger>();
+                    }
+                }
+            }
         }
 
         // Create persistent configurations for the mod
@@ -282,10 +376,15 @@ namespace TestMod
         private void AddInputs()
         {
             // Add key bindings on the fly
-            TogglePanelButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Insert, ActiveInGUI = true };
-            InputManager.Instance.AddButton(ModGUID, TogglePanelButton);
-            ToggleMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.Home, ActiveInGUI = true };
+            ToggleMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.PageDown, ActiveInGUI = true };
             InputManager.Instance.AddButton(ModGUID, ToggleMenuButton);
+            TogglePanelButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Home, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, TogglePanelButton);
+
+            CreateColorPickerButton = new ButtonConfig { Name = "TestMod_Color", Key = KeyCode.Insert, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, CreateColorPickerButton);
+            CreateGradientPickerButton = new ButtonConfig { Name = "TestMod_Gradient", Key = KeyCode.Delete, ActiveInGUI = true };
+            InputManager.Instance.AddButton(ModGUID, CreateGradientPickerButton);
 
             // Add key bindings backed by a config value
             // The HintToken is used for the custom KeyHint of the EvilSword
