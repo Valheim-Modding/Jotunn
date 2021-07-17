@@ -279,7 +279,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Adds a new item conversion for any prefab that has a CookingStation component (such as a "piece_cookingstation").
+        ///     Add a new item conversion
         /// </summary>
         /// <param name="itemConversion">Item conversion details</param>
         /// <returns>Whether the addition was successful or not</returns>
@@ -323,6 +323,10 @@ namespace Jotunn.Managers
             }
         }*/
 
+        /// <summary>
+        ///     Register all custom items added to the manager to the given <see cref="ObjectDB"/>
+        /// </summary>
+        /// <param name="objectDB"></param>
         private void RegisterCustomItems(ObjectDB objectDB)
         {
             if (Items.Count > 0)
@@ -347,7 +351,7 @@ namespace Jotunn.Managers
                             itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
                         }
 
-                        RegisterItemInObjectDB(customItem.ItemPrefab);
+                        RegisterItemInObjectDB(objectDB, customItem.ItemPrefab);
                     }
                     catch (Exception ex)
                     {
@@ -376,16 +380,20 @@ namespace Jotunn.Managers
         /// <param name="prefab"><see cref="GameObject"/> with an <see cref="ItemDrop"/> component to add to the <see cref="ObjectDB"/></param>
         public void RegisterItemInObjectDB(GameObject prefab)
         {
+            RegisterItemInObjectDB(ObjectDB.instance, prefab);
+        }
+
+        /// <summary>
+        ///     Internal method for adding a prefab to a specific ObjectDB.
+        /// </summary>
+        /// <param name="objectDB"><see cref="ObjectDB"/> the prefab should be added to</param>
+        /// <param name="prefab"><see cref="GameObject"/> with an <see cref="ItemDrop"/> component to add</param>
+        private void RegisterItemInObjectDB(ObjectDB objectDB, GameObject prefab)
+        {
             var itemDrop = prefab.GetComponent<ItemDrop>();
             if (itemDrop == null)
             {
                 throw new Exception($"Prefab {prefab.name} has no ItemDrop component attached");
-            }
-
-            var objectDB = ObjectDB.instance;
-            if (objectDB == null)
-            {
-                throw new Exception($"ObjectDB is not instantiated");
             }
 
             var hash = prefab.name.GetStableHashCode();
@@ -411,6 +419,10 @@ namespace Jotunn.Managers
             Logger.LogInfo($"Added item {prefab.name} | Token: {itemDrop.TokenName()}");
         }
 
+        /// <summary>
+        ///     Register the custom recipes added to the manager to the given <see cref="ObjectDB"/>
+        /// </summary>
+        /// <param name="objectDB"></param>
         private void RegisterCustomRecipes(ObjectDB objectDB)
         {
             if (Recipes.Count > 0)
@@ -458,6 +470,10 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Register the custom status effects added to the manager to the given <see cref="ObjectDB"/>
+        /// </summary>
+        /// <param name="objectDB"></param>
         private void RegisterCustomStatusEffects(ObjectDB objectDB)
         {
             if (StatusEffects.Count > 0)
@@ -497,6 +513,9 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Register the custom item conversions added to the manager
+        /// </summary>
         private void RegisterCustomItemConversions()
         {
             if (ItemConversions.Count > 0)
@@ -587,7 +606,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Hook on <see cref="ObjectDB.CopyOtherDB"/> to add custom items to FejdStartup screen (aka main menu)
+        ///     Prefix on <see cref="ObjectDB.CopyOtherDB"/> to add custom items to FejdStartup screen (aka main menu)
         /// </summary>
         /// <param name="orig"></param>
         /// <param name="self"></param>
@@ -595,37 +614,40 @@ namespace Jotunn.Managers
         private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             InvokeOnVanillaItemsAvailable();
-            
             InvokeOnKitbashItemsAvailable();
 
+            RegisterCustomItems(other);
+
             orig(self, other);
-
-            if (SceneManager.GetActiveScene().name == "start")
-            {
-                RegisterCustomItems(self);
-
-                self.UpdateItemHashes();
-            }
         }
 
+        /// <summary>
+        ///     Safely invoke the <see cref="OnVanillaItemsAvailable"/> event
+        /// </summary>
         private void InvokeOnVanillaItemsAvailable()
         {
             OnVanillaItemsAvailable?.SafeInvoke();
         }
 
+        /// <summary>
+        ///     Safely invoke the <see cref="OnKitbashItemsAvailable"/> event
+        /// </summary>
         private void InvokeOnKitbashItemsAvailable()
         {
             OnKitbashItemsAvailable?.SafeInvoke();
         }
 
+        /// <summary>
+        ///     Safely invoke the <see cref="OnItemsRegisteredFejd"/> event late in the detour chain
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
         private void InvokeOnItemsRegisteredFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
             orig(self, other);
 
-            if (SceneManager.GetActiveScene().name == "start")
-            {
-                OnItemsRegisteredFejd?.SafeInvoke();
-            }
+            OnItemsRegisteredFejd?.SafeInvoke();
         }
 
         /// <summary>
@@ -635,18 +657,22 @@ namespace Jotunn.Managers
         /// <param name="self"></param>
         private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
-            orig(self);
-
             if (SceneManager.GetActiveScene().name == "main")
             {
                 RegisterCustomItems(self);
                 RegisterCustomRecipes(self);
                 RegisterCustomStatusEffects(self);
                 RegisterCustomItemConversions();
-
-                self.UpdateItemHashes();
             }
+
+            orig(self);
         }
+
+        /// <summary>
+        ///     Safely invoke the <see cref="OnItemsRegistered"/> event
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
         private void InvokeOnItemsRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
         {
             orig(self);
@@ -666,7 +692,7 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (Items.Count > 0 || Recipes.Count() > 0)
+            if (Items.Count > 0 || Recipes.Count > 0)
             {
                 try
                 {

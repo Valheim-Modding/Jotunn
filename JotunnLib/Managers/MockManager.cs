@@ -35,7 +35,6 @@ namespace Jotunn.Managers
 
         internal T CreateMockedPrefab<T>(string prefabName) where T : Component
         {
-            //string name = prefabName + "_" + nameof(Mock<T>);
             string name = PrefabExtension.JVLMockPrefix + prefabName;
             Transform transform = MockPrefabContainer.transform.Find(name);
 
@@ -65,7 +64,6 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            //if (SceneManager.GetActiveScene().name == "main" && self.IsValid())
             if (SceneManager.GetActiveScene().name == "main")
             {
                 if (MockPrefabContainer.transform.childCount > 0)
