@@ -158,12 +158,12 @@ namespace Jotunn.Managers
 
             if (Skills.Count > 0)
             {
-                Logger.LogInfo($"---- Registering custom skills ----");
+                Logger.LogInfo($"Registering {Skills.Count} custom skills");
 
                 foreach (var pair in Skills)
                 {
                     self.m_skills.Add(pair.Value.ToSkillDef());
-                    Logger.LogInfo($"Registered skill {pair.Value.Name} | ID: {pair.Value.Identifier}");
+                    Logger.LogDebug($"Registered skill {pair.Value.Name} | ID: {pair.Value.Identifier}");
                 }
             }
         }
@@ -188,7 +188,7 @@ namespace Jotunn.Managers
 
                 var skillConfig = Skills[skill.m_info.m_skill];
                 var name = skillConfig.Name.StartsWith("$") ? Localization.instance.Localize(skillConfig.Name) : skillConfig.Name;
-                Logger.LogInfo($"Updated skill: {skillConfig.Name} -> {name}");
+                Logger.LogDebug($"Updated skill: {skillConfig.Name} -> {name}");
                 global::Utils.FindChild(elem.transform, "name").GetComponent<Text>().text = name;
             }
         }

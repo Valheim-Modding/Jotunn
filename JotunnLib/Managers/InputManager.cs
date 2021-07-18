@@ -132,7 +132,7 @@ namespace Jotunn.Managers
 
             if (Buttons.Count > 0)
             {
-                Logger.LogInfo("---- Registering custom inputs ----");
+                Logger.LogInfo($"Registering {Buttons.Count} custom inputs");
 
                 foreach (var pair in Buttons)
                 {
@@ -147,7 +147,7 @@ namespace Jotunn.Managers
                         self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
                     }
 
-                    Logger.LogInfo($"Registered input {pair.Key}");
+                    Logger.LogDebug($"Registered input {pair.Key}");
                 }
             }
         }

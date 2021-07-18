@@ -27,7 +27,7 @@ namespace Jotunn.Managers
         {
             orig(self);
             
-            Logger.LogInfo("---- Registering custom zone data ----");
+            Logger.LogInfo("Registering custom zone data");
 
             // Call event handlers to load prefabs
             OnBeforeZoneLoad?.Invoke(null, EventArgs.Empty);
@@ -35,7 +35,7 @@ namespace Jotunn.Managers
             foreach (var veg in Vegetation)
             {
                 ZoneSystem.instance.m_vegetation.Add(veg);
-                Logger.LogInfo("Added vegetation: " + veg.m_name);
+                Logger.LogDebug("Added vegetation: " + veg.m_name);
             }
         }
 

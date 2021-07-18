@@ -316,7 +316,7 @@ namespace Jotunn.Managers
         {
             if (PieceCategories.Count > 0)
             {
-                Logger.LogInfo($"---- Adding custom piece table categories ----");
+                Logger.LogInfo($"Adding {PieceCategories.Count} custom piece table categories");
 
                 // All piece tables using categories
                 foreach (var table in PieceTableMap.Values)
@@ -377,7 +377,7 @@ namespace Jotunn.Managers
                         // Set first available category
                         table.m_selectedCategory = categories.Values.Min();
 
-                        Logger.LogInfo($"Added categories for table {table.name}");
+                        Logger.LogDebug($"Added categories for table {table.name}");
                     }
                     catch (Exception ex)
                     {
@@ -479,7 +479,7 @@ namespace Jotunn.Managers
         {
             if (Pieces.Count > 0)
             {
-                Logger.LogInfo($"---- Adding custom pieces to the PieceTables ----");
+                Logger.LogInfo($"Adding {Pieces.Count} custom pieces to the PieceTables");
 
                 List<CustomPiece> toDelete = new List<CustomPiece>();
 
@@ -544,7 +544,7 @@ namespace Jotunn.Managers
             
             if (table.m_pieces.Contains(prefab))
             {
-                Logger.LogInfo($"Already added piece {prefab.name}");
+                Logger.LogDebug($"Already added piece {prefab.name}");
             }
             else
             {
@@ -563,7 +563,7 @@ namespace Jotunn.Managers
                 }
 
                 table.m_pieces.Add(prefab);
-                Logger.LogInfo($"Added piece {prefab.name} | Token: {piece.TokenName()}");
+                Logger.LogDebug($"Added piece {prefab.name} | Token: {piece.TokenName()}");
             }
         }
 

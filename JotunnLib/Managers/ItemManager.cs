@@ -331,7 +331,7 @@ namespace Jotunn.Managers
         {
             if (Items.Count > 0)
             {
-                Logger.LogInfo($"---- Adding custom items to {objectDB} ----");
+                Logger.LogInfo($"Adding {Items.Count} custom items to the ObjectDB");
 
                 List<CustomItem> toDelete = new List<CustomItem>();
 
@@ -365,10 +365,6 @@ namespace Jotunn.Managers
                 {
                     RemoveItem(item);
                 }
-
-                Logger.LogInfo("Updating item hashes");
-
-                objectDB.UpdateItemHashes();
             }
         }
 
@@ -399,7 +395,7 @@ namespace Jotunn.Managers
             var hash = prefab.name.GetStableHashCode();
             if (objectDB.m_itemByHash.ContainsKey(hash))
             {
-                Logger.LogInfo($"Already added item {prefab.name}");
+                Logger.LogDebug($"Already added item {prefab.name}");
             }
             else
             {
@@ -416,7 +412,7 @@ namespace Jotunn.Managers
                 objectDB.m_itemByHash.Add(hash, prefab);
             }
 
-            Logger.LogInfo($"Added item {prefab.name} | Token: {itemDrop.TokenName()}");
+            Logger.LogDebug($"Added item {prefab.name} | Token: {itemDrop.TokenName()}");
         }
 
         /// <summary>
@@ -427,7 +423,7 @@ namespace Jotunn.Managers
         {
             if (Recipes.Count > 0)
             {
-                Logger.LogInfo($"---- Adding custom recipes to {objectDB} ----");
+                Logger.LogInfo($"Adding {Recipes.Count} custom recipes to the ObjectDB");
 
                 List<CustomRecipe> toDelete = new List<CustomRecipe>();
 
@@ -453,7 +449,7 @@ namespace Jotunn.Managers
                         }
                         objectDB.m_recipes.Add(recipe);
 
-                        Logger.LogInfo($"Added recipe for {recipe.m_item.TokenName()}");
+                        Logger.LogDebug($"Added recipe for {recipe.m_item.TokenName()}");
                     }
                     catch (Exception ex)
                     {
@@ -478,7 +474,7 @@ namespace Jotunn.Managers
         {
             if (StatusEffects.Count > 0)
             {
-                Logger.LogInfo($"---- Adding custom status effects to {objectDB} ----");
+                Logger.LogInfo($"Adding {StatusEffects.Count} custom status effects to the ObjectDB");
 
                 List<CustomStatusEffect> toDelete = new List<CustomStatusEffect>();
 
@@ -495,7 +491,7 @@ namespace Jotunn.Managers
 
                         objectDB.m_StatusEffects.Add(statusEffect);
 
-                        Logger.LogInfo($"Added status effect {customStatusEffect}");
+                        Logger.LogDebug($"Added status effect {customStatusEffect}");
 
                     }
                     catch (Exception ex)
@@ -520,7 +516,7 @@ namespace Jotunn.Managers
         {
             if (ItemConversions.Count > 0)
             {
-                Logger.LogInfo($"---- Adding custom item conversions ----");
+                Logger.LogInfo($"Adding {ItemConversions.Count} custom item conversions");
 
                 List<CustomItemConversion> toDelete = new List<CustomItemConversion>();
 
@@ -551,7 +547,7 @@ namespace Jotunn.Managers
 
                                 if (cookStation.m_conversion.Exists(c => c.m_from == cookConversion.m_from))
                                 {
-                                    Logger.LogInfo($"Already added conversion ${conversion}");
+                                    Logger.LogDebug($"Already added conversion ${conversion}");
                                     continue;
                                 }
 
@@ -564,7 +560,7 @@ namespace Jotunn.Managers
 
                                 if (fermenterStation.m_conversion.Exists(c => c.m_from == fermenterConversion.m_from))
                                 {
-                                    Logger.LogInfo($"Already added conversion ${conversion}");
+                                    Logger.LogDebug($"Already added conversion ${conversion}");
                                     continue;
                                 }
 
@@ -577,7 +573,7 @@ namespace Jotunn.Managers
 
                                 if (smelterStation.m_conversion.Exists(c => c.m_from == smelterConversion.m_from))
                                 {
-                                    Logger.LogInfo($"Already added conversion ${conversion}");
+                                    Logger.LogDebug($"Already added conversion ${conversion}");
                                     continue;
                                 }
 
@@ -588,7 +584,7 @@ namespace Jotunn.Managers
                                 throw new Exception($"Unknown conversion type");
                         }
 
-                        Logger.LogInfo($"Added item conversion {conversion}");
+                        Logger.LogDebug($"Added item conversion {conversion}");
                     }
                     catch (Exception ex)
                     {

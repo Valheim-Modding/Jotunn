@@ -421,7 +421,7 @@ namespace Jotunn.Managers
         {
             if (KeyHints.Count > 0)
             {
-                Logger.LogInfo($"---- Adding custom key hints ----");
+                Logger.LogInfo("Adding custom key hints");
 
                 // Create hint objects for all configs
                 foreach (var entry in KeyHints)
@@ -502,7 +502,7 @@ namespace Jotunn.Managers
                 uihint.m_gamepadHint = gp.gameObject;
             }*/
 
-            Logger.LogInfo($"Added key hints for Item : {config}");
+            Logger.LogDebug($"Added key hints for Item : {config}");
         }
 
         /// <summary>
@@ -947,8 +947,8 @@ namespace Jotunn.Managers
         /// <param name="addContentSizeFitter">Add ContentSizeFitter</param>
         /// <returns>A text <see cref="GameObject"/></returns>
         public GameObject CreateText(
-            string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
-            Font font, int fontSize, Color color, bool outline, Color outlineColor, 
+            string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
+            Font font, int fontSize, Color color, bool outline, Color outlineColor,
             float width, float height, bool addContentSizeFitter)
         {
             GameObject go = new GameObject("Text", typeof(RectTransform), typeof(Text));
@@ -997,8 +997,8 @@ namespace Jotunn.Managers
         /// <param name="height">rect height</param>
         /// <returns></returns>
         public GameObject CreateScrollView(
-            Transform parent, bool showHorizontalScrollbar, bool showVerticalScrollbar, float handleSize, 
-            float handleDistanceToBorder, ColorBlock handleColors, Color slidingAreaBackgroundColor, 
+            Transform parent, bool showHorizontalScrollbar, bool showVerticalScrollbar, float handleSize,
+            float handleDistanceToBorder, ColorBlock handleColors, Color slidingAreaBackgroundColor,
             float width, float height)
         {
             GameObject canvas = new GameObject("Canvas", typeof(RectTransform), typeof(CanvasGroup), typeof(GraphicRaycaster));

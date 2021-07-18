@@ -101,7 +101,7 @@ namespace Jotunn.Managers
         {
             var result = orig(self);
 
-            Logger.LogInfo("---- Loading custom localizations ----");
+            Logger.LogInfo("Loading custom localizations");
 
             AddLanguageFilesFromPluginFolder();
 
@@ -124,7 +124,7 @@ namespace Jotunn.Managers
             // Only if we have translations for this language
             if (Localizations.ContainsKey(language))
             {
-                Logger.LogInfo($"---- Adding tokens for language '{language}' ----");
+                Logger.LogInfo($"Adding tokens for language '{language}'");
 
                 AddTokens(self, language);
             }
@@ -272,12 +272,12 @@ namespace Jotunn.Managers
                 var language = Path.GetFileName(Path.GetDirectoryName(path));
                 AddJson(language, fileContent);
 
-                Logger.LogInfo($"Added json language file: {Path.GetFileName(path)}");
+                Logger.LogDebug($"Added json language file: {Path.GetFileName(path)}");
             }
             else
             {
                 AddLanguageFile(fileContent);
-                Logger.LogInfo($"Added language file: {Path.GetFileName(path)}");
+                Logger.LogDebug($"Added language file: {Path.GetFileName(path)}");
             }
         }
 
