@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 using BepInEx;
 using Jotunn.Managers;
 using Jotunn.Utils;
+using UnityEngine;
 
 namespace Jotunn
 {
@@ -24,7 +24,7 @@ namespace Jotunn
         /// <summary>
         ///     The name of the library.
         /// </summary>
-        public const string ModName = "Jötunn";
+        public const string ModName = "Jotunn";
 
         /// <summary>
         ///     The BepInEx plugin Mod GUID being used (com.jotunn.jotunn).
@@ -129,7 +129,7 @@ namespace Jotunn
             // Invoke the method
             foreach (Tuple<MethodInfo, int> tuple in types.OrderBy(x => x.Item2))
             {
-                Jotunn.Logger.LogInfo($"Applying patches in {tuple.Item1.DeclaringType.Name}.{tuple.Item1.Name}");
+                Jotunn.Logger.LogDebug($"Applying patches in {tuple.Item1.DeclaringType.Name}.{tuple.Item1.Name}");
                 tuple.Item1.Invoke(null, null);
             }
         }

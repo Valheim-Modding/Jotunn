@@ -243,11 +243,11 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (Instance.Prefabs.Count > 0)
+            if (Prefabs.Count > 0)
             {
-                Logger.LogInfo($"---- Adding custom prefabs to {self} ----");
+                Logger.LogInfo($"Adding {Prefabs.Count} custom prefabs to the ZNetScene");
 
-                foreach (var prefab in Instance.Prefabs)
+                foreach (var prefab in Prefabs)
                 {
                     RegisterToZNetScene(prefab.Value);
                 }
@@ -270,13 +270,13 @@ namespace Jotunn.Managers
 
                 if (znet.m_namedPrefabs.ContainsKey(hash))
                 {
-                    Logger.LogWarning($"Prefab {name} already in ZNetScene");
+                    Logger.LogDebug($"Prefab {name} already in ZNetScene");
                 }
                 else
                 {
                     znet.m_prefabs.Add(gameObject);
                     znet.m_namedPrefabs.Add(hash, gameObject);
-                    Logger.LogInfo($"Added prefab {name}");
+                    Logger.LogDebug($"Added prefab {name}");
                 }
             }
         }

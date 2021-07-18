@@ -69,7 +69,7 @@ namespace Jotunn.Managers
         {
             if (KitbashObjects.Count > 0)
             {
-                Logger.LogInfo($"---- Applying Kitbash in {KitbashObjects.Count} objects ----");
+                Logger.LogInfo($"Applying Kitbash in {KitbashObjects.Count} objects");
 
                 foreach (KitbashObject kitbashObject in KitbashObjects)
                 {
@@ -81,7 +81,7 @@ namespace Jotunn.Managers
                         }
                         ApplyKitbash(kitbashObject);
                             
-                        Logger.LogInfo($"Kitbash for {kitbashObject} applied");
+                        Logger.LogDebug($"Kitbash for {kitbashObject} applied");
                     }
                     catch (Exception e)
                     {
