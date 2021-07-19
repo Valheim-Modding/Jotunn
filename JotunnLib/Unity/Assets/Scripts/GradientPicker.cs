@@ -6,35 +6,53 @@ using UnityEngine.UI;
 
 namespace Jotunn.GUI
 {
-
+    /// <summary>
+    ///     Custom MonoBehaviour for the GradientPicker
+    /// </summary>
     public class GradientPicker : MonoBehaviour
     {
         /// <summary>
-        /// Event that gets called by the GradientPicker.
+        ///     Event that gets called by the GradientPicker.
         /// </summary>
         /// <param name="g">received Gradient</param>
         public delegate void GradientEvent(Gradient g);
 
-        private static GradientPicker instance;
         /// <summary>
-        /// True when the GradientPicker is closed
+        ///     Singeleton instance
+        /// </summary>
+        private static GradientPicker instance;
+
+        /// <summary>
+        ///     True when the GradientPicker is closed
         /// </summary>
         public static bool done = true;
 
 
-        //onGradientChanged Event
+        /// <summary>
+        ///     OnGradientChanged Event
+        /// </summary>
         private static GradientEvent onGC;
-        //onGradientSelected Event
+        /// <summary>
+        ///     OnGradientSelected Event
+        /// </summary>
         private static GradientEvent onGS;
 
-        //Gradient before editing
+        /// <summary>
+        ///     Gradient before editing
+        /// </summary>
         private static Gradient originalGradient;
-        //current Gradient
+        /// <summary>
+        ///     Current Gradient
+        /// </summary>
         private static Gradient modifiedGradient;
 
-        //key template
+        /// <summary>
+        ///     Key template
+        /// </summary>
         private GameObject key;
-
+        /// <summary>
+        ///     Interact bool
+        /// </summary>
         private static bool interact;
 
 
@@ -59,8 +77,9 @@ namespace Jotunn.GUI
             alphaComponent = transform.parent.GetChild(5);
             transform.parent.gameObject.SetActive(false);
         }
+
         /// <summary>
-        /// Creates a new GradiantPicker
+        ///     Creates a new GradiantPicker
         /// </summary>
         /// <param name="original">Color before editing</param>
         /// <param name="message">Display message</param>
@@ -94,7 +113,10 @@ namespace Jotunn.GUI
                 return false;
             }
         }
-        //Setup new GradientPicker
+
+        /// <summary>
+        ///     Setup new GradientPicker
+        /// </summary>
         private void Setup()
         {
             interact = false;
@@ -113,7 +135,11 @@ namespace Jotunn.GUI
             CalculateTexture();
             interact = true;
         }
-        //creates a ColorKey UI object
+
+        /// <summary>
+        ///     Creates a ColorKey UI object
+        /// </summary>
+        /// <param name="k"></param>
         private void CreateColorKey(GradientColorKey k)
         {
             if (colorKeys.Count < 8)
@@ -129,7 +155,11 @@ namespace Jotunn.GUI
                 ChangeSelectedColorKey(colorKeys.Count - 1);
             }
         }
-        //checks if new ColorKey should be created
+
+        /// <summary>
+        ///     Checks if new ColorKey should be created
+        /// </summary>
+        /// <param name="time"></param>
         public void CreateNewColorKey(float time)
         {
             if (Input.GetMouseButtonDown(0))
@@ -139,7 +169,11 @@ namespace Jotunn.GUI
                 interact = true;
             }
         }
-        //creates a AlphaKey UI object
+
+        /// <summary>
+        ///     Creates a AlphaKey UI object
+        /// </summary>
+        /// <param name="k"></param>
         private void CreateAlphaKey(GradientAlphaKey k)
         {
             if (alphaKeys.Count < 8)
@@ -156,7 +190,10 @@ namespace Jotunn.GUI
                 ChangeSelectedAlphaKey(alphaKeys.Count - 1);
             }
         }
-        //checks if new AlphaKey should be created
+        /// <summary>
+        ///     Checks if new AlphaKey should be created
+        /// </summary>
+        /// <param name="time"></param>
         public void CreateNewAlphaKey(float time)
         {
             if (Input.GetMouseButtonDown(0))
@@ -184,7 +221,11 @@ namespace Jotunn.GUI
             GetComponent<RawImage>().texture = tex;
             onGC?.Invoke(modifiedGradient);
         }
-        //accessed by alpha Slider
+
+        /// <summary>
+        ///     Accessed by alpha Slider
+        /// </summary>
+        /// <param name="value"></param>
         public void SetAlpha(float value)
         {
             if (interact)
@@ -196,7 +237,10 @@ namespace Jotunn.GUI
                 alphaKeyObjects[selectedAlphaKey].transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(value, value, value, 1f);
             }
         }
-        //accessed by alpha InputField
+        /// <summary>
+        ///     Accessed by alpha InputField
+        /// </summary>
+        /// <param name="value"></param>
         public void SetAlpha(string value)
         {
             alphaComponent.GetComponent<Slider>().value = Mathf.Clamp(int.Parse(value), 0, 255) / 255f;
@@ -236,7 +280,11 @@ namespace Jotunn.GUI
             selectedAlphaKey = value;
             alphaKeyObjects[value].Select();
         }
-        //checks if Key can be deleted
+
+        /// <summary>
+        ///     Checks if Key can be deleted
+        /// </summary>
+        /// <param name="s"></param>
         public void CheckDeleteKey(Slider s)
         {
             if (Input.GetMouseButtonDown(1))
@@ -274,7 +322,10 @@ namespace Jotunn.GUI
                 }
             }
         }
-        //changes Selected Key
+
+        /// <summary>
+        ///     Changes Selected Key
+        /// </summary>
         public void Select()
         {
             Slider s = EventSystem.current.currentSelectedGameObject.GetComponent<Slider>();
@@ -297,7 +348,11 @@ namespace Jotunn.GUI
                 alphaComponent.GetChild(4).GetComponent<InputField>().text = Mathf.RoundToInt(alphaKeys[selectedAlphaKey].alpha * 255f).ToString();
             }
         }
-        //accessed by position Slider
+
+        /// <summary>
+        ///     Accessed by position Slider
+        /// </summary>
+        /// <param name="time"></param>
         public void SetTime(float time)
         {
             if (interact)
@@ -318,7 +373,11 @@ namespace Jotunn.GUI
                 positionComponent.text = Mathf.RoundToInt(time * 100f).ToString();
             }
         }
-        //accessed by position InputField
+
+        /// <summary>
+        ///     Accessed by position InputField
+        /// </summary>
+        /// <param name="time"></param>
         public void SetTime(string time)
         {
             interact = false;
@@ -337,7 +396,10 @@ namespace Jotunn.GUI
             CalculateTexture();
             interact = true;
         }
-        //choose color button call
+
+        /// <summary>
+        ///     Choose color button call
+        /// </summary>
         public void ChooseColor()
         {
             ColorPicker.Create(colorKeys[selectedColorKey].color, "Gradient Color Key", (c) => UpdateColor(selectedColorKey, c), null);
@@ -353,26 +415,31 @@ namespace Jotunn.GUI
             CalculateTexture();
             interact = true;
         }
-        //cancel button call
+
+        /// <summary>
+        ///     Cancel button call
+        /// </summary>
         public void CCancel()
         {
             Cancel();
         }
         /// <summary>
-        /// Manually cancel the GradientPicker and recovers the default value
+        ///     Manually cancel the GradientPicker and recovers the default value
         /// </summary>
         public static void Cancel()
         {
             modifiedGradient = originalGradient;
             Done();
         }
-        //done button call
+        /// <summary>
+        ///     Done button call
+        /// </summary>
         public void CDone()
         {
             Done();
         }
         /// <summary>
-        /// Manually close the GradientPicker and apply the selected color
+        ///     Manually close the GradientPicker and apply the selected color
         /// </summary>
         public static void Done()
         {

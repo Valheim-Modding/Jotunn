@@ -665,7 +665,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Get a sprite by name.
         /// </summary>
-        /// <param name="spriteName"></param>
+        /// <param name="spriteName">The sprite name</param>
         /// <returns>The sprite with given name</returns>
         public Sprite GetSprite(string spriteName)
         {
@@ -696,15 +696,16 @@ namespace Jotunn.Managers
         /// <param name="meshType"></param>
         /// <param name="slice"></param>
         /// <returns>The newly created sprite</returns>
-        public Sprite CreateSpriteFromAtlas(Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
+        public Sprite CreateSpriteFromAtlas(
+            Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
             SpriteMeshType meshType = SpriteMeshType.FullRect, Vector4 slice = new Vector4())
         {
             return Sprite.Create(TextureAtlas, rect, pivot, pixelsPerUnit, extrude, meshType, slice);
         }
 
         /// <summary>
-        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas atlas (not much used ingame or old
-        ///     textures).
+        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas atlas
+        ///     (not much used ingame or old textures).
         /// </summary>
         /// <param name="rect">Rect on atlas texture</param>
         /// <param name="pivot">pivot</param>
@@ -713,7 +714,8 @@ namespace Jotunn.Managers
         /// <param name="meshType"></param>
         /// <param name="slice"></param>
         /// <returns>The newly created sprite</returns>
-        public Sprite CreateSpriteFromAtlas2(Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
+        public Sprite CreateSpriteFromAtlas2(
+            Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
             SpriteMeshType meshType = SpriteMeshType.FullRect, Vector4 slice = new Vector4())
         {
             return Sprite.Create(TextureAtlas2, rect, pivot, pixelsPerUnit, extrude, meshType, slice);
@@ -722,9 +724,14 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Creates and displays a Valheim style ColorPicker
         /// </summary>
-        /// <param name="anchorMin"></param>
-        /// <param name="anchorMax"></param>
-        /// <param name="position"></param>
+        /// <param name="anchorMin">Min anchor on first instantiation</param>
+        /// <param name="anchorMax">Max anchor on first instantiation</param>
+        /// <param name="position">Position on first instantiation</param>
+        /// <param name="original">Color before editing</param>
+        /// <param name="message">Display message</param>
+        /// <param name="onColorChanged">Event that gets called when the color gets modified</param>
+        /// <param name="onColorSelected">Event that gets called when one of the buttons done or cancel get pressed</param>
+        /// <param name="useAlpha">When set to false the colors used don't have an alpha channel</param>
         /// <returns></returns>
         public void CreateColorPicker(
             Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
@@ -759,9 +766,13 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Creates and displays a Valheim style GradientPicker
         /// </summary>
-        /// <param name="anchorMin"></param>
-        /// <param name="anchorMax"></param>
-        /// <param name="position"></param>
+        /// <param name="anchorMin">Min anchor on first instantiation</param>
+        /// <param name="anchorMax">Max anchor on first instantiation</param>
+        /// <param name="position">Position on first instantiation</param>
+        /// <param name="original">Color before editing</param>
+        /// <param name="message">Display message</param>
+        /// <param name="onGradientChanged">Event that gets called when the gradient gets modified</param>
+        /// <param name="onGradientSelected">Event that gets called when one of the buttons done or cancel gets pressed</param>
         /// <returns></returns>
         public void CreateGradientPicker(
             Vector2 anchorMin, Vector2 anchorMax, Vector2 position,

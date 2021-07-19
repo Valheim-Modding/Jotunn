@@ -2,6 +2,9 @@
 
 namespace Jotunn.GUI
 {
+    /// <summary>
+    ///     Simple dragging <see cref="MonoBehaviour"/>
+    /// </summary>
     public class DragWindowCntrl : MonoBehaviour
     {
         private RectTransform window;
@@ -13,10 +16,16 @@ namespace Jotunn.GUI
             window = (RectTransform)transform;
         }
 
+        /// <summary>
+        ///     BeginDrag event trigger
+        /// </summary>
         public void BeginDrag()
         {
             delta = Input.mousePosition - window.position;
         }
+        /// <summary>
+        ///     Drag event trigger
+        /// </summary>
         public void Drag()
         {
             Vector2 newPos = (Vector2)Input.mousePosition - delta;

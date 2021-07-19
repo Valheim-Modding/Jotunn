@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace Jotunn.GUI
 {
+    /// <summary>
+    ///     Custom MonoBehaviour for the ColorPicker
+    /// </summary>
     public class ColorPicker : MonoBehaviour
     {
         /// <summary>
@@ -12,36 +15,75 @@ namespace Jotunn.GUI
         /// <param name="c">received Color</param>
         public delegate void ColorEvent(Color c);
 
+        /// <summary>
+        ///     Singeleton instance
+        /// </summary>
         private static ColorPicker instance;
+
         /// <returns>
-        /// True when the ColorPicker is closed
+        ///     True when the ColorPicker is closed
         /// </returns>
         public static bool done = true;
 
-        //onColorChanged event
+        /// <summary>
+        ///     OnColorChanged event
+        /// </summary>
         private static ColorEvent onCC;
-        //onColorSelected event
+        /// <summary>
+        ///     OnColorSelected event
+        /// </summary>
         private static ColorEvent onCS;
 
-        //Color before editing
+        /// <summary>
+        ///     Color before editing
+        /// </summary>
         private static Color32 originalColor;
-        //current Color
+        /// <summary>
+        ///     Current Color
+        /// </summary>
         private static Color32 modifiedColor;
         private static HSV modifiedHsv;
 
-        //useAlpha bool
+        /// <summary>
+        ///     UseAlpha bool
+        /// </summary>
         private static bool useA;
-
+        /// <summary>
+        ///     Interact bool
+        /// </summary>
         private bool interact;
 
-        // these can only work with the prefab and its children
+        /// <summary>
+        ///     Component ref
+        /// </summary>
         public RectTransform positionIndicator;
+        /// <summary>
+        ///     Component ref
+        /// </summary>
         public Slider mainComponent;
+        /// <summary>
+        ///     Component ref
+        /// </summary>
         public Slider rComponent;
+        /// <summary>
+        ///     Component ref
+        /// </summary>
         public Slider gComponent;
+        /// <summary>
+        ///     Component ref
+        /// </summary>
         public Slider bComponent;
+        /// <summary>
+        ///     Component ref
+        /// </summary>
         public Slider aComponent;
+        /// <summary>
+        ///     Component ref
+        /// </summary>
         public InputField hexaComponent;
+        /// <summary>
+        ///     Component ref
+        /// </summary>
         public RawImage colorComponent;
 
         private void Awake()
@@ -51,9 +93,8 @@ namespace Jotunn.GUI
 
         }
 
-
         /// <summary>
-        /// Creates a new Colorpicker
+        ///     Creates a new Colorpicker
         /// </summary>
         /// <param name="original">Color before editing</param>
         /// <param name="message">Display message</param>
@@ -61,7 +102,7 @@ namespace Jotunn.GUI
         /// <param name="onColorSelected">Event that gets called when one of the buttons done or cancel get pressed</param>
         /// <param name="useAlpha">When set to false the colors used don't have an alpha channel</param>
         /// <returns>
-        /// False if the instance is already running
+        ///     False if the instance is already running
         /// </returns>
         public static bool Create(Color original, string message, ColorEvent onColorChanged, ColorEvent onColorSelected, bool useAlpha = false)
         {
@@ -92,7 +133,10 @@ namespace Jotunn.GUI
             }
         }
 
-        //called when color is modified, to update other UI components
+        /// <summary>
+        ///     Called when color is modified, to update other UI components
+        /// </summary>
+        /// <param name="recalculateHSV"></param>
         private void RecalculateMenu(bool recalculateHSV)
         {
             interact = false;
@@ -132,7 +176,9 @@ namespace Jotunn.GUI
             interact = true;
         }
 
-        //used by EventTrigger to calculate the chosen value in color box
+        /// <summary>
+        ///     Used by EventTrigger to calculate the chosen value in color box
+        /// </summary>
         public void SetChooser()
         {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(positionIndicator.parent as RectTransform, Input.mousePosition, GetComponentInParent<Canvas>().worldCamera, out Vector2 localpoint);
@@ -147,7 +193,10 @@ namespace Jotunn.GUI
             }
         }
 
-        //gets main Slider value
+        /// <summary>
+        ///     Gets main Slider value
+        /// </summary>
+        /// <param name="value"></param>
         public void SetMain(float value)
         {
             if (interact)
@@ -157,7 +206,10 @@ namespace Jotunn.GUI
             }
         }
 
-        //gets r Slider value
+        /// <summary>
+        ///     Gets r Slider value
+        /// </summary>
+        /// <param name="value"></param>
         public void SetR(float value)
         {
             if (interact)
@@ -166,7 +218,10 @@ namespace Jotunn.GUI
                 RecalculateMenu(true);
             }
         }
-        //gets r InputField value
+        /// <summary>
+        ///     Gets r InputField value
+        /// </summary>
+        /// <param name="value"></param>
         public void SetR(string value)
         {
             if (interact)
@@ -175,7 +230,10 @@ namespace Jotunn.GUI
                 RecalculateMenu(true);
             }
         }
-        //gets g Slider value
+        /// <summary>
+        ///     Gets g Slider value
+        /// </summary>
+        /// <param name="value"></param>
         public void SetG(float value)
         {
             if (interact)
@@ -184,7 +242,10 @@ namespace Jotunn.GUI
                 RecalculateMenu(true);
             }
         }
-        //gets g InputField value
+        /// <summary>
+        ///     Gets g InputField value
+        /// </summary>
+        /// <param name="value"></param>
         public void SetG(string value)
         {
             if (interact)
@@ -193,7 +254,10 @@ namespace Jotunn.GUI
                 RecalculateMenu(true);
             }
         }
-        //gets b Slider value
+        /// <summary>
+        ///     Gets b Slider value
+        /// </summary>
+        /// <param name="value"></param>
         public void SetB(float value)
         {
             if (interact)
@@ -202,7 +266,10 @@ namespace Jotunn.GUI
                 RecalculateMenu(true);
             }
         }
-        //gets b InputField value
+        /// <summary>
+        ///     Gets b InputField value
+        /// </summary>
+        /// <param name="value"></param>
         public void SetB(string value)
         {
             if (interact)
@@ -211,7 +278,10 @@ namespace Jotunn.GUI
                 RecalculateMenu(true);
             }
         }
-        //gets a Slider value
+        /// <summary>
+        ///     Gets a Slider value
+        /// </summary>
+        /// <param name="value"></param>
         public void SetA(float value)
         {
             if (interact)
@@ -220,7 +290,10 @@ namespace Jotunn.GUI
                 RecalculateMenu(false);
             }
         }
-        //gets a InputField value
+        /// <summary>
+        ///     Gets a InputField value
+        /// </summary>
+        /// <param name="value"></param>
         public void SetA(string value)
         {
             if (interact)
@@ -229,7 +302,10 @@ namespace Jotunn.GUI
                 RecalculateMenu(false);
             }
         }
-        //gets hexa InputField value
+        /// <summary>
+        ///     Gets hexa InputField value
+        /// </summary>
+        /// <param name="value"></param>
         public void SetHexa(string value)
         {
             if (interact)
@@ -246,26 +322,30 @@ namespace Jotunn.GUI
                 }
             }
         }
-        //cancel button call
+        /// <summary>
+        ///     Cancel button call
+        /// </summary>
         public void CCancel()
         {
             Cancel();
         }
         /// <summary>
-        /// Manually cancel the ColorPicker and recover the default value
+        ///     Manually cancel the ColorPicker and recover the default value
         /// </summary>
         public static void Cancel()
         {
             modifiedColor = originalColor;
             Done();
         }
-        //done button call
+        /// <summary>
+        ///     Done button call
+        /// </summary>
         public void CDone()
         {
             Done();
         }
         /// <summary>
-        /// Manually close the ColorPicker and apply the selected color
+        ///     Manually close the ColorPicker and apply the selected color
         /// </summary>
         public static void Done()
         {
@@ -274,7 +354,9 @@ namespace Jotunn.GUI
             onCS?.Invoke(modifiedColor);
             instance.transform.gameObject.SetActive(false);
         }
-        //HSV helper class
+        /// <summary>
+        ///     HSV helper class
+        /// </summary>
         private sealed class HSV
         {
             public double H = 0, S = 1, V = 1;
