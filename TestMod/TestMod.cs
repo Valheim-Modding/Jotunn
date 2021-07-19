@@ -123,8 +123,7 @@ namespace TestMod
                     TogglePanel();
                 }
 
-                // To show GUI which does not get created every time OnGUI() is called,
-                // we have a togger method defined.
+                // Show ColorPicker or GradientPicker via GUIManager
                 if (ZInput.GetButtonDown(CreateColorPickerButton.Name))
                 {
                     CreateColorPicker();

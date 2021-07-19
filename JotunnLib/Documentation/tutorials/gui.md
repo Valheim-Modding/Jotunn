@@ -18,6 +18,37 @@ A dedicated server running without GUI is commonly referred to as a headless ser
 
 The [GUIManager](xref:Jotunn.Managers.GUIManager) provides useful methods to create buttons, text element and more at runtime using the original Valheim assets to create a seamless look for your custom GUI components.
 
+### ColorPicker and GradientPicker
+
+![ColorPicker and GradientPicker](../images/data/colorgradientpicker.png)
+
+Jötunn uses a custom made ColorPicker for its ModSettings dialogue which is also available for mods to use. Additionaly there is also a GradientPicker available.
+
+ColorPickerExample:
+```cs
+GUIManager.Instance.CreateColorPicker(
+    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+    r.sharedMaterial.color,  // Initial selected color in the picker
+    "Choose your poison",  // Caption of the picker window
+    SetColor,  // Callback delegate when the color in the picker changes
+    ColorChosen,  // Callback delegate when the window is closed
+    true  // Whether or not the alpha channel should be editable
+);
+```
+
+GradientPicker example:
+```cs
+GUIManager.Instance.CreateGradientPicker(
+    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+    new Gradient(),  // Initial gradient being used
+    "Gradiwut?",  // Caption of the GradientPicker window
+    SetGradient,  // Callback delegate when the gradient changes
+    GradientFinished  // Callback delegate when thw window is closed
+);
+```
+
+A more explanatory example can be found in our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
+
 ### Wood panels
 
 ![Woodpanel](../images/data/woodpanel.png)
@@ -26,7 +57,13 @@ Woodpanels, nicely usable as containers for other gui elements.
 
 Example:
 ```cs
-var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 0f), 400f, 300f);
+var panel = GUIManager.Instance.CreateWoodpanel(
+    GUIManager.PixelFix.transform, 
+    new Vector2(0.5f, 0.5f), 
+    new Vector2(0.5f, 0.5f), 
+    new Vector2(0f, 0f), 
+    400f, 
+    300f);
 ```
 
 ### Buttons
