@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
@@ -56,11 +59,14 @@ namespace Jotunn.Managers
 
             // Hook RPC_PeerInfo for initial retrieval of admin status and configuration
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
-
-            On.Menu.IsVisible += Menu_IsVisible;
+            
+            // Hook SyncedList for admin list changes
             On.SyncedList.Load += SyncedList_Load;
             On.SyncedList.Save += SyncedList_Save;
 
+            // Hook menu for ConfigManager integration
+            On.Menu.IsVisible += Menu_IsVisible;
+            
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
             if (!ConfigurationManager)
             {
@@ -106,7 +112,6 @@ namespace Jotunn.Managers
         {
             orig(self);
             ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_IsAdmin), new Action<long, bool>(RPC_Jotunn_IsAdmin));
-            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_ConfigSync), new Action<long, ZPackage>(RPC_Jotunn_ConfigSync));
             ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_ApplyConfig), new Action<long, ZPackage>(RPC_Jotunn_ApplyConfig));
 
             if (ZNet.instance != null && ZNet.instance.IsLocalInstance())
@@ -150,6 +155,7 @@ namespace Jotunn.Managers
 
             if (ZNet.instance.IsClientInstance())
             {
+                // Request admin status
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_Jotunn_IsAdmin), false);
             }
         }
@@ -290,7 +296,7 @@ namespace Jotunn.Managers
                     ZRoutedRpc.instance.InvokeRoutedRPC(sender, nameof(RPC_Jotunn_IsAdmin), result);
 
                     // Also sending server-only configuration values to client
-                    RPC_Jotunn_ConfigSync(sender, null);
+                    SynchronizeInitialConfig(sender);
                 }
             }
         }
@@ -383,37 +389,18 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Send initial configuration data to client (full set).
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="peer"></param>
         /// <param name="configPkg"></param>
-        internal void RPC_Jotunn_ConfigSync(long sender, ZPackage configPkg)
+        private void SynchronizeInitialConfig(long peer)
         {
-            if (ZNet.instance.IsClientInstance())
-            {
-                // Validate the message is from the server and not another client.
-                if (configPkg != null && configPkg.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
-                {
-                    Logger.LogInfo("Received configuration data from server");
-                    ApplyConfigZPackage(configPkg);
+            Logger.LogInfo($"Sending configuration data to peer #{peer}");
 
-                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = true });
-                }
-            }
+            var values = GetSyncConfigValues();
 
-            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
-            {
-                var peer = ZNet.instance.m_peers.FirstOrDefault(x => x.m_uid == sender);
-                if (peer != null)
-                {
-                    Logger.LogInfo($"Sending configuration data to peer #{sender}");
+            var pkg = GenerateConfigZPackage(true, values);
 
-                    var values = GetSyncConfigValues();
-
-                    var pkg = GenerateConfigZPackage(values);
-
-                    Logger.LogDebug($"Sending {values.Count} configuration values to client {sender}");
-                    ZRoutedRpc.instance.InvokeRoutedRPC(sender, nameof(RPC_Jotunn_ConfigSync), pkg);
-                }
-            }
+            Logger.LogDebug($"Sending {values.Count} configuration values to client {peer}");
+            ZRoutedRpc.instance.InvokeRoutedRPC(peer, nameof(RPC_Jotunn_ApplyConfig), pkg);
         }
 
         /// <summary>
@@ -452,7 +439,7 @@ namespace Jotunn.Managers
             // Send to server
             if (valuesToSend.Count > 0)
             {
-                var zPackage = GenerateConfigZPackage(valuesToSend);
+                var zPackage = GenerateConfigZPackage(false, valuesToSend);
 
                 // Send values to server if it is a client instance
                 if (ZNet.instance.IsClientInstance())
@@ -486,9 +473,9 @@ namespace Jotunn.Managers
                 if (configPkg != null && configPkg.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
                 {
                     Logger.LogInfo("Received configuration data from server");
-                    ApplyConfigZPackage(configPkg);
 
-                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
+                    ApplyConfigZPackage(configPkg, out bool initial);
+                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = initial });
                 }
             }
 
@@ -506,7 +493,7 @@ namespace Jotunn.Managers
                     }
 
                     // Apply config locally
-                    ApplyConfigZPackage(configPkg);
+                    ApplyConfigZPackage(configPkg, out bool initial);
                 }
             }
         }
@@ -514,10 +501,13 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Apply received configuration values locally
         /// </summary>
-        /// <param name="configPkg"></param>
-        internal void ApplyConfigZPackage(ZPackage configPkg)
+        /// <param name="configPkg">Package of config tuples</param>
+        /// <param name="initial">Indicator if this was an initial config package</param>
+        private void ApplyConfigZPackage(ZPackage configPkg, out bool initial)
         {
-            Logger.LogDebug("Applying configuration data package");
+            initial = configPkg.ReadBool();
+
+            Logger.LogDebug($"Applying {(initial ? "initial" : null)} configuration data package");
 
             var loadedPlugins = BepInExUtils.GetDependentPlugins();
 
@@ -555,11 +545,13 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Generate ZPackage from configuration tuples
         /// </summary>
-        /// <param name="values"></param>
+        /// <param name="initial">Indicator if this is the initial config package</param>
+        /// <param name="values">List of config tuples to include in the package</param>
         /// <returns></returns>
-        private ZPackage GenerateConfigZPackage(List<Tuple<string, string, string, string>> values)
+        private ZPackage GenerateConfigZPackage(bool initial, List<Tuple<string, string, string, string>> values)
         {
             var pkg = new ZPackage();
+            pkg.Write(initial);
             var num = values.Count;
             pkg.Write(num);
             foreach (var entry in values)
@@ -599,5 +591,100 @@ namespace Jotunn.Managers
 
             return values;
         }
+/*
+        private IEnumerator SendToPeer(ZNetPeer peer, ZPackage package)
+        {
+            if (ZRoutedRpc.instance is not ZRoutedRpc rpc)
+            {
+                yield break;
+            }
+
+            const int maximumSendQueueSize = 20000;
+
+            IEnumerable<bool> waitForQueue()
+            {
+                float timeout = Time.time + 30;
+                while (peer.m_socket.GetSendQueueSize() > maximumSendQueueSize)
+                {
+                    if (Time.time > timeout)
+                    {
+                        Debug.Log($"Disconnecting {peer.m_uid} after 30 seconds config sending timeout");
+                        peer.m_rpc.Invoke("Error", ZNet.ConnectionStatus.ErrorConnectFailed);
+                        ZNet.instance.Disconnect(peer);
+                        yield break;
+                    }
+
+                    yield return false;
+                }
+            }
+
+            void SendPackage(ZPackage pkg)
+            {
+                string method = Name + " ConfigSync";
+                if (ZNet.instance.IsServer())
+                {
+                    peer.m_rpc.Invoke(method, pkg);
+                }
+                else
+                {
+                    rpc.InvokeRoutedRPC(peer.m_server ? 0 : peer.m_uid, method, pkg);
+                }
+            }
+
+            foreach (bool wait in waitForQueue())
+            {
+                yield return wait;
+            }
+
+            SendPackage(package);
+        }
+
+        private IEnumerator SendAsync(long target, ZPackage package)
+        {
+            if (!ZNet.instance)
+            {
+                return Enumerable.Empty<object>().GetEnumerator();
+            }
+
+            List<ZNetPeer> peers = ZRoutedRpc.instance.m_peers;
+            if (target != ZRoutedRpc.Everybody)
+            {
+                peers = peers.Where(p => p.m_uid == target).ToList();
+            }
+
+            return SendAsync(peers, package);
+        }
+
+        private IEnumerator SendAsync(List<ZNetPeer> peers, ZPackage package)
+        {
+            if (!ZNet.instance)
+            {
+                yield break;
+            }
+
+            *//*const int compressMinSize = 10000;
+
+            if (package.GetArray() is byte[] { LongLength: > compressMinSize } rawData)
+            {
+                ZPackage compressedPackage = new();
+                compressedPackage.Write(COMPRESSED_CONFIG);
+                MemoryStream output = new();
+                using (DeflateStream deflateStream = new(output, System.IO.Compression.CompressionLevel.Optimal))
+                {
+                    deflateStream.Write(rawData, 0, rawData.Length);
+                }
+                compressedPackage.Write(output.ToArray());
+                package = compressedPackage;
+            }*//*
+
+            List<IEnumerator<bool>> writers = peers.Where(peer => peer.IsReady()).Select(p => distributeConfigToPeers(p, package)).ToList();
+            writers.RemoveAll(writer => !writer.MoveNext());
+            while (writers.Count > 0)
+            {
+                yield return null;
+                writers.RemoveAll(writer => !writer.MoveNext());
+            }
+        }
+*/
     }
 }
