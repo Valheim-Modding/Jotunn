@@ -14,19 +14,19 @@ namespace Jotunn.Managers
     /// </summary>
     public class SynchronizationManager : IManager
     {
-        private List<Tuple<string, string, string, string>> cachedConfigValues = new List<Tuple<string, string, string, string>>();
+        private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
+        private double LastLoadCheckTime;
 
-        private BaseUnityPlugin configurationManager;
-        internal bool configurationManagerWindowShown;
-        private static SynchronizationManager _instance;
-        private static Dictionary<string, bool> lastAdminStates = new Dictionary<string, bool>();
-        private double m_lastLoadCheckTime;
+        private List<Tuple<string, string, string, string>> CachedConfigValues = new List<Tuple<string, string, string, string>>();
+        private BaseUnityPlugin ConfigurationManager;
+        private bool ConfigurationManagerWindowShown;
 
         /// <summary>
         ///     Event triggered after server configuration is applied to client
         /// </summary>
         public static event EventHandler<ConfigurationSynchronizationEventArgs> OnConfigurationSynchronized;
 
+        private static SynchronizationManager _instance;
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -62,21 +62,38 @@ namespace Jotunn.Managers
             On.SyncedList.Save += SyncedList_Save;
 
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
-            if (!configurationManager)
+            if (!ConfigurationManager)
             {
-                HookConfigurationManager();
+                Logger.LogDebug("Trying to hook config manager");
+
+                var result = new Dictionary<string, BaseUnityPlugin>();
+                ConfigurationManager = GameObject.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray()
+                    .FirstOrDefault(x => x.Info.Metadata.GUID == "com.bepis.bepinex.configurationmanager");
+
+                if (ConfigurationManager)
+                {
+                    Logger.LogDebug("Configuration manager found, trying to hook DisplayingWindowChanged");
+                    var eventinfo = ConfigurationManager.GetType().GetEvent("DisplayingWindowChanged");
+                    if (eventinfo != null)
+                    {
+                        Action<object, object> local = ConfigurationManager_DisplayingWindowChanged;
+                        var converted = Delegate.CreateDelegate(eventinfo.EventHandlerType, local.Target, local.Method);
+
+                        eventinfo.AddEventHandler(ConfigurationManager, converted);
+                    }
+                }
             }
         }
 
         /// <summary>
         ///     Timer method for refreshing the ZNet admin list, polls the list every 10 seconds
         /// </summary>
-        internal void AdminListUpdate()
+        public void AdminListUpdate()
         {
-            if (Time.realtimeSinceStartup - this.m_lastLoadCheckTime >= 10.0f)
+            if (Time.realtimeSinceStartup - LastLoadCheckTime >= 10.0f)
             {
                 ZNet.instance.m_adminList.GetList();
-                m_lastLoadCheckTime = Time.realtimeSinceStartup;
+                LastLoadCheckTime = Time.realtimeSinceStartup;
             }
         }
 
@@ -186,17 +203,17 @@ namespace Jotunn.Managers
                 foreach (var entry in adminListCopy)
                 {
                     // Admin state added, but not in cache list yet
-                    if (!lastAdminStates.ContainsKey(entry))
+                    if (!CachedAdminStates.ContainsKey(entry))
                     {
                         // Send RPC, new entry found
                         SendAdminStateToClient(entry, true);
 
-                        lastAdminStates.Add(entry, true);
+                        CachedAdminStates.Add(entry, true);
                     }
                     // Admin state added and already in cache list
                     else
                     {
-                        if (lastAdminStates[entry] == false)
+                        if (CachedAdminStates[entry] == false)
                         {
                             // Send RPC, new entry found
                             SendAdminStateToClient(entry, true);
@@ -204,19 +221,19 @@ namespace Jotunn.Managers
                     }
                 }
 
-                foreach (var entry in lastAdminStates.Keys.ToList())
+                foreach (var entry in CachedAdminStates.Keys.ToList())
                 {
                     // Admin state removed
                     if (!adminListCopy.Contains(entry))
                     {
                         // If cached state is true
-                        if (lastAdminStates[entry])
+                        if (CachedAdminStates[entry])
                         {
                             // Send RPC, new entry found
                             SendAdminStateToClient(entry, false);
                         }
 
-                        lastAdminStates.Remove(entry);
+                        CachedAdminStates.Remove(entry);
                     }
                 }
             }
@@ -234,167 +251,6 @@ namespace Jotunn.Managers
             {
                 Logger.LogInfo($"Sending admin status to {entry}/{clientId} ({(admin ? "is admin" : "is no admin")})");
                 ZRoutedRpc.instance.InvokeRoutedRPC((long)clientId, nameof(RPC_Jotunn_IsAdmin), admin);
-            }
-        }
-
-        /// <summary>
-        ///     Hook ConfigurationManager's DisplayingWindowChanged to be able to react on window open/close.
-        /// </summary>
-        private void HookConfigurationManager()
-        {
-            Logger.LogDebug("Trying to hook config manager");
-
-            var result = new Dictionary<string, BaseUnityPlugin>();
-            configurationManager = GameObject.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray()
-                .FirstOrDefault(x => x.Info.Metadata.GUID == "com.bepis.bepinex.configurationmanager");
-
-            if (configurationManager)
-            {
-                Logger.LogDebug("Configuration manager found, trying to hook DisplayingWindowChanged");
-                var eventinfo = configurationManager.GetType().GetEvent("DisplayingWindowChanged");
-                if (eventinfo != null)
-                {
-                    Action<object, object> local = ConfigurationManager_DisplayingWindowChanged;
-                    var converted = Delegate.CreateDelegate(eventinfo.EventHandlerType, local.Target, local.Method);
-
-                    eventinfo.AddEventHandler(configurationManager, converted);
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Hook <see cref="Menu.IsVisible"/> to unlock cursor properly and disable camera rotation
-        /// </summary>
-        /// <param name="orig"></param>
-        /// <returns></returns>
-        private bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
-        {
-            return orig() | configurationManagerWindowShown;
-        }
-
-        /// <summary>
-        ///     Window display state changed event.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ConfigurationManager_DisplayingWindowChanged(object sender, object e)
-        {
-            // Read configuration manager's DisplayingWindow property
-            var pi = configurationManager.GetType().GetProperty("DisplayingWindow");
-            configurationManagerWindowShown = (bool)pi.GetValue(configurationManager, null);
-
-            // Did window open or close?
-            if (configurationManagerWindowShown)
-            {
-                // If window just opened, cache the config values for comparison later
-                CacheConfigurationValues();
-            }
-            else
-            {
-                SynchronizeChangedConfig();
-            }
-        }
-
-        /// <summary>
-        ///     Cache the synchronizable configuration values
-        /// </summary>
-        internal void CacheConfigurationValues()
-        {
-            cachedConfigValues = GetSyncConfigValues();
-        }
-
-        /// <summary>
-        ///     Syncs the changed configuration of a client to the server
-        /// </summary>
-        internal void SynchronizeChangedConfig()
-        {
-            // Lets compare and send to server, if applicable
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
-
-            var valuesToSend = new List<Tuple<string, string, string, string>>();
-            foreach (var plugin in loadedPlugins)
-            {
-                foreach (var cd in plugin.Value.Config.Keys)
-                {
-                    var cx = plugin.Value.Config[cd.Section, cd.Key];
-                    if (cx.Description.Tags.Any(x =>
-                        x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly &&
-                        ((ConfigurationManagerAttributes)x).UnlockSetting))
-                    {
-                        var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
-                        valuesToSend.Add(value);
-                    }
-
-                    string buttonName = cx.GetBoundButtonName();
-                    if (cx.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.ContainsKey(buttonName))
-                    {
-                        ZInput.instance.Setbutton(buttonName, (KeyCode)cx.BoxedValue);
-                    }
-                }
-            }
-
-            // We need only changed values
-            valuesToSend = valuesToSend.Where(x => !cachedConfigValues.Contains(x)).ToList();
-
-            // Send to server
-            if (valuesToSend.Count > 0)
-            {
-                var zPackage = GenerateConfigZPackage(valuesToSend);
-
-                // Send values to server if it is a client instance
-                if (ZNet.instance.IsClientInstance())
-                {
-                    ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_Jotunn_ApplyConfig), zPackage);
-
-                    // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
-                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
-
-                }
-                // If it is a local instance, send it to all connected peers
-                if (ZNet.instance.IsLocalInstance())
-                {
-                    foreach (var peer in ZNet.instance.m_peers)
-                    {
-                        ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_Jotunn_ApplyConfig), zPackage);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Apply a partial config to server and send to other clients.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="configPkg"></param>
-        internal void RPC_Jotunn_ApplyConfig(long sender, ZPackage configPkg)
-        {
-            if (ZNet.instance.IsClientInstance())
-            {
-                if (configPkg != null && configPkg.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
-                {
-                    Logger.LogInfo("Received configuration data from server");
-                    ApplyConfigZPackage(configPkg);
-
-                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
-                }
-            }
-
-            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
-            {
-                // Is package not empty and is sender admin?
-                if (configPkg != null && configPkg.Size() > 0 && ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
-                {
-                    Logger.LogInfo($"Received configuration data from client {sender}");
-
-                    // Send to all other clients
-                    foreach (var peer in ZNet.instance.m_peers.Where(x => x.m_uid != sender))
-                    {
-                        ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_Jotunn_ApplyConfig), configPkg);
-                    }
-
-                    // Apply config locally
-                    ApplyConfigZPackage(configPkg);
-                }
             }
         }
 
@@ -484,6 +340,47 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Hook <see cref="Menu.IsVisible"/> to unlock cursor properly and disable camera rotation
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <returns></returns>
+        private bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
+        {
+            return orig() | ConfigurationManagerWindowShown;
+        }
+
+        /// <summary>
+        ///     Window display state changed event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ConfigurationManager_DisplayingWindowChanged(object sender, object e)
+        {
+            // Read configuration manager's DisplayingWindow property
+            var pi = ConfigurationManager.GetType().GetProperty("DisplayingWindow");
+            ConfigurationManagerWindowShown = (bool)pi.GetValue(ConfigurationManager, null);
+
+            // Did window open or close?
+            if (ConfigurationManagerWindowShown)
+            {
+                // If window just opened, cache the config values for comparison later
+                CacheConfigurationValues();
+            }
+            else
+            {
+                SynchronizeChangedConfig();
+            }
+        }
+
+        /// <summary>
+        ///     Cache the synchronizable configuration values
+        /// </summary>
+        internal void CacheConfigurationValues()
+        {
+            CachedConfigValues = GetSyncConfigValues();
+        }
+
+        /// <summary>
         ///     Send initial configuration data to client (full set).
         /// </summary>
         /// <param name="sender"></param>
@@ -515,6 +412,101 @@ namespace Jotunn.Managers
 
                     Logger.LogDebug($"Sending {values.Count} configuration values to client {sender}");
                     ZRoutedRpc.instance.InvokeRoutedRPC(sender, nameof(RPC_Jotunn_ConfigSync), pkg);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Syncs the changed configuration of a client to the server
+        /// </summary>
+        internal void SynchronizeChangedConfig()
+        {
+            // Lets compare and send to server, if applicable
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+
+            var valuesToSend = new List<Tuple<string, string, string, string>>();
+            foreach (var plugin in loadedPlugins)
+            {
+                foreach (var cd in plugin.Value.Config.Keys)
+                {
+                    var cx = plugin.Value.Config[cd.Section, cd.Key];
+                    if (cx.Description.Tags.Any(x =>
+                        x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly &&
+                        ((ConfigurationManagerAttributes)x).UnlockSetting))
+                    {
+                        var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
+                        valuesToSend.Add(value);
+                    }
+
+                    string buttonName = cx.GetBoundButtonName();
+                    if (cx.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.ContainsKey(buttonName))
+                    {
+                        ZInput.instance.Setbutton(buttonName, (KeyCode)cx.BoxedValue);
+                    }
+                }
+            }
+
+            // We need only changed values
+            valuesToSend = valuesToSend.Where(x => !CachedConfigValues.Contains(x)).ToList();
+
+            // Send to server
+            if (valuesToSend.Count > 0)
+            {
+                var zPackage = GenerateConfigZPackage(valuesToSend);
+
+                // Send values to server if it is a client instance
+                if (ZNet.instance.IsClientInstance())
+                {
+                    ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, nameof(RPC_Jotunn_ApplyConfig), zPackage);
+
+                    // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
+                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
+
+                }
+                // If it is a local instance, send it to all connected peers
+                if (ZNet.instance.IsLocalInstance())
+                {
+                    foreach (var peer in ZNet.instance.m_peers)
+                    {
+                        ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_Jotunn_ApplyConfig), zPackage);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Apply a partial config to server and send to other clients.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="configPkg"></param>
+        internal void RPC_Jotunn_ApplyConfig(long sender, ZPackage configPkg)
+        {
+            if (ZNet.instance.IsClientInstance())
+            {
+                if (configPkg != null && configPkg.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
+                {
+                    Logger.LogInfo("Received configuration data from server");
+                    ApplyConfigZPackage(configPkg);
+
+                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
+                }
+            }
+
+            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
+            {
+                // Is package not empty and is sender admin?
+                if (configPkg != null && configPkg.Size() > 0 && ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
+                {
+                    Logger.LogInfo($"Received configuration data from client {sender}");
+
+                    // Send to all other clients
+                    foreach (var peer in ZNet.instance.m_peers.Where(x => x.m_uid != sender))
+                    {
+                        ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_Jotunn_ApplyConfig), configPkg);
+                    }
+
+                    // Apply config locally
+                    ApplyConfigZPackage(configPkg);
                 }
             }
         }
