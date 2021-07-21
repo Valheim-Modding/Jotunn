@@ -18,8 +18,6 @@ namespace Jotunn.Managers
     public class SynchronizationManager : IManager
     {
         private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
-        private double LastLoadCheckTime;
-
         private List<Tuple<string, string, string, string>> CachedConfigValues = new List<Tuple<string, string, string, string>>();
         private BaseUnityPlugin ConfigurationManager;
         private bool ConfigurationManagerWindowShown;
