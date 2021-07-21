@@ -17,8 +17,6 @@ namespace Jotunn.Managers
     /// </summary>
     public class SynchronizationManager : IManager
     {
-        private readonly List<ServerSync> ServerSyncs = new List<ServerSync>();
-        
         private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
         private double LastLoadCheckTime;
 
