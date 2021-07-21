@@ -93,3 +93,5 @@ These people have been integral to pushing JVL out of the door, and without them
 *zarboz#7828*: [github](https://github.com/sbtoonz), [thunderstore](https://valheim.thunderstore.io/package/sbtoonz/), [nexus](https://www.nexusmods.com/users/4057483)
 
 *MarcoPogo#6095*: [github](https://github.com/MathiasDecrock), [nexus](https://www.nexusmods.com/users/3030830?tab=user+files)
+
+*blaxxun#9098*: [github](https://github.com/blaxxun-boop) - Creator of the superb [ServerSync](https://github.com/blaxxun-boop/ServerSync) mod which Jötunn adapted
