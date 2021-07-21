@@ -58,7 +58,7 @@ namespace Jotunn.Managers
         {
             // Register RPCs in Game.Start
             On.Game.Start += Game_Start;
-            //On.ZNet.Awake += ZNet_Awake;
+            On.ZNet.Awake += ZNet_Awake;
             On.ZNet.OnNewConnection += ZNet_OnNewConnection;
 
             // Hook RPC_PeerInfo for initial retrieval of admin status and configuration
@@ -134,12 +134,20 @@ namespace Jotunn.Managers
             SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
         }
 
-        /*private void ZNet_Awake(On.ZNet.orig_Awake orig, ZNet self)
+        private void ZNet_Awake(On.ZNet.orig_Awake orig, ZNet self)
         {
             orig(self);
-            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_IsAdmin), new Action<long, bool>(RPC_Jotunn_IsAdmin));
-            ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_SyncConfig), new Action<long, ZPackage>(RPC_Jotunn_SyncConfig));
-        }*/
+
+            IEnumerator watchdog()
+            {
+                while (true)
+                {
+                    yield return new WaitForSeconds(10);
+                    self.m_adminList?.GetList();
+                }
+            }
+            self.StartCoroutine(watchdog());
+        }
 
         private void ZNet_OnNewConnection(On.ZNet.orig_OnNewConnection orig, ZNet self, ZNetPeer peer)
         {
@@ -197,18 +205,6 @@ namespace Jotunn.Managers
                     }
                 }
                 self.StartCoroutine(SynchronizeInitialData());
-            }
-        }
-
-        /// <summary>
-        ///     Timer method for refreshing the ZNet admin list, polls the list every 10 seconds
-        /// </summary>
-        internal void AdminListUpdate()
-        {
-            if (Time.realtimeSinceStartup - LastLoadCheckTime >= 10.0f)
-            {
-                ZNet.instance.m_adminList.GetList();
-                LastLoadCheckTime = Time.realtimeSinceStartup;
             }
         }
 

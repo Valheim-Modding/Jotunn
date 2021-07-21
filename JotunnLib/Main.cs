@@ -81,17 +81,6 @@ namespace Jotunn
             InitializePatches();
         }
 
-        private void Update()
-        {
-            if (ZNet.instance != null)
-            {
-                if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
-                {
-                    SynchronizationManager.Instance.AdminListUpdate();
-                }
-            }
-        }
-
         /// <summary>
         ///     Invoke patch initialization methods for all loaded mods.
         /// </summary>
