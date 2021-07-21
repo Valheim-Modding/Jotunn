@@ -752,7 +752,8 @@ namespace Jotunn.Managers
 
         private IEnumerator<bool> SendToPeer(ZNetPeer peer, ZPackage package)
         {
-            if (ZRoutedRpc.instance is not ZRoutedRpc rpc)
+            ZRoutedRpc rpc = ZRoutedRpc.instance;
+            if (rpc == null)
             {
                 yield break;
             }
@@ -790,8 +791,9 @@ namespace Jotunn.Managers
                 }
             }
 
-            if (package.GetArray() is byte[] { LongLength: > packageSliceSize } data)
+            if (package.Size() > packageSliceSize)
             {
+                byte[] data = package.GetArray();
                 int fragments = (int)(1 + (data.LongLength - 1) / packageSliceSize);
                 long packageIdentifier = ++packageCounter;
                 for (int fragment = 0; fragment < fragments; fragment++)
