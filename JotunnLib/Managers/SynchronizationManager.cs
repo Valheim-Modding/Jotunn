@@ -58,8 +58,8 @@ namespace Jotunn.Managers
         {
             // Register RPCs in Game.Start
             On.Game.Start += Game_Start;
-            /*On.ZNet.Awake += ZNet_Awake;
-            On.ZNet.OnNewConnection += ZNet_OnNewConnection;*/
+            //On.ZNet.Awake += ZNet_Awake;
+            On.ZNet.OnNewConnection += ZNet_OnNewConnection;
 
             // Hook RPC_PeerInfo for initial retrieval of admin status and configuration
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
@@ -92,18 +92,6 @@ namespace Jotunn.Managers
                         eventinfo.AddEventHandler(ConfigurationManager, converted);
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        ///     Timer method for refreshing the ZNet admin list, polls the list every 10 seconds
-        /// </summary>
-        public void AdminListUpdate()
-        {
-            if (Time.realtimeSinceStartup - LastLoadCheckTime >= 10.0f)
-            {
-                ZNet.instance.m_adminList.GetList();
-                LastLoadCheckTime = Time.realtimeSinceStartup;
             }
         }
 
@@ -151,16 +139,17 @@ namespace Jotunn.Managers
             orig(self);
             ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_IsAdmin), new Action<long, bool>(RPC_Jotunn_IsAdmin));
             ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_SyncConfig), new Action<long, ZPackage>(RPC_Jotunn_SyncConfig));
-        }
+        }*/
 
         private void ZNet_OnNewConnection(On.ZNet.orig_OnNewConnection orig, ZNet self, ZNetPeer peer)
         {
             orig(self, peer);
             if (!self.IsServer())
             {
+                peer.m_rpc.Register<bool>(nameof(RPC_Jotunn_IsAdmin), RPC_Jotunn_InitialAdmin);
                 peer.m_rpc.Register<ZPackage>(nameof(RPC_Jotunn_SyncConfig), RPC_Jotunn_SyncInitialConfig);
             }
-        }*/
+        }
 
         /// <summary>
         ///     Hook ZNet.RPC_PeerInfo on the server to send initial data
@@ -184,16 +173,43 @@ namespace Jotunn.Managers
             if (self.IsServer())
             {
                 ZNetPeer peer = self.GetPeer(rpc);
-                SynchronizeInitialAdminStatus(peer);
-                SynchronizeInitialConfig(peer);
+                Logger.LogInfo($"Sending initial data to peer #{peer.m_uid}");
+
+                IEnumerator SynchronizeInitialData()
+                {
+                    var result = ZNet.instance.m_adminList.Contains(peer.m_socket.GetHostName());
+                    Logger.LogDebug($"Admin status: {(result ? "Admin" : "No Admin")}");
+                    peer.m_rpc.Invoke(nameof(RPC_Jotunn_IsAdmin), result);
+                    yield return null;
+
+                    ZPackage pkg = GenerateConfigZPackage(true, GetSyncConfigValues());
+                    yield return ZNet.instance.StartCoroutine(SendPackage(peer.m_uid, pkg));
+
+                    if (peer.m_rpc.GetSocket() is BufferingSocket bufferingSocket)
+                    {
+                        peer.m_rpc.m_socket = bufferingSocket.Original;
+                        bufferingSocket.finished = true;
+
+                        foreach (ZPackage package in bufferingSocket.Package)
+                        {
+                            bufferingSocket.Original.Send(package);
+                        }
+                    }
+                }
+                self.StartCoroutine(SynchronizeInitialData());
             }
         }
 
-        private void SynchronizeInitialAdminStatus(ZNetPeer peer)
+        /// <summary>
+        ///     Timer method for refreshing the ZNet admin list, polls the list every 10 seconds
+        /// </summary>
+        internal void AdminListUpdate()
         {
-            var result = ZNet.instance.m_adminList.Contains(peer.m_socket.GetHostName());
-            Logger.LogInfo($"Sending admin status to peer #{peer.m_uid}: {(result ? "Admin" : "No Admin")}");
-            ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, nameof(RPC_Jotunn_IsAdmin), result);
+            if (Time.realtimeSinceStartup - LastLoadCheckTime >= 10.0f)
+            {
+                ZNet.instance.m_adminList.GetList();
+                LastLoadCheckTime = Time.realtimeSinceStartup;
+            }
         }
 
         /// <summary>
@@ -234,11 +250,6 @@ namespace Jotunn.Managers
         /// </summary>
         private void SynchronizeAdminStatus()
         {
-            if (ZNet.instance == null)
-            {
-                return;
-            }
-            
             if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
             {
                 List<string> adminListCopy = ZNet.instance.m_adminList.m_list.ToList();
@@ -296,12 +307,14 @@ namespace Jotunn.Managers
             }
         }
 
+        private void RPC_Jotunn_InitialAdmin(ZRpc rpc, bool isAdmin) => RPC_Jotunn_IsAdmin(0, isAdmin);
+
         /// <summary>
         ///     Determine Player's admin status.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="isAdmin"></param>
-        internal void RPC_Jotunn_IsAdmin(long sender, bool isAdmin)
+        private void RPC_Jotunn_IsAdmin(long sender, bool isAdmin)
         {
             // Client Receive
             if (ZNet.instance.IsClientInstance())
@@ -407,35 +420,6 @@ namespace Jotunn.Managers
             CachedConfigValues = GetSyncConfigValues();
         }
 
-        private const byte INITIAL_CONFIG = 1;
-        private const byte FRAGMENTED_CONFIG = 2;
-        private const byte COMPRESSED_CONFIG = 4;
-
-        private readonly Dictionary<string, SortedDictionary<int, byte[]>> configValueCache = new();
-        private readonly List<KeyValuePair<long, string>> cacheExpirations = new(); // avoid leaking memory
-
-        /// <summary>
-        ///     Send initial configuration data to client (full set).
-        /// </summary>
-        /// <param name="peer"></param>
-        private void SynchronizeInitialConfig(ZNetPeer peer)
-        {
-            Logger.LogInfo($"Sending configuration data to peer #{peer.m_uid}");
-
-            ZPackage pkg = GenerateConfigZPackage(true, GetSyncConfigValues());
-            ZNet.instance.StartCoroutine(SendAsync(peer.m_uid, pkg));
-
-            if (peer.m_rpc.GetSocket() is BufferingSocket bufferingSocket)
-            {
-                peer.m_rpc.m_socket = bufferingSocket.Original;
-                bufferingSocket.finished = true;
-
-                foreach (ZPackage package in bufferingSocket.Package)
-                {
-                    bufferingSocket.Original.Send(package);
-                }
-            }
-        }
 
         /// <summary>
         ///     Syncs the changed configuration of a client to the server
@@ -482,15 +466,21 @@ namespace Jotunn.Managers
 
                     // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
                     OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
-
                 }
                 // If it is a local instance, send it to all connected peers
                 if (ZNet.instance.IsLocalInstance())
                 {
-                    SendAsync(ZNet.instance.m_peers, package);
+                    ZNet.instance.StartCoroutine(SendPackage(ZNet.instance.m_peers, package));
                 }
             }
         }
+
+        private const byte INITIAL_CONFIG = 1;
+        private const byte FRAGMENTED_CONFIG = 2;
+        private const byte COMPRESSED_CONFIG = 4;
+
+        private readonly Dictionary<string, SortedDictionary<int, byte[]>> configValueCache = new();
+        private readonly List<KeyValuePair<long, string>> cacheExpirations = new(); // avoid leaking memory
 
         private void RPC_Jotunn_SyncInitialConfig(ZRpc rpc, ZPackage package) => RPC_Jotunn_SyncConfig(0, package);
 
@@ -503,9 +493,9 @@ namespace Jotunn.Managers
         {
             if (ZNet.instance.IsClientInstance())
             {
-                if (package != null && package.Size() > 0 && sender == ZNet.instance.GetServerPeer().m_uid)
+                if (package != null && package.Size() > 0) // && sender == ZNet.instance.GetServerPeer().m_uid)
                 {
-                    Logger.LogInfo("Received configuration data from server");
+                    Logger.LogDebug("Received configuration data from server");
                     try
                     {
                         cacheExpirations.RemoveAll(kv =>
@@ -582,7 +572,7 @@ namespace Jotunn.Managers
                     Logger.LogInfo($"Received configuration data from client {sender}");
 
                     // Send to all other clients
-                    SendAsync(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package);
+                    SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package);
 
                     // Apply config locally
                     ApplyConfigZPackage(package, out bool initial);
@@ -688,7 +678,7 @@ namespace Jotunn.Managers
             return values;
         }
 
-        private IEnumerator SendAsync(long target, ZPackage package)
+        private IEnumerator SendPackage(long target, ZPackage package)
         {
             if (!ZNet.instance)
             {
@@ -701,10 +691,10 @@ namespace Jotunn.Managers
                 peers = peers.Where(p => p.m_uid == target).ToList();
             }
 
-            return SendAsync(peers, package);
+            return SendPackage(peers, package);
         }
 
-        private IEnumerator SendAsync(List<ZNetPeer> peers, ZPackage package)
+        private IEnumerator SendPackage(List<ZNetPeer> peers, ZPackage package)
         {
             if (!ZNet.instance)
             {
@@ -715,6 +705,8 @@ namespace Jotunn.Managers
 
             if (package.GetArray() is byte[] { LongLength: > compressMinSize } rawData)
             {
+                Logger.LogDebug($"Compressing package with length {rawData.Length}");
+
                 ZPackage compressedPackage = new();
                 compressedPackage.Write(COMPRESSED_CONFIG);
                 MemoryStream output = new();
@@ -767,15 +759,14 @@ namespace Jotunn.Managers
             void SendPackage(ZPackage pkg)
             {
                 string method = nameof(RPC_Jotunn_SyncConfig);
-                /*if (ZNet.instance.IsServer())
+                if (ZNet.instance.IsServer())
                 {
                     peer.m_rpc.Invoke(method, pkg);
                 }
                 else
                 {
                     rpc.InvokeRoutedRPC(peer.m_server ? 0 : peer.m_uid, method, pkg);
-                }*/
-                ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_server ? 0 : peer.m_uid, nameof(RPC_Jotunn_SyncConfig), pkg);
+                }
             }
 
             if (package.GetArray() is byte[] { LongLength: > packageSliceSize } data)
@@ -800,8 +791,10 @@ namespace Jotunn.Managers
                     fragmentedPackage.Write(fragment);
                     fragmentedPackage.Write(fragments);
                     fragmentedPackage.Write(data.Skip(packageSliceSize * fragment).Take(packageSliceSize).ToArray());
-                    SendPackage(fragmentedPackage);
 
+                    Logger.LogDebug($"Sending fragmented package {packageIdentifier}:{fragment}");
+                    SendPackage(fragmentedPackage);
+                    
                     if (fragment != fragments - 1)
                     {
                         yield return true;
@@ -815,6 +808,7 @@ namespace Jotunn.Managers
                     yield return wait;
                 }
 
+                Logger.LogDebug("Sending package");
                 SendPackage(package);
             }
         }
@@ -850,6 +844,7 @@ namespace Jotunn.Managers
             {
                 pkg.SetPos(0);
                 int methodHash = pkg.ReadInt();
+
                 if ((methodHash == "PeerInfo".GetStableHashCode() || methodHash == "RoutedRPC".GetStableHashCode()) && !finished)
                 {
                     Package.Add(new ZPackage(pkg.GetArray())); // the original ZPackage gets reused, create a new one
