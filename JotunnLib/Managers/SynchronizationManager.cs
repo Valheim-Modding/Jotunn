@@ -31,6 +31,11 @@ namespace Jotunn.Managers
         /// </summary>
         public static event EventHandler<ConfigurationSynchronizationEventArgs> OnConfigurationSynchronized;
 
+        /// <summary>
+        ///     Event triggered after a clients admin status changed on the server
+        /// </summary>
+        public static event Action OnAdminStatusChanged;
+
         private static SynchronizationManager _instance;
         /// <summary>
         ///     Singleton instance
@@ -321,6 +326,7 @@ namespace Jotunn.Managers
                 Logger.LogInfo($"Received admin status from server: {(isAdmin ? "Admin" : "no admin")}");
 
                 Instance.PlayerIsAdmin = isAdmin;
+                InvokeOnAdminStatusChanged();
 
                 // If player is admin, unlock the configuration values
                 if (isAdmin)
@@ -332,6 +338,14 @@ namespace Jotunn.Managers
                     LockConfigurationEntries();
                 }
             }
+        }
+
+        /// <summary>
+        ///     Safely invoke the <see cref="OnAdminStatusChanged"/> event
+        /// </summary>
+        private void InvokeOnAdminStatusChanged()
+        {
+            OnAdminStatusChanged?.SafeInvoke();
         }
 
         /// <summary>
@@ -464,7 +478,7 @@ namespace Jotunn.Managers
                     ZRoutedRpc.instance.InvokeRoutedRPC(nameof(RPC_Jotunn_SyncConfig), package);
 
                     // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
-                    OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = false });
+                    InvokeOnConfigurationSynchronized(false);
                 }
                 // If it is a local instance, send it to all connected peers
                 if (ZNet.instance.IsLocalInstance())
@@ -561,7 +575,7 @@ namespace Jotunn.Managers
 
                         package.SetPos(0);
                         ApplyConfigZPackage(package, out bool initial);
-                        OnConfigurationSynchronized.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = initial });
+                        InvokeOnConfigurationSynchronized(initial);
                     }
                     finally
                     {
@@ -584,6 +598,14 @@ namespace Jotunn.Managers
                     ZNet.instance.StartCoroutine(SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package));
                 }
             }
+        }
+
+        /// <summary>
+        ///     Safely invoke the <see cref="OnConfigurationSynchronized"/> event
+        /// </summary>
+        private void InvokeOnConfigurationSynchronized(bool initial)
+        {
+            OnConfigurationSynchronized?.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = initial });
         }
 
         /// <summary>
