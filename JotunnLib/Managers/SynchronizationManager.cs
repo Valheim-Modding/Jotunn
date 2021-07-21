@@ -138,15 +138,18 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            IEnumerator watchdog()
+            if (self.IsServer())
             {
-                while (true)
+                IEnumerator watchdog()
                 {
-                    yield return new WaitForSeconds(10);
-                    self.m_adminList?.GetList();
+                    while (true)
+                    {
+                        yield return new WaitForSeconds(10);
+                        self.m_adminList?.GetList();
+                    }
                 }
+                self.StartCoroutine(watchdog());
             }
-            self.StartCoroutine(watchdog());
         }
 
         private void ZNet_OnNewConnection(On.ZNet.orig_OnNewConnection orig, ZNet self, ZNetPeer peer)
