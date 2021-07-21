@@ -174,7 +174,7 @@ namespace Jotunn.Managers
             // Create buffering socket
             if (self.IsServer())
             {
-                BufferingSocket bufferingSocket = new BufferingSocket(rpc.GetSocket());
+                PeerInfoBlockingSocket bufferingSocket = new PeerInfoBlockingSocket(rpc.GetSocket());
                 rpc.m_socket = bufferingSocket;
             }
 
@@ -196,7 +196,7 @@ namespace Jotunn.Managers
                     ZPackage pkg = GenerateConfigZPackage(true, GetSyncConfigValues());
                     yield return ZNet.instance.StartCoroutine(SendPackage(peer.m_uid, pkg));
 
-                    if (peer.m_rpc.GetSocket() is BufferingSocket bufferingSocket)
+                    if (peer.m_rpc.GetSocket() is PeerInfoBlockingSocket bufferingSocket)
                     {
                         peer.m_rpc.m_socket = bufferingSocket.Original;
                         bufferingSocket.finished = true;
@@ -815,13 +815,13 @@ namespace Jotunn.Managers
             }
         }
 
-        private class BufferingSocket : ISocket
+        private class PeerInfoBlockingSocket : ISocket
         {
             public volatile bool finished = false;
             public readonly List<ZPackage> Package = new();
             public readonly ISocket Original;
 
-            public BufferingSocket(ISocket original)
+            public PeerInfoBlockingSocket(ISocket original)
             {
                 Original = original;
             }
