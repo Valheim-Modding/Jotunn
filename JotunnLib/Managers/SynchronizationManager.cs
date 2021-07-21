@@ -577,11 +577,11 @@ namespace Jotunn.Managers
                 {
                     Logger.LogInfo($"Received configuration data from client {sender}");
 
-                    // Send to all other clients
-                    SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package);
-
                     // Apply config locally
                     ApplyConfigZPackage(package, out bool initial);
+
+                    // Send to all other clients
+                    ZNet.instance.StartCoroutine(SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package));
                 }
             }
         }
