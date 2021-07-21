@@ -18,7 +18,7 @@ namespace Jotunn.Managers
     public class SynchronizationManager : IManager
     {
         private readonly List<ServerSync> ServerSyncs = new List<ServerSync>();
-        
+
         private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
         private double LastLoadCheckTime;
 
@@ -63,14 +63,14 @@ namespace Jotunn.Managers
 
             // Hook RPC_PeerInfo for initial retrieval of admin status and configuration
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
-            
+
             // Hook SyncedList for admin list changes
             On.SyncedList.Load += SyncedList_Load;
             On.SyncedList.Save += SyncedList_Save;
 
             // Hook menu for ConfigManager integration
             On.Menu.IsVisible += Menu_IsVisible;
-            
+
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
             if (!ConfigurationManager)
             {
@@ -643,10 +643,6 @@ namespace Jotunn.Managers
                 pkg.Write(entry.Item3);
                 pkg.Write(entry.Item4);
             }
-            System.Random rnd = new System.Random();
-            Byte[] b = new Byte[5000 * 1024]; // convert kb to byte
-            rnd.NextBytes(b);
-            pkg.Write(b);
 
             return pkg;
         }
@@ -793,7 +789,7 @@ namespace Jotunn.Managers
 
                     Logger.LogDebug($"Sending fragmented package {packageIdentifier}:{fragment}");
                     SendPackage(fragmentedPackage);
-                    
+
                     if (fragment != fragments - 1)
                     {
                         yield return true;
