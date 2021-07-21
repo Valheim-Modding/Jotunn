@@ -488,8 +488,8 @@ namespace Jotunn.Managers
         private const byte FRAGMENTED_CONFIG = 2;
         private const byte COMPRESSED_CONFIG = 4;
 
-        private readonly Dictionary<string, SortedDictionary<int, byte[]>> configValueCache = new();
-        private readonly List<KeyValuePair<long, string>> cacheExpirations = new(); // avoid leaking memory
+        private readonly Dictionary<string, SortedDictionary<int, byte[]>> configValueCache = new Dictionary<string, SortedDictionary<int, byte[]>>();
+        private readonly List<KeyValuePair<long, string>> cacheExpirations = new List<KeyValuePair<long, string>>(); // avoid leaking memory
 
         private void RPC_Jotunn_SyncInitialConfig(ZRpc rpc, ZPackage package) => RPC_Jotunn_SyncConfig(0, package);
 
@@ -553,9 +553,9 @@ namespace Jotunn.Managers
                         {
                             byte[] data = package.ReadByteArray();
 
-                            MemoryStream input = new(data);
-                            MemoryStream output = new();
-                            using (DeflateStream deflateStream = new(input, CompressionMode.Decompress))
+                            MemoryStream input = new MemoryStream(data);
+                            MemoryStream output = new MemoryStream();
+                            using (DeflateStream deflateStream = new DeflateStream(input, CompressionMode.Decompress))
                             {
                                 deflateStream.CopyTo(output);
                             }
@@ -727,10 +727,10 @@ namespace Jotunn.Managers
             {
                 Logger.LogDebug($"Compressing package with length {rawData.Length}");
 
-                ZPackage compressedPackage = new();
+                ZPackage compressedPackage = new ZPackage();
                 compressedPackage.Write(COMPRESSED_CONFIG);
-                MemoryStream output = new();
-                using (DeflateStream deflateStream = new(output, System.IO.Compression.CompressionLevel.Optimal))
+                MemoryStream output = new MemoryStream();
+                using (DeflateStream deflateStream = new DeflateStream(output, System.IO.Compression.CompressionLevel.Optimal))
                 {
                     deflateStream.Write(rawData, 0, rawData.Length);
                 }
@@ -805,7 +805,7 @@ namespace Jotunn.Managers
                         yield break;
                     }
 
-                    ZPackage fragmentedPackage = new();
+                    ZPackage fragmentedPackage = new ZPackage();
                     fragmentedPackage.Write(FRAGMENTED_CONFIG);
                     fragmentedPackage.Write(packageIdentifier);
                     fragmentedPackage.Write(fragment);
@@ -836,7 +836,7 @@ namespace Jotunn.Managers
         private class PeerInfoBlockingSocket : ISocket
         {
             public volatile bool finished = false;
-            public readonly List<ZPackage> Package = new();
+            public readonly List<ZPackage> Package = new List<ZPackage>();
             public readonly ISocket Original;
 
             public PeerInfoBlockingSocket(ISocket original)
