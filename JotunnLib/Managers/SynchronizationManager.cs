@@ -723,8 +723,9 @@ namespace Jotunn.Managers
 
             const int compressMinSize = 10000;
 
-            if (package.GetArray() is byte[] { LongLength: > compressMinSize } rawData)
+            if (package.Size() > compressMinSize)
             {
+                byte[] rawData = package.GetArray();
                 Logger.LogDebug($"Compressing package with length {rawData.Length}");
 
                 ZPackage compressedPackage = new ZPackage();
