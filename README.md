@@ -64,7 +64,7 @@ Check our [projects](https://github.com/Valheim-Modding/Jotunn/projects) for a m
 
 ## Changelog
 
-See the full [Changelog](https://github.com/Valheim-Modding/Jotunn/blob/dev/CHANGELOG.md).
+See the full [Changelog](https://github.com/Valheim-Modding/Jotunn/blob/prod/CHANGELOG.md).
 
 ## Contributors to Jötunn, the Valheim Library
 
