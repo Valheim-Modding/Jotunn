@@ -95,6 +95,13 @@ namespace TestMod
                 }
             };
 
+            // Test admin status sync event
+            SynchronizationManager.OnAdminStatusChanged += () =>
+            {
+                Jotunn.Logger.LogMessage($"Admin status sync event received: {(SynchronizationManager.Instance.PlayerIsAdmin ? "Youre admin now" : "Downvoted, boy")}");
+            };
+
+
             // Get current version for the mod compatibility test
             CurrentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
