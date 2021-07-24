@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using Jotunn;
 using Jotunn.Configs;
 using Jotunn.Entities;
+using Jotunn.GUI;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
-using Object = UnityEngine.Object;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Jotunn.GUI;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace TestMod
 {
@@ -58,7 +58,7 @@ namespace TestMod
         {
             // Show DateTime on Logs
             //Jotunn.Logger.ShowDate = true;
-            
+
             // Create stuff
             CreateConfigValues();
             LoadAssets();
@@ -224,7 +224,7 @@ namespace TestMod
                     new Vector2(0, 0), 850, 600);
                 TestPanel.SetActive(false);
 
-                GameObject buttonObject = GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform, 
+                GameObject buttonObject = GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform,
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 250, 100);
                 buttonObject.SetActive(true);
 
@@ -263,8 +263,8 @@ namespace TestMod
                 if (current != null)
                 {
                     current.gameObject.AddComponent<ColorChanger>();
-                } 
-                else 
+                }
+                else
                 {
                     var parent = hovered.transform.parent.gameObject.GetComponentInChildren<Renderer>();
                     if (parent != null)
@@ -329,14 +329,14 @@ namespace TestMod
             // Test Color value support
             Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
                 new ConfigDescription("Server side Color", null, new ConfigurationManagerAttributes() { IsAdminOnly = true }));
-            
+
             // Test colored text configs
             Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
                 new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
 
             // Test invisible configs
             Config.Bind(JotunnTestModConfigSection, "InvisibleInt", 150,
-                new ConfigDescription("Invisible int, testing browsable=false", null, new ConfigurationManagerAttributes() {Browsable = false}));
+                new ConfigDescription("Invisible int, testing browsable=false", null, new ConfigurationManagerAttributes() { Browsable = false }));
 
             // Add client config to test ModCompatibility
             EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
@@ -423,12 +423,12 @@ namespace TestMod
             });
 
             // Add translations for the custom piece in AddPieceCategories
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English") 
+            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
             {
                 Translations = {
                     { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
                     { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
-                } 
+                }
             });
 
             // Add translations for the custom variant in AddClonedItems
@@ -712,7 +712,8 @@ namespace TestMod
             PieceManager.Instance.AddPiece(simpleKitbashPiece);
 
             // Now apply our Kitbash to the piece
-            KitbashManager.Instance.AddKitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
+            KitbashManager.Instance.AddKitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig
+            {
                 Layer = "piece",
                 KitbashSources = new List<KitbashSourceConfig>
                 {
@@ -744,12 +745,12 @@ namespace TestMod
                         Scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
                     }
                 }
-            }); 
+            });
 
             // A more complex Kitbash piece, this has a prepared GameObject for Kitbash to build upon
             AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash", typeof(TestMod).Assembly);
             try
-            { 
+            {
                 KitbashObject kitbashObject = KitbashManager.Instance.AddKitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
                 {
                     Layer = "piece",
@@ -796,7 +797,8 @@ namespace TestMod
                         new RequirementConfig { Item = "Bronze", Recover = true }
                     }
                 }));
-            } finally
+            }
+            finally
             {
                 kitbashAssetBundle.Unload(false);
             }
