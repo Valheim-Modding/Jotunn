@@ -11,7 +11,7 @@ using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
 
-namespace Jotunn.Utils
+namespace Jotunn
 {
     /// <summary>
     ///     Extends <see cref="ConfigEntryBase"/> with convenience functions.
@@ -24,6 +24,39 @@ namespace Jotunn.Utils
         /// <param name="configurationEntry"></param>
         /// <returns></returns>
         public static bool IsVisible(this ConfigEntryBase configurationEntry)
+        {
+            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
+            if (cma != null)
+            {
+                // if configuration manager attribute is set, check if browsable is not false
+                return cma.Browsable != false;
+            }
+
+            // no configuration manager attribute?
+            return true;
+        }
+
+        /// <summary>
+        ///     Check, if this config entry is "writable"
+        /// </summary>
+        /// <param name="configurationEntry"></param>
+        /// <returns></returns>
+        public static bool IsWritable(this ConfigEntryBase configurationEntry)
+        {
+            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
+            if (cma != null)
+            {
+                return cma.IsAdminOnly && !cma.UnlockSetting;
+            }
+            return true;
+        }
+
+        /// <summary>
+        ///     Get the local value of an admin config
+        /// </summary>
+        /// <param name="configurationEntry"></param>
+        /// <returns></returns>
+        public static object GetLocalValue(this ConfigEntryBase configurationEntry)
         {
             var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
             if (cma != null)
