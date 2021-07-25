@@ -113,20 +113,10 @@ namespace Jotunn.Managers
             orig(self);
             ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_IsAdmin), new Action<long, bool>(RPC_Jotunn_IsAdmin));
             ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_SyncConfig), new Action<long, ZPackage>(RPC_Jotunn_SyncConfig));
-
-            /*if (ZNet.instance != null && !ZNet.instance.IsServer())
-            {
-                Logger.LogDebug("Player is in local instance, lets make him admin");
-                Instance.PlayerIsAdmin = true;
-                UnlockConfigurationEntries();
-            }
-
-            // Add event to be notified on logout
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;*/
         }
 
         /// <summary>
-        ///     Init or reset configuration state
+        ///     Init or reset admin and configuration state
         /// </summary>
         /// <param name="scene"></param>
         /// <param name="loadMode"></param>
@@ -136,16 +126,21 @@ namespace Jotunn.Managers
             {
                 PlayerIsAdmin = true;
                 UnlockConfigurationEntries();
-                ResetServerConfigs();
+                ResetAdminConfigs();
                 CacheConfigurationValues();
             }
 
-            if (scene.name == "main" && ZNet.instance.IsClientInstance())
+            if (scene.name == "main" && !ZNet.instance.IsServer())
             {
-                InitServerConfigs();
+                InitAdminConfigs();
             }
         }
 
+        /// <summary>
+        ///     Start admin list watchdog on a server
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
         private void ZNet_Awake(On.ZNet.orig_Awake orig, ZNet self)
         {
             orig(self);
@@ -162,13 +157,14 @@ namespace Jotunn.Managers
                 }
                 self.StartCoroutine(watchdog());
             }
-
-            /*if (!self.IsServer())
-            {
-                InitServerConfigs();
-            }*/
         }
 
+        /// <summary>
+        ///     Register local RPCs on a client
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="peer"></param>
         private void ZNet_OnNewConnection(On.ZNet.orig_OnNewConnection orig, ZNet self, ZNetPeer peer)
         {
             orig(self, peer);
@@ -425,17 +421,6 @@ namespace Jotunn.Managers
             var pi = ConfigurationManager.GetType().GetProperty("DisplayingWindow");
             ConfigurationManagerWindowShown = (bool)pi.GetValue(ConfigurationManager, null);
 
-            /*// Did window open or close?
-            if (ConfigurationManagerWindowShown)
-            {
-                // If window just opened, cache the config values for comparison later
-                CacheConfigurationValues();
-            }
-            else
-            {
-                SynchronizeChangedConfig();
-            }*/
-
             if (!ConfigurationManagerWindowShown)
             {
                 // After closing the window check for changed configs
@@ -503,21 +488,12 @@ namespace Jotunn.Managers
                 {
                     return true;
                 }
-
-                /*try
-                {
-                    __instance.SetLocalValue(TomlTypeConverter.ConvertToValue(value, __instance.SettingType));
-                }
-                catch (Exception e)
-                {
-                    Logger.LogWarning($"Config value of setting \"{__instance.Definition}\" could not be parsed and will be ignored. Reason: {e.Message}; Value: {value}");
-                }*/
                 return false;
             }
         }
 
         /// <summary>
-        ///     Cache the synchronizable configuration values
+        ///     Cache the synchronizable configuration values for comparison
         /// </summary>
         internal void CacheConfigurationValues()
         {
@@ -613,7 +589,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Cache local config values for synced entries
         /// </summary>
-        private void InitServerConfigs()
+        private void InitAdminConfigs()
         {
             var loadedPlugins = BepInExUtils.GetDependentPlugins();
 
@@ -635,7 +611,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Reset configs which may have been overwritten with server values to the local value
         /// </summary>
-        private void ResetServerConfigs() 
+        private void ResetAdminConfigs() 
         {
             var loadedPlugins = BepInExUtils.GetDependentPlugins();
 
