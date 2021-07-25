@@ -444,6 +444,9 @@ namespace Jotunn.GUI
                 }
             }
 
+            // Renew the settings cache
+            //SynchronizationManager.Instance.CacheConfigurationValues();
+
             // Remove hook again until the next time
             On.Settings.SaveSettings -= Settings_SaveSettings;
         }
@@ -465,7 +468,7 @@ namespace Jotunn.GUI
                 binding.SetReadOnly(configurationManagerAttribute.ReadOnly == true);
 
                 // Disable the input field if it is a synchronizable and not unlocked
-                if (configurationManagerAttribute.IsAdminOnly && !configurationManagerAttribute.UnlockSetting)
+                if (configurationManagerAttribute.IsAdminOnly && !configurationManagerAttribute.IsUnlocked)
                 {
                     binding.SetEnabled(false);
                 }
