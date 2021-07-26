@@ -12,6 +12,7 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -205,7 +206,7 @@ namespace TestMod
         // Toggle our test panel with button
         private void TogglePanel()
         {
-            // Create the panel once
+            // Create the panel if it does not exist
             if (TestPanel == null)
             {
                 if (GUIManager.Instance == null)
@@ -220,14 +221,57 @@ namespace TestMod
                     return;
                 }
 
-                TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                    new Vector2(0, 0), 850, 600);
+                // Create the panel object
+                TestPanel = GUIManager.Instance.CreateWoodpanel(
+                    parent: GUIManager.PixelFix.transform,
+                    anchorMin: new Vector2(0.5f, 0.5f),
+                    anchorMax: new Vector2(0.5f, 0.5f),
+                    position: new Vector2(0, 0),
+                    width: 850,
+                    height: 600);
                 TestPanel.SetActive(false);
 
-                GameObject buttonObject = GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform,
-                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 250, 100);
+                // Add the Jötunn draggable Component to the panel
+                // To actually be able to drag the panel, Unity events must be registered with the Component
+                DragWindowCntrl drag = TestPanel.AddComponent<DragWindowCntrl>();
+                EventTrigger trigger = TestPanel.AddComponent<EventTrigger>();
+                EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
+                beginDragEntry.eventID = EventTriggerType.BeginDrag;
+                beginDragEntry.callback.AddListener((data) => { drag.BeginDrag(); });
+                trigger.triggers.Add(beginDragEntry);
+                EventTrigger.Entry dragEntry = new EventTrigger.Entry();
+                dragEntry.eventID = EventTriggerType.Drag;
+                dragEntry.callback.AddListener((data) => { drag.Drag(); });
+                trigger.triggers.Add(dragEntry);
+
+                // Create a text object
+                GameObject textObject = GUIManager.Instance.CreateText(
+                    text: "Jötunn, the Valheim Lib",
+                    parent: TestPanel.transform,
+                    anchorMin: new Vector2(0.5f, 1f),
+                    anchorMax: new Vector2(0.5f, 1f),
+                    position: new Vector2(0f, -100f),
+                    font: GUIManager.Instance.AveriaSerifBold,
+                    fontSize: 30,
+                    color: GUIManager.Instance.ValheimOrange,
+                    outline: true,
+                    outlineColor: Color.black,
+                    width: 350f,
+                    height: 40f,
+                    addContentSizeFitter: false);
+
+                // Create the button object
+                GameObject buttonObject = GUIManager.Instance.CreateButton(
+                    text: "A Test Button - long dong schlongsen text",
+                    parent: TestPanel.transform,
+                    anchorMin: new Vector2(0.5f, 0.5f),
+                    anchorMax: new Vector2(0.5f, 0.5f),
+                    position: new Vector2(0, 0),
+                    width: 250f,
+                    height: 100f);
                 buttonObject.SetActive(true);
 
+                // Add a listener to the button to close the panel again
                 Button button = buttonObject.GetComponent<Button>();
                 button.onClick.AddListener(() =>
                 {
@@ -235,8 +279,13 @@ namespace TestMod
                 });
             }
 
+            // Switch the current state
             bool state = !TestPanel.activeSelf;
+
+            // Set the active state of the panel
             TestPanel.SetActive(state);
+
+            // Toggle input for the player and camera while displaying the GUI
             GUIManager.BlockInput(state);
         }
 

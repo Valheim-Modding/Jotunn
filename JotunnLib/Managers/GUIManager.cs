@@ -1186,11 +1186,10 @@ namespace Jotunn.Managers
         ///     Create toggle field
         /// </summary>
         /// <param name="parent"></param>
-        /// <param name="position"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public GameObject CreateToggle(Transform parent, Vector2 position, float width, float height)
+        public GameObject CreateToggle(Transform parent, float width, float height)
         {
             GameObject toggle = new GameObject("Toggle", typeof(RectTransform), typeof(Toggle), typeof(LayoutElement)).SetUpperLeft().SetSize(width, height);
             toggle.GetComponent<LayoutElement>().preferredWidth = width;

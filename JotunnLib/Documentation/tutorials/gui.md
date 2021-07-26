@@ -28,11 +28,11 @@ ColorPickerExample:
 ```cs
 GUIManager.Instance.CreateColorPicker(
     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-    r.sharedMaterial.color,  // Initial selected color in the picker
-    "Choose your poison",  // Caption of the picker window
-    SetColor,  // Callback delegate when the color in the picker changes
-    ColorChosen,  // Callback delegate when the window is closed
-    true  // Whether or not the alpha channel should be editable
+    r.sharedMaterial.color, // Initial selected color in the picker
+    "Choose your poison",   // Caption of the picker window
+    SetColor,               // Callback delegate when the color in the picker changes
+    ColorChosen,            // Callback delegate when the window is closed
+    true                    // Whether or not the alpha channel should be editable
 );
 ```
 
@@ -41,9 +41,9 @@ GradientPicker example:
 GUIManager.Instance.CreateGradientPicker(
     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
     new Gradient(),  // Initial gradient being used
-    "Gradiwut?",  // Caption of the GradientPicker window
-    SetGradient,  // Callback delegate when the gradient changes
-    GradientFinished  // Callback delegate when thw window is closed
+    "Gradiwut?",     // Caption of the GradientPicker window
+    SetGradient,     // Callback delegate when the gradient changes
+    GradientFinished // Callback delegate when thw window is closed
 );
 ```
 
@@ -53,17 +53,18 @@ A more explanatory example can be found in our [example mod](https://github.com/
 
 ![Woodpanel](../images/data/woodpanel.png)
 
-Woodpanels, nicely usable as containers for other gui elements.
+Woodpanels, nicely usable as containers for other gui elements. Can automatically add the draggable Component to the panel object (default: true).
 
 Example:
 ```cs
 var panel = GUIManager.Instance.CreateWoodpanel(
-    GUIManager.PixelFix.transform, 
-    new Vector2(0.5f, 0.5f), 
-    new Vector2(0.5f, 0.5f), 
-    new Vector2(0f, 0f), 
-    400f, 
-    300f);
+    parent: GUIManager.PixelFix.transform, 
+    anchorMin: new Vector2(0.5f, 0.5f), 
+    anchorMax: new Vector2(0.5f, 0.5f), 
+    position: new Vector2(0f, 0f), 
+    width: 400f,
+    height: 300f,
+    draggable: true);
 ```
 
 ### Buttons
@@ -74,17 +75,38 @@ To create buttons, provide text, the parent's transform, min and max anchors, th
 
 Example:
 ```cs
-var button = GUIManager.Instance.CreateButton("A Test Button", testPanel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 250, 100);
+var button = GUIManager.Instance.CreateButton(
+    text: "A Test Button",
+    parent: testPanel.transform,
+    anchorMin: new Vector2(0.5f, 0.5f),
+    anchorMax: new Vector2(0.5f, 0.5f),
+    position: new Vector2(0f, 0f),
+    width: 250f,
+    height: 100f);
 ```
 
 ### Text elements
 
 ![Text Element](../images/data/text-element.png)
 
+To create a text element, provide text, the parent's transform, min and max anchors, the position and it's size (width and height). You can also let Jötunn add a ContentSizeFitter Component so the text element will have its bounds automatically adjusted to its content.
+
 Example:
 ```cs
-var text = GUIManager.Instance.CreateText("JötunnLib, the Valheim Lib", GUIManager.PixelFix.transform,new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-    new Vector2(0f, 0f), GUIManager.Instance.AveriaSerifBold, 18, GUIManager.Instance.ValheimOrange, true, Color.black, 400f, 30f, false);
+var text = GUIManager.Instance.CreateText(
+    text: "Jötunn, the Valheim Lib",
+    parent: TestPanel.transform,
+    anchorMin: new Vector2(0.5f, 1f),
+    anchorMax: new Vector2(0.5f, 1f),
+    position: new Vector2(0f, -100f),
+    font: GUIManager.Instance.AveriaSerifBold,
+    fontSize: 30,
+    color: GUIManager.Instance.ValheimOrange,
+    outline: true,
+    outlineColor: Color.black,
+    width: 350f,
+    height: 40f,
+    addContentSizeFitter: false);
 ```
 
 ### Checkboxes
@@ -93,7 +115,10 @@ var text = GUIManager.Instance.CreateText("JötunnLib, the Valheim Lib", GUIMana
 
 Example:
 ```cs
-var checkbox = GUIManager.Instance.CreateToggle(GUIManager.PixelFix.transform, new Vector2(0f, 0f), f, 40f);
+var checkbox = GUIManager.Instance.CreateToggle(
+    parent: GUIManager.PixelFix.transform,
+    width: 40f,
+    height: 40f);
 ```
 
 ### Getting sprites
@@ -112,9 +137,33 @@ The [GUIManager](xref:Jotunn.Managers.GUIManager) also comes with some useful in
 - Font AveriaSerifBold (the default Valheim font)
 - Color ValheimOrange
 
+## Custom GUI Components
+
+Jötunn provides helper Components for mods to use when handling with custom GUI.
+
+### Draggable windows
+
+[DragWindowCntrl](xref:Jotunn.GUI.DragWindowCntrl) is a simple Unity Component to make GUI elements draggable with the mouse. Does respect the window limits.
+
+```cs
+// Add the Jötunn draggable Component to the panel
+DragWindowCntrl drag = TestPanel.AddComponent<DragWindowCntrl>();
+
+// To actually be able to drag the panel, Unity events must be registered with the Component
+EventTrigger trigger = TestPanel.AddComponent<EventTrigger>();
+EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
+beginDragEntry.eventID = EventTriggerType.BeginDrag;
+beginDragEntry.callback.AddListener((data) => { drag.BeginDrag(); });
+trigger.triggers.Add(beginDragEntry);
+EventTrigger.Entry dragEntry = new EventTrigger.Entry();
+dragEntry.eventID = EventTriggerType.Drag;
+dragEntry.callback.AddListener((data) => { drag.Drag(); });
+trigger.triggers.Add(dragEntry);
+```
+
 ## Example
 
-In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use a [custom button](inputs.md) to toggle a simple panel with a button on it. That button also gets a listener added to close the panel again. Also the input is blocked for the player and camera while the panel is active so we can actually use the mouse and cant control the player any more.
+In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use a [custom button](inputs.md) to toggle a simple, draggable panel with a button on it. That button also gets a listener added to close the panel again. Also the input is blocked for the player and camera while the panel is active so we can actually use the mouse and cant control the player any more.
 
 ```cs
 // Toggle our test panel with button
@@ -136,13 +185,37 @@ private void TogglePanel()
         }
 
         // Create the panel object
-        TestPanel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0, 0), 850, 600);
+        TestPanel = GUIManager.Instance.CreateWoodpanel(
+            parent: GUIManager.PixelFix.transform,
+            anchorMin: new Vector2(0.5f, 0.5f),
+            anchorMax: new Vector2(0.5f, 0.5f),
+            position: new Vector2(0, 0),
+            width: 850,
+            height: 600);
         TestPanel.SetActive(false);
 
+        // Add the Jötunn draggable Component to the panel
+        // To actually be able to drag the panel, Unity events must be registered with the Component
+        DragWindowCntrl drag = TestPanel.AddComponent<DragWindowCntrl>();
+        EventTrigger trigger = TestPanel.AddComponent<EventTrigger>();
+        EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
+        beginDragEntry.eventID = EventTriggerType.BeginDrag;
+        beginDragEntry.callback.AddListener((data) => { drag.BeginDrag(); });
+        trigger.triggers.Add(beginDragEntry);
+        EventTrigger.Entry dragEntry = new EventTrigger.Entry();
+        dragEntry.eventID = EventTriggerType.Drag;
+        dragEntry.callback.AddListener((data) => { drag.Drag(); });
+        trigger.triggers.Add(dragEntry);
+
         // Create the button object
-        GameObject buttonObject = GUIManager.Instance.CreateButton("A Test Button - long dong schlongsen text", TestPanel.transform,
-            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 250, 100);
+        GameObject buttonObject = GUIManager.Instance.CreateButton(
+            text: "A Test Button - long dong schlongsen text",
+            parent: TestPanel.transform,
+            anchorMin: new Vector2(0.5f, 0.5f),
+            anchorMax: new Vector2(0.5f, 0.5f),
+            position: new Vector2(0, 0),
+            width: 250,
+            height: 100);
         buttonObject.SetActive(true);
 
         // Add a listener to the button to close the panel again
@@ -155,11 +228,11 @@ private void TogglePanel()
 
     // Switch the current state
     bool state = !TestPanel.activeSelf;
-            
+
     // Set the active state of the panel
     TestPanel.SetActive(state);
 
-    // Disable input for the player and camera while displaying the GUI
+    // Toggle input for the player and camera while displaying the GUI
     GUIManager.BlockInput(state);
 }
 ```

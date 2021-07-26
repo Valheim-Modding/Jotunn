@@ -110,8 +110,7 @@ namespace Jotunn.GUI
             }
 
 
-            // Add the tab 
-
+            // Add the tab
             var tab = settingsRoot.transform.Find("panel/Tabs").gameObject;
 
             // Create the content scroll view
@@ -672,7 +671,7 @@ namespace Jotunn.GUI
             result.SetWidth(width);
 
             // and now the toggle itself
-            GUIManager.Instance.CreateToggle(result.transform, new Vector2(0, 0), 28f, 28f).SetUpperRight();
+            GUIManager.Instance.CreateToggle(result.transform, 28f, 28f).SetUpperRight();
 
             // create the label text element
             var label = GUIManager.Instance.CreateText(labelname, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
