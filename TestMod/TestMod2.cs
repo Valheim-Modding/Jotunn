@@ -11,7 +11,6 @@ using Jotunn.Configs;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace TestMod
 {

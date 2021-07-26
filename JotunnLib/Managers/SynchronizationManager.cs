@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
+using HarmonyLib;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -57,7 +58,7 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            // Register RPCs in Game.Start
+            // Register RPCs and the admin watchdog
             On.Game.Start += Game_Start;
             On.ZNet.Awake += ZNet_Awake;
             On.ZNet.OnNewConnection += ZNet_OnNewConnection;
@@ -71,7 +72,13 @@ namespace Jotunn.Managers
 
             // Hook menu for ConfigManager integration
             On.Menu.IsVisible += Menu_IsVisible;
-            
+
+            // Hook fejd for ConfigReloaded event subscription
+            On.FejdStartup.Awake += FejdStartup_Awake;
+
+            // Hook start scene to reset config
+            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
             if (!ConfigurationManager)
             {
@@ -106,20 +113,10 @@ namespace Jotunn.Managers
             orig(self);
             ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_IsAdmin), new Action<long, bool>(RPC_Jotunn_IsAdmin));
             ZRoutedRpc.instance.Register(nameof(RPC_Jotunn_SyncConfig), new Action<long, ZPackage>(RPC_Jotunn_SyncConfig));
-
-            if (ZNet.instance != null && ZNet.instance.IsLocalInstance())
-            {
-                Logger.LogDebug("Player is in local instance, lets make him admin");
-                Instance.PlayerIsAdmin = true;
-                UnlockConfigurationEntries();
-            }
-
-            // Add event to be notified on logout
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
 
         /// <summary>
-        ///     Reset configuration unlock state
+        ///     Init or reset admin and configuration state
         /// </summary>
         /// <param name="scene"></param>
         /// <param name="loadMode"></param>
@@ -127,12 +124,16 @@ namespace Jotunn.Managers
         {
             if (scene.name == "start")
             {
-                PlayerIsAdmin = false;
-                LockConfigurationEntries();
+                PlayerIsAdmin = true;
+                UnlockConfigurationEntries();
+                ResetAdminConfigs();
+                CacheConfigurationValues();
             }
 
-            // Remove from handler
-            SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
+            if (scene.name == "main" && !ZNet.instance.IsServer())
+            {
+                InitAdminConfigs();
+            }
         }
 
         /// <summary>
@@ -330,7 +331,7 @@ namespace Jotunn.Managers
             // Client Receive
             if (ZNet.instance.IsClientInstance())
             {
-                Logger.LogInfo($"Received admin status from server: {(isAdmin ? "Admin" : "no admin")}");
+                Logger.LogInfo($"Received admin status from server: {(isAdmin ? "Admin" : "No Admin")}");
 
                 Instance.PlayerIsAdmin = isAdmin;
                 InvokeOnAdminStatusChanged();
@@ -367,18 +368,18 @@ namespace Jotunn.Managers
                 foreach (var configDefinition in plugin.Value.Config.Keys)
                 {
                     var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
-                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags.FirstOrDefault(x =>
-                       x is ConfigurationManagerAttributes { IsAdminOnly: true });
+                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
+                        .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
                     if (configAttribute != null)
                     {
-                        configAttribute.UnlockSetting = true;
+                        configAttribute.IsUnlocked = true;
                     }
                 }
             }
         }
 
         /// <summary>
-        ///     Lock configuration entries (on logout).
+        ///     Lock configuration entries.
         /// </summary>
         private void LockConfigurationEntries()
         {
@@ -389,11 +390,11 @@ namespace Jotunn.Managers
                 foreach (var configDefinition in plugin.Value.Config.Keys)
                 {
                     var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
-                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags.FirstOrDefault(x =>
-                       x is ConfigurationManagerAttributes { IsAdminOnly: true });
+                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
+                        .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
                     if (configAttribute != null)
                     {
-                        configAttribute.IsAdminOnly = true;
+                        configAttribute.IsUnlocked = false;
                     }
                 }
             }
@@ -420,26 +421,110 @@ namespace Jotunn.Managers
             var pi = ConfigurationManager.GetType().GetProperty("DisplayingWindow");
             ConfigurationManagerWindowShown = (bool)pi.GetValue(ConfigurationManager, null);
 
-            // Did window open or close?
-            if (ConfigurationManagerWindowShown)
+            if (!ConfigurationManagerWindowShown)
             {
-                // If window just opened, cache the config values for comparison later
-                CacheConfigurationValues();
-            }
-            else
-            {
+                // After closing the window check for changed configs
                 SynchronizeChangedConfig();
             }
         }
 
         /// <summary>
-        ///     Cache the synchronizable configuration values
+        ///     Initial cache the config values of dependent plugins and register ourself to config change events
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        private void FejdStartup_Awake(On.FejdStartup.orig_Awake orig, FejdStartup self)
+        {
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+            foreach (var config in loadedPlugins.Where(x => x.Value.Config != null).Select(x => x.Value.Config))
+            {
+                config.ConfigReloaded += Config_ConfigReloaded;
+            }
+
+            // Harmony patch BepInEx to ensure locked values are not overwritten
+            Harmony.CreateAndPatchAll(typeof(ConfigEntryBase_SetSerializedValue));
+            Harmony.CreateAndPatchAll(typeof(ConfigEntryBase_GetSerializedValue));
+
+            orig(self);
+        }
+
+        /// <summary>
+        ///     Sync the local bep config on reload
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Config_ConfigReloaded(object sender, EventArgs e)
+        {
+            SynchronizeChangedConfig();
+        }
+
+        /// <summary>
+        ///     Return the cached local value of a bep config thats locked
+        /// </summary>
+        [HarmonyPatch(typeof(ConfigEntryBase), "GetSerializedValue")]
+        private static class ConfigEntryBase_GetSerializedValue
+        {
+            private static bool Prefix(ConfigEntryBase __instance, ref string __result)
+            {
+                if (!__instance.IsSyncable() || GUIManager.IsHeadless() || __instance.GetLocalValue() == null)
+                {
+                    return true;
+                }
+
+                __result = TomlTypeConverter.ConvertToString(__instance.GetLocalValue(), __instance.SettingType);
+                return false;
+            }
+        }
+
+        /// <summary>
+        ///     Prevent overwriting bep config value when the setting is locked on config file reload
+        /// </summary>
+        [HarmonyPatch(typeof(ConfigEntryBase), "SetSerializedValue")]
+        private static class ConfigEntryBase_SetSerializedValue
+        {
+            private static bool Prefix(ConfigEntryBase __instance, string value)
+            {
+                if (GUIManager.IsHeadless() || __instance.GetLocalValue() == null)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        ///     Cache the synchronizable configuration values for comparison
         /// </summary>
         internal void CacheConfigurationValues()
         {
             CachedConfigValues = GetSyncConfigValues();
         }
 
+        /// <summary>
+        ///     Get syncable configuration values as tuples
+        /// </summary>
+        /// <returns></returns>
+        private List<Tuple<string, string, string, string>> GetSyncConfigValues()
+        {
+            Logger.LogDebug("Gathering config values");
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+
+            var values = new List<Tuple<string, string, string, string>>();
+            foreach (var plugin in loadedPlugins)
+            {
+                foreach (var cd in plugin.Value.Config.Keys)
+                {
+                    var cx = plugin.Value.Config[cd.Section, cd.Key];
+                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly))
+                    {
+                        var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
+                        values.Add(value);
+                    }
+                }
+            }
+
+            return values;
+        }
 
         /// <summary>
         ///     Syncs the changed configuration of a client to the server
@@ -457,9 +542,9 @@ namespace Jotunn.Managers
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
                     if (cx.Description.Tags.Any(x =>
                         x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly &&
-                        ((ConfigurationManagerAttributes)x).UnlockSetting))
+                        ((ConfigurationManagerAttributes)x).IsUnlocked))
                     {
-                        var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
+                        var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
                         valuesToSend.Add(value);
                     }
 
@@ -474,23 +559,74 @@ namespace Jotunn.Managers
             // We need only changed values
             valuesToSend = valuesToSend.Where(x => !CachedConfigValues.Contains(x)).ToList();
 
-            // Send to server
             if (valuesToSend.Count > 0)
             {
-                ZPackage package = GenerateConfigZPackage(false, valuesToSend);
-
-                // Send values to server if it is a client instance
-                if (ZNet.instance.IsClientInstance())
+                // Send if connected
+                if (ZNet.instance != null)
                 {
-                    ZRoutedRpc.instance.InvokeRoutedRPC(nameof(RPC_Jotunn_SyncConfig), package);
+                    ZPackage package = GenerateConfigZPackage(false, valuesToSend);
 
-                    // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
-                    InvokeOnConfigurationSynchronized(false);
+                    // Send values to server if it is a client instance
+                    if (ZNet.instance.IsClientInstance())
+                    {
+                        ZRoutedRpc.instance.InvokeRoutedRPC(nameof(RPC_Jotunn_SyncConfig), package);
+
+                        // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
+                        InvokeOnConfigurationSynchronized(false);
+                    }
+                    // Send changed values to all connected clients
+                    else
+                    {
+                        ZNet.instance.StartCoroutine(SendPackage(ZNet.instance.m_peers, package));
+                    }
                 }
-                // If it is a local instance, send it to all connected peers
-                if (ZNet.instance.IsLocalInstance())
+                
+                // Rebuild config cache
+                CacheConfigurationValues();
+            }
+        }
+
+        /// <summary>
+        ///     Cache local config values for synced entries
+        /// </summary>
+        private void InitAdminConfigs()
+        {
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+
+            foreach (var plugin in loadedPlugins)
+            {
+                foreach (var configDefinition in plugin.Value.Config.Keys)
                 {
-                    ZNet.instance.StartCoroutine(SendPackage(ZNet.instance.m_peers, package));
+                    var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
+                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
+                        .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
+                    if (configAttribute != null && configEntry.BoxedValue != null)
+                    {
+                        configAttribute.LocalValue = configEntry.BoxedValue;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Reset configs which may have been overwritten with server values to the local value
+        /// </summary>
+        private void ResetAdminConfigs() 
+        {
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+
+            foreach (var plugin in loadedPlugins)
+            {
+                foreach (var configDefinition in plugin.Value.Config.Keys)
+                {
+                    var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
+                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
+                        .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
+                    if (configAttribute != null && configAttribute.LocalValue != null)
+                    {
+                        configEntry.BoxedValue = configAttribute.LocalValue;
+                        configAttribute.LocalValue = null;
+                    }
                 }
             }
         }
@@ -621,7 +757,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Apply received configuration values locally
+        ///     Apply received configuration values locally and regenerate the cache
         /// </summary>
         /// <param name="configPkg">Package of config tuples</param>
         /// <param name="initial">Indicator if this was an initial config package</param>
@@ -631,9 +767,13 @@ namespace Jotunn.Managers
 
             Logger.LogDebug($"Applying{(initial ? " initial" : null)} configuration data package");
 
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
-
             var numberOfEntries = configPkg.ReadInt();
+            if (numberOfEntries == 0)
+            {
+                return;
+            }
+
+            var loadedPlugins = BepInExUtils.GetDependentPlugins();
             while (numberOfEntries > 0)
             {
                 var modguid = configPkg.ReadString();
@@ -647,8 +787,17 @@ namespace Jotunn.Managers
                 {
                     if (loadedPlugins[modguid].Config.Keys.Contains(new ConfigDefinition(section, key)))
                     {
-                        Logger.LogDebug($"Setting config value {modguid}.{section}.{key} to {serializedValue}");
-                        loadedPlugins[modguid].Config[section, key].SetSerializedValue(serializedValue);
+                        var entry = loadedPlugins[modguid].Config[section, key];
+                        if (entry.IsSyncable())
+                        {
+                            Logger.LogDebug($"Setting config value {modguid}.{section}.{key} to {serializedValue}");
+                            //loadedPlugins[modguid].Config[section, key].SetSerializedValue(serializedValue);
+                            entry.BoxedValue = TomlTypeConverter.ConvertToValue(serializedValue, entry.SettingType);
+                        }
+                        else
+                        {
+                            Logger.LogError($"Setting for GUID: {modguid}, Section {section}, Key {key} is not syncable");
+                        }
                     }
                     else
                     {
@@ -662,6 +811,9 @@ namespace Jotunn.Managers
 
                 numberOfEntries--;
             }
+
+            // Recreate config cache
+            CacheConfigurationValues();
         }
 
         /// <summary>
@@ -686,32 +838,6 @@ namespace Jotunn.Managers
             }
 
             return pkg;
-        }
-
-        /// <summary>
-        ///     Get syncable configuration values as tuples
-        /// </summary>
-        /// <returns></returns>
-        private List<Tuple<string, string, string, string>> GetSyncConfigValues()
-        {
-            Logger.LogDebug("Gathering config values");
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
-
-            var values = new List<Tuple<string, string, string, string>>();
-            foreach (var plugin in loadedPlugins)
-            {
-                foreach (var cd in plugin.Value.Config.Keys)
-                {
-                    var cx = plugin.Value.Config[cd.Section, cd.Key];
-                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly))
-                    {
-                        var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, cx.GetSerializedValue());
-                        values.Add(value);
-                    }
-                }
-            }
-
-            return values;
         }
 
         /// <summary>

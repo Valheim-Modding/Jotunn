@@ -11,29 +11,86 @@ using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
 
-namespace Jotunn.Utils
+namespace Jotunn
 {
     /// <summary>
     ///     Extends <see cref="ConfigEntryBase"/> with convenience functions.
     /// </summary>
-    public static class ConfigEntryBaseExtension
+    internal static class ConfigEntryBaseExtension
     {
         /// <summary>
         ///     Check, if this config entry is "visible"
         /// </summary>
         /// <param name="configurationEntry"></param>
         /// <returns></returns>
-        public static bool IsVisible(this ConfigEntryBase configurationEntry)
+        internal static bool IsVisible(this ConfigEntryBase configurationEntry)
         {
             var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
             if (cma != null)
             {
-                // if configuration manager attribute is set, check if browsable is not false
                 return cma.Browsable != false;
             }
-
-            // no configuration manager attribute?
             return true;
+        }
+
+        /// <summary>
+        ///     Check, if this config entry is "syncable"
+        /// </summary>
+        /// <param name="configurationEntry"></param>
+        /// <returns></returns>
+        internal static bool IsSyncable(this ConfigEntryBase configurationEntry)
+        {
+            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
+            if (cma != null)
+            {
+                return cma.IsAdminOnly;
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///     Check, if this config entry is "writable"
+        /// </summary>
+        /// <param name="configurationEntry"></param>
+        /// <returns></returns>
+        internal static bool IsWritable(this ConfigEntryBase configurationEntry)
+        {
+            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
+            if (cma != null)
+            {
+                return !cma.IsAdminOnly || (cma.IsAdminOnly && cma.IsUnlocked);
+            }
+            return true;
+        }
+
+        /// <summary>
+        ///     Get the local value of an admin config
+        /// </summary>
+        /// <param name="configurationEntry"></param>
+        /// <returns></returns>
+        internal static object GetLocalValue(this ConfigEntryBase configurationEntry)
+        {
+            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
+            if (cma != null)
+            {
+                return cma.LocalValue;
+            }
+            return null;
+        }
+
+        /// <summary>
+        ///     Set the local value of an admin config
+        /// </summary>
+        /// <param name="configurationEntry"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static void SetLocalValue(this ConfigEntryBase configurationEntry, object value)
+        {
+            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
+            if (cma != null)
+            {
+                cma.LocalValue = value; 
+            }
         }
 
         /// <summary>
@@ -42,7 +99,7 @@ namespace Jotunn.Utils
         /// <param name="configurationEntry"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static bool IsButtonBound(this ConfigEntryBase configurationEntry)
+        internal static bool IsButtonBound(this ConfigEntryBase configurationEntry)
         {
             if (configurationEntry == null)
             {
@@ -69,7 +126,7 @@ namespace Jotunn.Utils
         /// <param name="configurationEntry"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static string GetBoundButtonName(this ConfigEntryBase configurationEntry)
+        internal static string GetBoundButtonName(this ConfigEntryBase configurationEntry)
         {
             if (configurationEntry == null)
             {
@@ -98,7 +155,7 @@ namespace Jotunn.Utils
         /// <param name="configurationEntry"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static ButtonConfig GetButtonConfig(this ConfigEntryBase configurationEntry)
+        internal static ButtonConfig GetButtonConfig(this ConfigEntryBase configurationEntry)
         {
             if (configurationEntry == null)
             {

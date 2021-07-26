@@ -7,16 +7,20 @@ namespace Jotunn.Utils
     internal class BepInExUtils
     {
         /// <summary>
-        ///     Get a dictionary of loaded plugins which depend on Jotunn.
+        ///     Cached plugin list
+        /// </summary>
+        private static BaseUnityPlugin[] plugins;
+
+        /// <summary>
+        ///     Cache loaded plugins which depend on Jotunn.
         /// </summary>
         /// <returns></returns>
-        internal static Dictionary<string, BaseUnityPlugin> GetDependentPlugins(bool includeJotunn = false)
+        private static void CacheDependentPlugins()
         {
-            var result = new Dictionary<string, BaseUnityPlugin>();
+            var dependent = new List<BaseUnityPlugin>();
+            var loaded = BepInEx.Bootstrap.Chainloader.PluginInfos.Where(x => x.Value != null && x.Value.Instance != null).Select(x => x.Value.Instance);
 
-            var plugins = BepInEx.Bootstrap.Chainloader.PluginInfos.Where(x => x.Value != null && x.Value.Instance != null).Select(x => x.Value.Instance).ToArray();
-
-            foreach (var plugin in plugins)
+            foreach (var plugin in loaded)
             {
                 if (plugin.Info == null)
                 {
@@ -29,9 +33,9 @@ namespace Jotunn.Utils
                     continue;
                 }
 
-                if (includeJotunn && plugin.Info.Metadata.GUID == Main.ModGuid)
+                if (plugin.Info.Metadata.GUID == Main.ModGuid)
                 {
-                    result.Add(plugin.Info.Metadata.GUID, plugin);
+                    dependent.Add(plugin);
                     continue;
                 }
 
@@ -39,9 +43,39 @@ namespace Jotunn.Utils
                 {
                     if (dependencyAttribute.DependencyGUID == Main.ModGuid)
                     {
-                        result.Add(plugin.Info.Metadata.GUID, plugin);
+                        dependent.Add(plugin);
                     }
                 }
+            }
+
+            plugins = dependent.ToArray();
+        }
+
+        /// <summary>
+        ///     Get a dictionary of loaded plugins which depend on Jotunn.
+        /// </summary>
+        /// <returns></returns>
+        internal static Dictionary<string, BaseUnityPlugin> GetDependentPlugins(bool includeJotunn = false)
+        {
+            var result = new Dictionary<string, BaseUnityPlugin>();
+
+            if (plugins == null)
+            {
+                CacheDependentPlugins();
+            }
+
+            foreach (var plugin in plugins)
+            {
+                if (plugin.Info.Metadata.GUID == Main.ModGuid)
+                {
+                    if (includeJotunn)
+                    {
+                        result.Add(plugin.Info.Metadata.GUID, plugin);
+                    }
+                    continue;
+                }
+                
+                result.Add(plugin.Info.Metadata.GUID, plugin);
             }
 
             return result;

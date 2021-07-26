@@ -1,5 +1,4 @@
-﻿using Jotunn.Managers;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 ///     Class that specifies how a setting should be displayed inside the ConfigurationManager settings window.
@@ -27,12 +26,10 @@ using UnityEngine;
 ///     You can read more and see examples in the readme at https://github.com/BepInEx/BepInEx.ConfigurationManager
 ///     You can optionally remove fields that you won't use from this class, it's the same as leaving them null.
 /// </remarks>
-#pragma warning disable 0169, 0414, 0649
 public sealed class ConfigurationManagerAttributes
 {
-
     /// <summary>
-    /// ctor
+    ///     ctor
     /// </summary>
     public ConfigurationManagerAttributes()
     {
@@ -41,25 +38,9 @@ public sealed class ConfigurationManagerAttributes
     }
 
     /// <summary>
-    /// Should the setting be shown as a percentage (only use with value range settings).
-    /// </summary>
-    public bool? ShowRangeAsPercent;
-
-    /// <summary>
-    ///     Custom setting editor (OnGUI code that replaces the default editor provided by ConfigurationManager).
-    ///     See below for a deeper explanation. Using a custom drawer will cause many of the other fields to do nothing.
-    /// </summary>
-    public System.Action<BepInEx.Configuration.ConfigEntryBase> CustomDrawer;
-
-    /// <summary>
     ///     Show this setting in the settings screen at all? If false, don't show.
     /// </summary>
     public bool? Browsable;
-
-    /// <summary>
-    ///     Category the setting is under. Null to be directly under the plugin.
-    /// </summary>
-    public string Category;
 
     /// <summary>
     ///     If set, a "Default" button will be shown next to the setting to allow resetting to default.
@@ -70,23 +51,6 @@ public sealed class ConfigurationManagerAttributes
     ///     Force the "Reset" button to not be displayed, even if a valid DefaultValue is available. 
     /// </summary>
     public bool? HideDefaultButton;
-
-    /// <summary>
-    ///     Force the setting name to not be displayed. Should only be used with a <see cref="CustomDrawer"/> to get more space.
-    ///     Can be used together with <see cref="HideDefaultButton"/> to gain even more space.
-    /// </summary>
-    public bool? HideSettingName;
-
-    /// <summary>
-    ///     Optional description shown when hovering over the setting.
-    ///     Not recommended, provide the description when creating the setting instead.
-    /// </summary>
-    public string Description;
-
-    /// <summary>
-    ///     Name of the setting.
-    /// </summary>
-    public string DispName;
 
     /// <summary>
     ///     Order of the setting on the settings list relative to other settings in a category.
@@ -112,30 +76,11 @@ public sealed class ConfigurationManagerAttributes
         get => isAdminOnly;
         set
         {
-            ReadOnly = value;
-            HideDefaultButton = value;
             isAdminOnly = value;
-            // Reset unlockSetting if IsAdminOnly is set to true 
-            unlockSetting &= !isAdminOnly;
+            IsUnlocked = !value;
         }
     }
-
-    /// <summary>
-    ///     Welp
-    /// </summary>
-    public bool UnlockSetting
-    {
-        get => unlockSetting;
-        set
-        {
-            if (value)
-            {
-                HideDefaultButton = false;
-                ReadOnly = false;
-            }
-            unlockSetting = value;
-        }
-    }
+    private bool isAdminOnly;
 
     /// <summary>
     ///     Color of the entry text
@@ -148,15 +93,22 @@ public sealed class ConfigurationManagerAttributes
     public Color DescriptionColor { get; set; }
 
     /// <summary>
-    ///     Custom converter from setting type to string for the built-in editor textboxes.
+    ///     Whether a config is locked for direct writing
     /// </summary>
-    public System.Func<object, string> ObjToStr;
+    internal bool IsUnlocked
+    {
+        get => isUnlocked;
+        set
+        {
+            ReadOnly = !value;
+            HideDefaultButton = !value;
+            isUnlocked = value;
+        }
+    }
+    private bool isUnlocked;
 
     /// <summary>
-    ///     Custom converter from string to setting type for the built-in editor textboxes.
+    ///     When a config is locked, cache the local value
     /// </summary>
-    public System.Func<string, object> StrToObj;
-
-    private bool isAdminOnly;
-    private bool unlockSetting;
+    internal object LocalValue { get; set; }
 }
