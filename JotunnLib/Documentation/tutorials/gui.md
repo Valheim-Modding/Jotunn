@@ -199,7 +199,7 @@ private void TogglePanel()
         // Note: This is normally automatically added when using CreateWoodpanel()
         DragWindowCntrl drag = TestPanel.AddComponent<DragWindowCntrl>();
 
-        // To actually be able to drag the panel, Unity events must be registered with the Component
+        // To actually be able to drag the panel, Unity events must be registered
         EventTrigger trigger = TestPanel.AddComponent<EventTrigger>();
         EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
         beginDragEntry.eventID = EventTriggerType.BeginDrag;
@@ -210,7 +210,7 @@ private void TogglePanel()
         dragEntry.callback.AddListener((data) => { drag.Drag(); });
         trigger.triggers.Add(dragEntry);
 
-        // Create a text object
+        // Create the text object
         GameObject textObject = GUIManager.Instance.CreateText(
             text: "Jötunn, the Valheim Lib",
             parent: TestPanel.transform,

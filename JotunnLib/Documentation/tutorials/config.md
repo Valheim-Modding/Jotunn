@@ -22,9 +22,13 @@ private void CreateConfigValues()
 
     // Add client config which can be edited in every local instance independently
     StringConfig = Config.Bind("Client config", "LocalString", "Some string", "Client side string");
-    FloatConfig = Config.Bind("Client config", "LocalFloat", 0.5f, new ConfigDescription("Client side float with a value range", new AcceptableValueRange<float>(0f, 1f)));
-    IntegerConfig = Config.Bind("Client config", "LocalInteger", 2, new ConfigDescription("Client side integer without a range"));
-    BoolConfig = Config.Bind("Client config", "LocalBool", false, new ConfigDescription("Client side bool / checkbox"));
+    FloatConfig = Config.Bind("Client config", "LocalFloat", 0.5f, 
+        new ConfigDescription("Client side float with a value range", new AcceptableValueRange<float>(0f, 1f)));
+    IntegerConfig = Config.Bind("Client config", "LocalInteger", 2, 
+        new ConfigDescription("Client side integer without a range"));
+    BoolConfig = Config.Bind("Client config", "LocalBool", false, 
+        new ConfigDescription("Client side bool / checkbox"));
+
 }
 ```
 
@@ -60,10 +64,19 @@ private void CreateConfigValues()
 
     // Add server config which gets pushed to all clients connecting and can only be edited by admins
     // In local/single player games the player is always considered the admin
-    Config.Bind("Server config", "StringValue1", "StringValue", new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
-    Config.Bind("Server config", "FloatValue1", 750f, new ConfigDescription("Server side float", new AcceptableValueRange<float>(0f, 1000f), new ConfigurationManagerAttributes { IsAdminOnly = true }));
-    Config.Bind("Server config", "IntegerValue1", 200, new ConfigDescription("Server side integer", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
-    Config.Bind("Server config", "BoolValue1", false, new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+    Config.Bind("Server config", "StringValue1", "StringValue", 
+        new ConfigDescription("Server side string", null, 
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+    Config.Bind("Server config", "FloatValue1", 750f, 
+        new ConfigDescription("Server side float", 
+        new AcceptableValueRange<float>(0f, 1000f), 
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+    Config.Bind("Server config", "IntegerValue1", 200, 
+        new ConfigDescription("Server side integer", null, 
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+    Config.Bind("Server config", "BoolValue1", false, 
+        new ConfigDescription("Server side bool", null, 
+        new ConfigurationManagerAttributes { IsAdminOnly = true }));
 }
 ```
 
@@ -92,11 +105,13 @@ private void CreateConfigValues()
 
     // Colored text configs
     Config.Bind("Client config", "ColoredValue", false,
-        new ConfigDescription("Colored key and description text", null, new ConfigurationManagerAttributes { EntryColor = Color.blue, DescriptionColor = Color.yellow }));
+        new ConfigDescription("Colored key and description text", null,
+        new ConfigurationManagerAttributes { EntryColor = Color.blue, DescriptionColor = Color.yellow }));
 
     // Invisible configs
     Config.Bind("Client config", "InvisibleInt", 150,
-        new ConfigDescription("Invisible int, testing browsable=false", null, new ConfigurationManagerAttributes() { Browsable = false }));
+        new ConfigDescription("Invisible int, testing browsable=false", null,
+        new ConfigurationManagerAttributes() { Browsable = false }));
 }
 ```
 
