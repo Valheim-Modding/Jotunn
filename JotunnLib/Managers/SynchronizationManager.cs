@@ -137,7 +137,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Start admin list watchdog on a server
+        ///     Hook <see cref="ZNet.Awake"/> to start a watchdog Coroutine which monitors the admin list.
         /// </summary>
         /// <param name="orig"></param>
         /// <param name="self"></param>
@@ -160,7 +160,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Register local RPCs on a client
+        ///     Hook <see cref="ZNet.OnNewConnection"/> to register client side RPC calls for synchronization.
         /// </summary>
         /// <param name="orig"></param>
         /// <param name="self"></param>
@@ -638,15 +638,35 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, SortedDictionary<int, byte[]>> configValueCache = new Dictionary<string, SortedDictionary<int, byte[]>>();
         private readonly List<KeyValuePair<long, string>> cacheExpirations = new List<KeyValuePair<long, string>>(); // avoid leaking memory
 
+        /// <summary>
+        ///     Client side RPC to receive the initial config from the server
+        /// </summary>
+        /// <param name="rpc"></param>
+        /// <param name="package"></param>
         private void RPC_Jotunn_SyncInitialConfig(ZRpc rpc, ZPackage package) => RPC_Jotunn_SyncConfig(0, package);
 
         /// <summary>
-        ///     Apply a partial config to server and send to other clients.
+        ///     Receive and apply a partial config and send to other clients when the server receives changed config.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="package"></param>
         private void RPC_Jotunn_SyncConfig(long sender, ZPackage package)
         {
+            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
+            {
+                // Is package not empty and is sender admin?
+                if (package != null && package.Size() > 0 && ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
+                {
+                    Logger.LogInfo($"Received configuration data from client {sender}");
+
+                    // Apply config locally
+                    ApplyConfigZPackage(package, out bool initial);
+
+                    // Send to all other clients
+                    ZNet.instance.StartCoroutine(SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package));
+                }
+            }
+
             if (ZNet.instance.IsClientInstance())
             {
                 if (package != null && package.Size() > 0) // && sender == ZNet.instance.GetServerPeer().m_uid)
@@ -724,21 +744,6 @@ namespace Jotunn.Managers
                     {
                         //ProcessingServerUpdate = false;
                     }
-                }
-            }
-
-            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
-            {
-                // Is package not empty and is sender admin?
-                if (package != null && package.Size() > 0 && ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
-                {
-                    Logger.LogInfo($"Received configuration data from client {sender}");
-
-                    // Apply config locally
-                    ApplyConfigZPackage(package, out bool initial);
-
-                    // Send to all other clients
-                    ZNet.instance.StartCoroutine(SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package));
                 }
             }
         }
@@ -835,6 +840,12 @@ namespace Jotunn.Managers
             return pkg;
         }
 
+        /// <summary>
+        ///     Coroutine to send a package async to a single target. Compresses the package if necessary.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="package"></param>
+        /// <returns></returns>
         private IEnumerator SendPackage(long target, ZPackage package)
         {
             if (!ZNet.instance)
@@ -851,6 +862,12 @@ namespace Jotunn.Managers
             return SendPackage(peers, package);
         }
 
+        /// <summary>
+        ///     Coroutine to send a package async to a list of Peers. Compresses the package if necessary.
+        /// </summary>
+        /// <param name="peers"></param>
+        /// <param name="package"></param>
+        /// <returns></returns>
         private IEnumerator SendPackage(List<ZNetPeer> peers, ZPackage package)
         {
             if (!ZNet.instance)
@@ -885,8 +902,17 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Global package counter to identify fragmented packages
+        /// </summary>
         private static long packageCounter = 0;
 
+        /// <summary>
+        ///     Coroutine to send a package async to an actual peer. Fragments the package if necessary.
+        /// </summary>
+        /// <param name="peer"></param>
+        /// <param name="package"></param>
+        /// <returns></returns>
         private IEnumerator<bool> SendToPeer(ZNetPeer peer, ZPackage package)
         {
             ZRoutedRpc rpc = ZRoutedRpc.instance;
@@ -973,6 +999,11 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Wrapper Socket which holds up and preserves PeerInfo or RoutedRPC packages until
+        ///     the finished member is set to true. All other packages get sent. This will
+        ///     stop the client from completing the login handshake with the server until ready.
+        /// </summary>
         private class PeerInfoBlockingSocket : ISocket
         {
             public volatile bool finished = false;
