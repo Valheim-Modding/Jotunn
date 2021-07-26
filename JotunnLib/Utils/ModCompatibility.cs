@@ -195,10 +195,10 @@ namespace Jotunn.Utils
                     false);
             }
 
-
             scroll.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
 
-            var button = GUIManager.Instance.CreateButton("OK", panel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -215f));
+            var button = GUIManager.Instance.CreateButton("OK", panel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -215f),
+                100f, 40f);
 
             // Special condition, coming from ingame back into main scene
             button.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
