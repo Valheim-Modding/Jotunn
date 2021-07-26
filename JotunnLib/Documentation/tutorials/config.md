@@ -75,7 +75,7 @@ Upon connection to a server, Jötunn checks the admin status of the connecting p
 
 **Note**: When starting a local game the local player always gains admin status regardless of any given adminlist.txt values.
 
-**Note**: At the start scene / main menu the player is not an admin per default. This means that admin only configuration can never be changed in the main menu.
+**Note**: At the start scene / main menu the player is admin per default. This means that admin only configuration can also be changed in the main menu but will only be active in a local game.
 
 ## Additional config attributes
 
@@ -100,7 +100,7 @@ private void CreateConfigValues()
 }
 ```
 
-## Config synced event
+## "Config synced" event
 
 Jötunn provides an event in the SynchronizationManager you can subscribe to: [SynchronizationManager.OnConfigurationSynchronized](xref:Jotunn.Managers.SynchronizationManager.OnConfigurationSynchronized). It fires when configuration is synced from a server to the client. Upon connection there is always an initial sync event. If configuration is changed and distributed during a game session, the event is fired every time you receive or send configuration. This applies to server side configuration only (i.e. `AdminOnly = true`). To distinguish between the initial and recurring config sync use the [ConfigurationSynchronizationEventArgs](xref:Jotunn.Utils.ConfigurationSynchronizationEventArgs).
 
@@ -115,5 +115,16 @@ SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
     {
         Jotunn.Logger.LogMessage("Config sync event received");
     }
+};
+```
+
+## "Admin status changed" event
+
+Similar to the event on configuration sync there is also an event when the admin status of a player on the server changed and got synced to the client: [SynchronizationManager.OnAdminStatusChanged](xref:Jotunn.Managers.SynchronizationManager.OnAdminStatusChanged).
+
+```cs
+SynchronizationManager.OnAdminStatusChanged += () =>
+{
+    Jotunn.Logger.LogMessage($"Admin status sync event received: {(SynchronizationManager.Instance.PlayerIsAdmin ? "You're admin now" : "Downvoted, boy")}");
 };
 ```
