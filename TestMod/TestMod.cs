@@ -228,12 +228,15 @@ namespace TestMod
                     anchorMax: new Vector2(0.5f, 0.5f),
                     position: new Vector2(0, 0),
                     width: 850,
-                    height: 600);
+                    height: 600,
+                    draggable: false);
                 TestPanel.SetActive(false);
 
                 // Add the Jötunn draggable Component to the panel
-                // To actually be able to drag the panel, Unity events must be registered with the Component
+                // Note: This is normally automatically added when using CreateWoodpanel()
                 DragWindowCntrl drag = TestPanel.AddComponent<DragWindowCntrl>();
+
+                // To actually be able to drag the panel, Unity events must be registered with the Component
                 EventTrigger trigger = TestPanel.AddComponent<EventTrigger>();
                 EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
                 beginDragEntry.eventID = EventTriggerType.BeginDrag;
