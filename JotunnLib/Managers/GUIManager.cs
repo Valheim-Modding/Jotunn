@@ -297,7 +297,7 @@ namespace Jotunn.Managers
                     GameObject colorPicker = colorWheelBundle.LoadAsset<GameObject>("ColorPicker");
 
                     // Setting some vanilla styles
-                    colorPicker.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
+                    colorPicker.GetComponent<Image>().sprite = GetSprite("woodpanel_settings");
                     colorPicker.GetComponent<Image>().type = Image.Type.Sliced;
                     colorPicker.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
                     foreach (Text pickerTxt in colorPicker.GetComponentsInChildren<Text>(true))
@@ -322,7 +322,7 @@ namespace Jotunn.Managers
                     GameObject gradientPicker = colorWheelBundle.LoadAsset<GameObject>("GradientPicker");
 
                     // Setting some vanilla styles
-                    gradientPicker.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
+                    gradientPicker.GetComponent<Image>().sprite = GetSprite("woodpanel_settings");
                     gradientPicker.GetComponent<Image>().type = Image.Type.Sliced;
                     gradientPicker.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
                     foreach (Text pickerTxt in gradientPicker.GetComponentsInChildren<Text>(true))
