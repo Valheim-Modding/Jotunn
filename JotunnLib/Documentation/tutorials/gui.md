@@ -163,7 +163,7 @@ trigger.triggers.Add(dragEntry);
 
 ## Example
 
-In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use a [custom button](inputs.md) to toggle a simple, draggable panel with a button on it. That button also gets a listener added to close the panel again. Also the input is blocked for the player and camera while the panel is active so we can actually use the mouse and cant control the player any more.
+In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use a [custom button](inputs.md) to toggle a simple, draggable panel with a text and a button on it. That button also gets a listener added to close the panel again. Also the input is blocked for the player and camera while the panel is active so we can actually use the mouse and cant control the player any more.
 
 ```cs
 // Toggle our test panel with button
@@ -209,6 +209,22 @@ private void TogglePanel()
         dragEntry.eventID = EventTriggerType.Drag;
         dragEntry.callback.AddListener((data) => { drag.Drag(); });
         trigger.triggers.Add(dragEntry);
+
+        // Create a text object
+        GameObject textObject = GUIManager.Instance.CreateText(
+            text: "Jötunn, the Valheim Lib",
+            parent: TestPanel.transform,
+            anchorMin: new Vector2(0.5f, 1f),
+            anchorMax: new Vector2(0.5f, 1f),
+            position: new Vector2(0f, -100f),
+            font: GUIManager.Instance.AveriaSerifBold,
+            fontSize: 30,
+            color: GUIManager.Instance.ValheimOrange,
+            outline: true,
+            outlineColor: Color.black,
+            width: 350f,
+            height: 40f,
+            addContentSizeFitter: false);
 
         // Create the button object
         GameObject buttonObject = GUIManager.Instance.CreateButton(
