@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.2.0
+
+
 ## Version 2.1.3
 * Fixed KeyCode configs without backing ButtonConfig
 * Fixed KeyCode settings display

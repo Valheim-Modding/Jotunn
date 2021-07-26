@@ -313,7 +313,7 @@ namespace Jotunn.Managers
                     }
                     foreach (Button pickerButton in colorPicker.GetComponentsInChildren<Button>(true))
                     {
-                        ApplyButtonStyle(pickerButton);
+                        ApplyButtonStyle(pickerButton, 13);
                     }
 
                     PrefabManager.Instance.AddPrefab(colorPicker);
@@ -338,7 +338,7 @@ namespace Jotunn.Managers
                     }
                     foreach (Button pickerButton in gradientPicker.GetComponentsInChildren<Button>(true))
                     {
-                        ApplyButtonStyle(pickerButton);
+                        ApplyButtonStyle(pickerButton, 13);
                     }
 
                     PrefabManager.Instance.AddPrefab(gradientPicker);
@@ -1267,10 +1267,11 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Apply valheim style to a button component
+        ///     Apply valheim style to a <see cref="Button"/> Component
         /// </summary>
-        /// <param name="button"></param>
-        public void ApplyButtonStyle(Button button)
+        /// <param name="button"><see cref="Button"/> Component to apply the style to</param>
+        /// <param name="fontSize">Optional fontSize, defaults to 16</param>
+        public void ApplyButtonStyle(Button button, int fontSize = 16)
         {
             GameObject go = button.gameObject;
 
@@ -1320,13 +1321,11 @@ namespace Jotunn.Managers
 
                 txt.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
                 txt.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-                txt.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 140f);
-                txt.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 38f);
                 txt.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0f);
             }
 
             txt.GetComponent<Text>().font = AveriaSerifBold;
-            txt.GetComponent<Text>().fontSize = 16;
+            txt.GetComponent<Text>().fontSize = fontSize;
             txt.GetComponent<Text>().color = new Color(1f, 0.631f, 0.235f, 1f);
             txt.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
 
@@ -1339,7 +1338,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Apply Valheim style to an inputfield component.
+        ///     Apply Valheim style to an <see cref="InputField"/> Component.
         /// </summary>
         /// <param name="field"></param>
         public void ApplyInputFieldStyle(InputField field)
@@ -1354,7 +1353,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Apply Valheim style to a toggle component.
+        ///     Apply Valheim style to a <see cref="Toggle"/> component.
         /// </summary>
         /// <param name="toggle"></param>
         public void ApplyToogleStyle(Toggle toggle)
