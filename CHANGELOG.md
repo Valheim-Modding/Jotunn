@@ -1,14 +1,17 @@
 ﻿# Changelog
 
 ## Version 2.2.0
-* Added ColorPicker and GradientPicker for mods to use
-* Added ColorPicker in the "ModConfig" Settings tab to pick color values easily
 * Custom items get loaded into the ObjectDB _before_ any HarmonyX hooks run (fixes compatibility with BetterTrader for example)
-* Added non-blocking, fragemented and compressed config sync to the clients (thx to [blaxxun](https://github.com/blaxxun-boop))
+* Added non-server-blocking, fragemented and compressed config sync to the clients (thx to [blaxxun](https://github.com/blaxxun-boop))
 * Server configs get displayed in the Settings but don't overwrite local configs when connected to a server
 * Player with admin status on a server can change server config values directly in the Settings without touching the local configuration
 * Compatible with reloading config changes from the filesystem at runtime, changes get propagated to the server or clients if applicable
 * AdminOnly configs can be changed in the main menu for local games
+* Added event to subscribe to when a players admin status changes on a server, gets also synced to the client
+* Added ColorPicker in the "ModConfig" Settings tab to pick color values easily
+* Added ColorPicker and GradientPicker to the GUIManager for mods to use
+* Added more GUIManager stuff (apply styles for GUI elements, mod usable GUI dragging component)
+* Moved most of Jötunns console output to Debug level
 
 ## Version 2.1.3
 * Fixed KeyCode configs without backing ButtonConfig
