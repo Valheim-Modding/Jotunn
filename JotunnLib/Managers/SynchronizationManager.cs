@@ -129,11 +129,6 @@ namespace Jotunn.Managers
                 ResetAdminConfigs();
                 CacheConfigurationValues();
             }
-
-            if (scene.name == "main" && !ZNet.instance.IsServer())
-            {
-                InitAdminConfigs();
-            }
         }
 
         /// <summary>
@@ -517,7 +512,8 @@ namespace Jotunn.Managers
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
                     if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly))
                     {
-                        var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
+                        var value = new Tuple<string, string, string, string>(
+                            plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
                         values.Add(value);
                     }
                 }
@@ -544,7 +540,8 @@ namespace Jotunn.Managers
                         x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly &&
                         ((ConfigurationManagerAttributes)x).IsUnlocked))
                     {
-                        var value = new Tuple<string, string, string, string>(plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
+                        var value = new Tuple<string, string, string, string>(
+                            plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
                         valuesToSend.Add(value);
                     }
 
@@ -669,7 +666,7 @@ namespace Jotunn.Managers
 
             if (ZNet.instance.IsClientInstance())
             {
-                if (package != null && package.Size() > 0) // && sender == ZNet.instance.GetServerPeer().m_uid)
+                if (package != null && package.Size() > 0)
                 {
                     Logger.LogDebug("Received configuration data from server");
                     try
@@ -733,12 +730,16 @@ namespace Jotunn.Managers
 
                         if ((packageFlags & INITIAL_CONFIG) != 0)
                         {
-                            // hmmm...
+                            InitAdminConfigs();
                         }
 
                         package.SetPos(0);
                         ApplyConfigZPackage(package, out bool initial);
                         InvokeOnConfigurationSynchronized(initial);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogWarning($"Error caught while applying config package: {e}");
                     }
                     finally
                     {
