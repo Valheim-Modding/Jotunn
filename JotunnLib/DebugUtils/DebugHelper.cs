@@ -7,6 +7,10 @@ namespace Jotunn.DebugUtils
     {
         private void Awake()
         {
+            Main.RootObject.AddComponent<ZoneCounter>();
+            Main.RootObject.AddComponent<Eraser>();
+            Main.RootObject.AddComponent<FreeFly>();
+
             On.ZNet.Awake += ZNet_Awake;
         }
 

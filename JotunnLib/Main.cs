@@ -31,12 +31,16 @@ namespace Jotunn
         /// </summary>
         public const string ModGuid = "com.jotunn.jotunn";
 
+        internal static Main Instance;
         internal static GameObject RootObject;
 
-        private List<IManager> managers;
+        private List<IManager> Managers;
 
         private void Awake()
         {
+            // Set instance
+            Instance = this;
+
             // Initialize Logger
             Jotunn.Logger.Init();
 
@@ -45,7 +49,7 @@ namespace Jotunn
             DontDestroyOnLoad(RootObject);
 
             // Create and initialize all managers
-            managers = new List<IManager>()
+            Managers = new List<IManager>()
             {
                 LocalizationManager.Instance,
                 CommandManager.Instance,
@@ -61,16 +65,15 @@ namespace Jotunn
                 //ZoneManager.Instance,  // Had some problems reported, needs more tests
                 SynchronizationManager.Instance
             };
-            foreach (IManager manager in managers)
+            foreach (IManager manager in Managers)
             {
                 Logger.LogInfo("Initializing " + manager.GetType().Name);
                 manager.Init();
             }
 
 #if DEBUG
-            // Enable some helper on DEBUG build
+            // Enable helper on DEBUG build
             RootObject.AddComponent<DebugUtils.DebugHelper>();
-            RootObject.AddComponent<DebugUtils.ZoneCounter>();
 #endif
 
             Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
