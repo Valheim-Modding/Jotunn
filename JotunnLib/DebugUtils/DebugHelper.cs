@@ -8,7 +8,9 @@ namespace Jotunn.DebugUtils
         private void Awake()
         {
             Main.RootObject.AddComponent<ZoneCounter>();
+            Main.RootObject.AddComponent<HoverActionsPanel>();
             Main.RootObject.AddComponent<Eraser>();
+            Main.RootObject.AddComponent<HoverInfo>();
 
             On.ZNet.Awake += ZNet_Awake;
         }
