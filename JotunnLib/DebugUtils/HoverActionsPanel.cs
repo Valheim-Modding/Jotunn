@@ -1,47 +1,125 @@
-﻿using UnityEngine;
+﻿using System;
+using Jotunn.Managers;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Jotunn.DebugUtils
 {
-    internal class HoverActionsPanel
+    internal class HoverActionsPanel : MonoBehaviour
     {
-        private static GameObject _hoverActionsPanel = null;
+        public static Action<GameObject> OnHoverChanged;
+        private static GameObject _panel;
+        private GameObject _lastHoverObject;
 
-        public static GameObject GetPanel(Hud hud)
+        private void Awake()
         {
-            if (!_hoverActionsPanel)
-            {
-                _hoverActionsPanel = CreatePanel(hud);
-            }
-
-            return _hoverActionsPanel;
+            On.Hud.UpdateCrosshair += HudUpdateCrosshairPostfix;
         }
 
-        private static GameObject CreatePanel(Hud hud)
+        private void HudUpdateCrosshairPostfix(On.Hud.orig_UpdateCrosshair orig, Hud self, Player player, float bowDrawPercentage)
         {
-            var hoverActionsRoot =
-                new GameObject(
-                    "HoverActionsRoot", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            orig(self, player, bowDrawPercentage);
 
-            hoverActionsRoot.transform.SetParent(hud.m_hoverName.transform.parent);
+            GameObject hoverObject = GetValidHoverObject(player);
 
-            RectTransform transform = hoverActionsRoot.GetComponent<RectTransform>();
+            if (hoverObject != _lastHoverObject)
+            {
+                CreatePanel(self);
+                _lastHoverObject = hoverObject;
+                OnHoverChanged?.SafeInvoke(hoverObject);
+            }
+        }
+
+        private GameObject GetValidHoverObject(Player player)
+        {
+            if (!player || !player.GetHoverObject())
+            {
+                return null;
+            }
+
+            GameObject hoverObject = player.GetHoverObject();
+            ZNetView zNetView = hoverObject.GetComponentInParent<ZNetView>();
+
+            if (!zNetView || !zNetView.IsValid())
+            {
+                return null;
+            }
+
+            return hoverObject;
+        }
+
+        private void CreatePanel(Hud hud)
+        {
+            if (_panel)
+            {
+                GameObject.Destroy(_panel);
+            }
+
+            _panel = new GameObject("HoverActionsRoot", typeof(RectTransform));
+            _panel.transform.SetParent(hud.m_hoverName.transform.parent);
+
+            RectTransform transform = _panel.GetComponent<RectTransform>();
             transform.anchorMin = Vector2.zero;
             transform.anchorMax = new Vector2(-1f, 1f);
             transform.pivot = Vector2.zero;
             transform.anchoredPosition = new Vector2(22f, 22f);
-
-            VerticalLayoutGroup layoutGroup = hoverActionsRoot.GetComponent<VerticalLayoutGroup>();
-            layoutGroup.childControlHeight = true;
-            layoutGroup.childAlignment = TextAnchor.LowerLeft;
-            layoutGroup.spacing = 8f;
-
-            ContentSizeFitter fitter = hoverActionsRoot.GetComponent<ContentSizeFitter>();
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            HorizontalLayoutGroup panelLayout = _panel.AddComponent<HorizontalLayoutGroup>();
+            panelLayout.spacing = 8f;
+            ContentSizeFitter fitter = _panel.AddComponent<ContentSizeFitter>();
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            fitter.verticalFit = ContentSizeFitter.FitMode.MinSize;
 
-            hoverActionsRoot.SetActive(true);
-            return hoverActionsRoot;
+            GameObject left = new GameObject("lhs", typeof(RectTransform));
+            left.transform.SetParent(_panel.transform);
+
+            VerticalLayoutGroup leftLayout = left.AddComponent<VerticalLayoutGroup>();
+            leftLayout.childControlWidth = true;
+            leftLayout.childControlHeight = true;
+            leftLayout.childForceExpandWidth = true;
+            leftLayout.childForceExpandHeight = false;
+            leftLayout.childAlignment = TextAnchor.LowerLeft;
+            ContentSizeFitter leftFitter = left.AddComponent<ContentSizeFitter>();
+            leftFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            leftFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            GameObject right = new GameObject("rhs", typeof(RectTransform));
+            right.transform.SetParent(_panel.transform);
+
+            VerticalLayoutGroup rightLayout = right.AddComponent<VerticalLayoutGroup>();
+            rightLayout.childControlWidth = true;
+            rightLayout.childControlHeight = true;
+            rightLayout.childForceExpandWidth = true;
+            rightLayout.childForceExpandHeight = false;
+            rightLayout.childAlignment = TextAnchor.LowerRight;
+            ContentSizeFitter rightFitter = right.AddComponent<ContentSizeFitter>();
+            rightFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            rightFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            _panel.SetActive(true);
         }
+
+        public static void AddRow(string lhs, string rhs)
+        {
+            GameObject left = new GameObject("lhs", typeof(RectTransform));
+            left.transform.SetParent(_panel.transform.Find("lhs"));
+            Text ltext = left.AddComponent<Text>();
+            ltext.alignment = TextAnchor.MiddleRight;
+            ltext.horizontalOverflow = HorizontalWrapMode.Overflow;
+            ltext.font = GUIManager.Instance.AveriaSerif;
+            ltext.fontSize = 18;
+            ltext.text = lhs;
+
+            GameObject right = new GameObject("rhs", typeof(RectTransform));
+            right.transform.SetParent(_panel.transform.Find("rhs"));
+            Text rtext = right.AddComponent<Text>();
+            rtext.alignment = TextAnchor.MiddleLeft;
+            rtext.horizontalOverflow = HorizontalWrapMode.Wrap;
+            rtext.font = GUIManager.Instance.AveriaSerif;
+            rtext.fontSize = 18;
+            rtext.text = rhs;
+
+            ((RectTransform)_panel.transform).anchoredPosition += new Vector2(0f, 10f);
+        }
+
     }
 }

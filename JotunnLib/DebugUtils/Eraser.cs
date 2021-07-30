@@ -2,7 +2,6 @@
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Jotunn.DebugUtils
 {
@@ -11,10 +10,6 @@ namespace Jotunn.DebugUtils
         private ConfigEntry<bool> _isModEnabled;
         private ConfigEntry<KeyCode> _deleteObjectConfig;
         private ButtonConfig _deleteObjectButton;
-
-        private GameObject _hoverActionsPanel;
-        private Text _deleteObjectText;
-        private GameObject _lastHoverObject;
 
         private void Awake()
         {
@@ -27,38 +22,28 @@ namespace Jotunn.DebugUtils
             };
             InputManager.Instance.AddButton(Main.ModGuid, _deleteObjectButton);
 
-            On.Hud.Awake += HudAwakePostfix;
-            On.Hud.UpdateCrosshair += HudUpdateCrosshairPostfix;
+            HoverActionsPanel.OnHoverChanged += (GameObject hover) =>
+            {
+                if (!_isModEnabled.Value)
+                {
+                    return;
+                }
+                GenerateDeleteObjectText(hover);
+            };
+
             On.Player.Update += PlayerUpdatePostfix;
         }
 
-        private void HudAwakePostfix(On.Hud.orig_Awake orig, Hud self)
+        private void GenerateDeleteObjectText(GameObject hoverObject)
         {
-            orig(self);
-
-            _hoverActionsPanel = HoverActionsPanel.GetPanel(self);
-
-            _deleteObjectText = Instantiate<Text>(self.m_hoverName, _hoverActionsPanel.transform);
-            _deleteObjectText.text = string.Empty;
-            _deleteObjectText.gameObject.SetActive(true);
-        }
-
-        private void HudUpdateCrosshairPostfix(On.Hud.orig_UpdateCrosshair orig, Hud self, Player player, float bowDrawPercentage)
-        {
-            orig(self, player, bowDrawPercentage);
-
-            if (!_isModEnabled.Value)
+            if (!hoverObject)
             {
                 return;
             }
 
-            GameObject hoverObject = GetValidHoverObject(player);
-
-            if (hoverObject != _lastHoverObject)
-            {
-                _deleteObjectText.text = GenerateDeleteObjectText(hoverObject);
-                _lastHoverObject = hoverObject;
-            }
+            HoverActionsPanel.AddRow(
+                $"[<color=#f44336>{_deleteObjectConfig.Value}</color>]",
+                $"[Delete this object <color=#f44336>permanently</color>]");
         }
 
         private void PlayerUpdatePostfix(On.Player.orig_Update orig, Player self)
@@ -74,37 +59,6 @@ namespace Jotunn.DebugUtils
             }
 
             DeleteHoverObject(self);
-        }
-
-        private GameObject GetValidHoverObject(Player player)
-        {
-            if (!player || !player.GetHoverObject())
-            {
-                return null;
-            }
-
-            GameObject hoverObject = player.GetHoverObject();
-            ZNetView zNetView = hoverObject.GetComponentInParent<ZNetView>();
-
-            if (!zNetView || !zNetView.IsValid())
-            {
-                return null;
-            }
-
-            return hoverObject;
-        }
-
-        private string GenerateDeleteObjectText(GameObject hoverObject)
-        {
-            if (!hoverObject)
-            {
-                return string.Empty;
-            }
-
-            return string.Format(
-                "[<color={0}>{1}</color>] Delete this object <color={0}>permanently</color>",
-                "#f44336",
-                _deleteObjectConfig.Value.ToString());
         }
 
         private void DeleteHoverObject(Player player)
