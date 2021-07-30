@@ -179,10 +179,12 @@ namespace Jotunn.Managers
         /// <param name="pkg"></param>
         private void ZNet_RPC_PeerInfo(On.ZNet.orig_RPC_PeerInfo orig, ZNet self, ZRpc rpc, ZPackage pkg)
         {
+            PeerInfoBlockingSocket bufferingSocket = null;
+
             // Create buffering socket
             if (self.IsServer())
             {
-                PeerInfoBlockingSocket bufferingSocket = new PeerInfoBlockingSocket(rpc.GetSocket());
+                bufferingSocket = new PeerInfoBlockingSocket(rpc.GetSocket());
                 rpc.m_socket = bufferingSocket;
             }
 
@@ -204,15 +206,16 @@ namespace Jotunn.Managers
                     ZPackage pkg = GenerateConfigZPackage(true, GetSyncConfigValues());
                     yield return ZNet.instance.StartCoroutine(SendPackage(peer.m_uid, pkg));
 
-                    if (peer.m_rpc.GetSocket() is PeerInfoBlockingSocket bufferingSocket)
+                    if (peer.m_rpc.GetSocket() is PeerInfoBlockingSocket currentSocket)
                     {
-                        peer.m_rpc.m_socket = bufferingSocket.Original;
-                        bufferingSocket.finished = true;
+                        peer.m_rpc.m_socket = currentSocket.Original;
+                    }
 
-                        foreach (ZPackage package in bufferingSocket.Package)
-                        {
-                            bufferingSocket.Original.Send(package);
-                        }
+                    bufferingSocket.finished = true;
+
+                    foreach (ZPackage package in bufferingSocket.Package)
+                    {
+                        bufferingSocket.Original.Send(package);
                     }
                 }
                 self.StartCoroutine(SynchronizeInitialData());
