@@ -9,14 +9,7 @@ namespace Jotunn.DebugUtils
         {
             Main.RootObject.AddComponent<ZoneCounter>();
             Main.RootObject.AddComponent<Eraser>();
-
-            On.ZNet.Awake += ZNet_Awake;
-        }
-
-        private void ZNet_Awake(On.ZNet.orig_Awake orig, ZNet self)
-        {
-            Logger.LogDebug($"ZNet awoken. IsServer: {self.IsServer()} IsDedicated: {self.IsDedicated()}");
-            orig(self);
+            Main.RootObject.AddComponent<ZNetDiddelybug>();
         }
 
         private void Update()
