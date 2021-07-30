@@ -12,9 +12,6 @@ namespace Jotunn.DebugUtils
         {
             _isModEnabled = Main.Instance.Config.Bind<bool>(nameof(ZNetDiddelybug), "RPC Debug", false, "Globally enable or disable RPC debugging.");
 
-            Main.RootObject.AddComponent<ZoneCounter>();
-            Main.RootObject.AddComponent<Eraser>();
-
             On.ZNet.Awake += ZNet_Awake;
             On.ZSteamSocket.Send += ZSteamSocket_Send;
         }
