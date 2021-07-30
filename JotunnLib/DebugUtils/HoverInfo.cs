@@ -28,11 +28,17 @@ namespace Jotunn.DebugUtils
                 return;
             }
 
-            StringBuilder sb = new StringBuilder();
+            HoverActionsPanel.AddRow("Name", hoverObject.name);
 
-            HoverActionsPanel.AddRow("test", "bla");
-            HoverActionsPanel.AddRow("random", "info");
-            HoverActionsPanel.AddRow("that:", "grows");
+            if (hoverObject.TryGetComponent<ZNetView>(out var znet))
+            {
+                HoverActionsPanel.AddRow("IsOwner", znet.IsOwner().ToString());
+            }
+
+            if (hoverObject.TryGetComponent<Piece>(out var piece))
+            {
+                HoverActionsPanel.AddRow("Is", "Piece");
+            }
         }
     }
 }
