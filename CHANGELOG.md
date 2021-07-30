@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.2.1
+* Fixed a bug which rendered clients unable to login to dedicated servers
+
 ## Version 2.2.0
 * Custom items get loaded into the ObjectDB _before_ any HarmonyX hooks run (fixes compatibility with BetterTrader for example)
 * Added non-server-blocking, fragemented and compressed config sync to the clients (thx to [blaxxun](https://github.com/blaxxun-boop))
