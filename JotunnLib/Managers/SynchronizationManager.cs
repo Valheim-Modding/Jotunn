@@ -86,7 +86,7 @@ namespace Jotunn.Managers
 
                 var result = new Dictionary<string, BaseUnityPlugin>();
                 ConfigurationManager = GameObject.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray()
-                    .FirstOrDefault(x => x.Info.Metadata.GUID == "com.bepis.bepinex.configurationmanager");
+                    .FirstOrDefault(x => x.Info?.Metadata?.GUID == "com.bepis.bepinex.configurationmanager");
 
                 if (ConfigurationManager)
                 {
