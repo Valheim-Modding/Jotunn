@@ -178,7 +178,7 @@ namespace Jotunn.DebugUtils
 
         private static Gradient CreatePercentGradient()
         {
-            Gradient gradient = new();
+            Gradient gradient = new Gradient();
 
             gradient.SetKeys(
                 new GradientColorKey[] {
