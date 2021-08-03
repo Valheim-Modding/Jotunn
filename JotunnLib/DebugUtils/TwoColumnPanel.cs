@@ -38,7 +38,7 @@ namespace Jotunn.DebugUtils
 
         void CreatePanel(Transform parent)
         {
-            _panel = new("TwoColumnPanel", typeof(RectTransform));
+            _panel = new GameObject("TwoColumnPanel", typeof(RectTransform));
             _panel.transform.SetParent(parent, worldPositionStays: false);
 
             RectTransform transform = _panel.GetComponent<RectTransform>();
@@ -54,7 +54,7 @@ namespace Jotunn.DebugUtils
             panelFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             panelFitter.verticalFit = ContentSizeFitter.FitMode.MinSize;
 
-            _leftColumn = new("LeftColumn", typeof(RectTransform));
+            _leftColumn = new GameObject("LeftColumn", typeof(RectTransform));
             _leftColumn.transform.SetParent(_panel.transform, worldPositionStays: false);
 
             VerticalLayoutGroup leftLayout = _leftColumn.AddComponent<VerticalLayoutGroup>();
@@ -69,7 +69,7 @@ namespace Jotunn.DebugUtils
             leftFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             leftFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            _rightColumn = new("RightColumn", typeof(RectTransform));
+            _rightColumn = new GameObject("RightColumn", typeof(RectTransform));
             _rightColumn.transform.SetParent(_panel.transform, worldPositionStays: false);
 
             VerticalLayoutGroup rightLayout = _rightColumn.AddComponent<VerticalLayoutGroup>();
@@ -87,7 +87,7 @@ namespace Jotunn.DebugUtils
 
         public TwoColumnPanel AddPanelRow(out Text leftText, out Text rightText)
         {
-            GameObject leftSide = new("Label", typeof(RectTransform));
+            GameObject leftSide = new GameObject("Label", typeof(RectTransform));
             leftSide.transform.SetParent(_leftColumn.transform, worldPositionStays: false);
 
             leftText = leftSide.AddComponent<Text>();
@@ -101,7 +101,7 @@ namespace Jotunn.DebugUtils
             leftOutline.effectColor = Color.black;
             leftOutline.effectDistance = new Vector2(1, -1);
 
-            GameObject rightSide = new("Value", typeof(RectTransform));
+            GameObject rightSide = new GameObject("Value", typeof(RectTransform));
             rightSide.transform.SetParent(_rightColumn.transform, worldPositionStays: false);
 
             rightText = rightSide.AddComponent<Text>();
