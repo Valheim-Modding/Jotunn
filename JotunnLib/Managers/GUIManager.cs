@@ -369,29 +369,40 @@ namespace Jotunn.Managers
             }
             if (scene.name == "main" && GUIInStart)
             {
+                // Destroy our own PixelFix from the start scene
+                if (PixelFix)
+                {
+                    GameObject.DestroyImmediate(PixelFix);
+                }
+
                 // Create a new PixelFix for main scene
                 GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
-                if (root != null)
+                if (!root)
                 {
-                    GameObject gui = root.transform.Find("GUI/PixelFix").gameObject;
-                    if (gui != null)
-                    {
-                        GameObject.DestroyImmediate(PixelFix);
-                        PixelFix = new GameObject("GUIFix", typeof(RectTransform));
-                        PixelFix.layer = UILayer; // UI
-                        PixelFix.transform.SetParent(gui.transform, false);
-                        GUIContainer.SetActive(false);
-                        GUIInStart = false;
-
-                        InvokeOnPixelFixCreated();
-                    }
+                    Logger.LogWarning("_GameMain not found, not creating custom GUI");
+                    return;
                 }
+
+                GameObject gui = root.transform.Find("GUI/PixelFix").gameObject;
+                if (!gui)
+                {
+                    Logger.LogWarning("PixelFix not found, not creating custom GUI");
+                    return;
+                }
+                PixelFix = new GameObject("GUIFix", typeof(RectTransform));
+                PixelFix.layer = UILayer; // UI
+                PixelFix.transform.SetParent(gui.transform, false);
+                GUIContainer.SetActive(false);
+                GUIInStart = false;
+
+                InvokeOnPixelFixCreated();
 
                 // Get the KeyHints transform for this scene to create new KeyHint objects
                 KeyHintContainer = (RectTransform)root.transform.Find("GUI/PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints");
 
                 // Create all custom KeyHints
                 RegisterKeyHints();
+
             }
         }
 
@@ -421,12 +432,28 @@ namespace Jotunn.Managers
         {
             if (KeyHints.Count > 0)
             {
-                Logger.LogInfo("Adding custom key hints");
+                Logger.LogInfo($"Adding {KeyHints.Count} custom key hints");
+
+                List<string> toDelete = new List<string>();
 
                 // Create hint objects for all configs
                 foreach (var entry in KeyHints)
                 {
-                    CreateKeyHintObject(entry.Value);
+                    try
+                    {
+                        CreateKeyHintObject(entry.Value);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning($"Exception caught while creating KeyHint for {entry.Key}: {ex}");
+                        toDelete.Add(entry.Key);
+                    }
+                }
+
+                // Delete key hints with errors
+                foreach(string key in toDelete)
+                {
+                    KeyHints.Remove(key);
                 }
             }
         }
@@ -446,9 +473,22 @@ namespace Jotunn.Managers
             var kb = baseKeyHint.transform.Find("Keyboard");
             var gp = baseKeyHint.transform.Find("Gamepad");
 
+            if (kb == null || gp == null)
+            {
+                throw new Exception("Could not find child objects for KeyHints");
+            }
+
             // Clone vanilla key hint objects and use it as the base for custom key hints
-            var baseKey = GameObject.Instantiate(kb.transform.Find("Place").gameObject);
-            var baseRotate = GameObject.Instantiate(kb.transform.Find("rotate").gameObject);
+            var origKey = kb.transform.Find("Place")?.gameObject;
+            var origRotate = kb.transform.Find("rotate")?.gameObject;
+
+            if (!origKey || !origRotate)
+            {
+                throw new Exception("Could not find child objects for KeyHints");
+            }
+
+            var baseKey = GameObject.Instantiate(origKey);
+            var baseRotate = GameObject.Instantiate(origRotate);
 
             // Destroy all child objects
             foreach (RectTransform child in kb)
@@ -626,15 +666,20 @@ namespace Jotunn.Managers
                 return;
             }
 
-            // Display the Keyhint instead the vanilla one
+            // Display the KeyHint instead the vanilla one or remove the config if it fails
             var hintObject = KeyHintContainer.Find(hintConfig.ToString())?.gameObject;
             if (!hintObject)
             {
-                CreateKeyHintObject(hintConfig);
-            }
-            if (!hintObject)
-            {
-                return;
+                try
+                {
+                    CreateKeyHintObject(hintConfig);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning($"Exception caught while creating dynamic KeyHint {hintConfig}: {ex}");
+                    KeyHints.Remove(hintConfig.ToString());
+                    return;
+                }
             }
 
             self.m_buildHints.SetActive(false);
