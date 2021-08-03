@@ -73,11 +73,9 @@ namespace Jotunn.GUI
         // Create our tab
         private static void FejdStartup_OnButtonSettings(On.FejdStartup.orig_OnButtonSettings orig, FejdStartup self)
         {
-            orig(self);
-
             try
             {
-                settingsRoot = self.m_settingsPrefab;
+                settingsRoot = Object.Instantiate(self.m_settingsPrefab, self.transform);
                 CreateModConfigTab();
             }
             catch (Exception ex)
@@ -100,29 +98,34 @@ namespace Jotunn.GUI
             }
 
             // Gather components
-            //var tabButton = settingsRoot
+            Transform tabButtons = settingsRoot.transform.Find("panel/TabButtons");
+            Transform tabButton = global::Utils.FindChild(tabButtons, "Misc");
+            Transform tabParent = tabButton.parent;
 
             // Copy the Misc tab button
-            var tabButtonCopy = Object.Instantiate(settingsRoot.transform.Find("panel/TabButtons/Misc").gameObject,
-                settingsRoot.transform.Find("panel/TabButtons"));
+            var tabButtonCopy = Object.Instantiate(tabButton.gameObject, tabParent);
 
-            var tabHandler = settingsRoot.transform.Find("panel/TabButtons").GetComponent<TabHandler>();
+            var tabHandler = tabParent.GetComponent<TabHandler>();
 
             // and set it's new property values
             tabButtonCopy.name = "ModConfig";
-            tabButtonCopy.transform.Find("Text").GetComponent<Text>().text = "ModConfig";
-            tabButtonCopy.transform.Find("Selected/Text (1)").GetComponent<Text>().text = "ModConfig";
-
-            // Rearrange/center settings tab buttons (Valheim had an offset to the right.....)
-            var numChildren = settingsRoot.transform.Find("panel/TabButtons").childCount;
-            var width = settingsRoot.transform.Find("panel/TabButtons").GetComponent<RectTransform>().rect.width;
-            for (var i = 0; i < numChildren; i++)
+            if (tabButtonCopy.TryGetComponent<Text>(out var txt))
             {
-                settingsRoot.transform.Find("panel/TabButtons").GetChild(i).GetComponent<RectTransform>().anchoredPosition = new Vector2(
-                    (width - numChildren * 100f) / 2f + i * 100f + 50f,
-                    settingsRoot.transform.Find("panel/TabButtons").GetChild(i).GetComponent<RectTransform>().anchoredPosition.y);
+                txt.text = "ModConfig";
+            }
+            foreach (Text text in tabButtonCopy.GetComponentsInChildren<Text>(true))
+            {
+                text.text = "ModConfig";
             }
 
+            // Rearrange/center settings tab buttons (Valheim had an offset to the right.....)
+            var numChildren = tabParent.childCount;
+            var width = tabParent.GetComponent<RectTransform>().rect.width;
+            for (var i = 0; i < numChildren; i++)
+            {
+                RectTransform tf = tabParent.GetChild(i).GetComponent<RectTransform>();
+                tf.anchoredPosition = new Vector2((width - numChildren * 100f) / 2f + i * 100f + 50f, tf.anchoredPosition.y);
+            }
 
             // Add the tab
             var tab = settingsRoot.transform.Find("panel/Tabs").gameObject;
@@ -455,12 +458,14 @@ namespace Jotunn.GUI
                 if (childString != null)
                 {
                     childString.WriteBack();
+                    continue;
                 }
 
                 var childColor = configTab.transform.Find("Scroll View/Viewport/Content").GetChild(i).gameObject.GetComponent<ConfigBoundColor>();
                 if (childColor != null)
                 {
                     childColor.WriteBack();
+                    continue;
                 }
             }
 
