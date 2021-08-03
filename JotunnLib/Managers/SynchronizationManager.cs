@@ -359,7 +359,7 @@ namespace Jotunn.Managers
         /// </summary>
         private void UnlockConfigurationEntries()
         {
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
 
             foreach (var plugin in loadedPlugins)
             {
@@ -381,7 +381,7 @@ namespace Jotunn.Managers
         /// </summary>
         private void LockConfigurationEntries()
         {
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
 
             foreach (var plugin in loadedPlugins)
             {
@@ -433,7 +433,7 @@ namespace Jotunn.Managers
         /// <param name="self"></param>
         private void FejdStartup_Awake(On.FejdStartup.orig_Awake orig, FejdStartup self)
         {
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
             foreach (var config in loadedPlugins.Where(x => x.Value.Config != null).Select(x => x.Value.Config))
             {
                 config.ConfigReloaded += Config_ConfigReloaded;
@@ -505,7 +505,7 @@ namespace Jotunn.Managers
         private List<Tuple<string, string, string, string>> GetSyncConfigValues()
         {
             Logger.LogDebug("Gathering config values");
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
 
             var values = new List<Tuple<string, string, string, string>>();
             foreach (var plugin in loadedPlugins)
@@ -531,7 +531,7 @@ namespace Jotunn.Managers
         internal void SynchronizeChangedConfig()
         {
             // Lets compare and send to server, if applicable
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
 
             var valuesToSend = new List<Tuple<string, string, string, string>>();
             foreach (var plugin in loadedPlugins)
@@ -591,7 +591,7 @@ namespace Jotunn.Managers
         /// </summary>
         private void InitAdminConfigs()
         {
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
 
             foreach (var plugin in loadedPlugins)
             {
@@ -613,7 +613,7 @@ namespace Jotunn.Managers
         /// </summary>
         private void ResetAdminConfigs() 
         {
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
 
             foreach (var plugin in loadedPlugins)
             {
@@ -777,7 +777,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            var loadedPlugins = BepInExUtils.GetDependentPlugins();
+            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
             while (numberOfEntries > 0)
             {
                 var modguid = configPkg.ReadString();

@@ -10,7 +10,9 @@ namespace Jotunn.DebugUtils
 
         private void Awake()
         {
-            _isModEnabled = Main.Instance.Config.Bind<bool>(nameof(ZNetDiddelybug), "RPC Debug", false, "Globally enable or disable RPC debugging.");
+            _isModEnabled = Main.Instance.Config.Bind<bool>(nameof(ZNetDiddelybug), "Enabled", false,
+                new ConfigDescription("Globally enable or disable RPC debug logging.", null,
+                new ConfigurationManagerAttributes() { IsAdminOnly = true }));
 
             On.ZNet.Awake += ZNet_Awake;
             On.ZSteamSocket.Send += ZSteamSocket_Send;
@@ -18,7 +20,7 @@ namespace Jotunn.DebugUtils
 
         private void ZNet_Awake(On.ZNet.orig_Awake orig, ZNet self)
         {
-            Logger.LogDebug($"ZNet awoken. IsServer: {self.IsServer()} IsDedicated: {self.IsDedicated()} | Enabling Debug");
+            Logger.LogDebug($"ZNet awoken. IsServer: {self.IsServer()} IsDedicated: {self.IsDedicated()} | ZRpc.m_DEBUG enabled");
             ZRpc.m_DEBUG = true;
             orig(self);
         }
@@ -30,14 +32,14 @@ namespace Jotunn.DebugUtils
                 orig(self, pkg);
                 return;
             }
-
+            
             pkg.SetPos(0);
             int methodHash = pkg.ReadInt();
             if (ZRpc.m_DEBUG)
             {
                 if (methodHash == 0)
                 {
-                    Logger.LogMessage($"Sending RPC Ping");
+                    Logger.LogMessage($"Sending RPC Ping to {self.GetHostName()}");
                 }
                 else
                 {
@@ -45,7 +47,7 @@ namespace Jotunn.DebugUtils
                     {
                         string method = pkg.ReadString();
 
-                        Logger.LogMessage($"Sending RPC {method}");
+                        Logger.LogMessage($"Sending RPC {method} to {self.GetHostName()}");
                     }
                     catch (Exception) { }
                 }

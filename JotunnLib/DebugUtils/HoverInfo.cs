@@ -33,7 +33,8 @@ namespace Jotunn.DebugUtils
         {
             _isModEnabled = Main.Instance.Config.Bind(nameof(HoverInfo), "Enabled", true, "Globally enable or disable the hover info.");
 
-            _isModEnabled.SettingChanged += (sender, eventArgs) => {
+            _isModEnabled.SettingChanged += (sender, eventArgs) =>
+            {
                 DestroyPanels();
 
                 if (_isModEnabled.Value && Hud.instance)
