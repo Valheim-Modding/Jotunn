@@ -409,7 +409,7 @@ namespace Jotunn.Managers
                     root.SetWidth(PieceCategorySize);
 
                     Transform border = root.transform.Find("TabBorder");
-                    border.SetParent(root.transform.parent, true);
+                    border?.SetParent(root.transform.parent, true);
                 }
                 List<string> newNames = new List<string>(Hud.instance.m_buildCategoryNames);
                 List<GameObject> newTabs = new List<GameObject>(Hud.instance.m_pieceCategoryTabs);
@@ -422,7 +422,10 @@ namespace Jotunn.Managers
                         GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], root.transform);
                         newTab.name = category.Key;
 
-                        UIInputHandler component = newTab.GetComponent<UIInputHandler>();
+                        if (!newTab.TryGetComponent(out UIInputHandler component))
+                        {
+                            component = newTab.AddComponent<UIInputHandler>();
+                        }
                         component.m_onLeftDown += Hud.instance.OnLeftClickCategory;
 
                         newNames.Add(category.Key);
