@@ -20,12 +20,16 @@ namespace Jotunn.DebugUtils
         private Text _pieceHealthTextValue;
         private Text _pieceStabilityTextLabel;
         private Text _pieceStabilityTextValue;
+        private Text _pieceEulerTextLabel;
+        private Text _pieceEulerTextValue;
         private Text _pieceRotationTextLabel;
         private Text _pieceRotationTextValue;
 
         private TwoColumnPanel _placementGhostPanel;
         private Text _ghostNameTextLabel;
         private Text _ghostNameTextValue;
+        private Text _ghostEulerTextLabel;
+        private Text _ghostEulerTextValue;
         private Text _ghostRotationTextLabel;
         private Text _ghostRotationTextValue;
 
@@ -98,21 +102,25 @@ namespace Jotunn.DebugUtils
                     .AddPanelRow(out _pieceNameTextLabel, out _pieceNameTextValue)
                     .AddPanelRow(out _pieceHealthTextLabel, out _pieceHealthTextValue)
                     .AddPanelRow(out _pieceStabilityTextLabel, out _pieceStabilityTextValue)
+                    .AddPanelRow(out _pieceEulerTextLabel, out _pieceEulerTextValue)
                     .AddPanelRow(out _pieceRotationTextLabel, out _pieceRotationTextValue);
 
             _pieceNameTextLabel.text = "Piece \u25c8";
             _pieceHealthTextLabel.text = "Health \u2661";
             _pieceStabilityTextLabel.text = "Stability \u2616";
-            _pieceRotationTextLabel.text = "Rotation \u29bf";
+            _pieceEulerTextLabel.text = "Euler \u29bf";
+            _pieceRotationTextLabel.text = "Rotation \u210d";
 
             _placementGhostPanel =
                 new TwoColumnPanel(hud.m_crosshair.transform, hud.m_hoverName.font)
                     .SetPosition(_placementGhostPanelPosition.Value)
                     .AddPanelRow(out _ghostNameTextLabel, out _ghostNameTextValue)
+                    .AddPanelRow(out _ghostEulerTextLabel, out _ghostEulerTextValue)
                     .AddPanelRow(out _ghostRotationTextLabel, out _ghostRotationTextValue);
 
             _ghostNameTextLabel.text = "Placing \u25a5";
-            _ghostRotationTextLabel.text = "Rotation \u29bf";
+            _ghostEulerTextLabel.text = "Euler \u29bf";
+            _ghostRotationTextLabel.text = "Rotation \u210d";
         }
 
         private void DestroyPanels()
@@ -159,8 +167,9 @@ namespace Jotunn.DebugUtils
                   maxSupport,
                   ColorUtility.ToHtmlStringRGB(_percentGradient.Evaluate(supportPrecent)),
                   supportPrecent);
-
-            _pieceRotationTextValue.text = $"{wearNTear.transform.rotation.eulerAngles}";
+            
+            _pieceEulerTextValue.text = $"{wearNTear.transform.rotation.eulerAngles}";
+            _pieceRotationTextValue.text = $"{wearNTear.transform.rotation}";
         }
 
         private void UpdatePlacementGhostProperties(GameObject placementGhost)
@@ -174,7 +183,8 @@ namespace Jotunn.DebugUtils
             _placementGhostPanel.SetActive(true);
 
             _ghostNameTextValue.text = $"<color=#FFCA28>{Localization.instance.Localize(piece.m_name)}</color>";
-            _ghostRotationTextValue.text = $"{placementGhost.transform.rotation.eulerAngles}";
+            _ghostEulerTextValue.text = $"{placementGhost.transform.rotation.eulerAngles}";
+            _ghostRotationTextValue.text = $"{placementGhost.transform.rotation}";
         }
 
         private static Gradient CreatePercentGradient()
