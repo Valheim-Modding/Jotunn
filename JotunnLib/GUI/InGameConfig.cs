@@ -56,19 +56,35 @@ namespace Jotunn.GUI
         private static void Menu_OnSettings(On.Menu.orig_OnSettings orig, Menu self)
         {
             orig(self);
-            settingsRoot = self.m_settingsInstance;
 
-            SynchronizationManager.Instance.CacheConfigurationValues();
-            CreateModConfigTab();
+            try
+            {
+                SynchronizationManager.Instance.CacheConfigurationValues();
+                settingsRoot = self.m_settingsInstance;
+                CreateModConfigTab();
+            }
+            catch (Exception ex)
+            {
+                settingsRoot = null;
+                Logger.LogWarning($"Exception caught while creating the Settings tab: {ex}");
+            }
         }
 
         // Create our tab
         private static void FejdStartup_OnButtonSettings(On.FejdStartup.orig_OnButtonSettings orig, FejdStartup self)
         {
-            // we don't need to call orig here, only thing it did, was to instantiate the settings prefab (but without saving the reference)
-            settingsRoot = Object.Instantiate(self.m_settingsPrefab, self.transform);
+            orig(self);
 
-            CreateModConfigTab();
+            try
+            {
+                settingsRoot = self.m_settingsPrefab;
+                CreateModConfigTab();
+            }
+            catch (Exception ex)
+            {
+                settingsRoot = null;
+                Logger.LogWarning($"Exception caught while creating the Settings tab: {ex}");
+            }
         }
 
         /// <summary>
@@ -83,10 +99,8 @@ namespace Jotunn.GUI
                 return;
             }
 
-            // Hook SaveSettings to be notified when OK was pressed
-            On.Settings.SaveSettings += Settings_SaveSettings;
-            On.Settings.OnBack += Settings_OnBack;
-            On.Settings.OnOk += Settings_OnOk;
+            // Gather components
+            //var tabButton = settingsRoot
 
             // Copy the Misc tab button
             var tabButtonCopy = Object.Instantiate(settingsRoot.transform.Find("panel/TabButtons/Misc").gameObject,
@@ -359,6 +373,11 @@ namespace Jotunn.GUI
                     }
                 }
             }
+
+            // Hook SaveSettings to be notified when OK was pressed
+            On.Settings.SaveSettings += Settings_SaveSettings;
+            On.Settings.OnBack += Settings_OnBack;
+            On.Settings.OnOk += Settings_OnOk;
         }
 
         /// <summary>
@@ -379,12 +398,14 @@ namespace Jotunn.GUI
         {
             try { ColorPicker.Done(); } catch (Exception) { }
             orig(self);
+            On.Settings.OnOk -= Settings_OnOk;
         }
 
         private static void Settings_OnBack(On.Settings.orig_OnBack orig, Settings self)
         {
             try { ColorPicker.Cancel(); } catch (Exception) { }
             orig(self);
+            On.Settings.OnBack -= Settings_OnBack;
         }
 
         /// <summary>
@@ -442,9 +463,6 @@ namespace Jotunn.GUI
                     childColor.WriteBack();
                 }
             }
-
-            // Renew the settings cache
-            //SynchronizationManager.Instance.CacheConfigurationValues();
 
             // Remove hook again until the next time
             On.Settings.SaveSettings -= Settings_SaveSettings;
