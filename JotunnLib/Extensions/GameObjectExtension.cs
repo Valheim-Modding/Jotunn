@@ -19,7 +19,7 @@ namespace Jotunn
         }
 
         /// <summary>
-        /// Facilitates use of null propagation operator for unity MonBehaviours by respecting op_equality.
+        ///     Facilitates use of null propagation operator for unity MonBehaviours by respecting op_equality.
         /// </summary>
         /// <typeparam name="T">Any type that inherits MonoBehaviour</typeparam>
         /// <param name="this">this</param>
@@ -27,6 +27,18 @@ namespace Jotunn
         public static T OrNull<T>(this T @this) where T : UnityEngine.Object
         {
             return (T)(@this ? @this : null);
+        }
+
+        /// <summary>
+        ///     Returns the component of Type type. If one doesn't already exist on the GameObject it will be added.
+        /// </summary>
+        /// <remarks>Source: https://wiki.unity3d.com/index.php/GetOrAddComponent</remarks>
+        /// <typeparam name="T">The type of Component to return.</typeparam>
+        /// <param name="gameObject">The GameObject this Component is attached to.</param>
+        /// <returns>Component</returns>
+        public static T GetOrAddMonoBehaviour<T>(this GameObject gameObject) where T : MonoBehaviour
+        {
+            return gameObject.GetComponent<T>() ?? gameObject.AddComponent<T>();
         }
     }
 
