@@ -2,6 +2,7 @@
 
 ## Version 2.2.2
 * Fixed NREs for mods without proper BepInEx-Info
+* Fixed some NREs with custom GUI components (Auga for example). Jötunn does not brake anything any more but some features won't work with a custom GUI.
 
 ## Version 2.2.1
 * Fixed a bug which rendered clients unable to login to dedicated servers
