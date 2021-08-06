@@ -38,8 +38,8 @@
     <None Remove="Unity\AssetBundles\colorpicker" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="HarmonyX" Version="2.5.1" />
-    <PackageReference Include="MonoMod" Version="21.7.8.3" />
+    <PackageReference Include="HarmonyX" Version="2.5.4" />
+    <PackageReference Include="MonoMod" Version="21.8.5.1" />
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="5.10.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
