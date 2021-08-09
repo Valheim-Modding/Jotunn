@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
+using Object = UnityEngine.Object;
 using Toggle = UnityEngine.UI.Toggle;
 
 namespace Jotunn.Managers
@@ -112,7 +113,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Indicates if the PixelFix must be created for the start or main scene.
         /// </summary>
-        private bool GUIInStart = false;
+        private bool GUIInStart;
 
         /// <summary>
         ///     Detect headless mode (aka dedicated server)
@@ -127,7 +128,7 @@ namespace Jotunn.Managers
         ///     Global indicator if the input is currently blocked to avoid being
         ///     stuck in the block when the method is called twice.
         /// </summary>
-        private static bool InputBlocked = false;
+        private static bool InputBlocked;
 
         /// <summary>
         ///     Block all input except GUI
@@ -359,7 +360,7 @@ namespace Jotunn.Managers
                 GUIInStart = false;
 
                 // Get the KeyHints transform for this scene to create new KeyHint objects
-                KeyHintContainer = (RectTransform)root.transform.Find("GUI/PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints");
+                KeyHintContainer = (RectTransform)root?.transform.Find("GUI/PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints");
 
                 // Create all custom KeyHints
                 RegisterKeyHints();
@@ -421,7 +422,7 @@ namespace Jotunn.Managers
         private void CreateKeyHintObject(KeyHintConfig config)
         {
             // Clone BuildHints and add it under KeyHints to get the position right
-            var baseKeyHint = GameObject.Instantiate(KeyHintContainer.Find("BuildHints").gameObject, KeyHintContainer, false);
+            var baseKeyHint = Object.Instantiate(KeyHintContainer.Find("BuildHints").gameObject, KeyHintContainer, false);
             baseKeyHint.name = config.ToString();
             baseKeyHint.SetActive(false);
 
@@ -443,17 +444,17 @@ namespace Jotunn.Managers
                 throw new Exception("Could not find child objects for KeyHints");
             }
 
-            var baseKey = GameObject.Instantiate(origKey);
-            var baseRotate = GameObject.Instantiate(origRotate);
+            var baseKey = Object.Instantiate(origKey);
+            var baseRotate = Object.Instantiate(origRotate);
 
             // Destroy all child objects
             foreach (RectTransform child in kb)
             {
-                GameObject.Destroy(child.gameObject);
+                Object.Destroy(child.gameObject);
             }
             foreach (RectTransform child in gp)
             {
-                GameObject.Destroy(child.gameObject);
+                Object.Destroy(child.gameObject);
             }
 
             foreach (var buttonConfig in config.ButtonConfigs)
@@ -471,7 +472,7 @@ namespace Jotunn.Managers
 
                 if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                 {
-                    var customObject = GameObject.Instantiate(baseKey, kb, false);
+                    var customObject = Object.Instantiate(baseKey, kb, false);
                     customObject.name = buttonConfig.Name;
                     customObject.transform.Find("key_bkg/Key").gameObject.SetText(key);
                     customObject.transform.Find("Text").gameObject.SetText(hint);
@@ -479,7 +480,7 @@ namespace Jotunn.Managers
                 }
                 else
                 {
-                    var customObject = GameObject.Instantiate(baseRotate, kb, false);
+                    var customObject = Object.Instantiate(baseRotate, kb, false);
                     customObject.transform.Find("Text").gameObject.SetText(hint);
                     customObject.SetActive(true);
                 }
@@ -541,13 +542,13 @@ namespace Jotunn.Managers
                 var keyHintObject = KeyHintContainer.Find(hintConfig.ToString())?.gameObject;
                 if (keyHintObject)
                 {
-                    GameObject.Destroy(keyHintObject);
+                    Object.Destroy(keyHintObject);
                 }
             }
         }
 
         /// <summary>
-        ///     Hook on <see cref="KeyHints.UpdateHints" /> to show custom key hints instead of the vanilla ones.
+        ///     Hook on <see cref="global::KeyHints.UpdateHints" /> to show custom key hints instead of the vanilla ones.
         /// </summary>
         /// <param name="orig"></param>
         /// <param name="self"></param>
@@ -588,7 +589,11 @@ namespace Jotunn.Managers
             {
                 item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                // ignored
+            }
+
             if (item == null)
             {
                 return;
@@ -605,7 +610,10 @@ namespace Jotunn.Managers
             {
                 pieceName = Player.m_localPlayer.m_buildPieces.GetSelectedPiece()?.name;
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                // ignored
+            }
 
             // Try to get a KeyHint for the item and piece selected or just the item without a piece
             KeyHintConfig hintConfig = null;
@@ -754,7 +762,7 @@ namespace Jotunn.Managers
 
             if (PixelFix.transform.Find("ColorPicker") == null)
             {
-                GameObject newcolor = GameObject.Instantiate(color, PixelFix.transform, false);
+                GameObject newcolor = Object.Instantiate(color, PixelFix.transform, false);
                 newcolor.name = "ColorPicker";
                 newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
                 ((RectTransform)newcolor.transform).anchoredPosition = position;
@@ -802,14 +810,14 @@ namespace Jotunn.Managers
 
             if (PixelFix.transform.Find("ColorPicker") == null)
             {
-                GameObject newcolor = GameObject.Instantiate(color, PixelFix.transform, false);
+                GameObject newcolor = Object.Instantiate(color, PixelFix.transform, false);
                 newcolor.name = "ColorPicker";
                 newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
 
             if (PixelFix.transform.Find("GradientPicker") == null)
             {
-                GameObject newGradient = GameObject.Instantiate(gradient, PixelFix.transform, false);
+                GameObject newGradient = Object.Instantiate(gradient, PixelFix.transform, false);
                 newGradient.name = "GradientPicker";
                 newGradient.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
                 ((RectTransform)newGradient.transform).anchoredPosition = position;
@@ -841,7 +849,7 @@ namespace Jotunn.Managers
                 return null;
             }
 
-            var newButton = GameObject.Instantiate(baseButton, parent, false);
+            var newButton = Object.Instantiate(baseButton, parent, false);
 
             newButton.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
 
@@ -894,7 +902,9 @@ namespace Jotunn.Managers
         /// <param name="height">Optional height</param>
         /// <param name="draggable">Optional flag if the panel should be draggable (default true)</param>
         /// <returns>A <see cref="GameObject"/> as a Valheim style woodpanel</returns>
-        public GameObject CreateWoodpanel(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f, float height = 0f, bool draggable = true)
+        public GameObject CreateWoodpanel(
+            Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
+            float width = 0f, float height = 0f, bool draggable = true)
         {
             var basepanel = PrefabManager.Instance.GetPrefab("BaseWoodpanel");
 
@@ -903,7 +913,7 @@ namespace Jotunn.Managers
                 Logger.LogError("BasePanel is null");
             }
 
-            var newPanel = GameObject.Instantiate(basepanel, parent, false);
+            var newPanel = Object.Instantiate(basepanel, parent, false);
             newPanel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
 
             var tf = (RectTransform)newPanel.transform;
@@ -930,11 +940,11 @@ namespace Jotunn.Managers
                 EventTrigger trigger = newPanel.AddComponent<EventTrigger>();
                 EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
                 beginDragEntry.eventID = EventTriggerType.BeginDrag;
-                beginDragEntry.callback.AddListener((data) => { drag.BeginDrag(); });
+                beginDragEntry.callback.AddListener((_) => { drag.BeginDrag(); });
                 trigger.triggers.Add(beginDragEntry);
                 EventTrigger.Entry dragEntry = new EventTrigger.Entry();
                 dragEntry.eventID = EventTriggerType.Drag;
-                dragEntry.callback.AddListener((data) => { drag.Drag(); });
+                dragEntry.callback.AddListener((_) => { drag.Drag(); });
                 trigger.triggers.Add(dragEntry);
             }
 
