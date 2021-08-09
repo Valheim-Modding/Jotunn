@@ -49,13 +49,6 @@ namespace Jotunn.Managers
         public static GameObject PixelFix { get; private set; }
 
         /// <summary>
-        ///     Internal container for GUI elements created by the GUIManager. 
-        ///     Acts as a static transform for the base GUI elements which can
-        ///     be instantiated with this classes helper methods.
-        /// </summary>
-        internal static GameObject GUIContainer;
-
-        /// <summary>
         ///     Unity layer constant for UI objects.
         /// </summary>
         public const int UILayer = 5;
@@ -193,21 +186,6 @@ namespace Jotunn.Managers
             // Dont init on a headless server
             if (!IsHeadless())
             {
-                GUIContainer = new GameObject("GUI");
-                GUIContainer.transform.SetParent(Main.RootObject.transform);
-                GUIContainer.layer = UILayer; // UI
-                var canvas = GUIContainer.AddComponent<Canvas>();
-                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvas.sortingOrder = 1;
-                GUIContainer.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                GUIContainer.AddComponent<GraphicRaycaster>();
-                GUIContainer.AddComponent<CanvasScaler>();
-                GUIContainer.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-                GUIContainer.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-                GUIContainer.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-                GUIContainer.GetComponent<Canvas>().planeDistance = 0.0f;
-                GUIContainer.AddComponent<GuiScaler>().UpdateScale();
-
                 SceneManager.sceneLoaded += InitialLoad;
                 SceneManager.sceneLoaded += SceneManager_sceneLoaded;
                 On.KeyHints.UpdateHints += ShowCustomKeyHint;
@@ -216,12 +194,6 @@ namespace Jotunn.Managers
 
         internal void InitialLoad(Scene scene, LoadSceneMode loadMode)
         {
-            // No resource loading on a headless server
-            if (IsHeadless())
-            {
-                return;
-            }
-
             // Load valheim GUI assets
             if (scene.name == "start")
             {
@@ -361,41 +333,30 @@ namespace Jotunn.Managers
             if (scene.name == "start" && !GUIInStart)
             {
                 // Create a new PixelFix for start scene
-                GUIContainer.SetActive(true);
-                CreatePixelFix();
-                GUIInStart = true;
+                GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "GuiRoot");
+                Transform gui = root?.transform.Find("GUI");
+                if (!gui)
+                {
+                    Logger.LogWarning("StartGui not found, not creating custom GUI");
+                    return;
+                }
+                CreatePixelFix(gui);
 
-                InvokeOnPixelFixCreated();
+                GUIInStart = true;
             }
             if (scene.name == "main" && GUIInStart)
             {
-                // Destroy our own PixelFix from the start scene
-                if (PixelFix)
-                {
-                    GameObject.DestroyImmediate(PixelFix);
-                }
-
                 // Create a new PixelFix for main scene
                 GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
-                if (!root)
-                {
-                    Logger.LogWarning("_GameMain not found, not creating custom GUI");
-                    return;
-                }
-
-                GameObject gui = root.transform.Find("GUI/PixelFix").gameObject;
+                Transform gui = root?.transform.Find("GUI");
                 if (!gui)
                 {
                     Logger.LogWarning("PixelFix not found, not creating custom GUI");
                     return;
                 }
-                PixelFix = new GameObject("GUIFix", typeof(RectTransform));
-                PixelFix.layer = UILayer; // UI
-                PixelFix.transform.SetParent(gui.transform, false);
-                GUIContainer.SetActive(false);
-                GUIInStart = false;
+                CreatePixelFix(gui);
 
-                InvokeOnPixelFixCreated();
+                GUIInStart = false;
 
                 // Get the KeyHints transform for this scene to create new KeyHint objects
                 KeyHintContainer = (RectTransform)root.transform.Find("GUI/PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints");
@@ -406,23 +367,18 @@ namespace Jotunn.Managers
             }
         }
 
+        private void CreatePixelFix(Transform parent)
+        {
+            PixelFix = new GameObject("CustomGUI", typeof(RectTransform), typeof(GuiPixelFix));
+            PixelFix.layer = UILayer; // UI
+            PixelFix.transform.SetParent(parent.transform, false);
+            
+            InvokeOnPixelFixCreated();
+        }
+
         private void InvokeOnPixelFixCreated()
         {
             OnPixelFixCreated?.SafeInvoke();
-        }
-
-        private void CreatePixelFix()
-        {
-            PixelFix = new GameObject("GUIFix", typeof(RectTransform), typeof(GuiPixelFix));
-            PixelFix.layer = UILayer; // UI
-            PixelFix.transform.SetParent(GUIContainer.transform);
-            PixelFix.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            PixelFix.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-            PixelFix.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-            PixelFix.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GUIContainer.GetComponent<RectTransform>().rect.width);
-            PixelFix.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, GUIContainer.GetComponent<RectTransform>().rect.height);
-            PixelFix.GetComponent<RectTransform>().anchoredPosition = new Vector2(GUIContainer.GetComponent<RectTransform>().rect.width / 2f,
-                GUIContainer.GetComponent<RectTransform>().rect.height / 2f);
         }
 
         /// <summary>
