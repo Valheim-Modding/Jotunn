@@ -316,6 +316,7 @@ namespace Jotunn.GUI
                 tabContent.GetComponent<UIGroupHandler>().SetActive(true);
                 tabContent.SetActive(true);
                 tabContent.transform.Find("Scroll View").GetComponent<ScrollRect>().normalizedPosition = new Vector2(0, 1);
+                try { ColorPicker.Cancel(); } catch (Exception) { }
             });
 
             // Add the onClick of the tabhandler to the tab button
