@@ -50,7 +50,7 @@ namespace Jotunn
     {
         internal static GameObject SetToTextHeight(this GameObject go)
         {
-            go.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, go.GetComponent<Text>().preferredHeight);
+            go.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, go.GetComponentInChildren<Text>().preferredHeight);
             return go;
         }
 
@@ -70,6 +70,16 @@ namespace Jotunn
             rect.anchorMax = new Vector2(0, 0.5f);
             rect.anchorMin = new Vector2(0, 0.5f);
             rect.pivot = new Vector2(0, 0.5f);
+            rect.anchoredPosition = new Vector2(0, 0f);
+            return go;
+        }
+
+        internal static GameObject SetBottomLeft(this GameObject go)
+        {
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMax = new Vector2(0, 0);
+            rect.anchorMin = new Vector2(0, 0);
+            rect.pivot = new Vector2(0, 0);
             rect.anchoredPosition = new Vector2(0, 0f);
             return go;
         }
