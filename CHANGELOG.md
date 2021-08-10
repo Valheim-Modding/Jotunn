@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## Version 2.2.3
+* Don't use own canvas for custom GUI (fixes compat with VHVR for example)
+* Compile against BepInEx v5.4.15
+
 ## Version 2.2.2
 * Fixed NREs for mods without proper BepInEx-Info
 * Fixed some NREs with custom GUI components (Auga for example). Jötunn does not brake anything any more but some features won't work with a custom GUI.
