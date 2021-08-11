@@ -38,26 +38,16 @@ namespace Jotunn.GUI
         ///     Cached prefab of the vanilla Settings window
         /// </summary>
         private static GameObject SettingsPrefab;
-
-        /// <summary>
-        ///     Cached prefab of the vanilla tab button prefab
-        /// </summary>
-        private static GameObject TabPrefab;
-
+        
         /// <summary>
         ///     Our own Settings window
         /// </summary>
         private static GameObject SettingsRoot;
-
-        /// <summary>
-        ///     Our own mod config tab buttons
-        /// </summary>
-        private static readonly List<GameObject> ConfigTabButtons = new List<GameObject>();
-
+        
         /// <summary>
         ///     Our own mod config tabs
         /// </summary>
-        private static readonly List<GameObject> ConfigTabs = new List<GameObject>();
+        private static readonly List<Transform> Configs = new List<Transform>();
 
         /// <summary>
         ///     Key currently in the binding process
@@ -78,7 +68,6 @@ namespace Jotunn.GUI
         {
             On.FejdStartup.SetupGui += FejdStartup_SetupGui;
             On.Menu.Start += Menu_Start;
-
         }
 
         /// <summary>
@@ -98,7 +87,7 @@ namespace Jotunn.GUI
             catch (Exception ex)
             {
                 SettingsRoot = null;
-                Logger.LogWarning($"Exception caught while creating the Settings tab: {ex}");
+                Logger.LogWarning($"Exception caught while creating the Mod Settings entry: {ex}");
             }
         }
 
@@ -117,7 +106,7 @@ namespace Jotunn.GUI
             catch (Exception ex)
             {
                 SettingsRoot = null;
-                Logger.LogWarning($"Exception caught while creating the Settings tab: {ex}");
+                Logger.LogWarning($"Exception caught while creating the Mod Settings entry: {ex}");
             }
         }
 
@@ -137,7 +126,6 @@ namespace Jotunn.GUI
 
             MenuList = menuList;
             SettingsPrefab = settingsPrefab;
-            TabPrefab = global::Utils.FindChild(settingsPrefab.transform, "Tabs").gameObject;
 
             bool settingsFound = false;
             for (int i = 0; i < menuList.childCount; i++)
@@ -152,7 +140,18 @@ namespace Jotunn.GUI
                         modSettingsButton.onClick.SetPersistentListenerState(j, UnityEventCallState.Off);
                     }
                     modSettingsButton.onClick.RemoveAllListeners();
-                    modSettingsButton.onClick.AddListener(CreateWindow);
+                    modSettingsButton.onClick.AddListener(() =>
+                    {
+                        try
+                        {
+                            CreateWindow();
+                        }
+                        catch (Exception ex)
+                        {
+                            SettingsRoot = null;
+                            Logger.LogWarning($"Exception caught while creating the Mod Settings window: {ex}");
+                        }
+                    });
                     settingsFound = true;
                 }
                 else if (settingsFound)
@@ -169,10 +168,18 @@ namespace Jotunn.GUI
         /// </summary>
         private static void CreateWindow()
         {
+            // Reset
+            Configs.Clear();
+
             // Create settings window
             SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
             SettingsRoot.name = LocalizationManager.Instance.TryTranslate(MenuName);
             SettingsRoot.transform.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuName);
+            if (Menu.instance != null)
+            {
+                Menu.instance.m_settingsInstance = SettingsRoot;
+            }
+
             RectTransform panel = SettingsRoot.transform.Find("panel") as RectTransform;
 
             // Deactivate all
@@ -183,7 +190,7 @@ namespace Jotunn.GUI
             }
             tabButtons.gameObject.SetActive(false);
 
-            Transform tabs = panel.Find("Tabs");
+            RectTransform tabs = panel.Find("Tabs") as RectTransform;
             foreach (Transform t in tabs)
             {
                 t.gameObject.SetActive(false);
@@ -193,7 +200,7 @@ namespace Jotunn.GUI
             // Create main scroll view
             GameObject scrollView = GUIManager.Instance.CreateScrollView(
                 panel, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
-                new Color(0, 0, 0, 1), panel.rect.width - 50f, panel.rect.height - 150f);
+                new Color(0, 0, 0, 1), tabs.rect.width, tabs.rect.height);
             RectTransform viewport =
                 scrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
             VerticalLayoutGroup scrollLayout = viewport.GetComponent<VerticalLayoutGroup>();
@@ -204,28 +211,25 @@ namespace Jotunn.GUI
             scrollLayout.childAlignment = TextAnchor.UpperCenter;
             scrollLayout.spacing = 5f;
 
-            // Create ok and back button (just copy them from Controls tab)
+            // Create OK and Back button, react on Escape
             var ok = Object.Instantiate(global::Utils.FindChild(SettingsRoot.transform, "Ok").gameObject, scrollView.transform);
             ok.GetComponent<Button>().onClick.AddListener(() =>
             {
-                Settings.instance.OnOk();
-
-                // After applying ingame values, lets synchronize any changed (and unlocked) values
-                SynchronizationManager.Instance.SynchronizeChangedConfig();
-
-                // remove reference to gameobject
+                try { ColorPicker.Done(); } catch (Exception) { }
+                SaveConfiguration();
                 Object.Destroy(SettingsRoot);
+
             });
 
             var back = Object.Instantiate(global::Utils.FindChild(SettingsRoot.transform, "Back").gameObject, scrollView.transform);
             back.GetComponent<Button>().onClick.AddListener(() =>
             {
-                Settings.instance.OnBack();
-
-                // remove reference to gameobject
+                try { ColorPicker.Cancel(); } catch (Exception) { }
                 Object.Destroy(SettingsRoot);
             });
 
+            SettingsRoot.AddComponent<EscBehaviour>();
+            
             // Reset keybinding cache
             ConfigurationKeybindings.Clear();
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
@@ -252,11 +256,14 @@ namespace Jotunn.GUI
 
             // Scroll back to top
             scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
+        }
 
-            // Hook SaveSettings to be notified when OK was pressed
-            On.Settings.SaveSettings += Settings_SaveSettings;
-            On.Settings.OnBack += Settings_OnBack;
-            On.Settings.OnOk += Settings_OnOk;
+        private class EscBehaviour : MonoBehaviour
+        {
+            private void OnDestroy()
+            {
+                try { ColorPicker.Cancel(); } catch (Exception) { }
+            }
         }
 
         private static void CreatePlugin(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform pluginViewport)
@@ -301,10 +308,6 @@ namespace Jotunn.GUI
                 contentLayout.childForceExpandHeight = false;
                 contentLayout.childAlignment = TextAnchor.UpperCenter;
                 contentLayout.spacing = 5f;
-
-                /*var contentFitter = content.AddComponent<ContentSizeFitter>();
-                contentFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-                contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;*/
                 
                 content.SetActive(false);
 
@@ -326,6 +329,8 @@ namespace Jotunn.GUI
                 });
 
                 CreateContent(mod, contentViewport);
+
+                Configs.Add(contentViewport);
             }
         }
 
@@ -533,72 +538,54 @@ namespace Jotunn.GUI
                 yield return enumerator.Current;
             }
         }
-
-        private static void Settings_OnOk(On.Settings.orig_OnOk orig, Settings self)
-        {
-            try { ColorPicker.Done(); } catch (Exception) { }
-            orig(self);
-            On.Settings.OnOk -= Settings_OnOk;
-        }
-
-        private static void Settings_OnBack(On.Settings.orig_OnBack orig, Settings self)
-        {
-            try { ColorPicker.Cancel(); } catch (Exception) { }
-            orig(self);
-            On.Settings.OnBack -= Settings_OnBack;
-        }
-
+        
         /// <summary>
-        ///     SaveSettings Hook
+        ///     Save our settings
         /// </summary>
-        /// <param name="orig"></param>
-        /// <param name="self"></param>
-        private static void Settings_SaveSettings(On.Settings.orig_SaveSettings orig, Settings self)
+        private static void SaveConfiguration()
         {
-            orig(self);
-
-            // Iterate over all tabs
-            foreach (GameObject tab in ConfigTabs)
+            // Iterate over all configs
+            foreach (Transform config in Configs)
             {
                 // Just iterate over the children in the scroll view and act if we find a ConfigBound<T> component
-                foreach (Transform tabTransform in tab.transform.Find("Scroll View/Viewport/Content"))
+                foreach (Transform values in config)
                 {
-                    var childBoolean = tabTransform.gameObject.GetComponent<ConfigBoundBoolean>();
+                    var childBoolean = values.gameObject.GetComponent<ConfigBoundBoolean>();
                     if (childBoolean != null)
                     {
                         childBoolean.WriteBack();
                         continue;
                     }
 
-                    var childInt = tabTransform.gameObject.GetComponent<ConfigBoundInt>();
+                    var childInt = values.gameObject.GetComponent<ConfigBoundInt>();
                     if (childInt != null)
                     {
                         childInt.WriteBack();
                         continue;
                     }
 
-                    var childFloat = tabTransform.gameObject.GetComponent<ConfigBoundFloat>();
+                    var childFloat = values.gameObject.GetComponent<ConfigBoundFloat>();
                     if (childFloat != null)
                     {
                         childFloat.WriteBack();
                         continue;
                     }
 
-                    var childKeyCode = tabTransform.gameObject.GetComponent<ConfigBoundKeyCode>();
+                    var childKeyCode = values.gameObject.GetComponent<ConfigBoundKeyCode>();
                     if (childKeyCode != null)
                     {
                         childKeyCode.WriteBack();
                         continue;
                     }
 
-                    var childString = tabTransform.gameObject.GetComponent<ConfigBoundString>();
+                    var childString = values.gameObject.GetComponent<ConfigBoundString>();
                     if (childString != null)
                     {
                         childString.WriteBack();
                         continue;
                     }
 
-                    var childColor = tabTransform.gameObject.GetComponent<ConfigBoundColor>();
+                    var childColor = values.gameObject.GetComponent<ConfigBoundColor>();
                     if (childColor != null)
                     {
                         childColor.WriteBack();
@@ -607,8 +594,8 @@ namespace Jotunn.GUI
                 }
             }
 
-            // Remove hook again until the next time
-            On.Settings.SaveSettings -= Settings_SaveSettings;
+            // Sync changed config
+            SynchronizationManager.Instance.SynchronizeChangedConfig();
         }
 
         /// <summary>
