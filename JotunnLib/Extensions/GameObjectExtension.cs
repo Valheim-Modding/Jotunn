@@ -166,7 +166,19 @@ namespace Jotunn
             return go;
         }
 
+        internal static float GetWidth(this GameObject go)
+        {
+            var rect = go.GetComponent<RectTransform>();
+            return rect.rect.width;
+        }
+
         internal static float GetHeight(this GameObject go)
+        {
+            var rect = go.GetComponent<RectTransform>();
+            return rect.rect.height;
+        }
+
+        internal static float GetTextHeight(this GameObject go)
         {
             return go.GetComponent<Text>().preferredHeight;
         }

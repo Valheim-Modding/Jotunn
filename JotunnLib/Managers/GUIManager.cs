@@ -1255,11 +1255,11 @@ namespace Jotunn.Managers
                 Color.black, width - 150f, 0f, false);
             label.GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
             label.SetUpperLeft().SetToTextHeight();
-            input.SetHeight(label.GetHeight());
+            input.SetHeight(label.GetTextHeight());
 
             input.transform.SetParent(parent, false);
 
-            GameObject button = new GameObject("Button", typeof(RectTransform), typeof(Image), typeof(Button)).SetUpperRight().SetSize(100f, label.GetHeight());
+            GameObject button = new GameObject("Button", typeof(RectTransform), typeof(Image), typeof(Button)).SetUpperRight().SetSize(100f, label.GetTextHeight());
 
             button.transform.SetParent(input.transform, false);
             button.GetComponent<Button>().image = button.GetComponent<Image>();
@@ -1274,7 +1274,7 @@ namespace Jotunn.Managers
             bindString.SetToTextHeight().SetWidth(button.GetComponent<RectTransform>().rect.width);
             bindString.SetMiddleLeft().GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
 
-            button.SetHeight(bindString.GetHeight() + 4f);
+            button.SetHeight(bindString.GetTextHeight() + 4f);
 
             bindString.transform.SetParent(button.transform, false);
 

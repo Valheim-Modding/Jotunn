@@ -191,10 +191,15 @@ namespace Jotunn.GUI
             GameObject scrollView = GUIManager.Instance.CreateScrollView(
                 panel, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
                 new Color(0, 0, 0, 1), panel.rect.width - 50f, panel.rect.height - 150f);
-            scrollView.GetComponentInChildren<VerticalLayoutGroup>().childControlWidth = true;
-            scrollView.GetComponentInChildren<VerticalLayoutGroup>().spacing = 5f;
             RectTransform viewport =
                 scrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+            VerticalLayoutGroup scrollLayout = viewport.GetComponent<VerticalLayoutGroup>();
+            scrollLayout.childControlWidth = true;
+            scrollLayout.childControlHeight = true;
+            scrollLayout.childForceExpandWidth = false;
+            scrollLayout.childForceExpandHeight = false;
+            scrollLayout.childAlignment = TextAnchor.MiddleCenter;
+            scrollLayout.spacing = 5f;
 
             // Create ok and back button (just copy them from Controls tab)
             var ok = Object.Instantiate(global::Utils.FindChild(SettingsRoot.transform, "Ok").gameObject, scrollView.transform);
@@ -245,102 +250,104 @@ namespace Jotunn.GUI
                 }
             }
 
+            // Scroll back to top
+            scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
+
             // Hook SaveSettings to be notified when OK was pressed
             On.Settings.SaveSettings += Settings_SaveSettings;
             On.Settings.OnBack += Settings_OnBack;
             On.Settings.OnOk += Settings_OnOk;
         }
 
-        private static void CreatePlugin(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform scrollViewport)
+        private static void CreatePlugin(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform pluginViewport)
         {
-            /*// Create the tab button
-            GameObject tabButton = Object.Instantiate(TabButtonPrefab, tabButtonsParent);
-
-            // And set it's new property values
-            string modName = mod.Value.Info.Metadata.Name;
-            tabButton.name = modName;
-            if (tabButton.TryGetComponent<Text>(out var txt))
-            {
-                txt.text = modName;
-            }
-            foreach (Text text in tabButton.GetComponentsInChildren<Text>(true))
-            {
-                text.text = modName;
-            }
-            ConfigTabButtons.Add(tabButton);*/
-
-            /*// Create the tab contents
-            GameObject tabContent = GUIManager.Instance.CreateScrollView(
-                    tabsParent, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
-                    new Color(0, 0, 0, 1), tabsParent.rect.width - 50f, tabsParent.rect.height - 50f)
-                .SetMiddleCenter();
-            tabContent.name = mod.Key;*/
-
-            /*// configure the ui group handler
-            var groupHandler = scrollView.AddComponent<UIGroupHandler>();
-            groupHandler.m_groupPriority = 10;
-            groupHandler.m_canvasGroup = scrollView.GetComponent<CanvasGroup>();
-            groupHandler.m_canvasGroup.ignoreParentGroups = true;
-            groupHandler.m_canvasGroup.blocksRaycasts = true;
-            groupHandler.Update();*/
-
-            /*// initially hide the configTab
-            tabContent.SetActive(false);
-
-            // Add a new Tab to the TabHandler
-            TabHandler.Tab newTab = new TabHandler.Tab();
-            newTab.m_default = false;
-            newTab.m_button = tabButton.GetComponent<Button>();
-            newTab.m_page = tabContent.GetComponent<RectTransform>();
-            newTab.m_onClick = new UnityEvent();
-            newTab.m_onClick.AddListener(() =>
-            {
-                tabContent.GetComponent<UIGroupHandler>().SetActive(true);
-                tabContent.SetActive(true);
-                tabContent.transform.Find("Scroll View").GetComponent<ScrollRect>().normalizedPosition = new Vector2(0, 1);
-                try { ColorPicker.Cancel(); } catch (Exception) { }
-            });
-
-            // Add the onClick of the tabhandler to the tab button
-            tabButton.GetComponent<Button>().onClick.AddListener(() => tabHandler.OnClick(newTab.m_button));
-
-            // and add the new Tab to the tabs list
-            tabHandler.m_tabs.Add(newTab);
-            */
-
             // Create a header if there are any relevant configuration entries
             if (GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible()).GroupBy(x => x.Key.Section).Any())
             {
-                // Create module header Text element
-                GameObject plugin = GUIManager.Instance.CreateButton(
-                    $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}",
-                    scrollViewport, Vector2.zero, Vector2.zero, Vector2.zero, scrollViewport.rect.width - 25f);
-                plugin.name = mod.Key;
-                plugin.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
-                plugin.AddComponent<LayoutElement>().preferredHeight = 40f;
-                plugin.SetActive(true);
+                // Create plugin
+                GameObject plugin = new GameObject(mod.Key, typeof(RectTransform), typeof(LayoutElement));
+                ((RectTransform)plugin.transform).pivot = new Vector2(0.5f, 0.5f);
+                plugin.SetWidth(pluginViewport.rect.width);
+                plugin.GetComponent<LayoutElement>().preferredHeight = 40f;
+                plugin.transform.SetParent(pluginViewport, false);
 
-                RectTransform pluginViewport = plugin.GetComponent<RectTransform>();
-                //CreateContent(mod, pluginViewport);
+                var pluginLayout = plugin.AddComponent<VerticalLayoutGroup>();
+                pluginLayout.childControlWidth = true;
+                pluginLayout.childControlHeight = true;
+                pluginLayout.childForceExpandWidth = true;
+                pluginLayout.childForceExpandHeight = false;
+                pluginLayout.childAlignment = TextAnchor.MiddleCenter;
+                pluginLayout.spacing = 5f;
+
+                // Create button element
+                GameObject button = GUIManager.Instance.CreateButton(
+                    $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}", plugin.transform, 
+                    Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), plugin.GetWidth());
+                button.name = "button";
+                button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
+                button.GetComponentInChildren<Text>().fontSize = 20;
+                button.AddComponent<LayoutElement>().preferredHeight = 40f;
+                button.SetActive(true);
+
+                // Create content element
+                GameObject content = new GameObject("content", typeof(RectTransform), typeof(LayoutElement));
+                content.SetWidth(plugin.GetWidth());
+                RectTransform contentViewport = content.GetComponent<RectTransform>();
+                contentViewport.SetParent(plugin.transform, false);
+
+                var contentLayout = content.AddComponent<VerticalLayoutGroup>();
+                contentLayout.childControlWidth = false;
+                contentLayout.childControlHeight = true;
+                contentLayout.childForceExpandWidth = false;
+                contentLayout.childForceExpandHeight = false;
+                contentLayout.childAlignment = TextAnchor.UpperCenter;
+                contentLayout.spacing = 5f;
+
+                /*var contentFitter = content.AddComponent<ContentSizeFitter>();
+                contentFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+                contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;*/
+                
+                content.SetActive(false);
+
+                button.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    content.SetActive(!content.activeSelf);
+                    if (content.activeSelf)
+                    {
+                        plugin.GetComponent<LayoutElement>().preferredHeight = 
+                            button.GetComponent<LayoutElement>().preferredHeight + 
+                            content.GetComponent<LayoutElement>().preferredHeight;
+
+                    }
+                    else
+                    {
+                        plugin.GetComponent<LayoutElement>().preferredHeight =
+                            button.GetComponent<LayoutElement>().preferredHeight;
+                    }
+                });
+
+                CreateContent(mod, contentViewport);
             }
         }
 
-        private static void CreateContent(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform pluginViewport)
+        private static void CreateContent(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform contentViewport)
         {
-            float innerWidth = pluginViewport.rect.width - 25f;
+            float innerWidth = contentViewport.rect.width - 25f;
+            float preferredHeight = 0f;
 
             // Iterate over all configuration entries (grouped by their sections)
             foreach (var kv in GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible()).GroupBy(x => x.Key.Section))
             {
                 // Create section header Text element
                 var sectiontext = GUIManager.Instance.CreateText(
-                    "Section " + kv.Key, pluginViewport, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    "Section " + kv.Key, contentViewport, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 16, GUIManager.Instance.ValheimOrange,
-                    true, Color.black, pluginViewport.rect.width, 30, false);
+                    true, Color.black, contentViewport.rect.width, 30, false);
                 sectiontext.SetMiddleCenter();
                 sectiontext.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
                 sectiontext.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
                 sectiontext.AddComponent<LayoutElement>().preferredHeight = 30f;
+                preferredHeight += sectiontext.GetHeight();
 
                 // Iterate over all entries of this section
                 foreach (var entry in kv.OrderByDescending(x =>
@@ -367,7 +374,7 @@ namespace Jotunn.GUI
                     if (entry.Value.SettingType == typeof(bool))
                     {
                         // Create toggle element
-                        var go = CreateToggleElement(pluginViewport,
+                        var go = CreateToggleElement(contentViewport,
                             entry.Key.Key + ":",
                             entryAttributes.EntryColor,
                             entry.Value.Description.Description + (entryAttributes.IsAdminOnly
@@ -376,6 +383,7 @@ namespace Jotunn.GUI
                             entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key,
                             innerWidth);
                         SetProperties(go.GetComponent<ConfigBoundBoolean>(), entry);
+                        preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(int))
                     {
@@ -388,7 +396,7 @@ namespace Jotunn.GUI
                         }
 
                         // Create input field int
-                        var go = CreateTextInputField(pluginViewport,
+                        var go = CreateTextInputField(contentViewport,
                             entry.Key.Key + ":",
                             entryAttributes.EntryColor,
                             description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
@@ -403,6 +411,7 @@ namespace Jotunn.GUI
                             go.transform.Find("Input").GetComponent<InputField>().textComponent.color =
                                 go.GetComponent<ConfigBoundInt>().IsValid() ? Color.white : Color.red;
                         });
+                        preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(float))
                     {
@@ -415,7 +424,7 @@ namespace Jotunn.GUI
                         }
 
                         // Create input field float
-                        var go = CreateTextInputField(pluginViewport,
+                        var go = CreateTextInputField(contentViewport,
                             entry.Key.Key + ":",
                             entryAttributes.EntryColor,
                             description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
@@ -430,6 +439,7 @@ namespace Jotunn.GUI
                             go.transform.Find("Input").GetComponent<InputField>().textComponent.color =
                                 go.GetComponent<ConfigBoundFloat>().IsValid() ? Color.white : Color.red;
                         });
+                        preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(KeyCode) &&
                              ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
@@ -462,17 +472,18 @@ namespace Jotunn.GUI
                             }
                         }
 
-                        var go = CreateKeybindElement(pluginViewport,
+                        var go = CreateKeybindElement(contentViewport,
                             entry.Key.Key + ":", buttonText,
                             mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, buttonName, innerWidth);
                         go.GetComponent<ConfigBoundKeyCode>()
                             .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         SetProperties(go.GetComponent<ConfigBoundKeyCode>(), entry);
+                        preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(string))
                     {
                         // Create input field string
-                        var go = CreateTextInputField(pluginViewport,
+                        var go = CreateTextInputField(contentViewport,
                             entry.Key.Key + ":",
                             entryAttributes.EntryColor,
                             entry.Value.Description.Description + (entryAttributes.IsAdminOnly
@@ -484,11 +495,12 @@ namespace Jotunn.GUI
                         go.transform.Find("Input").GetComponent<InputField>().characterValidation =
                             InputField.CharacterValidation.None;
                         SetProperties(go.GetComponent<ConfigBoundString>(), entry);
+                        preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(Color))
                     {
                         // Create input field string with color picker
-                        var go = CreateColorInputField(pluginViewport,
+                        var go = CreateColorInputField(contentViewport,
                             entry.Key.Key + ":",
                             entryAttributes.EntryColor,
                             entry.Value.Description.Description + (entryAttributes.IsAdminOnly
@@ -501,9 +513,12 @@ namespace Jotunn.GUI
                         conf.Input.characterValidation = InputField.CharacterValidation.None;
                         conf.Input.contentType = InputField.ContentType.Alphanumeric;
                         SetProperties(conf, entry);
+                        preferredHeight += go.GetHeight();
                     }
                 }
             }
+
+            contentViewport.GetComponent<LayoutElement>().preferredHeight = preferredHeight;
         }
 
         /// <summary>
@@ -659,21 +674,21 @@ namespace Jotunn.GUI
             // create the description text
             var desc = GUIManager.Instance.CreateText(description, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 12, descriptionColor, true, Color.black, width - 150f, 0, false).SetUpperLeft();
-            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(label.GetHeight() + 3f));
+            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(label.GetTextHeight() + 3f));
             desc.SetToTextHeight();
 
             // calculate combined height
-            result.SetHeight(label.GetHeight() + 3f + desc.GetHeight() + 15f);
+            result.SetHeight(label.GetTextHeight() + 3f + desc.GetTextHeight() + 15f);
 
             // Add the input field element
-            var field = new GameObject("Input", typeof(RectTransform), typeof(Image), typeof(InputField)).SetUpperRight().SetSize(140f, label.GetHeight() + 6f);
+            var field = new GameObject("Input", typeof(RectTransform), typeof(Image), typeof(InputField)).SetUpperRight().SetSize(140f, label.GetTextHeight() + 6f);
             field.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("text_field");
             field.GetComponent<Image>().type = Image.Type.Sliced;
             field.transform.SetParent(result.transform, false);
 
             var inputField = field.GetComponent<InputField>();
 
-            var text = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleLeft().SetHeight(label.GetHeight() + 6f)
+            var text = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleLeft().SetHeight(label.GetTextHeight() + 6f)
                 .SetWidth(130f);
             inputField.textComponent = text.GetComponent<Text>();
             text.transform.SetParent(field.transform, false);
@@ -682,7 +697,7 @@ namespace Jotunn.GUI
             text.GetComponent<Text>().font = GUIManager.Instance.AveriaSerifBold;
 
             // create the placeholder element
-            var placeholder = new GameObject("Placeholder", typeof(RectTransform), typeof(Text)).SetMiddleLeft().SetHeight(label.GetHeight() + 6f)
+            var placeholder = new GameObject("Placeholder", typeof(RectTransform), typeof(Text)).SetMiddleLeft().SetHeight(label.GetTextHeight() + 6f)
                 .SetWidth(130f);
             inputField.placeholder = placeholder.GetComponent<Text>();
             placeholder.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
@@ -723,25 +738,25 @@ namespace Jotunn.GUI
             // create the description text
             var desc = GUIManager.Instance.CreateText(description, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 12, descriptionColor, true, Color.black, width - 150f, 0, false).SetUpperLeft();
-            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(label.GetHeight() + 3f));
+            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(label.GetTextHeight() + 3f));
             desc.SetToTextHeight();
 
             // calculate combined height
-            result.SetHeight(label.GetHeight() + 3f + desc.GetHeight() + 15f);
+            result.SetHeight(label.GetTextHeight() + 3f + desc.GetTextHeight() + 15f);
 
             // Add a layout component
-            var layout = new GameObject("Layout", typeof(RectTransform), typeof(LayoutElement)).SetUpperRight().SetSize(140f, label.GetHeight() + 6f);
+            var layout = new GameObject("Layout", typeof(RectTransform), typeof(LayoutElement)).SetUpperRight().SetSize(140f, label.GetTextHeight() + 6f);
             layout.transform.SetParent(result.transform, false);
 
             // Add the input field element
-            var field = new GameObject("Input", typeof(RectTransform), typeof(Image), typeof(InputField)).SetUpperLeft().SetSize(100f, label.GetHeight() + 6f);
+            var field = new GameObject("Input", typeof(RectTransform), typeof(Image), typeof(InputField)).SetUpperLeft().SetSize(100f, label.GetTextHeight() + 6f);
             field.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("text_field");
             field.GetComponent<Image>().type = Image.Type.Sliced;
             field.transform.SetParent(layout.transform, false);
 
             var inputField = field.GetComponent<InputField>();
 
-            var text = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleLeft().SetHeight(label.GetHeight() + 6f)
+            var text = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleLeft().SetHeight(label.GetTextHeight() + 6f)
                 .SetWidth(130f);
             inputField.textComponent = text.GetComponent<Text>();
             text.transform.SetParent(field.transform, false);
@@ -750,7 +765,7 @@ namespace Jotunn.GUI
             text.GetComponent<Text>().font = GUIManager.Instance.AveriaSerifBold;
 
             // create the placeholder element
-            var placeholder = new GameObject("Placeholder", typeof(RectTransform), typeof(Text)).SetMiddleLeft().SetHeight(label.GetHeight() + 6f)
+            var placeholder = new GameObject("Placeholder", typeof(RectTransform), typeof(Text)).SetMiddleLeft().SetHeight(label.GetTextHeight() + 6f)
                 .SetWidth(130f);
             inputField.placeholder = placeholder.GetComponent<Text>();
             placeholder.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
@@ -762,7 +777,7 @@ namespace Jotunn.GUI
             placeholder.GetComponent<RectTransform>().anchoredPosition = new Vector2(5, 0);
 
             // Add the ColorPicker button
-            var button = new GameObject("Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx)).SetUpperRight().SetSize(30f, label.GetHeight() + 6f);
+            var button = new GameObject("Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx)).SetUpperRight().SetSize(30f, label.GetTextHeight() + 6f);
             button.transform.SetParent(layout.transform, false);
 
             // Image
@@ -833,7 +848,7 @@ namespace Jotunn.GUI
             desc.GetComponent<Text>().color = descriptionColor;
             desc.GetComponent<Text>().fontSize = 12;
             desc.GetComponent<Text>().text = description;
-            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(result.transform.Find("Text").gameObject.GetHeight() + 3f));
+            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(result.transform.Find("Text").gameObject.GetTextHeight() + 3f));
             desc.SetToTextHeight();
 
 
@@ -891,7 +906,7 @@ namespace Jotunn.GUI
                 desc.SetUpperLeft().SetToTextHeight();
 
                 desc.GetComponent<RectTransform>().anchoredPosition = lastPosition;
-                lastPosition = new Vector2(0, lastPosition.y - desc.GetHeight() - 3);
+                lastPosition = new Vector2(0, lastPosition.y - desc.GetTextHeight() - 3);
 
                 idx++;
             }
