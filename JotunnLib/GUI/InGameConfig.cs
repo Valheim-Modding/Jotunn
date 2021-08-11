@@ -27,7 +27,7 @@ namespace Jotunn.GUI
         /// <summary>
         ///     Name of the menu entry
         /// </summary>
-        private const string MenuName = "Mod Settings";
+        private const string MenuName = "$jotunn_modsettings";
         
         /// <summary>
         ///     Cached transform of the vanilla menu list
@@ -86,6 +86,9 @@ namespace Jotunn.GUI
         /// </summary>
         private static void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
+            // Fallback english translation
+            LocalizationManager.Instance.AddToken(MenuName, "Mod Settings", true);
+
             orig(self);
 
             try
@@ -142,7 +145,7 @@ namespace Jotunn.GUI
                 if (menuList.GetChild(i).name == "Settings")
                 {
                     Transform modSettings = Object.Instantiate(menuList.GetChild(i), menuList);
-                    modSettings.GetComponentInChildren<Text>().text = MenuName;
+                    modSettings.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuName);
                     Button modSettingsButton = modSettings.GetComponent<Button>();
                     for (int j = 0; j < modSettingsButton.onClick.GetPersistentEventCount(); ++j)
                     {
@@ -168,8 +171,8 @@ namespace Jotunn.GUI
         {
             // Create settings window
             SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
-            SettingsRoot.name = MenuName;
-            SettingsRoot.transform.GetComponentInChildren<Text>().text = MenuName;
+            SettingsRoot.name = LocalizationManager.Instance.TryTranslate(MenuName);
+            SettingsRoot.transform.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuName);
             RectTransform panel = SettingsRoot.transform.Find("panel") as RectTransform;
 
             // Deactivate all
