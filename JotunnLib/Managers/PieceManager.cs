@@ -421,7 +421,7 @@ namespace Jotunn.Managers
                     {
                         GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], root.transform);
                         newTab.name = category.Key;
-                        UIInputHandler handler = newTab.GetOrAddMonoBehaviour<UIInputHandler>();
+                        UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
                         handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
 
                         newNames.Add(category.Key);
