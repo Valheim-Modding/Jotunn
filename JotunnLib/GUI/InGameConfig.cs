@@ -27,7 +27,7 @@ namespace Jotunn.GUI
         /// <summary>
         ///     Name of the menu entry
         /// </summary>
-        private const string MenuName = "ModConfig";
+        private const string MenuName = "Mod Settings";
         
         /// <summary>
         ///     Cached transform of the vanilla menu list
