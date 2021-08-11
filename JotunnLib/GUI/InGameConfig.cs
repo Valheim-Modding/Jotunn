@@ -232,7 +232,7 @@ namespace Jotunn.GUI
             
             // Reset keybinding cache
             ConfigurationKeybindings.Clear();
-            foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
+            foreach (var mod in BepInExUtils.GetDependentPlugins(true))
             {
                 foreach (var kv in GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible() && x.Value.IsButtonBound()))
                 {
@@ -249,7 +249,7 @@ namespace Jotunn.GUI
             }
 
             // Iterate over all dependent plugins (including Jotunn itself)
-            foreach (var mod in BepInExUtils.GetDependentPlugins(true))
+            foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
                 CreatePlugin(mod, viewport);
             }
