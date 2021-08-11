@@ -198,7 +198,7 @@ namespace Jotunn.GUI
             scrollLayout.childControlHeight = true;
             scrollLayout.childForceExpandWidth = false;
             scrollLayout.childForceExpandHeight = false;
-            scrollLayout.childAlignment = TextAnchor.MiddleCenter;
+            scrollLayout.childAlignment = TextAnchor.UpperCenter;
             scrollLayout.spacing = 5f;
 
             // Create ok and back button (just copy them from Controls tab)
@@ -266,7 +266,6 @@ namespace Jotunn.GUI
             {
                 // Create plugin
                 GameObject plugin = new GameObject(mod.Key, typeof(RectTransform), typeof(LayoutElement));
-                ((RectTransform)plugin.transform).pivot = new Vector2(0.5f, 0.5f);
                 plugin.SetWidth(pluginViewport.rect.width);
                 plugin.GetComponent<LayoutElement>().preferredHeight = 40f;
                 plugin.transform.SetParent(pluginViewport, false);
@@ -275,14 +274,14 @@ namespace Jotunn.GUI
                 pluginLayout.childControlWidth = true;
                 pluginLayout.childControlHeight = true;
                 pluginLayout.childForceExpandWidth = true;
-                pluginLayout.childForceExpandHeight = false;
+                pluginLayout.childForceExpandHeight = true;
                 pluginLayout.childAlignment = TextAnchor.MiddleCenter;
                 pluginLayout.spacing = 5f;
 
                 // Create button element
                 GameObject button = GUIManager.Instance.CreateButton(
                     $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}", plugin.transform, 
-                    Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), plugin.GetWidth());
+                    Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), plugin.GetWidth(), 40f);
                 button.name = "button";
                 button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
                 button.GetComponentInChildren<Text>().fontSize = 20;
