@@ -1057,7 +1057,7 @@ namespace Jotunn.Managers
             scrollView.GetComponent<ScrollRect>().horizontal = showHorizontalScrollbar;
             scrollView.GetComponent<ScrollRect>().vertical = showVerticalScrollbar;
             scrollView.GetComponent<ScrollRect>().horizontalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
-            scrollView.GetComponent<ScrollRect>().verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+            scrollView.GetComponent<ScrollRect>().verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
             scrollView.GetComponent<ScrollRect>().scrollSensitivity = 35f;
 
             scrollView.GetComponent<Mask>().showMaskGraphic = false;
@@ -1178,7 +1178,7 @@ namespace Jotunn.Managers
             content.GetComponent<Canvas>().planeDistance = 5.2f;
             content.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
             content.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-            content.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
+            content.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
             content.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 2 * handleDistanceToBorder - handleSize);
             content.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 2 * handleDistanceToBorder - handleSize);
 

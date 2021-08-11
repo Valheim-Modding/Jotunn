@@ -241,13 +241,10 @@ namespace Jotunn.GUI
                 }
             }
 
-            for (int i = 0; i < 5; ++i)
+            // Iterate over all dependent plugins (including Jotunn itself)
+            foreach (var mod in BepInExUtils.GetDependentPlugins(true))
             {
-                // Iterate over all dependent plugins (including Jotunn itself)
-                foreach (var mod in BepInExUtils.GetDependentPlugins(true))
-                {
-                    CreatePlugin(mod, viewport);
-                }
+                CreatePlugin(mod, viewport);
             }
 
             // Scroll back to top
