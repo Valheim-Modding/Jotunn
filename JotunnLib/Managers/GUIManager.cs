@@ -210,7 +210,7 @@ namespace Jotunn.Managers
                     }
 
                     // Sprites
-                    string[] spriteNames = { "checkbox", "checkbox_marker", "woodpanel_trophys", "button" };
+                    string[] spriteNames = { "checkbox", "checkbox_marker", "woodpanel_trophys", "button", "panel_interior_bkg_128" };
                     var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
 
                     var notFound = false;

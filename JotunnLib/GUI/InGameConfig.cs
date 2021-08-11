@@ -42,7 +42,7 @@ namespace Jotunn.GUI
         /// <summary>
         ///     Cached prefab of the vanilla tab button prefab
         /// </summary>
-        private static GameObject TabButtonPrefab;
+        private static GameObject TabPrefab;
 
         /// <summary>
         ///     Our own Settings window
@@ -134,7 +134,7 @@ namespace Jotunn.GUI
 
             MenuList = menuList;
             SettingsPrefab = settingsPrefab;
-            TabButtonPrefab = settingsPrefab.GetComponentInChildren<TabHandler>(true).transform.GetChild(1).gameObject;
+            TabPrefab = global::Utils.FindChild(settingsPrefab.transform, "Tabs").gameObject;
 
             bool settingsFound = false;
             for (int i = 0; i < menuList.childCount; i++)
@@ -168,46 +168,55 @@ namespace Jotunn.GUI
         {
             // Create settings window
             SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
+            SettingsRoot.name = MenuName;
             SettingsRoot.transform.GetComponentInChildren<Text>().text = MenuName;
-            ConfigTabs.Clear();
-            ConfigTabButtons.Clear();
+            RectTransform panel = SettingsRoot.transform.Find("panel") as RectTransform;
 
-            // Gather TabButtons
-            RectTransform tabButtons = SettingsRoot.transform.Find("panel/TabButtons") as RectTransform;
-            tabButtons.gameObject.SetMiddleLeft().SetSize(50f, 360f);
-            tabButtons.anchoredPosition = new Vector2(70f, 0f);
-            
-            TabHandler tabHandler = tabButtons.GetComponent<TabHandler>();
-            //RectTransform tabButtonsParent = tabHandler.transform as RectTransform;
-            //tabButtonsParent.gameObject.SetMiddleLeft().SetSize(50f, 360f);
-            //tabButtonsParent.anchoredPosition = new Vector2(50f, 0f);
-
-            // Destroy old tab buttons
+            // Deactivate all
+            Transform tabButtons = panel.Find("TabButtons");
             foreach (Transform t in tabButtons)
-            {
-                Object.Destroy(t.gameObject);
-            }
-            tabHandler.m_tabs.Clear();
-
-            GameObject tabButtonsScroll = GUIManager.Instance.CreateScrollView(
-                tabButtons, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
-                new Color(0, 0, 0, 1), tabButtons.rect.width - 10f, tabButtons.rect.height - 10f);
-            RectTransform tabButtonsParent =
-                tabButtonsScroll.transform.Find("Scroll View/Viewport/Content") as RectTransform;
-            tabButtonsParent.gameObject.GetComponent<VerticalLayoutGroup>().childScaleHeight = false;
-            tabButtonsParent.gameObject.GetComponent<VerticalLayoutGroup>().childScaleWidth = false;
-            Object.Destroy(tabButtonsParent.gameObject.GetComponent<ContentSizeFitter>());
-
-            // Gather Tabs
-            RectTransform tabsParent = SettingsRoot.transform.Find("panel/Tabs") as RectTransform;
-            tabsParent.gameObject.SetMiddleRight().SetSize(600f, 360f);
-            tabsParent.anchoredPosition = new Vector2(-15f, 0f);
-
-            // Deactivate old tab contents
-            foreach (Transform t in tabsParent)
             {
                 t.gameObject.SetActive(false);
             }
+            tabButtons.gameObject.SetActive(false);
+
+            Transform tabs = panel.Find("Tabs");
+            foreach (Transform t in tabs)
+            {
+                t.gameObject.SetActive(false);
+            }
+            tabs.gameObject.SetActive(false);
+
+            // Create main scroll view
+            GameObject scrollView = GUIManager.Instance.CreateScrollView(
+                panel, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
+                new Color(0, 0, 0, 1), panel.rect.width - 50f, panel.rect.height - 150f);
+            scrollView.GetComponentInChildren<VerticalLayoutGroup>().childControlWidth = true;
+            scrollView.GetComponentInChildren<VerticalLayoutGroup>().spacing = 5f;
+            RectTransform viewport =
+                scrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+
+            // Create ok and back button (just copy them from Controls tab)
+            var ok = Object.Instantiate(global::Utils.FindChild(SettingsRoot.transform, "Ok").gameObject, scrollView.transform);
+            ok.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                Settings.instance.OnOk();
+
+                // After applying ingame values, lets synchronize any changed (and unlocked) values
+                SynchronizationManager.Instance.SynchronizeChangedConfig();
+
+                // remove reference to gameobject
+                Object.Destroy(SettingsRoot);
+            });
+
+            var back = Object.Instantiate(global::Utils.FindChild(SettingsRoot.transform, "Back").gameObject, scrollView.transform);
+            back.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                Settings.instance.OnBack();
+
+                // remove reference to gameobject
+                Object.Destroy(SettingsRoot);
+            });
 
             // Reset keybinding cache
             ConfigurationKeybindings.Clear();
@@ -232,33 +241,19 @@ namespace Jotunn.GUI
                 // Iterate over all dependent plugins (including Jotunn itself)
                 foreach (var mod in BepInExUtils.GetDependentPlugins(true))
                 {
-                    CreateTab(mod, tabButtonsParent, tabsParent, tabHandler);
+                    CreatePlugin(mod, viewport);
                 }
             }
-
-            /*// Reorder tabs
-            float offset = 0f;
-            foreach (GameObject go in ConfigTabButtons)
-            {
-                go.SetUpperCenter().SetHeight(25f);
-                RectTransform tf = go.transform as RectTransform;
-                tf.anchoredPosition = new Vector2(tf.anchoredPosition.x, offset);
-                offset -= tf.rect.height;
-            }*/
 
             // Hook SaveSettings to be notified when OK was pressed
             On.Settings.SaveSettings += Settings_SaveSettings;
             On.Settings.OnBack += Settings_OnBack;
             On.Settings.OnOk += Settings_OnOk;
-
-            // Go to first tab
-            tabHandler.SetActiveTab(0);
         }
 
-        private static void CreateTab(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform tabButtonsParent, RectTransform tabsParent,
-            TabHandler tabHandler)
+        private static void CreatePlugin(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform scrollViewport)
         {
-            // Create the tab button
+            /*// Create the tab button
             GameObject tabButton = Object.Instantiate(TabButtonPrefab, tabButtonsParent);
 
             // And set it's new property values
@@ -272,52 +267,24 @@ namespace Jotunn.GUI
             {
                 text.text = modName;
             }
-            ConfigTabButtons.Add(tabButton);
+            ConfigTabButtons.Add(tabButton);*/
 
-            // Create the tab contents
+            /*// Create the tab contents
             GameObject tabContent = GUIManager.Instance.CreateScrollView(
                     tabsParent, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
                     new Color(0, 0, 0, 1), tabsParent.rect.width - 50f, tabsParent.rect.height - 50f)
                 .SetMiddleCenter();
-            tabContent.name = mod.Key;
+            tabContent.name = mod.Key;*/
 
-            // configure the ui group handler
-            var groupHandler = tabContent.AddComponent<UIGroupHandler>();
+            /*// configure the ui group handler
+            var groupHandler = scrollView.AddComponent<UIGroupHandler>();
             groupHandler.m_groupPriority = 10;
-            groupHandler.m_canvasGroup = tabContent.GetComponent<CanvasGroup>();
+            groupHandler.m_canvasGroup = scrollView.GetComponent<CanvasGroup>();
             groupHandler.m_canvasGroup.ignoreParentGroups = true;
             groupHandler.m_canvasGroup.blocksRaycasts = true;
-            groupHandler.Update();
+            groupHandler.Update();*/
 
-            // create ok and back button (just copy them from Controls tab)
-            var ok = Object.Instantiate(tabsParent.Find("Controls/Ok").gameObject, tabContent.transform);
-            ok.GetComponent<RectTransform>().anchoredPosition =
-                ok.GetComponent<RectTransform>().anchoredPosition - new Vector2(0, 25f);
-            ok.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                Settings.instance.OnOk();
-
-                // After applying ingame values, lets synchronize any changed (and unlocked) values
-                SynchronizationManager.Instance.SynchronizeChangedConfig();
-
-                // remove reference to gameobject
-                SettingsRoot = null;
-                tabContent = null;
-            });
-
-            var back = Object.Instantiate(tabsParent.Find("Controls/Back").gameObject, tabContent.transform);
-            back.GetComponent<RectTransform>().anchoredPosition =
-                back.GetComponent<RectTransform>().anchoredPosition - new Vector2(0, 25f);
-            back.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                Settings.instance.OnBack();
-
-                // remove reference to gameobject
-                SettingsRoot = null;
-                tabContent = null;
-            });
-
-            // initially hide the configTab
+            /*// initially hide the configTab
             tabContent.SetActive(false);
 
             // Add a new Tab to the TabHandler
@@ -339,32 +306,37 @@ namespace Jotunn.GUI
 
             // and add the new Tab to the tabs list
             tabHandler.m_tabs.Add(newTab);
-
-            float innerWidth = tabContent.GetComponent<RectTransform>().rect.width - 25f;
-            Transform viewport = tabContent.transform.Find("Scroll View/Viewport/Content");
+            */
 
             // Create a header if there are any relevant configuration entries
             if (GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible()).GroupBy(x => x.Key.Section).Any())
             {
                 // Create module header Text element
-                var text = GUIManager.Instance.CreateText(mod.Key, viewport,
-                    new Vector2(0.5f, 0.5f),
-                    new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 20, Color.white, true,
-                    Color.black,
-                    tabContent.GetComponent<RectTransform>().rect.width, 50, false);
-                text.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-                text.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                text.AddComponent<LayoutElement>().preferredHeight = 40f;
+                GameObject plugin = GUIManager.Instance.CreateButton(
+                    $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}",
+                    scrollViewport, Vector2.zero, Vector2.zero, Vector2.zero, scrollViewport.rect.width - 25f);
+                plugin.name = mod.Key;
+                plugin.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
+                plugin.AddComponent<LayoutElement>().preferredHeight = 40f;
+                plugin.SetActive(true);
+
+                RectTransform pluginViewport = plugin.GetComponent<RectTransform>();
+                //CreateContent(mod, pluginViewport);
             }
+        }
+
+        private static void CreateContent(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform pluginViewport)
+        {
+            float innerWidth = pluginViewport.rect.width - 25f;
 
             // Iterate over all configuration entries (grouped by their sections)
             foreach (var kv in GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible()).GroupBy(x => x.Key.Section))
             {
                 // Create section header Text element
                 var sectiontext = GUIManager.Instance.CreateText(
-                    "Section " + kv.Key, viewport, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    "Section " + kv.Key, pluginViewport, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 16, GUIManager.Instance.ValheimOrange,
-                    true, Color.black, tabContent.GetComponent<RectTransform>().rect.width, 30, false);
+                    true, Color.black, pluginViewport.rect.width, 30, false);
                 sectiontext.SetMiddleCenter();
                 sectiontext.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
                 sectiontext.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
@@ -395,7 +367,7 @@ namespace Jotunn.GUI
                     if (entry.Value.SettingType == typeof(bool))
                     {
                         // Create toggle element
-                        var go = CreateToggleElement(viewport,
+                        var go = CreateToggleElement(pluginViewport,
                             entry.Key.Key + ":",
                             entryAttributes.EntryColor,
                             entry.Value.Description.Description + (entryAttributes.IsAdminOnly
@@ -416,7 +388,7 @@ namespace Jotunn.GUI
                         }
 
                         // Create input field int
-                        var go = CreateTextInputField(viewport,
+                        var go = CreateTextInputField(pluginViewport,
                             entry.Key.Key + ":",
                             entryAttributes.EntryColor,
                             description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
@@ -443,7 +415,7 @@ namespace Jotunn.GUI
                         }
 
                         // Create input field float
-                        var go = CreateTextInputField(viewport,
+                        var go = CreateTextInputField(pluginViewport,
                             entry.Key.Key + ":",
                             entryAttributes.EntryColor,
                             description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
@@ -490,7 +462,7 @@ namespace Jotunn.GUI
                             }
                         }
 
-                        var go = CreateKeybindElement(viewport,
+                        var go = CreateKeybindElement(pluginViewport,
                             entry.Key.Key + ":", buttonText,
                             mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, buttonName, innerWidth);
                         go.GetComponent<ConfigBoundKeyCode>()
@@ -500,7 +472,7 @@ namespace Jotunn.GUI
                     else if (entry.Value.SettingType == typeof(string))
                     {
                         // Create input field string
-                        var go = CreateTextInputField(viewport,
+                        var go = CreateTextInputField(pluginViewport,
                             entry.Key.Key + ":",
                             entryAttributes.EntryColor,
                             entry.Value.Description.Description + (entryAttributes.IsAdminOnly
@@ -516,7 +488,7 @@ namespace Jotunn.GUI
                     else if (entry.Value.SettingType == typeof(Color))
                     {
                         // Create input field string with color picker
-                        var go = CreateColorInputField(viewport,
+                        var go = CreateColorInputField(pluginViewport,
                             entry.Key.Key + ":",
                             entryAttributes.EntryColor,
                             entry.Value.Description.Description + (entryAttributes.IsAdminOnly
@@ -532,7 +504,6 @@ namespace Jotunn.GUI
                     }
                 }
             }
-            ConfigTabs.Add(tabContent);
         }
 
         /// <summary>
