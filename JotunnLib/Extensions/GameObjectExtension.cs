@@ -50,7 +50,7 @@ namespace Jotunn
     {
         internal static GameObject SetToTextHeight(this GameObject go)
         {
-            go.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, go.GetComponent<Text>().preferredHeight);
+            go.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, go.GetComponentInChildren<Text>().preferredHeight);
             return go;
         }
 
@@ -74,6 +74,16 @@ namespace Jotunn
             return go;
         }
 
+        internal static GameObject SetBottomLeft(this GameObject go)
+        {
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMax = new Vector2(0, 0);
+            rect.anchorMin = new Vector2(0, 0);
+            rect.pivot = new Vector2(0, 0);
+            rect.anchoredPosition = new Vector2(0, 0f);
+            return go;
+        }
+
         internal static GameObject SetUpperRight(this GameObject go)
         {
             var rect = go.GetComponent<RectTransform>();
@@ -81,6 +91,16 @@ namespace Jotunn
             rect.anchorMin = new Vector2(1, 1);
             rect.pivot = new Vector2(1, 1);
             rect.anchoredPosition = new Vector2(0, 0);
+            return go;
+        }
+
+        internal static GameObject SetMiddleRight(this GameObject go)
+        {
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMax = new Vector2(1, 0.5f);
+            rect.anchorMin = new Vector2(1, 0.5f);
+            rect.pivot = new Vector2(1, 0.5f);
+            rect.anchoredPosition = new Vector2(0, 0f);
             return go;
         }
 
@@ -94,12 +114,12 @@ namespace Jotunn
             return go;
         }
 
-        internal static GameObject SetBottomCenter(this GameObject go)
+        internal static GameObject SetUpperCenter(this GameObject go)
         {
             var rect = go.GetComponent<RectTransform>();
-            rect.anchorMax = new Vector2(0.5f, 0);
-            rect.anchorMin = new Vector2(0.5f, 0);
-            rect.pivot = new Vector2(0.5f, 0f);
+            rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.anchorMin = new Vector2(0.5f, 1f);
+            rect.pivot = new Vector2(0.5f, 1f);
             rect.anchoredPosition = new Vector2(0, 0);
             return go;
         }
@@ -110,6 +130,16 @@ namespace Jotunn
             rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.anchorMin = new Vector2(0.5f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(0, 0);
+            return go;
+        }
+
+        internal static GameObject SetBottomCenter(this GameObject go)
+        {
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMax = new Vector2(0.5f, 0);
+            rect.anchorMin = new Vector2(0.5f, 0);
+            rect.pivot = new Vector2(0.5f, 0f);
             rect.anchoredPosition = new Vector2(0, 0);
             return go;
         }
@@ -136,7 +166,19 @@ namespace Jotunn
             return go;
         }
 
+        internal static float GetWidth(this GameObject go)
+        {
+            var rect = go.GetComponent<RectTransform>();
+            return rect.rect.width;
+        }
+
         internal static float GetHeight(this GameObject go)
+        {
+            var rect = go.GetComponent<RectTransform>();
+            return rect.rect.height;
+        }
+
+        internal static float GetTextHeight(this GameObject go)
         {
             return go.GetComponent<Text>().preferredHeight;
         }

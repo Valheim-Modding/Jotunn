@@ -25,7 +25,7 @@ namespace TestMod
     internal class TestMod : BaseUnityPlugin
     {
         private const string ModGUID = "com.jotunn.testmod";
-        private const string ModName = "Jotunn Test Mod";
+        private const string ModName = "Jotunn Test Mod #1";
         private const string ModVersion = "0.1.0";
         private const string JotunnTestModConfigSection = "JotunnTest";
 

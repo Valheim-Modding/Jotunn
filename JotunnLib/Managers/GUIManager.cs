@@ -210,7 +210,7 @@ namespace Jotunn.Managers
                     }
 
                     // Sprites
-                    string[] spriteNames = { "checkbox", "checkbox_marker", "woodpanel_trophys", "button" };
+                    string[] spriteNames = { "checkbox", "checkbox_marker", "woodpanel_trophys", "button", "panel_interior_bkg_128" };
                     var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
 
                     var notFound = false;
@@ -270,9 +270,11 @@ namespace Jotunn.Managers
                     GameObject colorPicker = colorWheelBundle.LoadAsset<GameObject>("ColorPicker");
 
                     // Setting some vanilla styles
-                    colorPicker.GetComponent<Image>().sprite = GetSprite("woodpanel_settings");
-                    colorPicker.GetComponent<Image>().type = Image.Type.Sliced;
-                    colorPicker.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+                    Image colorImage = colorPicker.GetComponent<Image>();
+                    colorImage.sprite = GetSprite("woodpanel_settings");
+                    colorImage.type = Image.Type.Sliced;
+                    colorImage.pixelsPerUnitMultiplier = 2f;
+                    colorImage.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
                     foreach (Text pickerTxt in colorPicker.GetComponentsInChildren<Text>(true))
                     {
                         pickerTxt.font = AveriaSerifBold;
@@ -295,9 +297,11 @@ namespace Jotunn.Managers
                     GameObject gradientPicker = colorWheelBundle.LoadAsset<GameObject>("GradientPicker");
 
                     // Setting some vanilla styles
-                    gradientPicker.GetComponent<Image>().sprite = GetSprite("woodpanel_settings");
-                    gradientPicker.GetComponent<Image>().type = Image.Type.Sliced;
-                    gradientPicker.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+                    Image gradientImage = gradientPicker.GetComponent<Image>();
+                    gradientImage.sprite = GetSprite("woodpanel_settings");
+                    gradientImage.type = Image.Type.Sliced;
+                    gradientImage.pixelsPerUnitMultiplier = 2f;
+                    gradientImage.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
                     foreach (Text pickerTxt in gradientPicker.GetComponentsInChildren<Text>(true))
                     {
                         pickerTxt.font = AveriaSerifBold;
@@ -1053,7 +1057,7 @@ namespace Jotunn.Managers
             scrollView.GetComponent<ScrollRect>().horizontal = showHorizontalScrollbar;
             scrollView.GetComponent<ScrollRect>().vertical = showVerticalScrollbar;
             scrollView.GetComponent<ScrollRect>().horizontalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
-            scrollView.GetComponent<ScrollRect>().verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+            scrollView.GetComponent<ScrollRect>().verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
             scrollView.GetComponent<ScrollRect>().scrollSensitivity = 35f;
 
             scrollView.GetComponent<Mask>().showMaskGraphic = false;
@@ -1174,7 +1178,7 @@ namespace Jotunn.Managers
             content.GetComponent<Canvas>().planeDistance = 5.2f;
             content.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
             content.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-            content.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
+            content.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
             content.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 2 * handleDistanceToBorder - handleSize);
             content.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 2 * handleDistanceToBorder - handleSize);
 
@@ -1251,11 +1255,11 @@ namespace Jotunn.Managers
                 Color.black, width - 150f, 0f, false);
             label.GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
             label.SetUpperLeft().SetToTextHeight();
-            input.SetHeight(label.GetHeight());
+            input.SetHeight(label.GetTextHeight());
 
             input.transform.SetParent(parent, false);
 
-            GameObject button = new GameObject("Button", typeof(RectTransform), typeof(Image), typeof(Button)).SetUpperRight().SetSize(100f, label.GetHeight());
+            GameObject button = new GameObject("Button", typeof(RectTransform), typeof(Image), typeof(Button)).SetUpperRight().SetSize(100f, label.GetTextHeight());
 
             button.transform.SetParent(input.transform, false);
             button.GetComponent<Button>().image = button.GetComponent<Image>();
@@ -1270,7 +1274,7 @@ namespace Jotunn.Managers
             bindString.SetToTextHeight().SetWidth(button.GetComponent<RectTransform>().rect.width);
             bindString.SetMiddleLeft().GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
 
-            button.SetHeight(bindString.GetHeight() + 4f);
+            button.SetHeight(bindString.GetTextHeight() + 4f);
 
             bindString.transform.SetParent(button.transform, false);
 
