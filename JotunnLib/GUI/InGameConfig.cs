@@ -173,19 +173,35 @@ namespace Jotunn.GUI
             ConfigTabButtons.Clear();
 
             // Gather TabButtons
-            Transform tabButtons = SettingsRoot.transform.Find("panel/TabButtons");
-            TabHandler tabHandler = tabButtons.GetComponentInChildren<TabHandler>();
-            RectTransform tabButtonsParent = tabHandler.transform as RectTransform;
+            RectTransform tabButtons = SettingsRoot.transform.Find("panel/TabButtons") as RectTransform;
+            tabButtons.gameObject.SetMiddleLeft().SetSize(50f, 360f);
+            tabButtons.anchoredPosition = new Vector2(70f, 0f);
+            
+            TabHandler tabHandler = tabButtons.GetComponent<TabHandler>();
+            //RectTransform tabButtonsParent = tabHandler.transform as RectTransform;
+            //tabButtonsParent.gameObject.SetMiddleLeft().SetSize(50f, 360f);
+            //tabButtonsParent.anchoredPosition = new Vector2(50f, 0f);
 
             // Destroy old tab buttons
-            foreach (Transform t in tabButtonsParent)
+            foreach (Transform t in tabButtons)
             {
                 Object.Destroy(t.gameObject);
             }
             tabHandler.m_tabs.Clear();
 
+            GameObject tabButtonsScroll = GUIManager.Instance.CreateScrollView(
+                tabButtons, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
+                new Color(0, 0, 0, 1), tabButtons.rect.width - 10f, tabButtons.rect.height - 10f);
+            RectTransform tabButtonsParent =
+                tabButtonsScroll.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+            tabButtonsParent.gameObject.GetComponent<VerticalLayoutGroup>().childScaleHeight = false;
+            tabButtonsParent.gameObject.GetComponent<VerticalLayoutGroup>().childScaleWidth = false;
+            Object.Destroy(tabButtonsParent.gameObject.GetComponent<ContentSizeFitter>());
+
             // Gather Tabs
             RectTransform tabsParent = SettingsRoot.transform.Find("panel/Tabs") as RectTransform;
+            tabsParent.gameObject.SetMiddleRight().SetSize(600f, 360f);
+            tabsParent.anchoredPosition = new Vector2(-15f, 0f);
 
             // Deactivate old tab contents
             foreach (Transform t in tabsParent)
@@ -211,25 +227,24 @@ namespace Jotunn.GUI
                 }
             }
 
-            // Iterate over all dependent plugins (including Jotunn itself)
-            foreach (var mod in BepInExUtils.GetDependentPlugins(true))
+            for (int i = 0; i < 5; ++i)
             {
-                CreateTab(mod, tabButtonsParent, tabsParent, tabHandler);
+                // Iterate over all dependent plugins (including Jotunn itself)
+                foreach (var mod in BepInExUtils.GetDependentPlugins(true))
+                {
+                    CreateTab(mod, tabButtonsParent, tabsParent, tabHandler);
+                }
             }
 
-            // Add RectMask
-            tabButtonsParent.gameObject.GetOrAddMonoBehaviour<RectMask2D>();
-            //tabButtonsParent.gameObject.SetWidth(tabButtonsParent.rect.width / 2f);
-
-            // Reorder tabs
+            /*// Reorder tabs
             float offset = 0f;
             foreach (GameObject go in ConfigTabButtons)
             {
-                go.SetBottomLeft().SetHeight(25f);
+                go.SetUpperCenter().SetHeight(25f);
                 RectTransform tf = go.transform as RectTransform;
-                tf.anchoredPosition = new Vector2(offset, tf.anchoredPosition.y);
-                offset += tf.rect.width;
-            }
+                tf.anchoredPosition = new Vector2(tf.anchoredPosition.x, offset);
+                offset -= tf.rect.height;
+            }*/
 
             // Hook SaveSettings to be notified when OK was pressed
             On.Settings.SaveSettings += Settings_SaveSettings;
