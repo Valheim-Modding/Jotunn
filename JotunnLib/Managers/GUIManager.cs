@@ -397,7 +397,7 @@ namespace Jotunn.Managers
 
             }
         }
-        
+
         private void CreateCustomGUI(Transform parent)
         {
             CustomGUIFront = new GameObject("CustomGUIFront", typeof(RectTransform), typeof(GuiPixelFix));
@@ -414,9 +414,19 @@ namespace Jotunn.Managers
             CustomGUIBack.transform.SetParent(parent.transform, false);
             CustomGUIBack.transform.SetAsFirstSibling();
 
+#pragma warning disable CS0612 // Type or member is obsolete
+            InvokeOnPixelFixCreated();
+#pragma warning restore CS0612 // Type or member is obsolete
+
             InvokeOnCustomGUIAvailable();
         }
-        
+
+        [Obsolete]
+        private void InvokeOnPixelFixCreated()
+        {
+            OnPixelFixCreated?.SafeInvoke();
+        }
+
         private void InvokeOnCustomGUIAvailable()
         {
             OnCustomGUIAvailable?.SafeInvoke();
