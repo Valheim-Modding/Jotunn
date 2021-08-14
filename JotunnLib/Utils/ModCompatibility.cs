@@ -163,7 +163,7 @@ namespace Jotunn.Utils
         /// </summary>
         private static void ShowModCompatibilityErrorMessage()
         {
-            var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.PixelFix.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.CustomGUIFront.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0f, 0f), 700, 500);
             panel.SetActive(true);
             var remote = new ModuleVersionData(lastServerVersion);

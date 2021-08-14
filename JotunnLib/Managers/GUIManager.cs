@@ -40,6 +40,7 @@ namespace Jotunn.Managers
         ///     object was created. Subscribe to this event to create your custom GUI objects
         ///     and add them as a child to the <see cref="PixelFix"/>.
         /// </summary>
+        [Obsolete("Use OnCustomGUIAvailable")]
         public static event Action OnPixelFixCreated;
 
         /// <summary>
@@ -47,7 +48,31 @@ namespace Jotunn.Managers
         ///     Gets rebuild at every scene change so make sure to add your custom
         ///     GUI prefabs again on each scene change.
         /// </summary>
+        [Obsolete("Use CustomGUIFront or CustomGUIBack")]
         public static GameObject PixelFix { get; private set; }
+
+        /// <summary>
+        ///     Event that gets fired every time the Unity scene changed and new CustomGUI 
+        ///     objects were created. Subscribe to this event to create your custom GUI objects
+        ///     and add them as a child to either <see cref="CustomGUIFront"/> or <see cref="CustomGUIBack"/>.
+        /// </summary>
+        public static event Action OnCustomGUIAvailable;
+
+        /// <summary>
+        ///     GUI container in front of Valheim's GUI elements with automatic scaling for
+        ///     high res displays and pixel correction.
+        ///     Gets rebuild at every scene change so make sure to add your custom
+        ///     GUI prefabs again on each scene change.
+        /// </summary>
+        public static GameObject CustomGUIFront { get; private set; }
+        
+        /// <summary>
+        ///     GUI container behind Valheim's GUI elements with automatic scaling for
+        ///     high res displays and pixel correction.
+        ///     Gets rebuild at every scene change so make sure to add your custom
+        ///     GUI prefabs again on each scene change.
+        /// </summary>
+        public static GameObject CustomGUIBack { get; private set; }
 
         /// <summary>
         ///     Unity layer constant for UI objects.
@@ -258,6 +283,7 @@ namespace Jotunn.Managers
                     woodpanel.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
                     woodpanel.GetComponent<Image>().type = Image.Type.Sliced;
                     woodpanel.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+                    woodpanel.GetComponent<Image>().material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
 
                     woodpanel.layer = UILayer;
 
@@ -332,34 +358,34 @@ namespace Jotunn.Managers
                 }
             }
         }
-
+        
         private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
-            if (scene.name == "start" && !GUIInStart)
+            if (scene.name == "start")
             {
                 // Create a new PixelFix for start scene
                 GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "GuiRoot");
                 Transform gui = root?.transform.Find("GUI");
                 if (!gui)
                 {
-                    Logger.LogWarning("StartGui not found, not creating custom GUI");
+                    Logger.LogWarning("GuiRoot GUI not found, not creating custom GUI");
                     return;
                 }
-                CreatePixelFix(gui);
+                CreateCustomGUI(gui);
 
                 GUIInStart = true;
             }
-            if (scene.name == "main" && GUIInStart)
+            if (scene.name == "main")
             {
                 // Create a new PixelFix for main scene
                 GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
                 Transform gui = root?.transform.Find("GUI");
                 if (!gui)
                 {
-                    Logger.LogWarning("PixelFix not found, not creating custom GUI");
+                    Logger.LogWarning("_GameMain GUI not found, not creating custom GUI");
                     return;
                 }
-                CreatePixelFix(gui);
+                CreateCustomGUI(gui);
 
                 GUIInStart = false;
 
@@ -372,18 +398,38 @@ namespace Jotunn.Managers
             }
         }
 
-        private void CreatePixelFix(Transform parent)
+        private void CreateCustomGUI(Transform parent)
         {
-            PixelFix = new GameObject("CustomGUI", typeof(RectTransform), typeof(GuiPixelFix));
-            PixelFix.layer = UILayer; // UI
-            PixelFix.transform.SetParent(parent.transform, false);
-            
+            CustomGUIFront = new GameObject("CustomGUIFront", typeof(RectTransform), typeof(GuiPixelFix));
+            CustomGUIFront.layer = UILayer;
+            CustomGUIFront.transform.SetParent(parent.transform, false);
+            CustomGUIFront.transform.SetAsLastSibling();
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            PixelFix = CustomGUIFront;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            CustomGUIBack = new GameObject("CustomGUIBack", typeof(RectTransform), typeof(GuiPixelFix));
+            CustomGUIBack.layer = UILayer;
+            CustomGUIBack.transform.SetParent(parent.transform, false);
+            CustomGUIBack.transform.SetAsFirstSibling();
+
+#pragma warning disable CS0612 // Type or member is obsolete
             InvokeOnPixelFixCreated();
+#pragma warning restore CS0612 // Type or member is obsolete
+
+            InvokeOnCustomGUIAvailable();
         }
 
+        [Obsolete]
         private void InvokeOnPixelFixCreated()
         {
             OnPixelFixCreated?.SafeInvoke();
+        }
+
+        private void InvokeOnCustomGUIAvailable()
+        {
+            OnCustomGUIAvailable?.SafeInvoke();
         }
 
         /// <summary>
@@ -751,9 +797,9 @@ namespace Jotunn.Managers
             Color original, string message, ColorPicker.ColorEvent onColorChanged,
             ColorPicker.ColorEvent onColorSelected, bool useAlpha = false)
         {
-            if (PixelFix == null)
+            if (CustomGUIFront == null)
             {
-                Logger.LogError("GUIManager PixelFix is null");
+                Logger.LogError("GUIManager CustomGUIFront is null");
                 return;
             }
 
@@ -764,9 +810,9 @@ namespace Jotunn.Managers
                 Logger.LogError("ColorPicker is null");
             }
 
-            if (PixelFix.transform.Find("ColorPicker") == null)
+            if (CustomGUIFront.transform.Find("ColorPicker") == null)
             {
-                GameObject newcolor = Object.Instantiate(color, PixelFix.transform, false);
+                GameObject newcolor = Object.Instantiate(color, CustomGUIFront.transform, false);
                 newcolor.name = "ColorPicker";
                 newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
                 ((RectTransform)newcolor.transform).anchoredPosition = position;
@@ -792,9 +838,9 @@ namespace Jotunn.Managers
             Gradient original, string message, GradientPicker.GradientEvent onGradientChanged,
             GradientPicker.GradientEvent onGradientSelected)
         {
-            if (PixelFix == null)
+            if (CustomGUIFront == null)
             {
-                Logger.LogError("GUIManager PixelFix is null");
+                Logger.LogError("GUIManager CustomGUIFront is null");
                 return;
             }
 
@@ -812,16 +858,16 @@ namespace Jotunn.Managers
                 Logger.LogError("GradientPicker is null");
             }
 
-            if (PixelFix.transform.Find("ColorPicker") == null)
+            if (CustomGUIFront.transform.Find("ColorPicker") == null)
             {
-                GameObject newcolor = Object.Instantiate(color, PixelFix.transform, false);
+                GameObject newcolor = Object.Instantiate(color, CustomGUIFront.transform, false);
                 newcolor.name = "ColorPicker";
                 newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
 
-            if (PixelFix.transform.Find("GradientPicker") == null)
+            if (CustomGUIFront.transform.Find("GradientPicker") == null)
             {
-                GameObject newGradient = Object.Instantiate(gradient, PixelFix.transform, false);
+                GameObject newGradient = Object.Instantiate(gradient, CustomGUIFront.transform, false);
                 newGradient.name = "GradientPicker";
                 newGradient.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
                 ((RectTransform)newGradient.transform).anchoredPosition = position;

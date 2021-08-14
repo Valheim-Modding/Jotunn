@@ -173,7 +173,7 @@ namespace Jotunn.GUI
 
             // Create settings window
             SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
-            SettingsRoot.name = LocalizationManager.Instance.TryTranslate(MenuName);
+            SettingsRoot.name = "ModSettings";
             SettingsRoot.transform.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuName);
             if (Menu.instance != null)
             {
@@ -269,7 +269,7 @@ namespace Jotunn.GUI
         private static void CreatePlugin(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform pluginViewport)
         {
             // Create a header if there are any relevant configuration entries
-            if (GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible()).GroupBy(x => x.Key.Section).Any())
+            if (GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible() && x.Value.IsWritable()).GroupBy(x => x.Key.Section).Any())
             {
                 // Create plugin
                 GameObject plugin = new GameObject(mod.Key, typeof(RectTransform), typeof(LayoutElement));
@@ -340,7 +340,7 @@ namespace Jotunn.GUI
             float preferredHeight = 0f;
 
             // Iterate over all configuration entries (grouped by their sections)
-            foreach (var kv in GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible()).GroupBy(x => x.Key.Section))
+            foreach (var kv in GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible() && x.Value.IsWritable()).GroupBy(x => x.Key.Section))
             {
                 // Create section header Text element
                 var sectiontext = GUIManager.Instance.CreateText(
