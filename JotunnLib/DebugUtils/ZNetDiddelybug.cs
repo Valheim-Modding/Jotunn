@@ -10,9 +10,8 @@ namespace Jotunn.DebugUtils
 
         private void Awake()
         {
-            _isModEnabled = Main.Instance.Config.Bind<bool>(nameof(ZNetDiddelybug), "Enabled", false,
-                new ConfigDescription("Globally enable or disable RPC debug logging.", null,
-                new ConfigurationManagerAttributes() { IsAdminOnly = true }));
+            _isModEnabled = Main.Instance.Config.Bind<bool>(
+                nameof(ZNetDiddelybug), "Enabled", false, "Globally enable or disable RPC debug logging.");
 
             On.ZNet.Awake += ZNet_Awake;
             On.ZSteamSocket.Send += ZSteamSocket_Send;
