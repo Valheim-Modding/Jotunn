@@ -24,7 +24,7 @@ namespace TestMod.ConsoleCommands
                 return;
             }
 
-            int cnt = args.Length < 3 ? 1 : int.Parse(args[3]);
+            int cnt = args.Length < 2 ? 1 : int.Parse(args[1]);
             for (int i = 0; i < cnt; i++)
             {
                 UnityEngine.Object.Instantiate<GameObject>(prefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity);
