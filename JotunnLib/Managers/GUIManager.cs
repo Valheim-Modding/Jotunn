@@ -283,6 +283,7 @@ namespace Jotunn.Managers
                     woodpanel.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
                     woodpanel.GetComponent<Image>().type = Image.Type.Sliced;
                     woodpanel.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+                    woodpanel.GetComponent<Image>().material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
 
                     woodpanel.layer = UILayer;
 
