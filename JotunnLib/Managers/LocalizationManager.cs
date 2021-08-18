@@ -49,6 +49,14 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Event that gets fired after all custom localization has been added to the game.
+        ///     Use this event if you need to translate strings using the vanilla <see cref="Localization"/> class.
+        ///     Your code will execute every time the localization gets reset (on every menu start).
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
+        public static event Action OnLocalizationAdded;
+
+        /// <summary>
         ///     Call into unity's DoQuoteLineSplit.
         /// </summary>
         internal static Func<StringReader, List<List<string>>> DoQuoteLineSplit;
@@ -129,7 +137,14 @@ namespace Jotunn.Managers
                 AddTokens(self, language);
             }
 
+            InvokeOnLocalizationAdded();
+
             return result;
+        }
+
+        private void InvokeOnLocalizationAdded()
+        {
+            OnLocalizationAdded?.SafeInvoke();
         }
 
         /// <summary>
