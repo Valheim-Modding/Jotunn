@@ -1,4 +1,5 @@
 ﻿# Localization
+
 Localizations are string conversions for language tokens that are bound to in-game objects. These language tokens are replaced at runtime by their specified localization, and can be thought of as a key value dataset. An example of a localization token may be `$item_stoneAxe`, which might have multiple localizations to translate into different languages at runtime.
 
 JVL provides a number of different methods to interface with our localization system, to allow both developers as well as the community at large to provide localizations for both custom items, as well as non supported languages.
@@ -6,11 +7,13 @@ JVL provides a number of different methods to interface with our localization sy
 **Note**: This example requires [assets](asset-loading.md) to be loaded. The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
 
 ## Preparing your assets
+
 In order to facilitate our localizations, we must prepare our assets to ensure they are able to accept our localization strings. The game follows the convention that language tokens are prefixed with a `$` to signify the string is a token due for replacement. Common properties which accept tokens are things such as names, descriptions, and flavourtext. The following name thereafter must be unique, but can follow any format the user desires.
 
 Convention within the game however states that items follow the `$item_{name}` `$item_{name}_description` formats, similarly buildable items are prefixed with `$piece_` instead.
 
 ## Format
+
 The format for localizations is a standard json collection as such:
 ```cs
 { "item_evilsword", "Sword of Darkness" },
@@ -18,11 +21,13 @@ The format for localizations is a standard json collection as such:
 ```
 
 ## Side loading localizations
+
 Localizations can be provide through loading side by side with your plugin. The folder structure which will be queried will be `Translations/{LanguageName}/{anyname}.json`, and can be placed in any sub directory within your plugin.
 An example of a path which will be read for localization at run time may be: `BepInEx/plugins/JotunnModExample/Assets/Translations/English/backpack.json`. 
 All .json files within such a directory will be iterated through and localizations added for each of those languages.
 
 ## Hardcoding
+
 Localizations may also be hardcoded into your plugin by invoking the [AddLocalization](xref:Jotunn.Managers.LocalizationManager.AddLocalization(Jotunn.Configs.LocalizationConfig)) method.
 
 ```cs
@@ -70,6 +75,7 @@ private void AddLocalizations()
 
 
 ## Prefabs
+
 It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime via [AddJson](xref:Jotunn.Managers.LocalizationManager.AddJson(System.String,System.String)). In this example, we use our filenames to provide the language which we wish to add the translations for:
 
 ```cs
@@ -85,7 +91,8 @@ private void BlueprintRuneLocalizations()
 ```
 ![Blueprint Rune Localizations](../images/data/blueprintRuneLocalizations.png)
 
-## Example JSON file
+### Example JSON file
+
 This is how the JSON file looks like which is deliverd as a TextAsset in the asset bundle for the Blueprint Rune example:
 ```json
 {
@@ -97,3 +104,7 @@ This is how the JSON file looks like which is deliverd as a TextAsset in the ass
   "piece_blueprint_desc": "Creates the structure attached to this blueprint."
 }
 ```
+
+## "Localization added" event
+
+After Jötunn has added all custom Localization to Valheim's own Localization dictionary, it fires an event [LocalizationManager.OnLocalizationAdded](xref:Jotunn.Managers.LocalizationManager.OnLocalizationAdded). You can subscribe to this event if you have code that needs to be sure that all Localization was added before.
