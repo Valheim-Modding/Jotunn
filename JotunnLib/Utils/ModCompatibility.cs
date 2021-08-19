@@ -20,9 +20,9 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Stores the last server message.
         /// </summary>
-        private static ZPackage lastServerVersion;
+        private static ZPackage LastServerVersion;
 
-        private static Dictionary<string, ZPackage> clientVersions = new Dictionary<string, ZPackage>();
+        private static readonly Dictionary<string, ZPackage> ClientVersions = new Dictionary<string, ZPackage>();
 
         /// <summary>
         ///     Initialize Patches
@@ -74,7 +74,7 @@ namespace Jotunn.Utils
         private static void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
             // Show message box if there is a message to show
-            if (lastServerVersion != null && scene.name == "start" && ZNet.m_connectionStatus == ZNet.ConnectionStatus.ErrorVersion)
+            if (LastServerVersion != null && scene.name == "start" && ZNet.m_connectionStatus == ZNet.ConnectionStatus.ErrorVersion)
             {
                 ShowModCompatibilityErrorMessage();
             }
@@ -86,20 +86,20 @@ namespace Jotunn.Utils
             if (ZNet.instance.IsClientInstance())
             {
                 // If there was no server version response, Jötunn is not installed. Cancel if we have mandatory mods
-                if (lastServerVersion == null &&
+                if (LastServerVersion == null &&
                     GetEnforcableMods().Any(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod))
                 {
                     rpc.Invoke("Disconnect");
-                    lastServerVersion =
+                    LastServerVersion =
                         new ModuleVersionData(new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>()).ToZPackage();
                     ZNet.m_connectionStatus = ZNet.ConnectionStatus.ErrorVersion;
                     return;
                 }
+
+                // If we got this far, clear lastServerVersion again
+                LastServerVersion = null;
             }
-
-            // If we got this far on client side, clear lastServerVersion again
-            lastServerVersion = null;
-
+            
             orig(self, rpc, password);
         }
 
@@ -110,11 +110,11 @@ namespace Jotunn.Utils
             {
                 try
                 {
-                    var clientVersion = new ModuleVersionData(clientVersions[rpc.GetSocket().GetEndPointString()]);
+                    var clientVersion = new ModuleVersionData(ClientVersions[rpc.GetSocket().GetEndPointString()]);
                     var serverVersion = new ModuleVersionData(GetEnforcableMods().ToList());
 
                     // Remove from list
-                    clientVersions.Remove(rpc.GetSocket().GetEndPointString());
+                    ClientVersions.Remove(rpc.GetSocket().GetEndPointString());
 
                     // Compare and disconnect when not equal
                     if (!clientVersion.Equals(serverVersion))
@@ -162,8 +162,8 @@ namespace Jotunn.Utils
 
             if (!ZNet.instance.IsClientInstance())
             {
-                clientVersions[sender.m_socket.GetEndPointString()] = data;
-                var clientVersion = new ModuleVersionData(clientVersions[sender.GetSocket().GetEndPointString()]);
+                ClientVersions[sender.m_socket.GetEndPointString()] = data;
+                var clientVersion = new ModuleVersionData(ClientVersions[sender.GetSocket().GetEndPointString()]);
                 var serverVersion = new ModuleVersionData(GetEnforcableMods().ToList());
 
                 if (!clientVersion.Equals(serverVersion))
@@ -174,7 +174,7 @@ namespace Jotunn.Utils
             }
             else
             {
-                lastServerVersion = data;
+                LastServerVersion = data;
             }
         }
 
@@ -186,7 +186,7 @@ namespace Jotunn.Utils
             var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.CustomGUIFront.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0f, 0f), 700, 500);
             panel.SetActive(true);
-            var remote = new ModuleVersionData(lastServerVersion);
+            var remote = new ModuleVersionData(LastServerVersion);
             var local = new ModuleVersionData(GetEnforcableMods().ToList());
 
 
@@ -240,7 +240,7 @@ namespace Jotunn.Utils
             });
 
             // Reset the last server version
-            lastServerVersion = null;
+            LastServerVersion = null;
         }
 
         /// <summary>
