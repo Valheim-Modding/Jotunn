@@ -53,6 +53,7 @@ namespace TestMod
         private CustomStatusEffect EvilSwordEffect;
 
         private ConfigEntry<bool> EnableVersionMismatch;
+        private ConfigEntry<bool> EnableExtVersionMismatch;
 
         // Load, create and init your custom mod stuff
         private void Awake()
@@ -106,6 +107,9 @@ namespace TestMod
             // Get current version for the mod compatibility test
             CurrentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
+
+            // Hook GetVersionString for ext version string compat test
+            On.Version.GetVersionString += Version_GetVersionString;
         }
 
         // Called every frame
@@ -392,6 +396,7 @@ namespace TestMod
 
             // Add client config to test ModCompatibility
             EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
+            EnableExtVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableExtVersionMismatch), false, new ConfigDescription("Enable to test external version mismatch"));
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
@@ -402,7 +407,7 @@ namespace TestMod
         // React on changed settings
         private void Config_SettingChanged(object sender, SettingChangedEventArgs e)
         {
-            if (e.ChangedSetting.Definition.Section == JotunnTestModConfigSection && e.ChangedSetting.Definition.Key == "EnableVersionMismatch")
+            if (e.ChangedSetting.Definition.Section == JotunnTestModConfigSection && e.ChangedSetting.Definition.Key == nameof(EnableVersionMismatch))
             {
                 SetVersion();
             }
@@ -1044,6 +1049,19 @@ namespace TestMod
             {
                 propinfo.SetValue(Info.Metadata, CurrentVersion, null);
             }
+        }
+
+        private string Version_GetVersionString(On.Version.orig_GetVersionString orig)
+        {
+            if (EnableExtVersionMismatch.Value)
+            {
+                return "Non.Business.You";
+            }
+            else
+            {
+                return orig();
+            }
+
         }
     }
 }
