@@ -469,7 +469,7 @@ namespace Jotunn.Managers
         ///     Copy vanilla BuildHints object and create a custom one from a KeyHintConfig.
         /// </summary>
         /// <param name="config"></param>
-        private void CreateKeyHintObject(KeyHintConfig config)
+        private GameObject CreateKeyHintObject(KeyHintConfig config)
         {
             // Clone BuildHints and add it under KeyHints to get the position right
             var baseKeyHint = Object.Instantiate(KeyHintContainer.Find("BuildHints").gameObject, KeyHintContainer, false);
@@ -550,6 +550,8 @@ namespace Jotunn.Managers
             }*/
 
             Logger.LogDebug($"Added key hints for Item : {config}");
+
+            return baseKeyHint;
         }
 
         /// <summary>
@@ -686,7 +688,7 @@ namespace Jotunn.Managers
             {
                 try
                 {
-                    CreateKeyHintObject(hintConfig);
+                    hintObject = CreateKeyHintObject(hintConfig);
                 }
                 catch (Exception ex)
                 {
