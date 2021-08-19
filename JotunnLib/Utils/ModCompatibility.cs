@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -30,6 +31,7 @@ namespace Jotunn.Utils
         public static void InitPatch()
         {
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
+            On.ZNet.SendPeerInfo += ZNet_SendPeerInfo;
             On.ZNet.OnNewConnection += ZNet_OnNewConnection;
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
@@ -42,6 +44,14 @@ namespace Jotunn.Utils
         {
             On.ZNet.RPC_ClientHandshake += ZNet_RPC_ClientHandshake;
             On.ZNet.RPC_ServerHandshake += ZNet_RPC_ServerHandshake;
+        }
+
+        // Register our RPC
+        private static void ZNet_OnNewConnection(On.ZNet.orig_OnNewConnection orig, ZNet self, ZNetPeer peer)
+        {
+            // Register our RPC very early
+            peer.m_rpc.Register<ZPackage>(nameof(RPC_Jotunn_ReceiveVersionData), RPC_Jotunn_ReceiveVersionData);
+            orig(self, peer);
         }
 
         // Send client module list to server
@@ -60,14 +70,6 @@ namespace Jotunn.Utils
             orig(self, rpc);
         }
 
-        // Register our RPC
-        private static void ZNet_OnNewConnection(On.ZNet.orig_OnNewConnection orig, ZNet self, ZNetPeer peer)
-        {
-            // Register our RPC very early
-            peer.m_rpc.Register<ZPackage>(nameof(RPC_Jotunn_ReceiveVersionData), RPC_Jotunn_ReceiveVersionData);
-            orig(self, peer);
-        }
-
         // Show mod compatibility error message when needed
         private static void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
@@ -78,53 +80,63 @@ namespace Jotunn.Utils
             }
         }
 
+        // Hook client sending of PeerInfo
+        private static void ZNet_SendPeerInfo(On.ZNet.orig_SendPeerInfo orig, ZNet self, ZRpc rpc, string password)
+        {
+            // If there was no server version response, Jötunn is not installed. Cancel if we have mandatory mods
+            if (lastServerVersion == null && GetEnforcableMods().Any(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod))
+            {
+                rpc.Invoke("Disconnect");
+                lastServerVersion = new ModuleVersionData(new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>()).ToZPackage();
+                ZNet.m_connectionStatus = ZNet.ConnectionStatus.ErrorVersion;
+                return;
+            }
+
+            // If we got this far on client side, clear lastServerVersion again
+            lastServerVersion = null;
+
+            orig(self, rpc, password);
+        }
+
         // Hook RPC_PeerInfo to check in front of the original method
         private static void ZNet_RPC_PeerInfo(On.ZNet.orig_RPC_PeerInfo orig, ZNet self, ZRpc rpc, ZPackage pkg)
         {
-            if (ZNet.instance.IsServerInstance() || ZNet.instance.IsLocalInstance())
+            try
             {
-                try
+                var clientVersion = new ModuleVersionData(clientVersions[rpc.GetSocket().GetEndPointString()]);
+                var serverVersion = new ModuleVersionData(GetEnforcableMods().ToList());
+
+                // Remove from list
+                clientVersions.Remove(rpc.GetSocket().GetEndPointString());
+
+                // Compare and disconnect when not equal
+                if (!clientVersion.Equals(serverVersion))
                 {
-                    var clientVersion = new ModuleVersionData(clientVersions[rpc.GetSocket().GetEndPointString()]);
-                    var serverVersion = new ModuleVersionData(GetEnforcableMods().ToList());
-
-                    // Remove from list
-                    clientVersions.Remove(rpc.GetSocket().GetEndPointString());
-
-                    // Compare and disconnect when not equal
-                    if (!clientVersion.Equals(serverVersion))
-                    {
-                        rpc.Invoke("Error", 3);
-                        return;
-                    }
-                }
-                catch (EndOfStreamException)
-                {
-                    Logger.LogError("Reading beyond end of stream. Probably client without Jotunn tried to connect.");
-
-                    // Client did not send appended package, just disconnect with the incompatible version error
                     rpc.Invoke("Error", 3);
                     return;
                 }
-                catch (KeyNotFoundException)
-                {
-                    // Vanilla client trying to connect?
-                    // Check mods, if there are some installed on the server which need also to be on the client
-
-                    if (GetEnforcableMods().Any(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod))
-                    {
-                        // There is a mod, which needs to be client side too
-                        // Lets disconnect the vanilla client with Incompatible Version message
-
-                        rpc.Invoke("Error", 3);
-                        return;
-                    }
-                }
             }
-            else
+            catch (EndOfStreamException)
             {
-                // If we got this far on client side, clear lastServerVersion again
-                lastServerVersion = null;
+                Logger.LogError("Reading beyond end of stream. Probably client without Jotunn tried to connect.");
+
+                // Client did not send appended package, just disconnect with the incompatible version error
+                rpc.Invoke("Error", 3);
+                return;
+            }
+            catch (KeyNotFoundException)
+            {
+                // Vanilla client trying to connect?
+                // Check mods, if there are some installed on the server which need also to be on the client
+
+                if (GetEnforcableMods().Any(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod))
+                {
+                    // There is a mod, which needs to be client side too
+                    // Lets disconnect the vanilla client with Incompatible Version message
+
+                    rpc.Invoke("Error", 3);
+                    return;
+                }
             }
 
             // call original method
