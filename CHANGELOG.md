@@ -5,6 +5,8 @@
 * Don't show server side configs in the GUI when a client has no admin rights
 * Added two new custom GUI containers for mods to use (in front and behind Valheim's own GUI)
 * Marked the old PixelFix container as obsolete
+* Added a new event after custom Localization got added
+* Fixed a NRE with dynamic KeyHints
 
 ## Version 2.2.3
 * Don't use own canvas for custom GUI (fixes compat with VHVR for example)
