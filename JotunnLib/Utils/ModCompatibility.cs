@@ -182,32 +182,41 @@ namespace Jotunn.Utils
             var local = new ModuleVersionData(GetEnforcableMods().ToList());
 
 
-            var scroll = GUIManager.Instance.CreateScrollView(panel.transform, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
+            var scroll = GUIManager.Instance.CreateScrollView(
+                panel.transform, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
                 new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f), 650f, 400f);
 
-            scroll.SetActive(true);
+            var tf = scroll.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+            tf.localPosition = new Vector3(325f, 0f);
 
-            GUIManager.Instance.CreateText("Remote version:", scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
+            GUIManager.Instance.CreateText(
+                "Remote version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 
+                GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
                 new Color(0, 0, 0, 1), 600f, 40f, false);
-            GUIManager.Instance.CreateText(remote.ToString(false), scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, Color.white, true, new Color(0, 0, 0, 1), 600f, 40f,
-                false);
-            GUIManager.Instance.CreateText("Local version:", scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
+            GUIManager.Instance.CreateText(
+                remote.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 
+                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true, 
                 new Color(0, 0, 0, 1), 600f, 40f, false);
-            GUIManager.Instance.CreateText(local.ToString(false), scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, Color.white, true, new Color(0, 0, 0, 1), 600f, 40f,
-                false);
+            GUIManager.Instance.CreateText(
+                "Local version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
+                new Color(0, 0, 0, 1), 600f, 40f, false);
+            GUIManager.Instance.CreateText(
+                local.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
+                new Color(0, 0, 0, 1), 600f, 40f, false);
 
             foreach (var part in CreateErrorMessage(remote, local))
             {
-                GUIManager.Instance.CreateText(part.Item2, scroll.transform.Find("Scroll View/Viewport/Content"), new Vector2(0.5f, 0.5f),
-                    new Vector2(0.5f, 0.5f), new Vector2(0, 0), GUIManager.Instance.AveriaSerifBold, 19, part.Item1, true, new Color(0, 0, 0, 1), 600f, 40f,
-                    false);
+                GUIManager.Instance.CreateText(
+                    part.Item2, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 
+                    GUIManager.Instance.AveriaSerifBold, 19, part.Item1, true,
+                    new Color(0, 0, 0, 1), 600f, 40f, false);
             }
 
             scroll.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
+
+            scroll.SetActive(true);
 
             var button = GUIManager.Instance.CreateButton("OK", panel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -215f),
                 100f, 40f);
