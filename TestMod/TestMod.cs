@@ -42,8 +42,6 @@ namespace TestMod
         private ButtonConfig CreateGradientPickerButton;
         private ButtonConfig TogglePanelButton;
         private GameObject TestPanel;
-        private ButtonConfig ToggleMenuButton;
-        private bool ToggleMenu;
 
         private ButtonConfig RaiseSkillButton;
         private Skills.SkillType TestSkill;
@@ -123,13 +121,6 @@ namespace TestMod
                 // Custom buttons need to be added to the InputManager before we can poll them.
                 // GetButtonDown will only return true ONCE, right after our button is pressed.
                 // If we hold the button down, it won't spam toggle our menu.
-                if (ZInput.GetButtonDown(ToggleMenuButton.Name))
-                {
-                    ToggleMenu = !ToggleMenu;
-                }
-
-                // To show GUI which does not get created every time OnGUI() is called,
-                // we have a togger method defined.
                 if (ZInput.GetButtonDown(TogglePanelButton.Name))
                 {
                     TogglePanel();
@@ -165,12 +156,6 @@ namespace TestMod
         // Called every frame for rendering GUI
         private void OnGUI()
         {
-            // Render our GUI if enabled
-            if (ToggleMenu)
-            {
-                GUI.Box(new Rect(40, 40, 150, 250), "TestMod");
-            }
-
             // Displays the current equiped tool/weapon and hover object
             if (Player.m_localPlayer)
             {
@@ -436,14 +421,12 @@ namespace TestMod
         private void AddInputs()
         {
             // Add key bindings on the fly
-            ToggleMenuButton = new ButtonConfig { Name = "TestMod_GUIManagerTest", Key = KeyCode.PageDown, ActiveInGUI = true };
-            InputManager.Instance.AddButton(ModGUID, ToggleMenuButton);
-            TogglePanelButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Home, ActiveInGUI = true };
+            TogglePanelButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Home, ActiveInCustomGUI = true };
             InputManager.Instance.AddButton(ModGUID, TogglePanelButton);
 
-            CreateColorPickerButton = new ButtonConfig { Name = "TestMod_Color", Key = KeyCode.Insert, ActiveInGUI = true };
+            CreateColorPickerButton = new ButtonConfig { Name = "TestMod_Color", Key = KeyCode.PageUp};
             InputManager.Instance.AddButton(ModGUID, CreateColorPickerButton);
-            CreateGradientPickerButton = new ButtonConfig { Name = "TestMod_Gradient", Key = KeyCode.Delete, ActiveInGUI = true };
+            CreateGradientPickerButton = new ButtonConfig { Name = "TestMod_Gradient", Key = KeyCode.PageDown};
             InputManager.Instance.AddButton(ModGUID, CreateGradientPickerButton);
 
             // Add key bindings backed by a config value
@@ -457,7 +440,7 @@ namespace TestMod
             InputManager.Instance.AddButton(ModGUID, EvilSwordSpecialButton);
 
             // Add a key binding to test skill raising
-            RaiseSkillButton = new ButtonConfig { Name = "TestMod_RaiseSkill", Key = KeyCode.PageUp };
+            RaiseSkillButton = new ButtonConfig { Name = "TestMod_RaiseSkill", Key = KeyCode.Insert, ActiveInGUI = true, ActiveInCustomGUI = true};
             InputManager.Instance.AddButton(ModGUID, RaiseSkillButton);
         }
 

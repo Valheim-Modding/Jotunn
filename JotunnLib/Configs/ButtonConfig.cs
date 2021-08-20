@@ -56,5 +56,10 @@ namespace Jotunn.Configs
         ///     Should this button react on key presses when a Valheim GUI is open? Defaults to <c>false</c>.
         /// </summary>
         public bool ActiveInGUI { get; set; } = false;
+
+        /// <summary>
+        ///     Should this button react on key presses when a custom GUI is open and requested to block input? Defaults to <c>false</c>.
+        /// </summary>
+        public bool ActiveInCustomGUI { get; set; } = false;
     }
 }

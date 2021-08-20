@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
-using UnityEngine;
 using Jotunn.Configs;
+using UnityEngine;
 
 namespace Jotunn.Managers
 {
@@ -46,7 +46,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        /// Add Button to Valheim
+        ///     Add a Button to Valheim
         /// </summary>
         /// <param name="modGuid">Mod GUID</param>
         /// <param name="buttonConfig">Button config</param>
@@ -83,49 +83,6 @@ namespace Jotunn.Managers
             Buttons.Add(buttonConfig.Name, buttonConfig);
         }
 
-        private bool TakeInput(string name)
-        {
-            if (Player.m_localPlayer == null)
-            {
-                return true;
-            }
-
-            var button = Buttons.FirstOrDefault(x => x.Key.Equals(name));
-            if (button.Key == null)
-            {
-                return true;
-            }
-            if (button.Value.ActiveInGUI)
-            {
-                return true;
-            }
-
-            return Player.m_localPlayer.TakeInput();
-        }
-        private bool ZInput_GetButtonUp(On.ZInput.orig_GetButtonUp orig, string name)
-        {
-            if (orig(name))
-            {
-                return TakeInput(name);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
-        {
-            if (orig(name))
-            {
-                return TakeInput(name);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         private void RegisterCustomInputs(On.ZInput.orig_Load orig, ZInput self)
         {
             orig(self);
@@ -150,6 +107,50 @@ namespace Jotunn.Managers
                     Logger.LogDebug($"Registered input {pair.Key}");
                 }
             }
+        }
+
+        private bool ZInput_GetButtonUp(On.ZInput.orig_GetButtonUp orig, string name)
+        {
+            if (orig(name))
+            {
+                return TakeInput(name);
+            }
+
+            return false;
+        }
+
+        private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
+        {
+            if (orig(name))
+            {
+                return TakeInput(name);
+            }
+
+            return false;
+        }
+
+        private bool TakeInput(string name)
+        {
+            if (Player.m_localPlayer == null)
+            {
+                return true;
+            }
+
+            var button = Buttons.FirstOrDefault(x => x.Key.Equals(name));
+            if (button.Key == null)
+            {
+                return true;
+            }
+            if (button.Value.ActiveInGUI && !GUIManager.InputBlocked)
+            {
+                return true;
+            }
+            if (button.Value.ActiveInCustomGUI && GUIManager.InputBlocked)
+            {
+                return true;
+            }
+
+            return Player.m_localPlayer.TakeInput();
         }
     }
 }
