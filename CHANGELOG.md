@@ -1,10 +1,10 @@
 ﻿# Changelog
 
 ## Version 2.3.0
-* ModCompatibility now disconnects clients from vanilla servers when the client runs enforcable mods
+* ModCompatibility now disconnects clients from vanilla servers when the client runs enforceable mods
 * Added a brand new Mod Settings GUI, accessible from the menu list
 * Don't show server side configs in the GUI when a client has no admin rights
-* Added two new custom GUI containers for mods to use (in front and behind Valheim's own GUI)
+* Added two new custom GUI containers for mods to use (in front of and behind Valheim's own GUI)
 * Marked the old PixelFix container as obsolete
 * Added a new event after custom Localization got added
 * Fixed a NRE with dynamic KeyHints
