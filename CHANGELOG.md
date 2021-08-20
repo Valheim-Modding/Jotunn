@@ -8,6 +8,7 @@
 * Marked the old PixelFix container as obsolete
 * Added a new event after custom Localization got added
 * Fixed a NRE with dynamic KeyHints
+* Fixed mod compatibility window showing on version errors not related to Jötunn
 
 ## Version 2.2.3
 * Don't use own canvas for custom GUI (fixes compat with VHVR for example)
