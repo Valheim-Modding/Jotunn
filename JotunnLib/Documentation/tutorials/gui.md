@@ -4,7 +4,7 @@ To add custom GUI elements to the game it is necessary to add the prefabs or gen
 
 ## CustomGUI event and GameObjects
 
-Valheim creates new clones of the whole menu and ingame GUI everytime the scene changes from start to main and vice versa. So if you dont want to create and draw on your own canvas, you have to add your custom stuff to the right path on every scene change, too. Additionally, Valheim implemented a scaling feature for high resolution display (4K output or high DPI screens) and a pixel correction component called the PixelFix. Theses concepts can be accessed easily via shortcuts through Jötunn. You can subscribe to the event [GUIManager.OnCustomGUIAvailable](xref:Jotunn.Managers.GUIManager.OnCustomGUIAvailable) which gets called everytime the scene changed and Jötunn has created and resolved the current GUI in the scene. In that event call you can load / create your custom GUI components and add them in the transform hierarchy under either the [GUIManager.CustomGUIBack](xref:Jotunn.Managers.GUIManager.CustomGUIBack) or the [GUIManager.CustomGUIFront](xref:Jotunn.Managers.GUIManager.CustomGUIFront) GameObject. The first resides before Valheim's own GUI elements in the transform hierarchy which means the GUI elements added to this GameObject will be drawn *before* the vanilla GUI and therefore appear *behind* of it. The latter is drawn *after* Valheim's GUI elements and therefore your custom GUI will be in *front* of Valheim's GUI.
+Valheim creates new clones of the whole menu and ingame GUI everytime the scene changes from start to main and vice versa. So if you dont want to create and draw on your own canvas, you have to add your custom stuff to the right path on every scene change, too. Additionally, Valheim implemented a scaling feature for high resolution display (4K output or high DPI screens) and a pixel correction component called the PixelFix. Theses concepts can be accessed easily via shortcuts through Jötunn. You can subscribe to the event [GUIManager.OnCustomGUIAvailable](xref:Jotunn.Managers.GUIManager.OnCustomGUIAvailable) which gets called everytime the scene changed and Jötunn has created and resolved the current GUI in the scene (previously called [GUIManager.OnPixelFixCreated](xref:Jotunn.Managers.GUIManager.OnPixelFixCreated) which is deprecated now). In that event call you can load / create your custom GUI components and add them in the transform hierarchy under either the [GUIManager.CustomGUIBack](xref:Jotunn.Managers.GUIManager.CustomGUIBack) or the [GUIManager.CustomGUIFront](xref:Jotunn.Managers.GUIManager.CustomGUIFront) GameObject (the latter being equivalent to the former [GUIManager.PixelFix](xref:Jotunn.Managers.GUIManager.PixelFix) GameObject which is now deprecated). The first resides before Valheim's own GUI elements in the transform hierarchy which means the GUI elements added to this GameObject will be drawn *before* the vanilla GUI and therefore appear *behind* of it. The latter is drawn *after* Valheim's GUI elements and therefore your custom GUI will be in *front* of Valheim's GUI.
 
 ## Block input for GUI
 
@@ -58,7 +58,7 @@ Woodpanels, nicely usable as containers for other gui elements. Can automaticall
 Example:
 ```cs
 var panel = GUIManager.Instance.CreateWoodpanel(
-    parent: GUIManager.PixelFix.transform, 
+    parent: GUIManager.CustomGUIFront.transform, 
     anchorMin: new Vector2(0.5f, 0.5f), 
     anchorMax: new Vector2(0.5f, 0.5f), 
     position: new Vector2(0f, 0f), 
@@ -116,14 +116,14 @@ var text = GUIManager.Instance.CreateText(
 Example:
 ```cs
 var checkbox = GUIManager.Instance.CreateToggle(
-    parent: GUIManager.PixelFix.transform,
+    parent: GUIManager.CustomGUIFront.transform,
     width: 40f,
     height: 40f);
 ```
 
 ### Getting sprites
 
-Gets sprites from the textureatlas by name. You find a list of the sprite names [here](../data/gui/sprite-list.md).
+Gets sprites from the UIAtlas or IconAtlas by name. You find a list of the sprite names [here](../data/gui/sprite-list.md).
 
 ```cs
 var sprite = GUIManager.Instance.GetSprite("text_field");
@@ -170,7 +170,7 @@ In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use
 private void TogglePanel()
 {
     // Create the panel if it does not exist
-    if (TestPanel == null)
+    if (!TestPanel)
     {
         if (GUIManager.Instance == null)
         {
@@ -178,15 +178,15 @@ private void TogglePanel()
             return;
         }
 
-        if (GUIManager.PixelFix == null)
+        if (!GUIManager.CustomGUIFront)
         {
-            Logger.LogError("GUIManager pixelfix is null");
+            Logger.LogError("GUIManager CustomGUI is null");
             return;
         }
 
         // Create the panel object
         TestPanel = GUIManager.Instance.CreateWoodpanel(
-            parent: GUIManager.PixelFix.transform,
+            parent: GUIManager.CustomGUIFront.transform,
             anchorMin: new Vector2(0.5f, 0.5f),
             anchorMax: new Vector2(0.5f, 0.5f),
             position: new Vector2(0, 0),
@@ -239,10 +239,7 @@ private void TogglePanel()
 
         // Add a listener to the button to close the panel again
         Button button = buttonObject.GetComponent<Button>();
-        button.onClick.AddListener(() =>
-        {
-            TogglePanel();
-        });
+        button.onClick.AddListener(TogglePanel);
     }
 
     // Switch the current state

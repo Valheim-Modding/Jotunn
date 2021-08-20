@@ -211,7 +211,7 @@ namespace TestMod
         private void TogglePanel()
         {
             // Create the panel if it does not exist
-            if (TestPanel == null)
+            if (!TestPanel)
             {
                 if (GUIManager.Instance == null)
                 {
@@ -219,15 +219,15 @@ namespace TestMod
                     return;
                 }
 
-                if (GUIManager.PixelFix == null)
+                if (!GUIManager.CustomGUIFront)
                 {
-                    Logger.LogError("GUIManager pixelfix is null");
+                    Logger.LogError("GUIManager CustomGUI is null");
                     return;
                 }
 
                 // Create the panel object
                 TestPanel = GUIManager.Instance.CreateWoodpanel(
-                    parent: GUIManager.PixelFix.transform,
+                    parent: GUIManager.CustomGUIFront.transform,
                     anchorMin: new Vector2(0.5f, 0.5f),
                     anchorMax: new Vector2(0.5f, 0.5f),
                     position: new Vector2(0, 0),
@@ -240,7 +240,7 @@ namespace TestMod
                 // Note: This is normally automatically added when using CreateWoodpanel()
                 DragWindowCntrl drag = TestPanel.AddComponent<DragWindowCntrl>();
 
-                // To actually be able to drag the panel, Unity events must be registered with the Component
+                // To actually be able to drag the panel, Unity events must be registered
                 EventTrigger trigger = TestPanel.AddComponent<EventTrigger>();
                 EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
                 beginDragEntry.eventID = EventTriggerType.BeginDrag;
@@ -251,7 +251,7 @@ namespace TestMod
                 dragEntry.callback.AddListener((data) => { drag.Drag(); });
                 trigger.triggers.Add(dragEntry);
 
-                // Create a text object
+                // Create the text object
                 GameObject textObject = GUIManager.Instance.CreateText(
                     text: "Jötunn, the Valheim Lib",
                     parent: TestPanel.transform,
@@ -274,16 +274,13 @@ namespace TestMod
                     anchorMin: new Vector2(0.5f, 0.5f),
                     anchorMax: new Vector2(0.5f, 0.5f),
                     position: new Vector2(0, 0),
-                    width: 250f,
-                    height: 100f);
+                    width: 250,
+                    height: 100);
                 buttonObject.SetActive(true);
 
                 // Add a listener to the button to close the panel again
                 Button button = buttonObject.GetComponent<Button>();
-                button.onClick.AddListener(() =>
-                {
-                    TogglePanel();
-                });
+                button.onClick.AddListener(TogglePanel);
             }
 
             // Switch the current state
@@ -315,14 +312,14 @@ namespace TestMod
             if (SceneManager.GetActiveScene().name == "main" && ColorPicker.done)
             {
                 var hovered = Player.m_localPlayer.GetHoverObject();
-                var current = hovered.GetComponentInChildren<Renderer>();
+                var current = hovered?.GetComponentInChildren<Renderer>();
                 if (current != null)
                 {
                     current.gameObject.AddComponent<ColorChanger>();
                 }
                 else
                 {
-                    var parent = hovered.transform.parent.gameObject.GetComponentInChildren<Renderer>();
+                    var parent = hovered?.transform.parent.gameObject.GetComponentInChildren<Renderer>();
                     if (parent != null)
                     {
                         parent.gameObject.AddComponent<ColorChanger>();
@@ -351,14 +348,14 @@ namespace TestMod
             if (SceneManager.GetActiveScene().name == "main" && GradientPicker.done)
             {
                 var hovered = Player.m_localPlayer.GetHoverObject();
-                var current = hovered.GetComponentInChildren<Renderer>();
+                var current = hovered?.GetComponentInChildren<Renderer>();
                 if (current != null)
                 {
                     current.gameObject.AddComponent<GradientChanger>();
                 }
                 else
                 {
-                    var parent = hovered.transform.parent.gameObject.GetComponentInChildren<Renderer>();
+                    var parent = hovered?.transform.parent.gameObject.GetComponentInChildren<Renderer>();
                     if (parent != null)
                     {
                         parent.gameObject.AddComponent<GradientChanger>();
