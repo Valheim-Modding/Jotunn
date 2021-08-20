@@ -44,16 +44,19 @@ private void AddInputs()
     {
         Name = "JotunnModExample_Menu",
         Key = KeyCode.Insert,
-        ActiveInGUI = true    // Enable this button also when in GUI (e.g. the console)
+        ActiveInCustomGUI = true  // Enable this button in custom GUI
     };
     InputManager.Instance.AddButton(PluginGUID, ShowGUIButton);
 
     RaiseSkillButton = new ButtonConfig
     {
         Name = "JotunnExampleMod_RaiseSkill",
-        Key = KeyCode.Home
+        Key = KeyCode.RightControl,
+        ActiveInGUI = true,    // Enable this button in vanilla GUI (e.g. the console)
+        ActiveInCustomGUI = true  // Enable this button in custom GUI
     };
     InputManager.Instance.AddButton(PluginGUID, RaiseSkillButton);
+
 
     // Add key bindings backed by a config value
     // The HintToken is used for the custom KeyHint of the EvilSword
@@ -89,7 +92,7 @@ private void Update()
         // Raise the test skill
         if (Player.m_localPlayer != null && ZInput.GetButtonDown(RaiseSkillButton.Name))
         {
-            Player.m_localPlayer.RaiseSkill(TestSkill, 1f);
+            Player.m_localPlayer.RaiseSkill(TestSkill);
         }
 
         // Use the name of the ButtonConfig to identify the button pressed
