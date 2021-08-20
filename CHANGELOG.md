@@ -9,6 +9,8 @@
 * Added a new event after custom Localization got added
 * Fixed a NRE with dynamic KeyHints
 * Fixed mod compatibility window showing on version errors not related to Jötunn
+* Track requests to BlockInput and release the block only after all requests are released
+* Added static indicator if input is currently blocked to the GUIManager
 
 ## Version 2.2.3
 * Don't use own canvas for custom GUI (fixes compat with VHVR for example)
