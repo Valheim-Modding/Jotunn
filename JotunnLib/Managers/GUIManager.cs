@@ -110,18 +110,6 @@ namespace Jotunn.Managers
         public Font AveriaSerifBold { get; private set; }
 
         /// <summary>
-        ///     Internal SpriteAtlas holding the references to the sprites used in the helper methods.
-        /// </summary>
-        internal SpriteAtlas UIAtlas;
-
-        /// <summary>
-        ///     Internal SpriteAtlas holding the references to the sprites used in the helper methods.
-        /// </summary>
-        internal SpriteAtlas IconAtlas;
-
-        //internal readonly Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
-
-        /// <summary>
         ///     Internal Dictionary holding the references to the custom key hints added to the manager.
         /// </summary>
         internal readonly Dictionary<string, KeyHintConfig> KeyHints = new Dictionary<string, KeyHintConfig>();
@@ -130,6 +118,16 @@ namespace Jotunn.Managers
         ///     Reference to the games "KeyHint" GameObjects RectTransform.
         /// </summary>
         private RectTransform KeyHintContainer;
+
+        /// <summary>
+        ///     SpriteAtlas holding the references to the sprites used in the helper methods.
+        /// </summary>
+        private SpriteAtlas UIAtlas;
+
+        /// <summary>
+        ///     SpriteAtlas holding the references to the sprites used in the helper methods.
+        /// </summary>
+        private SpriteAtlas IconAtlas;
 
         /// <summary>
         ///     Indicates if the PixelFix must be created for the start or main scene.
@@ -146,10 +144,14 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Global indicator if the input is currently blocked to avoid being
-        ///     stuck in the block when the method is called twice.
+        ///     Global indicator if the input is currently blocked by the GUIManager.
         /// </summary>
-        private static bool InputBlocked;
+        public static bool InputBlocked { get; private set; }
+
+        /// <summary>
+        ///     Counter to track multiple block requests.
+        /// </summary>
+        private static int InputBlockRequests;
 
         /// <summary>
         ///     Block all input except GUI
@@ -159,31 +161,64 @@ namespace Jotunn.Managers
         {
             if (!IsHeadless() && SceneManager.GetActiveScene().name == "main")
             {
-                if (state == InputBlocked)
-                {
-                    return;
-                }
-
                 if (state)
                 {
-                    On.Player.TakeInput += Player_TakeInput;
-                    On.PlayerController.TakeInput += PlayerController_TakeInput;
-                    On.Menu.IsVisible += Menu_IsVisible;
+                    ++InputBlockRequests;
                 }
                 else
                 {
-                    On.Player.TakeInput -= Player_TakeInput;
-                    On.PlayerController.TakeInput -= PlayerController_TakeInput;
-                    On.Menu.IsVisible -= Menu_IsVisible;
+                    InputBlockRequests = Math.Max(--InputBlockRequests, 0);
                 }
-                if (GameCamera.instance)
+
+                if (!InputBlocked && InputBlockRequests > 0)
                 {
-                    GameCamera.instance.m_mouseCapture = !state;
-                    GameCamera.instance.UpdateMouseCapture();
+                    EnableInputBlock();
                 }
-                InputBlocked = state;
+                if (InputBlocked && InputBlockRequests == 0)
+                {
+                    ResetInputBlock();
+                }
+                
             }
         }
+
+        /// <summary>
+        ///     Enable the InputBlock
+        /// </summary>
+        private static void EnableInputBlock()
+        {
+            InputBlocked = true;
+
+            On.Player.TakeInput += Player_TakeInput;
+            On.PlayerController.TakeInput += PlayerController_TakeInput;
+            On.Menu.IsVisible += Menu_IsVisible;
+
+            if (GameCamera.instance)
+            {
+                GameCamera.instance.m_mouseCapture = false;
+                GameCamera.instance.UpdateMouseCapture();
+            }
+        }
+
+        /// <summary>
+        ///     Reset the InputBlock to its initial state (disabled)
+        /// </summary>
+        private static void ResetInputBlock()
+        {
+            InputBlocked = false;
+            InputBlockRequests = 0;
+
+            On.Player.TakeInput -= Player_TakeInput;
+            On.PlayerController.TakeInput -= PlayerController_TakeInput;
+            On.Menu.IsVisible -= Menu_IsVisible;
+
+            if (GameCamera.instance)
+            {
+                GameCamera.instance.m_mouseCapture = true;
+                GameCamera.instance.UpdateMouseCapture();
+            }
+        }
+
         private static bool PlayerController_TakeInput(On.PlayerController.orig_TakeInput orig, PlayerController self)
         {
             orig(self);
@@ -214,6 +249,11 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Load GUI assets on first start
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <param name="loadMode"></param>
         internal void InitialLoad(Scene scene, LoadSceneMode loadMode)
         {
             // Load valheim GUI assets
@@ -339,7 +379,6 @@ namespace Jotunn.Managers
         {
             if (scene.name == "start")
             {
-                // Create a new PixelFix for start scene
                 GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "GuiRoot");
                 Transform gui = root?.transform.Find("GUI");
                 if (!gui)
@@ -349,11 +388,12 @@ namespace Jotunn.Managers
                 }
                 CreateCustomGUI(gui);
 
+                ResetInputBlock();
+
                 GUIInStart = true;
             }
             if (scene.name == "main")
             {
-                // Create a new PixelFix for main scene
                 GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
                 Transform gui = root?.transform.Find("GUI");
                 if (!gui)
@@ -363,17 +403,22 @@ namespace Jotunn.Managers
                 }
                 CreateCustomGUI(gui);
 
+                ResetInputBlock();
+
                 GUIInStart = false;
 
                 // Get the KeyHints transform for this scene to create new KeyHint objects
-                KeyHintContainer = (RectTransform)root?.transform.Find("GUI/PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints");
+                KeyHintContainer = (RectTransform)gui?.Find("PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints");
 
                 // Create all custom KeyHints
                 RegisterKeyHints();
-
             }
         }
 
+        /// <summary>
+        ///     Create GameObjects for mods to append their custom GUI to
+        /// </summary>
+        /// <param name="parent"></param>
         private void CreateCustomGUI(Transform parent)
         {
             CustomGUIFront = new GameObject("CustomGUIFront", typeof(RectTransform), typeof(GuiPixelFix));
