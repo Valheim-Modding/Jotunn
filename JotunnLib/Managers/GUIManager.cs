@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+using UnityEngine.U2D;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
@@ -65,7 +66,7 @@ namespace Jotunn.Managers
         ///     GUI prefabs again on each scene change.
         /// </summary>
         public static GameObject CustomGUIFront { get; private set; }
-        
+
         /// <summary>
         ///     GUI container behind Valheim's GUI elements with automatic scaling for
         ///     high res displays and pixel correction.
@@ -109,21 +110,16 @@ namespace Jotunn.Managers
         public Font AveriaSerifBold { get; private set; }
 
         /// <summary>
-        ///     Internal reference to Valheims TextureAtlas. 
-        ///     Used to get Valheim sprites in <see cref="CreateSpriteFromAtlas"/>.
+        ///     Internal SpriteAtlas holding the references to the sprites used in the helper methods.
         /// </summary>
-        internal Texture2D TextureAtlas { get; private set; }
+        internal SpriteAtlas UIAtlas;
 
         /// <summary>
-        ///     Internal reference to Valheims second TextureAtlas.
-        ///     Used to get Valheim sprites in <see cref="CreateSpriteFromAtlas2"/>.
+        ///     Internal SpriteAtlas holding the references to the sprites used in the helper methods.
         /// </summary>
-        internal Texture2D TextureAtlas2 { get; private set; }
+        internal SpriteAtlas IconAtlas;
 
-        /// <summary>
-        ///     Internal Dictionary holding the references to the sprites used in the helper methods.
-        /// </summary>
-        internal readonly Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
+        //internal readonly Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();
 
         /// <summary>
         ///     Internal Dictionary holding the references to the custom key hints added to the manager.
@@ -225,36 +221,16 @@ namespace Jotunn.Managers
             {
                 try
                 {
-                    // Texture Atlas aka Sprite Sheet
-                    var textures = Resources.FindObjectsOfTypeAll<Texture2D>();
-                    TextureAtlas = textures.LastOrDefault(x => x.name.StartsWith("sactx-2048x2048-Uncompressed-UIAtlas-"));
-                    TextureAtlas2 = textures.FirstOrDefault(x => x.name.StartsWith("sactx-2048x2048-Uncompressed-UIAtlas-"));
-                    if (TextureAtlas == null || TextureAtlas2 == null)
+                    UIAtlas = Resources.FindObjectsOfTypeAll<SpriteAtlas>().FirstOrDefault();
+                    if (UIAtlas == null)
                     {
-                        throw new Exception("Texture atlas not found");
+                        throw new Exception("UIAtlas not found");
                     }
 
-                    // Sprites
-                    string[] spriteNames = { "checkbox", "checkbox_marker", "woodpanel_trophys", "button", "panel_interior_bkg_128" };
-                    var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
-
-                    var notFound = false;
-                    foreach (var spriteName in spriteNames)
+                    IconAtlas = Resources.FindObjectsOfTypeAll<SpriteAtlas>().FirstOrDefault();
+                    if (IconAtlas == null)
                     {
-                        var sprite = sprites.FirstOrDefault(x => x.name == spriteName);
-                        notFound |= sprite == null;
-                        if (sprite == null)
-                        {
-                            Logger.LogError($"Sprite {spriteName} not found.");
-                            break;
-                        }
-
-                        Sprites.Add(spriteName, sprite);
-                    }
-
-                    if (notFound)
-                    {
-                        throw new Exception("Sprites not found");
+                        throw new Exception("IconAtlas not found");
                     }
 
                     // Fonts
@@ -358,7 +334,7 @@ namespace Jotunn.Managers
                 }
             }
         }
-        
+
         private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
             if (scene.name == "start")
@@ -458,7 +434,7 @@ namespace Jotunn.Managers
                 }
 
                 // Delete key hints with errors
-                foreach(string key in toDelete)
+                foreach (string key in toDelete)
                 {
                     KeyHints.Remove(key);
                 }
@@ -730,56 +706,27 @@ namespace Jotunn.Managers
         /// <returns>The sprite with given name</returns>
         public Sprite GetSprite(string spriteName)
         {
-            if (Sprites.ContainsKey(spriteName))
+            Sprite ret = UIAtlas.GetSprite(spriteName);
+            if (ret != null)
             {
-                return Sprites[spriteName];
+                return ret;
             }
 
-            var sprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault(x => x.name == spriteName);
-            if (sprite != null)
+            ret = IconAtlas.GetSprite(spriteName);
+            if (ret != null)
             {
-                Sprites.Add(spriteName, sprite);
-                return sprite;
+                return ret;
             }
 
-            Logger.LogError($"Sprite {spriteName} not found.");
+            ret = PrefabManager.Cache.GetPrefab<Sprite>(spriteName);
+            if (ret != null)
+            {
+                return ret;
+            }
+
+            Logger.LogWarning($"Sprite {spriteName} not found.");
 
             return null;
-        }
-
-        /// <summary>
-        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas atlas.
-        /// </summary>
-        /// <param name="rect">Rect on atlas texture</param>
-        /// <param name="pivot">pivot</param>
-        /// <param name="pixelsPerUnit"></param>
-        /// <param name="extrude"></param>
-        /// <param name="meshType"></param>
-        /// <param name="slice"></param>
-        /// <returns>The newly created sprite</returns>
-        public Sprite CreateSpriteFromAtlas(
-            Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
-            SpriteMeshType meshType = SpriteMeshType.FullRect, Vector4 slice = new Vector4())
-        {
-            return Sprite.Create(TextureAtlas, rect, pivot, pixelsPerUnit, extrude, meshType, slice);
-        }
-
-        /// <summary>
-        ///     Get sprite low level fashion from sactx-2048x2048-Uncompressed-UIAtlas atlas
-        ///     (not much used ingame or old textures).
-        /// </summary>
-        /// <param name="rect">Rect on atlas texture</param>
-        /// <param name="pivot">pivot</param>
-        /// <param name="pixelsPerUnit"></param>
-        /// <param name="extrude"></param>
-        /// <param name="meshType"></param>
-        /// <param name="slice"></param>
-        /// <returns>The newly created sprite</returns>
-        public Sprite CreateSpriteFromAtlas2(
-            Rect rect, Vector2 pivot, float pixelsPerUnit = 50f, uint extrude = 0,
-            SpriteMeshType meshType = SpriteMeshType.FullRect, Vector4 slice = new Vector4())
-        {
-            return Sprite.Create(TextureAtlas2, rect, pivot, pixelsPerUnit, extrude, meshType, slice);
         }
 
         /// <summary>
@@ -1311,8 +1258,9 @@ namespace Jotunn.Managers
 
             button.transform.SetParent(input.transform, false);
             button.GetComponent<Button>().image = button.GetComponent<Image>();
-            button.GetComponent<Image>().sprite = CreateSpriteFromAtlas(new Rect(0, 2048 - 156, 139, 36), new Vector2(0.5f, 0.5f), 50f, 0, SpriteMeshType.FullRect,
-                new Vector4(5, 5, 5, 5));
+            //button.GetComponent<Image>().sprite = CreateSpriteFromAtlas(new Rect(0, 2048 - 156, 139, 36), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect,
+            //    new Vector4(5, 5, 5, 5));
+            button.GetComponent<Image>().sprite = GetSprite("text_field");
 
             var bindString = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleCenter();
             bindString.GetComponent<Text>().text = "";
@@ -1408,8 +1356,9 @@ namespace Jotunn.Managers
         {
             var go = field.gameObject;
 
-            go.GetComponent<Image>().sprite = CreateSpriteFromAtlas(new Rect(0, 2048 - 156, 139, 36), new Vector2(0.5f, 0.5f), 50f, 0, SpriteMeshType.FullRect,
-                new Vector4(5, 5, 5, 5));
+            //go.GetComponent<Image>().sprite = CreateSpriteFromAtlas(new Rect(0, 2048 - 156, 139, 36), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect,
+            //    new Vector4(5, 5, 5, 5));
+            go.GetComponent<Image>().sprite = GetSprite("text_field");
             go.transform.Find("Placeholder").GetComponent<Text>().font = AveriaSerifBold;
             go.transform.Find("Text").GetComponent<Text>().font = AveriaSerifBold;
             go.transform.Find("Text").GetComponent<Text>().color = new Color(1, 1, 1, 1);
