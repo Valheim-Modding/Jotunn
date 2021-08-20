@@ -136,6 +136,7 @@ The [GUIManager](xref:Jotunn.Managers.GUIManager) also comes with some useful in
 - Font AveriaSerif
 - Font AveriaSerifBold (the default Valheim font)
 - Color ValheimOrange
+- ColorBlock ValheimScrollbarHandleColorBlock
 
 ## Custom GUI Components
 
