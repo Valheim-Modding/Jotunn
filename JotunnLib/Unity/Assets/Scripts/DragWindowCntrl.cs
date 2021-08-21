@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Jotunn.GUI
 {
@@ -7,6 +8,24 @@ namespace Jotunn.GUI
     /// </summary>
     public class DragWindowCntrl : MonoBehaviour
     {
+        /// <summary>
+        ///     Add this MonoBehaviour to a GameObject and register the EventTrigger for it
+        /// </summary>
+        /// <param name="go"></param>
+        public static void ApplyDragWindowCntrl(GameObject go)
+        {
+            DragWindowCntrl drag = go.AddComponent<DragWindowCntrl>();
+            EventTrigger trigger = go.AddComponent<EventTrigger>();
+            EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
+            beginDragEntry.eventID = EventTriggerType.BeginDrag;
+            beginDragEntry.callback.AddListener((_) => { drag.BeginDrag(); });
+            trigger.triggers.Add(beginDragEntry);
+            EventTrigger.Entry dragEntry = new EventTrigger.Entry();
+            dragEntry.eventID = EventTriggerType.Drag;
+            dragEntry.callback.AddListener((_) => { drag.Drag(); });
+            trigger.triggers.Add(dragEntry);
+        }
+
         private RectTransform window;
         //delta drag
         private Vector2 delta;

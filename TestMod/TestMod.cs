@@ -223,18 +223,7 @@ namespace TestMod
 
                 // Add the Jötunn draggable Component to the panel
                 // Note: This is normally automatically added when using CreateWoodpanel()
-                DragWindowCntrl drag = TestPanel.AddComponent<DragWindowCntrl>();
-
-                // To actually be able to drag the panel, Unity events must be registered
-                EventTrigger trigger = TestPanel.AddComponent<EventTrigger>();
-                EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
-                beginDragEntry.eventID = EventTriggerType.BeginDrag;
-                beginDragEntry.callback.AddListener((data) => { drag.BeginDrag(); });
-                trigger.triggers.Add(beginDragEntry);
-                EventTrigger.Entry dragEntry = new EventTrigger.Entry();
-                dragEntry.eventID = EventTriggerType.Drag;
-                dragEntry.callback.AddListener((data) => { drag.Drag(); });
-                trigger.triggers.Add(dragEntry);
+                DragWindowCntrl.ApplyDragWindowCntrl(TestPanel);
 
                 // Create the text object
                 GameObject textObject = GUIManager.Instance.CreateText(

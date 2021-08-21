@@ -980,16 +980,7 @@ namespace Jotunn.Managers
             // Add draggable component
             if (draggable)
             {
-                DragWindowCntrl drag = newPanel.AddComponent<DragWindowCntrl>();
-                EventTrigger trigger = newPanel.AddComponent<EventTrigger>();
-                EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
-                beginDragEntry.eventID = EventTriggerType.BeginDrag;
-                beginDragEntry.callback.AddListener((_) => { drag.BeginDrag(); });
-                trigger.triggers.Add(beginDragEntry);
-                EventTrigger.Entry dragEntry = new EventTrigger.Entry();
-                dragEntry.eventID = EventTriggerType.Drag;
-                dragEntry.callback.AddListener((_) => { drag.Drag(); });
-                trigger.triggers.Add(dragEntry);
+                DragWindowCntrl.ApplyDragWindowCntrl(newPanel);
             }
 
             return newPanel;

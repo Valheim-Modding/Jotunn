@@ -144,22 +144,11 @@ Jötunn provides helper Components for mods to use when handling with custom GUI
 
 ### Draggable windows
 
-[DragWindowCntrl](xref:Jotunn.GUI.DragWindowCntrl) is a simple Unity Component to make GUI elements draggable with the mouse. Does respect the window limits.
+[DragWindowCntrl](xref:Jotunn.GUI.DragWindowCntrl) is a simple Unity Component to make GUI elements draggable with the mouse. Does respect the window limits. To apply it to your own GameObject, simply call the static factory method:
 
 ```cs
 // Add the Jötunn draggable Component to the panel
-DragWindowCntrl drag = TestPanel.AddComponent<DragWindowCntrl>();
-
-// To actually be able to drag the panel, Unity events must be registered with the Component
-EventTrigger trigger = TestPanel.AddComponent<EventTrigger>();
-EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
-beginDragEntry.eventID = EventTriggerType.BeginDrag;
-beginDragEntry.callback.AddListener((data) => { drag.BeginDrag(); });
-trigger.triggers.Add(beginDragEntry);
-EventTrigger.Entry dragEntry = new EventTrigger.Entry();
-dragEntry.eventID = EventTriggerType.Drag;
-dragEntry.callback.AddListener((data) => { drag.Drag(); });
-trigger.triggers.Add(dragEntry);
+DragWindowCntrl.ApplyDragWindowCntrl(TestPanel);
 ```
 
 ## Example
@@ -198,18 +187,7 @@ private void TogglePanel()
 
         // Add the Jötunn draggable Component to the panel
         // Note: This is normally automatically added when using CreateWoodpanel()
-        DragWindowCntrl drag = TestPanel.AddComponent<DragWindowCntrl>();
-
-        // To actually be able to drag the panel, Unity events must be registered
-        EventTrigger trigger = TestPanel.AddComponent<EventTrigger>();
-        EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
-        beginDragEntry.eventID = EventTriggerType.BeginDrag;
-        beginDragEntry.callback.AddListener((data) => { drag.BeginDrag(); });
-        trigger.triggers.Add(beginDragEntry);
-        EventTrigger.Entry dragEntry = new EventTrigger.Entry();
-        dragEntry.eventID = EventTriggerType.Drag;
-        dragEntry.callback.AddListener((data) => { drag.Drag(); });
-        trigger.triggers.Add(dragEntry);
+        DragWindowCntrl.ApplyDragWindowCntrl(TestPanel);
 
         // Create the text object
         GameObject textObject = GUIManager.Instance.CreateText(
