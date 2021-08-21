@@ -10,6 +10,7 @@ using HarmonyLib;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
 {
@@ -73,7 +74,7 @@ namespace Jotunn.Managers
             // Hook menu for ConfigManager integration
             On.Menu.IsVisible += Menu_IsVisible;
 
-            // Hook fejd for ConfigReloaded event subscription
+            // Hook Fejd for ConfigReloaded event subscription
             On.FejdStartup.Awake += FejdStartup_Awake;
 
             // Hook start scene to reset config
@@ -83,9 +84,8 @@ namespace Jotunn.Managers
             if (!ConfigurationManager)
             {
                 Logger.LogDebug("Trying to hook config manager");
-
-                var result = new Dictionary<string, BaseUnityPlugin>();
-                ConfigurationManager = GameObject.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray()
+                
+                ConfigurationManager = Object.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray()
                     .FirstOrDefault(x => x.Info?.Metadata?.GUID == "com.bepis.bepinex.configurationmanager");
 
                 if (ConfigurationManager)

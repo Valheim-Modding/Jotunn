@@ -7,10 +7,11 @@ namespace Jotunn.DebugUtils
     {
         private void Awake()
         {
-            Main.RootObject.AddComponent<ZoneCounter>();
             Main.RootObject.AddComponent<Eraser>();
             Main.RootObject.AddComponent<HoverInfo>();
+            Main.RootObject.AddComponent<UEInputBlocker>();
             Main.RootObject.AddComponent<ZNetDiddelybug>();
+            Main.RootObject.AddComponent<ZoneCounter>();
         }
 
         private void Update()
