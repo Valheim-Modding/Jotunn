@@ -12,8 +12,10 @@ namespace Jotunn.DebugUtils
             Main.RootObject.AddComponent<UEInputBlocker>();
             Main.RootObject.AddComponent<ZNetDiddelybug>();
             Main.RootObject.AddComponent<ZoneCounter>();
-        }
 
+            On.Console.Awake += (orig, self) => { orig(self); self.m_cheat = true; };
+        }
+        
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.F6))
