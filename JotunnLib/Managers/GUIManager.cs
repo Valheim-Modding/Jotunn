@@ -1390,14 +1390,21 @@ namespace Jotunn.Managers
         /// <param name="field"></param>
         public void ApplyInputFieldStyle(InputField field)
         {
-            var go = field.gameObject;
+            if ((bool)field.targetGraphic && field.targetGraphic is Image imageField)
+            {
+                imageField.sprite = GetSprite("text_field");
+            }
 
-            //go.GetComponent<Image>().sprite = CreateSpriteFromAtlas(new Rect(0, 2048 - 156, 139, 36), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect,
-            //    new Vector4(5, 5, 5, 5));
-            go.GetComponent<Image>().sprite = GetSprite("text_field");
-            go.transform.Find("Placeholder").GetComponent<Text>().font = AveriaSerifBold;
-            go.transform.Find("Text").GetComponent<Text>().font = AveriaSerifBold;
-            go.transform.Find("Text").GetComponent<Text>().color = new Color(1, 1, 1, 1);
+            if ((bool)field.placeholder && field.placeholder is Text placeholder)
+            {
+                placeholder.font = AveriaSerifBold;
+            }
+
+            if ((bool)field.textComponent)
+            {
+                field.textComponent.font = AveriaSerifBold;
+                field.textComponent.color = new Color(1, 1, 1, 1);
+            }
         }
 
         /// <summary>
@@ -1419,12 +1426,17 @@ namespace Jotunn.Managers
             toggle.toggleTransition = Toggle.ToggleTransition.Fade;
             toggle.colors = tinter;
 
-            toggle.gameObject.transform.Find("Background").GetComponent<Image>().sprite = GetSprite("checkbox");
+            if ((bool)toggle.targetGraphic && toggle.targetGraphic is Image background)
+            {
+                background.sprite = GetSprite("checkbox");
+            }
 
-            toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().color = new Color(1f, 0.678f, 0.103f, 1f);
-
-            toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().sprite = GetSprite("checkbox_marker");
-            toggle.gameObject.transform.Find("Background/Checkmark").GetComponent<Image>().maskable = true;
+            if ((bool)toggle.graphic && toggle.graphic is Image checkbox)
+            {
+                checkbox.color = new Color(1f, 0.678f, 0.103f, 1f);
+                checkbox.sprite = GetSprite("checkbox_marker");
+                checkbox.maskable = true;
+            }
         }
     }
 }
