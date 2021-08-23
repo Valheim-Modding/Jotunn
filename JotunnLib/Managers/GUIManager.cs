@@ -146,7 +146,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Global indicator if the input is currently blocked by the GUIManager.
         /// </summary>
-        public static bool InputBlocked { get; private set; }
+        internal static bool InputBlocked;
 
         /// <summary>
         ///     Counter to track multiple block requests.
