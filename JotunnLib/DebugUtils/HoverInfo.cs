@@ -131,7 +131,7 @@ namespace Jotunn.DebugUtils
 
         private void UpdateHoverPieceProperties(Piece piece)
         {
-            if (!piece || !piece.TryGetComponent(out WearNTear wearNTear))
+            if (!piece || !piece.m_nview || !piece.m_nview.IsValid() || !piece.TryGetComponent(out WearNTear wearNTear))
             {
                 _hoverPiecePanel.SetActive(false);
                 return;
