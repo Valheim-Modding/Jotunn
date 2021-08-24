@@ -373,6 +373,10 @@ namespace TestMod
             // Add a client side custom input key for the EvilSword
             EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
 
+            // Test KeyboardShortcut
+            Config.Bind<KeyboardShortcut>(JotunnTestModConfigSection, "KeyboardShortcutValue",
+                new KeyboardShortcut(KeyCode.A, KeyCode.LeftControl), "Testing how KeyboardShortcut behaves");
+
         }
 
         // React on changed settings
