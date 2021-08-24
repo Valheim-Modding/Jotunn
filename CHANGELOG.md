@@ -1,6 +1,6 @@
 ﻿# Changelog
 
-## Version 2.3.0
+## Version 2.2.4
 * ModCompatibility now disconnects clients from vanilla servers when the client runs enforceable mods
 * Added a brand new Mod Settings GUI, accessible from the menu list
 * Don't show server side configs in the GUI when a client has no admin rights
