@@ -86,7 +86,13 @@ namespace Jotunn.Configs
             {
                 piece.m_name = Name;
             }
-
+            
+            // Set description if given
+            if (!string.IsNullOrEmpty(Description))
+            {
+                piece.m_description = Description;
+            }
+            
             // Set icon if overriden
             if (Icon != null)
             {
