@@ -2,6 +2,7 @@
 
 ## Version 2.2.5
 * LocalizationManager.TryTranslate searches custom localization first with english fallback
+* Custom piece categories can be translated, token is always "jotunn_cat_\<customCategory\>"
 
 ## Version 2.2.4
 * ModCompatibility now disconnects clients from vanilla servers when the client runs enforceable mods
