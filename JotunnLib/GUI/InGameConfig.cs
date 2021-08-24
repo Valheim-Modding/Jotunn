@@ -152,6 +152,16 @@ namespace Jotunn.GUI
                             Logger.LogWarning($"Exception caught while creating the Mod Settings window: {ex}");
                         }
                     });
+                    Transform left = modSettings.Find("LeftKnot");
+                    if (left != null)
+                    {
+                        left.localPosition = new Vector2(left.localPosition.x - 10f, left.localPosition.y);
+                    }
+                    Transform right = modSettings.Find("RightKnot");
+                    if (right != null)
+                    {
+                        right.localPosition = new Vector2(right.localPosition.x + 10f, right.localPosition.y);
+                    }
                     settingsFound = true;
                 }
                 else if (settingsFound)
