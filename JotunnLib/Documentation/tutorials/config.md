@@ -143,3 +143,7 @@ SynchronizationManager.OnAdminStatusChanged += () =>
     Jotunn.Logger.LogMessage($"Admin status sync event received: {(SynchronizationManager.Instance.PlayerIsAdmin ? "You're admin now" : "Downvoted, boy")}");
 };
 ```
+
+## Translating the menu entry
+
+You can provide localized versions of the menu entry string. Please see our [localization tutorial](localization.md#localizable-content-in-jötunn) on how to do this.

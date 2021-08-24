@@ -108,3 +108,10 @@ This is how the JSON file looks like which is deliverd as a TextAsset in the ass
 ## "Localization added" event
 
 After Jötunn has added all custom Localization to Valheim's own Localization dictionary, it fires an event [LocalizationManager.OnLocalizationAdded](xref:Jotunn.Managers.LocalizationManager.OnLocalizationAdded). You can subscribe to this event if you have code that needs to be sure that all Localization was added before.
+
+## Localizable content in Jötunn
+
+Some content added by Jötunn can be translated. The fallback english translation is provided by Jötunn itself. But you can add translations for other languages using this tokens:
+
+* jotunn_modsettings: Menu entry to access the [mod settings](config.md) dialogue.
+* jotunn_cat_\<category\>: [Custom category](pieces.md#adding-custom-piece-table-categories-to-vanilla-tables) localization, replace \<category\> with the lower case name of your added category (e.g. jotunn_cat_mycat).

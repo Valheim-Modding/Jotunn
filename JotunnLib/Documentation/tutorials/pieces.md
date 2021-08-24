@@ -201,3 +201,7 @@ private void AddItemsWithConfigs()
 
 The result is a tool with two completely custom categories:<br />
 ![Custom Piece Tables Categories](../images/data/customTableCategories.png)
+
+## Translating your custom categories
+
+You can provide localized versions of your custom categories. Please see our [localization tutorial](localization.md#localizable-content-in-jötunn) on how to do this.
