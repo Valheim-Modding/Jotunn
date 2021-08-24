@@ -133,8 +133,12 @@ namespace Jotunn.Managers
             if (Localizations.ContainsKey(language))
             {
                 Logger.LogInfo($"Adding tokens for language '{language}'");
-
-                AddTokens(self, language);
+                
+                foreach (var pair in Localizations[language])
+                {
+                    Logger.LogDebug("Added translation: " + pair.Key + " -> " + pair.Value);
+                    self.AddWord(pair.Key, pair.Value);
+                }
             }
 
             InvokeOnLocalizationAdded();
@@ -228,7 +232,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="token">token / key</param>
         /// <param name="value">value that will be printed in the game</param>
-        /// <param name="language"></param>
+        /// <param name="language">language ID for this token</param>
         /// <param name="forceReplace">replace the token if it already exists</param>
         public void AddToken(string token, string value, string language = DefaultLanguage, bool forceReplace = false)
         {
@@ -414,23 +418,6 @@ namespace Jotunn.Managers
 
                 languageDict.Remove(token);
                 languageDict.Add(token, (string) tokenValue);
-            }
-        }
-
-        /// <summary>
-        ///     Add tokens to the respective localization.
-        /// </summary>
-        /// <param name="self"></param>
-        /// <param name="language"></param>
-        private void AddTokens(Localization self, string language)
-        {
-            if (Localizations.TryGetValue(language, out var tokens))
-            {
-                foreach (var pair in tokens)
-                {
-                    Logger.LogDebug("\tAdded translation: " + pair.Key + " -> " + pair.Value);
-                    self.AddWord(pair.Key, pair.Value);
-                }
             }
         }
     }
