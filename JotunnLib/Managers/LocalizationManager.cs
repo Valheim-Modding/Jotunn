@@ -234,23 +234,25 @@ namespace Jotunn.Managers
         /// <param name="value">value that will be printed in the game</param>
         /// <param name="language">language ID for this token</param>
         /// <param name="forceReplace">replace the token if it already exists</param>
-        public void AddToken(string token, string value, string language = DefaultLanguage, bool forceReplace = false)
+        public void AddToken(string token, string value, string language, bool forceReplace = false)
         {
             Dictionary<string, string> languageDict = null;
 
             if (token.Any(x => LocalizationEndChars.Contains(x)))
             {
-                Logger.LogError($"Token '{token}' must not contain an end char ({LocalizationEndChars}).");
+                Logger.LogWarning($"Token '{token}' must not contain an end char ({LocalizationEndChars}).");
                 return;
             }
+
+            string cleanedToken = token.TrimStart(TokenFirstChar);
 
             if (!forceReplace)
             {
                 if (Localizations.TryGetValue(language, out languageDict))
                 {
-                    if (languageDict.Keys.Contains(token))
+                    if (languageDict.Keys.Contains(cleanedToken))
                     {
-                        Logger.LogError($"Token named '{token}' already exist!");
+                        Logger.LogWarning($"Token named '{cleanedToken}' already exist!");
                         return;
                     }
                 }
@@ -258,8 +260,8 @@ namespace Jotunn.Managers
 
             languageDict ??= GetLanguageDict(language);
 
-            languageDict.Remove(token.TrimStart(TokenFirstChar));
-            languageDict.Add(token.TrimStart(TokenFirstChar), value);
+            languageDict.Remove(cleanedToken);
+            languageDict.Add(cleanedToken, value);
         }
 
         /// <summary>
@@ -330,10 +332,11 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Tries to translate a word with <see cref="Localization"/>, handles null and tokenized input
+        ///     Tries to translate a word with the custom dictionary or <see cref="Localization.Translate"/>,
+        ///     handles null and tokenized input.
         /// </summary>
-        /// <param name="word"></param>
-        /// <returns></returns>
+        /// <param name="word">Single word to translate</param>
+        /// <returns>Translated word in Player language or english as a fallback</returns>
         public string TryTranslate(string word)
         {
             var toTranslate = word;
@@ -346,6 +349,20 @@ namespace Jotunn.Managers
             if (toTranslate[0] == TokenFirstChar)
             {
                 toTranslate = toTranslate.Substring(1);
+            }
+
+            string playerLang = PlayerPrefs.GetString("language", string.Empty);
+            if (!string.IsNullOrEmpty(playerLang) &&
+                Localizations.ContainsKey(playerLang) &&
+                Localizations[playerLang].TryGetValue(word, out string translated))
+            {
+                return translated;
+            }
+
+            if (Localizations.ContainsKey(DefaultLanguage) &&
+                Localizations[DefaultLanguage].TryGetValue(word, out string fallback))
+            {
+                return fallback;
             }
 
             return Localization.instance.Translate(toTranslate);
