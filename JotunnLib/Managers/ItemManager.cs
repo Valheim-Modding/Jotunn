@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using Jotunn.Utils;
-using Jotunn.Entities;
-using Jotunn.Configs;
-using UnityEngine.SceneManagement;
-using MonoMod.RuntimeDetour;
 using System.Linq;
+using Jotunn.Configs;
+using Jotunn.Entities;
+using Jotunn.Utils;
+using MonoMod.RuntimeDetour;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Jotunn.Managers
 {
@@ -160,7 +160,7 @@ namespace Jotunn.Managers
             {
                 PrefabManager.Instance.RemovePrefab(item.ItemPrefab.name);
             }
-            
+
             if (item.Recipe != null)
             {
                 RemoveRecipe(item.Recipe);
@@ -246,7 +246,7 @@ namespace Jotunn.Managers
         public void RemoveRecipe(CustomRecipe recipe)
         {
             Recipes.Remove(recipe);
-            
+
             if (recipe.Recipe != null && ObjectDB.instance != null &&
                 ObjectDB.instance.m_recipes.Contains(recipe.Recipe))
             {
@@ -421,7 +421,7 @@ namespace Jotunn.Managers
         /// <param name="objectDB"></param>
         private void RegisterCustomRecipes(ObjectDB objectDB)
         {
-            if (Recipes.Count > 0)
+            if (Recipes.Any())
             {
                 Logger.LogInfo($"Adding {Recipes.Count} custom recipes to the ObjectDB");
 
@@ -459,7 +459,7 @@ namespace Jotunn.Managers
                 }
 
                 // Delete custom recipes with errors
-                foreach(var recipe in toDelete)
+                foreach (var recipe in toDelete)
                 {
                     Recipes.Remove(recipe);
                 }
@@ -472,7 +472,7 @@ namespace Jotunn.Managers
         /// <param name="objectDB"></param>
         private void RegisterCustomStatusEffects(ObjectDB objectDB)
         {
-            if (StatusEffects.Count > 0)
+            if (StatusEffects.Any())
             {
                 Logger.LogInfo($"Adding {StatusEffects.Count} custom status effects to the ObjectDB");
 
@@ -514,7 +514,7 @@ namespace Jotunn.Managers
         /// </summary>
         private void RegisterCustomItemConversions()
         {
-            if (ItemConversions.Count > 0)
+            if (ItemConversions.Any())
             {
                 Logger.LogInfo($"Adding {ItemConversions.Count} custom item conversions");
 

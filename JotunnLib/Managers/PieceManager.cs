@@ -1,9 +1,9 @@
-﻿using Jotunn.Configs;
-using Jotunn.Entities;
-using MonoMod.RuntimeDetour;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jotunn.Configs;
+using Jotunn.Entities;
+using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -45,7 +45,7 @@ namespace Jotunn.Managers
 
         internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private Piece.PieceCategory PieceCategoryMax = Piece.PieceCategory.Max;
-        
+
         private const float PieceCategorySize = 540f;
         private const float PieceCategoryTabSize = 120f;
 
@@ -170,7 +170,7 @@ namespace Jotunn.Managers
             if (Enum.IsDefined(typeof(Piece.PieceCategory), name))
             {
                 categoryID = (Piece.PieceCategory)Enum.Parse(typeof(Piece.PieceCategory), name);
-            } 
+            }
             else if (PieceCategories.ContainsKey(name))
             {
                 categoryID = PieceCategories[name];
@@ -466,7 +466,7 @@ namespace Jotunn.Managers
             {
                 Logger.LogError($"Error toggling piece selection window: {ex}");
             }
-            
+
             orig(self, player, forceUpdateAllBuildStatuses);
         }
 
@@ -534,13 +534,13 @@ namespace Jotunn.Managers
             {
                 throw new Exception($"Prefab {prefab.name} has no Piece component attached");
             }
-            
+
             var table = GetPieceTable(pieceTable);
             if (table == null)
             {
                 throw new Exception($"Could not find PieceTable {pieceTable}");
             }
-            
+
             if (table.m_pieces.Contains(prefab))
             {
                 Logger.LogDebug($"Already added piece {prefab.name}");
@@ -597,7 +597,7 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (Pieces.Count() > 0)
+            if (Pieces.Any())
             {
                 try
                 {

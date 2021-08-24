@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -243,7 +244,7 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (Prefabs.Count > 0)
+            if (Prefabs.Any())
             {
                 Logger.LogInfo($"Adding {Prefabs.Count} custom prefabs to the ZNetScene");
 

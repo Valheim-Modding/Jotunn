@@ -87,7 +87,7 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (Buttons.Count > 0)
+            if (Buttons.Any())
             {
                 Logger.LogInfo($"Registering {Buttons.Count} custom inputs");
 
