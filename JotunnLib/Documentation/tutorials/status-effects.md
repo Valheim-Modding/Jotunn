@@ -21,12 +21,17 @@ private void AddStatusEffects()
     effect.m_stopMessageType = MessageHud.MessageType.Center;
     effect.m_stopMessage = "$evilsword_effectstop";
 
-    evilSwordEffect = new CustomStatusEffect(effect, fixReference: false);  // We dont need to fix refs here, because no mocks were used
-    ItemManager.Instance.AddStatusEffect(evilSwordEffect);
+    EvilSwordEffect = new CustomStatusEffect(effect, fixReference: false);  // We dont need to fix refs here, because no mocks were used
+    ItemManager.Instance.AddStatusEffect(EvilSwordEffect);
 }
 ```
 
-In our [JotunnModExample](https://github.com/Valheim-Modding/Jotunn/JotunnModExample) this effect is added as the equip effect to the "EvilSword" so it activates when equipping the sword from the inventory.
+In our [JotunnModExample](https://github.com/Valheim-Modding/JotunnModExample) this effect is added as the equip effect to the "EvilSword" so it activates when equipping the sword from the inventory.
+
+```cs
+// Add our custom status effect to it
+itemDrop.m_itemData.m_shared.m_equipStatusEffect = EvilSwordEffect.StatusEffect;
+```
 
 The result is an icon displaying that the status effect is active.
 
