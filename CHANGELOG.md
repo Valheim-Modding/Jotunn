@@ -2,8 +2,9 @@
 
 ## Version 2.2.5
 * LocalizationManager.TryTranslate searches custom localization first with english fallback
-* Custom piece categories can be translated, token is always "jotunn_cat_\<customCategory\>"
+* Custom piece categories and the "Mod Settings" menu entry can be translated, for token names see https://valheim-modding.github.io/Jotunn/tutorials/localization.html#localizable-content-in-jötunn
 * Fixed a bug where custom piece descriptions were not imported (thx Dominowood371)
+* Fixed config "Order" attribute interpretation in the "Mod Settings" (thx Digitalroot)
 
 ## Version 2.2.4
 * ModCompatibility now disconnects clients from vanilla servers when the client runs enforceable mods
