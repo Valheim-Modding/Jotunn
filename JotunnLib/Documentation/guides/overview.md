@@ -16,6 +16,7 @@ Jötunn is continually improving and we have lots of features planned for the fu
 - Reordering of bones for character wearable assets reposition.
 - Network synchronization of assets and configurations.
 - UI system to create panels with interactable content.
+- JSON integration with SimpleJSON.
 
 # Example and Stub
 
