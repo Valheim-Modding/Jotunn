@@ -364,15 +364,15 @@ namespace Jotunn.GUI
                 preferredHeight += sectiontext.GetHeight();
 
                 // Iterate over all entries of this section
-                foreach (var entry in kv.OrderByDescending(x =>
+                foreach (var entry in kv.OrderBy(x =>
                 {
                     if (x.Value.Description.Tags.FirstOrDefault(y => y is ConfigurationManagerAttributes) is
                         ConfigurationManagerAttributes cma)
                     {
-                        return cma.Order ?? 0;
+                        return cma.Order ?? int.MaxValue;
                     }
 
-                    return 0;
+                    return int.MaxValue;
                 }).ThenBy(x => x.Key.Key))
                 {
                     // Create config entry
