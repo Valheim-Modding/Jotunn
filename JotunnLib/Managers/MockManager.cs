@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
 {
@@ -23,7 +24,6 @@ namespace Jotunn.Managers
 
         internal GameObject MockPrefabContainer;
 
-
         public void Init()
         {
             MockPrefabContainer = new GameObject("MockPrefabs");
@@ -36,28 +36,28 @@ namespace Jotunn.Managers
         internal T CreateMockedPrefab<T>(string prefabName) where T : Component
         {
             string name = PrefabExtension.JVLMockPrefix + prefabName;
-            Transform transform = MockPrefabContainer.transform.Find(name);
 
-            if (transform)
+            Transform transform = MockPrefabContainer.transform.Find(name);
+            if (transform != null)
             {
-                Logger.LogDebug($"Mock {name} already registered");
-                
                 return transform.gameObject.GetComponent<T>();
             }
-            else
+
+            GameObject g = new GameObject(name);
+            g.transform.parent = MockPrefabContainer.transform;
+            g.SetActive(false);
+
+            T mock = g.AddComponent<T>();
+            if (mock == null)
             {
-                Logger.LogDebug($"Mock {name} created");
-                
-                var g = new GameObject(name);
-                g.transform.SetParent(MockPrefabContainer.transform);
-                g.SetActive(false);
-
-                var mock = g.AddComponent<T>();
-                mock.name = PrefabExtension.JVLMockPrefix + prefabName;
-                
-                return mock;
+                Logger.LogWarning($"Could not create mock for prefab {prefabName} of type {typeof(T)}");
+                return null;
             }
+            mock.name = name;
 
+            Logger.LogDebug($"Mock {name} created");
+
+            return mock;
         }
 
         private void RemoveMockPrefabs(On.ObjectDB.orig_Awake orig, ObjectDB self)
@@ -72,7 +72,7 @@ namespace Jotunn.Managers
 
                     foreach (var transform in MockPrefabContainer.transform)
                     {
-                        GameObject.Destroy(((Transform)transform).gameObject);
+                        Object.Destroy(((Transform)transform).gameObject);
                     }
                 }
             }
