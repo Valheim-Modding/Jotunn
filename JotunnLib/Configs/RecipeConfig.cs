@@ -44,9 +44,9 @@ namespace Jotunn.Configs
         public string RepairStation { get; set; } = string.Empty;
 
         /// <summary>
-        ///     The minimum required level for the crafting station. Defaults to <c>0</c>.
+        ///     The minimum required level for the crafting station. Defaults to <c>1</c>.
         /// </summary>
-        public int MinStationLevel { get; set; } = 0;
+        public int MinStationLevel { get; set; } = 1;
 
         /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
