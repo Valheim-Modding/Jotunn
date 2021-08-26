@@ -844,7 +844,7 @@ namespace TestMod
                 Icon = TestSprite,
                 PieceTable = "Hammer",
                 ExtendStation = "piece_workbench", // Test station extension
-                Category = "Lulzies"  // Test custom category
+                Category = "Lulzies."  // Test custom category
             });
 
             if (CP != null)
@@ -862,7 +862,7 @@ namespace TestMod
                 Icon = TestSprite,
                 PieceTable = "Hammer",
                 ExtendStation = "piece_workbench", // Test station extension
-                Category = "Lulzies"  // Test custom category
+                Category = "Lulzies."  // Test custom category
             });
 
             if (CP != null)

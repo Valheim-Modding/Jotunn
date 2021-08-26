@@ -429,7 +429,9 @@ namespace Jotunn.Managers
                     UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
                     handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
 
-                    string tokenName = $"jotunn_cat_{category.Key}".ToLower();
+                    char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
+                    string tokenCategory = string.Concat(category.Key.ToLower().Split(forbiddenCharsArray));
+                    string tokenName = $"jotunn_cat_{tokenCategory}";
                     LocalizationManager.Instance.AddToken(tokenName, category.Key, true);
 
                     newNames.Add(LocalizationManager.Instance.TryTranslate(tokenName));

@@ -33,7 +33,10 @@ namespace Jotunn.Managers
         /// </summary>
         public const string CommunityTranslationFileName = "community_translation.json";
 
-        private const string LocalizationEndChars = " (){}[]+-!?/\\\\&%,.:-=<>\n";
+        /// <summary>
+        ///     String of chars not allowed in a token string
+        /// </summary>
+        internal const string ForbiddenChars = " (){}[]+-!?/\\\\&%,.:-=<>\n";
 
         private static LocalizationManager _instance;
         /// <summary>
@@ -238,9 +241,9 @@ namespace Jotunn.Managers
         {
             Dictionary<string, string> languageDict = null;
 
-            if (token.Any(x => LocalizationEndChars.Contains(x)))
+            if (token.Any(x => ForbiddenChars.Contains(x)))
             {
-                Logger.LogWarning($"Token '{token}' must not contain an end char ({LocalizationEndChars}).");
+                Logger.LogWarning($"Token '{token}' must not contain following chars: '{ForbiddenChars}'.");
                 return;
             }
 
