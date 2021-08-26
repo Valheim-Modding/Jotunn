@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## Version 2.2.6
+* Fixed category translations with special chars in the category
+* Hardened Mock creation a bit
+
 ## Version 2.2.5
 * LocalizationManager.TryTranslate searches custom localization first with english fallback
 * Custom piece categories and the "Mod Settings" menu entry can be translated, for token names see https://valheim-modding.github.io/Jotunn/tutorials/localization.html#localizable-content-in-jötunn
