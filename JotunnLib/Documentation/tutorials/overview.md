@@ -14,8 +14,8 @@ Each section will have examples showing how this is done. All of the examples sh
 
 ### Assets
 
-* [Asset Creation](asset-creation.md): Create new Assets with Unity and prepare them to be imported into Valheim using JotunnLib.
-* [Asset Loading](asset-loading.md): Load Assets into your plugin using JotunnLib.
+* [Asset Creation](asset-creation.md): Create new Assets with Unity and prepare them to be imported into Valheim using Jötunn.
+* [Asset Loading](asset-loading.md): Load Assets into your plugin using Jötunn.
 * [Asset Mocking](asset-mocking.md): Duplicate and modify Assets without the need to include copyrighted content in your plugin.
 * [Kitbashing](kitbash.md): Use individual parts of vanilla prefabs to assemble your custom assets.
 * [Reordering Bones](bonereorder.md): Reoder and preserve bone order so player attached objects preserve their position.
