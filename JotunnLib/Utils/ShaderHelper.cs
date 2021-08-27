@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jotunn.Utils
@@ -26,11 +24,11 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
-        ///     Get a list of all <see cref="Material"/> of a GameObject and its childs
+        ///     Get a list of all renderer <see cref="Material"/> of a GameObject and its childs
         /// </summary>
         /// <param name="gameObject">Parent GameObject</param>
         /// <returns>List of <see cref="Material"/></returns>
-        public static List<Material> GetMaterials(GameObject gameObject)
+        public static List<Material> GetRendererMaterials(GameObject gameObject)
         {
             List<Material> result = new List<Material>();
             foreach (Renderer randy in GetRenderers(gameObject))
@@ -39,13 +37,13 @@ namespace Jotunn.Utils
             }
             return result;
         }
-        
+
         /// <summary>
-        ///     Get a list of all shared <see cref="Material"/> of a GameObject and its childs
+        ///     Get a list of all shared renderer <see cref="Material"/> of a GameObject and its childs
         /// </summary>
         /// <param name="gameObject">Parent GameObject</param>
         /// <returns>List of <see cref="Material"/></returns>
-        public static List<Material> GetSharedMaterials(GameObject gameObject)
+        public static List<Material> GetRendererSharedMaterials(GameObject gameObject)
         {
             List<Material> result = new List<Material>();
             foreach (Renderer randy in GetRenderers(gameObject))
@@ -54,13 +52,13 @@ namespace Jotunn.Utils
             }
             return result;
         }
-        
+
         /// <summary>
-        ///     Get a list of all normal and shared <see cref="Material"/> of a GameObject and its childs
+        ///     Get a list of all normal and shared renderer <see cref="Material"/> of a GameObject and its childs
         /// </summary>
         /// <param name="gameObject">Parent GameObject</param>
         /// <returns>List of <see cref="Material"/></returns>
-        public static List<Material> GetAllMaterials(GameObject gameObject)
+        public static List<Material> GetAllRendererMaterials(GameObject gameObject)
         {
             List<Material> result = new List<Material>();
             foreach (Renderer randy in GetRenderers(gameObject))

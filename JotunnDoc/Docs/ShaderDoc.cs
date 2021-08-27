@@ -37,7 +37,7 @@ namespace JotunnDoc.Docs
             {
                 Dictionary<string, Material> mats = new Dictionary<string, Material>();
 
-                foreach (Material mat in ShaderHelper.GetAllMaterials(prefab))
+                foreach (Material mat in ShaderHelper.GetAllRendererMaterials(prefab))
                 {
                     const string materialInstance = " (Instance)";
                     string name = mat.name;

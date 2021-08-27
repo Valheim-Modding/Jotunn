@@ -12,7 +12,6 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using TestMod.ConsoleCommands;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -108,6 +107,32 @@ namespace TestMod
 
             // Hook GetVersionString for ext version string compat test
             On.Version.GetVersionString += Version_GetVersionString;
+
+            ItemManager.OnVanillaItemsAvailable += ItemManager_OnVanillaItemsAvailable;
+        }
+
+        private void ItemManager_OnVanillaItemsAvailable()
+        {
+            GameObject shield = PrefabManager.Cache.GetPrefab<GameObject>("Beehive");
+            var mats = ShaderHelper.GetRendererMaterials(shield);
+            foreach (Material mat in mats)
+            {
+                Jotunn.Logger.LogMessage(mat.shader.ToString());
+                foreach (string prop in mat.shaderKeywords)
+                {
+                    Jotunn.Logger.LogMessage(prop);
+                }
+
+                foreach (string prop in mat.GetTexturePropertyNames())
+                {
+                    Jotunn.Logger.LogMessage(prop);
+                }
+
+                for (int i = 0; i < mat.shader.GetPropertyCount(); ++i)
+                {
+                    Jotunn.Logger.LogMessage(mat.shader.GetPropertyName(i));
+                }
+            }
         }
 
         // Called every frame
@@ -417,9 +442,9 @@ namespace TestMod
             TogglePanelButton = new ButtonConfig { Name = "TestMod_Menu", Key = KeyCode.Home, ActiveInCustomGUI = true };
             InputManager.Instance.AddButton(ModGUID, TogglePanelButton);
 
-            CreateColorPickerButton = new ButtonConfig { Name = "TestMod_Color", Key = KeyCode.PageUp};
+            CreateColorPickerButton = new ButtonConfig { Name = "TestMod_Color", Key = KeyCode.PageUp };
             InputManager.Instance.AddButton(ModGUID, CreateColorPickerButton);
-            CreateGradientPickerButton = new ButtonConfig { Name = "TestMod_Gradient", Key = KeyCode.PageDown};
+            CreateGradientPickerButton = new ButtonConfig { Name = "TestMod_Gradient", Key = KeyCode.PageDown };
             InputManager.Instance.AddButton(ModGUID, CreateGradientPickerButton);
 
             // Add key bindings backed by a config value
@@ -433,7 +458,7 @@ namespace TestMod
             InputManager.Instance.AddButton(ModGUID, EvilSwordSpecialButton);
 
             // Add a key binding to test skill raising
-            RaiseSkillButton = new ButtonConfig { Name = "TestMod_RaiseSkill", Key = KeyCode.Insert, ActiveInGUI = true, ActiveInCustomGUI = true};
+            RaiseSkillButton = new ButtonConfig { Name = "TestMod_RaiseSkill", Key = KeyCode.Insert, ActiveInGUI = true, ActiveInCustomGUI = true };
             InputManager.Instance.AddButton(ModGUID, RaiseSkillButton);
         }
 
