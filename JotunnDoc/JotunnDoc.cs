@@ -23,6 +23,7 @@ namespace JotunnDoc
                 new PieceDoc(),
                 new RecipeDoc(),
                 new RPCDoc(),
+                new ShaderDoc(),
                 new SpriteDoc(),
                 new StatusEffectDoc()
             };

@@ -3,3 +3,5 @@ This section will go into details about how prefabs work in Valheim. For a tutor
 
 ## List of all Valheim prefabs
 See the [list of all prefabs currently in the game](prefab-list.md).
+
+For prefabs with shaders there is a [list of all shaders and their properties](shader-list.md)
