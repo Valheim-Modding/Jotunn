@@ -68,5 +68,33 @@ namespace Jotunn.Utils
             }
             return result;
         }
+        
+        /// <summary>
+        ///     Dumps all shader information of a GameObject and its childs onto debug log
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public static void ShaderDump(GameObject gameObject)
+        {
+            var mats = GetRendererMaterials(gameObject);
+            foreach (Material mat in mats)
+            {
+                Logger.LogDebug(mat.shader.ToString());
+                foreach (string prop in mat.shaderKeywords)
+                {
+                    Logger.LogDebug(prop);
+                }
+
+                foreach (string prop in mat.GetTexturePropertyNames())
+                {
+                    Logger.LogDebug(prop);
+                }
+
+                for (int i = 0; i < mat.shader.GetPropertyCount(); ++i)
+                {
+                    Logger.LogDebug(mat.shader.GetPropertyName(i));
+                }
+            }
+        }
+
     }
 }
