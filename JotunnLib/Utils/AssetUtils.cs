@@ -103,7 +103,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Load an assembly-embedded <see cref="AssetBundle" />
         /// </summary>
-        /// <param name="bundleName">Name of the bundle</param>
+        /// <param name="bundleName">Name of the bundle. Folders are point-seperated e.g. folder/bundle becomes folder.bundle</param>
         /// <param name="resourceAssembly">Executing assembly</param>
         /// <returns></returns>
         public static AssetBundle LoadAssetBundleFromResources(string bundleName, Assembly resourceAssembly)
@@ -129,6 +129,43 @@ namespace Jotunn.Utils
             using (var stream = resourceAssembly.GetManifestResourceStream(resourceName))
             {
                 ret = AssetBundle.LoadFromStream(stream);
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        ///     Load an assembly-embedded file as a char string />
+        /// </summary>
+        /// <param name="fileName">Name of the file. Folders are point-seperated e.g. folder/file.json becomes folder.file.json</param>
+        /// <param name="resourceAssembly">Executing assembly</param>
+        /// <returns></returns>
+        public static string LoadTextFromResources(string fileName, Assembly resourceAssembly)
+        {
+            if (resourceAssembly == null)
+            {
+                throw new ArgumentNullException("Parameter resourceAssembly can not be null.");
+            }
+
+            string resourceName = null;
+            try
+            {
+                resourceName = resourceAssembly.GetManifestResourceNames().Single(str => str.EndsWith(fileName));
+            } catch (Exception) { }
+
+            if (resourceName == null)
+            {
+                Logger.LogError($"File {fileName} not found in assembly manifest");
+                return null;
+            }
+
+            string ret;
+            using (var stream = resourceAssembly.GetManifestResourceStream(resourceName))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    ret = reader.ReadToEnd();
+                }
             }
 
             return ret;
