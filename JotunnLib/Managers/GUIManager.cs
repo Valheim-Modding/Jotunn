@@ -1493,12 +1493,12 @@ namespace Jotunn.Managers
 
             var rectTransform = (RectTransform)scrollbar.transform;
 
-            if (scrollbar.direction is Scrollbar.Direction.LeftToRight or Scrollbar.Direction.RightToLeft)
+            if (scrollbar.direction == Scrollbar.Direction.LeftToRight || scrollbar.direction == Scrollbar.Direction.RightToLeft)
             {
                 rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, 10);
             }
 
-            if (scrollbar.direction is Scrollbar.Direction.BottomToTop or Scrollbar.Direction.TopToBottom)
+            if (scrollbar.direction == Scrollbar.Direction.BottomToTop || scrollbar.direction == Scrollbar.Direction.TopToBottom)
             {
                 rectTransform.sizeDelta = new Vector2(10, rectTransform.sizeDelta.y);
             }
