@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## Version 2.2.7
+* Added loading of dll embedded text assets (thx MSchmoecker)
+* Added material and shader dumps to the docs (https://valheim-modding.github.io/Jotunn/data/prefabs/overview.html)
+
 ## Version 2.2.6
 * Fixed category translations with special chars in the category
 * Hardened Mock creation a bit
