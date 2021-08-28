@@ -292,17 +292,7 @@ namespace Jotunn.Managers
 
                     // Base woodpanel prefab
                     var woodpanel = new GameObject("BaseWoodpanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-                    woodpanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-                    woodpanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-                    woodpanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 0f);
-
-                    woodpanel.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
-                    woodpanel.GetComponent<Image>().type = Image.Type.Sliced;
-                    woodpanel.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
-                    woodpanel.GetComponent<Image>().material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
-
-                    woodpanel.layer = UILayer;
-
+                    ApplyWoodpanelStyle(woodpanel.transform);
                     PrefabManager.Instance.AddPrefab(woodpanel);
 
                     // Color and Gradient picker
@@ -1311,6 +1301,25 @@ namespace Jotunn.Managers
             bindString.transform.SetParent(button.transform, false);
 
             return input;
+        }
+
+        /// <summary>
+        ///     Apply Valheim style to a woodpanel.
+        /// </summary>
+        /// <param name="woodpanel"></param>
+        public void ApplyWoodpanelStyle(Transform woodpanel)
+        {
+            woodpanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+            woodpanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+            woodpanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 0f);
+
+            woodpanel.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
+            woodpanel.GetComponent<Image>().type = Image.Type.Sliced;
+            woodpanel.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+            woodpanel.GetComponent<Image>().material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
+            woodpanel.GetComponent<Image>().color = Color.white;
+
+            woodpanel.gameObject.layer = UILayer;
         }
 
         /// <summary>
