@@ -1445,3 +1445,5 @@ YagluthDrop|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTr
 YmirRemains|<ul><li>Transform</li><li>Rigidbody</li><li>ZNetView</li><li>ZSyncTransform</li><li>ItemDrop</li><li>ParticleSystemRenderer</li><li>ParticleSystem</li><li>LODGroup</li></ul>|
 BaseButton|<ul><li>RectTransform</li><li>CanvasRenderer</li><li>Image</li><li>Button</li><li>ButtonSfx</li></ul>|
 BaseWoodpanel|<ul><li>RectTransform</li><li>CanvasRenderer</li><li>Image</li></ul>|
+ColorPicker|<ul><li>RectTransform</li><li>CanvasRenderer</li><li>Image</li><li>DragWindowCntrl</li><li>ColorPicker</li><li>EventTrigger</li></ul>|
+GradientPicker|<ul><li>RectTransform</li><li>CanvasRenderer</li><li>Image</li><li>DragWindowCntrl</li><li>EventTrigger</li></ul>|

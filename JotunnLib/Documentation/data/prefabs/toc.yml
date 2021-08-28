@@ -1,4 +1,6 @@
 ﻿- name: Prefab list
   href: prefab-list.md
+- name: Material list
+  href: material-list.md
 - name: Shader list
   href: shader-list.md

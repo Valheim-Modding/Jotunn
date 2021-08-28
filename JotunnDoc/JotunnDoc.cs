@@ -18,6 +18,7 @@ namespace JotunnDoc
             {
                 new InputDoc(),
                 new ItemDoc(),
+                new MaterialDoc(),
                 new PrefabDoc(),
                 new PieceTableDoc(),
                 new PieceDoc(),
