@@ -1447,5 +1447,67 @@ namespace Jotunn.Managers
                 checkbox.maskable = true;
             }
         }
+
+        /// <summary>
+        ///     Apply Valheim style to a <see cref="ScrollRect"/> component.
+        /// </summary>
+        /// <param name="scrollRect"> Component to apply the style to </param>
+        public void ApplyScrollRectStyle(ScrollRect scrollRect)
+        {
+            scrollRect.scrollSensitivity = 40f;
+
+            if ((bool)scrollRect.horizontalScrollbar)
+            {
+                ApplyScrollbarStyle(scrollRect.horizontalScrollbar);
+            }
+
+            if ((bool)scrollRect.verticalScrollbar)
+            {
+                ApplyScrollbarStyle(scrollRect.verticalScrollbar);
+            }
+
+            if (scrollRect.TryGetComponent<Image>(out var image))
+            {
+                image.color = new Color(0f, 0f, 0f, 0.564f);
+            }
+        }
+
+        /// <summary>
+        ///     Apply Valheim style to a <see cref="Scrollbar"/> component.
+        /// </summary>
+        /// <param name="scrollbar"> Component to apply the style to </param>
+        public void ApplyScrollbarStyle(Scrollbar scrollbar)
+        {
+            var tinter = new ColorBlock()
+            {
+                colorMultiplier = 1f,
+                disabledColor = new Color(0.784f, 0.784f, 0.784f, 0.502f),
+                fadeDuration = 0.1f,
+                highlightedColor = new Color(1f, 0.784f, 0.088f, 1f),
+                normalColor = new Color(0.926f, 0.645f, 0.34f, 1f),
+                pressedColor = new Color(0.838f, 0.647f, 0.03f, 1f),
+                selectedColor = new Color(1f, 0.786f, 0.088f, 1f)
+            };
+            scrollbar.transition = Selectable.Transition.ColorTint;
+            scrollbar.colors = tinter;
+
+            var rectTransform = (RectTransform)scrollbar.transform;
+
+            if (scrollbar.direction is Scrollbar.Direction.LeftToRight or Scrollbar.Direction.RightToLeft)
+            {
+                rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, 10);
+            }
+
+            if (scrollbar.direction is Scrollbar.Direction.BottomToTop or Scrollbar.Direction.TopToBottom)
+            {
+                rectTransform.sizeDelta = new Vector2(10, rectTransform.sizeDelta.y);
+            }
+
+            if (scrollbar.TryGetComponent<Image>(out var image))
+            {
+                image.color = new Color(0.191f, 0.125f, 0.078f, 1f);
+                image.raycastTarget = true;
+            }
+        }
     }
 }
