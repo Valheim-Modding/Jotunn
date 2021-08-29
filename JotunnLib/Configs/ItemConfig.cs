@@ -127,6 +127,7 @@ namespace Jotunn.Configs
                 // Set variants if a StyleTex is provided
                 if (StyleTex != null)
                 {
+                    ExtEquipment.Enable();
                     foreach (var rend in ShaderHelper.GetRenderers(prefab))
                     {
                         foreach (var mat in rend.materials)

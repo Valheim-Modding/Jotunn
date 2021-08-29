@@ -80,6 +80,9 @@ namespace TestMod
 
             // Clone an item with variants and replace them
             ItemManager.OnVanillaItemsAvailable += AddVariants;
+            
+            // Create a custom item with variants
+            ItemManager.OnVanillaItemsAvailable += AddCustomVariants;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -107,8 +110,6 @@ namespace TestMod
 
             // Hook GetVersionString for ext version string compat test
             On.Version.GetVersionString += Version_GetVersionString;
-
-            ItemManager.OnItemsRegisteredFejd += AddCustomVariants;
         }
 
         // Called every frame
