@@ -292,17 +292,7 @@ namespace Jotunn.Managers
 
                     // Base woodpanel prefab
                     var woodpanel = new GameObject("BaseWoodpanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-                    woodpanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-                    woodpanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-                    woodpanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 0f);
-
-                    woodpanel.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
-                    woodpanel.GetComponent<Image>().type = Image.Type.Sliced;
-                    woodpanel.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
-                    woodpanel.GetComponent<Image>().material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
-
-                    woodpanel.layer = UILayer;
-
+                    ApplyWoodpanelStyle(woodpanel.transform);
                     PrefabManager.Instance.AddPrefab(woodpanel);
 
                     // Color and Gradient picker
@@ -1314,6 +1304,25 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Apply Valheim style to a woodpanel.
+        /// </summary>
+        /// <param name="woodpanel"></param>
+        public void ApplyWoodpanelStyle(Transform woodpanel)
+        {
+            woodpanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+            woodpanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+            woodpanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 0f);
+
+            woodpanel.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
+            woodpanel.GetComponent<Image>().type = Image.Type.Sliced;
+            woodpanel.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+            woodpanel.GetComponent<Image>().material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
+            woodpanel.GetComponent<Image>().color = Color.white;
+
+            woodpanel.gameObject.layer = UILayer;
+        }
+
+        /// <summary>
         ///     Apply valheim style to a <see cref="Button"/> Component
         /// </summary>
         /// <param name="button"><see cref="Button"/> Component to apply the style to</param>
@@ -1436,6 +1445,68 @@ namespace Jotunn.Managers
                 checkbox.color = new Color(1f, 0.678f, 0.103f, 1f);
                 checkbox.sprite = GetSprite("checkbox_marker");
                 checkbox.maskable = true;
+            }
+        }
+
+        /// <summary>
+        ///     Apply Valheim style to a <see cref="ScrollRect"/> component.
+        /// </summary>
+        /// <param name="scrollRect"> Component to apply the style to </param>
+        public void ApplyScrollRectStyle(ScrollRect scrollRect)
+        {
+            scrollRect.scrollSensitivity = 40f;
+
+            if ((bool)scrollRect.horizontalScrollbar)
+            {
+                ApplyScrollbarStyle(scrollRect.horizontalScrollbar);
+            }
+
+            if ((bool)scrollRect.verticalScrollbar)
+            {
+                ApplyScrollbarStyle(scrollRect.verticalScrollbar);
+            }
+
+            if (scrollRect.TryGetComponent<Image>(out var image))
+            {
+                image.color = new Color(0f, 0f, 0f, 0.564f);
+            }
+        }
+
+        /// <summary>
+        ///     Apply Valheim style to a <see cref="Scrollbar"/> component.
+        /// </summary>
+        /// <param name="scrollbar"> Component to apply the style to </param>
+        public void ApplyScrollbarStyle(Scrollbar scrollbar)
+        {
+            var tinter = new ColorBlock()
+            {
+                colorMultiplier = 1f,
+                disabledColor = new Color(0.784f, 0.784f, 0.784f, 0.502f),
+                fadeDuration = 0.1f,
+                highlightedColor = new Color(1f, 0.784f, 0.088f, 1f),
+                normalColor = new Color(0.926f, 0.645f, 0.34f, 1f),
+                pressedColor = new Color(0.838f, 0.647f, 0.03f, 1f),
+                selectedColor = new Color(1f, 0.786f, 0.088f, 1f)
+            };
+            scrollbar.transition = Selectable.Transition.ColorTint;
+            scrollbar.colors = tinter;
+
+            var rectTransform = (RectTransform)scrollbar.transform;
+
+            if (scrollbar.direction == Scrollbar.Direction.LeftToRight || scrollbar.direction == Scrollbar.Direction.RightToLeft)
+            {
+                rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, 10);
+            }
+
+            if (scrollbar.direction == Scrollbar.Direction.BottomToTop || scrollbar.direction == Scrollbar.Direction.TopToBottom)
+            {
+                rectTransform.sizeDelta = new Vector2(10, rectTransform.sizeDelta.y);
+            }
+
+            if (scrollbar.TryGetComponent<Image>(out var image))
+            {
+                image.color = new Color(0.191f, 0.125f, 0.078f, 1f);
+                image.raycastTarget = true;
             }
         }
     }
