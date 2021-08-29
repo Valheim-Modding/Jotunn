@@ -741,13 +741,13 @@ namespace Jotunn.Managers
         /// <returns>The sprite with given name</returns>
         public Sprite GetSprite(string spriteName)
         {
-            Sprite ret = UIAtlas.GetSprite(spriteName);
+            Sprite ret = UIAtlas?.GetSprite(spriteName);
             if (ret != null)
             {
                 return ret;
             }
 
-            ret = IconAtlas.GetSprite(spriteName);
+            ret = IconAtlas?.GetSprite(spriteName);
             if (ret != null)
             {
                 return ret;
