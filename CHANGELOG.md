@@ -2,6 +2,7 @@
 
 ## Version 2.2.7
 * Added loading of dll embedded text assets (thx MSchmoecker)
+* Added "ApplyStyle" methods for Scrollbars (thx MSchmoecker)
 * Added material and shader dumps to the docs (https://valheim-modding.github.io/Jotunn/data/prefabs/overview.html)
 
 ## Version 2.2.6
