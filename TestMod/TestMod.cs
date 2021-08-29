@@ -108,31 +108,7 @@ namespace TestMod
             // Hook GetVersionString for ext version string compat test
             On.Version.GetVersionString += Version_GetVersionString;
 
-            ItemManager.OnVanillaItemsAvailable += ItemManager_OnVanillaItemsAvailable;
-        }
-
-        private void ItemManager_OnVanillaItemsAvailable()
-        {
-            GameObject shield = PrefabManager.Cache.GetPrefab<GameObject>("Beehive");
-            var mats = ShaderHelper.GetRendererMaterials(shield);
-            foreach (Material mat in mats)
-            {
-                Jotunn.Logger.LogMessage(mat.shader.ToString());
-                foreach (string prop in mat.shaderKeywords)
-                {
-                    Jotunn.Logger.LogMessage(prop);
-                }
-
-                foreach (string prop in mat.GetTexturePropertyNames())
-                {
-                    Jotunn.Logger.LogMessage(prop);
-                }
-
-                for (int i = 0; i < mat.shader.GetPropertyCount(); ++i)
-                {
-                    Jotunn.Logger.LogMessage(mat.shader.GetPropertyName(i));
-                }
-            }
+            ItemManager.OnItemsRegisteredFejd += AddCustomVariants;
         }
 
         // Called every frame
@@ -1009,10 +985,6 @@ namespace TestMod
                 {
                     Name = "$lulz_shield",
                     Description = "$lulz_shield_desc",
-                    Requirements = new RequirementConfig[]
-                    {
-                        new RequirementConfig{ Item = "Wood", Amount = 1 }
-                    },
                     Icons = new Sprite[]
                     {
                         var1, var2
@@ -1029,6 +1001,36 @@ namespace TestMod
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
                 ItemManager.OnVanillaItemsAvailable -= AddVariants;
+            }
+        }
+        
+        private void AddCustomVariants()
+        {
+            try
+            {
+                CustomItem CI = new CustomItem("item_swordvariants", "SwordBronze", new ItemConfig
+                {
+                    Name = "Lulz Sword",
+                    Description = "Lulz on a stick",
+                    Icons = new Sprite[]
+                    {
+                        GUIManager.Instance.GetSprite("shield_banded0"),
+                        GUIManager.Instance.GetSprite("shield_banded1"),
+                        GUIManager.Instance.GetSprite("shield_banded2"),
+                        GUIManager.Instance.GetSprite("shield_banded3")
+                    },
+                    StyleTex = PrefabManager.Cache.GetPrefab<Texture2D>("shieldwood_paint")
+                });
+                ItemManager.Instance.AddItem(CI);
+            }
+            catch (Exception ex)
+            {
+                Jotunn.Logger.LogError($"Error while adding variant item: {ex}");
+            }
+            finally
+            {
+                // You want that to run only once, Jotunn has the item cached for the game session
+                ItemManager.OnVanillaItemsAvailable -= AddCustomVariants;
             }
         }
 

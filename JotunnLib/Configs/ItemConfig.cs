@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Jotunn.Entities;
+using Jotunn.Utils;
 
 namespace Jotunn.Configs
 {
@@ -67,7 +68,7 @@ namespace Jotunn.Configs
         ///     Texture holding the variants different styles.
         /// </summary>
         public Texture2D StyleTex { get; set; } = null;
-
+        
         /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
@@ -126,19 +127,23 @@ namespace Jotunn.Configs
                 // Set variants if a StyleTex is provided
                 if (StyleTex != null)
                 {
-                    itemDrop.m_itemData.m_shared.m_variants = Icons.Length;
-
-                    Renderer[] renderer = prefab.GetComponentsInChildren<Renderer>();
-                    foreach (var rend in renderer)
+                    foreach (var rend in ShaderHelper.GetRenderers(prefab))
                     {
-                        if (rend.materials != null)
+                        foreach (var mat in rend.materials)
                         {
-                            foreach (var mat in rend.materials)
+                            if (mat.shader != Shader.Find("Custom/Creature"))
                             {
-                                if (mat.HasProperty("_StyleTex"))
-                                {
-                                    mat.SetTexture("_StyleTex", StyleTex);
-                                }
+                                mat.shader = Shader.Find("Custom/Creature");
+                            }
+
+                            if (mat.HasProperty("_StyleTex"))
+                            {
+                                itemDrop.m_itemData.m_shared.m_variants = Icons.Length;
+                                rend.gameObject.GetOrAddComponent<ItemStyle>();
+                                mat.EnableKeyword("_USESTYLES_ON");
+                                mat.SetFloat("_Style", 0f);
+                                mat.SetFloat("_UseStyles", 1f);
+                                mat.SetTexture("_StyleTex", StyleTex);
                             }
                         }
                     }
