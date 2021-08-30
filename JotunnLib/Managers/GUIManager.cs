@@ -1087,7 +1087,6 @@ namespace Jotunn.Managers
 
             // Create viewport
             GameObject viewPort = new GameObject("Viewport", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            viewPort.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
             viewPort.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
             viewPort.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
             viewPort.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
@@ -1197,9 +1196,9 @@ namespace Jotunn.Managers
             GameObject content = new GameObject("Content", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(Canvas), typeof(GraphicRaycaster), typeof(ContentSizeFitter));
 
             content.GetComponent<Canvas>().planeDistance = 5.2f;
-            content.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
-            content.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-            content.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
+            content.GetComponent<RectTransform>().anchorMin = new Vector2(0f, 1f);
+            content.GetComponent<RectTransform>().anchorMax = new Vector2(0f, 1f);
+            content.GetComponent<RectTransform>().pivot = new Vector2(0f, 1f);
             content.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 2 * handleDistanceToBorder - handleSize);
             content.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 2 * handleDistanceToBorder - handleSize);
 

@@ -195,7 +195,6 @@ namespace Jotunn.Utils
                 new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f), 650f, 400f);
 
             var tf = scroll.transform.Find("Scroll View/Viewport/Content") as RectTransform;
-            tf.localPosition = new Vector3(325f, 0f);
 
             GUIManager.Instance.CreateText(
                 "Remote version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 

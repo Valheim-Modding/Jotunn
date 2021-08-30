@@ -50,7 +50,7 @@ namespace Jotunn
     {
         internal static GameObject SetToTextHeight(this GameObject go)
         {
-            go.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, go.GetComponentInChildren<Text>().preferredHeight);
+            go.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, go.GetComponentInChildren<Text>().preferredHeight + 3f);
             return go;
         }
 
