@@ -525,6 +525,10 @@ namespace Jotunn.Managers
             // Delete custom pieces with errors
             foreach (var piece in toDelete)
             {
+                if (piece.PiecePrefab)
+                {
+                    PrefabManager.Instance.DestroyPrefab(piece.PiecePrefab.name);
+                }
                 RemovePiece(piece);
             }
         }

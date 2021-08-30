@@ -363,6 +363,10 @@ namespace Jotunn.Managers
                 // Delete custom items with errors
                 foreach (var item in toDelete)
                 {
+                    if (item.ItemPrefab)
+                    {
+                        PrefabManager.Instance.DestroyPrefab(item.ItemPrefab.name);
+                    }
                     RemoveItem(item);
                 }
             }
