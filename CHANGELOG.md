@@ -5,6 +5,7 @@
 * Added "ApplyStyle" methods for Scrollbars (thx MSchmoecker)
 * Added material and shader dumps to the docs (https://valheim-modding.github.io/Jotunn/data/prefabs/overview.html)
 * Fixed the ScrollView pivot in GUIManager.CreateScrollView
+* Added removal of failed items/pieces from ZNetScene
 
 ## Version 2.2.6
 * Fixed category translations with special chars in the category
