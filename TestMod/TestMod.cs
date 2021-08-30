@@ -152,6 +152,14 @@ namespace TestMod
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
                 }
+
+                if (Input.GetKeyDown(KeyCode.J))
+                {
+                    var pre = PrefabManager.Instance.GetPrefab("GoblinArcher");
+                    var go = Object.Instantiate(pre, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity);
+                    Object.Destroy(go.GetComponent<MonsterAI>());
+                    go.GetComponent<VisEquipment>().SetRightItem("item_swordvariants");
+                }
             }
         }
 
@@ -1009,20 +1017,49 @@ namespace TestMod
         {
             try
             {
-                CustomItem CI = new CustomItem("item_swordvariants", "SwordBronze", new ItemConfig
+                Sprite var1 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var1.png");
+                Sprite var2 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var2.png");
+                Sprite var3 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var3.png");
+                Sprite var4 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var4.png");
+                Texture2D styleTex = AssetUtils.LoadTexture("TestMod/Assets/test_varpaint.png");
+
+                CustomItem sword = new CustomItem("item_swordvariants", "SwordBronze", new ItemConfig
                 {
                     Name = "Lulz Sword",
                     Description = "Lulz on a stick",
                     Icons = new Sprite[]
                     {
-                        GUIManager.Instance.GetSprite("shield_banded0"),
-                        GUIManager.Instance.GetSprite("shield_banded1"),
-                        GUIManager.Instance.GetSprite("shield_banded2"),
-                        GUIManager.Instance.GetSprite("shield_banded3")
+                        var1, var2, var3, var4
                     },
-                    StyleTex = PrefabManager.Cache.GetPrefab<Texture2D>("shieldwood_paint")
+                    StyleTex = styleTex
                 });
-                ItemManager.Instance.AddItem(CI);
+                ItemManager.Instance.AddItem(sword);
+                
+                CustomItem cape = new CustomItem("item_lulzcape", "CapeLinen", new ItemConfig
+                {
+                    Name = "Lulz Cape",
+                    Description = "Lulz to the rescue",
+                    Icons = new Sprite[]
+                    {
+                        var1, var2, var3, var4
+                    },
+                    StyleTex = styleTex
+                });
+                ItemManager.Instance.AddItem(cape);
+                
+                
+                Texture2D styleTexArmor = AssetUtils.LoadTexture("TestMod/Assets/test_varpaintarmor.png");
+                CustomItem chest = new CustomItem("item_lulzchest", "ArmorIronChest", new ItemConfig
+                {
+                    Name = "Lulz Armor",
+                    Description = "Lol, that hit",
+                    Icons = new Sprite[]
+                    {
+                        var1, var2, var3, var4
+                    },
+                    StyleTex = styleTexArmor
+                });
+                ItemManager.Instance.AddItem(chest);
             }
             catch (Exception ex)
             {
