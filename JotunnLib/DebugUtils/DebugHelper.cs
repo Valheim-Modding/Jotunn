@@ -14,6 +14,7 @@ namespace Jotunn.DebugUtils
             Main.RootObject.AddComponent<ZoneCounter>();
 
             On.Console.Awake += (orig, self) => { orig(self); self.m_cheat = true; };
+            On.Player.OnSpawned += (orig, self) => { self.m_firstSpawn = false; orig(self); };
         }
         
         private void Update()
