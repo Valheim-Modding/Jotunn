@@ -25,21 +25,6 @@ namespace Jotunn.Utils
             return typeof(IEnumerable).IsAssignableFrom(self) && self != typeof(string);
         }
 
-        public static PluginInfo GetPluginInfoFromType(Type type)
-        {
-            var callerAss = type.Assembly;
-            foreach (var p in BepInEx.Bootstrap.Chainloader.PluginInfos)
-            {
-                var pluginAssembly = p.Value.Instance.GetType().Assembly;
-                if (pluginAssembly == callerAss)
-                {
-                    return p.Value;
-                }
-            }
-
-            return null;
-        }
-
         // https://stackoverflow.com/a/21995826
         public static Type GetEnumeratedType(this Type type) =>
             type?.GetElementType() ?? 
@@ -62,6 +47,19 @@ namespace Jotunn.Utils
             }
 
             return method.Invoke(instance, args);
+        }
+        
+        public static T GetPrivateProperty<T>(object instance, string name)
+        {
+            PropertyInfo var = instance.GetType().GetProperty(name, BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (var == null)
+            {
+                Logger.LogError("Property " + name + " does not exist on type: " + instance.GetType());
+                return default(T);
+            }
+
+            return (T)var.GetValue(instance);
         }
 
         public static T GetPrivateField<T>(object instance, string name)

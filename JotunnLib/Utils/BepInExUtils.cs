@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
@@ -75,7 +76,7 @@ namespace Jotunn.Utils
                     }
                     continue;
                 }
-                
+
                 result.Add(plugin.Info.Metadata.GUID, plugin);
             }
 
@@ -83,18 +84,39 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
-        ///     Get a dependent plugin by its <see cref="Assembly"/>.
+        ///     Get <see cref="PluginInfo"/> from a <see cref="Type"/>
         /// </summary>
-        /// <param name="assembly">Assembly that plugin was loaded from</param>
-        /// <returns><see cref="BaseUnityPlugin"/> information for that plugin</returns>
-        public static BaseUnityPlugin GetDependentPlugin(Assembly assembly)
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static PluginInfo GetPluginInfoFromType(Type type)
         {
-            if (Plugins == null)
+            var callerAss = type.Assembly;
+            return GetPluginInfoFromAssembly(callerAss);
+        }
+
+        /// <summary>
+        ///     Get <see cref="PluginInfo"/> from an <see cref="Assembly"/>
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
+        public static PluginInfo GetPluginInfoFromAssembly(Assembly assembly)
+        {
+            //assembly.GetType(nameof(BepInPlugin)).
+            foreach (var p in BepInEx.Bootstrap.Chainloader.PluginInfos)
             {
-                CacheDependentPlugins();
+                /*var pluginAssembly = p.Value.GetType().Assembly;
+                if (pluginAssembly == assembly)
+                {
+                    return p.Value;
+                }*/
+                var typeName = ReflectionHelper.GetPrivateProperty<string>(p.Value, "TypeName");
+                if (assembly.GetType(typeName) != null)
+                {
+                    return p.Value;
+                }
             }
 
-            return Plugins.FirstOrDefault(plugin => plugin.GetType().Assembly == assembly);
+            return null;
         }
     }
 }
