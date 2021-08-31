@@ -177,7 +177,7 @@ namespace Jotunn.Managers
             }
             else
             {
-                categoryID = PieceCategories.Count() + Piece.PieceCategory.Max;
+                categoryID = PieceCategories.Count + Piece.PieceCategory.Max;
                 PieceCategories.Add(name, categoryID);
                 PieceCategoryMax++;
             }
