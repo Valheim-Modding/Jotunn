@@ -1,5 +1,8 @@
-﻿using Jotunn.Configs;
+﻿using System.Reflection;
+using BepInEx;
+using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -13,24 +16,29 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The prefab for this custom item.
         /// </summary>
-        public GameObject ItemPrefab { get; set; }
+        public GameObject ItemPrefab { get; }
 
         /// <summary>
-        ///     The <see cref="global::ItemDrop"/> component for this custom item as a shortcut. 
-        ///     Will not be added again to the prefab when replaced.
+        ///     The <see cref="global::ItemDrop"/> component for this custom item as a shortcut.
         /// </summary>
-        public ItemDrop ItemDrop { get; set; }
+        public ItemDrop ItemDrop { get; }
 
         /// <summary>
         ///     The <see cref="CustomRecipe"/> associated with this custom item. Is needed to craft
         ///     this item on a workbench or from the players crafting menu.
         /// </summary>
-        public CustomRecipe Recipe { get; set; }
+        public CustomRecipe Recipe { get; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
-        public bool FixReference { get; set; } = false;
+        public bool FixReference { get; set; }
+
+        /// <summary>
+        ///     Reference to the <see cref="BepInPlugin"/> which added this piece table.
+        /// </summary>
+        public BepInPlugin SourceMod { get; } =
+            BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
 
         /// <summary>
         ///     Custom item from a prefab.<br />
@@ -162,7 +170,7 @@ namespace Jotunn.Entities
                 Logger.LogError($"CustomItem {this} has no ItemDrop component");
                 valid = false;
             }
-            if (Recipe != null && ItemDrop.m_itemData.m_shared.m_icons.Length == 0)
+            if (Recipe != null && ItemDrop?.m_itemData.m_shared.m_icons.Length == 0)
             {
                 Logger.LogError($"CustomItem {this} has no icon");
                 valid = false;

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Reflection;
+using BepInEx;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -24,6 +27,12 @@ namespace Jotunn.Entities
         ///     Config for the KitbashObject
         /// </summary>
         public KitbashConfig Config { get; internal set; }
+
+        /// <summary>
+        ///     Reference to the <see cref="BepInPlugin"/> which added this kitbash object.
+        /// </summary>
+        public BepInPlugin SourceMod { get; } =
+            BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
 
         /// <inheritdoc/>
         public override string ToString()

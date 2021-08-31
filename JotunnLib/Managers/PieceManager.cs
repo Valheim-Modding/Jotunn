@@ -155,7 +155,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Add a new <see cref="global::Piece.PieceCategory"/> by name. A new category
+        ///     Add a new <see cref="Piece.PieceCategory"/> by name. A new category
         ///     gets assigned a random integer for internal use. If you pass a vanilla category
         ///     the actual integer value of the enum is returned. 
         /// </summary>

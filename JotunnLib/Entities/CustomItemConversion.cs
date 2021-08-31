@@ -1,6 +1,8 @@
-﻿using Jotunn.Configs;
+﻿using System.Reflection;
+using BepInEx;
+using Jotunn.Configs;
 using Jotunn.Managers;
-using UnityEngine;
+using Jotunn.Utils;
 
 namespace Jotunn.Entities
 {
@@ -33,22 +35,23 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Type of the item conversion. Defines to which station the conversion is added.
         /// </summary>
-        public ConversionType Type { get; set; }
+        public ConversionType Type { get; }
 
         /// <summary>
         ///     Config of the item conversion. Depends on the <see cref="Type"/> of the conversion.
         /// </summary>
-        public ConversionConfig Config { get; set; }
+        public ConversionConfig Config { get; }
 
         /// <summary>
         ///     Indicator if the conversion needs fixing.
         /// </summary>
-        internal bool fixReference = true;
+        internal bool FixReference = true;
 
         /// <summary>
         ///     Actual ItemConversion type as <see cref="object"/>. Needs to be cast according to <see cref="ConversionType"/>.
         /// </summary>
-        internal object ItemConversion { 
+        internal object ItemConversion
+        {
             get
             {
                 return Type switch
@@ -63,6 +66,12 @@ namespace Jotunn.Entities
         private CookingStation.ItemConversion _cookingConversion;
         private Fermenter.ItemConversion _fermenterConversion;
         private Smelter.ItemConversion _smelterConversion;
+        
+        /// <summary>
+        ///     Reference to the <see cref="BepInPlugin"/> which added this conversion.
+        /// </summary>
+        public BepInPlugin SourceMod { get; } =
+            BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
 
         /// <summary>
         ///     Create a custom item conversion. Depending on the config class this custom

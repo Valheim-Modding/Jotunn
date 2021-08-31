@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Reflection;
+using BepInEx;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -17,20 +20,25 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The prefab for this custom piece table.
         /// </summary>
-        public GameObject PieceTablePrefab { get; set; }
+        public GameObject PieceTablePrefab { get; }
 
         /// <summary>
-        ///     The <see cref="global::PieceTable"/> component for this custom piece table as a shortcut. 
-        ///     Will not be added again to the prefab when replaced.
+        ///     The <see cref="global::PieceTable"/> component for this custom piece table as a shortcut.
         /// </summary>
-        public PieceTable PieceTable { get; set; }
+        public PieceTable PieceTable { get; }
 
         /// <summary>
         ///     String array of categories used on the <see cref="global::PieceTable"/>. 
         ///     Will be ignored when m_useCategories is false.<br />
         ///     All categories provided here will be used and displayed on the <see cref="Hud"/>.
         /// </summary>
-        public string[] Categories { get; set; } = Array.Empty<string>();
+        public string[] Categories { get; } = Array.Empty<string>();
+
+        /// <summary>
+        ///     Reference to the <see cref="BepInPlugin"/> which added this piece table.
+        /// </summary>
+        internal BepInPlugin SourceMod { get; } =
+            BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
 
         /// <summary>
         ///     Custom piece table from a prefab.

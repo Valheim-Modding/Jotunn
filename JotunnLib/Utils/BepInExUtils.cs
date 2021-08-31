@@ -101,14 +101,8 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static PluginInfo GetPluginInfoFromAssembly(Assembly assembly)
         {
-            //assembly.GetType(nameof(BepInPlugin)).
             foreach (var p in BepInEx.Bootstrap.Chainloader.PluginInfos)
             {
-                /*var pluginAssembly = p.Value.GetType().Assembly;
-                if (pluginAssembly == assembly)
-                {
-                    return p.Value;
-                }*/
                 var typeName = ReflectionHelper.GetPrivateProperty<string>(p.Value, "TypeName");
                 if (assembly.GetType(typeName) != null)
                 {

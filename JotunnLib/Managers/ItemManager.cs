@@ -536,10 +536,10 @@ namespace Jotunn.Managers
                         }
 
                         // Fix references if needed
-                        if (conversion.fixReference)
+                        if (conversion.FixReference)
                         {
                             conversion.ItemConversion.FixReferences();
-                            conversion.fixReference = false;
+                            conversion.FixReference = false;
                         }
 
                         // Sure, make three almost identical classes but dont have a common base class, Iron Gate

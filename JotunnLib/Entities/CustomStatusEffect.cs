@@ -1,4 +1,7 @@
-﻿using Jotunn.Managers;
+﻿using System.Reflection;
+using BepInEx;
+using Jotunn.Managers;
+using Jotunn.Utils;
 
 namespace Jotunn.Entities
 {
@@ -11,12 +14,18 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The <see cref="global::StatusEffect"/> for this custom status effect.
         /// </summary>
-        public StatusEffect StatusEffect { get; set; }
+        public StatusEffect StatusEffect { get; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
+
+        /// <summary>
+        ///     Reference to the <see cref="BepInPlugin"/> which added this status effect.
+        /// </summary>
+        public BepInPlugin SourceMod { get; } =
+            BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
 
         /// <summary>
         ///     Custom status effect from a <see cref="global::StatusEffect"/>.<br />

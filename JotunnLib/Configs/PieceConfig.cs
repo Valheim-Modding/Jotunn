@@ -41,7 +41,7 @@ namespace Jotunn.Configs
         ///     The name of the category this piece will appear on. If categories are disabled on the 
         ///     target <see cref="global::PieceTable"/>, this setting will be ignored.<br />
         ///     If categories are enabled but the given category can't be found, a new 
-        ///     <see cref="global::Piece.PieceCategory"/> will be added to the table.
+        ///     <see cref="Piece.PieceCategory"/> will be added to the table.
         /// </summary>
         public string Category { get; set; } = string.Empty;
 
@@ -63,7 +63,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
-        public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
+        public RequirementConfig[] Requirements { get; set; } = Array.Empty<RequirementConfig>();
 
         /// <summary>
         ///     Apply this configs values to a piece GameObject.
