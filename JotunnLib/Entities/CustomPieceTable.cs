@@ -1,4 +1,5 @@
-﻿using Jotunn.Configs;
+﻿using System;
+using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -22,14 +23,14 @@ namespace Jotunn.Entities
         ///     The <see cref="global::PieceTable"/> component for this custom piece table as a shortcut. 
         ///     Will not be added again to the prefab when replaced.
         /// </summary>
-        public PieceTable PieceTable { get; set; } = null;
+        public PieceTable PieceTable { get; set; }
 
         /// <summary>
         ///     String array of categories used on the <see cref="global::PieceTable"/>. 
         ///     Will be ignored when m_useCategories is false.<br />
         ///     All categories provided here will be used and displayed on the <see cref="Hud"/>.
         /// </summary>
-        public string[] Categories { get; set; } = new string[0];
+        public string[] Categories { get; set; } = Array.Empty<string>();
 
         /// <summary>
         ///     Custom piece table from a prefab.
