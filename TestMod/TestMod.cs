@@ -107,34 +107,8 @@ namespace TestMod
 
             // Hook GetVersionString for ext version string compat test
             On.Version.GetVersionString += Version_GetVersionString;
-
-            ItemManager.OnVanillaItemsAvailable += ItemManager_OnVanillaItemsAvailable;
         }
-
-        private void ItemManager_OnVanillaItemsAvailable()
-        {
-            GameObject shield = PrefabManager.Cache.GetPrefab<GameObject>("Beehive");
-            var mats = ShaderHelper.GetRendererMaterials(shield);
-            foreach (Material mat in mats)
-            {
-                Jotunn.Logger.LogMessage(mat.shader.ToString());
-                foreach (string prop in mat.shaderKeywords)
-                {
-                    Jotunn.Logger.LogMessage(prop);
-                }
-
-                foreach (string prop in mat.GetTexturePropertyNames())
-                {
-                    Jotunn.Logger.LogMessage(prop);
-                }
-
-                for (int i = 0; i < mat.shader.GetPropertyCount(); ++i)
-                {
-                    Jotunn.Logger.LogMessage(mat.shader.GetPropertyName(i));
-                }
-            }
-        }
-
+        
         // Called every frame
         private void Update()
         {
@@ -272,7 +246,7 @@ namespace TestMod
                     parent: TestPanel.transform,
                     anchorMin: new Vector2(0.5f, 0.5f),
                     anchorMax: new Vector2(0.5f, 0.5f),
-                    position: new Vector2(0, 0),
+                    position: new Vector2(0, 400f),
                     width: 250,
                     height: 100);
                 buttonObject.SetActive(true);
