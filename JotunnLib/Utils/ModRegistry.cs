@@ -22,9 +22,7 @@ namespace Jotunn.Utils
                 {
                     GUID = mod.GUID,
                     Name = mod.Name,
-                    Version = mod.Version,
-                    Items = GetItems(mod.GUID),
-                    Pieces = GetPieces(mod.GUID)
+                    Version = mod.Version
                 };
             }
         }
@@ -66,6 +64,25 @@ namespace Jotunn.Utils
         {
             return ItemManager.Instance.Items.Where(mod => mod.SourceMod.GUID.Equals(modGuid));
         }
+        
+        /// <summary>
+        ///     Get all added <see cref="CustomRecipe"/> instances
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<CustomRecipe> GetRecipes()
+        {
+            return ItemManager.Instance.Recipes.ToList();
+        }
+
+        /// <summary>
+        ///     Get all added <see cref="CustomRecipe"/> instances of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns></returns>
+        public static IEnumerable<CustomRecipe> GetRecipes(string modGuid)
+        {
+            return ItemManager.Instance.Recipes.Where(mod => mod.SourceMod.GUID.Equals(modGuid));
+        }
 
         /// <summary>
         ///     Model class holding metadata of Jötunn mods.
@@ -88,14 +105,37 @@ namespace Jotunn.Utils
             public System.Version Version { get; internal set; }
 
             /// <summary>
-            ///     Custom items added by that mod
-            /// </summary>
-            public IEnumerable<CustomItem> Items { get; internal set; }
-
-            /// <summary>
             ///     Custom pieces added by that mod
             /// </summary>
-            public IEnumerable<CustomPiece> Pieces { get; internal set; }
+            public IEnumerable<CustomPiece> Pieces
+            {
+                get
+                {
+                    return GetPieces(GUID);
+                }
+            }
+
+            /// <summary>
+            ///     Custom items added by that mod
+            /// </summary>
+            public IEnumerable<CustomItem> Items
+            {
+                get
+                {
+                    return GetItems(GUID);
+                }
+            }
+            
+            /// <summary>
+            ///     Custom recipes added by that mod
+            /// </summary>
+            public IEnumerable<CustomRecipe> Recipes
+            {
+                get
+                {
+                    return GetRecipes(GUID);
+                }
+            }
         }
     }
 }
