@@ -1,8 +1,5 @@
-﻿using System.Reflection;
-using BepInEx;
-using Jotunn.Configs;
+﻿using Jotunn.Configs;
 using Jotunn.Managers;
-using Jotunn.Utils;
 
 namespace Jotunn.Entities
 {
@@ -10,7 +7,7 @@ namespace Jotunn.Entities
     ///     Main interface for adding custom recipes to the game.<br />
     ///     All custom recipes have to be wrapped inside this class to add it to Jötunns <see cref="ItemManager"/>.
     /// </summary>
-    public class CustomRecipe
+    public class CustomRecipe : CustomEntity
     {
         /// <summary>
         ///     The <see cref="global::Recipe"/> for this custom recipe.
@@ -26,12 +23,6 @@ namespace Jotunn.Entities
         ///     Indicator if references from <see cref="MockRequirement"/>s will be replaced at runtime.
         /// </summary>
         public bool FixRequirementReferences { get; set; }
-        
-        /// <summary>
-        ///     Reference to the <see cref="BepInPlugin"/> which added this recipe.
-        /// </summary>
-        public BepInPlugin SourceMod { get; } =
-            BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
 
         /// <summary>
         ///     Custom recipe from a <see cref="global::Recipe"/>.<br />

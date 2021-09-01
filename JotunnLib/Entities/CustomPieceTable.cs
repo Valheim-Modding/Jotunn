@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Reflection;
-using BepInEx;
 using Jotunn.Configs;
 using Jotunn.Managers;
-using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -15,7 +12,7 @@ namespace Jotunn.Entities
     ///     Add strings to <see cref="Categories"/> to use custom categories on your
     ///     piece table. All categories will be replaced so list vanilla categories, too.
     /// </summary>
-    public class CustomPieceTable
+    public class CustomPieceTable : CustomEntity
     {
         /// <summary>
         ///     The prefab for this custom piece table.
@@ -33,12 +30,6 @@ namespace Jotunn.Entities
         ///     All categories provided here will be used and displayed on the <see cref="Hud"/>.
         /// </summary>
         public string[] Categories { get; } = Array.Empty<string>();
-
-        /// <summary>
-        ///     Reference to the <see cref="BepInPlugin"/> which added this piece table.
-        /// </summary>
-        internal BepInPlugin SourceMod { get; } =
-            BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
 
         /// <summary>
         ///     Custom piece table from a prefab.
@@ -98,7 +89,7 @@ namespace Jotunn.Entities
                 Logger.LogError($"CustomPieceTable {this} has no PieceTable component");
                 valid = false;
             }
-            
+
             return valid;
         }
 

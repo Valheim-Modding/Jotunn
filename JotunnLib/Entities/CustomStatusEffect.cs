@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using BepInEx;
-using Jotunn.Managers;
-using Jotunn.Utils;
+﻿using Jotunn.Managers;
 
 namespace Jotunn.Entities
 {
@@ -9,7 +6,7 @@ namespace Jotunn.Entities
     ///     Main interface for adding custom status effects to the game.<br />
     ///     All custom status effects have to be wrapped inside this class to add it to Jötunns <see cref="ItemManager"/>.
     /// </summary>
-    public class CustomStatusEffect
+    public class CustomStatusEffect : CustomEntity
     {
         /// <summary>
         ///     The <see cref="global::StatusEffect"/> for this custom status effect.
@@ -20,12 +17,6 @@ namespace Jotunn.Entities
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
-
-        /// <summary>
-        ///     Reference to the <see cref="BepInPlugin"/> which added this status effect.
-        /// </summary>
-        public BepInPlugin SourceMod { get; } =
-            BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
 
         /// <summary>
         ///     Custom status effect from a <see cref="global::StatusEffect"/>.<br />

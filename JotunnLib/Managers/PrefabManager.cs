@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using BepInEx;
-using Jotunn.Utils;
+using Jotunn.Entities;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -370,31 +367,6 @@ namespace Jotunn.Managers
             internal static void ClearCache()
             {
                 dictionaryCache.Clear();
-            }
-        }
-
-        /// <summary>
-        ///     Wrapper for custom added GameObjects holding the mod reference
-        /// </summary>
-        internal class CustomPrefab
-        {
-            /// <summary>
-            ///     Reference to the <see cref="BepInPlugin"/> which added this prefab.
-            /// </summary>
-            public BepInPlugin SourceMod { get; } = BepInExUtils.GetSourceModMetadata();
-
-            /// <summary>
-            ///     Original prefab
-            /// </summary>
-            public GameObject Prefab { get; }
-
-            /// <summary>
-            ///     ctor
-            /// </summary>
-            /// <param name="prefab">Prefab added</param>
-            public CustomPrefab(GameObject prefab)
-            {
-                Prefab = prefab;
             }
         }
     }

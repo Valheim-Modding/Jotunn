@@ -29,17 +29,35 @@ namespace Jotunn.Utils
         }
         
         /// <summary>
-        ///     Get all added prefabs of a mod by GUID
+        ///     Get all added <see cref="CustomPrefab"/>s
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<CustomPrefab> GetPrefabs()
+        {
+            return PrefabManager.Instance.Prefabs;
+        }
+
+        /// <summary>
+        ///     Get all added <see cref="CustomPrefab"/>s of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns></returns>
-        public static IEnumerable<GameObject> GetPrefabs(string modGuid)
+        public static IEnumerable<CustomPrefab> GetPrefabs(string modGuid)
         {
-            return PrefabManager.Instance.Prefabs.Where(x => x.SourceMod.GUID.Equals(modGuid)).Select(x => x.Prefab);
+            return PrefabManager.Instance.Prefabs.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
         
         /// <summary>
-        ///     Get all added custom items of a mod by GUID
+        ///     Get all added <see cref="CustomItem"/>s
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<CustomItem> GetItems()
+        {
+            return ItemManager.Instance.Items.ToList();
+        }
+
+        /// <summary>
+        ///     Get all added <see cref="CustomItem"/>s of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns></returns>
@@ -49,7 +67,16 @@ namespace Jotunn.Utils
         }
         
         /// <summary>
-        ///     Get all added <see cref="CustomRecipe"/> instances of a mod by GUID
+        ///     Get all added <see cref="CustomRecipe"/>s
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<CustomRecipe> GetRecipes()
+        {
+            return ItemManager.Instance.Recipes.ToList();
+        }
+
+        /// <summary>
+        ///     Get all added <see cref="CustomRecipe"/>s of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns></returns>
@@ -59,7 +86,16 @@ namespace Jotunn.Utils
         }
         
         /// <summary>
-        ///     Get all added <see cref="CustomItemConversion"/> instances of a mod by GUID
+        ///     Get all added <see cref="CustomItemConversion"/>s of a mod by GUID
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<CustomItemConversion> GetItemConversions()
+        {
+            return ItemManager.Instance.ItemConversions.ToList();
+        }
+
+        /// <summary>
+        ///     Get all added <see cref="CustomItemConversion"/>s of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns></returns>
@@ -69,7 +105,16 @@ namespace Jotunn.Utils
         }
         
         /// <summary>
-        ///     Get all added custom status effects of a mod by GUID
+        ///     Get all added <see cref="CustomStatusEffect"/>s
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<CustomStatusEffect> GetStatusEffects()
+        {
+            return ItemManager.Instance.StatusEffects.ToList();
+        }
+
+        /// <summary>
+        ///     Get all added <see cref="CustomStatusEffect"/>s of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns></returns>
@@ -79,7 +124,16 @@ namespace Jotunn.Utils
         }
         
         /// <summary>
-        ///     Get all added <see cref="CustomPieceTable"/> instances of a mod by GUID
+        ///     Get all added <see cref="CustomPieceTable"/>s
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<CustomPieceTable> GetPieceTables()
+        {
+            return PieceManager.Instance.PieceTables.ToList();
+        }
+
+        /// <summary>
+        ///     Get all added <see cref="CustomPieceTable"/>s of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns></returns>
@@ -89,7 +143,15 @@ namespace Jotunn.Utils
         }
         
         /// <summary>
-        ///     Get all added <see cref="CustomPiece"/> instances of a mod by GUID
+        ///     Get all added <see cref="CustomPiece"/>s
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<CustomPiece> GetPieces()
+        {
+            return PieceManager.Instance.Pieces.ToList();
+        }
+        /// <summary>
+        ///     Get all added <see cref="CustomPiece"/>s of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns></returns>
@@ -121,7 +183,7 @@ namespace Jotunn.Utils
             /// <summary>
             ///     Custom prefabs added by that mod
             /// </summary>
-            public IEnumerable<GameObject> Prefabs
+            public IEnumerable<CustomPrefab> Prefabs
             {
                 get
                 {

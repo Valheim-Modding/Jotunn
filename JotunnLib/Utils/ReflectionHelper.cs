@@ -30,6 +30,13 @@ namespace Jotunn.Utils
         public static Type GetEnumeratedType(this Type type) =>
             type?.GetElementType() ?? 
             (typeof(IEnumerable).IsAssignableFrom(type) ? type.GetGenericArguments().FirstOrDefault() : null);
+        
+        public static Type GetCallingType()
+        {
+            return new StackTrace().GetFrames()
+                .First(x => x.GetMethod().ReflectedType.Assembly != typeof(Main).Assembly).GetMethod()
+                .ReflectedType;
+        }
 
         public static Assembly GetCallingAssembly()
         {

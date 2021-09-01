@@ -1,8 +1,5 @@
-﻿using System.Reflection;
-using BepInEx;
-using Jotunn.Configs;
+﻿using Jotunn.Configs;
 using Jotunn.Managers;
-using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -11,7 +8,7 @@ namespace Jotunn.Entities
     ///     Main interface for adding custom pieces to the game.<br />
     ///     All custom pieces have to be wrapped inside this class to add it to Jötunns <see cref="PieceManager"/>.
     /// </summary>
-    public class CustomPiece
+    public class CustomPiece : CustomEntity
     {
         /// <summary>
         ///     The prefab for this custom piece.
@@ -26,18 +23,12 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Name of the <see cref="global::PieceTable"/> this custom piece belongs to.
         /// </summary>
-        public string PieceTable { get; }
+        public string PieceTable { get; set; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
-
-        /// <summary>
-        ///     Reference to the <see cref="BepInPlugin"/> which added this piece table.
-        /// </summary>
-        public BepInPlugin SourceMod { get; } =
-            BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
 
         /// <summary>
         ///     Custom piece from a prefab.<br />

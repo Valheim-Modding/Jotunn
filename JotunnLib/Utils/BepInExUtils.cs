@@ -90,8 +90,16 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static PluginInfo GetPluginInfoFromType(Type type)
         {
-            var callerAss = type.Assembly;
-            return GetPluginInfoFromAssembly(callerAss);
+            foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
+            {
+                var typeName = ReflectionHelper.GetPrivateProperty<string>(info, "TypeName");
+                if (typeName.Equals(type.FullName))
+                {
+                    return info;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -101,21 +109,28 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static PluginInfo GetPluginInfoFromAssembly(Assembly assembly)
         {
-            foreach (var p in BepInEx.Bootstrap.Chainloader.PluginInfos)
+            foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
             {
-                var typeName = ReflectionHelper.GetPrivateProperty<string>(p.Value, "TypeName");
+                var typeName = ReflectionHelper.GetPrivateProperty<string>(info, "TypeName");
                 if (assembly.GetType(typeName) != null)
                 {
-                    return p.Value;
+                    return info;
                 }
             }
 
             return null;
         }
 
+        /// <summary>
+        ///     Get metadata information from the current calling mod
+        /// </summary>
+        /// <returns></returns>
         public static BepInPlugin GetSourceModMetadata()
         {
-            return GetPluginInfoFromAssembly(ReflectionHelper.GetCallingAssembly())?.Metadata;
+            Type callingType = ReflectionHelper.GetCallingType();
+
+            return GetPluginInfoFromType(callingType)?.Metadata ??
+                   GetPluginInfoFromAssembly(callingType.Assembly)?.Metadata;
         }
     }
 }

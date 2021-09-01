@@ -1,8 +1,5 @@
-﻿using System.Reflection;
-using BepInEx;
-using Jotunn.Configs;
+﻿using Jotunn.Configs;
 using Jotunn.Managers;
-using Jotunn.Utils;
 
 namespace Jotunn.Entities
 {
@@ -11,7 +8,7 @@ namespace Jotunn.Entities
     ///     Supports and combines conversions for the cooking station, fermenter and smelter.<br />
     ///     All custom item conversions have to be wrapped inside this class to add it to Jötunns <see cref="ItemManager"/>.
     /// </summary>
-    public class CustomItemConversion
+    public class CustomItemConversion : CustomEntity
     {
         /// <summary>
         ///     Type of the conversion component used in game.
@@ -66,12 +63,6 @@ namespace Jotunn.Entities
         private CookingStation.ItemConversion _cookingConversion;
         private Fermenter.ItemConversion _fermenterConversion;
         private Smelter.ItemConversion _smelterConversion;
-        
-        /// <summary>
-        ///     Reference to the <see cref="BepInPlugin"/> which added this conversion.
-        /// </summary>
-        public BepInPlugin SourceMod { get; } =
-            BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
 
         /// <summary>
         ///     Create a custom item conversion. Depending on the config class this custom
