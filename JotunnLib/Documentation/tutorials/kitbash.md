@@ -99,7 +99,7 @@ var piece = simpleKitbashPiece.Piece;
 piece.m_icon = testSprite; 
 simpleKitbashPiece.FixReference = true;
 PieceManager.Instance.AddPiece(simpleKitbashPiece);
-KitbashManager.Instance.Kitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
+KitbashManager.Instance.AddKitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
     layer = "piece",
     KitbashSources = new List<KitbashSourceConfig>
     {
@@ -164,7 +164,7 @@ See [Asset creation - AssetBundle ](./asset-creation.md#assetbundle) on how to c
 AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash", typeof(TestMod).Assembly);
 try
 { 
-    KitbashObject kitbashObject = KitbashManager.Instance.Kitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
+    KitbashObject kitbashObject = KitbashManager.Instance.AddKitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
     {
         Layer = "piece",
         KitbashSources = new List<KitbashSourceConfig>
