@@ -230,7 +230,7 @@ namespace TestMod
                     parent: TestPanel.transform,
                     anchorMin: new Vector2(0.5f, 1f),
                     anchorMax: new Vector2(0.5f, 1f),
-                    position: new Vector2(0f, -100f),
+                    position: new Vector2(0f, -50f),
                     font: GUIManager.Instance.AveriaSerifBold,
                     fontSize: 30,
                     color: GUIManager.Instance.ValheimOrange,
@@ -246,14 +246,119 @@ namespace TestMod
                     parent: TestPanel.transform,
                     anchorMin: new Vector2(0.5f, 0.5f),
                     anchorMax: new Vector2(0.5f, 0.5f),
-                    position: new Vector2(0, 400f),
-                    width: 250,
-                    height: 100);
+                    position: new Vector2(0, -250f),
+                    width: 250f,
+                    height: 60f);
                 buttonObject.SetActive(true);
 
                 // Add a listener to the button to close the panel again
                 Button button = buttonObject.GetComponent<Button>();
                 button.onClick.AddListener(TogglePanel);
+
+                // Create PluginInfo
+                GameObject scrollView = GUIManager.Instance.CreateScrollView(
+                    TestPanel.transform,
+                    false, true, 10f, 5f,
+                    GUIManager.Instance.ValheimScrollbarHandleColorBlock, Color.black, 
+                    700f, 400f);
+
+                RectTransform viewport =
+                    scrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+                
+                foreach (var mod in ModRegistry.GetMods().OrderBy(x => x.GUID))
+                {
+                    // Mod GUID
+                    GUIManager.Instance.CreateText(
+                        text: mod.GUID,
+                        parent: viewport,
+                        anchorMin: new Vector2(0.5f, 1f),
+                        anchorMax: new Vector2(0.5f, 1f),
+                        position: new Vector2(0f, 0f),
+                        font: GUIManager.Instance.AveriaSerifBold,
+                        fontSize: 30,
+                        color: GUIManager.Instance.ValheimOrange,
+                        outline: true,
+                        outlineColor: Color.black,
+                        width: 650f,
+                        height: 40f,
+                        addContentSizeFitter: false);
+
+                    if (mod.Pieces.Any())
+                    {
+                        // Pieces title
+                        GUIManager.Instance.CreateText(
+                            text: "Pieces:",
+                            parent: viewport,
+                            anchorMin: new Vector2(0.5f, 1f),
+                            anchorMax: new Vector2(0.5f, 1f),
+                            position: new Vector2(0f, 0f),
+                            font: GUIManager.Instance.AveriaSerifBold,
+                            fontSize: 20,
+                            color: GUIManager.Instance.ValheimOrange,
+                            outline: true,
+                            outlineColor: Color.black,
+                            width: 650f,
+                            height: 30f,
+                            addContentSizeFitter: false);
+
+                        foreach (var piece in mod.Pieces)
+                        {
+                            // Piece name
+                            GUIManager.Instance.CreateText(
+                                text: $"{piece}",
+                                parent: viewport,
+                                anchorMin: new Vector2(0.5f, 1f),
+                                anchorMax: new Vector2(0.5f, 1f),
+                                position: new Vector2(0f, 0f),
+                                font: GUIManager.Instance.AveriaSerifBold,
+                                fontSize: 20,
+                                color: Color.white,
+                                outline: true,
+                                outlineColor: Color.black,
+                                width: 650f,
+                                height: 30f,
+                                addContentSizeFitter: false);
+                        }
+                    }
+
+                    if (mod.Items.Any())
+                    {
+                        // Items title
+                        GUIManager.Instance.CreateText(
+                            text: "Items:",
+                            parent: viewport,
+                            anchorMin: new Vector2(0.5f, 1f),
+                            anchorMax: new Vector2(0.5f, 1f),
+                            position: new Vector2(0f, 0f),
+                            font: GUIManager.Instance.AveriaSerifBold,
+                            fontSize: 20,
+                            color: GUIManager.Instance.ValheimOrange,
+                            outline: true,
+                            outlineColor: Color.black,
+                            width: 650f,
+                            height: 30f,
+                            addContentSizeFitter: false);
+
+                        foreach (var item in mod.Items)
+                        {
+                            // Piece name
+                            GUIManager.Instance.CreateText(
+                                text: $"{item}",
+                                parent: viewport,
+                                anchorMin: new Vector2(0.5f, 1f),
+                                anchorMax: new Vector2(0.5f, 1f),
+                                position: new Vector2(0f, 0f),
+                                font: GUIManager.Instance.AveriaSerifBold,
+                                fontSize: 20,
+                                color: Color.white,
+                                outline: true,
+                                outlineColor: Color.black,
+                                width: 650f,
+                                height: 30f,
+                                addContentSizeFitter: false);
+                        }
+                    }
+                }
             }
 
             // Switch the current state
