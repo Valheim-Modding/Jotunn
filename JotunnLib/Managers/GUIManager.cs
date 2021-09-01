@@ -5,7 +5,6 @@ using Jotunn.Configs;
 using Jotunn.GUI;
 using Jotunn.Utils;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.U2D;
@@ -178,7 +177,7 @@ namespace Jotunn.Managers
                 {
                     ResetInputBlock();
                 }
-                
+
             }
         }
 
@@ -261,13 +260,15 @@ namespace Jotunn.Managers
             {
                 try
                 {
-                    UIAtlas = Resources.FindObjectsOfTypeAll<SpriteAtlas>().FirstOrDefault();
+                    var atlas = Resources.FindObjectsOfTypeAll<SpriteAtlas>();
+
+                    UIAtlas = atlas.FirstOrDefault(x => x.name.Equals("UIAtlas"));
                     if (UIAtlas == null)
                     {
                         throw new Exception("UIAtlas not found");
                     }
 
-                    IconAtlas = Resources.FindObjectsOfTypeAll<SpriteAtlas>().FirstOrDefault();
+                    IconAtlas = atlas.FirstOrDefault(x => x.name.Equals("IconAtlas"));
                     if (IconAtlas == null)
                     {
                         throw new Exception("IconAtlas not found");
