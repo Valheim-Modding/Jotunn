@@ -74,6 +74,19 @@ namespace Jotunn.Utils
 
             return (T)var.GetValue(instance);
         }
+        
+        public static T GetPrivateField<T>(Type type, string name)
+        {
+            FieldInfo var = type.GetField(name, BindingFlags.NonPublic | BindingFlags.Static);
+
+            if (var == null)
+            {
+                Logger.LogError("Variable " + name + " does not exist on type: " + type);
+                return default(T);
+            }
+
+            return (T)var.GetValue(null);
+        }
 
         public static void SetPrivateField(object instance, string name, object value)
         {

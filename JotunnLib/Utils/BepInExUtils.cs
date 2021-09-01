@@ -61,7 +61,7 @@ namespace Jotunn.Utils
         {
             var result = new Dictionary<string, BaseUnityPlugin>();
 
-            if (Plugins == null)
+            if (Plugins == null && ReflectionHelper.GetPrivateField<bool>(typeof(BepInEx.Bootstrap.Chainloader), "_loaded"))
             {
                 CacheDependentPlugins();
             }
