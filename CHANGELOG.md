@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.2.8
+* Added global mod registry, collecting added entities per mod
+
 ## Version 2.2.7
 * Added loading of dll embedded text assets (thx MSchmoecker)
 * Added "ApplyStyle" methods for Scrollbars (thx MSchmoecker)
