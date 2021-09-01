@@ -59,17 +59,20 @@ namespace TestMod
 
         private void CreateStuff()
         {
+            Sprite var4 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var4.png");
+
             // Add lul piece from second mod
             CustomPiece CP = new CustomPiece("piece_lal", true, new PieceConfig
             {
-                Name = "$piece_lal",
-                Description = "$piece_lal_description",
-                Icon = GUIManager.Instance.GetSprite("forge_ext1"),
+                Name = "Lalalal",
+                Description = "<3",
+                Icon = var4,
                 PieceTable = "Hammer",
                 ExtendStation = "piece_workbench", // Test station extension
                 Category = "Lulzies."  // Test custom category
             });
             PieceManager.Instance.AddPiece(CP);
+            CP.PiecePrefab.GetComponent<MeshRenderer>().material.mainTexture = var4.texture;
         }
     }
 }
