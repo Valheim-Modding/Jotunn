@@ -112,5 +112,10 @@ namespace Jotunn.Utils
 
             return null;
         }
+
+        public static BepInPlugin GetSourceModMetadata()
+        {
+            return GetPluginInfoFromAssembly(ReflectionHelper.GetCallingAssembly())?.Metadata;
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using UnityEngine;
 
 namespace Jotunn.Utils
 {
@@ -26,54 +27,27 @@ namespace Jotunn.Utils
                 };
             }
         }
-
+        
         /// <summary>
-        ///     Get all added <see cref="CustomPiece"/> instances
-        /// </summary>
-        /// <returns></returns>
-        public static IEnumerable<CustomPiece> GetPieces()
-        {
-            return PieceManager.Instance.Pieces.ToList();
-        }
-
-        /// <summary>
-        ///     Get all added <see cref="CustomPiece"/> instances of a mod by GUID
+        ///     Get all added prefabs of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns></returns>
-        public static IEnumerable<CustomPiece> GetPieces(string modGuid)
+        public static IEnumerable<GameObject> GetPrefabs(string modGuid)
         {
-            return PieceManager.Instance.Pieces.Where(mod => mod.SourceMod.GUID.Equals(modGuid));
+            return PrefabManager.Instance.Prefabs.Where(x => x.SourceMod.GUID.Equals(modGuid)).Select(x => x.Prefab);
         }
-
+        
         /// <summary>
-        ///     Get all added <see cref="CustomItem"/> instances
-        /// </summary>
-        /// <returns></returns>
-        public static IEnumerable<CustomItem> GetItems()
-        {
-            return ItemManager.Instance.Items.ToList();
-        }
-
-        /// <summary>
-        ///     Get all added <see cref="CustomItem"/> instances of a mod by GUID
+        ///     Get all added custom items of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns></returns>
         public static IEnumerable<CustomItem> GetItems(string modGuid)
         {
-            return ItemManager.Instance.Items.Where(mod => mod.SourceMod.GUID.Equals(modGuid));
+            return ItemManager.Instance.Items.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
         
-        /// <summary>
-        ///     Get all added <see cref="CustomRecipe"/> instances
-        /// </summary>
-        /// <returns></returns>
-        public static IEnumerable<CustomRecipe> GetRecipes()
-        {
-            return ItemManager.Instance.Recipes.ToList();
-        }
-
         /// <summary>
         ///     Get all added <see cref="CustomRecipe"/> instances of a mod by GUID
         /// </summary>
@@ -81,7 +55,47 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static IEnumerable<CustomRecipe> GetRecipes(string modGuid)
         {
-            return ItemManager.Instance.Recipes.Where(mod => mod.SourceMod.GUID.Equals(modGuid));
+            return ItemManager.Instance.Recipes.Where(x => x.SourceMod.GUID.Equals(modGuid));
+        }
+        
+        /// <summary>
+        ///     Get all added <see cref="CustomItemConversion"/> instances of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns></returns>
+        public static IEnumerable<CustomItemConversion> GetItemConversions(string modGuid)
+        {
+            return ItemManager.Instance.ItemConversions.Where(x => x.SourceMod.GUID.Equals(modGuid));
+        }
+        
+        /// <summary>
+        ///     Get all added custom status effects of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns></returns>
+        public static IEnumerable<CustomStatusEffect> GetStatusEffects(string modGuid)
+        {
+            return ItemManager.Instance.StatusEffects.Where(x => x.SourceMod.GUID.Equals(modGuid));
+        }
+        
+        /// <summary>
+        ///     Get all added <see cref="CustomPieceTable"/> instances of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns></returns>
+        public static IEnumerable<CustomPieceTable> GetPieceTables(string modGuid)
+        {
+            return PieceManager.Instance.PieceTables.Where(x => x.SourceMod.GUID.Equals(modGuid));
+        }
+        
+        /// <summary>
+        ///     Get all added <see cref="CustomPiece"/> instances of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns></returns>
+        public static IEnumerable<CustomPiece> GetPieces(string modGuid)
+        {
+            return PieceManager.Instance.Pieces.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
 
         /// <summary>
@@ -103,15 +117,15 @@ namespace Jotunn.Utils
             ///     Current version
             /// </summary>
             public System.Version Version { get; internal set; }
-
+            
             /// <summary>
-            ///     Custom pieces added by that mod
+            ///     Custom prefabs added by that mod
             /// </summary>
-            public IEnumerable<CustomPiece> Pieces
+            public IEnumerable<GameObject> Prefabs
             {
                 get
                 {
-                    return GetPieces(GUID);
+                    return GetPrefabs(GUID);
                 }
             }
 
@@ -134,6 +148,50 @@ namespace Jotunn.Utils
                 get
                 {
                     return GetRecipes(GUID);
+                }
+            }
+            
+            /// <summary>
+            ///     Custom item conversions added by that mod
+            /// </summary>
+            public IEnumerable<CustomItemConversion> ItemConversions
+            {
+                get
+                {
+                    return GetItemConversions(GUID);
+                }
+            }
+
+            /// <summary>
+            ///     Custom status effects added by that mod
+            /// </summary>
+            public IEnumerable<CustomStatusEffect> StatusEffects
+            {
+                get
+                {
+                    return GetStatusEffects(GUID);
+                }
+            }
+
+            /// <summary>
+            ///     Custom piece tables added by that mod
+            /// </summary>
+            public IEnumerable<CustomPieceTable> PieceTables
+            {
+                get
+                {
+                    return GetPieceTables(GUID);
+                }
+            }
+
+            /// <summary>
+            ///     Custom pieces added by that mod
+            /// </summary>
+            public IEnumerable<CustomPiece> Pieces
+            {
+                get
+                {
+                    return GetPieces(GUID);
                 }
             }
         }

@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using BepInEx;
+using Jotunn.Utils;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -39,9 +43,9 @@ namespace Jotunn.Managers
         internal GameObject PrefabContainer;
 
         /// <summary>
-        ///     Dictionary of all added custom prefabs by name.
+        ///     List of all added custom prefabs.
         /// </summary>
-        internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
+        internal List<CustomPrefab> Prefabs = new List<CustomPrefab>();
 
         /// <summary>
         ///     Creates the prefab container and registers all hooks.
@@ -71,14 +75,17 @@ namespace Jotunn.Managers
         /// <param name="prefab">Prefab to add</param>
         public void AddPrefab(GameObject prefab)
         {
-            if (Prefabs.ContainsKey(prefab.name))
+            CustomPrefab customPrefab = new CustomPrefab(prefab);
+
+            if (Prefabs.Contains(customPrefab))
             {
                 Logger.LogWarning($"Prefab '{prefab.name}' already exists");
                 return;
             }
 
             prefab.transform.SetParent(PrefabContainer.transform, false);
-            Prefabs.Add(prefab.name, prefab);
+
+            Prefabs.Add(customPrefab);
         }
 
         /// <summary>
@@ -165,7 +172,7 @@ namespace Jotunn.Managers
                 return null;
             }
 
-            var newPrefab = GameObject.Instantiate(prefab, PrefabContainer.transform, false);
+            var newPrefab = Object.Instantiate(prefab, PrefabContainer.transform, false);
             newPrefab.name = name;
 
             return newPrefab;
@@ -184,9 +191,10 @@ namespace Jotunn.Managers
         /// <returns>The existing prefab, or null if none exists with given name</returns>
         public GameObject GetPrefab(string name)
         {
-            if (Prefabs.ContainsKey(name))
+            CustomPrefab ret = Prefabs.FirstOrDefault(x => x.Prefab.name.Equals(name));
+            if (ret != null)
             {
-                return Prefabs[name];
+                return ret.Prefab;
             }
 
             if (ZNetScene.instance)
@@ -207,10 +215,8 @@ namespace Jotunn.Managers
         /// <param name="name">Name of the prefab to remove</param>
         public void RemovePrefab(string name)
         {
-            if (Prefabs.ContainsKey(name))
-            {
-                Prefabs.Remove(name);
-            }
+            CustomPrefab ret = Prefabs.FirstOrDefault(x => x.Prefab.name.Equals(name));
+            Prefabs.Remove(ret);
         }
 
         /// <summary>
@@ -250,7 +256,7 @@ namespace Jotunn.Managers
 
                 foreach (var prefab in Prefabs)
                 {
-                    RegisterToZNetScene(prefab.Value);
+                    RegisterToZNetScene(prefab.Prefab);
                 }
             }
         }
@@ -364,6 +370,31 @@ namespace Jotunn.Managers
             internal static void ClearCache()
             {
                 dictionaryCache.Clear();
+            }
+        }
+
+        /// <summary>
+        ///     Wrapper for custom added GameObjects holding the mod reference
+        /// </summary>
+        internal class CustomPrefab
+        {
+            /// <summary>
+            ///     Reference to the <see cref="BepInPlugin"/> which added this prefab.
+            /// </summary>
+            public BepInPlugin SourceMod { get; } = BepInExUtils.GetSourceModMetadata();
+
+            /// <summary>
+            ///     Original prefab
+            /// </summary>
+            public GameObject Prefab { get; }
+
+            /// <summary>
+            ///     ctor
+            /// </summary>
+            /// <param name="prefab">Prefab added</param>
+            public CustomPrefab(GameObject prefab)
+            {
+                Prefab = prefab;
             }
         }
     }

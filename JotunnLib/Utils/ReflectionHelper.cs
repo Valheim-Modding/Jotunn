@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -29,6 +30,14 @@ namespace Jotunn.Utils
         public static Type GetEnumeratedType(this Type type) =>
             type?.GetElementType() ?? 
             (typeof(IEnumerable).IsAssignableFrom(type) ? type.GetGenericArguments().FirstOrDefault() : null);
+
+        public static Assembly GetCallingAssembly()
+        {
+            return new StackTrace().GetFrames()
+                    .First(x => x.GetMethod().ReflectedType.Assembly != typeof(Main).Assembly).GetMethod()
+                .ReflectedType
+                .Assembly;
+        }
 
         public static object InvokePrivate(object instance, string name, object[] args = null)
         {

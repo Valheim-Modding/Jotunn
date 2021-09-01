@@ -403,7 +403,7 @@ namespace Jotunn.Managers
             }
             else
             {
-                if (!PrefabManager.Instance.Prefabs.ContainsKey(prefab.name))
+                if (!PrefabManager.Instance.Prefabs.Any(x => x.Prefab.name.Equals(prefab.name)))
                 {
                     PrefabManager.Instance.AddPrefab(prefab);
                 }
