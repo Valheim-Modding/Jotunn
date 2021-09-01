@@ -28,11 +28,7 @@ namespace Jotunn.Entities
         /// <inheritdoc/>
         public override string ToString()
         {
-            if (Prefab)
-            {
-                return Prefab.name;
-            }
-            return base.ToString();
+            return Prefab ? Prefab.name : base.ToString();
         }
     }
 }
