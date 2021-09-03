@@ -87,7 +87,7 @@ namespace Jotunn.Managers
             }
 
             // Add the prefab to the PrefabManager
-            PrefabManager.Instance.AddPrefab(customPieceTable.PieceTablePrefab);
+            PrefabManager.Instance.AddPrefab(customPieceTable.PieceTablePrefab, customPieceTable.SourceMod);
 
             // Create all custom categories on that table
             if (customPieceTable.Categories != null)
@@ -232,7 +232,7 @@ namespace Jotunn.Managers
             }
 
             // Add the prefab to the PrefabManager
-            PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab);
+            PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab, customPiece.SourceMod);
 
             // Add the custom piece to the PieceManager
             Pieces.Add(customPiece);

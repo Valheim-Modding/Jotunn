@@ -108,7 +108,7 @@ namespace Jotunn.Managers
             }
 
             // Add prefab to PrefabManager
-            PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
+            PrefabManager.Instance.AddPrefab(customItem.ItemPrefab, customItem.SourceMod);
 
             // Add custom item to ItemManager
             Items.Add(customItem);

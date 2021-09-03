@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx;
 using Jotunn.Entities;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
@@ -73,6 +74,26 @@ namespace Jotunn.Managers
         public void AddPrefab(GameObject prefab)
         {
             CustomPrefab customPrefab = new CustomPrefab(prefab);
+
+            if (Prefabs.Contains(customPrefab))
+            {
+                Logger.LogWarning($"Prefab '{prefab.name}' already exists");
+                return;
+            }
+
+            prefab.transform.SetParent(PrefabContainer.transform, false);
+
+            Prefabs.Add(customPrefab);
+        }
+
+        /// <summary>
+        ///     Add a custom prefab to the manager with known source mod metadata.
+        /// </summary>
+        /// <param name="prefab">Prefab to add</param>
+        /// <param name="sourceMod">Metadata of the mod adding this prefab</param>
+        internal void AddPrefab(GameObject prefab, BepInPlugin sourceMod)
+        {
+            CustomPrefab customPrefab = new CustomPrefab(prefab, sourceMod);
 
             if (Prefabs.Contains(customPrefab))
             {
