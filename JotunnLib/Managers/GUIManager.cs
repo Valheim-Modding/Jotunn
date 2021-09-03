@@ -1221,8 +1221,6 @@ namespace Jotunn.Managers
             newButton.transform.SetParent(parent, false);
             ApplyButtonStyle(newButton.GetComponent<Button>());
 
-            //newButton.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-
             // Set text
             newButton.GetComponentInChildren<Text>().text = text;
 
@@ -1390,25 +1388,17 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Apply valheim style to a <see cref="Button"/> Component
         /// </summary>
-        /// <param name="button"><see cref="Button"/> Component to apply the style to</param>
+        /// <param name="button">Component to apply the style to</param>
         /// <param name="fontSize">Optional fontSize, defaults to 16</param>
         public void ApplyButtonStyle(Button button, int fontSize = 16)
         {
             GameObject go = button.gameObject;
 
             // Image
-            if (!go.TryGetComponent<Image>(out var image))
-            {
-                image = go.AddComponent<Image>();
-            }
-            var sprite = GetSprite("button");
-            if (sprite == null)
-            {
-                Logger.LogError("Could not find 'button' sprite");
-            }
-            image.sprite = sprite;
+            Image image = go.GetOrAddComponent<Image>();
+            image.sprite = GetSprite("button");
             image.type = Image.Type.Sliced;
-            image.pixelsPerUnitMultiplier = 2f;
+            image.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             go.GetComponent<Button>().image = image;
 
             // SFX
@@ -1440,28 +1430,27 @@ namespace Jotunn.Managers
                 txt.transform.SetParent(go.transform);
                 txt.transform.localScale = new Vector3(1f, 1f, 1f);
 
-                txt.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-                txt.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-                txt.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0f);
+                RectTransform txtTransform = txt.GetComponent<RectTransform>();
+                txtTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                txtTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                txtTransform.anchoredPosition = new Vector2(0, 0f);
             }
 
-            txt.GetComponent<Text>().font = AveriaSerifBold;
-            txt.GetComponent<Text>().fontSize = fontSize;
-            txt.GetComponent<Text>().color = new Color(1f, 0.631f, 0.235f, 1f);
-            txt.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+            Text txtComponent = txt.GetComponent<Text>();
+            txtComponent.font = AveriaSerifBold;
+            txtComponent.fontSize = fontSize;
+            txtComponent.color = new Color(1f, 0.631f, 0.235f, 1f);
+            txtComponent.alignment = TextAnchor.MiddleCenter;
 
             // Text Outline
-            if (!txt.TryGetComponent<Outline>(out var outline))
-            {
-                outline = txt.AddComponent<Outline>();
-            }
-            outline.effectColor = new Color(0f, 0f, 0f, 1f);
+            Outline outline = txt.GetOrAddComponent<Outline>();
+            outline.effectColor = Color.black;
         }
 
         /// <summary>
         ///     Apply Valheim style to an <see cref="InputField"/> Component.
         /// </summary>
-        /// <param name="field"></param>
+        /// <param name="field">Component to apply the style to</param>
         public void ApplyInputFieldStyle(InputField field)
         {
             if (field.targetGraphic && field.targetGraphic is Image imageField)
@@ -1478,14 +1467,14 @@ namespace Jotunn.Managers
             if (field.textComponent)
             {
                 field.textComponent.font = AveriaSerifBold;
-                field.textComponent.color = new Color(1, 1, 1, 1);
+                field.textComponent.color = Color.white;
             }
         }
 
         /// <summary>
         ///     Apply Valheim style to a <see cref="Toggle"/> component.
         /// </summary>
-        /// <param name="toggle"></param>
+        /// <param name="toggle">Component to apply the style to</param>
         public void ApplyToogleStyle(Toggle toggle)
         {
             toggle.toggleTransition = Toggle.ToggleTransition.Fade;
@@ -1494,20 +1483,22 @@ namespace Jotunn.Managers
             if ((bool)toggle.targetGraphic && toggle.targetGraphic is Image background)
             {
                 background.sprite = GetSprite("checkbox");
+                background.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
 
             if ((bool)toggle.graphic && toggle.graphic is Image checkbox)
             {
                 checkbox.color = new Color(1f, 0.678f, 0.103f, 1f);
                 checkbox.sprite = GetSprite("checkbox_marker");
+                checkbox.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
                 checkbox.maskable = true;
             }
         }
-        
+
         /// <summary>
         ///     Apply Valheim style to a <see cref="Dropdown"/> component.
         /// </summary>
-        /// <param name="dropdown"></param>
+        /// <param name="dropdown">Component to apply the style to</param>
         public void ApplyDropdownStyle(Dropdown dropdown)
         {
             // Dropdown
@@ -1515,20 +1506,20 @@ namespace Jotunn.Managers
             {
                 captionText.font = AveriaSerifBold;
                 captionText.color = ValheimOrange;
-                captionText.gameObject.GetOrAddComponent<Outline>();
+                captionText.gameObject.GetOrAddComponent<Outline>().effectColor = Color.black;
             }
 
             if (dropdown.itemText && dropdown.itemText is Text itemText)
             {
                 itemText.font = AveriaSerifBold;
                 itemText.color = ValheimOrange;
-                itemText.gameObject.GetOrAddComponent<Outline>();
+                itemText.gameObject.GetOrAddComponent<Outline>().effectColor = Color.black;
             }
 
             if (dropdown.TryGetComponent<Image>(out var dropdownImage))
             {
                 dropdownImage.sprite = GetSprite("text_field");
-                dropdown.gameObject.GetOrAddComponent<Outline>();
+                dropdownImage.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
 
             // Arrow
@@ -1540,6 +1531,7 @@ namespace Jotunn.Managers
                 arrow.SetSize(25f, 25f);
                 arrowImage.sprite = GetSprite("map_marker");
                 arrowImage.color = ValheimOrange;
+                arrowImage.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
             
             // Template
@@ -1552,6 +1544,7 @@ namespace Jotunn.Managers
             {
                 templateImage.sprite = GetSprite("button_small");
                 templateImage.color = Color.white;
+                templateImage.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
 
             // Item
@@ -1574,7 +1567,8 @@ namespace Jotunn.Managers
                     checkbox.color = ValheimOrange;
                     checkbox.type = Image.Type.Simple;
                     checkbox.maskable = true;
-                    checkbox.gameObject.GetOrAddComponent<Outline>();
+                    checkbox.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+                    checkbox.gameObject.GetOrAddComponent<Outline>().effectColor = Color.black;
                 }
             }
         }
@@ -1582,7 +1576,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Apply Valheim style to a <see cref="ScrollRect"/> component.
         /// </summary>
-        /// <param name="scrollRect"> Component to apply the style to </param>
+        /// <param name="scrollRect">Component to apply the style to</param>
         public void ApplyScrollRectStyle(ScrollRect scrollRect)
         {
             scrollRect.scrollSensitivity = 40f;
@@ -1600,13 +1594,14 @@ namespace Jotunn.Managers
             if (scrollRect.TryGetComponent<Image>(out var image))
             {
                 image.color = new Color(0f, 0f, 0f, 0.564f);
+                image.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
         }
 
         /// <summary>
         ///     Apply Valheim style to a <see cref="Scrollbar"/> component.
         /// </summary>
-        /// <param name="scrollbar"> Component to apply the style to </param>
+        /// <param name="scrollbar">Component to apply the style to</param>
         public void ApplyScrollbarStyle(Scrollbar scrollbar)
         {
             scrollbar.transition = Selectable.Transition.ColorTint;
@@ -1627,6 +1622,7 @@ namespace Jotunn.Managers
             if (scrollbar.targetGraphic && scrollbar.targetGraphic is Image handleImage)
             {
                 handleImage.sprite = GetSprite("UISprite");
+                handleImage.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
 
             if (scrollbar.TryGetComponent<Image>(out var image))
@@ -1634,6 +1630,7 @@ namespace Jotunn.Managers
                 image.sprite = GetSprite("Background");
                 image.color = Color.black;
                 image.raycastTarget = true;
+                image.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
         }
     }
