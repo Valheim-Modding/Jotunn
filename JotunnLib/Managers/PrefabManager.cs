@@ -215,13 +215,11 @@ namespace Jotunn.Managers
                 return ret.Prefab;
             }
 
-            if (ZNetScene.instance)
+            int hash = name.GetStableHashCode();
+            if (ZNetScene.instance &&
+                ZNetScene.instance.m_namedPrefabs.TryGetValue(hash, out var prefab))
             {
-                int hash = name.GetStableHashCode();
-                if (ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))
-                {
-                    return ZNetScene.instance.GetPrefab(hash);
-                }
+                return prefab;
             }
 
             return Cache.GetPrefab<GameObject>(name);
@@ -251,9 +249,8 @@ namespace Jotunn.Managers
                 //TODO: remove all clones, too
 
                 int hash = name.GetStableHashCode();
-                if (ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))
+                if (ZNetScene.instance.m_namedPrefabs.TryGetValue(hash, out var del))
                 {
-                    GameObject del = ZNetScene.instance.GetPrefab(hash);
                     ZNetScene.instance.m_prefabs.Remove(del);
                     ZNetScene.instance.m_namedPrefabs.Remove(hash);
                     ZNetScene.instance.Destroy(del);
