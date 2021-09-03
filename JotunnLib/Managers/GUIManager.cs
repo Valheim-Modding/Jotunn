@@ -377,7 +377,10 @@ namespace Jotunn.Managers
                     }
                     foreach (Button pickerButton in gradientPicker.GetComponentsInChildren<Button>(true))
                     {
-                        ApplyButtonStyle(pickerButton, 13);
+                        if (pickerButton.name != "ColorButton")
+                        {
+                            ApplyButtonStyle(pickerButton, 13);
+                        }
                     }
 
                     PrefabManager.Instance.AddPrefab(gradientPicker);
@@ -1453,13 +1456,13 @@ namespace Jotunn.Managers
         /// <param name="field">Component to apply the style to</param>
         public void ApplyInputFieldStyle(InputField field)
         {
-            if (field.targetGraphic && field.targetGraphic is Image imageField)
+            if (field.targetGraphic is Image imageField)
             {
                 imageField.color = Color.white;
                 imageField.sprite = GetSprite("text_field");
             }
 
-            if (field.placeholder && field.placeholder is Text placeholder)
+            if (field.placeholder is Text placeholder)
             {
                 placeholder.font = AveriaSerifBold;
             }
@@ -1480,13 +1483,13 @@ namespace Jotunn.Managers
             toggle.toggleTransition = Toggle.ToggleTransition.Fade;
             toggle.colors = ValheimToggleColorBlock;
 
-            if ((bool)toggle.targetGraphic && toggle.targetGraphic is Image background)
+            if (toggle.targetGraphic is Image background)
             {
                 background.sprite = GetSprite("checkbox");
                 background.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
 
-            if ((bool)toggle.graphic && toggle.graphic is Image checkbox)
+            if (toggle.graphic is Image checkbox)
             {
                 checkbox.color = new Color(1f, 0.678f, 0.103f, 1f);
                 checkbox.sprite = GetSprite("checkbox_marker");
@@ -1502,14 +1505,14 @@ namespace Jotunn.Managers
         public void ApplyDropdownStyle(Dropdown dropdown)
         {
             // Dropdown
-            if (dropdown.captionText && dropdown.captionText is Text captionText)
+            if (dropdown.captionText is Text captionText)
             {
                 captionText.font = AveriaSerifBold;
                 captionText.color = ValheimOrange;
                 captionText.gameObject.GetOrAddComponent<Outline>().effectColor = Color.black;
             }
 
-            if (dropdown.itemText && dropdown.itemText is Text itemText)
+            if (dropdown.itemText is Text itemText)
             {
                 itemText.font = AveriaSerifBold;
                 itemText.color = ValheimOrange;
@@ -1556,12 +1559,12 @@ namespace Jotunn.Managers
                 toggle.colors = ValheimToggleColorBlock;
                 toggle.spriteState = new SpriteState {highlightedSprite = GetSprite("button_highlight")};
 
-                if (toggle.targetGraphic && toggle.targetGraphic is Image background)
+                if (toggle.targetGraphic is Image background)
                 {
                     background.enabled = false;
                 }
 
-                if (toggle.graphic && toggle.graphic is Image checkbox)
+                if (toggle.graphic is Image checkbox)
                 {
                     checkbox.sprite = GetSprite("checkbox_marker");
                     checkbox.color = ValheimOrange;
@@ -1619,7 +1622,7 @@ namespace Jotunn.Managers
                 rectTransform.sizeDelta = new Vector2(10, rectTransform.sizeDelta.y);
             }
 
-            if (scrollbar.targetGraphic && scrollbar.targetGraphic is Image handleImage)
+            if (scrollbar.targetGraphic is Image handleImage)
             {
                 handleImage.sprite = GetSprite("UISprite");
                 handleImage.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
