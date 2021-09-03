@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using BepInEx;
+using UnityEngine;
 
 namespace Jotunn.Entities
 {
@@ -17,6 +18,16 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="prefab">Prefab added</param>
         internal CustomPrefab(GameObject prefab)
+        {
+            Prefab = prefab;
+        }
+
+        /// <summary>
+        ///     ctor
+        /// </summary>
+        /// <param name="prefab">Prefab added</param>
+        /// <param name="sourceMod">Metadata of the mod adding this prefab</param>
+        internal CustomPrefab(GameObject prefab, BepInPlugin sourceMod) : base(sourceMod)
         {
             Prefab = prefab;
         }
