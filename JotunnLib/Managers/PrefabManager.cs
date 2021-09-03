@@ -242,7 +242,12 @@ namespace Jotunn.Managers
         /// <param name="name">The name of the prefab to destroy</param>
         public void DestroyPrefab(string name)
         {
-            RemovePrefab(name);
+            CustomPrefab custom = Prefabs.FirstOrDefault(x => x.Prefab.name.Equals(name));
+
+            if (custom != null)
+            {
+                Prefabs.Remove(custom);
+            }
 
             if (ZNetScene.instance)
             {
@@ -255,6 +260,11 @@ namespace Jotunn.Managers
                     ZNetScene.instance.m_namedPrefabs.Remove(hash);
                     ZNetScene.instance.Destroy(del);
                 }
+            }
+
+            if (custom.Prefab)
+            {
+                Object.Destroy(custom.Prefab);
             }
         }
 
