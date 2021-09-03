@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Jotunn.Configs;
 using Jotunn.GUI;
 using Jotunn.Utils;
@@ -87,15 +88,29 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Scrollbar handle color block in default Valheim orange.
         /// </summary>
-        public ColorBlock ValheimScrollbarHandleColorBlock = new ColorBlock()
+        public ColorBlock ValheimScrollbarHandleColorBlock = new ColorBlock
         {
+            normalColor = new Color(0.926f, 0.645f, 0.34f, 1f),
+            highlightedColor = new Color(1f, 0.786f, 0.088f, 1f),
+            pressedColor = new Color(0.838f, 0.647f, 0.03f, 1f),
+            selectedColor = new Color(1f, 0.786f, 0.088f, 1f),
+            disabledColor = new Color(0.784f, 0.784f, 0.784f, 0.502f),
             colorMultiplier = 1f,
-            disabledColor = new Color(0.783f, 0.783f, 0.783f, 0.502f),
-            fadeDuration = 0.1f,
-            highlightedColor = new Color(1, 0.786f, 0.088f, 1f),
-            normalColor = new Color(0.926f, 0.646f, 0.341f, 1f),
-            pressedColor = new Color(0.838f, 0.647f, 0.031f, 1f),
-            selectedColor = new Color(1, 0.786f, 0.088f, 1f),
+            fadeDuration = 0.1f
+        };
+
+        /// <summary>
+        ///     Toggle color block in Valheim style.
+        /// </summary>
+        public ColorBlock ValheimToggleColorBlock = new ColorBlock
+        {
+            normalColor = new Color(0.61f, 0.61f, 0.61f, 1f),
+            highlightedColor = new Color(1f, 1f, 1f, 1f),
+            pressedColor = new Color(0.784f, 0.784f, 0.784f, 1f),
+            selectedColor = new Color(1f, 1f, 1f, 1f),
+            disabledColor = new Color(0.784f, 0.784f, 0.784f, 0.502f),
+            colorMultiplier = 1f,
+            fadeDuration = 0.1f
         };
 
         /// <summary>
@@ -107,6 +122,11 @@ namespace Jotunn.Managers
         ///     Valheims standard font bold faced.
         /// </summary>
         public Font AveriaSerifBold { get; private set; }
+
+        /// <summary>
+        ///     <see cref="DefaultControls.Resources"/> with default Valheim assets.
+        /// </summary>
+        public DefaultControls.Resources ValheimControlResources;
 
         /// <summary>
         ///     Internal Dictionary holding the references to the custom key hints added to the manager.
@@ -282,7 +302,7 @@ namespace Jotunn.Managers
                     {
                         throw new Exception("Fonts not found");
                     }
-
+/*
                     // Base prefab for a valheim style button
                     var button = new GameObject("BaseButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx));
                     ApplyButtonStyle(button.GetComponent<Button>());
@@ -295,6 +315,15 @@ namespace Jotunn.Managers
                     var woodpanel = new GameObject("BaseWoodpanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
                     ApplyWoodpanelStyle(woodpanel.transform);
                     PrefabManager.Instance.AddPrefab(woodpanel);
+*/
+                    // DefaultControls.Resources pack
+                    ValheimControlResources.standard = GetSprite("button");
+                    ValheimControlResources.background = GetSprite("text_field");
+                    ValheimControlResources.inputField = GetSprite("text_field");
+                    ValheimControlResources.knob = GetSprite("checkbox_marker");
+                    ValheimControlResources.checkmark = GetSprite("checkbox_marker");
+                    ValheimControlResources.dropdown = GetSprite("checkbox_marker");
+                    ValheimControlResources.mask = GetSprite("UIMask");
 
                     // Color and Gradient picker
                     AssetBundle colorWheelBundle = AssetUtils.LoadAssetBundleFromResources("colorpicker", typeof(Main).Assembly);
@@ -863,55 +892,6 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Create a new button (Valheim style).
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="parent"></param>
-        /// <param name="anchorMin"></param>
-        /// <param name="anchorMax"></param>
-        /// <param name="position"></param>
-        /// <param name="width">Set width if > 0</param>
-        /// <param name="height">Set height if > 0</param>
-        /// <returns>new Button gameobject</returns>
-        public GameObject CreateButton(string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0f,
-            float height = 0f)
-        {
-            var baseButton = PrefabManager.Instance.GetPrefab("BaseButton");
-
-            if (baseButton == null)
-            {
-                Logger.LogError("BaseButton is null");
-                return null;
-            }
-
-            var newButton = Object.Instantiate(baseButton, parent, false);
-
-            newButton.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-
-            // Set text
-            newButton.GetComponentInChildren<Text>().text = text;
-
-            // Set positions and anchors
-            ((RectTransform)newButton.transform).anchoredPosition = position;
-            ((RectTransform)newButton.transform).anchorMin = anchorMin;
-            ((RectTransform)newButton.transform).anchorMax = anchorMax;
-
-            if (width > 0f)
-            {
-                ((RectTransform)newButton.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-                newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-            }
-
-            if (height > 0f)
-            {
-                ((RectTransform)newButton.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-                newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-            }
-
-            return newButton;
-        }
-
-        /// <summary>
         ///     Creates a Valheim style woodpanel which is draggable per default
         /// </summary>
         /// <param name="parent">Parent <see cref="Transform"/></param>
@@ -941,14 +921,19 @@ namespace Jotunn.Managers
             Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
             float width = 0f, float height = 0f, bool draggable = true)
         {
-            var basepanel = PrefabManager.Instance.GetPrefab("BaseWoodpanel");
+            /*var basepanel = PrefabManager.Instance.GetPrefab("BaseWoodpanel");
 
             if (basepanel == null)
             {
                 Logger.LogError("BasePanel is null");
             }
 
-            var newPanel = Object.Instantiate(basepanel, parent, false);
+            var newPanel = Object.Instantiate(basepanel, parent, false);*/
+
+            GameObject newPanel = DefaultControls.CreatePanel(ValheimControlResources);
+            newPanel.transform.SetParent(parent, false);
+            ApplyWoodpanelStyle(newPanel.transform);
+
             newPanel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
 
             var tf = (RectTransform)newPanel.transform;
@@ -976,61 +961,7 @@ namespace Jotunn.Managers
 
             return newPanel;
         }
-
-        /// <summary>
-        ///     Create a <see cref="GameObject"/> with a Text (and optional Outline and ContentSizeFitter) component
-        /// </summary>
-        /// <param name="text">Text to show</param>
-        /// <param name="parent">Parent transform</param>
-        /// <param name="anchorMin">Anchor min</param>
-        /// <param name="anchorMax">Anchor max</param>
-        /// <param name="position">Anchored position</param>
-        /// <param name="font">Font</param>
-        /// <param name="fontSize">Font size</param>
-        /// <param name="color">Font color</param>
-        /// <param name="outline">Add outline component</param>
-        /// <param name="outlineColor">Outline color</param>
-        /// <param name="width">Width</param>
-        /// <param name="height">Height</param>
-        /// <param name="addContentSizeFitter">Add ContentSizeFitter</param>
-        /// <returns>A text <see cref="GameObject"/></returns>
-        public GameObject CreateText(
-            string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
-            Font font, int fontSize, Color color, bool outline, Color outlineColor,
-            float width, float height, bool addContentSizeFitter)
-        {
-            GameObject go = new GameObject("Text", typeof(RectTransform), typeof(Text));
-
-            if (outline)
-            {
-                go.AddComponent<Outline>().effectColor = outlineColor;
-            }
-
-            var tf = go.GetComponent<RectTransform>();
-            tf.anchorMin = anchorMin;
-            tf.anchorMax = anchorMax;
-            tf.anchoredPosition = position;
-            if (!addContentSizeFitter)
-            {
-                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-            }
-            else
-            {
-                go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            }
-            var txt = go.GetComponent<Text>();
-            txt.font = font;
-            txt.color = color;
-            txt.fontSize = fontSize;
-            txt.text = text;
-
-            go.transform.SetParent(parent, false);
-
-            return go;
-        }
-
-
+        
         /// <summary>
         ///     Create a complete scroll view
         /// </summary>
@@ -1219,6 +1150,105 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Create a <see cref="GameObject"/> with a Text (and optional Outline and ContentSizeFitter) component
+        /// </summary>
+        /// <param name="text">Text to show</param>
+        /// <param name="parent">Parent transform</param>
+        /// <param name="anchorMin">Anchor min</param>
+        /// <param name="anchorMax">Anchor max</param>
+        /// <param name="position">Anchored position</param>
+        /// <param name="font">Font</param>
+        /// <param name="fontSize">Font size</param>
+        /// <param name="color">Font color</param>
+        /// <param name="outline">Add outline component</param>
+        /// <param name="outlineColor">Outline color</param>
+        /// <param name="width">Width</param>
+        /// <param name="height">Height</param>
+        /// <param name="addContentSizeFitter">Add ContentSizeFitter</param>
+        /// <returns>A text <see cref="GameObject"/></returns>
+        public GameObject CreateText(
+            string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
+            Font font, int fontSize, Color color, bool outline, Color outlineColor,
+            float width, float height, bool addContentSizeFitter)
+        {
+            GameObject go = new GameObject("Text", typeof(RectTransform), typeof(Text));
+
+            if (outline)
+            {
+                go.AddComponent<Outline>().effectColor = outlineColor;
+            }
+
+            var tf = go.GetComponent<RectTransform>();
+            tf.anchorMin = anchorMin;
+            tf.anchorMax = anchorMax;
+            tf.anchoredPosition = position;
+            if (!addContentSizeFitter)
+            {
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            }
+            else
+            {
+                go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            }
+            var txt = go.GetComponent<Text>();
+            txt.font = font;
+            txt.color = color;
+            txt.fontSize = fontSize;
+            txt.text = text;
+
+            go.transform.SetParent(parent, false);
+
+            return go;
+        }
+        
+        /// <summary>
+        ///     Create a new button (Valheim style).
+        /// </summary>
+        /// <param name="text">Text to display on the button</param>
+        /// <param name="parent">Parent transform</param>
+        /// <param name="anchorMin">Min anchor</param>
+        /// <param name="anchorMax">Max anchor</param>
+        /// <param name="position">Position</param>
+        /// <param name="width">Set width if > 0</param>
+        /// <param name="height">Set height if > 0</param>
+        /// <returns>Button GameObject in Valheim style</returns>
+        public GameObject CreateButton(
+            string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
+            float width = 0f, float height = 0f)
+        {
+            GameObject newButton = DefaultControls.CreateButton(ValheimControlResources);
+            newButton.transform.SetParent(parent, false);
+            ApplyButtonStyle(newButton.GetComponent<Button>());
+
+            //newButton.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+
+            // Set text
+            newButton.GetComponentInChildren<Text>().text = text;
+
+            // Set positions and anchors
+            RectTransform tf = newButton.transform as RectTransform;
+            tf.anchoredPosition = position;
+            tf.anchorMin = anchorMin;
+            tf.anchorMax = anchorMax;
+
+            // Optionally set width and height
+            if (width > 0f)
+            {
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            }
+
+            if (height > 0f)
+            {
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            }
+
+            return newButton;
+        }
+
+        /// <summary>
         ///     Create toggle field
         /// </summary>
         /// <param name="parent"></param>
@@ -1227,7 +1257,7 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public GameObject CreateToggle(Transform parent, float width, float height)
         {
-            GameObject toggle = new GameObject("Toggle", typeof(RectTransform), typeof(Toggle), typeof(LayoutElement)).SetUpperLeft().SetSize(width, height);
+            /*GameObject toggle = new GameObject("Toggle", typeof(RectTransform), typeof(Toggle), typeof(LayoutElement)).SetUpperLeft().SetSize(width, height);
             toggle.GetComponent<LayoutElement>().preferredWidth = width;
             toggle.transform.SetParent(parent, false);
 
@@ -1240,23 +1270,60 @@ namespace Jotunn.Managers
             Sprite checkBoxSprite = GetSprite("checkbox");
             background.GetComponent<Image>().sprite = checkBoxSprite;
             background.GetComponent<Image>().type = Image.Type.Simple;
-
-            toggle.GetComponent<Toggle>().toggleTransition = Toggle.ToggleTransition.Fade;
-
+            
             GameObject checkMark = new GameObject("Checkmark", typeof(RectTransform), typeof(Image));
             checkMark.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
             checkMark.SetSize(28f, 28f);
             checkMark.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
-            checkMark.transform.SetParent(background.transform, false);
-
-            toggle.GetComponent<Toggle>().graphic = checkMark.GetComponent<Image>();
-            toggle.GetComponent<Toggle>().targetGraphic = background.GetComponent<Image>();
-
-
-            ApplyToogleStyle(toggle.GetComponent<Toggle>());
             checkMark.GetComponent<Image>().type = Image.Type.Simple;
+            checkMark.transform.SetParent(background.transform, false);*/
+
+            GameObject toggle = DefaultControls.CreateToggle(ValheimControlResources).SetSize(width, height);
+            toggle.transform.SetParent(parent);
+            toggle.transform.Find("Background").gameObject.SetSize(28f, 28f);
+            toggle.transform.Find("Background/Checkmark").gameObject.SetSize(28f, 28f);
+            Toggle toggleComponent = toggle.GetComponent<Toggle>();
+            ApplyToogleStyle(toggleComponent);
 
             return toggle;
+        }
+
+        /// <summary>
+        ///     Create dropdown field
+        /// </summary>
+        /// <param name="parent">Parent transform</param>
+        /// <param name="anchorMin">Min anchor</param>
+        /// <param name="anchorMax">Max anchor</param>
+        /// <param name="position">Position</param>
+        /// <param name="width">Set width if > 0</param>
+        /// <param name="height">Set height if > 0</param>
+        /// <returns></returns>
+        public GameObject CreateDropDown(
+            Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
+            float width = 0f, float height = 0f)
+        {
+            GameObject dropdown = DefaultControls.CreateDropdown(ValheimControlResources).SetSize(width, height);
+            dropdown.transform.SetParent(parent, worldPositionStays: false);
+            ApplyDropdownStyle(dropdown.GetComponent<Dropdown>());
+            
+            // Set positions and anchors
+            RectTransform tf = dropdown.transform as RectTransform;
+            tf.anchoredPosition = position;
+            tf.anchorMin = anchorMin;
+            tf.anchorMax = anchorMax;
+            
+            // Optionally set width and height
+            if (width > 0f)
+            {
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            }
+
+            if (height > 0f)
+            {
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            }
+
+            return dropdown;
         }
 
         /// <summary>
@@ -1284,8 +1351,6 @@ namespace Jotunn.Managers
 
             button.transform.SetParent(input.transform, false);
             button.GetComponent<Button>().image = button.GetComponent<Image>();
-            //button.GetComponent<Image>().sprite = CreateSpriteFromAtlas(new Rect(0, 2048 - 156, 139, 36), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect,
-            //    new Vector4(5, 5, 5, 5));
             button.GetComponent<Image>().sprite = GetSprite("text_field");
 
             var bindString = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleCenter();
@@ -1399,17 +1464,18 @@ namespace Jotunn.Managers
         /// <param name="field"></param>
         public void ApplyInputFieldStyle(InputField field)
         {
-            if ((bool)field.targetGraphic && field.targetGraphic is Image imageField)
+            if (field.targetGraphic && field.targetGraphic is Image imageField)
             {
+                imageField.color = Color.white;
                 imageField.sprite = GetSprite("text_field");
             }
 
-            if ((bool)field.placeholder && field.placeholder is Text placeholder)
+            if (field.placeholder && field.placeholder is Text placeholder)
             {
                 placeholder.font = AveriaSerifBold;
             }
 
-            if ((bool)field.textComponent)
+            if (field.textComponent)
             {
                 field.textComponent.font = AveriaSerifBold;
                 field.textComponent.color = new Color(1, 1, 1, 1);
@@ -1422,18 +1488,8 @@ namespace Jotunn.Managers
         /// <param name="toggle"></param>
         public void ApplyToogleStyle(Toggle toggle)
         {
-            var tinter = new ColorBlock
-            {
-                colorMultiplier = 1f,
-                disabledColor = new Color(0.784f, 0.784f, 0.784f, 0.502f),
-                fadeDuration = 0.1f,
-                highlightedColor = new Color(1f, 1f, 1f, 1f),
-                normalColor = new Color(0.61f, 0.61f, 0.61f, 1f),
-                pressedColor = new Color(0.784f, 0.784f, 0.784f, 1f),
-                selectedColor = new Color(1f, 1f, 1f, 1f)
-            };
             toggle.toggleTransition = Toggle.ToggleTransition.Fade;
-            toggle.colors = tinter;
+            toggle.colors = ValheimToggleColorBlock;
 
             if ((bool)toggle.targetGraphic && toggle.targetGraphic is Image background)
             {
@@ -1447,6 +1503,81 @@ namespace Jotunn.Managers
                 checkbox.maskable = true;
             }
         }
+        
+        /// <summary>
+        ///     Apply Valheim style to a <see cref="Dropdown"/> component.
+        /// </summary>
+        /// <param name="dropdown"></param>
+        public void ApplyDropdownStyle(Dropdown dropdown)
+        {
+            // Dropdown
+            if (dropdown.captionText && dropdown.captionText is Text captionText)
+            {
+                captionText.font = AveriaSerifBold;
+                captionText.color = ValheimOrange;
+                captionText.gameObject.GetOrAddComponent<Outline>();
+            }
+
+            if (dropdown.itemText && dropdown.itemText is Text itemText)
+            {
+                itemText.font = AveriaSerifBold;
+                itemText.color = ValheimOrange;
+                itemText.gameObject.GetOrAddComponent<Outline>();
+            }
+
+            if (dropdown.TryGetComponent<Image>(out var dropdownImage))
+            {
+                dropdownImage.sprite = GetSprite("text_field");
+                dropdown.gameObject.GetOrAddComponent<Outline>();
+            }
+
+            // Arrow
+            GameObject arrow = dropdown.transform.Find("Arrow").gameObject;
+            arrow.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 180f));
+            
+            if (arrow.TryGetComponent<Image>(out var arrowImage))
+            {
+                arrow.SetSize(25f, 25f);
+                arrowImage.sprite = GetSprite("map_marker");
+                arrowImage.color = ValheimOrange;
+            }
+            
+            // Template
+            if (dropdown.template && dropdown.template.TryGetComponent<ScrollRect>(out var scrollRect))
+            {
+                ApplyScrollRectStyle(scrollRect);
+            }
+
+            if (dropdown.template && dropdown.template.TryGetComponent<Image>(out var templateImage))
+            {
+                templateImage.sprite = GetSprite("button_small");
+                templateImage.color = Color.white;
+            }
+
+            // Item
+            GameObject item = dropdown.template.Find("Viewport/Content/Item").gameObject;
+
+            if (item && item.TryGetComponent<Toggle>(out var toggle))
+            {
+                toggle.toggleTransition = Toggle.ToggleTransition.None;
+                toggle.colors = ValheimToggleColorBlock;
+                toggle.spriteState = new SpriteState {highlightedSprite = GetSprite("button_highlight")};
+
+                if (toggle.targetGraphic && toggle.targetGraphic is Image background)
+                {
+                    background.enabled = false;
+                }
+
+                if (toggle.graphic && toggle.graphic is Image checkbox)
+                {
+                    checkbox.sprite = GetSprite("checkbox_marker");
+                    checkbox.color = ValheimOrange;
+                    checkbox.type = Image.Type.Simple;
+                    checkbox.maskable = true;
+                    checkbox.gameObject.GetOrAddComponent<Outline>();
+                }
+            }
+        }
 
         /// <summary>
         ///     Apply Valheim style to a <see cref="ScrollRect"/> component.
@@ -1456,12 +1587,12 @@ namespace Jotunn.Managers
         {
             scrollRect.scrollSensitivity = 40f;
 
-            if ((bool)scrollRect.horizontalScrollbar)
+            if (scrollRect.horizontalScrollbar)
             {
                 ApplyScrollbarStyle(scrollRect.horizontalScrollbar);
             }
 
-            if ((bool)scrollRect.verticalScrollbar)
+            if (scrollRect.verticalScrollbar)
             {
                 ApplyScrollbarStyle(scrollRect.verticalScrollbar);
             }
@@ -1478,18 +1609,8 @@ namespace Jotunn.Managers
         /// <param name="scrollbar"> Component to apply the style to </param>
         public void ApplyScrollbarStyle(Scrollbar scrollbar)
         {
-            var tinter = new ColorBlock()
-            {
-                colorMultiplier = 1f,
-                disabledColor = new Color(0.784f, 0.784f, 0.784f, 0.502f),
-                fadeDuration = 0.1f,
-                highlightedColor = new Color(1f, 0.784f, 0.088f, 1f),
-                normalColor = new Color(0.926f, 0.645f, 0.34f, 1f),
-                pressedColor = new Color(0.838f, 0.647f, 0.03f, 1f),
-                selectedColor = new Color(1f, 0.786f, 0.088f, 1f)
-            };
             scrollbar.transition = Selectable.Transition.ColorTint;
-            scrollbar.colors = tinter;
+            scrollbar.colors = ValheimScrollbarHandleColorBlock;
 
             var rectTransform = (RectTransform)scrollbar.transform;
 
@@ -1503,9 +1624,15 @@ namespace Jotunn.Managers
                 rectTransform.sizeDelta = new Vector2(10, rectTransform.sizeDelta.y);
             }
 
+            if (scrollbar.targetGraphic && scrollbar.targetGraphic is Image handleImage)
+            {
+                handleImage.sprite = GetSprite("UISprite");
+            }
+
             if (scrollbar.TryGetComponent<Image>(out var image))
             {
-                image.color = new Color(0.191f, 0.125f, 0.078f, 1f);
+                image.sprite = GetSprite("Background");
+                image.color = Color.black;
                 image.raycastTarget = true;
             }
         }

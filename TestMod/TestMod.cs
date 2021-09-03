@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using BepInEx;
 using BepInEx.Configuration;
 using Jotunn;
@@ -225,7 +226,7 @@ namespace TestMod
                 DragWindowCntrl.ApplyDragWindowCntrl(TestPanel);
 
                 // Create the text object
-                GameObject textObject = GUIManager.Instance.CreateText(
+                GUIManager.Instance.CreateText(
                     text: "Jötunn, the Valheim Lib",
                     parent: TestPanel.transform,
                     anchorMin: new Vector2(0.5f, 1f),
@@ -254,6 +255,20 @@ namespace TestMod
                 // Add a listener to the button to close the panel again
                 Button button = buttonObject.GetComponent<Button>();
                 button.onClick.AddListener(TogglePanel);
+                
+                // Create a dropdown
+                var dd = GUIManager.Instance.CreateDropDown(
+                    parent: TestPanel.transform,
+                    anchorMin: new Vector2(0.5f, 0.5f),
+                    anchorMax: new Vector2(0.5f, 0.5f),
+                    position: new Vector2(200f, -250f),
+                    width: 100f,
+                    height: 30f);
+                dd.GetComponent<Dropdown>().ClearOptions();
+                dd.GetComponent<Dropdown>().AddOptions(new List<string>
+                {
+                    "bla", "blubb", "börks", "blarp", "harhar"
+                });
 
                 // Create PluginInfo
                 GameObject scrollView = GUIManager.Instance.CreateScrollView(
@@ -261,10 +276,10 @@ namespace TestMod
                     false, true, 10f, 5f,
                     GUIManager.Instance.ValheimScrollbarHandleColorBlock, Color.black, 
                     700f, 400f);
-
+                
                 RectTransform viewport =
                     scrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
-                
+
                 foreach (var mod in ModRegistry.GetMods().OrderBy(x => x.GUID))
                 {
                     // Mod GUID
