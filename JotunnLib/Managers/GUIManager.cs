@@ -112,6 +112,20 @@ namespace Jotunn.Managers
             colorMultiplier = 1f,
             fadeDuration = 0.1f
         };
+        
+        /// <summary>
+        ///     Button color block in Valheim style
+        /// </summary>
+        public ColorBlock ValheimButtonColorBlock = new ColorBlock
+        {
+            normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+            highlightedColor = new Color(1.3f, 1.3f, 1.3f, 1f),
+            pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
+            selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+            disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
+            colorMultiplier = 1f,
+            fadeDuration = 0.1f
+        };
 
         /// <summary>
         ///     Valheim standard font normal faced.
@@ -1223,7 +1237,8 @@ namespace Jotunn.Managers
             ApplyButtonStyle(newButton.GetComponent<Button>());
 
             // Set text
-            newButton.GetComponentInChildren<Text>().text = text;
+            Text txtComponent = newButton.GetComponentInChildren<Text>();
+            txtComponent.text = text;
 
             // Set positions and anchors
             RectTransform tf = newButton.transform as RectTransform;
@@ -1235,13 +1250,13 @@ namespace Jotunn.Managers
             if (width > 0f)
             {
                 tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-                newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                txtComponent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             }
 
             if (height > 0f)
             {
                 tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-                newButton.transform.Find("Text").GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                txtComponent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
             }
 
             return newButton;
@@ -1400,7 +1415,7 @@ namespace Jotunn.Managers
             image.sprite = GetSprite("button");
             image.type = Image.Type.Sliced;
             image.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-            go.GetComponent<Button>().image = image;
+            button.image = image;
 
             // SFX
             if (!go.TryGetComponent<ButtonSfx>(out var sfx))
@@ -1411,30 +1426,14 @@ namespace Jotunn.Managers
             sfx.m_selectSfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_select");
 
             // Colors
-            var tinter = new ColorBlock()
-            {
-                disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
-                fadeDuration = 0.1f,
-                normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                highlightedColor = new Color(1.3f, 1.3f, 1.3f, 1f),
-                pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
-                selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                colorMultiplier = 1f
-            };
-            go.GetComponent<Button>().colors = tinter;
-
-            // Text GO
+            go.GetComponent<Button>().colors = ValheimButtonColorBlock;
+            
+            // Text
             var txt = go.GetComponentInChildren<Text>()?.gameObject;
+
             if (!txt)
             {
-                txt = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Outline));
-                txt.transform.SetParent(go.transform);
-                txt.transform.localScale = new Vector3(1f, 1f, 1f);
-
-                RectTransform txtTransform = txt.GetComponent<RectTransform>();
-                txtTransform.anchorMin = new Vector2(0.5f, 0.5f);
-                txtTransform.anchorMax = new Vector2(0.5f, 0.5f);
-                txtTransform.anchoredPosition = new Vector2(0, 0f);
+                return;
             }
 
             Text txtComponent = txt.GetComponent<Text>();

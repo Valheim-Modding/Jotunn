@@ -4,6 +4,7 @@
 * Added global mod registry, collecting added entities per mod
 * Fixed sprite atlas loading
 * Show color on the ColorPicker button in the mod settings
+* GUIManager.ApplyButtonStyle does not add a Text GO any more
 
 ## Version 2.2.7
 * Added loading of dll embedded text assets (thx MSchmoecker)
