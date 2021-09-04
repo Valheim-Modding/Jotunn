@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using BepInEx;
 using BepInEx.Configuration;
 using Jotunn;
@@ -109,7 +108,7 @@ namespace TestMod
             // Hook GetVersionString for ext version string compat test
             On.Version.GetVersionString += Version_GetVersionString;
         }
-        
+
         // Called every frame
         private void Update()
         {
@@ -255,7 +254,7 @@ namespace TestMod
                 // Add a listener to the button to close the panel again
                 Button button = buttonObject.GetComponent<Button>();
                 button.onClick.AddListener(TogglePanel);
-                
+
                 // Create a dropdown
                 var dd = GUIManager.Instance.CreateDropDown(
                     parent: TestPanel.transform,
@@ -274,9 +273,9 @@ namespace TestMod
                 GameObject scrollView = GUIManager.Instance.CreateScrollView(
                     TestPanel.transform,
                     false, true, 10f, 5f,
-                    GUIManager.Instance.ValheimScrollbarHandleColorBlock, Color.black, 
+                    GUIManager.Instance.ValheimScrollbarHandleColorBlock, Color.black,
                     700f, 400f);
-                
+
                 RectTransform viewport =
                     scrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
 

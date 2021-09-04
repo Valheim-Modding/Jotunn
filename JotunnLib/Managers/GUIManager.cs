@@ -349,7 +349,7 @@ namespace Jotunn.Managers
                     Image colorImage = colorPicker.GetComponent<Image>();
                     colorImage.sprite = GetSprite("woodpanel_settings");
                     colorImage.type = Image.Type.Sliced;
-                    colorImage.pixelsPerUnitMultiplier = 2f;
+                    colorImage.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
                     colorImage.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
                     foreach (Text pickerTxt in colorPicker.GetComponentsInChildren<Text>(true))
                     {
@@ -375,7 +375,7 @@ namespace Jotunn.Managers
                     Image gradientImage = gradientPicker.GetComponent<Image>();
                     gradientImage.sprite = GetSprite("woodpanel_settings");
                     gradientImage.type = Image.Type.Sliced;
-                    gradientImage.pixelsPerUnitMultiplier = 2f;
+                    gradientImage.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
                     gradientImage.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
                     foreach (Text pickerTxt in gradientPicker.GetComponentsInChildren<Text>(true))
                     {
@@ -1316,7 +1316,7 @@ namespace Jotunn.Managers
             Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
             float width = 0f, float height = 0f)
         {
-            GameObject dropdown = DefaultControls.CreateDropdown(ValheimControlResources).SetSize(width, height);
+            GameObject dropdown = DefaultControls.CreateDropdown(ValheimControlResources);
             dropdown.transform.SetParent(parent, worldPositionStays: false);
             ApplyDropdownStyle(dropdown.GetComponent<Dropdown>());
             
@@ -1394,7 +1394,7 @@ namespace Jotunn.Managers
 
             woodpanel.GetComponent<Image>().sprite = GetSprite("woodpanel_trophys");
             woodpanel.GetComponent<Image>().type = Image.Type.Sliced;
-            woodpanel.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
+            woodpanel.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             woodpanel.GetComponent<Image>().material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
             woodpanel.GetComponent<Image>().color = Color.white;
 
