@@ -318,8 +318,8 @@ namespace Jotunn.Managers
                     }
 
                     // DefaultControls.Resources pack
-                    AssetBundle jotunnbundle = AssetUtils.LoadAssetBundleFromResources("jotunn", typeof(Main).Assembly);
-                    jotunnbundle.LoadAsset<GameObject>("UIMaskStub");
+                    AssetBundle jotunnBundle = AssetUtils.LoadAssetBundleFromResources("jotunn", typeof(Main).Assembly);
+                    GameObject stub = jotunnBundle.LoadAsset<GameObject>("UIMaskStub");
                     
                     ValheimControlResources.standard = GetSprite("button");
                     ValheimControlResources.background = GetSprite("text_field");
@@ -327,9 +327,9 @@ namespace Jotunn.Managers
                     ValheimControlResources.knob = GetSprite("checkbox_marker");
                     ValheimControlResources.checkmark = GetSprite("checkbox_marker");
                     ValheimControlResources.dropdown = GetSprite("checkbox_marker");
-                    ValheimControlResources.mask = GetSprite("UIMask");  // loaded now with the stub
+                    ValheimControlResources.mask = stub.GetComponent<Image>().sprite;
 
-                    jotunnbundle.Unload(false);
+                    jotunnBundle.Unload(false);
 
                     // Color and Gradient picker
                     AssetBundle colorWheelBundle = AssetUtils.LoadAssetBundleFromResources("colorpicker", typeof(Main).Assembly);
