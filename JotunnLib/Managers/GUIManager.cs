@@ -350,7 +350,7 @@ namespace Jotunn.Managers
                     }
                     foreach (InputField pickerInput in colorPicker.GetComponentsInChildren<InputField>(true))
                     {
-                        ApplyInputFieldStyle(pickerInput);
+                        ApplyInputFieldStyle(pickerInput, 13);
                     }
                     foreach (Button pickerButton in colorPicker.GetComponentsInChildren<Button>(true))
                     {
@@ -376,7 +376,7 @@ namespace Jotunn.Managers
                     }
                     foreach (InputField pickerInput in gradientPicker.GetComponentsInChildren<InputField>(true))
                     {
-                        ApplyInputFieldStyle(pickerInput);
+                        ApplyInputFieldStyle(pickerInput, 13);
                     }
                     foreach (Button pickerButton in gradientPicker.GetComponentsInChildren<Button>(true))
                     {
