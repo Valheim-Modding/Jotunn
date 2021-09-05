@@ -316,20 +316,21 @@ namespace Jotunn.Managers
                     {
                         throw new Exception("Fonts not found");
                     }
-/*
-                    // Base prefab for a valheim style button
-                    var button = new GameObject("BaseButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx));
-                    ApplyButtonStyle(button.GetComponent<Button>());
-                    button.SetActive(false);
-                    button.layer = UILayer;
 
-                    PrefabManager.Instance.AddPrefab(button);
+                    // DefaultControls.Resources pack
+                    AssetBundle jotunnbundle = AssetUtils.LoadAssetBundleFromResources("jotunn", typeof(Main).Assembly);
+                    jotunnbundle.LoadAsset<GameObject>("UIMaskStub");
+                    
+                    ValheimControlResources.standard = GetSprite("button");
+                    ValheimControlResources.background = GetSprite("text_field");
+                    ValheimControlResources.inputField = GetSprite("text_field");
+                    ValheimControlResources.knob = GetSprite("checkbox_marker");
+                    ValheimControlResources.checkmark = GetSprite("checkbox_marker");
+                    ValheimControlResources.dropdown = GetSprite("checkbox_marker");
+                    ValheimControlResources.mask = GetSprite("UIMask");  // loaded now with the stub
 
-                    // Base woodpanel prefab
-                    var woodpanel = new GameObject("BaseWoodpanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-                    ApplyWoodpanelStyle(woodpanel.transform);
-                    PrefabManager.Instance.AddPrefab(woodpanel);
-*/
+                    jotunnbundle.Unload(false);
+
                     // Color and Gradient picker
                     AssetBundle colorWheelBundle = AssetUtils.LoadAssetBundleFromResources("colorpicker", typeof(Main).Assembly);
 
@@ -389,15 +390,6 @@ namespace Jotunn.Managers
                     PrefabManager.Instance.AddPrefab(gradientPicker);
                     
                     colorWheelBundle.Unload(false);
-                    
-                    // DefaultControls.Resources pack
-                    ValheimControlResources.standard = GetSprite("button");
-                    ValheimControlResources.background = GetSprite("text_field");
-                    ValheimControlResources.inputField = GetSprite("text_field");
-                    ValheimControlResources.knob = GetSprite("checkbox_marker");
-                    ValheimControlResources.checkmark = GetSprite("checkbox_marker");
-                    ValheimControlResources.dropdown = GetSprite("checkbox_marker");
-                    ValheimControlResources.mask = null;
                 }
                 catch (Exception ex)
                 {
