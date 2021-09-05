@@ -130,7 +130,8 @@ namespace Jotunn.Utils
             Type callingType = ReflectionHelper.GetCallingType();
 
             return GetPluginInfoFromType(callingType)?.Metadata ??
-                   GetPluginInfoFromAssembly(callingType.Assembly)?.Metadata;
+                   GetPluginInfoFromAssembly(callingType.Assembly)?.Metadata ??
+                   Main.Instance.Info.Metadata;
         }
     }
 }

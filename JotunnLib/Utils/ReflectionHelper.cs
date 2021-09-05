@@ -53,8 +53,9 @@ namespace Jotunn.Utils
         /// <returns>The reflected type of the first caller outside of this assembly</returns>
         public static Type GetCallingType()
         {
-            return new StackTrace().GetFrames()
-                .First(x => x.GetMethod().ReflectedType?.Assembly != typeof(Main).Assembly).GetMethod()
+            return (new StackTrace().GetFrames() ?? Array.Empty<StackFrame>())
+                .First(x => x.GetMethod().ReflectedType?.Assembly != typeof(Main).Assembly)
+                .GetMethod()
                 .ReflectedType;
         }
 
@@ -64,8 +65,9 @@ namespace Jotunn.Utils
         /// <returns>The assembly of the first caller outside of this assembly</returns>
         public static Assembly GetCallingAssembly()
         {
-            return new StackTrace().GetFrames()
-                    .First(x => x.GetMethod().ReflectedType?.Assembly != typeof(Main).Assembly).GetMethod()
+            return (new StackTrace().GetFrames() ?? Array.Empty<StackFrame>())
+                .First(x => x.GetMethod().ReflectedType?.Assembly != typeof(Main).Assembly)
+                .GetMethod()
                 .ReflectedType?
                 .Assembly;
         }
