@@ -260,13 +260,13 @@ namespace TestMod
                     parent: TestPanel.transform,
                     anchorMin: new Vector2(0.5f, 0.5f),
                     anchorMax: new Vector2(0.5f, 0.5f),
-                    position: new Vector2(200f, -250f),
+                    position: new Vector2(-250f, -250f),
                     width: 100f,
                     height: 30f);
                 dd.GetComponent<Dropdown>().ClearOptions();
                 dd.GetComponent<Dropdown>().AddOptions(new List<string>
                 {
-                    "bla", "blubb", "börks", "blarp", "harhar", "needscroll", "really bad", "gogogo", "aaaaargh"
+                    "bla", "blubb", "börks", "blarp", "harhar"
                 });
                 
                 // Create an input field
@@ -274,9 +274,9 @@ namespace TestMod
                     parent: TestPanel.transform,
                     anchorMin: new Vector2(0.5f, 0.5f),
                     anchorMax: new Vector2(0.5f, 0.5f),
-                    position: new Vector2(300f, -250f),
+                    position: new Vector2(250f, -250f),
                     placeholderText: "input...",
-                    width: 100f,
+                    width: 160f,
                     height: 30f);
 
                 // Create PluginInfo

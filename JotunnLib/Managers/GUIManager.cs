@@ -1271,19 +1271,19 @@ namespace Jotunn.Managers
         /// <param name="position">Position</param>
         /// <param name="contentType">Content type for the input field</param>
         /// <param name="placeholderText">Text to display as a placeholder (can be null)</param>
-        /// <param name="fontSize">Optional font size, defaults to 14</param>
+        /// <param name="fontSize">Optional font size, defaults to 16</param>
         /// <param name="width">Set width if > 0</param>
         /// <param name="height">Set height if > 0</param>
         /// <returns>Input field GameObject in Valheim style</returns>
         public GameObject CreateInputField(
             Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
             InputField.ContentType contentType = InputField.ContentType.Standard, 
-            string placeholderText = null, int fontSize = 14, float width = 0f, float height = 0f)
+            string placeholderText = null, int fontSize = 16, float width = 0f, float height = 0f)
         {
             GameObject inputField = DefaultControls.CreateInputField(ValheimControlResources);
             inputField.transform.SetParent(parent, false);
             InputField inputComponent = inputField.GetComponent<InputField>();
-            ApplyInputFieldStyle(inputComponent);
+            ApplyInputFieldStyle(inputComponent, fontSize);
 
             // Set content type
             inputComponent.contentType = contentType;
@@ -1292,11 +1292,7 @@ namespace Jotunn.Managers
             if (!string.IsNullOrEmpty(placeholderText) && inputComponent.placeholder is Text txt)
             {
                 txt.text = placeholderText;
-                txt.fontSize = fontSize;
             }
-
-            // Set font size
-            inputComponent.textComponent.fontSize = fontSize;
             
             // Set positions and anchors
             RectTransform tf = inputField.transform as RectTransform;
@@ -1307,20 +1303,16 @@ namespace Jotunn.Managers
             // Optionally set width and height
             if (width > 0f)
             {
-                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-                inputComponent.textComponent.GetComponent<RectTransform>()
-                    .SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 20f);
-                inputComponent.placeholder.GetComponent<RectTransform>()
-                    .SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 20f);
+                inputField.SetWidth(width);
+                inputComponent.placeholder.gameObject.SetWidth(width - 20f);
+                inputComponent.textComponent.gameObject.SetWidth(width - 20f);
             }
 
             if (height > 0f)
             {
-                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-                inputComponent.textComponent.GetComponent<RectTransform>()
-                    .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 10f);
-                inputComponent.placeholder.GetComponent<RectTransform>()
-                    .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 10f);
+                inputField.SetHeight(height);
+                inputComponent.placeholder.gameObject.SetHeight(height - 10f);
+                inputComponent.textComponent.gameObject.SetHeight(height - 10f);
             }
 
             return inputField;
@@ -1355,16 +1347,18 @@ namespace Jotunn.Managers
         /// <param name="anchorMin">Min anchor</param>
         /// <param name="anchorMax">Max anchor</param>
         /// <param name="position">Position</param>
+        /// <param name="fontSize">Optional font size, defaults to 16</param>
         /// <param name="width">Set width if > 0</param>
         /// <param name="height">Set height if > 0</param>
         /// <returns></returns>
         public GameObject CreateDropDown(
             Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
-            float width = 0f, float height = 0f)
+            int fontSize = 16, float width = 0f, float height = 0f)
         {
             GameObject dropdown = DefaultControls.CreateDropdown(ValheimControlResources);
             dropdown.transform.SetParent(parent, worldPositionStays: false);
-            ApplyDropdownStyle(dropdown.GetComponent<Dropdown>());
+            Dropdown dropdownComponent = dropdown.GetComponent<Dropdown>();
+            ApplyDropdownStyle(dropdownComponent, fontSize);
             
             // Set positions and anchors
             RectTransform tf = dropdown.transform as RectTransform;
@@ -1375,12 +1369,21 @@ namespace Jotunn.Managers
             // Optionally set width and height
             if (width > 0f)
             {
-                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                dropdownComponent.captionText.gameObject.SetMiddleLeft();
+                dropdownComponent.captionText.gameObject.SetWidth(width);
+                dropdownComponent.captionText.GetComponent<RectTransform>()
+                    .anchoredPosition = new Vector3(10f, 0f);
+                dropdownComponent.itemText.gameObject.SetWidth(width);
             }
 
             if (height > 0f)
             {
-                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                dropdown.SetHeight(height);
+                dropdownComponent.captionText.gameObject.SetMiddleLeft();
+                dropdownComponent.captionText.gameObject.SetHeight(height);
+                dropdownComponent.captionText.GetComponent<RectTransform>()
+                    .anchoredPosition = new Vector3(10f, 0f);
+                dropdownComponent.itemText.gameObject.SetHeight(height);
             }
 
             return dropdown;
@@ -1497,7 +1500,8 @@ namespace Jotunn.Managers
         ///     Apply Valheim style to an <see cref="InputField"/> Component.
         /// </summary>
         /// <param name="field">Component to apply the style to</param>
-        public void ApplyInputFieldStyle(InputField field)
+        /// <param name="fontSize">Optional font size, defaults to 16</param>
+        public void ApplyInputFieldStyle(InputField field, int fontSize = 16)
         {
             // Image
             if (field.targetGraphic is Image imageField)
@@ -1512,6 +1516,7 @@ namespace Jotunn.Managers
             {
                 placeholder.font = AveriaSerifBold;
                 placeholder.color = Color.grey;
+                placeholder.fontSize = fontSize;
             }
             
             // Text
@@ -1519,6 +1524,7 @@ namespace Jotunn.Managers
             {
                 field.textComponent.font = AveriaSerifBold;
                 field.textComponent.color = Color.white;
+                field.textComponent.fontSize = fontSize;
             }
             
             // Text Outline
@@ -1554,20 +1560,23 @@ namespace Jotunn.Managers
         ///     Apply Valheim style to a <see cref="Dropdown"/> component.
         /// </summary>
         /// <param name="dropdown">Component to apply the style to</param>
-        public void ApplyDropdownStyle(Dropdown dropdown)
+        /// <param name="fontSize">Optional font size, defaults to 16</param>
+        public void ApplyDropdownStyle(Dropdown dropdown, int fontSize = 16)
         {
             // Dropdown
             if (dropdown.captionText is Text captionText)
             {
                 captionText.font = AveriaSerifBold;
-                captionText.color = ValheimOrange;
+                captionText.fontSize = fontSize;
+                captionText.color = Color.white;
                 captionText.gameObject.GetOrAddComponent<Outline>().effectColor = Color.black;
             }
 
             if (dropdown.itemText is Text itemText)
             {
                 itemText.font = AveriaSerifBold;
-                itemText.color = ValheimOrange;
+                itemText.fontSize = fontSize;
+                itemText.color = Color.white;
                 itemText.gameObject.GetOrAddComponent<Outline>().effectColor = Color.black;
             }
 
@@ -1585,7 +1594,7 @@ namespace Jotunn.Managers
             {
                 arrow.SetSize(25f, 25f);
                 arrowImage.sprite = GetSprite("map_marker");
-                arrowImage.color = ValheimOrange;
+                arrowImage.color = Color.white;
                 arrowImage.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
             
@@ -1619,7 +1628,7 @@ namespace Jotunn.Managers
                 if (toggle.graphic is Image checkbox)
                 {
                     checkbox.sprite = GetSprite("checkbox_marker");
-                    checkbox.color = ValheimOrange;
+                    checkbox.color = Color.white;
                     checkbox.type = Image.Type.Simple;
                     checkbox.maskable = true;
                     checkbox.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
