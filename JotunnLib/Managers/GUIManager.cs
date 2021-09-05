@@ -1500,6 +1500,16 @@ namespace Jotunn.Managers
         ///     Apply Valheim style to an <see cref="InputField"/> Component.
         /// </summary>
         /// <param name="field">Component to apply the style to</param>
+        [Obsolete("Only here for backward compat")]
+        public void ApplyInputFieldStyle(InputField field)
+        {
+            ApplyInputFieldStyle(field, 16);
+        }
+
+        /// <summary>
+        ///     Apply Valheim style to an <see cref="InputField"/> Component.
+        /// </summary>
+        /// <param name="field">Component to apply the style to</param>
         /// <param name="fontSize">Optional font size, defaults to 16</param>
         public void ApplyInputFieldStyle(InputField field, int fontSize = 16)
         {
