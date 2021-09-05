@@ -382,6 +382,44 @@ namespace TestMod
                                 addContentSizeFitter: false);
                         }
                     }
+                    
+                    if (mod.Commands.Any())
+                    {
+                        // Items title
+                        GUIManager.Instance.CreateText(
+                            text: "Commands:",
+                            parent: viewport,
+                            anchorMin: new Vector2(0.5f, 1f),
+                            anchorMax: new Vector2(0.5f, 1f),
+                            position: new Vector2(0f, 0f),
+                            font: GUIManager.Instance.AveriaSerifBold,
+                            fontSize: 20,
+                            color: GUIManager.Instance.ValheimOrange,
+                            outline: true,
+                            outlineColor: Color.black,
+                            width: 650f,
+                            height: 30f,
+                            addContentSizeFitter: false);
+
+                        foreach (var command in mod.Commands)
+                        {
+                            // Piece name
+                            GUIManager.Instance.CreateText(
+                                text: $"{command}",
+                                parent: viewport,
+                                anchorMin: new Vector2(0.5f, 1f),
+                                anchorMax: new Vector2(0.5f, 1f),
+                                position: new Vector2(0f, 0f),
+                                font: GUIManager.Instance.AveriaSerifBold,
+                                fontSize: 20,
+                                color: Color.white,
+                                outline: true,
+                                outlineColor: Color.black,
+                                width: 650f,
+                                height: 30f,
+                                addContentSizeFitter: false);
+                        }
+                    }
                 }
             }
 

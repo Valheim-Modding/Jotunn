@@ -2,7 +2,6 @@
 using System.Linq;
 using Jotunn.Entities;
 using Jotunn.Managers;
-using UnityEngine;
 
 namespace Jotunn.Utils
 {
@@ -27,14 +26,14 @@ namespace Jotunn.Utils
                 };
             }
         }
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomPrefab"/>s
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<CustomPrefab> GetPrefabs()
         {
-            return PrefabManager.Instance.Prefabs;
+            return PrefabManager.Instance.Prefabs.AsReadOnly();
         }
 
         /// <summary>
@@ -46,14 +45,14 @@ namespace Jotunn.Utils
         {
             return PrefabManager.Instance.Prefabs.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomItem"/>s
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<CustomItem> GetItems()
         {
-            return ItemManager.Instance.Items.ToList();
+            return ItemManager.Instance.Items.AsReadOnly();
         }
 
         /// <summary>
@@ -65,14 +64,14 @@ namespace Jotunn.Utils
         {
             return ItemManager.Instance.Items.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomRecipe"/>s
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<CustomRecipe> GetRecipes()
         {
-            return ItemManager.Instance.Recipes.ToList();
+            return ItemManager.Instance.Recipes.AsReadOnly();
         }
 
         /// <summary>
@@ -84,14 +83,14 @@ namespace Jotunn.Utils
         {
             return ItemManager.Instance.Recipes.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomItemConversion"/>s of a mod by GUID
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<CustomItemConversion> GetItemConversions()
         {
-            return ItemManager.Instance.ItemConversions.ToList();
+            return ItemManager.Instance.ItemConversions.AsReadOnly();
         }
 
         /// <summary>
@@ -103,14 +102,14 @@ namespace Jotunn.Utils
         {
             return ItemManager.Instance.ItemConversions.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomStatusEffect"/>s
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<CustomStatusEffect> GetStatusEffects()
         {
-            return ItemManager.Instance.StatusEffects.ToList();
+            return ItemManager.Instance.StatusEffects.AsReadOnly();
         }
 
         /// <summary>
@@ -122,14 +121,14 @@ namespace Jotunn.Utils
         {
             return ItemManager.Instance.StatusEffects.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomPieceTable"/>s
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<CustomPieceTable> GetPieceTables()
         {
-            return PieceManager.Instance.PieceTables.ToList();
+            return PieceManager.Instance.PieceTables.AsReadOnly();
         }
 
         /// <summary>
@@ -141,14 +140,14 @@ namespace Jotunn.Utils
         {
             return PieceManager.Instance.PieceTables.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomPiece"/>s
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<CustomPiece> GetPieces()
         {
-            return PieceManager.Instance.Pieces.ToList();
+            return PieceManager.Instance.Pieces.AsReadOnly();
         }
         /// <summary>
         ///     Get all added <see cref="CustomPiece"/>s of a mod by GUID
@@ -158,6 +157,24 @@ namespace Jotunn.Utils
         public static IEnumerable<CustomPiece> GetPieces(string modGuid)
         {
             return PieceManager.Instance.Pieces.Where(x => x.SourceMod.GUID.Equals(modGuid));
+        }
+        
+        /// <summary>
+        ///     Get all added <see cref="ConsoleCommand"/>s
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<ConsoleCommand> GetCommands()
+        {
+            return CommandManager.Instance.CustomCommands;
+        }
+        /// <summary>
+        ///     Get all added <see cref="ConsoleCommand"/>s of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns></returns>
+        public static IEnumerable<ConsoleCommand> GetCommands(string modGuid)
+        {
+            return CommandManager.Instance.CustomCommands.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
 
         /// <summary>
@@ -179,7 +196,7 @@ namespace Jotunn.Utils
             ///     Current version
             /// </summary>
             public System.Version Version { get; internal set; }
-            
+
             /// <summary>
             ///     Custom prefabs added by that mod
             /// </summary>
@@ -201,7 +218,7 @@ namespace Jotunn.Utils
                     return GetItems(GUID);
                 }
             }
-            
+
             /// <summary>
             ///     Custom recipes added by that mod
             /// </summary>
@@ -212,7 +229,7 @@ namespace Jotunn.Utils
                     return GetRecipes(GUID);
                 }
             }
-            
+
             /// <summary>
             ///     Custom item conversions added by that mod
             /// </summary>
@@ -254,6 +271,17 @@ namespace Jotunn.Utils
                 get
                 {
                     return GetPieces(GUID);
+                }
+            }
+            
+            /// <summary>
+            ///     Custom commands added by that mod
+            /// </summary>
+            public IEnumerable<ConsoleCommand> Commands
+            {
+                get
+                {
+                    return GetCommands(GUID);
                 }
             }
         }
