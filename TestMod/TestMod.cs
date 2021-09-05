@@ -266,8 +266,18 @@ namespace TestMod
                 dd.GetComponent<Dropdown>().ClearOptions();
                 dd.GetComponent<Dropdown>().AddOptions(new List<string>
                 {
-                    "bla", "blubb", "börks", "blarp", "harhar"
+                    "bla", "blubb", "börks", "blarp", "harhar", "needscroll", "really bad", "gogogo", "aaaaargh"
                 });
+                
+                // Create an input field
+                GUIManager.Instance.CreateInputField(
+                    parent: TestPanel.transform,
+                    anchorMin: new Vector2(0.5f, 0.5f),
+                    anchorMax: new Vector2(0.5f, 0.5f),
+                    position: new Vector2(300f, -250f),
+                    placeholderText: "input...",
+                    width: 100f,
+                    height: 30f);
 
                 // Create PluginInfo
                 GameObject scrollView = GUIManager.Instance.CreateScrollView(

@@ -294,7 +294,7 @@ namespace Jotunn.Managers
             {
                 try
                 {
-                    var atlas = Resources.FindObjectsOfTypeAll<SpriteAtlas>();
+                    SpriteAtlas[] atlas = Resources.FindObjectsOfTypeAll<SpriteAtlas>();
 
                     UIAtlas = atlas.FirstOrDefault(x => x.name.Equals("UIAtlas"));
                     if (UIAtlas == null)
@@ -309,7 +309,7 @@ namespace Jotunn.Managers
                     }
 
                     // Fonts
-                    var fonts = Resources.FindObjectsOfTypeAll<Font>();
+                    Font[] fonts = Resources.FindObjectsOfTypeAll<Font>();
                     AveriaSerif = fonts.FirstOrDefault(x => x.name == "AveriaSerifLibre-Regular");
                     AveriaSerifBold = fonts.FirstOrDefault(x => x.name == "AveriaSerifLibre-Bold");
                     if (AveriaSerifBold == null || AveriaSerif == null)
@@ -330,15 +330,6 @@ namespace Jotunn.Managers
                     ApplyWoodpanelStyle(woodpanel.transform);
                     PrefabManager.Instance.AddPrefab(woodpanel);
 */
-                    // DefaultControls.Resources pack
-                    ValheimControlResources.standard = GetSprite("button");
-                    ValheimControlResources.background = GetSprite("text_field");
-                    ValheimControlResources.inputField = GetSprite("text_field");
-                    ValheimControlResources.knob = GetSprite("checkbox_marker");
-                    ValheimControlResources.checkmark = GetSprite("checkbox_marker");
-                    ValheimControlResources.dropdown = GetSprite("checkbox_marker");
-                    ValheimControlResources.mask = GetSprite("UIMask");
-
                     // Color and Gradient picker
                     AssetBundle colorWheelBundle = AssetUtils.LoadAssetBundleFromResources("colorpicker", typeof(Main).Assembly);
 
@@ -396,8 +387,17 @@ namespace Jotunn.Managers
                     }
 
                     PrefabManager.Instance.AddPrefab(gradientPicker);
-
+                    
                     colorWheelBundle.Unload(false);
+                    
+                    // DefaultControls.Resources pack
+                    ValheimControlResources.standard = GetSprite("button");
+                    ValheimControlResources.background = GetSprite("text_field");
+                    ValheimControlResources.inputField = GetSprite("text_field");
+                    ValheimControlResources.knob = GetSprite("checkbox_marker");
+                    ValheimControlResources.checkmark = GetSprite("checkbox_marker");
+                    ValheimControlResources.dropdown = GetSprite("checkbox_marker");
+                    ValheimControlResources.mask = null;
                 }
                 catch (Exception ex)
                 {
@@ -1261,43 +1261,89 @@ namespace Jotunn.Managers
 
             return newButton;
         }
+        
+        /// <summary>
+        ///     Create a new InputField (Valheim style).
+        /// </summary>
+        /// <param name="parent">Parent transform</param>
+        /// <param name="anchorMin">Min anchor</param>
+        /// <param name="anchorMax">Max anchor</param>
+        /// <param name="position">Position</param>
+        /// <param name="contentType">Content type for the input field</param>
+        /// <param name="placeholderText">Text to display as a placeholder (can be null)</param>
+        /// <param name="fontSize">Optional font size, defaults to 14</param>
+        /// <param name="width">Set width if > 0</param>
+        /// <param name="height">Set height if > 0</param>
+        /// <returns>Input field GameObject in Valheim style</returns>
+        public GameObject CreateInputField(
+            Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
+            InputField.ContentType contentType = InputField.ContentType.Standard, 
+            string placeholderText = null, int fontSize = 14, float width = 0f, float height = 0f)
+        {
+            GameObject inputField = DefaultControls.CreateInputField(ValheimControlResources);
+            inputField.transform.SetParent(parent, false);
+            InputField inputComponent = inputField.GetComponent<InputField>();
+            ApplyInputFieldStyle(inputComponent);
+
+            // Set content type
+            inputComponent.contentType = contentType;
+
+            // Set placeholder text and font size
+            if (!string.IsNullOrEmpty(placeholderText) && inputComponent.placeholder is Text txt)
+            {
+                txt.text = placeholderText;
+                txt.fontSize = fontSize;
+            }
+
+            // Set font size
+            inputComponent.textComponent.fontSize = fontSize;
+            
+            // Set positions and anchors
+            RectTransform tf = inputField.transform as RectTransform;
+            tf.anchoredPosition = position;
+            tf.anchorMin = anchorMin;
+            tf.anchorMax = anchorMax;
+
+            // Optionally set width and height
+            if (width > 0f)
+            {
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                inputComponent.textComponent.GetComponent<RectTransform>()
+                    .SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 20f);
+                inputComponent.placeholder.GetComponent<RectTransform>()
+                    .SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width - 20f);
+            }
+
+            if (height > 0f)
+            {
+                tf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                inputComponent.textComponent.GetComponent<RectTransform>()
+                    .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 10f);
+                inputComponent.placeholder.GetComponent<RectTransform>()
+                    .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height - 10f);
+            }
+
+            return inputField;
+        }
 
         /// <summary>
         ///     Create toggle field
         /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
+        /// <param name="parent">Parent transform</param>
+        /// <param name="width">Set width</param>
+        /// <param name="height">Set height</param>
         /// <returns></returns>
         public GameObject CreateToggle(Transform parent, float width, float height)
         {
-            /*GameObject toggle = new GameObject("Toggle", typeof(RectTransform), typeof(Toggle), typeof(LayoutElement)).SetUpperLeft().SetSize(width, height);
-            toggle.GetComponent<LayoutElement>().preferredWidth = width;
-            toggle.transform.SetParent(parent, false);
-
-
-            GameObject background = new GameObject("Background", typeof(RectTransform), typeof(Image)).SetUpperRight().SetSize(28f, 28f);
-            background.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
-            background.transform.SetParent(toggle.transform, false);
-
-
-            Sprite checkBoxSprite = GetSprite("checkbox");
-            background.GetComponent<Image>().sprite = checkBoxSprite;
-            background.GetComponent<Image>().type = Image.Type.Simple;
-            
-            GameObject checkMark = new GameObject("Checkmark", typeof(RectTransform), typeof(Image));
-            checkMark.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-            checkMark.SetSize(28f, 28f);
-            checkMark.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
-            checkMark.GetComponent<Image>().type = Image.Type.Simple;
-            checkMark.transform.SetParent(background.transform, false);*/
-
-            GameObject toggle = DefaultControls.CreateToggle(ValheimControlResources).SetSize(width, height);
+            GameObject toggle = DefaultControls.CreateToggle(ValheimControlResources);
             toggle.transform.SetParent(parent);
-            toggle.transform.Find("Background").gameObject.SetSize(28f, 28f);
-            toggle.transform.Find("Background/Checkmark").gameObject.SetSize(28f, 28f);
             Toggle toggleComponent = toggle.GetComponent<Toggle>();
             ApplyToogleStyle(toggleComponent);
+
+            // Set size
+            toggle.SetSize(width, height);
+            toggle.transform.Find("Background").gameObject.SetSize(width, height);
+            toggle.transform.Find("Background/Checkmark").gameObject.SetSize(width, height);
 
             return toggle;
         }
@@ -1405,7 +1451,7 @@ namespace Jotunn.Managers
         ///     Apply valheim style to a <see cref="Button"/> Component
         /// </summary>
         /// <param name="button">Component to apply the style to</param>
-        /// <param name="fontSize">Optional fontSize, defaults to 16</param>
+        /// <param name="fontSize">Optional font size, defaults to 16</param>
         public void ApplyButtonStyle(Button button, int fontSize = 16)
         {
             GameObject go = button.gameObject;
@@ -1446,29 +1492,38 @@ namespace Jotunn.Managers
             Outline outline = txt.GetOrAddComponent<Outline>();
             outline.effectColor = Color.black;
         }
-
+        
         /// <summary>
         ///     Apply Valheim style to an <see cref="InputField"/> Component.
         /// </summary>
         /// <param name="field">Component to apply the style to</param>
         public void ApplyInputFieldStyle(InputField field)
         {
+            // Image
             if (field.targetGraphic is Image imageField)
             {
                 imageField.color = Color.white;
                 imageField.sprite = GetSprite("text_field");
+                imageField.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
 
+            // Placeholder
             if (field.placeholder is Text placeholder)
             {
                 placeholder.font = AveriaSerifBold;
+                placeholder.color = Color.grey;
             }
-
+            
+            // Text
             if (field.textComponent)
             {
                 field.textComponent.font = AveriaSerifBold;
                 field.textComponent.color = Color.white;
             }
+            
+            // Text Outline
+            Outline outline = field.textComponent.gameObject.GetOrAddComponent<Outline>();
+            outline.effectColor = Color.black;
         }
 
         /// <summary>
