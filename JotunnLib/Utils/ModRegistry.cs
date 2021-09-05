@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using BepInEx;
 using Jotunn.Entities;
 using Jotunn.Managers;
 
@@ -14,9 +15,12 @@ namespace Jotunn.Utils
         ///     Get all loaded mod's metadata
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<ModInfo> GetMods()
+        public static IEnumerable<ModInfo> GetMods(bool includingJotunn = false)
         {
-            foreach (var mod in BepInExUtils.GetDependentPlugins().Values.Select(mod => mod.Info.Metadata))
+            foreach (
+                BepInPlugin mod in BepInExUtils.GetDependentPlugins(includingJotunn)
+                .Values
+                .Select(mod => mod.Info.Metadata))
             {
                 yield return new ModInfo()
                 {
