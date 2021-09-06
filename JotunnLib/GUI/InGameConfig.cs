@@ -184,6 +184,7 @@ namespace Jotunn.GUI
             // Create settings window
             SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
             SettingsRoot.name = "ModSettings";
+            SettingsRoot.transform.GetComponentInChildren<Text>().gameObject.SetWidth(500f);
             SettingsRoot.transform.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuName);
             if (Menu.instance != null)
             {
