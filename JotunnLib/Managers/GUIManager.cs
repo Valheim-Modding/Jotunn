@@ -1350,6 +1350,7 @@ namespace Jotunn.Managers
             GameObject dropdown = DefaultControls.CreateDropdown(ValheimControlResources);
             dropdown.transform.SetParent(parent, worldPositionStays: false);
             Dropdown dropdownComponent = dropdown.GetComponent<Dropdown>();
+            dropdownComponent.ClearOptions();
             ApplyDropdownStyle(dropdownComponent, fontSize);
             
             // Set positions and anchors
