@@ -263,7 +263,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            ct.AddTranslation(language, token, value);
+            ct.AddTranslation(language, trim, value);
         }
 
         /// <summary> Tries to translate a word with loaded plugin translations or <see cref="Localization.Translate"/>. </summary>
@@ -350,7 +350,7 @@ namespace Jotunn.Managers
                     if (string.IsNullOrEmpty(translation) || translation[0] == '\r')
                         translation = slicedLine[1];
 
-                    translations.AddTranslation(token, language, translation);
+                    translations.AddTranslation(language, token, translation);
                 }
             }
         }
@@ -362,10 +362,9 @@ namespace Jotunn.Managers
         private void LoadJsonLanguageFile(string language, string fileContent, BepInPlugin sourceMod = null)
         {
             var translations = Data.Get(sourceMod ?? BepInExUtils.GetSourceModMetadata());
-            var json = (IDictionary<string, string>)SimpleJson.SimpleJson.DeserializeObject(fileContent);
+            var json = (IDictionary<string, object>)SimpleJson.SimpleJson.DeserializeObject(fileContent);
 
-            foreach (var pair in json)
-                translations.AddTranslation(pair.Key, language, pair.Value);
+            translations.AddTranslation(language, json);
         }
         #endregion
     }

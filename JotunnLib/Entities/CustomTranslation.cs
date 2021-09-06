@@ -19,11 +19,24 @@ namespace Jotunn.Entities
 
         /// <summary> Add translation to the translation dictionary. </summary>
         /// <param name="language"> Language of the translation you want to add. </param>
-        /// <param name="tokenValueDic"> Token-Value dictionary. </param>
-        public void AddTranslation(in string language, Dictionary<string, string> tokenValueDic)
+        /// <param name="tokenValue"> Token-Value dictionary. </param>
+        public void AddTranslation(in string language, Dictionary<string, string> tokenValue)
         {
-            if (!map.ContainsKey(language)) map.Add(language, new Dictionary<string, string>());
-            foreach (var tv in tokenValueDic) map[language][tv.Key] = tv.Value;
+            if (!map.ContainsKey(language))
+                map.Add(language, new Dictionary<string, string>());
+            foreach (var tv in tokenValue)
+                map[language][tv.Key] = tv.Value;
+        }
+
+        /// <summary> Add translation to the translation dictionary. </summary>
+        /// <param name="language"> Language of the translation you want to add. </param>
+        /// <param name="tokenValue"> Token-Value dictionary. </param>
+        public void AddTranslation(in string language, IDictionary<string, object> tokenValue)
+        {
+            if (!map.ContainsKey(language))
+                map.Add(language, new Dictionary<string, string>());
+            foreach (var tv in tokenValue)
+                map[language][tv.Key] = (string)tv.Value;
         }
 
         /// <summary> Add translation to the translation dictionary. </summary>
@@ -32,7 +45,8 @@ namespace Jotunn.Entities
         /// <param name="translation"> The translation. </param>
         public void AddTranslation(in string language, in string token, string translation)
         {
-            if (!map.ContainsKey(language)) map.Add(language, new Dictionary<string, string>());
+            if (!map.ContainsKey(language))
+                map.Add(language, new Dictionary<string, string>());
             map[language][token] = translation;
         }
 
