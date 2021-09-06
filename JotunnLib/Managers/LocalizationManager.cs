@@ -104,6 +104,8 @@ namespace Jotunn.Managers
                 Localization.instance.SetupLanguage(lang);
             }
 
+            InvokeOnLocalizationAdded();
+
             On.Localization.LoadLanguages -= Localization_LoadLanguages;
             On.Localization.SetupLanguage -= Localization_SetupLanguage;
         }
@@ -143,8 +145,6 @@ namespace Jotunn.Managers
                     self.AddWord(pair.Key, pair.Value);
                 }
             }
-
-            InvokeOnLocalizationAdded();
 
             return result;
         }
