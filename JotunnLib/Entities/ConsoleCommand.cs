@@ -21,7 +21,7 @@
         /// <param name="args">The arguments the user types, with spaces being the delimiter.</param>
         public abstract void Run(string[] args);
 
-        /// <inheritdoc cref="object"/>
+        /// <inheritdoc/>
         public override string ToString()
         {
             return Name;
