@@ -54,6 +54,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **Bone Reorderer** - Fixes bone ordering issues on `SkinnedMeshRenderer`'s that have been ripped and imported into unity.
 - **Network Compatibility** - Allows plugins to define their own version requirements for clients connected to the server. Ensures a customisable level of interoperability with clients of differing mod configurations on a plugin-by-plugin basis.
 - **Config Synchronisation** - Allows administrators to adjust configuration values via an in game menu. Config setting is synced to connected clients.
+- **Mod Registry** - Query added content per Mod.
 - **SimpleJSON** - We have imported SimpleJSON into our library at the request of developers who would simply prefer to have this dependency taken care of already. We use the MIT Licensed [SimpleJSON](https://simplejson.readthedocs.io/en/latest/)
 
 ## Bugs, Support, Contributions
