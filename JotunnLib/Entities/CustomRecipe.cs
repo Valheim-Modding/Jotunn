@@ -7,22 +7,22 @@ namespace Jotunn.Entities
     ///     Main interface for adding custom recipes to the game.<br />
     ///     All custom recipes have to be wrapped inside this class to add it to Jötunns <see cref="ItemManager"/>.
     /// </summary>
-    public class CustomRecipe
+    public class CustomRecipe : CustomEntity
     {
         /// <summary>
         ///     The <see cref="global::Recipe"/> for this custom recipe.
         /// </summary>
-        public Recipe Recipe { get; set; }
+        public Recipe Recipe { get; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
-        public bool FixReference { get; set; } = false;
+        public bool FixReference { get; set; }
 
         /// <summary>
         ///     Indicator if references from <see cref="MockRequirement"/>s will be replaced at runtime.
         /// </summary>
-        public bool FixRequirementReferences { get; set; } = false;
+        public bool FixRequirementReferences { get; set; }
 
         /// <summary>
         ///     Custom recipe from a <see cref="global::Recipe"/>.<br />
@@ -37,6 +37,7 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             FixRequirementReferences = fixRequirementReferences;
         }
+
         /// <summary>
         ///     Custom recipe from a <see cref="RecipeConfig"/>.<br />
         ///     The <see cref="global::Recipe"/> is created automatically by Jötunn at runtime.

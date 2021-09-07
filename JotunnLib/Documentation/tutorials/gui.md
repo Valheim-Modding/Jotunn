@@ -67,24 +67,6 @@ var panel = GUIManager.Instance.CreateWoodpanel(
     draggable: true);
 ```
 
-### Buttons
-
-![GUI Button](../images/data/test-button.png)
-
-To create buttons, provide text, the parent's transform, min and max anchors, the position and it's size (width and height).
-
-Example:
-```cs
-var button = GUIManager.Instance.CreateButton(
-    text: "A Test Button",
-    parent: testPanel.transform,
-    anchorMin: new Vector2(0.5f, 0.5f),
-    anchorMax: new Vector2(0.5f, 0.5f),
-    position: new Vector2(0f, 0f),
-    width: 250f,
-    height: 100f);
-```
-
 ### Text elements
 
 ![Text Element](../images/data/text-element.png)
@@ -93,7 +75,7 @@ To create a text element, provide text, the parent's transform, min and max anch
 
 Example:
 ```cs
-var text = GUIManager.Instance.CreateText(
+var textObject = GUIManager.Instance.CreateText(
     text: "Jötunn, the Valheim Lib",
     parent: TestPanel.transform,
     anchorMin: new Vector2(0.5f, 1f),
@@ -109,6 +91,44 @@ var text = GUIManager.Instance.CreateText(
     addContentSizeFitter: false);
 ```
 
+### Buttons
+
+![GUI Button](../images/data/test-button.png)
+
+To create buttons, provide text, the parent's transform, min and max anchors, the position and it's size (width and height).
+
+Example:
+```cs
+var buttonObject = GUIManager.Instance.CreateButton(
+    text: "A Test Button",
+    parent: TestPanel.transform,
+    anchorMin: new Vector2(0.5f, 0.5f),
+    anchorMax: new Vector2(0.5f, 0.5f),
+    position: new Vector2(0, -250f),
+    width: 250f,
+    height: 60f);
+```
+
+### Input Fields
+
+![Input Field](../images/data/test-input.png) ![Input Field with text](../images/data/test-input-filled.png)
+
+To create an input field, provide text, the parent's transform, min and max anchors and the position. Optional parameters are the content type (using Unity's builtin types), a placeholder text (can be null), font size (default 16) and the field's actual size (width and height).
+
+Example:
+```cs
+GUIManager.Instance.CreateInputField(
+    parent: TestPanel.transform,
+    anchorMin: new Vector2(0.5f, 0.5f),
+    anchorMax: new Vector2(0.5f, 0.5f),
+    position: new Vector2(250f, -250f),
+    contentType: InputField.ContentType.Standard,
+    placeholderText: "input...",
+    fontSize: 16,
+    width: 160f,
+    height: 30f);
+```
+
 ### Checkboxes
 
 ![Checkbox](../images/data/checkbox.png)
@@ -119,6 +139,28 @@ var checkbox = GUIManager.Instance.CreateToggle(
     parent: GUIManager.CustomGUIFront.transform,
     width: 40f,
     height: 40f);
+```
+
+### Dropdown Fields
+
+![Input Field](../images/data/test-dropdown.png)
+
+To create a dropdown field, provide the parent's transform, min and max anchors, the position and optionally font size (default 16) and the dropdown's actual size (width and height). After creating the object through the GUIManager you need to provide selectable values. For that you get the Dropdown component of the GameObject and feed your options with the AddOptions() method.
+
+Example:
+```cs
+var dropdownObject = GUIManager.Instance.CreateDropDown(
+    parent: TestPanel.transform,
+    anchorMin: new Vector2(0.5f, 0.5f),
+    anchorMax: new Vector2(0.5f, 0.5f),
+    position: new Vector2(-250f, -250f),
+    fontSize: 16,
+    width: 100f,
+    height: 30f);
+dropdownObject.GetComponent<Dropdown>().AddOptions(new List<string>
+{
+    "bla", "blubb", "börks", "blarp", "harhar"
+});
 ```
 
 ### Getting sprites
@@ -137,6 +179,8 @@ The [GUIManager](xref:Jotunn.Managers.GUIManager) also comes with some useful in
 - Font AveriaSerifBold (the default Valheim font)
 - Color ValheimOrange
 - ColorBlock ValheimScrollbarHandleColorBlock
+- ColorBlock ValheimToggleColorBlock
+- ColorBlock ValheimButtonColorBlock
 
 ## Custom GUI Components
 
@@ -153,7 +197,7 @@ DragWindowCntrl.ApplyDragWindowCntrl(TestPanel);
 
 ## Example
 
-In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use a [custom button](inputs.md) to toggle a simple, draggable panel with a text and a button on it. That button also gets a listener added to close the panel again. Also the input is blocked for the player and camera while the panel is active so we can actually use the mouse and cant control the player any more.
+In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use a [custom button](inputs.md) to toggle a simple, draggable panel with the Jötunn provided GUI controls on it. The button also gets a listener added to close the panel again. Also the input is blocked for the player and camera while the panel is active so we can actually use the mouse and cant control the player any more.
 
 ```cs
 // Toggle our test panel with button
@@ -190,12 +234,12 @@ private void TogglePanel()
         DragWindowCntrl.ApplyDragWindowCntrl(TestPanel);
 
         // Create the text object
-        GameObject textObject = GUIManager.Instance.CreateText(
+        GUIManager.Instance.CreateText(
             text: "Jötunn, the Valheim Lib",
             parent: TestPanel.transform,
             anchorMin: new Vector2(0.5f, 1f),
             anchorMax: new Vector2(0.5f, 1f),
-            position: new Vector2(0f, -100f),
+            position: new Vector2(0f, -50f),
             font: GUIManager.Instance.AveriaSerifBold,
             fontSize: 30,
             color: GUIManager.Instance.ValheimOrange,
@@ -211,14 +255,40 @@ private void TogglePanel()
             parent: TestPanel.transform,
             anchorMin: new Vector2(0.5f, 0.5f),
             anchorMax: new Vector2(0.5f, 0.5f),
-            position: new Vector2(0, 0),
-            width: 250,
-            height: 100);
+            position: new Vector2(0, -250f),
+            width: 250f,
+            height: 60f);
         buttonObject.SetActive(true);
 
         // Add a listener to the button to close the panel again
         Button button = buttonObject.GetComponent<Button>();
         button.onClick.AddListener(TogglePanel);
+
+        // Create a dropdown
+        var dropdownObject = GUIManager.Instance.CreateDropDown(
+            parent: TestPanel.transform,
+            anchorMin: new Vector2(0.5f, 0.5f),
+            anchorMax: new Vector2(0.5f, 0.5f),
+            position: new Vector2(-250f, -250f),
+            fontSize: 16,
+            width: 100f,
+            height: 30f);
+        dropdownObject.GetComponent<Dropdown>().AddOptions(new List<string>
+        {
+            "bla", "blubb", "börks", "blarp", "harhar"
+        });
+
+        // Create an input field
+        GUIManager.Instance.CreateInputField(
+            parent: TestPanel.transform,
+            anchorMin: new Vector2(0.5f, 0.5f),
+            anchorMax: new Vector2(0.5f, 0.5f),
+            position: new Vector2(250f, -250f),
+            contentType: InputField.ContentType.Standard,
+            placeholderText: "input...",
+            fontSize: 16,
+            width: 160f,
+            height: 30f);
     }
 
     // Switch the current state
@@ -231,3 +301,5 @@ private void TogglePanel()
     GUIManager.BlockInput(state);
 }
 ```
+
+![Test Panel Example](../images/data/test-complete.png)

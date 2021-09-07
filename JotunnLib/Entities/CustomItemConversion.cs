@@ -1,6 +1,5 @@
 ﻿using Jotunn.Configs;
 using Jotunn.Managers;
-using UnityEngine;
 
 namespace Jotunn.Entities
 {
@@ -9,7 +8,7 @@ namespace Jotunn.Entities
     ///     Supports and combines conversions for the cooking station, fermenter and smelter.<br />
     ///     All custom item conversions have to be wrapped inside this class to add it to Jötunns <see cref="ItemManager"/>.
     /// </summary>
-    public class CustomItemConversion
+    public class CustomItemConversion : CustomEntity
     {
         /// <summary>
         ///     Type of the conversion component used in game.
@@ -33,22 +32,23 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Type of the item conversion. Defines to which station the conversion is added.
         /// </summary>
-        public ConversionType Type { get; set; }
+        public ConversionType Type { get; }
 
         /// <summary>
         ///     Config of the item conversion. Depends on the <see cref="Type"/> of the conversion.
         /// </summary>
-        public ConversionConfig Config { get; set; }
+        public ConversionConfig Config { get; }
 
         /// <summary>
         ///     Indicator if the conversion needs fixing.
         /// </summary>
-        internal bool fixReference = true;
+        internal bool FixReference = true;
 
         /// <summary>
         ///     Actual ItemConversion type as <see cref="object"/>. Needs to be cast according to <see cref="ConversionType"/>.
         /// </summary>
-        internal object ItemConversion { 
+        internal object ItemConversion
+        {
             get
             {
                 return Type switch

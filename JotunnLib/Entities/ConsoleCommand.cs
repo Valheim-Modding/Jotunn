@@ -3,7 +3,7 @@
     /// <summary>
     ///     A custom console command.
     /// </summary>
-    public abstract class ConsoleCommand
+    public abstract class ConsoleCommand : CustomEntity
     {
         /// <summary>
         ///     The command that the user will need to type in their console to run your command.
@@ -20,5 +20,11 @@
         /// </summary>
         /// <param name="args">The arguments the user types, with spaces being the delimiter.</param>
         public abstract void Run(string[] args);
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

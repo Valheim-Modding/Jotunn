@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx;
+using Jotunn.Entities;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -39,9 +41,9 @@ namespace Jotunn.Managers
         internal GameObject PrefabContainer;
 
         /// <summary>
-        ///     Dictionary of all added custom prefabs by name.
+        ///     List of all added custom prefabs.
         /// </summary>
-        internal Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
+        internal List<CustomPrefab> Prefabs = new List<CustomPrefab>();
 
         /// <summary>
         ///     Creates the prefab container and registers all hooks.
@@ -71,14 +73,37 @@ namespace Jotunn.Managers
         /// <param name="prefab">Prefab to add</param>
         public void AddPrefab(GameObject prefab)
         {
-            if (Prefabs.ContainsKey(prefab.name))
+            CustomPrefab customPrefab = new CustomPrefab(prefab);
+
+            if (Prefabs.Contains(customPrefab))
             {
                 Logger.LogWarning($"Prefab '{prefab.name}' already exists");
                 return;
             }
 
             prefab.transform.SetParent(PrefabContainer.transform, false);
-            Prefabs.Add(prefab.name, prefab);
+
+            Prefabs.Add(customPrefab);
+        }
+
+        /// <summary>
+        ///     Add a custom prefab to the manager with known source mod metadata.
+        /// </summary>
+        /// <param name="prefab">Prefab to add</param>
+        /// <param name="sourceMod">Metadata of the mod adding this prefab</param>
+        internal void AddPrefab(GameObject prefab, BepInPlugin sourceMod)
+        {
+            CustomPrefab customPrefab = new CustomPrefab(prefab, sourceMod);
+
+            if (Prefabs.Contains(customPrefab))
+            {
+                Logger.LogWarning($"Prefab '{prefab.name}' already exists");
+                return;
+            }
+
+            prefab.transform.SetParent(PrefabContainer.transform, false);
+
+            Prefabs.Add(customPrefab);
         }
 
         /// <summary>
@@ -165,7 +190,7 @@ namespace Jotunn.Managers
                 return null;
             }
 
-            var newPrefab = GameObject.Instantiate(prefab, PrefabContainer.transform, false);
+            var newPrefab = Object.Instantiate(prefab, PrefabContainer.transform, false);
             newPrefab.name = name;
 
             return newPrefab;
@@ -184,18 +209,17 @@ namespace Jotunn.Managers
         /// <returns>The existing prefab, or null if none exists with given name</returns>
         public GameObject GetPrefab(string name)
         {
-            if (Prefabs.ContainsKey(name))
+            CustomPrefab ret = Prefabs.FirstOrDefault(x => x.Prefab.name.Equals(name));
+            if (ret != null)
             {
-                return Prefabs[name];
+                return ret.Prefab;
             }
 
-            if (ZNetScene.instance)
+            int hash = name.GetStableHashCode();
+            if (ZNetScene.instance &&
+                ZNetScene.instance.m_namedPrefabs.TryGetValue(hash, out var prefab))
             {
-                int hash = name.GetStableHashCode();
-                if (ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))
-                {
-                    return ZNetScene.instance.GetPrefab(hash);
-                }
+                return prefab;
             }
 
             return Cache.GetPrefab<GameObject>(name);
@@ -207,10 +231,8 @@ namespace Jotunn.Managers
         /// <param name="name">Name of the prefab to remove</param>
         public void RemovePrefab(string name)
         {
-            if (Prefabs.ContainsKey(name))
-            {
-                Prefabs.Remove(name);
-            }
+            CustomPrefab ret = Prefabs.FirstOrDefault(x => x.Prefab.name.Equals(name));
+            Prefabs.Remove(ret);
         }
 
         /// <summary>
@@ -220,20 +242,29 @@ namespace Jotunn.Managers
         /// <param name="name">The name of the prefab to destroy</param>
         public void DestroyPrefab(string name)
         {
-            RemovePrefab(name);
+            CustomPrefab custom = Prefabs.FirstOrDefault(x => x.Prefab.name.Equals(name));
+
+            if (custom != null)
+            {
+                Prefabs.Remove(custom);
+            }
 
             if (ZNetScene.instance)
             {
                 //TODO: remove all clones, too
 
                 int hash = name.GetStableHashCode();
-                if (ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))
+                if (ZNetScene.instance.m_namedPrefabs.TryGetValue(hash, out var del))
                 {
-                    GameObject del = ZNetScene.instance.GetPrefab(hash);
                     ZNetScene.instance.m_prefabs.Remove(del);
                     ZNetScene.instance.m_namedPrefabs.Remove(hash);
                     ZNetScene.instance.Destroy(del);
                 }
+            }
+
+            if (custom.Prefab)
+            {
+                Object.Destroy(custom.Prefab);
             }
         }
 
@@ -250,7 +281,7 @@ namespace Jotunn.Managers
 
                 foreach (var prefab in Prefabs)
                 {
-                    RegisterToZNetScene(prefab.Value);
+                    RegisterToZNetScene(prefab.Prefab);
                 }
             }
         }

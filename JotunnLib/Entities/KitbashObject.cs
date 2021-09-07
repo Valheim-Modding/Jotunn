@@ -8,7 +8,7 @@ namespace Jotunn.Entities
     /// <summary>
     ///     Container class for Kitbashed prefabs, returned by <see cref="KitbashManager"/>
     /// </summary>
-    public class KitbashObject
+    public class KitbashObject : CustomEntity
     {
         /// <summary>
         ///     Callback that is called when Kitbashes are applied
@@ -28,11 +28,7 @@ namespace Jotunn.Entities
         /// <inheritdoc/>
         public override string ToString()
         {
-            if (Prefab)
-            {
-                return Prefab.name;
-            }
-            return base.ToString();
+            return Prefab ? Prefab.name : base.ToString();
         }
     }
 }

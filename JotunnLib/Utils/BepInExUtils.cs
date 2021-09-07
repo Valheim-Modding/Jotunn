@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 
 namespace Jotunn.Utils
@@ -9,7 +11,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Cached plugin list
         /// </summary>
-        private static BaseUnityPlugin[] plugins;
+        private static BaseUnityPlugin[] Plugins;
 
         /// <summary>
         ///     Cache loaded plugins which depend on Jotunn.
@@ -48,23 +50,23 @@ namespace Jotunn.Utils
                 }
             }
 
-            plugins = dependent.ToArray();
+            Plugins = dependent.ToArray();
         }
 
         /// <summary>
         ///     Get a dictionary of loaded plugins which depend on Jotunn.
         /// </summary>
-        /// <returns></returns>
-        internal static Dictionary<string, BaseUnityPlugin> GetDependentPlugins(bool includeJotunn = false)
+        /// <returns>Dictionary of plugin GUID and <see cref="BaseUnityPlugin"/></returns>
+        public static Dictionary<string, BaseUnityPlugin> GetDependentPlugins(bool includeJotunn = false)
         {
             var result = new Dictionary<string, BaseUnityPlugin>();
 
-            if (plugins == null)
+            if (Plugins == null && ReflectionHelper.GetPrivateField<bool>(typeof(BepInEx.Bootstrap.Chainloader), "_loaded"))
             {
                 CacheDependentPlugins();
             }
 
-            foreach (var plugin in plugins)
+            foreach (var plugin in Plugins)
             {
                 if (plugin.Info.Metadata.GUID == Main.ModGuid)
                 {
@@ -74,11 +76,62 @@ namespace Jotunn.Utils
                     }
                     continue;
                 }
-                
+
                 result.Add(plugin.Info.Metadata.GUID, plugin);
             }
 
             return result;
+        }
+
+        /// <summary>
+        ///     Get <see cref="PluginInfo"/> from a <see cref="Type"/>
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static PluginInfo GetPluginInfoFromType(Type type)
+        {
+            foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
+            {
+                var typeName = ReflectionHelper.GetPrivateProperty<string>(info, "TypeName");
+                if (typeName.Equals(type.FullName))
+                {
+                    return info;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Get <see cref="PluginInfo"/> from an <see cref="Assembly"/>
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
+        public static PluginInfo GetPluginInfoFromAssembly(Assembly assembly)
+        {
+            foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
+            {
+                var typeName = ReflectionHelper.GetPrivateProperty<string>(info, "TypeName");
+                if (assembly.GetType(typeName) != null)
+                {
+                    return info;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Get metadata information from the current calling mod
+        /// </summary>
+        /// <returns></returns>
+        public static BepInPlugin GetSourceModMetadata()
+        {
+            Type callingType = ReflectionHelper.GetCallingType();
+
+            return GetPluginInfoFromType(callingType)?.Metadata ??
+                   GetPluginInfoFromAssembly(callingType.Assembly)?.Metadata ??
+                   Main.Instance.Info.Metadata;
         }
     }
 }

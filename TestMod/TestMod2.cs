@@ -8,6 +8,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using Jotunn;
 using Jotunn.Configs;
+using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -19,7 +20,7 @@ namespace TestMod
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch)]
     internal class TestMod2 : BaseUnityPlugin
     {
-        private const string ModGUID = "com.jotunn.2testmod";
+        private const string ModGUID = "com.jotunn.testmod2";
         private const string ModName = "Jotunn Test Mod #2";
         private const string ModVersion = "0.1.0";
         private const string JotunnTestModConfigSection = "JotunnTest2";
@@ -52,6 +53,26 @@ namespace TestMod
             Config.Bind(OrderConfigSection, "Order undefined aaa", string.Empty, "Should be ordered by name at the end");
 
             Config.Bind(OrderConfigSection, "Order undefined zzz", string.Empty, "Should be ordered by name at the end");
+
+            ItemManager.OnVanillaItemsAvailable += CreateStuff;
+        }
+
+        private void CreateStuff()
+        {
+            Sprite var4 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var4.png");
+
+            // Add lul piece from second mod
+            CustomPiece CP = new CustomPiece("piece_lal", true, new PieceConfig
+            {
+                Name = "Lalalal",
+                Description = "<3",
+                Icon = var4,
+                PieceTable = "Hammer",
+                ExtendStation = "piece_workbench", // Test station extension
+                Category = "Lulzies."  // Test custom category
+            });
+            PieceManager.Instance.AddPiece(CP);
+            CP.PiecePrefab.GetComponent<MeshRenderer>().material.mainTexture = var4.texture;
         }
     }
 }

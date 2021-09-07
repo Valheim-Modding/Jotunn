@@ -236,12 +236,12 @@ namespace TestMod
                 DragWindowCntrl.ApplyDragWindowCntrl(TestPanel);
 
                 // Create the text object
-                GameObject textObject = GUIManager.Instance.CreateText(
+                GUIManager.Instance.CreateText(
                     text: "Jötunn, the Valheim Lib",
                     parent: TestPanel.transform,
                     anchorMin: new Vector2(0.5f, 1f),
                     anchorMax: new Vector2(0.5f, 1f),
-                    position: new Vector2(0f, -100f),
+                    position: new Vector2(0f, -50f),
                     font: GUIManager.Instance.AveriaSerifBold,
                     fontSize: 30,
                     color: GUIManager.Instance.ValheimOrange,
@@ -257,14 +257,113 @@ namespace TestMod
                     parent: TestPanel.transform,
                     anchorMin: new Vector2(0.5f, 0.5f),
                     anchorMax: new Vector2(0.5f, 0.5f),
-                    position: new Vector2(0, 0),
-                    width: 250,
-                    height: 100);
+                    position: new Vector2(0, -250f),
+                    width: 250f,
+                    height: 60f);
                 buttonObject.SetActive(true);
 
                 // Add a listener to the button to close the panel again
                 Button button = buttonObject.GetComponent<Button>();
                 button.onClick.AddListener(TogglePanel);
+
+                // Create a dropdown
+                var dropdownObject = GUIManager.Instance.CreateDropDown(
+                    parent: TestPanel.transform,
+                    anchorMin: new Vector2(0.5f, 0.5f),
+                    anchorMax: new Vector2(0.5f, 0.5f),
+                    position: new Vector2(-250f, -250f),
+                    fontSize: 16,
+                    width: 100f,
+                    height: 30f);
+                dropdownObject.GetComponent<Dropdown>().AddOptions(new List<string>
+                {
+                    "bla", "blubb", "börks", "blarp", "harhar"
+                });
+
+                // Create an input field
+                GUIManager.Instance.CreateInputField(
+                    parent: TestPanel.transform,
+                    anchorMin: new Vector2(0.5f, 0.5f),
+                    anchorMax: new Vector2(0.5f, 0.5f),
+                    position: new Vector2(250f, -250f),
+                    contentType: InputField.ContentType.Standard,
+                    placeholderText: "input...",
+                    fontSize: 16,
+                    width: 160f,
+                    height: 30f);
+
+                // Create PluginInfo
+                GameObject scrollView = GUIManager.Instance.CreateScrollView(
+                    TestPanel.transform,
+                    false, true, 10f, 5f,
+                    GUIManager.Instance.ValheimScrollbarHandleColorBlock, Color.black,
+                    700f, 400f);
+
+                RectTransform viewport =
+                    scrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+
+                foreach (var mod in ModRegistry.GetMods(true).OrderBy(x => x.GUID))
+                {
+                    // Mod GUID
+                    GUIManager.Instance.CreateText(mod.GUID, 
+                        viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                        GUIManager.Instance.AveriaSerifBold, 30, GUIManager.Instance.ValheimOrange,
+                        true, Color.black, 650f, 40f, false);
+
+                    if (mod.Pieces.Any())
+                    {
+                        // Pieces title
+                        GUIManager.Instance.CreateText("Pieces:", 
+                            viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                            GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
+                            true, Color.black, 650f, 30f, false);
+
+                        foreach (var piece in mod.Pieces)
+                        {
+                            // Piece name
+                            GUIManager.Instance.CreateText($"{piece}", 
+                                viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                true, Color.black, 650f, 30f, false);
+                        }
+                    }
+
+                    if (mod.Items.Any())
+                    {
+                        // Items title
+                        GUIManager.Instance.CreateText("Items:",
+                            viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                            GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
+                            true, Color.black, 650f, 30f, false);
+
+                        foreach (var item in mod.Items)
+                        {
+                            // Piece name
+                            GUIManager.Instance.CreateText($"{item}",
+                                viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                true, Color.black, 650f, 30f, false);
+                        }
+                    }
+
+                    if (mod.Commands.Any())
+                    {
+                        // Items title
+                        GUIManager.Instance.CreateText("Commands:",
+                            viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                            GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
+                            true, Color.black, 650f, 30f, false);
+
+                        foreach (var command in mod.Commands)
+                        {
+                            // Command name
+                            GUIManager.Instance.CreateText($"{command}",
+                                viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                true, Color.black, 650f, 30f, false);
+                        }
+                    }
+                }
             }
 
             // Switch the current state

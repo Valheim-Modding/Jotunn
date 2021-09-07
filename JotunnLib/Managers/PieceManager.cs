@@ -87,7 +87,7 @@ namespace Jotunn.Managers
             }
 
             // Add the prefab to the PrefabManager
-            PrefabManager.Instance.AddPrefab(customPieceTable.PieceTablePrefab);
+            PrefabManager.Instance.AddPrefab(customPieceTable.PieceTablePrefab, customPieceTable.SourceMod);
 
             // Create all custom categories on that table
             if (customPieceTable.Categories != null)
@@ -155,7 +155,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Add a new <see cref="global::Piece.PieceCategory"/> by name. A new category
+        ///     Add a new <see cref="Piece.PieceCategory"/> by name. A new category
         ///     gets assigned a random integer for internal use. If you pass a vanilla category
         ///     the actual integer value of the enum is returned. 
         /// </summary>
@@ -177,7 +177,7 @@ namespace Jotunn.Managers
             }
             else
             {
-                categoryID = PieceCategories.Count() + Piece.PieceCategory.Max;
+                categoryID = PieceCategories.Count + Piece.PieceCategory.Max;
                 PieceCategories.Add(name, categoryID);
                 PieceCategoryMax++;
             }
@@ -232,7 +232,7 @@ namespace Jotunn.Managers
             }
 
             // Add the prefab to the PrefabManager
-            PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab);
+            PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab, customPiece.SourceMod);
 
             // Add the custom piece to the PieceManager
             Pieces.Add(customPiece);
@@ -525,6 +525,10 @@ namespace Jotunn.Managers
             // Delete custom pieces with errors
             foreach (var piece in toDelete)
             {
+                if (piece.PiecePrefab)
+                {
+                    PrefabManager.Instance.DestroyPrefab(piece.PiecePrefab.name);
+                }
                 RemovePiece(piece);
             }
         }
@@ -558,7 +562,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            if (!PrefabManager.Instance.Prefabs.ContainsKey(prefab.name))
+            if (!PrefabManager.Instance.Prefabs.Any(x => x.Prefab.name.Equals(prefab.name)))
             {
                 PrefabManager.Instance.AddPrefab(prefab);
             }

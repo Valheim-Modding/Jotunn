@@ -8,28 +8,27 @@ namespace Jotunn.Entities
     ///     Main interface for adding custom pieces to the game.<br />
     ///     All custom pieces have to be wrapped inside this class to add it to Jötunns <see cref="PieceManager"/>.
     /// </summary>
-    public class CustomPiece
+    public class CustomPiece : CustomEntity
     {
         /// <summary>
         ///     The prefab for this custom piece.
         /// </summary>
-        public GameObject PiecePrefab { get; set; }
+        public GameObject PiecePrefab { get; }
 
         /// <summary>
         ///     The <see cref="global::Piece"/> component for this custom piece as a shortcut. 
-        ///     Will not be added again to the prefab when replaced.
         /// </summary>
-        public Piece Piece { get; set; } = null;
+        public Piece Piece { get; }
 
         /// <summary>
         ///     Name of the <see cref="global::PieceTable"/> this custom piece belongs to.
         /// </summary>
-        public string PieceTable { get; set; } = string.Empty;
+        public string PieceTable { get; set; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
-        public bool FixReference { get; set; } = false;
+        public bool FixReference { get; set; }
 
         /// <summary>
         ///     Custom piece from a prefab.<br />

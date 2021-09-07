@@ -108,7 +108,7 @@ namespace Jotunn.Managers
             }
 
             // Add prefab to PrefabManager
-            PrefabManager.Instance.AddPrefab(customItem.ItemPrefab);
+            PrefabManager.Instance.AddPrefab(customItem.ItemPrefab, customItem.SourceMod);
 
             // Add custom item to ItemManager
             Items.Add(customItem);
@@ -363,6 +363,10 @@ namespace Jotunn.Managers
                 // Delete custom items with errors
                 foreach (var item in toDelete)
                 {
+                    if (item.ItemPrefab)
+                    {
+                        PrefabManager.Instance.DestroyPrefab(item.ItemPrefab.name);
+                    }
                     RemoveItem(item);
                 }
             }
@@ -399,7 +403,7 @@ namespace Jotunn.Managers
             }
             else
             {
-                if (!PrefabManager.Instance.Prefabs.ContainsKey(prefab.name))
+                if (!PrefabManager.Instance.Prefabs.Any(x => x.Prefab.name.Equals(prefab.name)))
                 {
                     PrefabManager.Instance.AddPrefab(prefab);
                 }
@@ -532,10 +536,10 @@ namespace Jotunn.Managers
                         }
 
                         // Fix references if needed
-                        if (conversion.fixReference)
+                        if (conversion.FixReference)
                         {
                             conversion.ItemConversion.FixReferences();
-                            conversion.fixReference = false;
+                            conversion.FixReference = false;
                         }
 
                         // Sure, make three almost identical classes but dont have a common base class, Iron Gate

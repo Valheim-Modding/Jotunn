@@ -6,12 +6,12 @@ namespace Jotunn.Entities
     ///     Main interface for adding custom status effects to the game.<br />
     ///     All custom status effects have to be wrapped inside this class to add it to Jötunns <see cref="ItemManager"/>.
     /// </summary>
-    public class CustomStatusEffect
+    public class CustomStatusEffect : CustomEntity
     {
         /// <summary>
         ///     The <see cref="global::StatusEffect"/> for this custom status effect.
         /// </summary>
-        public StatusEffect StatusEffect { get; set; }
+        public StatusEffect StatusEffect { get; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.

@@ -1,4 +1,5 @@
-﻿using Jotunn.Configs;
+﻿using System;
+using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -11,25 +12,24 @@ namespace Jotunn.Entities
     ///     Add strings to <see cref="Categories"/> to use custom categories on your
     ///     piece table. All categories will be replaced so list vanilla categories, too.
     /// </summary>
-    public class CustomPieceTable
+    public class CustomPieceTable : CustomEntity
     {
         /// <summary>
         ///     The prefab for this custom piece table.
         /// </summary>
-        public GameObject PieceTablePrefab { get; set; }
+        public GameObject PieceTablePrefab { get; }
 
         /// <summary>
-        ///     The <see cref="global::PieceTable"/> component for this custom piece table as a shortcut. 
-        ///     Will not be added again to the prefab when replaced.
+        ///     The <see cref="global::PieceTable"/> component for this custom piece table as a shortcut.
         /// </summary>
-        public PieceTable PieceTable { get; set; } = null;
+        public PieceTable PieceTable { get; }
 
         /// <summary>
         ///     String array of categories used on the <see cref="global::PieceTable"/>. 
         ///     Will be ignored when m_useCategories is false.<br />
         ///     All categories provided here will be used and displayed on the <see cref="Hud"/>.
         /// </summary>
-        public string[] Categories { get; set; } = new string[0];
+        public string[] Categories { get; } = Array.Empty<string>();
 
         /// <summary>
         ///     Custom piece table from a prefab.
@@ -89,7 +89,7 @@ namespace Jotunn.Entities
                 Logger.LogError($"CustomPieceTable {this} has no PieceTable component");
                 valid = false;
             }
-            
+
             return valid;
         }
 

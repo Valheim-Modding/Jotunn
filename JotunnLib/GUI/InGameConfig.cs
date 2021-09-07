@@ -184,6 +184,7 @@ namespace Jotunn.GUI
             // Create settings window
             SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
             SettingsRoot.name = "ModSettings";
+            SettingsRoot.transform.GetComponentInChildren<Text>().gameObject.SetWidth(500f);
             SettingsRoot.transform.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuName);
             if (Menu.instance != null)
             {
@@ -773,12 +774,13 @@ namespace Jotunn.GUI
             placeholder.GetComponent<RectTransform>().anchoredPosition = new Vector2(5, 0);
 
             // Add the ColorPicker button
-            var button = new GameObject("Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx)).SetUpperRight().SetSize(30f, label.GetTextHeight() + 6f);
+            var button = new GameObject("Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx))
+                .SetUpperRight().SetSize(30f, label.GetTextHeight() + 6f);
             button.transform.SetParent(layout.transform, false);
 
             // Image
             var image = button.GetComponent<Image>();
-            var sprite = GUIManager.Instance.GetSprite("button");
+            var sprite = GUIManager.Instance.GetSprite("UISprite");
             image.sprite = sprite;
             image.type = Image.Type.Sliced;
             image.pixelsPerUnitMultiplier = 2f;
@@ -829,7 +831,7 @@ namespace Jotunn.GUI
             result.SetWidth(width);
 
             // and now the toggle itself
-            GUIManager.Instance.CreateToggle(result.transform, 28f, 28f).SetUpperRight();
+            GUIManager.Instance.CreateToggle(result.transform, 20f, 20f).SetUpperRight();
 
             // create the label text element
             var label = GUIManager.Instance.CreateText(labelname, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
@@ -1232,12 +1234,15 @@ namespace Jotunn.GUI
         {
             internal InputField Input;
             internal Button Button;
+            internal Image Image;
 
             internal void Register()
             {
                 Input = gameObject.transform.Find("Layout/Input").GetComponent<InputField>();
+                Input.onEndEdit.AddListener(SetButtonColor);
                 Button = gameObject.transform.Find("Layout/Button").GetComponent<Button>();
                 Button.onClick.AddListener(ShowColorPicker);
+                Image = gameObject.transform.Find("Layout/Button").GetComponent<Image>();
             }
 
             internal override Color GetValueFromConfig()
@@ -1263,7 +1268,7 @@ namespace Jotunn.GUI
                 }
                 catch (Exception e)
                 {
-                    Logger.LogWarning(e.Message);
+                    Logger.LogWarning(e);
                     var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                     var entry = pluginConfig[Section, Key] as ConfigEntry<Color>;
                     Logger.LogWarning($"Using default value ({(Color)entry.DefaultValue}) instead.");
@@ -1274,6 +1279,7 @@ namespace Jotunn.GUI
             internal override void SetValue(Color value)
             {
                 Input.text = StringFromColor(value);
+                Image.color = value;
             }
 
             public override void SetEnabled(bool enabled)
@@ -1282,10 +1288,12 @@ namespace Jotunn.GUI
                 Button.enabled = enabled;
                 if (enabled)
                 {
+                    Input.onEndEdit.AddListener(SetButtonColor);
                     Button.onClick.AddListener(ShowColorPicker);
                 }
                 else
                 {
+                    Input.onEndEdit.RemoveAllListeners();
                     Button.onClick.RemoveAllListeners();
                 }
             }
@@ -1297,6 +1305,15 @@ namespace Jotunn.GUI
                 Button.enabled = !readOnly;
             }
 
+            private void SetButtonColor(string value)
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    return;
+                }
+                Image.color = ColorFromString(value);
+            }
+
             private void ShowColorPicker()
             {
                 if (!ColorPicker.done)
@@ -1305,7 +1322,7 @@ namespace Jotunn.GUI
                 }
                 GUIManager.Instance.CreateColorPicker(
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                    GetValue(), Key, SetValue, null, true);
+                    GetValue(), Key, SetValue, (c) => Image.color = c, true);
             }
 
             private string StringFromColor(Color col)
