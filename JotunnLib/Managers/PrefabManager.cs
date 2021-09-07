@@ -263,6 +263,7 @@ namespace Jotunn.Managers
                 if (ZNetScene.instance.m_namedPrefabs.TryGetValue(hash, out var del))
                 {
                     ZNetScene.instance.m_prefabs.Remove(del);
+                    ZNetScene.instance.m_nonNetViewPrefabs.Remove(del);
                     ZNetScene.instance.m_namedPrefabs.Remove(hash);
                     ZNetScene.instance.Destroy(del);
                 }
@@ -337,7 +338,14 @@ namespace Jotunn.Managers
                 }
                 else
                 {
-                    znet.m_prefabs.Add(gameObject);
+                    if (gameObject.GetComponent<ZNetView>() != null)
+                    {
+                        znet.m_prefabs.Add(gameObject);
+                    }
+                    else
+                    {
+                        znet.m_nonNetViewPrefabs.Add(gameObject);
+                    }
                     znet.m_namedPrefabs.Add(hash, gameObject);
                     Logger.LogDebug($"Added prefab {name}");
                 }
