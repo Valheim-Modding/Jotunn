@@ -142,6 +142,11 @@ namespace Jotunn.Managers
             On.Localization.SetupLanguage -= Localization_SetupLanguage;
         }
 
+        private void InvokeOnLocalizationAdded()
+        {
+            OnLocalizationAdded?.SafeInvoke();
+        }
+
         private List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
         {
             var result = orig(self);
