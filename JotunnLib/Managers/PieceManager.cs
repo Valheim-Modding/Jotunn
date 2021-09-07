@@ -561,8 +561,8 @@ namespace Jotunn.Managers
                 Logger.LogDebug($"Already added piece {prefab.name}");
                 return;
             }
-            
-            var hash = prefab.name.GetStableHashCode();
+
+            int hash = prefab.name.GetStableHashCode();
 
             if (!PrefabManager.Instance.Prefabs.ContainsKey(hash))
             {

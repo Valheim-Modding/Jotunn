@@ -295,7 +295,7 @@ namespace TestMod
                 foreach (var mod in ModRegistry.GetMods(true).OrderBy(x => x.GUID))
                 {
                     // Mod GUID
-                    GUIManager.Instance.CreateText(mod.GUID, 
+                    GUIManager.Instance.CreateText(mod.GUID,
                         viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                         GUIManager.Instance.AveriaSerifBold, 30, GUIManager.Instance.ValheimOrange,
                         true, Color.black, 650f, 40f, false);
@@ -303,7 +303,7 @@ namespace TestMod
                     if (mod.Pieces.Any())
                     {
                         // Pieces title
-                        GUIManager.Instance.CreateText("Pieces:", 
+                        GUIManager.Instance.CreateText("Pieces:",
                             viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                             GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
                             true, Color.black, 650f, 30f, false);
@@ -311,7 +311,7 @@ namespace TestMod
                         foreach (var piece in mod.Pieces)
                         {
                             // Piece name
-                            GUIManager.Instance.CreateText($"{piece}", 
+                            GUIManager.Instance.CreateText($"{piece}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                                 GUIManager.Instance.AveriaSerifBold, 20, Color.white,
                                 true, Color.black, 650f, 30f, false);

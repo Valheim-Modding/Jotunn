@@ -41,7 +41,7 @@ namespace Jotunn.Managers
         internal GameObject PrefabContainer;
 
         /// <summary>
-        ///     Dictionary of all added custom prefabs by name.
+        ///     Dictionary of all added custom prefabs by name hash.
         /// </summary>
         internal Dictionary<int, CustomPrefab> Prefabs = new Dictionary<int, CustomPrefab>();
 
@@ -260,7 +260,7 @@ namespace Jotunn.Managers
             if (ZNetScene.instance)
             {
                 //TODO: remove all clones, too
-                
+
                 if (ZNetScene.instance.m_namedPrefabs.TryGetValue(hash, out var del))
                 {
                     ZNetScene.instance.m_prefabs.Remove(del);

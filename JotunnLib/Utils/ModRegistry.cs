@@ -162,7 +162,7 @@ namespace Jotunn.Utils
         {
             return PieceManager.Instance.Pieces.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
-        
+
         /// <summary>
         ///     Get all added <see cref="ConsoleCommand"/>s
         /// </summary>
@@ -277,7 +277,7 @@ namespace Jotunn.Utils
                     return GetPieces(GUID);
                 }
             }
-            
+
             /// <summary>
             ///     Custom commands added by that mod
             /// </summary>
