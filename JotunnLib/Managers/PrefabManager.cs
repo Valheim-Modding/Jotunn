@@ -30,10 +30,10 @@ namespace Jotunn.Managers
         
         /// <summary>
         ///     Event that gets fired after the vanilla prefabs are in memory and available for cloning.
-        ///     Your code will execute every time a new <see cref="ObjectDB"/> is copied (on every menu start).
+        ///     Your code will execute every time before a new <see cref="ObjectDB"/> is copied (on every menu start).
         ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
-        public static event Action OnVanillaObjectsAvailable;
+        public static event Action OnVanillaPrefabsAvailable;
 
         /// <summary>
         ///     Event that gets fired after registering all custom prefabs to <see cref="ZNetScene"/>.
@@ -364,12 +364,12 @@ namespace Jotunn.Managers
         }
         
         /// <summary>
-        ///     Safely invoke the <see cref="OnVanillaObjectsAvailable"/> event
+        ///     Safely invoke the <see cref="OnVanillaPrefabsAvailable"/> event
         /// </summary>
         /// 
         private void InvokeOnVanillaObjectsAvailable(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
-            OnVanillaObjectsAvailable?.SafeInvoke();
+            OnVanillaPrefabsAvailable?.SafeInvoke();
 
             orig(self, other);
         }

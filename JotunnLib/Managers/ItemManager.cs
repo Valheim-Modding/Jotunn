@@ -34,7 +34,7 @@ namespace Jotunn.Managers
         ///     Your code will execute every time a new ObjectDB is copied (on every menu start).
         ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
-        [Obsolete("Use PrefabManager.OnVanillaObjectsAvailable instead")]
+        [Obsolete("Use PrefabManager.OnVanillaPrefabsAvailable instead")]
         public static event Action OnVanillaItemsAvailable;
 
         /// <summary>

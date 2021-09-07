@@ -54,7 +54,7 @@ namespace TestMod
 
             Config.Bind(OrderConfigSection, "Order undefined zzz", string.Empty, "Should be ordered by name at the end");
 
-            PrefabManager.OnVanillaObjectsAvailable += CreateStuff;
+            PrefabManager.OnVanillaPrefabsAvailable += CreateStuff;
         }
 
         private void CreateStuff()
@@ -75,7 +75,7 @@ namespace TestMod
             CP.PiecePrefab.GetComponent<MeshRenderer>().material.mainTexture = var4.texture;
 
             // Whoops, what a test...
-            //PrefabManager.OnVanillaObjectsAvailable -= CreateStuff;
+            //PrefabManager.OnVanillaPrefabsAvailable -= CreateStuff;
         }
     }
 }
