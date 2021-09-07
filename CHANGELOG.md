@@ -2,6 +2,7 @@
 
 ## Version 2.2.8
 * Added global mod registry, collecting added entities per mod
+* Added entity CustomPrefab including the possibility to let Jötunn fix mock references
 * Show color on the ColorPicker button in the mod settings
 * Refactored manually built controls in GUIManager to use Unity's DefaultControls (thx redseiko)
 * GUIManager.ApplyButtonStyle does not add a Text GO any more

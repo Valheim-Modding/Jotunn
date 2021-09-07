@@ -69,6 +69,7 @@ namespace TestMod
             AddStatusEffects();
             AddVanillaItemConversions();
             AddCustomItemConversion();
+            AddCustomPrefabs();
             AddItemsWithConfigs();
             AddMockedItems();
             AddKitbashedPieces();
@@ -675,6 +676,22 @@ namespace TestMod
             ItemManager.Instance.AddItemConversion(blastConversion);
         }
 
+        // Add some custom prefabs
+        private void AddCustomPrefabs()
+        {
+            // Dont fix references
+            var noFix = PrefabManager.Instance.CreateEmptyPrefab("prefab_nofix", false);
+            PrefabManager.Instance.AddPrefab(noFix);
+
+            // Fix references
+            var fix = PrefabManager.Instance.CreateEmptyPrefab("prefab_fix", false);
+            fix.GetComponent<Renderer>().material = new Material(Shader.Find("Standard"));
+            fix.GetComponent<Renderer>().material.name = "JVLmock_amber";
+            PrefabManager.Instance.AddPrefab(new CustomPrefab(fix, true));
+
+            // Test duplicate
+            PrefabManager.Instance.AddPrefab(fix);
+        }
 
         // Add new Items with item Configs
         private void AddItemsWithConfigs()
