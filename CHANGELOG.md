@@ -9,6 +9,7 @@
 * Added GUIManager.CreateInputField
 * Fixed sprite atlas loading
 * Fixed OnLocalizationAdded event timing
+* Deprecated ItemManager.OnVanillaItemsAvailable, mods should use PrefabManager.OnVanillaObjectsAvailable now
 
 ## Version 2.2.7
 * Added loading of dll embedded text assets (thx MSchmoecker)

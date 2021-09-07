@@ -27,6 +27,13 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Event that gets fired after the vanilla prefabs are in memory and available for cloning.
+        ///     Your code will execute every time a new <see cref="ObjectDB"/> is copied (on every menu start).
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
+        public static event Action OnVanillaObjectsAvailable;
 
         /// <summary>
         ///     Event that gets fired after registering all custom prefabs to <see cref="ZNetScene"/>.
@@ -53,14 +60,15 @@ namespace Jotunn.Managers
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
-
+            
             On.ZNetScene.Awake += RegisterAllToZNetScene;
-            SceneManager.sceneUnloaded += (Scene current) => Cache.ClearCache();
+            SceneManager.sceneUnloaded += (current) => Cache.ClearCache();
 
             // Fire events as a late action in the detour so all mods can load before
             // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
             using (new DetourContext(int.MaxValue - 1000))
             {
+                On.ObjectDB.CopyOtherDB += InvokeOnVanillaObjectsAvailable; ;
                 On.ZNetScene.Awake += InvokeOnPrefabsRegistered;
             }
         }
@@ -354,7 +362,18 @@ namespace Jotunn.Managers
                 }
             }
         }
+        
+        /// <summary>
+        ///     Safely invoke the <see cref="OnVanillaObjectsAvailable"/> event
+        /// </summary>
+        /// 
+        private void InvokeOnVanillaObjectsAvailable(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        {
+            OnVanillaObjectsAvailable?.SafeInvoke();
 
+            orig(self, other);
+        }
+        
         private void InvokeOnPrefabsRegistered(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);

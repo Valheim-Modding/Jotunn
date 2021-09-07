@@ -77,10 +77,10 @@ namespace TestMod
             AddInvalidEntities();
 
             // Add custom items cloned from vanilla items
-            ItemManager.OnVanillaItemsAvailable += AddClonedItems;
+            PrefabManager.OnVanillaObjectsAvailable += AddClonedItems;
 
             // Clone an item with variants and replace them
-            ItemManager.OnVanillaItemsAvailable += AddVariants;
+            PrefabManager.OnVanillaObjectsAvailable += AddVariants;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -1083,7 +1083,7 @@ namespace TestMod
             finally
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
-                ItemManager.OnVanillaItemsAvailable -= AddClonedItems;
+                PrefabManager.OnVanillaObjectsAvailable -= AddClonedItems;
             }
         }
 
@@ -1118,7 +1118,7 @@ namespace TestMod
             finally
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
-                ItemManager.OnVanillaItemsAvailable -= AddVariants;
+                PrefabManager.OnVanillaObjectsAvailable -= AddVariants;
             }
         }
 

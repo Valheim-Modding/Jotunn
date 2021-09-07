@@ -34,6 +34,7 @@ namespace Jotunn.Managers
         ///     Your code will execute every time a new ObjectDB is copied (on every menu start).
         ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
+        [Obsolete("Use PrefabManager.OnVanillaObjectsAvailable instead")]
         public static event Action OnVanillaItemsAvailable;
 
         /// <summary>
@@ -608,12 +609,12 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Prefix on <see cref="ObjectDB.CopyOtherDB"/> to add custom items to FejdStartup screen (aka main menu)
         /// </summary>
-        /// <param name="orig"></param>
-        /// <param name="self"></param>
-        /// <param name="other"></param>
         private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
+
+#pragma warning disable 612
             InvokeOnVanillaItemsAvailable();
+#pragma warning restore 612
             InvokeOnKitbashItemsAvailable();
 
             RegisterCustomItems(other);
@@ -624,6 +625,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Safely invoke the <see cref="OnVanillaItemsAvailable"/> event
         /// </summary>
+        [Obsolete]
         private void InvokeOnVanillaItemsAvailable()
         {
             OnVanillaItemsAvailable?.SafeInvoke();
