@@ -37,7 +37,7 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static IEnumerable<CustomPrefab> GetPrefabs()
         {
-            return PrefabManager.Instance.Prefabs.AsReadOnly();
+            return PrefabManager.Instance.Prefabs.Values;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static IEnumerable<CustomPrefab> GetPrefabs(string modGuid)
         {
-            return PrefabManager.Instance.Prefabs.Where(x => x.SourceMod.GUID.Equals(modGuid));
+            return PrefabManager.Instance.Prefabs.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
 
         /// <summary>
