@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
@@ -39,6 +41,15 @@ namespace Jotunn.Entities
         {
             PieceTablePrefab = pieceTablePrefab;
             PieceTable = pieceTablePrefab.GetComponent<PieceTable>();
+            if (PieceTable != null && PieceTable.m_useCategories)
+            {
+                List<string> categories = new List<string>();
+                for (int i = 0; i < (int)Piece.PieceCategory.Max; i++)
+                {
+                    categories.Add(Enum.GetName(typeof(Piece.PieceCategory), i));
+                }
+                Categories = categories.ToArray();
+            }
         }
 
         /// <summary>
