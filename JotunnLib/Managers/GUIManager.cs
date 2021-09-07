@@ -358,7 +358,7 @@ namespace Jotunn.Managers
                         ApplyButtonStyle(pickerButton, 13);
                     }
 
-                    PrefabManager.Instance.AddPrefab(colorPicker);
+                    PrefabManager.Instance.AddPrefab(colorPicker, Main.Instance.Info.Metadata);
 
                     // GradientPicker prefab
                     GameObject gradientPicker = colorWheelBundle.LoadAsset<GameObject>("GradientPicker");
@@ -387,7 +387,7 @@ namespace Jotunn.Managers
                         }
                     }
 
-                    PrefabManager.Instance.AddPrefab(gradientPicker);
+                    PrefabManager.Instance.AddPrefab(gradientPicker, Main.Instance.Info.Metadata);
                     
                     colorWheelBundle.Unload(false);
                 }

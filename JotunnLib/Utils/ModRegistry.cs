@@ -37,7 +37,7 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static IEnumerable<CustomPrefab> GetPrefabs()
         {
-            return PrefabManager.Instance.Prefabs.AsReadOnly();
+            return PrefabManager.Instance.Prefabs.Values;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static IEnumerable<CustomPrefab> GetPrefabs(string modGuid)
         {
-            return PrefabManager.Instance.Prefabs.Where(x => x.SourceMod.GUID.Equals(modGuid));
+            return PrefabManager.Instance.Prefabs.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Jotunn.Utils
         {
             return PieceManager.Instance.Pieces.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
-        
+
         /// <summary>
         ///     Get all added <see cref="ConsoleCommand"/>s
         /// </summary>
@@ -277,7 +277,7 @@ namespace Jotunn.Utils
                     return GetPieces(GUID);
                 }
             }
-            
+
             /// <summary>
             ///     Custom commands added by that mod
             /// </summary>

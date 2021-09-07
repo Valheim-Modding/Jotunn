@@ -27,6 +27,13 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Event that gets fired after the vanilla prefabs are in memory and available for cloning.
+        ///     Your code will execute every time before a new <see cref="ObjectDB"/> is copied (on every menu start).
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
+        public static event Action OnVanillaPrefabsAvailable;
 
         /// <summary>
         ///     Event that gets fired after registering all custom prefabs to <see cref="ZNetScene"/>.
@@ -41,9 +48,9 @@ namespace Jotunn.Managers
         internal GameObject PrefabContainer;
 
         /// <summary>
-        ///     List of all added custom prefabs.
+        ///     Dictionary of all added custom prefabs by name hash.
         /// </summary>
-        internal List<CustomPrefab> Prefabs = new List<CustomPrefab>();
+        internal Dictionary<int, CustomPrefab> Prefabs = new Dictionary<int, CustomPrefab>();
 
         /// <summary>
         ///     Creates the prefab container and registers all hooks.
@@ -53,37 +60,17 @@ namespace Jotunn.Managers
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
-
+            
             On.ZNetScene.Awake += RegisterAllToZNetScene;
-            SceneManager.sceneUnloaded += (Scene current) => Cache.ClearCache();
+            SceneManager.sceneUnloaded += (current) => Cache.ClearCache();
 
             // Fire events as a late action in the detour so all mods can load before
             // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
             using (new DetourContext(int.MaxValue - 1000))
             {
+                On.ObjectDB.CopyOtherDB += InvokeOnVanillaObjectsAvailable; ;
                 On.ZNetScene.Awake += InvokeOnPrefabsRegistered;
             }
-        }
-
-        /// <summary>
-        ///     Add a custom prefab to the manager.<br />
-        ///     Checks if a prefab with the same name is already added.<br />
-        ///     Added prefabs get registered to the <see cref="ZNetScene"/> on <see cref="ZNetScene.Awake"/>.
-        /// </summary>
-        /// <param name="prefab">Prefab to add</param>
-        public void AddPrefab(GameObject prefab)
-        {
-            CustomPrefab customPrefab = new CustomPrefab(prefab);
-
-            if (Prefabs.Contains(customPrefab))
-            {
-                Logger.LogWarning($"Prefab '{prefab.name}' already exists");
-                return;
-            }
-
-            prefab.transform.SetParent(PrefabContainer.transform, false);
-
-            Prefabs.Add(customPrefab);
         }
 
         /// <summary>
@@ -94,16 +81,45 @@ namespace Jotunn.Managers
         internal void AddPrefab(GameObject prefab, BepInPlugin sourceMod)
         {
             CustomPrefab customPrefab = new CustomPrefab(prefab, sourceMod);
+            AddPrefab(customPrefab);
+        }
 
-            if (Prefabs.Contains(customPrefab))
+        /// <summary>
+        ///     Add a custom prefab to the manager.<br />
+        ///     Checks if a prefab with the same name is already added.<br />
+        ///     Added prefabs get registered to the <see cref="ZNetScene"/> on <see cref="ZNetScene.Awake"/>.
+        /// </summary>
+        /// <param name="prefab">Prefab to add</param>
+        public void AddPrefab(GameObject prefab)
+        {
+            CustomPrefab customPrefab = new CustomPrefab(prefab, false);
+            AddPrefab(customPrefab);
+        }
+
+        /// <summary>
+        ///     Add a custom prefab to the manager.<br />
+        ///     Checks if a prefab with the same name is already added.<br />
+        ///     Added prefabs get registered to the <see cref="ZNetScene"/> on <see cref="ZNetScene.Awake"/>.
+        /// </summary>
+        /// <param name="customPrefab">Prefab to add</param>
+        public void AddPrefab(CustomPrefab customPrefab)
+        {
+            if (!customPrefab.IsValid())
             {
-                Logger.LogWarning($"Prefab '{prefab.name}' already exists");
+                Logger.LogWarning($"Custom prefab {customPrefab} is not valid");
                 return;
             }
 
-            prefab.transform.SetParent(PrefabContainer.transform, false);
+            int hash = customPrefab.Prefab.name.GetStableHashCode();
+            if (Prefabs.ContainsKey(hash))
+            {
+                Logger.LogWarning($"Prefab '{customPrefab}' already exists");
+                return;
+            }
 
-            Prefabs.Add(customPrefab);
+            customPrefab.Prefab.transform.SetParent(PrefabContainer.transform, false);
+
+            Prefabs.Add(hash, customPrefab);
         }
 
         /// <summary>
@@ -118,12 +134,12 @@ namespace Jotunn.Managers
         {
             if (string.IsNullOrEmpty(name))
             {
-                Logger.LogError($"Failed to create prefab with invalid name: {name}");
+                Logger.LogWarning($"Failed to create prefab with invalid name: {name}");
                 return null;
             }
             if (GetPrefab(name))
             {
-                Logger.LogError($"Failed to create prefab, name already exists: {name}");
+                Logger.LogWarning($"Failed to create prefab, name already exists: {name}");
                 return null;
             }
 
@@ -151,7 +167,7 @@ namespace Jotunn.Managers
         {
             if (string.IsNullOrEmpty(baseName))
             {
-                Logger.LogError($"Failed to clone prefab with invalid baseName: {baseName}");
+                Logger.LogWarning($"Failed to clone prefab with invalid baseName: {baseName}");
                 return null;
             }
 
@@ -159,7 +175,7 @@ namespace Jotunn.Managers
             GameObject prefab = GetPrefab(baseName);
             if (!prefab)
             {
-                Logger.LogError($"Failed to clone prefab, can not find base prefab with name: {baseName}");
+                Logger.LogWarning($"Failed to clone prefab, can not find base prefab with name: {baseName}");
                 return null;
             }
 
@@ -176,12 +192,12 @@ namespace Jotunn.Managers
         {
             if (string.IsNullOrEmpty(name))
             {
-                Logger.LogError($"Failed to clone prefab with invalid name: {name}");
+                Logger.LogWarning($"Failed to clone prefab with invalid name: {name}");
                 return null;
             }
             if (!prefab)
             {
-                Logger.LogError($"Failed to clone prefab, base prefab is not valid");
+                Logger.LogWarning($"Failed to clone prefab, base prefab is not valid");
                 return null;
             }
             if (GetPrefab(name))
@@ -209,13 +225,13 @@ namespace Jotunn.Managers
         /// <returns>The existing prefab, or null if none exists with given name</returns>
         public GameObject GetPrefab(string name)
         {
-            CustomPrefab ret = Prefabs.FirstOrDefault(x => x.Prefab.name.Equals(name));
-            if (ret != null)
+            int hash = name.GetStableHashCode();
+
+            if (Prefabs.TryGetValue(hash, out var custom))
             {
-                return ret.Prefab;
+                return custom.Prefab;
             }
 
-            int hash = name.GetStableHashCode();
             if (ZNetScene.instance &&
                 ZNetScene.instance.m_namedPrefabs.TryGetValue(hash, out var prefab))
             {
@@ -231,32 +247,32 @@ namespace Jotunn.Managers
         /// <param name="name">Name of the prefab to remove</param>
         public void RemovePrefab(string name)
         {
-            CustomPrefab ret = Prefabs.FirstOrDefault(x => x.Prefab.name.Equals(name));
-            Prefabs.Remove(ret);
+            int hash = name.GetStableHashCode();
+            Prefabs.Remove(hash);
         }
 
         /// <summary>
         ///     Destroy a custom prefab.<br />
-        ///     Removes it from the manager and if instantiated also from the <see cref="ZNetScene"/>.
+        ///     Removes it from the manager and if already instantiated also from the <see cref="ZNetScene"/>.
         /// </summary>
         /// <param name="name">The name of the prefab to destroy</param>
         public void DestroyPrefab(string name)
         {
-            CustomPrefab custom = Prefabs.FirstOrDefault(x => x.Prefab.name.Equals(name));
+            int hash = name.GetStableHashCode();
 
-            if (custom != null)
+            if (!Prefabs.TryGetValue(hash, out var custom))
             {
-                Prefabs.Remove(custom);
+                return;
             }
 
             if (ZNetScene.instance)
             {
                 //TODO: remove all clones, too
 
-                int hash = name.GetStableHashCode();
                 if (ZNetScene.instance.m_namedPrefabs.TryGetValue(hash, out var del))
                 {
                     ZNetScene.instance.m_prefabs.Remove(del);
+                    ZNetScene.instance.m_nonNetViewPrefabs.Remove(del);
                     ZNetScene.instance.m_namedPrefabs.Remove(hash);
                     ZNetScene.instance.Destroy(del);
                 }
@@ -266,6 +282,8 @@ namespace Jotunn.Managers
             {
                 Object.Destroy(custom.Prefab);
             }
+
+            Prefabs.Remove(hash);
         }
 
         /// <summary>
@@ -279,16 +297,41 @@ namespace Jotunn.Managers
             {
                 Logger.LogInfo($"Adding {Prefabs.Count} custom prefabs to the ZNetScene");
 
-                foreach (var prefab in Prefabs)
+                List<CustomPrefab> toDelete = new List<CustomPrefab>();
+
+                foreach (var customPrefab in Prefabs.Values)
                 {
-                    RegisterToZNetScene(prefab.Prefab);
+                    try
+                    {
+                        if (customPrefab.FixReference)
+                        {
+                            customPrefab.Prefab.FixReferences();
+                            customPrefab.FixReference = false;
+                        }
+
+                        RegisterToZNetScene(customPrefab.Prefab);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning($"Error caught while adding prefab {customPrefab}: {ex}");
+                        toDelete.Add(customPrefab);
+                    }
+                }
+
+                // Delete custom prefabs with errors
+                foreach (var prefab in toDelete)
+                {
+                    if (prefab.Prefab)
+                    {
+                        DestroyPrefab(prefab.Prefab.name);
+                    }
                 }
             }
         }
 
         /// <summary>
         ///     Register a single prefab to the current <see cref="ZNetScene"/>.<br />
-        ///     Checks for existance of the object via GetStableHashCode() and adds the prefab if it is not already added.
+        ///     Checks for existence of the object via GetStableHashCode() and adds the prefab if it is not already added.
         /// </summary>
         /// <param name="gameObject"></param>
         public void RegisterToZNetScene(GameObject gameObject)
@@ -306,13 +349,31 @@ namespace Jotunn.Managers
                 }
                 else
                 {
-                    znet.m_prefabs.Add(gameObject);
+                    if (gameObject.GetComponent<ZNetView>() != null)
+                    {
+                        znet.m_prefabs.Add(gameObject);
+                    }
+                    else
+                    {
+                        znet.m_nonNetViewPrefabs.Add(gameObject);
+                    }
                     znet.m_namedPrefabs.Add(hash, gameObject);
                     Logger.LogDebug($"Added prefab {name}");
                 }
             }
         }
+        
+        /// <summary>
+        ///     Safely invoke the <see cref="OnVanillaPrefabsAvailable"/> event
+        /// </summary>
+        /// 
+        private void InvokeOnVanillaObjectsAvailable(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        {
+            OnVanillaPrefabsAvailable?.SafeInvoke();
 
+            orig(self, other);
+        }
+        
         private void InvokeOnPrefabsRegistered(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);

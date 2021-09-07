@@ -69,6 +69,7 @@ namespace TestMod
             AddStatusEffects();
             AddVanillaItemConversions();
             AddCustomItemConversion();
+            AddCustomPrefabs();
             AddItemsWithConfigs();
             AddMockedItems();
             AddKitbashedPieces();
@@ -76,13 +77,13 @@ namespace TestMod
             AddInvalidEntities();
 
             // Add custom items cloned from vanilla items
-            ItemManager.OnVanillaItemsAvailable += AddClonedItems;
+            PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
 
             // Clone an item with variants and replace them
-            ItemManager.OnVanillaItemsAvailable += AddVariants;
+            PrefabManager.OnVanillaPrefabsAvailable += AddVariants;
             
             // Create a custom item with variants
-            ItemManager.OnVanillaItemsAvailable += AddCustomVariants;
+            PrefabManager.OnVanillaPrefabsAvailable += AddCustomVariants;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -305,7 +306,7 @@ namespace TestMod
                 foreach (var mod in ModRegistry.GetMods(true).OrderBy(x => x.GUID))
                 {
                     // Mod GUID
-                    GUIManager.Instance.CreateText(mod.GUID, 
+                    GUIManager.Instance.CreateText(mod.GUID,
                         viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                         GUIManager.Instance.AveriaSerifBold, 30, GUIManager.Instance.ValheimOrange,
                         true, Color.black, 650f, 40f, false);
@@ -313,7 +314,7 @@ namespace TestMod
                     if (mod.Pieces.Any())
                     {
                         // Pieces title
-                        GUIManager.Instance.CreateText("Pieces:", 
+                        GUIManager.Instance.CreateText("Pieces:",
                             viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                             GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
                             true, Color.black, 650f, 30f, false);
@@ -321,7 +322,7 @@ namespace TestMod
                         foreach (var piece in mod.Pieces)
                         {
                             // Piece name
-                            GUIManager.Instance.CreateText($"{piece}", 
+                            GUIManager.Instance.CreateText($"{piece}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                                 GUIManager.Instance.AveriaSerifBold, 20, Color.white,
                                 true, Color.black, 650f, 30f, false);
@@ -686,6 +687,22 @@ namespace TestMod
             ItemManager.Instance.AddItemConversion(blastConversion);
         }
 
+        // Add some custom prefabs
+        private void AddCustomPrefabs()
+        {
+            // Dont fix references
+            var noFix = PrefabManager.Instance.CreateEmptyPrefab("prefab_nofix", false);
+            PrefabManager.Instance.AddPrefab(noFix);
+
+            // Fix references
+            var fix = PrefabManager.Instance.CreateEmptyPrefab("prefab_fix", false);
+            fix.GetComponent<Renderer>().material = new Material(Shader.Find("Standard"));
+            fix.GetComponent<Renderer>().material.name = "JVLmock_amber";
+            PrefabManager.Instance.AddPrefab(new CustomPrefab(fix, true));
+
+            // Test duplicate
+            PrefabManager.Instance.AddPrefab(fix);
+        }
 
         // Add new Items with item Configs
         private void AddItemsWithConfigs()
@@ -1077,7 +1094,7 @@ namespace TestMod
             finally
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
-                ItemManager.OnVanillaItemsAvailable -= AddClonedItems;
+                PrefabManager.OnVanillaPrefabsAvailable -= AddClonedItems;
             }
         }
 
@@ -1108,7 +1125,7 @@ namespace TestMod
             finally
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
-                ItemManager.OnVanillaItemsAvailable -= AddVariants;
+                PrefabManager.OnVanillaPrefabsAvailable -= AddVariants;
             }
         }
         
