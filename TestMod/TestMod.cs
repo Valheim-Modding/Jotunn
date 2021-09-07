@@ -256,15 +256,15 @@ namespace TestMod
                 button.onClick.AddListener(TogglePanel);
 
                 // Create a dropdown
-                var dd = GUIManager.Instance.CreateDropDown(
+                var dropdownObject = GUIManager.Instance.CreateDropDown(
                     parent: TestPanel.transform,
                     anchorMin: new Vector2(0.5f, 0.5f),
                     anchorMax: new Vector2(0.5f, 0.5f),
                     position: new Vector2(-250f, -250f),
+                    fontSize: 16,
                     width: 100f,
                     height: 30f);
-                dd.GetComponent<Dropdown>().ClearOptions();
-                dd.GetComponent<Dropdown>().AddOptions(new List<string>
+                dropdownObject.GetComponent<Dropdown>().AddOptions(new List<string>
                 {
                     "bla", "blubb", "börks", "blarp", "harhar"
                 });
@@ -275,7 +275,9 @@ namespace TestMod
                     anchorMin: new Vector2(0.5f, 0.5f),
                     anchorMax: new Vector2(0.5f, 0.5f),
                     position: new Vector2(250f, -250f),
+                    contentType: InputField.ContentType.Standard,
                     placeholderText: "input...",
+                    fontSize: 16,
                     width: 160f,
                     height: 30f);
 

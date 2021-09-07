@@ -3,10 +3,11 @@
 ## Version 2.2.8
 * Added global mod registry, collecting added entities per mod
 * Show color on the ColorPicker button in the mod settings
-* Refactored manually built controls in GUIManager to use Unity's DefaultControls
+* Refactored manually built controls in GUIManager to use Unity's DefaultControls (thx redseiko)
 * GUIManager.ApplyButtonStyle does not add a Text GO any more
 * Added GUIManager.CreateInputField
 * Fixed sprite atlas loading
+* Fixed OnLocalizationAdded event timing
 
 ## Version 2.2.7
 * Added loading of dll embedded text assets (thx MSchmoecker)
