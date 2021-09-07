@@ -836,9 +836,10 @@ namespace Jotunn.Managers
                 GameObject newcolor = Object.Instantiate(color, CustomGUIFront.transform, false);
                 newcolor.name = "ColorPicker";
                 newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-                ((RectTransform)newcolor.transform).anchoredPosition = position;
-                ((RectTransform)newcolor.transform).anchorMin = anchorMin;
-                ((RectTransform)newcolor.transform).anchorMax = anchorMax;
+                RectTransform tf = newcolor.GetComponent<RectTransform>();
+                tf.anchoredPosition = position;
+                tf.anchorMin = anchorMin;
+                tf.anchorMax = anchorMax;
             }
             ColorPicker.Create(original, message, onColorChanged, onColorSelected, useAlpha);
         }
@@ -891,9 +892,10 @@ namespace Jotunn.Managers
                 GameObject newGradient = Object.Instantiate(gradient, CustomGUIFront.transform, false);
                 newGradient.name = "GradientPicker";
                 newGradient.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-                ((RectTransform)newGradient.transform).anchoredPosition = position;
-                ((RectTransform)newGradient.transform).anchorMin = anchorMin;
-                ((RectTransform)newGradient.transform).anchorMax = anchorMax;
+                RectTransform tf = newGradient.GetComponent<RectTransform>();
+                tf.anchoredPosition = position;
+                tf.anchorMin = anchorMin;
+                tf.anchorMax = anchorMax;
             }
             GradientPicker.Create(original, message, onGradientChanged, onGradientSelected);
         }
