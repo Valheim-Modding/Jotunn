@@ -18,6 +18,8 @@ A dedicated server running without GUI is commonly referred to as a headless ser
 
 The [GUIManager](xref:Jotunn.Managers.GUIManager) provides useful methods to create buttons, text element and more at runtime using the original Valheim assets to create a seamless look for your custom GUI components.
 
+If you dont want to create new GameObjects from scratch, there is also the possibility to apply Jötunn style to your existing GUI controls. Check out the [API docs](xref:Jotunn.Managers.GUIManager) to learn more.
+
 ### ColorPicker and GradientPicker
 
 ![ColorPicker and GradientPicker](../images/data/colorgradientpicker.png)

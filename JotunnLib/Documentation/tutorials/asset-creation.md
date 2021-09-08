@@ -80,7 +80,7 @@ If I were to copy paste those, I'd need to fix shaders, and now I'd also have to
 The solution is easy though, thanks to [JVL](https://github.com/Valheim-Modding/Jotunn), we introduce a [Mock object system](asset-mocking.md). Click the link to learn more about resolving native asset references at runtime.
 
 
-## Creating an Asset Bundle
+## AssetBundle
 
 Now we want to make our AssetBundle so that we later inject it with our BepInEx plugin dll
 
