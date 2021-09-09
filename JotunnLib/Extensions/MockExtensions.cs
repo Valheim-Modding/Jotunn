@@ -14,71 +14,6 @@ namespace Jotunn
     /// </summary>
     public static class PrefabExtension
     {
-        /// <summary>
-        ///     Legacy ValheimLib prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
-        /// </summary>
-        [Obsolete("Legacy ValheimLib mock prefix. Use JVLMockPrefix \"JVLmock_\" instead.")]
-        public const string MockPrefix = "VLmock_";
-
-        /// <summary>
-        ///     Prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
-        /// </summary>
-        public const string JVLMockPrefix = "JVLmock_";
-
-#pragma warning disable CS0618
-        /// <summary>
-        ///     Will try to find the real vanilla prefab from the given mock
-        /// </summary>
-        /// <param name="unityObject"></param>
-        /// <param name="mockObjectType"></param>
-        /// <returns>the real prefab</returns>
-        public static Object GetRealPrefabFromMock(Object unityObject, Type mockObjectType)
-        {
-            if (unityObject)
-            {
-                var unityObjectName = unityObject.name;
-                var isVLMock = unityObjectName.StartsWith(MockPrefix);
-                var isJVLMock = unityObjectName.StartsWith(JVLMockPrefix);
-                if (isVLMock || isJVLMock)
-                {
-                    if (isVLMock) unityObjectName = unityObjectName.Substring(MockPrefix.Length);
-                    if (isJVLMock) unityObjectName = unityObjectName.Substring(JVLMockPrefix.Length);
-
-                    // Cut off the suffix in the name to correctly query the original material
-                    if (unityObject is Material)
-                    {
-                        const string materialInstance = " (Instance)";
-                        if (unityObjectName.EndsWith(materialInstance))
-                        {
-                            unityObjectName = unityObjectName.Substring(0, unityObjectName.Length - materialInstance.Length);
-                        }
-                    }
-
-                    Object ret = PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);
-
-                    if (!ret)
-                    {
-                        throw new Exception($"Mock prefab {unityObjectName} could not be resolved");
-                    }
-
-                    return ret;
-                }
-            }
-
-            return null;
-        }
-#pragma warning restore CS0618
-
-        /// <summary>
-        ///     Will try to find the real vanilla prefab from the given mock
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="unityObject"></param>
-        /// <returns>the real prefab</returns>
-        public static T GetRealPrefabFromMock<T>(Object unityObject) where T : Object
-        {
-            return (T)GetRealPrefabFromMock(unityObject, typeof(T));
-        }
 
         /// <summary>
         ///     Will attempt to fix every field that are mocks gameObjects / Components from the given object.
@@ -90,14 +25,35 @@ namespace Jotunn
         }
 
         /// <summary>
-        ///     Resolves all references for mocks in this GameObject recursively.
+        ///     Resolves all references for mocks in this GameObject's components recursively
         /// </summary>
         /// <param name="gameObject"></param>
         public static void FixReferences(this GameObject gameObject)
         {
+            gameObject.FixReferences(false);
+        }
+        
+        /// <summary>
+        ///     Resolves all references for mocks in this GameObject recursively.
+        ///     Can additionally traverse the transforms hierarchy to fix child GameObjects recursively.
+        /// </summary>
+        /// <param name="gameObject">This GameObject</param>
+        /// <param name="recursive">Traverse all child transforms</param>
+        public static void FixReferences(this GameObject gameObject, bool recursive)
+        {
             foreach (var component in gameObject.GetComponents<Component>())
             {
                 component.FixReferences();
+            }
+
+            if (!recursive)
+            {
+                return;
+            }
+
+            foreach (Transform tf in gameObject.transform)
+            {
+                tf.gameObject.FixReferences();
             }
         }
 
@@ -132,7 +88,7 @@ namespace Jotunn
                 if (isUnityObject)
                 {
                     var mock = (Object)field.GetValue(objectToFix);
-                    var realPrefab = GetRealPrefabFromMock(mock, fieldType);
+                    var realPrefab = MockManager.GetRealPrefabFromMock(mock, fieldType);
                     if (realPrefab)
                     {
                         field.SetValue(objectToFix, realPrefab);
@@ -159,7 +115,7 @@ namespace Jotunn
                             var list = new List<Object>();
                             foreach (var unityObject in currentValues)
                             {
-                                var realPrefab = GetRealPrefabFromMock(unityObject, enumeratedType);
+                                var realPrefab = MockManager.GetRealPrefabFromMock(unityObject, enumeratedType);
                                 if (realPrefab)
                                 {
                                     list.Add(realPrefab);
@@ -226,7 +182,7 @@ namespace Jotunn
                 if (isUnityObject)
                 {
                     var mock = (Object)property.GetValue(objectToFix, null);
-                    var realPrefab = GetRealPrefabFromMock(mock, propertyType);
+                    var realPrefab = MockManager.GetRealPrefabFromMock(mock, propertyType);
                     if (realPrefab)
                     {
                         property.SetValue(objectToFix, realPrefab, null);
@@ -253,7 +209,7 @@ namespace Jotunn
                             var list = new List<Object>();
                             foreach (var unityObject in currentValues)
                             {
-                                var realPrefab = GetRealPrefabFromMock(unityObject, enumeratedType);
+                                var realPrefab = MockManager.GetRealPrefabFromMock(unityObject, enumeratedType);
                                 if (realPrefab)
                                 {
                                     list.Add(realPrefab);
