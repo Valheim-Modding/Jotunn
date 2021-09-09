@@ -32,6 +32,11 @@ namespace Jotunn.Entities
         public bool FixReference { get; set; }
 
         /// <summary>
+        ///     Indicator if references from configs should get replaced
+        /// </summary>
+        internal bool FixConfig { get; set; }
+
+        /// <summary>
         ///     Custom item from a prefab.<br />
         ///     Can fix references for <see cref="Entities.Mock{T}"/>s and the <see cref="global::Recipe"/>.
         /// </summary>
@@ -56,12 +61,8 @@ namespace Jotunn.Entities
             ItemPrefab = itemPrefab;
             ItemDrop = itemPrefab.GetComponent<ItemDrop>();
             FixReference = fixReference;
-
             itemConfig.Apply(ItemPrefab);
-            if (!string.IsNullOrEmpty(itemConfig.PieceTable))
-            {
-                FixReference = true;
-            }
+            FixConfig = true;
             Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
         }
 
@@ -96,10 +97,7 @@ namespace Jotunn.Entities
                 ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
                 ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
                 itemConfig.Apply(ItemPrefab);
-                if (!string.IsNullOrEmpty(itemConfig.PieceTable))
-                {
-                    FixReference = true;
-                }
+                FixConfig = true;
                 Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
             }
         }
@@ -131,10 +129,7 @@ namespace Jotunn.Entities
             {
                 ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
                 itemConfig.Apply(ItemPrefab);
-                if (!string.IsNullOrEmpty(itemConfig.PieceTable))
-                {
-                    FixReference = true;
-                }
+                FixConfig = true;
                 Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
             }
         }
