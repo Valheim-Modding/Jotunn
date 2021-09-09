@@ -53,7 +53,7 @@ namespace Jotunn
 
             foreach (Transform tf in gameObject.transform)
             {
-                tf.gameObject.FixReferences();
+                tf.gameObject.FixReferences(true);
             }
         }
 
