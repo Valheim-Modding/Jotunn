@@ -43,7 +43,10 @@ namespace Jotunn
         {
             foreach (var component in gameObject.GetComponents<Component>())
             {
-                component.FixReferences();
+                if (!(component is Transform))
+                {
+                    component.FixReferences(0);
+                }
             }
 
             if (!recursive)
