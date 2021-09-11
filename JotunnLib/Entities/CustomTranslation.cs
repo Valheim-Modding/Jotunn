@@ -23,9 +23,13 @@ namespace Jotunn.Entities
         public void AddTranslation(in string language, Dictionary<string, string> tokenValue)
         {
             if (!map.ContainsKey(language))
+            {
                 map.Add(language, new Dictionary<string, string>());
+            }
             foreach (var tv in tokenValue)
+            {
                 map[language][tv.Key] = tv.Value;
+            }
         }
 
         /// <summary> Add translation to the translation dictionary. </summary>
@@ -34,9 +38,13 @@ namespace Jotunn.Entities
         public void AddTranslation(in string language, IDictionary<string, object> tokenValue)
         {
             if (!map.ContainsKey(language))
+            {
                 map.Add(language, new Dictionary<string, string>());
+            }
             foreach (var tv in tokenValue)
+            {
                 map[language][tv.Key] = (string)tv.Value;
+            }
         }
 
         /// <summary> Add translation to the translation dictionary. </summary>
@@ -46,7 +54,9 @@ namespace Jotunn.Entities
         public void AddTranslation(in string language, in string token, string translation)
         {
             if (!map.ContainsKey(language))
+            {
                 map.Add(language, new Dictionary<string, string>());
+            }
             map[language][token] = translation;
         }
 
@@ -66,8 +76,12 @@ namespace Jotunn.Entities
         {
             translation = null;
             if (map.TryGetValue(language, out var Map2))
+            {
                 if (Map2.TryGetValue(token, out var value))
+                {
                     translation = value;
+                }
+            }
             return translation != null;
         }
 
@@ -78,7 +92,9 @@ namespace Jotunn.Entities
         public bool Contains(in string language, in string token)
         {
             if (map.TryGetValue(language, out var translations))
+            {
                 return translations.ContainsValue(token);
+            }
             return false;
         }
     }
