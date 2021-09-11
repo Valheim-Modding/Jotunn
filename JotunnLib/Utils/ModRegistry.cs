@@ -182,6 +182,24 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
+        ///     Get all added <see cref="CustomTranslation"/>s
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<CustomTranslation> GetTranslations()
+        {
+            return LocalizationManager.Instance.Data.GetRaw();
+        }
+        /// <summary>
+        ///     Get all added <see cref="CustomTranslation"/>s of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns></returns>
+        public static IEnumerable<CustomTranslation> GetTranslations(string modGuid)
+        {
+            return LocalizationManager.Instance.Data.GetRaw().Where(x => x.SourceMod.GUID.Equals(modGuid));
+        }
+
+        /// <summary>
         ///     Model class holding metadata of Jötunn mods.
         /// </summary>
         public class ModInfo
@@ -237,13 +255,7 @@ namespace Jotunn.Utils
             /// <summary>
             ///     Custom item conversions added by that mod
             /// </summary>
-            public IEnumerable<CustomItemConversion> ItemConversions
-            {
-                get
-                {
-                    return GetItemConversions(GUID);
-                }
-            }
+            public IEnumerable<CustomItemConversion> ItemConversions => GetItemConversions(GUID);
 
             /// <summary>
             ///     Custom status effects added by that mod
@@ -286,6 +298,17 @@ namespace Jotunn.Utils
                 get
                 {
                     return GetCommands(GUID);
+                }
+            }
+
+            /// <summary>
+            ///     Custom commands added by that mod
+            /// </summary>
+            public IEnumerable<CustomTranslation> Translations
+            {
+                get
+                {
+                    return GetTranslations(GUID);
                 }
             }
         }
