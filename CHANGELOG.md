@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.2.9
+* Fixed compat errors
+
 ## Version 2.2.8
 * Added global mod registry, collecting added entities per mod
 * Added entity CustomPrefab including the possibility to let Jötunn fix mock references
