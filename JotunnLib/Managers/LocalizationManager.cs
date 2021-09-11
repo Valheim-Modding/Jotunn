@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using BepInEx;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -80,7 +81,9 @@ namespace Jotunn.Managers
                 foreach (var ct in data)
                 {
                     if (ct.TryTranslate(language, token, out translation))
+                    {
                         break;
+                    }
                 }
                 return translation != null;
             }
@@ -128,6 +131,11 @@ namespace Jotunn.Managers
         ///     String of chars not allowed in a token string.
         /// </summary>
         internal const string ForbiddenChars = " (){}[]+-!?/\\\\&%,.:-=<>\n";
+
+        /// <summary> 
+        ///     Array of chars not allowed in a token string.
+        /// </summary>
+        internal readonly char[] ForbiddenCharsArr = ForbiddenChars.ToCharArray();
 
         /// <summary> 
         ///     The singleton instance of this manager.
@@ -252,10 +260,41 @@ namespace Jotunn.Managers
         }
 
         /// <summary> 
+        ///     Tries to translate a word with loaded plugin translations or <see cref="Localization.Translate"/>.
+        /// </summary>
+        /// <param name="word"> Word to translate. </param>
+        /// <returns> Translated word in player language or english as a fallback. </returns>
+        public string TryTranslate(string word)
+        {
+            if (!ValidateToken(word))
+            {
+                return null;
+            }
+
+            var trim = word.TrimStart(TokenFirstChar);
+            var PlayerLanguage = PlayerPrefs.GetString("language", string.Empty);
+
+            if (Data.TryTranslate(PlayerLanguage, trim, out var translation))
+            {
+                return translation;
+            }
+
+            if (Data.TryTranslate(DefaultLanguage, trim, out translation))
+            {
+                return translation;
+            }
+
+            return Localization.instance.Translate(trim);
+        }
+
+        #region --------------------------------------------------------------------------------- Add Directly
+
+        /// <summary> 
         ///     Registers a new Localization for a language.
         /// </summary>
         /// <param name="config"> Wrapper which contains a language and a Token-Value dictionary. </param>
-        public void AddLocalization(LocalizationConfig config) => AddLocalization(config.Language, config.Translations);
+        public void AddLocalization(LocalizationConfig config)
+            => AddLocalization(config.Language, config.Translations);
 
         /// <summary> 
         ///     Registers a new Localization for a language.
@@ -264,9 +303,8 @@ namespace Jotunn.Managers
         /// <param name="localization"> Token-Value dictionary. </param>
         public void AddLocalization(string language, Dictionary<string, string> localization)
         {
-            if (string.IsNullOrEmpty(language))
+            if (!ValidateLanguage(language))
             {
-                Logger.LogError("Error: 'language' was null or empty");
                 return;
             }
             if (localization is null || localization.Count < 1)
@@ -279,9 +317,56 @@ namespace Jotunn.Managers
         }
 
         /// <summary> 
+        ///     Add a token and its value to the "English" language.
+        /// </summary>
+        /// <param name="token">token / key</param>
+        /// <param name="value">value that will be printed in the game</param>
+        /// <param name="forceReplace">replace the token if it already exists</param>
+        public void AddToken(string token, string value, bool forceReplace = false)
+            => AddToken(token, value, DefaultLanguage, forceReplace);
+
+        /// <summary> 
+        ///     Add a token and its value to the specified language (default to "English").
+        /// </summary>
+        /// <param name="token"> Token </param>
+        /// <param name="value"> Translation. </param>
+        /// <param name="language"> Language ID for this token. </param>
+        /// <param name="forceReplace"> Replace the token if it already exists </param>
+        public void AddToken(string token, string value, string language, bool forceReplace = false)
+        {
+            if (!ValidateLanguage(language))
+            {
+                return;
+            }
+            if (!ValidateToken(token))
+            {
+                return;
+            }
+            if (!ValidateTranslation(value))
+            {
+                return;
+            }
+
+            var trim = token.TrimStart(TokenFirstChar);
+            var ct = Data.Get();
+
+            if (!forceReplace && ct.Contains(language, token))
+            {
+                Logger.LogWarning($"Token named '{trim}' already exist!");
+                return;
+            }
+
+            ct.AddTranslation(language, trim, value);
+        }
+
+        #endregion
+
+        #region --------------------------------------------------------------------------------- Add by File
+
+        /// <summary> 
         ///     Search and add localization files.
         /// </summary>
-        private void AddLanguageFilesFromPluginFolder()
+        private void AddLanguageFilesFromPluginFolder() // TODO: change to get sourceMod info
         {
             static string GetDirName(in string str) => Path.GetDirectoryName(str);
             var jsonFormat = new HashSet<string>();
@@ -323,71 +408,6 @@ namespace Jotunn.Managers
                 AddPath(path);
             }
         }
-
-        /// <summary> 
-        ///     Add a token and its value to the "English" language.
-        /// </summary>
-        /// <param name="token">token / key</param>
-        /// <param name="value">value that will be printed in the game</param>
-        /// <param name="forceReplace">replace the token if it already exists</param>
-        public void AddToken(string token, string value, bool forceReplace = false) => AddToken(token, value, DefaultLanguage, forceReplace);
-
-        /// <summary> 
-        ///     Add a token and its value to the specified language (default to "English").
-        /// </summary>
-        /// <param name="token"> Token </param>
-        /// <param name="value"> Translation. </param>
-        /// <param name="language"> Language ID for this token. </param>
-        /// <param name="forceReplace"> Replace the token if it already exists </param>
-        public void AddToken(string token, string value, string language, bool forceReplace = false)
-        {
-            if (token.IndexOfAny(ForbiddenChars.ToCharArray()) != -1)
-            {
-                Logger.LogWarning($"Token '{token}' must not contain following chars: '{ForbiddenChars}'.");
-                return;
-            }
-
-            var trim = token.TrimStart(TokenFirstChar);
-            var ct = Data.Get();
-
-            if (!forceReplace && ct.Contains(language, token))
-            {
-                Logger.LogWarning($"Token named '{trim}' already exist!");
-                return;
-            }
-
-            ct.AddTranslation(language, trim, value);
-        }
-
-        /// <summary> 
-        ///     Tries to translate a word with loaded plugin translations or <see cref="Localization.Translate"/>.
-        /// </summary>
-        /// <param name="word"> Word to translate. </param>
-        /// <returns> Translated word in player language or english as a fallback. </returns>
-        public string TryTranslate(string word)
-        {
-            if (string.IsNullOrEmpty(word))
-            {
-                return null;
-            }
-
-            var trim = word.TrimStart(TokenFirstChar);
-            var PlayerLanguage = PlayerPrefs.GetString("language", string.Empty);
-
-            if (Data.TryTranslate(PlayerLanguage, trim, out var translation))
-            {
-                return translation;
-            }
-
-            if (Data.TryTranslate(DefaultLanguage, trim, out translation))
-            {
-                return translation;
-            }
-
-            return Localization.instance.Translate(trim);
-        }
-
-        #region ------------------------------------------------------------------------------------- Language File Addition
 
         /// <summary> 
         ///     Add a file via absolute path.
@@ -461,8 +481,14 @@ namespace Jotunn.Managers
                 {
                     continue;
                 }
+
                 var token = slicedLine[0];
+
                 if (token.StartsWith("//") || token.Length == 0)
+                {
+                    continue;
+                }
+                if (!ValidateToken(token))
                 {
                     continue;
                 }
@@ -475,6 +501,15 @@ namespace Jotunn.Managers
                     if (string.IsNullOrEmpty(translation) || translation[0] == '\r')
                     {
                         translation = slicedLine[1];
+                    }
+
+                    if (!ValidateLanguage(language))
+                    {
+                        continue;
+                    }
+                    if (!ValidateTranslation(translation))
+                    {
+                        continue;
                     }
 
                     translations.AddTranslation(language, token, translation);
@@ -490,12 +525,71 @@ namespace Jotunn.Managers
         /// <param name="sourceMod"> Mod data in the shape of BepInPlugin class. </param>
         private void LoadJsonLanguageFile(string language, string fileContent, BepInPlugin sourceMod = null)
         {
+            if (!ValidateLanguage(language))
+            {
+                return;
+            }
+
             var translations = Data.Get(sourceMod ?? BepInExUtils.GetSourceModMetadata());
             var json = (IDictionary<string, object>)SimpleJson.SimpleJson.DeserializeObject(fileContent);
 
             translations.AddTranslation(language, json);
         }
+
+        #endregion
+
+        #region --------------------------------------------------------------------------------- Validation Methods
+
+        private bool ValidateLanguage(in string language)
+        {
+            if (string.IsNullOrEmpty(language))
+            {
+                Logger.LogError($"Error: Language was null or empty");
+                return false;
+            }
+            if (StrForbiddenChars(language))
+            {
+                Logger.LogWarning($"Error: Language '{language}' must not contain following chars: '{ForbiddenChars}'.");
+                return false;
+            }
+            if (!char.IsUpper(language[0]))
+            {
+                Logger.LogWarning($"Error: Language '{language}' must start with a capital letter");
+                return false;
+            }
+            return true;
+        }
+
+        private bool ValidateToken(in string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                Logger.LogError($"Error: 'language' was null or empty");
+                return false;
+            }
+            if (token.IndexOfAny(ForbiddenCharsArr) != -1)
+            {
+                Logger.LogWarning($"Error: Token '{token}' must not contain following chars: '{ForbiddenChars}'.");
+                return false;
+            }
+            return true;
+        }
+
+        private bool ValidateTranslation(in string translation)
+        {
+            if (string.IsNullOrEmpty(translation))
+            {
+                Logger.LogError($"Error: 'translation' was null or empty");
+                return false;
+            }
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool StrForbiddenChars(in string str) => str.IndexOfAny(ForbiddenChars.ToCharArray()) != -1;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool StrFirstNotUpper(in string str) => Char.IsUpper(str[0]);
+
         #endregion
     }
-
 }
