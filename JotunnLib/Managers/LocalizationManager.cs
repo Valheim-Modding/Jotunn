@@ -255,7 +255,7 @@ namespace Jotunn.Managers
             }
 
             var trim = word.TrimStart(TokenFirstChar);
-            var playerLang = PlayerPrefs.GetString("language", string.Empty);
+            var playerLang = PlayerPrefs.GetString("language", DefaultLanguage);
 
             if (Data.TryTranslate(playerLang, trim, out var translation))
             {
@@ -286,13 +286,12 @@ namespace Jotunn.Managers
         /// <param name="localization"> Token-Value dictionary. </param>
         public void AddLocalization(string language, Dictionary<string, string> localization)
         {
-            if (!ValidateLanguage(language))
-            {
-                return;
-            }
             if (localization is null || localization.Count < 1)
             {
-                Logger.LogError("Error: 'localization' was null or empty");
+                throw new ArgumentNullException(nameof(language));
+            }
+            if (!ValidateLanguage(language))
+            {
                 return;
             }
 
@@ -401,7 +400,7 @@ namespace Jotunn.Managers
         {
             if (path is null)
             {
-                throw new NullReferenceException($"param {nameof(path)} is null");
+                throw new ArgumentNullException(nameof(path));
             }
 
             var fileContent = File.ReadAllText(path);
@@ -426,7 +425,7 @@ namespace Jotunn.Managers
         {
             if (fileContent is null)
             {
-                throw new NullReferenceException($"param {nameof(fileContent)} is null");
+                throw new ArgumentNullException(nameof(fileContent));
             }
 
             LoadLanguageFile(fileContent);
@@ -439,9 +438,13 @@ namespace Jotunn.Managers
         /// <param name="fileContent"> Entire file as string </param>
         public void AddJson(string language, string fileContent)
         {
+            if (language is null)
+            {
+                throw new ArgumentNullException(nameof(language));
+            }
             if (fileContent is null)
             {
-                throw new NullReferenceException($"param {nameof(fileContent)} is null");
+                throw new ArgumentNullException(nameof(fileContent));
             }
 
             LoadJsonLanguageFile(language, fileContent);
@@ -527,13 +530,7 @@ namespace Jotunn.Managers
         {
             if (string.IsNullOrEmpty(language))
             {
-                Logger.LogError($"Error: Language was null or empty");
-                return false;
-            }
-            if (StrForbiddenChars(language))
-            {
-                Logger.LogWarning($"Error: Language '{language}' must not contain following chars: '{ForbiddenChars}'.");
-                return false;
+                throw new ArgumentNullException(nameof(language));
             }
             if (!char.IsUpper(language[0]))
             {
@@ -547,8 +544,7 @@ namespace Jotunn.Managers
         {
             if (string.IsNullOrEmpty(token))
             {
-                Logger.LogError($"Error: 'language' was null or empty");
-                return false;
+                throw new ArgumentNullException(nameof(token));
             }
             if (token.IndexOfAny(ForbiddenCharsArr) != -1)
             {
@@ -562,8 +558,7 @@ namespace Jotunn.Managers
         {
             if (string.IsNullOrEmpty(translation))
             {
-                Logger.LogError($"Error: 'translation' was null or empty");
-                return false;
+                throw new ArgumentNullException(nameof(translation));
             }
             return true;
         }
