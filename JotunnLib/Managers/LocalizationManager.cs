@@ -275,6 +275,13 @@ namespace Jotunn.Managers
         /// <summary> 
         ///     Registers a new Localization for a language.
         /// </summary>
+        /// <param name="config"> Wrapper which contains a language and a Token-Value dictionary. </param>
+        public void AddLocalization(LocalizationConfig config)
+            => AddLocalization(config.Language, config.Translations);
+
+        /// <summary> 
+        ///     Registers a new Localization for a language.
+        /// </summary>
         /// <param name="language"> The language being added. </param>
         /// <param name="localization"> Token-Value dictionary. </param>
         public void AddLocalization(string language, Dictionary<string, string> localization)
