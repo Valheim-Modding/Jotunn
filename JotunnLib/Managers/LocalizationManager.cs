@@ -534,7 +534,7 @@ namespace Jotunn.Managers
             }
             if (!char.IsUpper(language[0]))
             {
-                Logger.LogWarning($"Error: Language '{language}' must start with a capital letter");
+                Logger.LogWarning($"Language '{language}' must start with a capital letter");
                 return false;
             }
             return true;
@@ -548,7 +548,7 @@ namespace Jotunn.Managers
             }
             if (token.IndexOfAny(ForbiddenCharsArr) != -1)
             {
-                Logger.LogWarning($"Error: Token '{token}' must not contain following chars: '{ForbiddenChars}'.");
+                Logger.LogWarning($"Token '{token}' must not contain following chars: '{ForbiddenChars}'.");
                 return false;
             }
             return true;
