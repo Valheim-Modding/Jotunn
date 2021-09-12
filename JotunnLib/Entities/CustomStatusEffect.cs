@@ -11,7 +11,7 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The <see cref="global::StatusEffect"/> for this custom status effect.
         /// </summary>
-        public StatusEffect StatusEffect { get; set; }
+        public StatusEffect StatusEffect { get; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.

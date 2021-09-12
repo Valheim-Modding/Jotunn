@@ -13,12 +13,12 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The prefab for this custom item.
         /// </summary>
-        public GameObject ItemPrefab { get; set; }
+        public GameObject ItemPrefab { get; }
 
         /// <summary>
         ///     The <see cref="global::ItemDrop"/> component for this custom item as a shortcut.
         /// </summary>
-        public ItemDrop ItemDrop { get; set; }
+        public ItemDrop ItemDrop { get; }
 
         /// <summary>
         ///     The <see cref="CustomRecipe"/> associated with this custom item. Is needed to craft

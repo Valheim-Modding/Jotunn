@@ -13,12 +13,12 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The prefab for this custom piece.
         /// </summary>
-        public GameObject PiecePrefab { get; set; }
+        public GameObject PiecePrefab { get; }
 
         /// <summary>
         ///     The <see cref="global::Piece"/> component for this custom piece as a shortcut. 
         /// </summary>
-        public Piece Piece { get; set; }
+        public Piece Piece { get; }
 
         /// <summary>
         ///     Name of the <see cref="global::PieceTable"/> this custom piece belongs to.
