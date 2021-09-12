@@ -67,7 +67,7 @@ namespace Jotunn.Entities
             PiecePrefab = piecePrefab;
             Piece = piecePrefab.GetComponent<Piece>();
             PieceTable = pieceConfig.PieceTable;
-            FixReference = true;
+            FixReference = false;
             FixConfig = true;
 
             pieceConfig.Apply(piecePrefab);
@@ -130,7 +130,8 @@ namespace Jotunn.Entities
                 PiecePrefab = piecePrefab;
                 Piece = piecePrefab.GetComponent<Piece>();
                 PieceTable = pieceConfig.PieceTable;
-                FixReference = true;
+                FixReference = false;
+                FixConfig = true;
 
                 pieceConfig.Apply(piecePrefab);
             }
