@@ -313,7 +313,7 @@ namespace TestMod
                             // Piece name
                             GUIManager.Instance.CreateText($"{piece}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
@@ -331,7 +331,7 @@ namespace TestMod
                             // Piece name
                             GUIManager.Instance.CreateText($"{item}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
@@ -349,7 +349,7 @@ namespace TestMod
                             // Command name
                             GUIManager.Instance.CreateText($"{command}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
