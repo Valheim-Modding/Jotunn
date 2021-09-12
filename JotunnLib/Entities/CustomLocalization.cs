@@ -5,17 +5,17 @@ using BepInEx;
 namespace Jotunn.Entities
 {
     /// <summary> Wrapper to hold each mod localization data. </summary>
-    public class CustomTranslation : CustomEntity
+    public class CustomLocalization : CustomEntity
     {
         /// <summary> Map that work as [language][token] = translation. </summary>
         private Dictionary<string, Dictionary<string, string>> Map { get; }
 
         /// <summary> Default constuctor. </summary>
-        public CustomTranslation() => Map = new Dictionary<string, Dictionary<string, string>>();
+        public CustomLocalization() => Map = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary> SourceMod hint constuctor. </summary>
         /// <param name="sourceMod"> Mod data in the shape of BepInPlugin class. </param>
-        public CustomTranslation(BepInPlugin sourceMod) : base(sourceMod) => Map = new Dictionary<string, Dictionary<string, string>>();
+        public CustomLocalization(BepInPlugin sourceMod) : base(sourceMod) => Map = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary> Add translation to the translation dictionary. </summary>
         /// <param name="language"> Language of the translation you want to add. </param>

@@ -370,7 +370,7 @@ namespace TestMod
                                 // Token - Value
                                 GUIManager.Instance.CreateText($"{tokenvalue.Key}: {tokenvalue.Value}",
                                     viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                    GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                    GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                     true, Color.black, 650f, 30f, false);
                             }
                         }

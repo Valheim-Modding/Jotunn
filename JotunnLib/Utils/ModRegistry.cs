@@ -182,19 +182,19 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
-        ///     Get all added <see cref="CustomTranslation"/>s
+        ///     Get all added <see cref="CustomLocalization"/>s
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<CustomTranslation> GetTranslations()
+        public static IEnumerable<CustomLocalization> GetTranslations()
         {
             return LocalizationManager.Instance.Data.GetRaw();
         }
         /// <summary>
-        ///     Get all added <see cref="CustomTranslation"/>s of a mod by GUID
+        ///     Get all added <see cref="CustomLocalization"/>s of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns></returns>
-        public static IEnumerable<CustomTranslation> GetTranslations(string modGuid)
+        public static IEnumerable<CustomLocalization> GetTranslations(string modGuid)
         {
             return LocalizationManager.Instance.Data.GetRaw().Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
@@ -304,7 +304,7 @@ namespace Jotunn.Utils
             /// <summary>
             ///     Custom commands added by that mod
             /// </summary>
-            public IEnumerable<CustomTranslation> Translations
+            public IEnumerable<CustomLocalization> Translations
             {
                 get
                 {

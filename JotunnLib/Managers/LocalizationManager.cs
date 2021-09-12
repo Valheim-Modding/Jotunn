@@ -25,19 +25,19 @@ namespace Jotunn.Managers
             /// <summary> 
             ///     List where all data is collected.
             /// </summary>
-            private readonly List<CustomTranslation> Data = new List<CustomTranslation>();
+            private readonly List<CustomLocalization> Data = new List<CustomLocalization>();
 
             /// <summary> 
             ///     Readonly accessor for collected data.
             /// </summary>
-            public IReadOnlyList<CustomTranslation> GetRaw() => Data as IReadOnlyList<CustomTranslation>;
+            public IReadOnlyList<CustomLocalization> GetRaw() => Data as IReadOnlyList<CustomLocalization>;
             
             /// <summary> 
-            ///     Get the CustomTranslation for this mod or creates one if it doesn't exist.
+            ///     Get the CustomLocalization for this mod or creates one if it doesn't exist.
             /// </summary>
             /// <param name="sourceMod"> Mod data in the shape of BepInPlugin class. </param>
-            /// <returns> Existing or newly created CustomTranslation. </returns>
-            public CustomTranslation Get(BepInPlugin sourceMod = null)
+            /// <returns> Existing or newly created CustomLocalization. </returns>
+            public CustomLocalization Get(BepInPlugin sourceMod = null)
             {
                 var plugin = sourceMod ?? BepInExUtils.GetSourceModMetadata();
                 var ct = Data.FirstOrDefault(ctx => ctx.SourceMod == plugin);
@@ -46,7 +46,7 @@ namespace Jotunn.Managers
                     return ct;
                 }
 
-                ct = sourceMod is null ? new CustomTranslation() : new CustomTranslation(sourceMod);
+                ct = sourceMod is null ? new CustomLocalization() : new CustomLocalization(sourceMod);
                 Data.Add(ct);
                 return ct;
             }
