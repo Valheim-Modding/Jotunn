@@ -1,5 +1,11 @@
 ﻿# Changelog
 
+## Version 2.2.10
+* Added possibility to traverse child GameObjects when resolving mocks
+* Traversing child GOs is now standard for all GameObjects
+* References on Config elemets are referenced just on all Components automatically, set FixReference = false for this
+* __Check your mod's items and pieces if they really need FixReference set to true__
+
 ## Version 2.2.9
 * Fixed compat errors
 

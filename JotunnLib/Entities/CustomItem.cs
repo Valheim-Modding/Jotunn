@@ -32,6 +32,11 @@ namespace Jotunn.Entities
         public bool FixReference { get; set; }
 
         /// <summary>
+        ///     Indicator if references from configs should get replaced
+        /// </summary>
+        internal bool FixConfig { get; set; }
+
+        /// <summary>
         ///     Custom item from a prefab.<br />
         ///     Can fix references for <see cref="Entities.Mock{T}"/>s and the <see cref="global::Recipe"/>.
         /// </summary>
@@ -56,12 +61,8 @@ namespace Jotunn.Entities
             ItemPrefab = itemPrefab;
             ItemDrop = itemPrefab.GetComponent<ItemDrop>();
             FixReference = fixReference;
-
             itemConfig.Apply(ItemPrefab);
-            if (!string.IsNullOrEmpty(itemConfig.PieceTable))
-            {
-                FixReference = true;
-            }
+            FixConfig = true;
             Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
         }
 
@@ -74,12 +75,9 @@ namespace Jotunn.Entities
         public CustomItem(string name, bool addZNetView)
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
-            if (ItemPrefab)
-            {
-                ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
-                ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
-                ItemDrop.m_itemData.m_shared.m_name = name;
-            }
+            ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
+            ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
+            ItemDrop.m_itemData.m_shared.m_name = name;
         }
 
         /// <summary>
@@ -91,17 +89,11 @@ namespace Jotunn.Entities
         public CustomItem(string name, bool addZNetView, ItemConfig itemConfig)
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
-            if (ItemPrefab)
-            {
-                ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
-                ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
-                itemConfig.Apply(ItemPrefab);
-                if (!string.IsNullOrEmpty(itemConfig.PieceTable))
-                {
-                    FixReference = true;
-                }
-                Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
-            }
+            ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
+            ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
+            itemConfig.Apply(ItemPrefab);
+            FixConfig = true;
+            Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
         }
 
         /// <summary>
@@ -111,9 +103,10 @@ namespace Jotunn.Entities
         /// <param name="basePrefabName">The name of the base prefab the custom item is cloned from.</param>
         public CustomItem(string name, string basePrefabName)
         {
-            ItemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
-            if (ItemPrefab)
+            var itemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
+            if (itemPrefab)
             {
+                ItemPrefab = itemPrefab;
                 ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
             }
         }
@@ -126,15 +119,13 @@ namespace Jotunn.Entities
         /// <param name="itemConfig">The item config for this custom item.</param>
         public CustomItem(string name, string basePrefabName, ItemConfig itemConfig)
         {
-            ItemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
-            if (ItemPrefab)
+            var itemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
+            if (itemPrefab)
             {
-                ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
-                itemConfig.Apply(ItemPrefab);
-                if (!string.IsNullOrEmpty(itemConfig.PieceTable))
-                {
-                    FixReference = true;
-                }
+                ItemPrefab = itemPrefab;
+                ItemDrop = itemPrefab.GetComponent<ItemDrop>();
+                itemConfig.Apply(itemPrefab);
+                FixConfig = true;
                 Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
             }
         }
