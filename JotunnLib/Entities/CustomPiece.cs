@@ -12,14 +12,33 @@ namespace Jotunn.Entities
     public class CustomPiece : CustomEntity
     {
         /// <summary>
+        ///     Private reference to the prefab
+        /// </summary>
+        private GameObject Prefab;
+
+        /// <summary>
         ///     The prefab for this custom piece.
         /// </summary>
-        public GameObject PiecePrefab { get; set; }
+        public GameObject PiecePrefab
+        {
+            get
+            {
+                return Prefab;
+            }
+            set
+            {
+                Prefab = value;
+                if (value && value.TryGetComponent<Piece>(out var piece))
+                {
+                    Piece = piece;
+                }
+            }
+        }
 
         /// <summary>
         ///     The <see cref="global::Piece"/> component for this custom piece as a shortcut. 
         /// </summary>
-        public Piece Piece { get; set; }
+        public Piece Piece { get; internal set; }
 
         /// <summary>
         ///     Name of the <see cref="global::PieceTable"/> this custom piece belongs to.

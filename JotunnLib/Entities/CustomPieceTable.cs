@@ -19,7 +19,7 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The prefab for this custom piece table.
         /// </summary>
-        public GameObject PieceTablePrefab { get; }
+        public GameObject PieceTablePrefab { get; set; }
 
         /// <summary>
         ///     The <see cref="global::PieceTable"/> component for this custom piece table as a shortcut.

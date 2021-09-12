@@ -11,7 +11,7 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Original prefab
         /// </summary>
-        public GameObject Prefab { get; }
+        public GameObject Prefab { get; set; }
         
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
