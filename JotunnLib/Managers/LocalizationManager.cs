@@ -563,12 +563,6 @@ namespace Jotunn.Managers
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool StrForbiddenChars(in string str) => str.IndexOfAny(ForbiddenChars.ToCharArray()) != -1;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool StrFirstNotUpper(in string str) => Char.IsUpper(str[0]);
-
         #endregion
     }
 }
