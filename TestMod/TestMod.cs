@@ -108,10 +108,6 @@ namespace TestMod
 
             // Hook GetVersionString for ext version string compat test
             On.Version.GetVersionString += Version_GetVersionString;
-
-            var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword", typeof(TestMod).Assembly);
-            var cheaty = cheatybundle.LoadAsset<GameObject>("Cheaty");
-            ItemManager.Instance.AddItem(new CustomItem(cheaty, true));
         }
 
         // Called every frame
@@ -849,6 +845,12 @@ namespace TestMod
 
                 assetBundle.Unload(false);
             }
+
+            // Load completely mocked "Shit Sword" (Cheat Sword copy)
+            var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword", typeof(TestMod).Assembly);
+            var cheaty = cheatybundle.LoadAsset<GameObject>("Cheaty");
+            ItemManager.Instance.AddItem(new CustomItem(cheaty, fixReference: true));
+            cheatybundle.Unload(false);
         }
 
         // Adds Kitbashed pieces
