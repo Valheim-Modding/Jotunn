@@ -353,6 +353,24 @@ namespace TestMod
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
+                    
+                    if (mod.Translations.Any())
+                    {
+                        // Translations title
+                        GUIManager.Instance.CreateText("Translations:",
+                            viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                            GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
+                            true, Color.black, 650f, 30f, false);
+
+                        foreach (var translation in mod.Translations)
+                        {
+                            // Command name
+                            GUIManager.Instance.CreateText($"{translation}",
+                                viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                true, Color.black, 650f, 30f, false);
+                        }
+                    }
                 }
             }
 

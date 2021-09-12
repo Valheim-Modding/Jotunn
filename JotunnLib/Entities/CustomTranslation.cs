@@ -8,27 +8,27 @@ namespace Jotunn.Entities
     public class CustomTranslation : CustomEntity
     {
         /// <summary> Map that work as [language][token] = translation. </summary>
-        private Dictionary<string, Dictionary<string, string>> map { get; set; }
+        private Dictionary<string, Dictionary<string, string>> Map { get; }
 
         /// <summary> Default constuctor. </summary>
-        public CustomTranslation() => map = new Dictionary<string, Dictionary<string, string>>();
+        public CustomTranslation() => Map = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary> SourceMod hint constuctor. </summary>
         /// <param name="sourceMod"> Mod data in the shape of BepInPlugin class. </param>
-        public CustomTranslation(BepInPlugin sourceMod) : base(sourceMod) => map = new Dictionary<string, Dictionary<string, string>>();
+        public CustomTranslation(BepInPlugin sourceMod) : base(sourceMod) => Map = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary> Add translation to the translation dictionary. </summary>
         /// <param name="language"> Language of the translation you want to add. </param>
         /// <param name="tokenValue"> Token-Value dictionary. </param>
         public void AddTranslation(in string language, Dictionary<string, string> tokenValue)
         {
-            if (!map.ContainsKey(language))
+            if (!Map.ContainsKey(language))
             {
-                map.Add(language, new Dictionary<string, string>());
+                Map.Add(language, new Dictionary<string, string>());
             }
             foreach (var tv in tokenValue)
             {
-                map[language][tv.Key] = tv.Value;
+                Map[language][tv.Key] = tv.Value;
             }
         }
 
@@ -37,13 +37,13 @@ namespace Jotunn.Entities
         /// <param name="tokenValue"> Token-Value dictionary. </param>
         public void AddTranslation(in string language, IDictionary<string, object> tokenValue)
         {
-            if (!map.ContainsKey(language))
+            if (!Map.ContainsKey(language))
             {
-                map.Add(language, new Dictionary<string, string>());
+                Map.Add(language, new Dictionary<string, string>());
             }
             foreach (var tv in tokenValue)
             {
-                map[language][tv.Key] = (string)tv.Value;
+                Map[language][tv.Key] = (string)tv.Value;
             }
         }
 
@@ -53,19 +53,19 @@ namespace Jotunn.Entities
         /// <param name="translation"> The translation. </param>
         public void AddTranslation(in string language, in string token, string translation)
         {
-            if (!map.ContainsKey(language))
+            if (!Map.ContainsKey(language))
             {
-                map.Add(language, new Dictionary<string, string>());
+                Map.Add(language, new Dictionary<string, string>());
             }
-            map[language][token] = translation;
+            Map[language][token] = translation;
         }
 
         /// <summary> Retrieve translations for given language. </summary>
-        public IReadOnlyList<string> Getlanguages() => map.Keys.ToList();
+        public IReadOnlyList<string> Getlanguages() => Map.Keys.ToList();
 
         /// <summary> Retrieve translations for given language. </summary>
         /// <param name="language"> Language of the translation you want to retrieve. </param>
-        public IReadOnlyDictionary<string, string> GetTranslations(in string language) => map.TryGetValue(language, out var x) ? x : null;
+        public IReadOnlyDictionary<string, string> GetTranslations(in string language) => Map.TryGetValue(language, out var x) ? x : null;
 
         /// <summary> Retrieve Translation if it exists. </summary>
         /// <param name="language"> Language of the translation you want to retrieve. </param>
@@ -75,7 +75,7 @@ namespace Jotunn.Entities
         public bool TryTranslate(in string language, in string token, out string translation)
         {
             translation = null;
-            if (map.TryGetValue(language, out var Map2))
+            if (Map.TryGetValue(language, out var Map2))
             {
                 if (Map2.TryGetValue(token, out var value))
                 {
@@ -91,7 +91,7 @@ namespace Jotunn.Entities
         /// <returns> The translation. </returns>
         public bool Contains(in string language, in string token)
         {
-            if (map.TryGetValue(language, out var translations))
+            if (Map.TryGetValue(language, out var translations))
             {
                 return translations.ContainsValue(token);
             }

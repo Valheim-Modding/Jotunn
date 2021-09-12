@@ -25,30 +25,13 @@ namespace Jotunn.Managers
             /// <summary> 
             ///     List where all data is collected.
             /// </summary>
-            private List<CustomTranslation> data = new List<CustomTranslation>();
+            private readonly List<CustomTranslation> Data = new List<CustomTranslation>();
 
             /// <summary> 
             ///     Readonly accessor for collected data.
             /// </summary>
-            public IReadOnlyList<CustomTranslation> GetRaw() => data as IReadOnlyList<CustomTranslation>;
-
-            /// <summary> 
-            ///     ctor
-            /// </summary>
-            public LocalizationData() => data = new List<CustomTranslation>();
-
-            /// <summary> 
-            ///     Add given CustomTranslation to the data.
-            /// </summary>
-            /// <param name="ct"> CustomTranslation class to add. </param>
-            public void Add(CustomTranslation ct)
-            {
-                if (!data.Any(ctx => ctx.SourceMod == ct.SourceMod))
-                {
-                    data.Add(ct);
-                }
-            }
-
+            public IReadOnlyList<CustomTranslation> GetRaw() => Data as IReadOnlyList<CustomTranslation>;
+            
             /// <summary> 
             ///     Get the CustomTranslation for this mod or creates one if it doesn't exist.
             /// </summary>
@@ -57,14 +40,14 @@ namespace Jotunn.Managers
             public CustomTranslation Get(BepInPlugin sourceMod = null)
             {
                 var plugin = sourceMod ?? BepInExUtils.GetSourceModMetadata();
-                var ct = data.FirstOrDefault(ctx => ctx.SourceMod == plugin);
+                var ct = Data.FirstOrDefault(ctx => ctx.SourceMod == plugin);
                 if (ct != null)
                 {
                     return ct;
                 }
 
                 ct = sourceMod is null ? new CustomTranslation() : new CustomTranslation(sourceMod);
-                data.Add(ct);
+                Data.Add(ct);
                 return ct;
             }
 
@@ -78,7 +61,7 @@ namespace Jotunn.Managers
             public bool TryTranslate(in string language, in string token, out string translation)
             {
                 translation = null;
-                foreach (var ct in data)
+                foreach (var ct in Data)
                 {
                     if (ct.TryTranslate(language, token, out translation))
                     {
@@ -96,7 +79,7 @@ namespace Jotunn.Managers
             /// <returns> The translation. </returns>
             public bool Contains(in string language, in string token)
             {
-                foreach (var ct in data)
+                foreach (var ct in Data)
                 {
                     if (ct.Contains(language, token))
                     {
@@ -272,9 +255,9 @@ namespace Jotunn.Managers
             }
 
             var trim = word.TrimStart(TokenFirstChar);
-            var PlayerLanguage = PlayerPrefs.GetString("language", string.Empty);
+            var playerLang = PlayerPrefs.GetString("language", string.Empty);
 
-            if (Data.TryTranslate(PlayerLanguage, trim, out var translation))
+            if (Data.TryTranslate(playerLang, trim, out var translation))
             {
                 return translation;
             }
@@ -287,15 +270,8 @@ namespace Jotunn.Managers
             return Localization.instance.Translate(trim);
         }
 
-        #region --------------------------------------------------------------------------------- Add Directly
-
-        /// <summary> 
-        ///     Registers a new Localization for a language.
-        /// </summary>
-        /// <param name="config"> Wrapper which contains a language and a Token-Value dictionary. </param>
-        public void AddLocalization(LocalizationConfig config)
-            => AddLocalization(config.Language, config.Translations);
-
+        #region Add Directly
+        
         /// <summary> 
         ///     Registers a new Localization for a language.
         /// </summary>
@@ -361,7 +337,7 @@ namespace Jotunn.Managers
 
         #endregion
 
-        #region --------------------------------------------------------------------------------- Add by File
+        #region Add by File
 
         /// <summary> 
         ///     Search and add localization files.
@@ -538,7 +514,7 @@ namespace Jotunn.Managers
 
         #endregion
 
-        #region --------------------------------------------------------------------------------- Validation Methods
+        #region Validation Methods
 
         private bool ValidateLanguage(in string language)
         {
@@ -587,6 +563,7 @@ namespace Jotunn.Managers
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool StrForbiddenChars(in string str) => str.IndexOfAny(ForbiddenChars.ToCharArray()) != -1;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool StrFirstNotUpper(in string str) => Char.IsUpper(str[0]);
 
