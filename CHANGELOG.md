@@ -1,5 +1,13 @@
 ﻿# Changelog
 
+## Version 2.3.0
+* Added possibility to traverse child GameObjects when resolving mocks (FixReference = true)
+* Mock references added via Config are resolved automatically, set FixReference = false if your actual GO does not use mocks
+* __Check your mod's items and pieces if they really need FixReference set to true__
+
+## Version 2.2.9
+* Fixed compat errors
+
 ## Version 2.2.8
 * Added global mod registry, collecting added entities per mod
 * Added entity CustomPrefab including the possibility to let Jötunn fix mock references

@@ -324,7 +324,7 @@ namespace TestMod
                             // Piece name
                             GUIManager.Instance.CreateText($"{piece}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
@@ -342,7 +342,7 @@ namespace TestMod
                             // Piece name
                             GUIManager.Instance.CreateText($"{item}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
@@ -360,7 +360,7 @@ namespace TestMod
                             // Command name
                             GUIManager.Instance.CreateText($"{command}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
@@ -515,7 +515,7 @@ namespace TestMod
 
             // Load Steel ingot from streamed resource
             Steelingot = AssetUtils.LoadAssetBundleFromResources("steel", typeof(TestMod).Assembly);
-
+            
             // Embedded Resources
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
         }
@@ -738,7 +738,7 @@ namespace TestMod
 
             // Create and add custom pieces
             var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
-            var makebp = new CustomPiece(makebp_prefab,
+            var makebp = new CustomPiece(makebp_prefab, fixReference: false,
                 new PieceConfig
                 {
                     PieceTable = "_BlueprintTestTable",
@@ -747,7 +747,7 @@ namespace TestMod
             PieceManager.Instance.AddPiece(makebp);
 
             var placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
-            var placebp = new CustomPiece(placebp_prefab,
+            var placebp = new CustomPiece(placebp_prefab, fixReference: false,
                 new PieceConfig
                 {
                     PieceTable = "_BlueprintTestTable",
@@ -856,6 +856,12 @@ namespace TestMod
 
                 assetBundle.Unload(false);
             }
+
+            // Load completely mocked "Shit Sword" (Cheat Sword copy)
+            var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword", typeof(TestMod).Assembly);
+            var cheaty = cheatybundle.LoadAsset<GameObject>("Cheaty");
+            ItemManager.Instance.AddItem(new CustomItem(cheaty, fixReference: true));
+            cheatybundle.Unload(false);
         }
 
         // Adds Kitbashed pieces
@@ -944,15 +950,17 @@ namespace TestMod
                     // We've added a CapsuleCollider to the skeleton, this is no longer needed
                     Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
                 };
-                PieceManager.Instance.AddPiece(new CustomPiece(kitbashObject.Prefab, new PieceConfig
-                {
-                    PieceTable = "Hammer",
-                    Requirements = new RequirementConfig[]
-                    {
-                        new RequirementConfig { Item = "Obsidian" , Recover = true},
-                        new RequirementConfig { Item = "Bronze", Recover = true }
-                    }
-                }));
+                PieceManager.Instance.AddPiece(
+                    new CustomPiece(kitbashObject.Prefab,  fixReference: false, 
+                        new PieceConfig
+                        {
+                            PieceTable = "Hammer",
+                            Requirements = new RequirementConfig[]
+                            {
+                                new RequirementConfig { Item = "Obsidian" , Recover = true},
+                                new RequirementConfig { Item = "Bronze", Recover = true }
+                            }
+                        }));
             }
             finally
             {

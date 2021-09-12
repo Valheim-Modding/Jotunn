@@ -462,6 +462,7 @@
     <None Include="app.config" />
     <EmbeddedResource Include="AssetsEmbedded\steel" />
     <EmbeddedResource Include="AssetsEmbedded\kitbash" />
+    <EmbeddedResource Include="AssetsEmbedded\cheatsword" />
     <None Include="Assets\jotunnlibtest" />
     <EmbeddedResource Include="AssetsEmbedded\capeironbackpack" />
     <None Include="Assets\recipes.json" />
@@ -475,6 +476,7 @@
     <Content Include="Assets\reee.png" />
     <Content Include="Assets\test_var1.png" />
     <Content Include="Assets\test_var2.png" />
+    <Content Include="Assets\test_var4.png" />
     <Content Include="Assets\test_varpaint.png" />
   </ItemGroup>
   <ItemGroup>

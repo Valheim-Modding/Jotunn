@@ -9,7 +9,7 @@ In this example, we will clone a vanilla shield with custom variants which the u
 ```cs
 private voic Awake()
 {
-    ItemManager.OnVanillaItemsAvailable += AddVariants;
+    PrefabManager.OnVanillaPrefabsAvailable += AddVariants;
 }
 ```
 
@@ -47,7 +47,7 @@ private void AddVariants()
     finally
     {
         // You want that to run only once, Jotunn has the item cached for the game session
-        ItemManager.OnVanillaItemsAvailable -= AddVariants;
+        PrefabManager.OnVanillaPrefabsAvailable -= AddVariants;
     }
 }
 ```

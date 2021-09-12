@@ -23,7 +23,7 @@ namespace Jotunn.Configs
         ///     Array of custom categories the <see cref="PieceTable"/> uses. 
         ///     Will be ignored when <see cref="UseCustomCategories"/> is false.
         /// </summary>
-        public string[] CustomCategories { get; set; } = new string[0];
+        public string[] CustomCategories { get; set; } = Array.Empty<string>();
 
         /// <summary>
         ///     Indicator if the <see cref="PieceTable"/> can also remove pieces. Defaults to <c>true</c>.
@@ -50,9 +50,9 @@ namespace Jotunn.Configs
 
             if (UseCustomCategories)
             {
-                for (int i = 0; i < CustomCategories.Length; i++)
+                foreach (var category in CustomCategories)
                 {
-                    categories.Add(CustomCategories[i]);
+                    categories.Add(category);
                 }
             }
 

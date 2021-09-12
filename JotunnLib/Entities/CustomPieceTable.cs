@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
@@ -29,7 +31,7 @@ namespace Jotunn.Entities
         ///     Will be ignored when m_useCategories is false.<br />
         ///     All categories provided here will be used and displayed on the <see cref="Hud"/>.
         /// </summary>
-        public string[] Categories { get; } = Array.Empty<string>();
+        public string[] Categories { get; set; } = Array.Empty<string>();
 
         /// <summary>
         ///     Custom piece table from a prefab.
@@ -39,6 +41,15 @@ namespace Jotunn.Entities
         {
             PieceTablePrefab = pieceTablePrefab;
             PieceTable = pieceTablePrefab.GetComponent<PieceTable>();
+            if (PieceTable != null && PieceTable.m_useCategories)
+            {
+                List<string> categories = new List<string>();
+                for (int i = 0; i < (int)Piece.PieceCategory.Max; i++)
+                {
+                    categories.Add(Enum.GetName(typeof(Piece.PieceCategory), i));
+                }
+                Categories = categories.ToArray();
+            }
         }
 
         /// <summary>

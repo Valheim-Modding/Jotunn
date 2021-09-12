@@ -90,12 +90,9 @@ namespace Jotunn.Managers
             PrefabManager.Instance.AddPrefab(customPieceTable.PieceTablePrefab, customPieceTable.SourceMod);
 
             // Create all custom categories on that table
-            if (customPieceTable.Categories != null)
+            foreach (var category in customPieceTable.Categories)
             {
-                foreach (var category in customPieceTable.Categories)
-                {
-                    AddPieceCategory(customPieceTable.ToString(), category);
-                }
+                AddPieceCategory(customPieceTable.ToString(), category);
             }
 
             // Add the custom table to the PieceManager
@@ -322,7 +319,7 @@ namespace Jotunn.Managers
             Logger.LogInfo($"Adding {PieceCategories.Count} custom piece table categories");
 
             // All piece tables using categories
-            foreach (var table in PieceTableMap.Values)
+            foreach (var table in PieceTableMap.Values.Where(x => x.m_useCategories))
             {
                 try
                 {
@@ -499,12 +496,12 @@ namespace Jotunn.Managers
                 try
                 {
                     // Fix references if needed
-                    if (customPiece.FixReference)
+                    if (customPiece.FixReference | customPiece.FixConfig)
                     {
-                        customPiece.PiecePrefab.FixReferences();
+                        customPiece.PiecePrefab.FixReferences(customPiece.FixReference);
                         customPiece.FixReference = false;
+                        customPiece.FixConfig = false;
                     }
-
                     // Assign vfx_ExtensionConnection for StationExtensions
                     var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
                     if (extension != null && !extension.m_connectionPrefab)
