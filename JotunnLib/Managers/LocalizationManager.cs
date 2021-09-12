@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using BepInEx;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -31,7 +30,7 @@ namespace Jotunn.Managers
             ///     Readonly accessor for collected data.
             /// </summary>
             public IReadOnlyList<CustomLocalization> GetRaw() => Data as IReadOnlyList<CustomLocalization>;
-            
+
             /// <summary> 
             ///     Get the CustomLocalization for this mod or creates one if it doesn't exist.
             /// </summary>
@@ -271,7 +270,7 @@ namespace Jotunn.Managers
         }
 
         #region Add Directly
-        
+
         /// <summary> 
         ///     Registers a new Localization for a language.
         /// </summary>
@@ -416,21 +415,7 @@ namespace Jotunn.Managers
 
             Logger.LogDebug($"Added {(isJson ? "Json" : "")} language file: {Path.GetFileName(path)}");
         }
-
-        /// <summary> 
-        ///     Add a language file that matches Valheim's language format.
-        /// </summary>
-        /// <param name="fileContent">Entire file as string</param>
-        public void AddLanguageFile(string fileContent)
-        {
-            if (fileContent is null)
-            {
-                throw new ArgumentNullException(nameof(fileContent));
-            }
-
-            LoadLanguageFile(fileContent);
-        }
-
+        
         /// <summary> 
         ///     Add a json language file (match crowdin format).
         /// </summary>
@@ -448,6 +433,20 @@ namespace Jotunn.Managers
             }
 
             LoadJsonLanguageFile(language, fileContent);
+        }
+
+        /// <summary> 
+        ///     Add a language file that matches Valheim's language format.
+        /// </summary>
+        /// <param name="fileContent">Entire file as string</param>
+        public void AddLanguageFile(string fileContent)
+        {
+            if (fileContent is null)
+            {
+                throw new ArgumentNullException(nameof(fileContent));
+            }
+
+            LoadLanguageFile(fileContent);
         }
 
         /// <summary> 
