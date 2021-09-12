@@ -11,33 +11,14 @@ namespace Jotunn.Entities
     public class CustomItem : CustomEntity
     {
         /// <summary>
-        ///     Private reference to the prefab
-        /// </summary>
-        private GameObject Prefab;
-
-        /// <summary>
         ///     The prefab for this custom item.
         /// </summary>
-        public GameObject ItemPrefab 
-        {
-            get
-            {
-                return Prefab;
-            }
-            set
-            {
-                Prefab = value;
-                if (value && value.TryGetComponent<ItemDrop>(out var drop))
-                {
-                    ItemDrop = drop;
-                }
-            }
-        }
+        public GameObject ItemPrefab { get; }
 
         /// <summary>
         ///     The <see cref="global::ItemDrop"/> component for this custom item as a shortcut.
         /// </summary>
-        public ItemDrop ItemDrop { get; internal set; }
+        public ItemDrop ItemDrop { get; }
 
         /// <summary>
         ///     The <see cref="CustomRecipe"/> associated with this custom item. Is needed to craft
@@ -78,6 +59,7 @@ namespace Jotunn.Entities
         public CustomItem(GameObject itemPrefab, bool fixReference, ItemConfig itemConfig)
         {
             ItemPrefab = itemPrefab;
+            ItemDrop = itemPrefab.GetComponent<ItemDrop>();
             FixReference = fixReference;
             itemConfig.Apply(ItemPrefab);
             FixConfig = true;
@@ -93,6 +75,7 @@ namespace Jotunn.Entities
         public CustomItem(string name, bool addZNetView)
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
+            ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
             ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
             ItemDrop.m_itemData.m_shared.m_name = name;
         }
@@ -106,6 +89,7 @@ namespace Jotunn.Entities
         public CustomItem(string name, bool addZNetView, ItemConfig itemConfig)
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
+            ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
             ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
             itemConfig.Apply(ItemPrefab);
             FixConfig = true;
@@ -119,7 +103,12 @@ namespace Jotunn.Entities
         /// <param name="basePrefabName">The name of the base prefab the custom item is cloned from.</param>
         public CustomItem(string name, string basePrefabName)
         {
-            ItemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
+            var itemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
+            if (itemPrefab)
+            {
+                ItemPrefab = itemPrefab;
+                ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
+            }
         }
 
         /// <summary>
@@ -130,10 +119,12 @@ namespace Jotunn.Entities
         /// <param name="itemConfig">The item config for this custom item.</param>
         public CustomItem(string name, string basePrefabName, ItemConfig itemConfig)
         {
-            ItemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
-            if (ItemPrefab)
+            var itemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
+            if (itemPrefab)
             {
-                itemConfig.Apply(ItemPrefab);
+                ItemPrefab = itemPrefab;
+                ItemDrop = itemPrefab.GetComponent<ItemDrop>();
+                itemConfig.Apply(itemPrefab);
                 FixConfig = true;
                 Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
             }

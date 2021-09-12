@@ -19,7 +19,7 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The prefab for this custom piece table.
         /// </summary>
-        public GameObject PieceTablePrefab { get; set; }
+        public GameObject PieceTablePrefab { get; }
 
         /// <summary>
         ///     The <see cref="global::PieceTable"/> component for this custom piece table as a shortcut.
@@ -31,7 +31,7 @@ namespace Jotunn.Entities
         ///     Will be ignored when m_useCategories is false.<br />
         ///     All categories provided here will be used and displayed on the <see cref="Hud"/>.
         /// </summary>
-        public string[] Categories { get; } = Array.Empty<string>();
+        public string[] Categories { get; set; } = Array.Empty<string>();
 
         /// <summary>
         ///     Custom piece table from a prefab.
