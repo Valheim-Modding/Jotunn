@@ -13,18 +13,18 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The prefab for this custom item.
         /// </summary>
-        public GameObject ItemPrefab { get; }
+        public GameObject ItemPrefab { get; set; }
 
         /// <summary>
         ///     The <see cref="global::ItemDrop"/> component for this custom item as a shortcut.
         /// </summary>
-        public ItemDrop ItemDrop { get; }
+        public ItemDrop ItemDrop { get; set; }
 
         /// <summary>
         ///     The <see cref="CustomRecipe"/> associated with this custom item. Is needed to craft
         ///     this item on a workbench or from the players crafting menu.
         /// </summary>
-        public CustomRecipe Recipe { get; }
+        public CustomRecipe Recipe { get; set; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.

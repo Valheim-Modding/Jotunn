@@ -476,6 +476,7 @@
     <Content Include="Assets\reee.png" />
     <Content Include="Assets\test_var1.png" />
     <Content Include="Assets\test_var2.png" />
+    <Content Include="Assets\test_var4.png" />
     <Content Include="Assets\test_varpaint.png" />
   </ItemGroup>
   <ItemGroup>
