@@ -39,7 +39,7 @@ namespace Jotunn.Utils
             On.VisEquipment.SetRightItem += VisEquipment_SetRightItem;
             IL.VisEquipment.SetRightHandEquiped += VisEquipment_SetRightHandEquiped;
             On.VisEquipment.SetRightBackItem += VisEquipment_SetRightBackItem;
-            IL.VisEquipment.SetBackEquiped += VisEquipment_SetBackEquiped1;
+            IL.VisEquipment.SetBackEquiped += VisEquipment_SetBackEquiped;
             On.VisEquipment.SetChestItem += VisEquipment_SetChestItem;
             IL.VisEquipment.SetChestEquiped += VisEquipment_SetChestEquiped;
         }
@@ -50,7 +50,7 @@ namespace Jotunn.Utils
             On.VisEquipment.SetRightItem -= VisEquipment_SetRightItem;
             IL.VisEquipment.SetRightHandEquiped -= VisEquipment_SetRightHandEquiped;
             On.VisEquipment.SetRightBackItem -= VisEquipment_SetRightBackItem;
-            IL.VisEquipment.SetBackEquiped -= VisEquipment_SetBackEquiped1;
+            IL.VisEquipment.SetBackEquiped -= VisEquipment_SetBackEquiped;
             On.VisEquipment.SetChestItem -= VisEquipment_SetChestItem;
             IL.VisEquipment.SetChestEquiped -= VisEquipment_SetChestEquiped;
         }
@@ -95,26 +95,32 @@ namespace Jotunn.Utils
         {
             ILCursor c = new ILCursor(il);
 
+            // TODO: check if this is called from self
+
             // Change hash if variant is different
-            c.GotoNext(MoveType.After,
-                x => x.OpCode.Code == Code.Ldarg_1);
-            c.EmitDelegate<Func<int, int>>((hash) =>
+            if (c.TryGotoNext(MoveType.After,
+                x => x.MatchLdarg(1)))
             {
-                if (hash != 0 && CurrentRightItemVariant != NewRightItemVariant)
+                c.EmitDelegate<Func<int, int>>((hash) =>
                 {
-                    CurrentRightItemVariant = NewRightItemVariant;
-                    return hash + 1;
-                }
-                return hash;
-            });
+                    if (hash != 0 && CurrentRightItemVariant != NewRightItemVariant)
+                    {
+                        CurrentRightItemVariant = NewRightItemVariant;
+                        return hash + 1;
+                    }
+                    return hash;
+                });
+            }
 
             // Pass current variant to AttachItem
-            c.GotoNext(MoveType.After,
-                x => x.OpCode.Code == Code.Ldarg_0,
-                x => x.OpCode.Code == Code.Ldarg_0,
-                x => x.OpCode.Code == Code.Ldarg_1,
-                x => x.OpCode.Code == Code.Ldc_I4_0);
-            c.EmitDelegate<Func<int, int>>(variant => CurrentRightItemVariant);
+            if (c.TryGotoNext(MoveType.After,
+                x => x.MatchLdarg(0),
+                x => x.MatchLdarg(0),
+                x => x.MatchLdarg(1),
+                x => x.MatchLdcI4(0)))
+            {
+                c.EmitDelegate<Func<int, int>>(variant => CurrentRightItemVariant);
+            }
         }
 
         /// <summary>
@@ -138,30 +144,34 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Check for variant changes and pass the variant to AttachBackItem
         /// </summary>
-        private void VisEquipment_SetBackEquiped1(MonoMod.Cil.ILContext il)
+        private void VisEquipment_SetBackEquiped(MonoMod.Cil.ILContext il)
         {
             ILCursor c = new ILCursor(il);
 
             // Change hash if variant is different
-            c.GotoNext(MoveType.After,
-                x => x.OpCode.Code == Code.Ldarg_2);
-            c.EmitDelegate<Func<int, int>>((hash) =>
+            if (c.TryGotoNext(MoveType.After,
+                x => x.MatchLdarg(2)))
             {
-                if (hash != 0 && CurrentRightBackItemVariant != NewRightBackItemVariant)
+                c.EmitDelegate<Func<int, int>>((hash) =>
                 {
-                    CurrentRightBackItemVariant = NewRightBackItemVariant;
-                    return hash + 1;
-                }
-                return hash;
-            });
+                    if (hash != 0 && CurrentRightBackItemVariant != NewRightBackItemVariant)
+                    {
+                        CurrentRightBackItemVariant = NewRightBackItemVariant;
+                        return hash + 1;
+                    }
+                    return hash;
+                });
+            }
 
             // Pass current variant to AttachItem
-            c.GotoNext(MoveType.After,
-                x => x.OpCode.Code == Code.Ldarg_0,
-                x => x.OpCode.Code == Code.Ldarg_0,
-                x => x.OpCode.Code == Code.Ldarg_2,
-                x => x.OpCode.Code == Code.Ldc_I4_0);
-            c.EmitDelegate<Func<int, int>>(variant => CurrentRightBackItemVariant);
+            if (c.TryGotoNext(MoveType.After,
+                x => x.MatchLdarg(0),
+                x => x.MatchLdarg(0),
+                x => x.MatchLdarg(2),
+                x => x.MatchLdcI4(0)))
+            {
+                c.EmitDelegate<Func<int, int>>(variant => CurrentRightBackItemVariant);
+            }
         }
 
         /// <summary>
@@ -190,25 +200,29 @@ namespace Jotunn.Utils
             ILCursor c = new ILCursor(il);
 
             // Change hash if variant is different
-            c.GotoNext(MoveType.After,
-                x => x.OpCode.Code == Code.Ldarg_1);
-            c.EmitDelegate<Func<int, int>>((hash) =>
+            if (c.TryGotoNext(MoveType.After,
+                x => x.MatchLdarg(1)))
             {
-                if (hash != 0 && CurrentChestVariant != NewChestVariant)
+                c.EmitDelegate<Func<int, int>>((hash) =>
                 {
-                    CurrentChestVariant = NewChestVariant;
-                    return hash + 1;
-                }
-                return hash;
-            });
+                    if (hash != 0 && CurrentChestVariant != NewChestVariant)
+                    {
+                        CurrentChestVariant = NewChestVariant;
+                        return hash + 1;
+                    }
+                    return hash;
+                });
+            }
 
             // Pass current variant to AttachArmor
-            c.GotoNext(MoveType.After,
-                x => x.OpCode.Code == Code.Ldarg_0,
-                x => x.OpCode.Code == Code.Ldarg_0,
-                x => x.OpCode.Code == Code.Ldarg_1,
-                x => x.OpCode.Code == Code.Ldc_I4_M1);
-            c.EmitDelegate<Func<int, int>>(variant => CurrentChestVariant);
+            if (c.TryGotoNext(MoveType.After,
+                x => x.MatchLdarg(0),
+                x => x.MatchLdarg(0),
+                x => x.MatchLdarg(1),
+                x => x.MatchLdcI4(-1)))
+            {
+                c.EmitDelegate<Func<int, int>>(variant => CurrentChestVariant);
+            }
         }
     }
 }
