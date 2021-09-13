@@ -15,6 +15,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
+using Random = System.Random;
 
 namespace TestMod
 {
@@ -154,11 +155,15 @@ namespace TestMod
                     }
                 }
 
-                if (Input.GetKeyDown(KeyCode.J))
+                // Spawn goblin with a variant sword
+                if (Player.m_localPlayer != null && Input.GetKeyDown(KeyCode.J))
                 {
                     var pre = PrefabManager.Instance.GetPrefab("GoblinArcher");
                     var go = Object.Instantiate(pre, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity);
                     Object.Destroy(go.GetComponent<MonsterAI>());
+                    var sword = Object.Instantiate(PrefabManager.Instance.GetPrefab("item_swordvariants")).GetComponent<ItemDrop>().m_itemData;
+                    sword.m_variant = new Random().Next(0, 3);
+                    go.GetComponent<Humanoid>().m_rightItem = sword;
                     go.GetComponent<VisEquipment>().SetRightItem("item_swordvariants");
                 }
             }
