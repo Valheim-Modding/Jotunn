@@ -114,7 +114,7 @@ namespace Jotunn.Utils
                 x => x.OpCode.Code == Code.Ldarg_0,
                 x => x.OpCode.Code == Code.Ldarg_1,
                 x => x.OpCode.Code == Code.Ldc_I4_0);
-            c.EmitDelegate<Func<int, int>>((variant) => CurrentRightItemVariant);
+            c.EmitDelegate<Func<int, int>>(variant => CurrentRightItemVariant);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Jotunn.Utils
                 x => x.OpCode.Code == Code.Ldarg_0,
                 x => x.OpCode.Code == Code.Ldarg_2,
                 x => x.OpCode.Code == Code.Ldc_I4_0);
-            c.EmitDelegate<Func<int, int>>((variant) => CurrentRightBackItemVariant);
+            c.EmitDelegate<Func<int, int>>(variant => CurrentRightBackItemVariant);
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace Jotunn.Utils
                 x => x.OpCode.Code == Code.Ldarg_0,
                 x => x.OpCode.Code == Code.Ldarg_1,
                 x => x.OpCode.Code == Code.Ldc_I4_M1);
-            c.EmitDelegate<Func<int, int>>((variant) => CurrentChestVariant);
+            c.EmitDelegate<Func<int, int>>(variant => CurrentChestVariant);
         }
     }
 }
