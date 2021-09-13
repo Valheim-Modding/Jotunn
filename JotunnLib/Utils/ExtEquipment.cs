@@ -1,11 +1,7 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Jotunn.Utils
 {
@@ -41,24 +37,27 @@ namespace Jotunn.Utils
             MyHumanoid = gameObject.GetComponent<Humanoid>();
             On.VisEquipment.UpdateEquipmentVisuals += VisEquipment_UpdateEquipmentVisuals;
             On.VisEquipment.SetRightItem += VisEquipment_SetRightItem;
-            On.VisEquipment.SetRightHandEquiped += VisEquipment_SetRightHandEquiped;
+            IL.VisEquipment.SetRightHandEquiped += VisEquipment_SetRightHandEquiped;
             On.VisEquipment.SetRightBackItem += VisEquipment_SetRightBackItem;
-            On.VisEquipment.SetBackEquiped += VisEquipment_SetBackEquiped;
+            IL.VisEquipment.SetBackEquiped += VisEquipment_SetBackEquiped1;
             On.VisEquipment.SetChestItem += VisEquipment_SetChestItem;
-            On.VisEquipment.SetChestEquiped += VisEquipment_SetChestEquiped;
+            IL.VisEquipment.SetChestEquiped += VisEquipment_SetChestEquiped;
         }
-        
+
         private void OnDestroy()
         {
             On.VisEquipment.UpdateEquipmentVisuals -= VisEquipment_UpdateEquipmentVisuals;
             On.VisEquipment.SetRightItem -= VisEquipment_SetRightItem;
-            On.VisEquipment.SetRightHandEquiped -= VisEquipment_SetRightHandEquiped;
+            IL.VisEquipment.SetRightHandEquiped -= VisEquipment_SetRightHandEquiped;
             On.VisEquipment.SetRightBackItem -= VisEquipment_SetRightBackItem;
-            On.VisEquipment.SetBackEquiped -= VisEquipment_SetBackEquiped;
+            IL.VisEquipment.SetBackEquiped -= VisEquipment_SetBackEquiped1;
             On.VisEquipment.SetChestItem -= VisEquipment_SetChestItem;
-            On.VisEquipment.SetChestEquiped -= VisEquipment_SetChestEquiped;
+            IL.VisEquipment.SetChestEquiped -= VisEquipment_SetChestEquiped;
         }
-        
+
+        /// <summary>
+        ///     Get non-vanilla variant indices from the ZDO
+        /// </summary>
         private void VisEquipment_UpdateEquipmentVisuals(On.VisEquipment.orig_UpdateEquipmentVisuals orig, VisEquipment self)
         {
             if (self.m_nview && self.m_nview.GetZDO() is ZDO zdo)
@@ -71,6 +70,9 @@ namespace Jotunn.Utils
             orig(self);
         }
 
+        /// <summary>
+        ///     Store the variant index of the right hand item to the ZDO if the variant has changed
+        /// </summary>
         private void VisEquipment_SetRightItem(On.VisEquipment.orig_SetRightItem orig, VisEquipment self, string name)
         {
             if (MyHumanoid && MyHumanoid.m_rightItem != null &&
@@ -85,29 +87,39 @@ namespace Jotunn.Utils
 
             orig(self, name);
         }
-        
-        private bool VisEquipment_SetRightHandEquiped(On.VisEquipment.orig_SetRightHandEquiped orig, VisEquipment self, int hash)
+
+        /// <summary>
+        ///     Check for variant changes and pass the variant to AttachItem
+        /// </summary>
+        private void VisEquipment_SetRightHandEquiped(MonoMod.Cil.ILContext il)
         {
-            //TODO: needs transpiler here
-            if (self.m_currentRightItemHash == hash && CurrentRightItemVariant == NewRightItemVariant)
+            ILCursor c = new ILCursor(il);
+
+            // Change hash if variant is different
+            c.GotoNext(MoveType.After,
+                x => x.OpCode.Code == Code.Ldarg_1);
+            c.EmitDelegate<Func<int, int>>((hash) =>
             {
-                return orig(self, hash);
-            }
-            if (self.m_rightItemInstance)
-            {
-                Destroy(self.m_rightItemInstance);
-                self.m_rightItemInstance = null;
-            }
-            self.m_currentRightItemHash = hash;
-            CurrentRightItemVariant = NewRightItemVariant;
-            if (hash != 0)
-            {
-                //TODO: Hook AttachItem and inject our variant
-                self.m_rightItemInstance = self.AttachItem(hash, CurrentRightItemVariant, self.m_rightHand);
-            }
-            return true;
+                if (hash != 0 && CurrentRightItemVariant != NewRightItemVariant)
+                {
+                    CurrentRightItemVariant = NewRightItemVariant;
+                    return hash + 1;
+                }
+                return hash;
+            });
+
+            // Pass current variant to AttachItem
+            c.GotoNext(MoveType.After,
+                x => x.OpCode.Code == Code.Ldarg_0,
+                x => x.OpCode.Code == Code.Ldarg_0,
+                x => x.OpCode.Code == Code.Ldarg_1,
+                x => x.OpCode.Code == Code.Ldc_I4_0);
+            c.EmitDelegate<Func<int, int>>((variant) => CurrentRightItemVariant);
         }
-        
+
+        /// <summary>
+        ///     Store the variant index of the right back item to the ZDO if the variant has changed
+        /// </summary>
         private void VisEquipment_SetRightBackItem(On.VisEquipment.orig_SetRightBackItem orig, VisEquipment self, string name)
         {
             if (MyHumanoid && MyHumanoid.m_hiddenRightItem != null &&
@@ -123,41 +135,38 @@ namespace Jotunn.Utils
             orig(self, name);
         }
 
-        private bool VisEquipment_SetBackEquiped(On.VisEquipment.orig_SetBackEquiped orig, VisEquipment self, int leftItem, int rightItem, int leftVariant)
+        /// <summary>
+        ///     Check for variant changes and pass the variant to AttachBackItem
+        /// </summary>
+        private void VisEquipment_SetBackEquiped1(MonoMod.Cil.ILContext il)
         {
-            //TODO: needs transpiler here
-            if (self.m_currentLeftBackItemHash == leftItem && 
-                self.m_currentRightBackItemHash == rightItem && 
-                self.m_currentLeftBackItemVariant == leftVariant && 
-                CurrentRightBackItemVariant == NewRightBackItemVariant)
+            ILCursor c = new ILCursor(il);
+
+            // Change hash if variant is different
+            c.GotoNext(MoveType.After,
+                x => x.OpCode.Code == Code.Ldarg_2);
+            c.EmitDelegate<Func<int, int>>((hash) =>
             {
-                return orig(self, leftItem, rightItem, leftVariant);
-            }
-            if (self.m_leftBackItemInstance)
-            {
-                Object.Destroy(self.m_leftBackItemInstance);
-                self.m_leftBackItemInstance = null;
-            }
-            if (self.m_rightBackItemInstance)
-            {
-                Object.Destroy(self.m_rightBackItemInstance);
-                self.m_rightBackItemInstance = null;
-            }
-            self.m_currentLeftBackItemHash = leftItem;
-            self.m_currentRightBackItemHash = rightItem;
-            self.m_currentLeftBackItemVariant = leftVariant;
-            CurrentRightBackItemVariant = NewRightBackItemVariant;
-            if (self.m_currentLeftBackItemHash != 0)
-            {
-                self.m_leftBackItemInstance = self.AttachBackItem(leftItem, leftVariant, rightHand: false);
-            }
-            if (self.m_currentRightBackItemHash != 0)
-            {
-                self.m_rightBackItemInstance = self.AttachBackItem(rightItem, CurrentRightBackItemVariant, rightHand: true);
-            }
-            return true;
+                if (hash != 0 && CurrentRightBackItemVariant != NewRightBackItemVariant)
+                {
+                    CurrentRightBackItemVariant = NewRightBackItemVariant;
+                    return hash + 1;
+                }
+                return hash;
+            });
+
+            // Pass current variant to AttachItem
+            c.GotoNext(MoveType.After,
+                x => x.OpCode.Code == Code.Ldarg_0,
+                x => x.OpCode.Code == Code.Ldarg_0,
+                x => x.OpCode.Code == Code.Ldarg_2,
+                x => x.OpCode.Code == Code.Ldc_I4_0);
+            c.EmitDelegate<Func<int, int>>((variant) => CurrentRightBackItemVariant);
         }
 
+        /// <summary>
+        ///     Store the variant index of the chest item to the ZDO if the variant has changed
+        /// </summary>
         private void VisEquipment_SetChestItem(On.VisEquipment.orig_SetChestItem orig, VisEquipment self, string name)
         {
             if (MyHumanoid && MyHumanoid.m_chestItem != null &&
@@ -166,61 +175,40 @@ namespace Jotunn.Utils
                 NewChestVariant = MyHumanoid.m_chestItem.m_variant;
                 if (self.m_nview && self.m_nview.GetZDO() is ZDO zdo)
                 {
-                    zdo.Set("ChestItemVariant", (!string.IsNullOrEmpty(name)) ? NewRightItemVariant : 0);
+                    zdo.Set("ChestItemVariant", (!string.IsNullOrEmpty(name)) ? NewChestVariant : 0);
                 }
             }
 
             orig(self, name);
         }
-        
-        private bool VisEquipment_SetChestEquiped(On.VisEquipment.orig_SetChestEquiped orig, VisEquipment self, int hash)
+
+        /// <summary>
+        ///     Check for variant changes and pass the variant to AttachArmor
+        /// </summary>
+        private void VisEquipment_SetChestEquiped(ILContext il)
         {
-            //TODO: needs transpiler here
-            if (self.m_currentChestItemHash == hash && CurrentChestVariant == NewChestVariant)
+            ILCursor c = new ILCursor(il);
+
+            // Change hash if variant is different
+            c.GotoNext(MoveType.After,
+                x => x.OpCode.Code == Code.Ldarg_1);
+            c.EmitDelegate<Func<int, int>>((hash) =>
             {
-                return orig(self, hash);
-            }
-            self.m_currentChestItemHash = hash;
-            CurrentChestVariant = NewChestVariant;
-            if (self.m_bodyModel == null)
-            {
-                return true;
-            }
-            if (self.m_chestItemInstances != null)
-            {
-                foreach (GameObject chestItemInstance in self.m_chestItemInstances)
+                if (hash != 0 && CurrentChestVariant != NewChestVariant)
                 {
-                    if (self.m_lodGroup)
-                    {
-                        global::Utils.RemoveFromLodgroup(self.m_lodGroup, chestItemInstance);
-                    }
-                    Object.Destroy(chestItemInstance);
+                    CurrentChestVariant = NewChestVariant;
+                    return hash + 1;
                 }
-                self.m_chestItemInstances = null;
-                self.m_bodyModel.material.SetTexture("_ChestTex", self.m_emptyBodyTexture);
-                self.m_bodyModel.material.SetTexture("_ChestBumpMap", null);
-                self.m_bodyModel.material.SetTexture("_ChestMetal", null);
-            }
-            if (self.m_currentChestItemHash == 0)
-            {
-                return true;
-            }
-            GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(hash);
-            if (itemPrefab == null)
-            {
-                ZLog.Log("Missing chest item " + hash);
-                return true;
-            }
-            ItemDrop component = itemPrefab.GetComponent<ItemDrop>();
-            if ((bool)component.m_itemData.m_shared.m_armorMaterial)
-            {
-                self.m_bodyModel.material.SetTexture("_ChestTex", component.m_itemData.m_shared.m_armorMaterial.GetTexture("_ChestTex"));
-                self.m_bodyModel.material.SetTexture("_ChestBumpMap", component.m_itemData.m_shared.m_armorMaterial.GetTexture("_ChestBumpMap"));
-                self.m_bodyModel.material.SetTexture("_ChestMetal", component.m_itemData.m_shared.m_armorMaterial.GetTexture("_ChestMetal"));
-            }
-            //TODO: hook AttachArmor and inject our variant
-            self.m_chestItemInstances = self.AttachArmor(hash, CurrentChestVariant);
-            return true;
+                return hash;
+            });
+
+            // Pass current variant to AttachArmor
+            c.GotoNext(MoveType.After,
+                x => x.OpCode.Code == Code.Ldarg_0,
+                x => x.OpCode.Code == Code.Ldarg_0,
+                x => x.OpCode.Code == Code.Ldarg_1,
+                x => x.OpCode.Code == Code.Ldc_I4_M1);
+            c.EmitDelegate<Func<int, int>>((variant) => CurrentChestVariant);
         }
     }
 }
