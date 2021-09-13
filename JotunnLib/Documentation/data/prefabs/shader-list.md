@@ -31,7 +31,6 @@ Custom/Water|<dl><dd>_ColorTop (Color top)</dd><dd>_ColorBottom (Color bottom de
 Custom/WaterBottom|<dl><dd>_WaterEdge (World water edge)</dd></dl>|
 Custom/WaterMask||
 Custom/Yggdrasil|<dl><dd>_Color (Color)</dd><dd>_MainTex (Albedo (RGB))</dd><dd>_Glossiness (Smoothness)</dd><dd>_Metallic (Metallic)</dd><dd>_Cutoff (Alpha Cutoff)</dd><dd>_BumpMap (Normal Map)</dd><dd>_BumpScale (Normal scale)</dd><dd>_MossTex (Moss texture (RGB))</dd><dd>_MossAlpha (Moss mask power)</dd><dd>_MossBlend (Moss texture blend)</dd><dd>_MossColor (Moss Cclor)</dd><dd>_MossNormal (MossNormal)</dd><dd>_MossTransition (MossTransition)</dd><dd>_EmissiveTex (Emissive (RGB))</dd><dd>_EmissiveMaskTex (Emissive mask (RA))</dd><dd>_EmissBlend (Emissive texture blend)</dd><dd>_MossEmissive (Moss emission)</dd><dd>_MossEmissivePower (Moss emission power)</dd><dd>_EmissiveScroll (Speed)</dd><dd>_RefractionNormal (Refraction normal)</dd><dd>_RefractionScale (Refraction scale)</dd><dd>_RefractionIntensity (Refraction intensity)</dd><dd>_RefractionSpeed (Refraction speed)</dd><dd>_FogAmount (Fog)</dd><dd>_FogStart (Fog start)</dd><dd>_FogEnd (Fog end)</dd><dd>_FogPower (Fog power)</dd><dd>_TwoSidedNormals (Twosided normals)</dd><dd>_Cull (Cull)</dd></dl>|
-DoubleSided/Standard/Standard DS|<dl><dd>_Color (Color)</dd><dd>_MainTex (Albedo)</dd><dd>_Cutoff (Alpha Cutoff)</dd><dd>_Glossiness (Smoothness)</dd><dd>_GlossMapScale (Smoothness Scale)</dd><dd>_SmoothnessTextureChannel (Smoothness texture channel)</dd><dd>_Metallic (Metallic)</dd><dd>_MetallicGlossMap (Metallic)</dd><dd>_SpecularHighlights (Specular Highlights)</dd><dd>_GlossyReflections (Glossy Reflections)</dd><dd>_BumpScale (Scale)</dd><dd>_BumpMap (Normal Map)</dd><dd>_Parallax (Height Scale)</dd><dd>_ParallaxMap (Height Map)</dd><dd>_OcclusionStrength (Strength)</dd><dd>_OcclusionMap (Occlusion)</dd><dd>_EmissionColor (Color)</dd><dd>_EmissionMap (Emission)</dd><dd>_DetailMask (Detail Mask)</dd><dd>_DetailAlbedoMap (Detail Albedo x2)</dd><dd>_DetailNormalMapScale (Scale)</dd><dd>_DetailNormalMap (Normal Map)</dd><dd>_UVSec (UV Set for secondary textures)</dd><dd>_Mode (__mode)</dd><dd>_SrcBlend (__src)</dd><dd>_DstBlend (__dst)</dd><dd>_ZWrite (__zw)</dd></dl>|
 GUI/Text Shader|<dl><dd>_MainTex (Font Texture)</dd><dd>_Color (Text Color)</dd></dl>|
 Hidden/BlitCopy|<dl><dd>_MainTex (Texture)</dd><dd>_Color (Multiplicative color)</dd></dl>|
 Hidden/CubeBlend|<dl><dd>_TexA (Cubemap)</dd><dd>_TexB (Cubemap)</dd><dd>_value (Value)</dd></dl>|
@@ -45,10 +44,16 @@ Hidden/InternalErrorShader||
 Hidden/Internal-Flare||
 Hidden/Internal-GUITexture|<dl><dd>_MainTex (Texture)</dd></dl>|
 Hidden/Internal-GUITextureClipText|<dl><dd>_MainTex (Texture)</dd></dl>|
+Hidden/Internal-MotionVectors||
 Hidden/Internal-ScreenSpaceShadows|<dl><dd>_ShadowMapTexture</dd><dd>_ODSWorldTexture</dd></dl>|
 Hidden/Internal-StencilWrite||
+Hidden/Post FX/Ambient Occlusion||
+Hidden/Post FX/Blit|<dl><dd>_MainTex (Main Texture)</dd></dl>|
+Hidden/Post FX/Bloom|<dl><dd>_MainTex</dd><dd>_BaseTex</dd><dd>_AutoExposure</dd></dl>|
 Hidden/Post FX/Fog|<dl><dd>_MainTex (Main Texture)</dd></dl>|
 Hidden/Post FX/Lut Generator||
+Hidden/Post FX/Motion Blur||
+Hidden/Post FX/Temporal Anti-aliasing|<dl><dd>_MainTex</dd></dl>|
 Hidden/Post FX/Uber Shader|<dl><dd>_MainTex (Texture)</dd><dd>_AutoExposure</dd><dd>_BloomTex</dd><dd>_Bloom_DirtTex</dd><dd>_GrainTex</dd><dd>_LogLut</dd><dd>_UserLut</dd><dd>_Vignette_Mask</dd><dd>_ChromaticAberration_Spectrum</dd><dd>_DitheringTex</dd></dl>|
 Hidden/SimpleClear|<dl><dd>_MainTex (Base (RGB))</dd></dl>|
 Hidden/SunShaftsComposite|<dl><dd>_MainTex (Base)</dd><dd>_ColorBuffer (Color)</dd><dd>_Skybox (Skybox)</dd></dl>|
