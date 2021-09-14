@@ -60,8 +60,7 @@ namespace Jotunn.Managers
         /// <summary> 
         ///     Localizations for internal use.
         /// </summary>
-        internal CustomLocalization JotunnLocalizations => _localizations ??= Get();
-        internal CustomLocalization _localizations;
+        internal CustomLocalization JotunnLocalization => GetLocalization();
 
         /// <summary>
         ///     Event that gets fired after all custom localization has been added to the game.
@@ -154,9 +153,8 @@ namespace Jotunn.Managers
         private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
         {
             var result = orig(self, language);
-            var data = Localizations;
 
-            foreach (var ct in data)
+            foreach (var ct in Localizations)
             {
                 var langDic = ct.GetTranslations(language);
                 if (langDic == null)
@@ -209,32 +207,50 @@ namespace Jotunn.Managers
 
             foreach (var path in jsonFormat)
             {
-                JotunnLocalizations.AddFileByPath(path, true);
+                JotunnLocalization.AddFileByPath(path, true);
             }
             foreach (var path in unityFormat)
             {
-                JotunnLocalizations.AddFileByPath(path);
+                JotunnLocalization.AddFileByPath(path);
             }
         }
 
         /// <summary>
-        ///     Get the CustomLocalization for this mod or creates one if it doesn't exist.
+        ///     Add your mod's custom localization. Only one <see cref="CustomLocalization"/> can be added per mod.
         /// </summary>
-        /// <param name="sourceMod"> Mod data in the shape of BepInPlugin class. </param>
-        /// <returns> Existing or newly created CustomLocalization. </returns>
-        public CustomLocalization Get(BepInPlugin sourceMod = null)
+        /// <param name="customLocalization">The localization to add.</param>
+        /// <returns>true if the custom localization was added to the manager.</returns>
+        public bool AddLocalization(CustomLocalization customLocalization)
         {
-            var plugin = sourceMod ?? BepInExUtils.GetSourceModMetadata();
-            var ct = Localizations.FirstOrDefault(ctx => ctx.SourceMod == plugin);
-
-            if (ct != null)
+            if (Localizations.Any(x => x.SourceMod == customLocalization.SourceMod))
             {
-                return ct;
+                Logger.LogWarning($"Custom localization for mod {customLocalization.SourceMod} already added");
+                return false;
             }
 
-            ct = sourceMod is null ? new CustomLocalization() : new CustomLocalization(sourceMod);
-            Localizations.Add(ct);
-            return ct;
+            Localizations.Add(customLocalization);
+
+            return true;
+        }
+
+        /// <summary>
+        ///     Get the CustomLocalization for your mod.
+        ///     Creates a new <see cref="CustomLocalization"/> if no localization as added before.
+        /// </summary>
+        /// <returns>Existing or newly created <see cref="CustomLocalization"/>.</returns>
+        public CustomLocalization GetLocalization()
+        {
+            var sourceMod = BepInExUtils.GetSourceModMetadata();
+            var ret = Localizations.FirstOrDefault(ctx => ctx.SourceMod == sourceMod);
+
+            if (ret != null)
+            {
+                return ret;
+            }
+
+            ret = new CustomLocalization(sourceMod);
+            Localizations.Add(ret);
+            return ret;
         }
 
         /// <summary>
@@ -282,18 +298,18 @@ namespace Jotunn.Managers
         ///     Registers a new Localization for a language.
         /// </summary>
         /// <param name="config"> Wrapper which contains a language and a Token-Value dictionary. </param>
-        [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddLocalization(LocalizationConfig config)
-            => JotunnLocalizations.AddTranslation(config.Language, config.Translations);
+            => GetLocalization().AddTranslation(config.Language, config.Translations);
 
         /// <summary> 
         ///     Registers a new Localization for a language.
         /// </summary>
         /// <param name="language"> The language being added. </param>
         /// <param name="localization"> Token-Value dictionary. </param>
-        [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddLocalization(string language, Dictionary<string, string> localization)
-            => JotunnLocalizations.AddTranslation(language, localization);
+            => GetLocalization().AddTranslation(language, localization);
 
         /// <summary> 
         ///     Add a token and its value to the "English" language.
@@ -301,9 +317,9 @@ namespace Jotunn.Managers
         /// <param name="token"> Token </param>
         /// <param name="value"> Translation. </param>
         /// <param name="forceReplace"> Replace the token if it already exists </param>
-        [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddToken(string token, string value, bool forceReplace = false)
-            => JotunnLocalizations.AddTranslation(token, value);
+            => GetLocalization().AddTranslation(token, value);
 
         /// <summary> 
         ///     Add a token and its value to the specified language (default to "English").
@@ -312,35 +328,35 @@ namespace Jotunn.Managers
         /// <param name="value"> Translation. </param>
         /// <param name="language"> Language ID for this token. </param>
         /// <param name="forceReplace"> Replace the token if it already exists </param>
-        [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddToken(string token, string value, string language, bool forceReplace = false)
-            => JotunnLocalizations.AddTranslation(language, token, value);
+            => GetLocalization().AddTranslation(language, token, value);
 
         /// <summary> 
         ///     Add a file via absolute path.
         /// </summary>
         /// <param name="path"> Absolute path to file. </param>
         /// <param name="isJson"> Is the language file a json file. </param>
-        [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddPath(string path, bool isJson = false)
-            => JotunnLocalizations.AddFileByPath(path, isJson);
+            => GetLocalization().AddFileByPath(path, isJson);
 
         /// <summary>
         ///     Add a json language file (match crowdin format).
         /// </summary>
         /// <param name="language"> Language for the json file, for example, "English" </param>
         /// <param name="fileContent"> Entire file as string </param>
-        [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddJson(string language, string fileContent)
-            => JotunnLocalizations.AddJsonFile(language, fileContent);
+            => GetLocalization().AddJsonFile(language, fileContent);
 
         /// <summary>
         ///     Add a language file that matches Valheim's language format.
         /// </summary>
         /// <param name="fileContent"> Entire file as string </param>
-        [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddLanguageFile(string fileContent)
-            => JotunnLocalizations.AddLanguageFile(fileContent);
+            => GetLocalization().AddLanguageFile(fileContent);
 
         #endregion
     }

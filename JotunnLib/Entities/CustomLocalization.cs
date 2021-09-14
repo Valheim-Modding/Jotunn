@@ -183,7 +183,7 @@ namespace Jotunn.Entities
             foreach (var tv in json)
             {
                 var translation = tv.Value as string;
-                var token = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);;
+                var token = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
 
                 if (!ValidateToken(token))
                 {
