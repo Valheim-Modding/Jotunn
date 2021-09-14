@@ -92,8 +92,9 @@ namespace Jotunn.Entities
             {
                 return;
             }
+            var cleanedToken = token.TrimStart(LocalizationManager.TokenFirstChar);
 
-            Map[language][token] = translation;
+            Map[language][cleanedToken] = translation;
         }
 
         /// <summary> Add a group of translations. </summary>
@@ -113,7 +114,7 @@ namespace Jotunn.Entities
 
             foreach (var tv in tokenValue)
             {
-                var token = (string)tv.Key;
+                var token = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
                 var translation = tv.Value;
 
                 if (!ValidateToken(token))
@@ -181,8 +182,8 @@ namespace Jotunn.Entities
 
             foreach (var tv in json)
             {
-                var translation = (string)tv.Value;
-                var token = tv.Key;
+                var translation = tv.Value as string;
+                var token = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);;
 
                 if (!ValidateToken(token))
                 {
@@ -222,6 +223,8 @@ namespace Jotunn.Entities
                     continue;
                 }
 
+                var cleanedToken = token.TrimStart(LocalizationManager.TokenFirstChar);
+
                 for (var i = 1; i < slicedLine.Count; i++)
                 {
                     var language = languages[i];
@@ -244,7 +247,7 @@ namespace Jotunn.Entities
                         Map.Add(language, new Dictionary<string, string>());
                     }
 
-                    Map[language][token] = translation;
+                    Map[language][cleanedToken] = translation;
                 }
             }
         }
@@ -260,7 +263,7 @@ namespace Jotunn.Entities
         {
             if (Map.ContainsKey(language))
             {
-                Map.Remove(token);
+                Map.Remove(token.TrimStart(LocalizationManager.TokenFirstChar));
             }
         }
 
