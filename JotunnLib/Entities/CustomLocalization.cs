@@ -23,8 +23,7 @@ namespace Jotunn.Entities
             => Map = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary> Retrieve list of languages that have been added. </summary>
-        public IReadOnlyList<string> Getlanguages()
-            => Map.Keys.ToList();
+        public IEnumerable<string> Getlanguages() => Map.Keys;
 
         /// <summary> Retrieve translations for given language. </summary>
         /// <param name="language"> Language of the translation you want to retrieve. </param>
