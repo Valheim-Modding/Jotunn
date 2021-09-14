@@ -231,6 +231,7 @@ namespace Jotunn.Managers
         {
             var plugin = sourceMod ?? BepInExUtils.GetSourceModMetadata();
             var ct = Data.FirstOrDefault(ctx => ctx.SourceMod == plugin);
+
             if (ct != null)
             {
                 return ct;
@@ -347,6 +348,5 @@ namespace Jotunn.Managers
             => JotunnLocalizations.AddLanguageFile(fileContent);
 
         #endregion
-
     }
 }

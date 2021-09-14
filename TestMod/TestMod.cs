@@ -60,6 +60,7 @@ namespace TestMod
             // Show DateTime on Logs
             //Jotunn.Logger.ShowDate = true;
 
+            // Ask for your mods corresponding CustomLocalization reference for future use
             Localizations = LocalizationManager.Instance.Get();
 
             // Create stuff
