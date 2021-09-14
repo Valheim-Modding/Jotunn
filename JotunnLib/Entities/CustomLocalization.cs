@@ -37,10 +37,11 @@ namespace Jotunn.Entities
         /// <returns> True if found the translation, false if not. </returns>
         public bool TryTranslate(in string language, in string token, out string translation)
         {
+            var cleanedToken = token.TrimStart(LocalizationManager.TokenFirstChar);
             translation = null;
             if (Map.TryGetValue(language, out var Map2))
             {
-                if (Map2.TryGetValue(token, out var value))
+                if (Map2.TryGetValue(cleanedToken, out var value))
                 {
                     translation = value;
                 }
@@ -54,9 +55,10 @@ namespace Jotunn.Entities
         /// <returns> The translation. </returns>
         public bool Contains(in string language, in string token)
         {
+            var cleanedToken = token.TrimStart(LocalizationManager.TokenFirstChar);
             if (Map.TryGetValue(language, out var translations))
             {
-                return translations.ContainsValue(token);
+                return translations.ContainsValue(cleanedToken);
             }
             return false;
         }

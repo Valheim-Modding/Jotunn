@@ -283,12 +283,12 @@ namespace Jotunn.Managers
                 return null;
             }
 
-            var trim = word.TrimStart(TokenFirstChar);
+            var cleanedWord = word.TrimStart(TokenFirstChar);
             var playerLang = PlayerPrefs.GetString("language", DefaultLanguage);
 
             foreach (var ct in Localizations)
             {
-                if (ct.TryTranslate(playerLang, trim, out var translation))
+                if (ct.TryTranslate(playerLang, cleanedWord, out var translation))
                 {
                     return translation;
                 }
@@ -296,13 +296,13 @@ namespace Jotunn.Managers
 
             foreach (var ct in Localizations)
             {
-                if (ct.TryTranslate(DefaultLanguage, trim, out var translation))
+                if (ct.TryTranslate(DefaultLanguage, cleanedWord, out var translation))
                 {
                     return translation;
                 }
             }
 
-            return Localization.instance.Translate(trim);
+            return Localization.instance.Translate(cleanedWord);
         }
 
         #region Obsolete
