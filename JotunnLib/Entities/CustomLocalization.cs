@@ -11,7 +11,7 @@ namespace Jotunn.Entities
     public class CustomLocalization : CustomEntity
     {
         /// <summary> Map that work as [language][token] = translation. </summary>
-        private Dictionary<string, Dictionary<string, string>> Map { get; }
+        internal Dictionary<string, Dictionary<string, string>> Map { get; }
 
         /// <summary> Default constuctor. </summary>
         public CustomLocalization()

@@ -187,7 +187,7 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static IEnumerable<CustomLocalization> GetTranslations()
         {
-            return LocalizationManager.Instance.GetRaw();
+            return LocalizationManager.Instance.Localizations.AsReadOnly();
         }
         /// <summary>
         ///     Get all added <see cref="CustomLocalization"/>s of a mod by GUID
@@ -196,7 +196,7 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static IEnumerable<CustomLocalization> GetTranslations(string modGuid)
         {
-            return LocalizationManager.Instance.GetRaw().Where(x => x.SourceMod.GUID.Equals(modGuid));
+            return LocalizationManager.Instance.Localizations.Where(x => x.SourceMod.GUID.Equals(modGuid));
         }
 
         /// <summary>

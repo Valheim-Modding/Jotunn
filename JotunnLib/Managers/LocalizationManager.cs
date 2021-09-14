@@ -19,13 +19,8 @@ namespace Jotunn.Managers
         /// <summary> 
         ///     List where all data is collected.
         /// </summary>
-        private readonly List<CustomLocalization> Data = new List<CustomLocalization>();
-
-        /// <summary> 
-        ///     Readonly accessor for collected data.
-        /// </summary>
-        public IReadOnlyList<CustomLocalization> GetRaw() => Data as IReadOnlyList<CustomLocalization>;
-
+        internal readonly List<CustomLocalization> Localizations = new List<CustomLocalization>();
+        
         /// <summary> 
         ///     Your token must start with this character.
         /// </summary>
@@ -142,7 +137,7 @@ namespace Jotunn.Managers
             AutomaticLocalizationLoading();
 
             // Add in localized languages that do not yet exist
-            foreach (var ct in GetRaw())
+            foreach (var ct in Localizations)
             {
                 foreach (var language in ct.Getlanguages())
                 {
@@ -159,7 +154,7 @@ namespace Jotunn.Managers
         private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
         {
             var result = orig(self, language);
-            var data = GetRaw();
+            var data = Localizations;
 
             foreach (var ct in data)
             {
@@ -230,7 +225,7 @@ namespace Jotunn.Managers
         public CustomLocalization Get(BepInPlugin sourceMod = null)
         {
             var plugin = sourceMod ?? BepInExUtils.GetSourceModMetadata();
-            var ct = Data.FirstOrDefault(ctx => ctx.SourceMod == plugin);
+            var ct = Localizations.FirstOrDefault(ctx => ctx.SourceMod == plugin);
 
             if (ct != null)
             {
@@ -238,7 +233,7 @@ namespace Jotunn.Managers
             }
 
             ct = sourceMod is null ? new CustomLocalization() : new CustomLocalization(sourceMod);
-            Data.Add(ct);
+            Localizations.Add(ct);
             return ct;
         }
 
@@ -262,7 +257,7 @@ namespace Jotunn.Managers
             var trim = word.TrimStart(TokenFirstChar);
             var playerLang = PlayerPrefs.GetString("language", DefaultLanguage);
 
-            foreach (var ct in Data)
+            foreach (var ct in Localizations)
             {
                 if (ct.TryTranslate(playerLang, trim, out var translation))
                 {
@@ -270,7 +265,7 @@ namespace Jotunn.Managers
                 }
             }
 
-            foreach (var ct in Data)
+            foreach (var ct in Localizations)
             {
                 if (ct.TryTranslate(DefaultLanguage, trim, out var translation))
                 {
