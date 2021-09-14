@@ -76,7 +76,7 @@ namespace Jotunn.GUI
         private static void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
             // Fallback english translation
-            LocalizationManager.Instance.Get().AddTranslation(MenuName, "Mod Settings");
+            LocalizationManager.Instance.JotunnLocalizations.AddTranslation(MenuName, "Mod Settings");
 
             orig(self);
 

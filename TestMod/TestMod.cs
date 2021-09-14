@@ -52,11 +52,15 @@ namespace TestMod
         private ConfigEntry<bool> EnableVersionMismatch;
         private ConfigEntry<bool> EnableExtVersionMismatch;
 
+        private CustomLocalization Localizations;
+
         // Load, create and init your custom mod stuff
         private void Awake()
         {
             // Show DateTime on Logs
             //Jotunn.Logger.ShowDate = true;
+
+            Localizations = LocalizationManager.Instance.Get();
 
             // Create stuff
             CreateConfigValues();
@@ -561,10 +565,8 @@ namespace TestMod
         // Adds localizations with configs
         private void AddLocalizations()
         {
-            var ct = LocalizationManager.Instance.Get();
-
             // Add translations for the custom item in AddClonedItems
-            ct.AddTranslation("English", new Dictionary<string, string>
+            Localizations.AddTranslation("English", new Dictionary<string, string>
             {
                 {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
                 {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
@@ -574,14 +576,14 @@ namespace TestMod
             });
 
             // Add translations for the custom piece in AddPieceCategories
-            ct.AddTranslation("English", new Dictionary<string, string>
+            Localizations.AddTranslation("English", new Dictionary<string, string>
             {
                 { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
                 { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
             });
 
             // Add translations for the custom variant in AddClonedItems
-            ct.AddTranslation("English", new Dictionary<string, string>
+            Localizations.AddTranslation("English", new Dictionary<string, string>
             {
                 { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
             });
@@ -772,7 +774,7 @@ namespace TestMod
             foreach (var textAsset in textAssets)
             {
                 var lang = textAsset.name.Replace(".json", null);
-                LocalizationManager.Instance.Get().AddJsonFile(lang, textAsset.ToString());
+                Localizations.AddJsonFile(lang, textAsset.ToString());
             }
 
             // Override "default" KeyHint with an empty config
@@ -808,7 +810,7 @@ namespace TestMod
             GUIManager.Instance.AddKeyHint(KHC_piece);
 
             // Add additional localization manually
-            LocalizationManager.Instance.Get().AddTranslation("English", new Dictionary<string, string>
+            Localizations.AddTranslation("English", new Dictionary<string, string>
             {
                 { "bprune_make", "Capture Blueprint"}, { "bprune_piece", "Place Blueprint"}
             });

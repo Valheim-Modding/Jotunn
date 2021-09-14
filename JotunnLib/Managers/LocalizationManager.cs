@@ -62,6 +62,12 @@ namespace Jotunn.Managers
         public static LocalizationManager Instance => _instance ??= new LocalizationManager();
         private static LocalizationManager _instance;
 
+        /// <summary> 
+        ///     Localizations for internal use.
+        /// </summary>
+        internal CustomLocalization JotunnLocalizations => _localizations ??= Get();
+        internal CustomLocalization _localizations;
+
         /// <summary>
         ///     Event that gets fired after all custom localization has been added to the game.
         ///     Use this event if you need to translate strings using the vanilla <see cref="Localization"/> class.
@@ -206,15 +212,13 @@ namespace Jotunn.Managers
                 unityFormat.Add(path);
             }
 
-            var ct = Get();
-
             foreach (var path in jsonFormat)
             {
-                ct.AddFileByPath(path, true);
+                JotunnLocalizations.AddFileByPath(path, true);
             }
             foreach (var path in unityFormat)
             {
-                ct.AddFileByPath(path);
+                JotunnLocalizations.AddFileByPath(path);
             }
         }
 
@@ -284,10 +288,7 @@ namespace Jotunn.Managers
         /// <param name="config"> Wrapper which contains a language and a Token-Value dictionary. </param>
         [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
         public void AddLocalization(LocalizationConfig config)
-        {
-            var ct = Get();
-            ct.AddTranslation(config.Language, config.Translations);
-        }
+            => JotunnLocalizations.AddTranslation(config.Language, config.Translations);
 
         /// <summary> 
         ///     Registers a new Localization for a language.
@@ -296,10 +297,7 @@ namespace Jotunn.Managers
         /// <param name="localization"> Token-Value dictionary. </param>
         [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
         public void AddLocalization(string language, Dictionary<string, string> localization)
-        {
-            var ct = Get();
-            ct.AddTranslation(language, localization);
-        }
+            => JotunnLocalizations.AddTranslation(language, localization);
 
         /// <summary> 
         ///     Add a token and its value to the "English" language.
@@ -309,10 +307,7 @@ namespace Jotunn.Managers
         /// <param name="forceReplace"> Replace the token if it already exists </param>
         [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
         public void AddToken(string token, string value, bool forceReplace = false)
-        {
-            var ct = Get();
-            ct.AddTranslation(token, value);
-        }
+            => JotunnLocalizations.AddTranslation(token, value);
 
         /// <summary> 
         ///     Add a token and its value to the specified language (default to "English").
@@ -323,10 +318,7 @@ namespace Jotunn.Managers
         /// <param name="forceReplace"> Replace the token if it already exists </param>
         [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
         public void AddToken(string token, string value, string language, bool forceReplace = false)
-        {
-            var ct = Get();
-            ct.AddTranslation(language, token, value);
-        }
+            => JotunnLocalizations.AddTranslation(language, token, value);
 
         /// <summary> 
         ///     Add a file via absolute path.
@@ -335,10 +327,7 @@ namespace Jotunn.Managers
         /// <param name="isJson"> Is the language file a json file. </param>
         [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
         public void AddPath(string path, bool isJson = false)
-        {
-            var ct = Get();
-            ct.AddFileByPath(path, isJson);
-        }
+            => JotunnLocalizations.AddFileByPath(path, isJson);
 
         /// <summary>
         ///     Add a json language file (match crowdin format).
@@ -347,10 +336,7 @@ namespace Jotunn.Managers
         /// <param name="fileContent"> Entire file as string </param>
         [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
         public void AddJson(string language, string fileContent)
-        {
-            var ct = Get();
-            ct.AddJsonFile(language, fileContent);
-        }
+            => JotunnLocalizations.AddJsonFile(language, fileContent);
 
         /// <summary>
         ///     Add a language file that matches Valheim's language format.
@@ -358,10 +344,7 @@ namespace Jotunn.Managers
         /// <param name="fileContent"> Entire file as string </param>
         [Obsolete("Use Get() to retrieve a CustomTranslation reference. Use it to add translations.")]
         public void AddLanguageFile(string fileContent)
-        {
-            var ct = Get();
-            ct.AddLanguageFile(fileContent);
-        }
+            => JotunnLocalizations.AddLanguageFile(fileContent);
 
         #endregion
 
