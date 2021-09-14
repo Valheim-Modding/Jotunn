@@ -60,7 +60,7 @@ namespace Jotunn.Managers
         /// <summary> 
         ///     Localizations for internal use.
         /// </summary>
-        internal CustomLocalization JotunnLocalization => GetLocalization();
+        internal CustomLocalization JotunnLocalization = new CustomLocalization(Main.Instance.Info.Metadata);
 
         /// <summary>
         ///     Event that gets fired after all custom localization has been added to the game.
@@ -81,6 +81,8 @@ namespace Jotunn.Managers
         public void Init()
         {
             On.FejdStartup.SetupGui += LoadAndSetupModLanguages;
+
+            AddLocalization(JotunnLocalization);
 
             DoQuoteLineSplit = (Func<StringReader, List<List<string>>>)
                 Delegate.CreateDelegate(
