@@ -28,7 +28,7 @@ namespace Jotunn.GUI
         ///     Name of the menu entry
         /// </summary>
         private const string MenuName = "$jotunn_modsettings";
-        
+
         /// <summary>
         ///     Cached transform of the vanilla menu list
         /// </summary>
@@ -38,12 +38,12 @@ namespace Jotunn.GUI
         ///     Cached prefab of the vanilla Settings window
         /// </summary>
         private static GameObject SettingsPrefab;
-        
+
         /// <summary>
         ///     Our own Settings window
         /// </summary>
         private static GameObject SettingsRoot;
-        
+
         /// <summary>
         ///     Our own mod config tabs
         /// </summary>
@@ -76,7 +76,7 @@ namespace Jotunn.GUI
         private static void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
             // Fallback english translation
-            LocalizationManager.Instance.AddToken(MenuName, "Mod Settings", true);
+            LocalizationManager.Instance.Get().AddTranslation(MenuName, "Mod Settings");
 
             orig(self);
 
@@ -172,7 +172,7 @@ namespace Jotunn.GUI
                 }
             }
         }
-        
+
         /// <summary>
         ///     Create custom configuration window
         /// </summary>
@@ -240,7 +240,7 @@ namespace Jotunn.GUI
             });
 
             SettingsRoot.AddComponent<EscBehaviour>();
-            
+
             // Reset keybinding cache
             ConfigurationKeybindings.Clear();
             foreach (var mod in BepInExUtils.GetDependentPlugins(true))
@@ -298,7 +298,7 @@ namespace Jotunn.GUI
 
                 // Create button element
                 GameObject button = GUIManager.Instance.CreateButton(
-                    $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}", plugin.transform, 
+                    $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}", plugin.transform,
                     Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), plugin.GetWidth(), 40f);
                 button.name = "button";
                 button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
@@ -319,7 +319,7 @@ namespace Jotunn.GUI
                 contentLayout.childForceExpandHeight = false;
                 contentLayout.childAlignment = TextAnchor.UpperCenter;
                 contentLayout.spacing = 5f;
-                
+
                 content.SetActive(false);
 
                 button.GetComponent<Button>().onClick.AddListener(() =>
@@ -327,8 +327,8 @@ namespace Jotunn.GUI
                     content.SetActive(!content.activeSelf);
                     if (content.activeSelf)
                     {
-                        plugin.GetComponent<LayoutElement>().preferredHeight = 
-                            button.GetComponent<LayoutElement>().preferredHeight + 
+                        plugin.GetComponent<LayoutElement>().preferredHeight =
+                            button.GetComponent<LayoutElement>().preferredHeight +
                             content.GetComponent<LayoutElement>().preferredHeight;
 
                     }
@@ -549,7 +549,7 @@ namespace Jotunn.GUI
                 yield return enumerator.Current;
             }
         }
-        
+
         /// <summary>
         ///     Save our settings
         /// </summary>

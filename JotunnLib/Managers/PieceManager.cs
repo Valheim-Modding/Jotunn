@@ -429,7 +429,7 @@ namespace Jotunn.Managers
                     char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
                     string tokenCategory = string.Concat(category.Key.ToLower().Split(forbiddenCharsArray));
                     string tokenName = $"jotunn_cat_{tokenCategory}";
-                    LocalizationManager.Instance.AddToken(tokenName, category.Key, true);
+                    LocalizationManager.Instance.Get().AddTranslation(tokenName, category.Key);
 
                     newNames.Add(LocalizationManager.Instance.TryTranslate(tokenName));
                     newTabs.Add(newTab);

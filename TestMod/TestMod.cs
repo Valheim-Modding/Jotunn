@@ -353,7 +353,7 @@ namespace TestMod
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
-                    
+
                     if (mod.Translations.Any())
                     {
                         // Translations title
@@ -526,7 +526,7 @@ namespace TestMod
 
             // Load Steel ingot from streamed resource
             Steelingot = AssetUtils.LoadAssetBundleFromResources("steel", typeof(TestMod).Assembly);
-            
+
             // Embedded Resources
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
         }
@@ -561,33 +561,29 @@ namespace TestMod
         // Adds localizations with configs
         private void AddLocalizations()
         {
+            var ct = LocalizationManager.Instance.Get();
+
             // Add translations for the custom item in AddClonedItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            ct.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
-                    {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
-                    {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
-                    {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
-                    {"evilsword_effectstop", "You feel nice again"}
-                }
+                {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
+                {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
+                {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
+                {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
+                {"evilsword_effectstop", "You feel nice again"}
             });
 
             // Add translations for the custom piece in AddPieceCategories
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            ct.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
-                    { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
-                }
+                { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
+                { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
             });
 
             // Add translations for the custom variant in AddClonedItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            ct.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
-                }
+                { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
             });
         }
 
@@ -776,7 +772,7 @@ namespace TestMod
             foreach (var textAsset in textAssets)
             {
                 var lang = textAsset.name.Replace(".json", null);
-                LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
+                LocalizationManager.Instance.Get().AddJsonFile(lang, textAsset.ToString());
             }
 
             // Override "default" KeyHint with an empty config
@@ -812,11 +808,9 @@ namespace TestMod
             GUIManager.Instance.AddKeyHint(KHC_piece);
 
             // Add additional localization manually
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            LocalizationManager.Instance.Get().AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    {"bprune_make", "Capture Blueprint"}, {"bprune_piece", "Place Blueprint"}
-                }
+                { "bprune_make", "Capture Blueprint"}, { "bprune_piece", "Place Blueprint"}
             });
 
             // Don't forget to unload the bundle to free the resources
@@ -962,7 +956,7 @@ namespace TestMod
                     Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
                 };
                 PieceManager.Instance.AddPiece(
-                    new CustomPiece(kitbashObject.Prefab,  fixReference: false, 
+                    new CustomPiece(kitbashObject.Prefab, fixReference: false,
                         new PieceConfig
                         {
                             PieceTable = "Hammer",
