@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using UnityEngine;
@@ -11,7 +10,8 @@ namespace Jotunn.Utils
     {
         private static bool Enabled;
 
-        private static readonly List<ExtEquipment> Instances = new List<ExtEquipment>();
+        private static readonly Dictionary<VisEquipment, ExtEquipment> Instances =
+            new Dictionary<VisEquipment, ExtEquipment>();
 
         public static void Enable()
         {
@@ -37,7 +37,7 @@ namespace Jotunn.Utils
             orig(self);
             self.gameObject.AddComponent<ExtEquipment>();
         }
-        
+
         /// <summary>
         ///     Get non-vanilla variant indices from the ZDO
         /// </summary>
@@ -45,15 +45,14 @@ namespace Jotunn.Utils
         {
             if (self.m_nview && self.m_nview.GetZDO() is ZDO zdo)
             {
-                var instance = Instances.FirstOrDefault(x => x.MyVisEquipment == self);
-                if (instance != null)
+                if (Instances.TryGetValue(self, out var instance))
                 {
                     instance.NewRightItemVariant = zdo.GetInt("RightItemVariant");
                     instance.NewChestVariant = zdo.GetInt("ChestItemVariant");
                     instance.NewRightBackItemVariant = zdo.GetInt("RightBackItemVariant");
                 }
             }
-            
+
             orig(self);
         }
 
@@ -65,7 +64,7 @@ namespace Jotunn.Utils
             ExtEquipment instance = null;
 
             ILCursor c = new ILCursor(il);
-            
+
             // Change hash if variant is different
             if (c.TryGotoNext(MoveType.After,
                 x => x.MatchLdarg(1)))
@@ -73,9 +72,8 @@ namespace Jotunn.Utils
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<int, VisEquipment, int>>((hash, self) =>
                 {
-                    instance = Instances.FirstOrDefault(x => x.MyVisEquipment == self);
-
-                    if (instance != null && hash != 0 && instance.CurrentRightItemVariant != instance.NewRightItemVariant)
+                    if (Instances.TryGetValue(self, out instance) && hash != 0 &&
+                        instance.CurrentRightItemVariant != instance.NewRightItemVariant)
                     {
                         instance.CurrentRightItemVariant = instance.NewRightItemVariant;
                         return hash + instance.CurrentRightItemVariant;
@@ -95,7 +93,7 @@ namespace Jotunn.Utils
                 c.EmitDelegate<Func<int, int>>(variant => (instance != null) ? instance.CurrentRightItemVariant : variant);
             }
         }
-        
+
         /// <summary>
         ///     Check for variant changes and pass the variant to AttachBackItem
         /// </summary>
@@ -112,9 +110,8 @@ namespace Jotunn.Utils
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<int, VisEquipment, int>>((hash, self) =>
                 {
-                    instance = Instances.FirstOrDefault(x => x.MyVisEquipment == self);
-
-                    if (instance != null && hash != 0 && instance.CurrentRightBackItemVariant != instance.NewRightBackItemVariant)
+                    if (Instances.TryGetValue(self, out instance) && hash != 0 &&
+                        instance.CurrentRightBackItemVariant != instance.NewRightBackItemVariant)
                     {
                         instance.CurrentRightBackItemVariant = instance.NewRightBackItemVariant;
                         return hash + instance.CurrentRightBackItemVariant;
@@ -133,7 +130,7 @@ namespace Jotunn.Utils
                 c.EmitDelegate<Func<int, int>>(variant => (instance != null) ? instance.CurrentRightBackItemVariant : variant);
             }
         }
-        
+
         /// <summary>
         ///     Check for variant changes and pass the variant to AttachArmor
         /// </summary>
@@ -150,9 +147,8 @@ namespace Jotunn.Utils
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<int, VisEquipment, int>>((hash, self) =>
                 {
-                    instance = Instances.FirstOrDefault(x => x.MyVisEquipment == self);
-
-                    if (instance != null && hash != 0 && instance.CurrentChestVariant != instance.NewChestVariant)
+                    if (Instances.TryGetValue(self, out instance) && hash != 0 &&
+                        instance.CurrentChestVariant != instance.NewChestVariant)
                     {
                         instance.CurrentChestVariant = instance.NewChestVariant;
                         return hash + instance.CurrentChestVariant;
@@ -177,9 +173,8 @@ namespace Jotunn.Utils
         /// </summary>
         private static void VisEquipment_SetRightItem(On.VisEquipment.orig_SetRightItem orig, VisEquipment self, string name)
         {
-            var instance = Instances.FirstOrDefault(x => x.MyVisEquipment == self);
-
-            if (instance != null && instance.MyHumanoid && instance.MyHumanoid.m_rightItem != null &&
+            if (Instances.TryGetValue(self, out var instance) &&
+                instance.MyHumanoid && instance.MyHumanoid.m_rightItem != null &&
                 !(self.m_rightItem == name && instance.MyHumanoid.m_rightItem.m_variant == instance.CurrentRightItemVariant))
             {
                 instance.NewRightItemVariant = instance.MyHumanoid.m_rightItem.m_variant;
@@ -191,15 +186,14 @@ namespace Jotunn.Utils
 
             orig(self, name);
         }
-        
+
         /// <summary>
         ///     Store the variant index of the right back item to the ZDO if the variant has changed
         /// </summary>
         private static void VisEquipment_SetRightBackItem(On.VisEquipment.orig_SetRightBackItem orig, VisEquipment self, string name)
         {
-            var instance = Instances.FirstOrDefault(x => x.MyVisEquipment == self);
-
-            if (instance != null && instance.MyHumanoid && instance.MyHumanoid.m_hiddenRightItem != null &&
+            if (Instances.TryGetValue(self, out var instance) &&
+                instance.MyHumanoid && instance.MyHumanoid.m_hiddenRightItem != null &&
                 !(self.m_rightBackItem == name && instance.MyHumanoid.m_hiddenRightItem.m_variant == instance.CurrentRightBackItemVariant))
             {
                 instance.NewRightBackItemVariant = instance.MyHumanoid.m_hiddenRightItem.m_variant;
@@ -217,9 +211,8 @@ namespace Jotunn.Utils
         /// </summary>
         private static void VisEquipment_SetChestItem(On.VisEquipment.orig_SetChestItem orig, VisEquipment self, string name)
         {
-            var instance = Instances.FirstOrDefault(x => x.MyVisEquipment == self);
-
-            if (instance != null && instance.MyHumanoid && instance.MyHumanoid.m_chestItem != null &&
+            if (Instances.TryGetValue(self, out var instance) &&
+                instance.MyHumanoid && instance.MyHumanoid.m_chestItem != null &&
                 !(self.m_chestItem == name && instance.MyHumanoid.m_chestItem.m_variant == instance.CurrentChestVariant))
             {
                 instance.NewChestVariant = instance.MyHumanoid.m_chestItem.m_variant;
@@ -232,8 +225,8 @@ namespace Jotunn.Utils
             orig(self, name);
         }
 
-        private VisEquipment MyVisEquipment;
         private Humanoid MyHumanoid;
+
         private int NewRightItemVariant;
         private int CurrentRightItemVariant;
         private int NewRightBackItemVariant;
@@ -244,13 +237,12 @@ namespace Jotunn.Utils
         private void Awake()
         {
             MyHumanoid = gameObject.GetComponent<Humanoid>();
-            MyVisEquipment = gameObject.GetComponent<VisEquipment>();
-            Instances.Add(this);
+            Instances.Add(gameObject.GetComponent<VisEquipment>(), this);
         }
 
         private void OnDestroy()
         {
-            Instances.Remove(this);
+            Instances.Remove(gameObject.GetComponent<VisEquipment>());
         }
     }
 }

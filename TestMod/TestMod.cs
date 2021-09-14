@@ -159,13 +159,32 @@ namespace TestMod
                 if (Player.m_localPlayer != null && Input.GetKeyDown(KeyCode.J))
                 {
                     var pre = PrefabManager.Instance.GetPrefab("GoblinArcher");
-                    var go = Object.Instantiate(pre, Player.m_localPlayer.transform.position + GameCamera.instance.transform.forward * 2f + Vector3.up, Quaternion.identity);
+                    var go = Object.Instantiate(pre, 
+                        Player.m_localPlayer.transform.position + GameCamera.instance.transform.forward * 2f + Vector3.up, 
+                        Quaternion.Euler(GameCamera.instance.transform.forward));
                     Object.Destroy(go.GetComponent<MonsterAI>());
-                    var sword = Object.Instantiate(PrefabManager.Instance.GetPrefab("item_swordvariants")).GetComponent<ItemDrop>().m_itemData;
-                    sword.m_variant = new Random().Next(1, 4);
-                    Jotunn.Logger.LogMessage($"Rolled variant no {sword.m_variant}");
-                    go.GetComponent<Humanoid>().m_rightItem = sword;
-                    go.GetComponent<VisEquipment>().SetRightItem("item_swordvariants");
+
+                    var rand = new Random();
+
+                    int swordrand = rand.Next(0, 6);
+                    if (swordrand < 4)
+                    {
+                        var sword = Object.Instantiate(PrefabManager.Instance.GetPrefab("item_swordvariants"))
+                            .GetComponent<ItemDrop>().m_itemData;
+                        sword.m_variant = swordrand;
+                        go.GetComponent<Humanoid>().m_rightItem = sword;
+                    }
+
+                    int shieldrand = rand.Next(0, 10);
+                    if (shieldrand < 4)
+                    {
+                        var shield = Object.Instantiate(PrefabManager.Instance.GetPrefab("item_lulvariants"))
+                            .GetComponent<ItemDrop>().m_itemData;
+                        shield.m_variant = shieldrand;
+                        go.GetComponent<Humanoid>().m_leftItem = shield;
+                    }
+
+                    Jotunn.Logger.LogMessage($"Rolled sword {swordrand} shield {shieldrand}");
                 }
             }
         }
