@@ -209,11 +209,13 @@ namespace Jotunn.Managers
 
             foreach (var path in jsonFormat)
             {
-                JotunnLocalization.AddFileByPath(path, true);
+                var mod = BepInExUtils.GetPluginInfoFromPath(path)?.Metadata;
+                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(path, true);
             }
             foreach (var path in unityFormat)
             {
-                JotunnLocalization.AddFileByPath(path);
+                var mod = BepInExUtils.GetPluginInfoFromPath(path)?.Metadata;
+                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(path);
             }
         }
 
@@ -237,12 +239,21 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Get the CustomLocalization for your mod.
-        ///     Creates a new <see cref="CustomLocalization"/> if no localization as added before.
+        ///     Creates a new <see cref="CustomLocalization"/> if no localization was added before.
         /// </summary>
         /// <returns>Existing or newly created <see cref="CustomLocalization"/>.</returns>
         public CustomLocalization GetLocalization()
         {
-            var sourceMod = BepInExUtils.GetSourceModMetadata();
+            return GetLocalization(BepInExUtils.GetSourceModMetadata());
+        }
+        
+        /// <summary>
+        ///     Get the CustomLocalization for a given mod.
+        ///     Creates a new <see cref="CustomLocalization"/> if no localization was added before.
+        /// </summary>
+        /// <returns>Existing or newly created <see cref="CustomLocalization"/>.</returns>
+        internal CustomLocalization GetLocalization(BepInPlugin sourceMod)
+        {
             var ret = Localizations.FirstOrDefault(ctx => ctx.SourceMod == sourceMod);
 
             if (ret != null)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
@@ -113,6 +114,24 @@ namespace Jotunn.Utils
             {
                 var typeName = ReflectionHelper.GetPrivateProperty<string>(info, "TypeName");
                 if (assembly.GetType(typeName) != null)
+                {
+                    return info;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Get <see cref="PluginInfo"/> from a path, also matches subfolder paths
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static PluginInfo GetPluginInfoFromPath(string path)
+        {
+            foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
+            {
+                if (Path.GetDirectoryName(path).IndexOf(Path.GetDirectoryName(info.Location)) >= 0)
                 {
                     return info;
                 }
