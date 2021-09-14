@@ -4,6 +4,10 @@
 * Added possibility to traverse child GameObjects when resolving mocks (FixReference = true)
 * Mock references added via Config are resolved automatically, set FixReference = false if your actual GO does not use mocks
 * __Check your mod's items and pieces if they really need FixReference set to true__
+* Fundamentally refactored the Localization system - mods can and should add a CustomLocalization wrapper for all mod specific localization from now on
+* Localization is stored per mod, so you can create / add only one custom localization instance, which behaves like the LocalizationManager in older releases
+* Marked the old API obsolete, __existing mods are encouraged to adapt the new system__
+* See https://valheim-modding.github.io/Jotunn/tutorials/localization.html for more information about the new localization system
 
 ## Version 2.2.9
 * Fixed compat errors
