@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Jotunn.Configs
 {
     /// <summary>
     ///     Configuration class for adding custom localizations.
     /// </summary>
+    [Obsolete("Use CustomLocalization instead")]
     public class LocalizationConfig
     {
         /// <summary>

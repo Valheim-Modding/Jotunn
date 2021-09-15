@@ -59,6 +59,10 @@ namespace TestMod
         {
             // Show DateTime on Logs
             //Jotunn.Logger.ShowDate = true;
+            
+            // Create a custom Localization and add it to the Manager
+            Localization = new CustomLocalization();
+            LocalizationManager.Instance.AddLocalization(Localization);
 
             // Create stuff
             CreateConfigValues();
@@ -563,10 +567,6 @@ namespace TestMod
         // Adds localizations with configs
         private void AddLocalizations()
         {
-            // Create a custom Localization and add it to the Manager
-            Localization = new CustomLocalization();
-            LocalizationManager.Instance.AddLocalization(Localization);
-
             // Add translations for the custom item in AddClonedItems
             Localization.AddTranslation("English", new Dictionary<string, string>
             {
