@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using Jotunn.Managers;
 using UnityEngine;
@@ -10,11 +9,13 @@ namespace JotunnDoc.Docs
     {
         public ShaderDoc() : base("prefabs/shader-list.md")
         {
-            PrefabManager.OnPrefabsRegistered += DocShaders;
+            On.Player.OnSpawned += DocShaders;
         }
 
-        private void DocShaders()
+        private void DocShaders(On.Player.orig_OnSpawned orig, Player self)
         {
+            orig(self);
+
             if (Generated)
             {
                 return;
