@@ -8,6 +8,7 @@
 * Localization is stored per mod, so you can create / add only one custom localization instance, which behaves like the LocalizationManager in older releases
 * Marked the old API obsolete, __existing mods are encouraged to adapt the new system__
 * See https://valheim-modding.github.io/Jotunn/tutorials/localization.html for more information about the new localization system
+* Added ApplyTextStyle to GUIManager (thx MSchmoecker)
 
 ## Version 2.2.9
 * Fixed compat errors
