@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using BepInEx;
 using Jotunn.Managers;
+using UnityEngine;
 
 namespace Jotunn.Entities
 {
@@ -28,24 +29,42 @@ namespace Jotunn.Entities
         /// <param name="language"> Language of the translation you want to retrieve. </param>
         public IReadOnlyDictionary<string, string> GetTranslations(in string language)
             => Map.TryGetValue(language, out var x) ? x : null;
-
-        /// <summary> Retrieve a translation for the given language and token. </summary>
-        /// <param name="language"> Language of the translation you want to retrieve. </param>
-        /// <param name="token"> Token of the translation you want to retrieve. </param>
-        /// <param name="translation"> String with the result of the search or null if unsuccessful. </param>
-        /// <returns> True if found the translation, false if not. </returns>
-        public bool TryTranslate(in string language, in string token, out string translation)
+        
+        /// <summary>
+        ///     Retrieve a translation from this custom localization or <see cref="Localization.Translate"/>.
+        ///     Searches with the user language with a fallback to English.
+        /// </summary>
+        /// <param name="word">Word to translate.</param>
+        /// <returns>Translated word in player language or english as a fallback.</returns>
+        public string TryTranslate(string word)
         {
-            var cleanedToken = token.TrimStart(LocalizationManager.TokenFirstChar);
-            translation = null;
-            if (Map.TryGetValue(language, out var Map2))
+            if (string.IsNullOrEmpty(word))
             {
-                if (Map2.TryGetValue(cleanedToken, out var value))
-                {
-                    translation = value;
-                }
+                throw new ArgumentNullException(nameof(word));
             }
-            return translation != null;
+            if (word.IndexOfAny(LocalizationManager.ForbiddenCharsArr) != -1)
+            {
+                Logger.LogWarning($"Token '{word}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'.");
+                return null;
+            }
+
+            var cleanedWord = word.TrimStart(LocalizationManager.TokenFirstChar);
+            var playerLang = PlayerPrefs.GetString("language", LocalizationManager.DefaultLanguage);
+
+            if (Map.TryGetValue(playerLang, out var playerDictionary) && 
+                playerDictionary.TryGetValue(cleanedWord, out var playerTranslation))
+            {
+                return playerTranslation;
+            }
+
+            if (!playerLang.Equals(LocalizationManager.DefaultLanguage) &&
+                Map.TryGetValue(LocalizationManager.DefaultLanguage, out var dictionary) && 
+                dictionary.TryGetValue(cleanedWord, out var translation))
+            {
+                return translation;
+            }
+
+            return Localization.instance.Translate(cleanedWord);
         }
 
         /// <summary> Checks if a translation exists for given language and token. </summary>

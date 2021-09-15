@@ -156,6 +156,8 @@ namespace Jotunn.Managers
         {
             var result = orig(self, language);
 
+            Logger.LogInfo($"Adding tokens for language '{language}'");
+
             foreach (var ct in Localizations)
             {
                 var langDic = ct.GetTranslations(language);
@@ -164,11 +166,11 @@ namespace Jotunn.Managers
                     continue;
                 }
 
-                Logger.LogInfo($"Adding tokens for language '{language}'");
+                Logger.LogDebug($"Adding tokens for '{ct}'");
 
                 foreach (var pair in langDic)
                 {
-                    Logger.LogDebug("Added translation: " + pair.Key + " -> " + pair.Value);
+                    Logger.LogDebug($"Added translation: {pair.Key} -> {pair.Value}");
                     self.AddWord(pair.Key, pair.Value);
                 }
             }
@@ -273,35 +275,17 @@ namespace Jotunn.Managers
         /// <returns> Translated word in player language or english as a fallback. </returns>
         public string TryTranslate(string word)
         {
-            if (string.IsNullOrEmpty(word))
-            {
-                throw new ArgumentNullException(nameof(word));
-            }
-            if (word.IndexOfAny(ForbiddenCharsArr) != -1)
-            {
-                Logger.LogWarning($"Token '{word}' must not contain following chars: '{ForbiddenChars}'.");
-                return null;
-            }
-
             var cleanedWord = word.TrimStart(TokenFirstChar);
-            var playerLang = PlayerPrefs.GetString("language", DefaultLanguage);
 
             foreach (var ct in Localizations)
             {
-                if (ct.TryTranslate(playerLang, cleanedWord, out var translation))
+                var translation = ct.TryTranslate(word);
+                if (translation != null)
                 {
                     return translation;
                 }
             }
-
-            foreach (var ct in Localizations)
-            {
-                if (ct.TryTranslate(DefaultLanguage, cleanedWord, out var translation))
-                {
-                    return translation;
-                }
-            }
-
+            
             return Localization.instance.Translate(cleanedWord);
         }
 
