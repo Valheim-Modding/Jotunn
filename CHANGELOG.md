@@ -9,6 +9,7 @@
 * Marked the old API obsolete, __existing mods are encouraged to adapt the new system__
 * See https://valheim-modding.github.io/Jotunn/tutorials/localization.html for more information about the new localization system
 * Added ApplyTextStyle to GUIManager (thx MSchmoecker)
+* Enabled item style variants for items which do not support variants in vanilla (e.g. swords or armor)
 
 ## Version 2.2.9
 * Fixed compat errors
