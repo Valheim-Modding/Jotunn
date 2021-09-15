@@ -140,7 +140,7 @@ namespace Jotunn.Managers
             // Add in localized languages that do not yet exist
             foreach (var ct in Localizations)
             {
-                foreach (var language in ct.Getlanguages())
+                foreach (var language in ct.GetLanguages())
                 {
                     if (!result.Contains(language))
                     {
