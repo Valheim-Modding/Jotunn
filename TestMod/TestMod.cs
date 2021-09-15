@@ -53,11 +53,17 @@ namespace TestMod
         private ConfigEntry<bool> EnableVersionMismatch;
         private ConfigEntry<bool> EnableExtVersionMismatch;
 
+        private CustomLocalization Localization;
+
         // Load, create and init your custom mod stuff
         private void Awake()
         {
             // Show DateTime on Logs
             //Jotunn.Logger.ShowDate = true;
+            
+            // Create a custom Localization and add it to the Manager
+            Localization = new CustomLocalization();
+            LocalizationManager.Instance.AddLocalization(Localization);
 
             // Create stuff
             CreateConfigValues();
@@ -389,6 +395,28 @@ namespace TestMod
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
+
+                    if (mod.Translations.Any())
+                    {
+                        // Translations title
+                        GUIManager.Instance.CreateText("Translations:",
+                            viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                            GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
+                            true, Color.black, 650f, 30f, false);
+
+                        foreach (var translation in mod.Translations)
+                        {
+                            foreach (var tokenvalue in translation.GetTranslations(
+                                PlayerPrefs.GetString("language", "English")))
+                            {
+                                // Token - Value
+                                GUIManager.Instance.CreateText($"{tokenvalue.Key}: {tokenvalue.Value}",
+                                    viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                                    GUIManager.Instance.AveriaSerifBold, 16, Color.white,
+                                    true, Color.black, 650f, 30f, false);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -540,7 +568,7 @@ namespace TestMod
 
             // Load Steel ingot from streamed resource
             Steelingot = AssetUtils.LoadAssetBundleFromResources("steel", typeof(TestMod).Assembly);
-            
+
             // Embedded Resources
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
         }
@@ -576,32 +604,26 @@ namespace TestMod
         private void AddLocalizations()
         {
             // Add translations for the custom item in AddClonedItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
-                    {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
-                    {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
-                    {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
-                    {"evilsword_effectstop", "You feel nice again"}
-                }
+                {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
+                {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
+                {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
+                {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
+                {"evilsword_effectstop", "You feel nice again"}
             });
 
             // Add translations for the custom piece in AddPieceCategories
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
-                    { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
-                }
+                { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
+                { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
             });
 
             // Add translations for the custom variant in AddClonedItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
-                }
+                { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
             });
         }
 
@@ -790,7 +812,7 @@ namespace TestMod
             foreach (var textAsset in textAssets)
             {
                 var lang = textAsset.name.Replace(".json", null);
-                LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
+                Localization.AddJsonFile(lang, textAsset.ToString());
             }
 
             // Override "default" KeyHint with an empty config
@@ -826,11 +848,9 @@ namespace TestMod
             GUIManager.Instance.AddKeyHint(KHC_piece);
 
             // Add additional localization manually
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    {"bprune_make", "Capture Blueprint"}, {"bprune_piece", "Place Blueprint"}
-                }
+                { "bprune_make", "Capture Blueprint"}, { "bprune_piece", "Place Blueprint"}
             });
 
             // Don't forget to unload the bundle to free the resources
@@ -976,7 +996,7 @@ namespace TestMod
                     Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
                 };
                 PieceManager.Instance.AddPiece(
-                    new CustomPiece(kitbashObject.Prefab,  fixReference: false, 
+                    new CustomPiece(kitbashObject.Prefab, fixReference: false,
                         new PieceConfig
                         {
                             PieceTable = "Hammer",
