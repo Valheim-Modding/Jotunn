@@ -228,7 +228,7 @@ namespace Jotunn.Managers
         {
             if (Localizations.Any(x => x.SourceMod == customLocalization.SourceMod))
             {
-                Logger.LogWarning($"Custom localization for mod {customLocalization.SourceMod} already added");
+                Logger.LogWarning($"{customLocalization} already added");
                 return false;
             }
 

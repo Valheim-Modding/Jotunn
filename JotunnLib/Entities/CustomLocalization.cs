@@ -325,5 +325,10 @@ namespace Jotunn.Entities
 
         #endregion
 
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"Localization ({SourceMod.GUID})";
+        }
     }
 }
