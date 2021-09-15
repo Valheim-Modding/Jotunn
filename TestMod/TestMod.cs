@@ -15,6 +15,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
+using Random = System.Random;
 
 namespace TestMod
 {
@@ -87,6 +88,9 @@ namespace TestMod
 
             // Clone an item with variants and replace them
             PrefabManager.OnVanillaPrefabsAvailable += AddVariants;
+            
+            // Create a custom item with variants
+            PrefabManager.OnVanillaPrefabsAvailable += AddCustomVariants;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -155,6 +159,38 @@ namespace TestMod
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
+                }
+
+                // Spawn goblin with a variant sword
+                if (Player.m_localPlayer != null && Input.GetKeyDown(KeyCode.J))
+                {
+                    var pre = PrefabManager.Instance.GetPrefab("GoblinArcher");
+                    var go = Object.Instantiate(pre, 
+                        Player.m_localPlayer.transform.position + GameCamera.instance.transform.forward * 2f + Vector3.up, 
+                        Quaternion.Euler(GameCamera.instance.transform.forward));
+                    Object.Destroy(go.GetComponent<MonsterAI>());
+
+                    var rand = new Random();
+
+                    int swordrand = rand.Next(0, 6);
+                    if (swordrand < 4)
+                    {
+                        var sword = Object.Instantiate(PrefabManager.Instance.GetPrefab("item_swordvariants"))
+                            .GetComponent<ItemDrop>().m_itemData;
+                        sword.m_variant = swordrand;
+                        go.GetComponent<Humanoid>().m_rightItem = sword;
+                    }
+
+                    int shieldrand = rand.Next(0, 10);
+                    if (shieldrand < 4)
+                    {
+                        var shield = Object.Instantiate(PrefabManager.Instance.GetPrefab("item_lulvariants"))
+                            .GetComponent<ItemDrop>().m_itemData;
+                        shield.m_variant = shieldrand;
+                        go.GetComponent<Humanoid>().m_leftItem = shield;
+                    }
+
+                    Jotunn.Logger.LogMessage($"Rolled sword {swordrand} shield {shieldrand}");
                 }
             }
         }
@@ -1127,10 +1163,6 @@ namespace TestMod
                 {
                     Name = "$lulz_shield",
                     Description = "$lulz_shield_desc",
-                    Requirements = new RequirementConfig[]
-                    {
-                        new RequirementConfig{ Item = "Wood", Amount = 1 }
-                    },
                     Icons = new Sprite[]
                     {
                         var1, var2
@@ -1147,6 +1179,65 @@ namespace TestMod
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
                 PrefabManager.OnVanillaPrefabsAvailable -= AddVariants;
+            }
+        }
+        
+        private void AddCustomVariants()
+        {
+            try
+            {
+                Sprite var1 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var1.png");
+                Sprite var2 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var2.png");
+                Sprite var3 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var3.png");
+                Sprite var4 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var4.png");
+                Texture2D styleTex = AssetUtils.LoadTexture("TestMod/Assets/test_varpaint.png");
+
+                CustomItem sword = new CustomItem("item_swordvariants", "SwordBronze", new ItemConfig
+                {
+                    Name = "Lulz Sword",
+                    Description = "Lulz on a stick",
+                    Icons = new Sprite[]
+                    {
+                        var1, var2, var3, var4
+                    },
+                    StyleTex = styleTex
+                });
+                ItemManager.Instance.AddItem(sword);
+                
+                CustomItem cape = new CustomItem("item_lulzcape", "CapeLinen", new ItemConfig
+                {
+                    Name = "Lulz Cape",
+                    Description = "Lulz to the rescue",
+                    Icons = new Sprite[]
+                    {
+                        var1, var2, var3, var4
+                    },
+                    StyleTex = styleTex
+                });
+                ItemManager.Instance.AddItem(cape);
+                
+                
+                Texture2D styleTexArmor = AssetUtils.LoadTexture("TestMod/Assets/test_varpaintarmor.png");
+                CustomItem chest = new CustomItem("item_lulzchest", "ArmorIronChest", new ItemConfig
+                {
+                    Name = "Lulz Armor",
+                    Description = "Lol, that hit",
+                    Icons = new Sprite[]
+                    {
+                        var1, var2, var3, var4
+                    },
+                    StyleTex = styleTexArmor
+                });
+                ItemManager.Instance.AddItem(chest);
+            }
+            catch (Exception ex)
+            {
+                Jotunn.Logger.LogError($"Error while adding variant item: {ex}");
+            }
+            finally
+            {
+                // You want that to run only once, Jotunn has the item cached for the game session
+                PrefabManager.OnVanillaPrefabsAvailable -= AddCustomVariants;
             }
         }
 
