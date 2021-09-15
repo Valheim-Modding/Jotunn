@@ -41,7 +41,7 @@ private void CreateRunePieces()
 {
     // Create and add a custom piece for the rune. Add the prefab name of the PieceTable to the config.
     var makebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
-    var makebp = new CustomPiece(makebp_prefab,
+    var makebp = new CustomPiece(makebp_prefab, fixReference: false,
         new PieceConfig
         {
             PieceTable = "_BlueprintTestTable"
@@ -51,7 +51,7 @@ private void CreateRunePieces()
     // Load, create and add another custom piece for the rune. This piece uses more properties
     // of the PieceConfig - it can now be build in dungeons and has actual requirements to build it.
     var placebp_prefab = blueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
-    var placebp = new CustomPiece(placebp_prefab,
+    var placebp = new CustomPiece(placebp_prefab, fixReference: false,
         new PieceConfig
         {
             PieceTable = "_BlueprintTestTable",
