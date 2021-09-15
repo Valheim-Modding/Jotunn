@@ -16,7 +16,7 @@ Convention within the game however states that items follow the `$item_{name}` `
 
 ## Adding localization
 
-Jötunn stores all custom localization added seperatly per mod. No matter if you let Jötunn automatically load your translation files via side loading or added the translations yourself via code. 
+Jötunn stores all added custom localization in its own [CustomLocalization](xref:Jotunn.Entities.CustomLocalization) instance per mod. No matter if you let Jötunn automatically load your translation files via side loading or added the translations yourself via code.
 
 ### Format
 
