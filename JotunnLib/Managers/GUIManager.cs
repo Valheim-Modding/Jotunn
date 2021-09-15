@@ -1480,7 +1480,6 @@ namespace Jotunn.Managers
         ///     Uses <code>GUIManager.Instance.AveriaSerifBold</code>, <code>Color.white</code> and creates an outline by default
         /// </summary>
         /// <param name="text">Target component</param>
-        /// <param name="createOutline">creates an <see cref="Outline"/> component when true</param>
         /// <param name="fontSize">Optional font size, defaults to 16</param>
         public void ApplyTextStyle(Text text, int fontSize = 16)
         {
