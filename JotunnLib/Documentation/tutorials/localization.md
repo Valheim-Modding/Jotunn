@@ -74,7 +74,8 @@ private void AddLocalizations()
     // Add translations for the custom item in AddVariants
     Localization.AddTranslation("English", new Dictionary<string, string>
     {
-        { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
+        { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" },
+        { "lulz_sword", "Lulz Sword" }, { "lulz_sword_desc", "Lulz on a stick" }
     });
 }
 ```

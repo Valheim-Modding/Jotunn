@@ -1216,7 +1216,6 @@ namespace TestMod
                 });
                 ItemManager.Instance.AddItem(cape);
                 
-                
                 Texture2D styleTexArmor = AssetUtils.LoadTexture("TestMod/Assets/test_varpaintarmor.png");
                 CustomItem chest = new CustomItem("item_lulzchest", "ArmorIronChest", new ItemConfig
                 {
