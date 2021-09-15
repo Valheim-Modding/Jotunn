@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using Jotunn.Managers;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -57,6 +58,16 @@ namespace Jotunn.Entities
             return valid;
         }
         
+        /// <summary>
+        ///     Helper method to determine if a prefab with a given name is a custom prefab created with Jötunn.
+        /// </summary>
+        /// <param name="prefabName">Name of the prefab to test.</param>
+        /// <returns>true if the prefab is added as a custom prefab to the <see cref="PrefabManager"/>.</returns>
+        public static bool IsCustomPrefab(string prefabName)
+        {
+            return PrefabManager.Instance.Prefabs.ContainsKey(prefabName.GetStableHashCode());
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
