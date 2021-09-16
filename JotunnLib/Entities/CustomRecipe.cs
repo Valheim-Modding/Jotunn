@@ -12,7 +12,7 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The <see cref="global::Recipe"/> for this custom recipe.
         /// </summary>
-        public Recipe Recipe { get; set; }
+        public Recipe Recipe { get; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.

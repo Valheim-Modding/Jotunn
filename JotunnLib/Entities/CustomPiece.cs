@@ -1,4 +1,5 @@
-﻿using Jotunn.Configs;
+﻿using System;
+using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -13,12 +14,12 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The prefab for this custom piece.
         /// </summary>
-        public GameObject PiecePrefab { get; set; }
+        public GameObject PiecePrefab { get; }
 
         /// <summary>
         ///     The <see cref="global::Piece"/> component for this custom piece as a shortcut. 
         /// </summary>
-        public Piece Piece { get; set; }
+        public Piece Piece { get; }
 
         /// <summary>
         ///     Name of the <see cref="global::PieceTable"/> this custom piece belongs to.
@@ -29,6 +30,11 @@ namespace Jotunn.Entities
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
+        
+        /// <summary>
+        ///     Indicator if references from configs should get replaced
+        /// </summary>
+        internal bool FixConfig { get; set; }
 
         /// <summary>
         ///     Custom piece from a prefab.<br />
@@ -55,12 +61,32 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="piecePrefab">The prefab for this custom piece.</param>
         /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
+        [Obsolete("Use CustomPiece(GameObject, bool, PieceConfig) instead and define if references should be fixed")]
         public CustomPiece(GameObject piecePrefab, PieceConfig pieceConfig)
         {
             PiecePrefab = piecePrefab;
             Piece = piecePrefab.GetComponent<Piece>();
             PieceTable = pieceConfig.PieceTable;
-            FixReference = true;
+            FixReference = false;
+            FixConfig = true;
+
+            pieceConfig.Apply(piecePrefab);
+        }
+        
+        /// <summary>
+        ///     Custom piece from a prefab with a <see cref="PieceConfig"/> attached.<br />
+        ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
+        /// </summary>
+        /// <param name="piecePrefab">The prefab for this custom piece.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
+        public CustomPiece(GameObject piecePrefab, bool fixReference, PieceConfig pieceConfig)
+        {
+            PiecePrefab = piecePrefab;
+            Piece = piecePrefab.GetComponent<Piece>();
+            PieceTable = pieceConfig.PieceTable;
+            FixReference = fixReference;
+            FixConfig = true;
 
             pieceConfig.Apply(piecePrefab);
         }
@@ -95,6 +121,7 @@ namespace Jotunn.Entities
         /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
         /// <param name="assetName">Name of the prefab in the bundle.</param>
         /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
+        [Obsolete("Use CustomPiece(AssetBundle, string, bool, PieceConfig) instead and define if references should be fixed")]
         public CustomPiece(AssetBundle assetBundle, string assetName, PieceConfig pieceConfig)
         {
             var piecePrefab = (GameObject)assetBundle.LoadAsset(assetName);
@@ -103,9 +130,33 @@ namespace Jotunn.Entities
                 PiecePrefab = piecePrefab;
                 Piece = piecePrefab.GetComponent<Piece>();
                 PieceTable = pieceConfig.PieceTable;
+                FixReference = false;
+                FixConfig = true;
 
                 pieceConfig.Apply(piecePrefab);
-                FixReference = true;
+            }
+        }
+        
+        /// <summary>
+        ///     Custom piece from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="PieceConfig"/> attached.<br />
+        ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
+        /// </summary>
+        /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
+        /// <param name="assetName">Name of the prefab in the bundle.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
+        public CustomPiece(AssetBundle assetBundle, string assetName, bool fixReference, PieceConfig pieceConfig)
+        {
+            var piecePrefab = (GameObject)assetBundle.LoadAsset(assetName);
+            if (piecePrefab)
+            {
+                PiecePrefab = piecePrefab;
+                Piece = piecePrefab.GetComponent<Piece>();
+                PieceTable = pieceConfig.PieceTable;
+                FixReference = fixReference;
+                FixConfig = true;
+
+                pieceConfig.Apply(piecePrefab);
             }
         }
 
@@ -144,9 +195,9 @@ namespace Jotunn.Entities
             {
                 Piece = PiecePrefab.AddComponent<Piece>();
                 PieceTable = pieceConfig.PieceTable;
+                FixConfig = true;
 
                 pieceConfig.Apply(PiecePrefab);
-                FixReference = true;
             }
         }
 
@@ -184,9 +235,9 @@ namespace Jotunn.Entities
             {
                 Piece = PiecePrefab.GetComponent<Piece>();
                 PieceTable = pieceConfig.PieceTable;
+                FixConfig = true;
 
                 pieceConfig.Apply(PiecePrefab);
-                FixReference = true;
             }
         }
 

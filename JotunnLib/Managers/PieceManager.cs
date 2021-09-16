@@ -429,7 +429,7 @@ namespace Jotunn.Managers
                     char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
                     string tokenCategory = string.Concat(category.Key.ToLower().Split(forbiddenCharsArray));
                     string tokenName = $"jotunn_cat_{tokenCategory}";
-                    LocalizationManager.Instance.AddToken(tokenName, category.Key, true);
+                    LocalizationManager.Instance.JotunnLocalization.AddTranslation(tokenName, category.Key);
 
                     newNames.Add(LocalizationManager.Instance.TryTranslate(tokenName));
                     newTabs.Add(newTab);
@@ -496,12 +496,12 @@ namespace Jotunn.Managers
                 try
                 {
                     // Fix references if needed
-                    if (customPiece.FixReference)
+                    if (customPiece.FixReference | customPiece.FixConfig)
                     {
-                        customPiece.PiecePrefab.FixReferences();
+                        customPiece.PiecePrefab.FixReferences(customPiece.FixReference);
                         customPiece.FixReference = false;
+                        customPiece.FixConfig = false;
                     }
-
                     // Assign vfx_ExtensionConnection for StationExtensions
                     var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
                     if (extension != null && !extension.m_connectionPrefab)

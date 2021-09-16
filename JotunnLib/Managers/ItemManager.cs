@@ -341,11 +341,12 @@ namespace Jotunn.Managers
                     try
                     {
                         var itemDrop = customItem.ItemDrop;
-                        if (customItem.FixReference)
+                        if (customItem.FixReference | customItem.FixConfig)
                         {
-                            customItem.ItemPrefab.FixReferences();
+                            customItem.ItemPrefab.FixReferences(customItem.FixReference);
                             itemDrop.m_itemData.m_shared.FixReferences();
                             customItem.FixReference = false;
+                            customItem.FixConfig = false;
                         }
                         if (!itemDrop.m_itemData.m_dropPrefab)
                         {

@@ -2,54 +2,65 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BepInEx;
 using Jotunn.Configs;
+using Jotunn.Entities;
 using Jotunn.Utils;
 using UnityEngine;
+using Paths = Jotunn.Utils.Paths;
 
 namespace Jotunn.Managers
 {
-    /// <summary>
+    /// <summary> 
     ///     Manager for handling localizations for all custom content added to the game.
     /// </summary>
     public class LocalizationManager : IManager
     {
-        /// <summary>
+        /// <summary> 
+        ///     List where all data is collected.
+        /// </summary>
+        internal readonly List<CustomLocalization> Localizations = new List<CustomLocalization>();
+        
+        /// <summary> 
         ///     Your token must start with this character.
         /// </summary>
         public const char TokenFirstChar = '$';
 
-        /// <summary>
+        /// <summary> 
         ///     Default language of the game.
         /// </summary>
         public const string DefaultLanguage = "English";
 
-        /// <summary>
+        /// <summary> 
         ///     Name of the folder that will hold the custom .json translations files.
         /// </summary>
         public const string TranslationsFolderName = "Translations";
 
-        /// <summary>
+        /// <summary> 
         ///     Name of the community translation files that will be the first custom languages files loaded before any others.
         /// </summary>
         public const string CommunityTranslationFileName = "community_translation.json";
 
-        /// <summary>
-        ///     String of chars not allowed in a token string
+        /// <summary> 
+        ///     String of chars not allowed in a token string.
         /// </summary>
         internal const string ForbiddenChars = " (){}[]+-!?/\\\\&%,.:-=<>\n";
 
-        private static LocalizationManager _instance;
-        /// <summary>
+        /// <summary> 
+        ///     Array of chars not allowed in a token string.
+        /// </summary>
+        internal static readonly char[] ForbiddenCharsArr = ForbiddenChars.ToCharArray();
+
+        /// <summary> 
         ///     The singleton instance of this manager.
         /// </summary>
-        public static LocalizationManager Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new LocalizationManager();
-                return _instance;
-            }
-        }
+        public static LocalizationManager Instance => _instance ??= new LocalizationManager();
+        private static LocalizationManager _instance;
+
+        /// <summary> 
+        ///     Localizations for internal use.
+        /// </summary>
+        internal CustomLocalization JotunnLocalization = new CustomLocalization(Main.Instance.Info.Metadata);
 
         /// <summary>
         ///     Event that gets fired after all custom localization has been added to the game.
@@ -59,27 +70,27 @@ namespace Jotunn.Managers
         /// </summary>
         public static event Action OnLocalizationAdded;
 
-        /// <summary>
+        /// <summary> 
         ///     Call into unity's DoQuoteLineSplit.
         /// </summary>
         internal static Func<StringReader, List<List<string>>> DoQuoteLineSplit;
 
-        /// <summary>
-        ///     Dictionary holding all localizations.
-        /// </summary>
-        internal Dictionary<string, Dictionary<string, string>> Localizations = new Dictionary<string, Dictionary<string, string>>();
-
-        /// <summary>
+        /// <summary> 
         ///     Initialize localization manager.
         /// </summary>
         public void Init()
         {
             On.FejdStartup.SetupGui += LoadAndSetupModLanguages;
 
-            var doQuoteLineSplitMethodInfo = typeof(Localization).GetMethod(nameof(Localization.DoQuoteLineSplit), ReflectionHelper.AllBindingFlags);
-            DoQuoteLineSplit =
-                (Func<StringReader, List<List<string>>>) Delegate.CreateDelegate(typeof(Func<StringReader, List<List<string>>>), null,
-                    doQuoteLineSplitMethodInfo);
+            AddLocalization(JotunnLocalization);
+
+            DoQuoteLineSplit = (Func<StringReader, List<List<string>>>)
+                Delegate.CreateDelegate(
+                    typeof(Func<StringReader, List<List<string>>>),
+                    null,
+                    typeof(Localization).GetMethod(
+                        nameof(Localization.DoQuoteLineSplit),
+                        ReflectionHelper.AllBindingFlags));
         }
 
         // Some mod could have initialized Localization before all mods are loaded.
@@ -91,11 +102,14 @@ namespace Jotunn.Managers
             On.Localization.LoadLanguages += Localization_LoadLanguages;
             On.Localization.SetupLanguage += Localization_SetupLanguage;
 
-            List<string> tmplist = Localization.instance.m_languages.ToList();
-            tmplist.AddRange(Localization.instance.LoadLanguages());
-            tmplist = tmplist.Distinct().ToList();
+            var tmp = new HashSet<string>(Localization.instance.m_languages.ToList());
+            foreach (var language in Localization.instance.LoadLanguages())
+            {
+                tmp.Add(language);
+            }
+
             Localization.instance.m_languages.Clear();
-            Localization.instance.m_languages.AddRange(tmplist);
+            Localization.instance.m_languages.AddRange(tmp);
 
             Localization.instance.SetupLanguage(DefaultLanguage);
             string lang = PlayerPrefs.GetString("language", DefaultLanguage);
@@ -110,20 +124,28 @@ namespace Jotunn.Managers
             On.Localization.SetupLanguage -= Localization_SetupLanguage;
         }
 
+        private void InvokeOnLocalizationAdded()
+        {
+            OnLocalizationAdded?.SafeInvoke();
+        }
+
         private List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
         {
             var result = orig(self);
 
             Logger.LogInfo("Loading custom localizations");
 
-            AddLanguageFilesFromPluginFolder();
+            AutomaticLocalizationLoading();
 
             // Add in localized languages that do not yet exist
-            foreach (var language in Localizations.Keys.OrderBy(x => x))
+            foreach (var ct in Localizations)
             {
-                if (!result.Contains(language))
+                foreach (var language in ct.GetLanguages())
                 {
-                    result.Add(language);
+                    if (!result.Contains(language))
+                    {
+                        result.Add(language);
+                    }
                 }
             }
 
@@ -133,15 +155,22 @@ namespace Jotunn.Managers
         private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
         {
             var result = orig(self, language);
-            
-            // Only if we have translations for this language
-            if (Localizations.ContainsKey(language))
+
+            Logger.LogInfo($"Adding tokens for language '{language}'");
+
+            foreach (var ct in Localizations)
             {
-                Logger.LogInfo($"Adding tokens for language '{language}'");
-                
-                foreach (var pair in Localizations[language])
+                var langDic = ct.GetTranslations(language);
+                if (langDic == null)
                 {
-                    Logger.LogDebug("Added translation: " + pair.Key + " -> " + pair.Value);
+                    continue;
+                }
+
+                Logger.LogDebug($"Adding tokens for '{ct}'");
+
+                foreach (var pair in langDic)
+                {
+                    Logger.LogDebug($"Added translation: {pair.Key} -> {pair.Value}");
                     self.AddWord(pair.Key, pair.Value);
                 }
             }
@@ -149,296 +178,183 @@ namespace Jotunn.Managers
             return result;
         }
 
-        private void InvokeOnLocalizationAdded()
+        private void AutomaticLocalizationLoading()
         {
-            OnLocalizationAdded?.SafeInvoke();
+            static string GetDirName(in string str) => Path.GetDirectoryName(str);
+            var jsonFormat = new HashSet<string>();
+            var unityFormat = new HashSet<string>();
+
+            // Json format community files
+            var paths = Directory.GetFiles(Paths.LanguageTranslationsFolder, CommunityTranslationFileName, SearchOption.AllDirectories);
+            foreach (var path in paths)
+            {
+                if (GetDirName(GetDirName(path)).EndsWith(TranslationsFolderName))
+                {
+                    jsonFormat.Add(path);
+                }
+            }
+
+            paths = Directory.GetFiles(Paths.LanguageTranslationsFolder, "*.json", SearchOption.AllDirectories);
+            foreach (var path in paths)
+            {
+                if (GetDirName(GetDirName(path)).EndsWith(TranslationsFolderName))
+                {
+                    jsonFormat.Add(path);
+                }
+            }
+
+            paths = Directory.GetFiles(Paths.LanguageTranslationsFolder, "*.language", SearchOption.AllDirectories);
+            foreach (var path in paths)
+            {
+                unityFormat.Add(path);
+            }
+
+            foreach (var path in jsonFormat)
+            {
+                var mod = BepInExUtils.GetPluginInfoFromPath(path)?.Metadata;
+                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(path, true);
+            }
+            foreach (var path in unityFormat)
+            {
+                var mod = BepInExUtils.GetPluginInfoFromPath(path)?.Metadata;
+                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(path);
+            }
         }
 
         /// <summary>
+        ///     Add your mod's custom localization. Only one <see cref="CustomLocalization"/> can be added per mod.
+        /// </summary>
+        /// <param name="customLocalization">The localization to add.</param>
+        /// <returns>true if the custom localization was added to the manager.</returns>
+        public bool AddLocalization(CustomLocalization customLocalization)
+        {
+            if (Localizations.Any(x => x.SourceMod == customLocalization.SourceMod))
+            {
+                Logger.LogWarning($"{customLocalization} already added");
+                return false;
+            }
+
+            Localizations.Add(customLocalization);
+
+            return true;
+        }
+
+        /// <summary>
+        ///     Get the CustomLocalization for your mod.
+        ///     Creates a new <see cref="CustomLocalization"/> if no localization was added before.
+        /// </summary>
+        /// <returns>Existing or newly created <see cref="CustomLocalization"/>.</returns>
+        public CustomLocalization GetLocalization()
+        {
+            return GetLocalization(BepInExUtils.GetSourceModMetadata());
+        }
+        
+        /// <summary>
+        ///     Get the CustomLocalization for a given mod.
+        ///     Creates a new <see cref="CustomLocalization"/> if no localization was added before.
+        /// </summary>
+        /// <returns>Existing or newly created <see cref="CustomLocalization"/>.</returns>
+        internal CustomLocalization GetLocalization(BepInPlugin sourceMod)
+        {
+            var ret = Localizations.FirstOrDefault(ctx => ctx.SourceMod == sourceMod);
+
+            if (ret != null)
+            {
+                return ret;
+            }
+
+            ret = new CustomLocalization(sourceMod);
+            Localizations.Add(ret);
+            return ret;
+        }
+
+        /// <summary>
+        ///     Retrieve a translation if it's found in any CustomLocalization or <see cref="Localization.Translate"/>.
+        /// </summary>
+        /// <param name="word"> Word to translate. </param>
+        /// <returns> Translated word in player language or english as a fallback. </returns>
+        public string TryTranslate(string word)
+        {
+            var cleanedWord = word.TrimStart(TokenFirstChar);
+
+            foreach (var ct in Localizations)
+            {
+                var translation = ct.TryTranslate(word);
+                if (translation != null)
+                {
+                    return translation;
+                }
+            }
+            
+            return Localization.instance.Translate(cleanedWord);
+        }
+
+        #region Obsolete
+
+        /// <summary> 
         ///     Registers a new Localization for a language.
         /// </summary>
-        /// <param name="language">The language added</param>
-        /// <param name="localization">The localization for a language</param>
-        public void AddLocalization(string language, Dictionary<string, string> localization)
-        {
-            if (string.IsNullOrEmpty(language))
-            {
-                Logger.LogError("Error, localization had null or empty language");
-                return;
-            }
-
-            if (!Localizations.ContainsKey(language))
-            {
-                Localizations.Add(language, localization);
-            }
-            else
-            {
-                // Merge
-                foreach (var kv in localization)
-                {
-                    Localizations[language][kv.Key] = kv.Value;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Add localization config to existing localizations
-        /// </summary>
-        /// <param name="config"></param>
+        /// <param name="config"> Wrapper which contains a language and a Token-Value dictionary. </param>
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddLocalization(LocalizationConfig config)
-        {
-            AddLocalization(config.Language, config.Translations);
-        }
+            => GetLocalization().AddTranslation(config.Language, config.Translations);
 
-        /// <summary>
-        ///     Search for and add localization files.
+        /// <summary> 
+        ///     Registers a new Localization for a language.
         /// </summary>
-        private void AddLanguageFilesFromPluginFolder()
-        {
-            // First search for the community translation
-            var communityTranslationsFilePaths = new List<string>();
-            var languagePaths = Directory.GetFiles(Paths.LanguageTranslationsFolder, CommunityTranslationFileName, SearchOption.AllDirectories);
-            foreach (var path in languagePaths)
-            {
-                var isTranslationFile = Path.GetDirectoryName(Path.GetDirectoryName(path)).EndsWith(TranslationsFolderName);
-                if (isTranslationFile)
-                {
-                    AddPath(path, true);
-                    communityTranslationsFilePaths.Add(path);
-                }
-            }
+        /// <param name="language"> The language being added. </param>
+        /// <param name="localization"> Token-Value dictionary. </param>
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
+        public void AddLocalization(string language, Dictionary<string, string> localization)
+            => GetLocalization().AddTranslation(language, localization);
 
-            languagePaths = Directory.GetFiles(Paths.LanguageTranslationsFolder, "*.json", SearchOption.AllDirectories);
-            foreach (var path in languagePaths)
-            {
-                if (communityTranslationsFilePaths.Contains(path))
-                {
-                    continue;
-                }
-
-                var isTranslationFile = Path.GetDirectoryName(Path.GetDirectoryName(path)).EndsWith(TranslationsFolderName);
-                if (isTranslationFile)
-                {
-                    AddPath(path, true);
-                }
-            }
-
-            languagePaths = Directory.GetFiles(Paths.LanguageTranslationsFolder, "*.language", SearchOption.AllDirectories);
-            foreach (var path in languagePaths)
-            {
-                AddPath(path);
-            }
-        }
-
-        /// <summary>
-        ///     Add a token and its value to the specified language (default to "English").
-        /// </summary>
-        /// <param name="token">token / key</param>
-        /// <param name="value">value that will be printed in the game</param>
-        /// <param name="language">language ID for this token</param>
-        /// <param name="forceReplace">replace the token if it already exists</param>
-        public void AddToken(string token, string value, string language, bool forceReplace = false)
-        {
-            Dictionary<string, string> languageDict = null;
-
-            if (token.Any(x => ForbiddenChars.Contains(x)))
-            {
-                Logger.LogWarning($"Token '{token}' must not contain following chars: '{ForbiddenChars}'.");
-                return;
-            }
-
-            string cleanedToken = token.TrimStart(TokenFirstChar);
-
-            if (!forceReplace)
-            {
-                if (Localizations.TryGetValue(language, out languageDict))
-                {
-                    if (languageDict.Keys.Contains(cleanedToken))
-                    {
-                        Logger.LogWarning($"Token named '{cleanedToken}' already exist!");
-                        return;
-                    }
-                }
-            }
-
-            languageDict ??= GetLanguageDict(language);
-
-            languageDict.Remove(cleanedToken);
-            languageDict.Add(cleanedToken, value);
-        }
-
-        /// <summary>
+        /// <summary> 
         ///     Add a token and its value to the "English" language.
         /// </summary>
-        /// <param name="token">token / key</param>
-        /// <param name="value">value that will be printed in the game</param>
-        /// <param name="forceReplace">replace the token if it already exists</param>
+        /// <param name="token"> Token </param>
+        /// <param name="value"> Translation. </param>
+        /// <param name="forceReplace"> Replace the token if it already exists </param>
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddToken(string token, string value, bool forceReplace = false)
-        {
-            AddToken(token, value, DefaultLanguage, forceReplace);
-        }
+            => GetLocalization().AddTranslation(token, value);
 
-        /// <summary>
+        /// <summary> 
+        ///     Add a token and its value to the specified language (default to "English").
+        /// </summary>
+        /// <param name="token"> Token </param>
+        /// <param name="value"> Translation. </param>
+        /// <param name="language"> Language ID for this token. </param>
+        /// <param name="forceReplace"> Replace the token if it already exists </param>
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
+        public void AddToken(string token, string value, string language, bool forceReplace = false)
+            => GetLocalization().AddTranslation(language, token, value);
+
+        /// <summary> 
         ///     Add a file via absolute path.
         /// </summary>
-        /// <param name="path">Absolute path to file</param>
-        /// <param name="isJson">Is the language file a json file</param>
+        /// <param name="path"> Absolute path to file. </param>
+        /// <param name="isJson"> Is the language file a json file. </param>
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddPath(string path, bool isJson = false)
-        {
-            if (path == null)
-            {
-                throw new NullReferenceException($"param {nameof(path)} is null");
-            }
-
-            var fileContent = File.ReadAllText(path);
-            if (isJson)
-            {
-                var language = Path.GetFileName(Path.GetDirectoryName(path));
-                AddJson(language, fileContent);
-
-                Logger.LogDebug($"Added json language file: {Path.GetFileName(path)}");
-            }
-            else
-            {
-                AddLanguageFile(fileContent);
-                Logger.LogDebug($"Added language file: {Path.GetFileName(path)}");
-            }
-        }
-
-        /// <summary>
-        ///     Add a language file that matches Valheim's language format.
-        /// </summary>
-        /// <param name="fileContent">Entire file as string</param>
-        public void AddLanguageFile(string fileContent)
-        {
-            if (fileContent == null)
-            {
-                throw new NullReferenceException($"param {nameof(fileContent)} is null");
-            }
-
-            LoadLanguageFile(fileContent);
-        }
+            => GetLocalization().AddFileByPath(path, isJson);
 
         /// <summary>
         ///     Add a json language file (match crowdin format).
         /// </summary>
-        /// <param name="language">Language for the json file, for example, "English"</param>
-        /// <param name="fileContent">Entire file as string</param>
+        /// <param name="language"> Language for the json file, for example, "English" </param>
+        /// <param name="fileContent"> Entire file as string </param>
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
         public void AddJson(string language, string fileContent)
-        {
-            if (fileContent == null)
-            {
-                throw new NullReferenceException($"param {nameof(fileContent)} is null");
-            }
-
-            LoadJsonLanguageFile(language, fileContent);
-        }
+            => GetLocalization().AddJsonFile(language, fileContent);
 
         /// <summary>
-        ///     Tries to translate a word with the custom dictionary or <see cref="Localization.Translate"/>,
-        ///     handles null and tokenized input.
+        ///     Add a language file that matches Valheim's language format.
         /// </summary>
-        /// <param name="word">Single word to translate</param>
-        /// <returns>Translated word in Player language or english as a fallback</returns>
-        public string TryTranslate(string word)
-        {
-            var toTranslate = word;
+        /// <param name="fileContent"> Entire file as string </param>
+        [Obsolete("Use AddLocalization(CustomLocalization) instead")]
+        public void AddLanguageFile(string fileContent)
+            => GetLocalization().AddLanguageFile(fileContent);
 
-            if (string.IsNullOrEmpty(toTranslate))
-            {
-                return null;
-            }
-
-            if (toTranslate[0] == TokenFirstChar)
-            {
-                toTranslate = toTranslate.Substring(1);
-            }
-
-            string playerLang = PlayerPrefs.GetString("language", string.Empty);
-            if (!string.IsNullOrEmpty(playerLang) &&
-                Localizations.ContainsKey(playerLang) &&
-                Localizations[playerLang].TryGetValue(word, out string translated))
-            {
-                return translated;
-            }
-
-            if (Localizations.ContainsKey(DefaultLanguage) &&
-                Localizations[DefaultLanguage].TryGetValue(word, out string fallback))
-            {
-                return fallback;
-            }
-
-            return Localization.instance.Translate(toTranslate);
-        }
-
-        /// <summary>
-        ///     Load Unity style language file.
-        /// </summary>
-        /// <param name="fileContent"></param>
-        private void LoadLanguageFile(string fileContent)
-        {
-            var stringReader = new StringReader(fileContent);
-            var languages = stringReader.ReadLine().Split(',');
-
-            foreach (var keyAndValues in DoQuoteLineSplit(stringReader))
-            {
-                if (keyAndValues.Count != 0)
-                {
-                    var token = keyAndValues[0];
-                    if (!token.StartsWith("//") && token.Length != 0)
-                    {
-                        for (var i = 0; i < languages.Length; i++)
-                        {
-                            var language = languages[i];
-
-                            var tokenValue = keyAndValues[i];
-                            if (string.IsNullOrEmpty(tokenValue) || tokenValue[0] == '\r')
-                            {
-                                tokenValue = keyAndValues[1];
-                            }
-
-                            var languageDict = GetLanguageDict(language);
-                            languageDict[token]= tokenValue;
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Get the dictionary for a specific language.
-        /// </summary>
-        /// <param name="language"></param>
-        /// <returns></returns>
-        private Dictionary<string, string> GetLanguageDict(string language)
-        {
-            if (!Localizations.ContainsKey(language))
-            {
-                Localizations.Add(language, new Dictionary<string, string>());
-            }
-
-            return Localizations[language];
-        }
-
-        /// <summary>
-        ///     Load community translation file.
-        /// </summary>
-        /// <param name="language"></param>
-        /// <param name="fileContent"></param>
-        private void LoadJsonLanguageFile(string language, string fileContent)
-        {
-            var languageDict = GetLanguageDict(language);
-
-            var json = (IDictionary<string, object>) SimpleJson.SimpleJson.DeserializeObject(fileContent);
-
-            foreach (var pair in json)
-            {
-                var token = pair.Key;
-                var tokenValue = pair.Value;
-
-                languageDict.Remove(token);
-                languageDict.Add(token, (string) tokenValue);
-            }
-        }
+        #endregion
     }
 }

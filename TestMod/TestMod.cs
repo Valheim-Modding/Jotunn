@@ -15,6 +15,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
+using Random = System.Random;
 
 namespace TestMod
 {
@@ -52,11 +53,17 @@ namespace TestMod
         private ConfigEntry<bool> EnableVersionMismatch;
         private ConfigEntry<bool> EnableExtVersionMismatch;
 
+        private CustomLocalization Localization;
+
         // Load, create and init your custom mod stuff
         private void Awake()
         {
             // Show DateTime on Logs
             //Jotunn.Logger.ShowDate = true;
+            
+            // Create a custom Localization and add it to the Manager
+            Localization = new CustomLocalization();
+            LocalizationManager.Instance.AddLocalization(Localization);
 
             // Create stuff
             CreateConfigValues();
@@ -81,6 +88,9 @@ namespace TestMod
 
             // Clone an item with variants and replace them
             PrefabManager.OnVanillaPrefabsAvailable += AddVariants;
+            
+            // Create a custom item with variants
+            PrefabManager.OnVanillaPrefabsAvailable += AddCustomVariants;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -149,6 +159,38 @@ namespace TestMod
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
+                }
+
+                // Spawn goblin with a variant sword
+                if (Player.m_localPlayer != null && Input.GetKeyDown(KeyCode.J))
+                {
+                    var pre = PrefabManager.Instance.GetPrefab("GoblinArcher");
+                    var go = Object.Instantiate(pre, 
+                        Player.m_localPlayer.transform.position + GameCamera.instance.transform.forward * 2f + Vector3.up, 
+                        Quaternion.Euler(GameCamera.instance.transform.forward));
+                    Object.Destroy(go.GetComponent<MonsterAI>());
+
+                    var rand = new Random();
+
+                    int swordrand = rand.Next(0, 6);
+                    if (swordrand < 4)
+                    {
+                        var sword = Object.Instantiate(PrefabManager.Instance.GetPrefab("item_swordvariants"))
+                            .GetComponent<ItemDrop>().m_itemData;
+                        sword.m_variant = swordrand;
+                        go.GetComponent<Humanoid>().m_rightItem = sword;
+                    }
+
+                    int shieldrand = rand.Next(0, 10);
+                    if (shieldrand < 4)
+                    {
+                        var shield = Object.Instantiate(PrefabManager.Instance.GetPrefab("item_lulvariants"))
+                            .GetComponent<ItemDrop>().m_itemData;
+                        shield.m_variant = shieldrand;
+                        go.GetComponent<Humanoid>().m_leftItem = shield;
+                    }
+
+                    Jotunn.Logger.LogMessage($"Rolled sword {swordrand} shield {shieldrand}");
                 }
             }
         }
@@ -313,7 +355,7 @@ namespace TestMod
                             // Piece name
                             GUIManager.Instance.CreateText($"{piece}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
@@ -331,7 +373,7 @@ namespace TestMod
                             // Piece name
                             GUIManager.Instance.CreateText($"{item}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
                         }
                     }
@@ -349,8 +391,30 @@ namespace TestMod
                             // Command name
                             GUIManager.Instance.CreateText($"{command}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                GUIManager.Instance.AveriaSerifBold, 20, Color.white,
+                                GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
+                        }
+                    }
+
+                    if (mod.Translations.Any())
+                    {
+                        // Translations title
+                        GUIManager.Instance.CreateText("Translations:",
+                            viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                            GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
+                            true, Color.black, 650f, 30f, false);
+
+                        foreach (var translation in mod.Translations)
+                        {
+                            foreach (var tokenvalue in translation.GetTranslations(
+                                PlayerPrefs.GetString("language", "English")))
+                            {
+                                // Token - Value
+                                GUIManager.Instance.CreateText($"{tokenvalue.Key}: {tokenvalue.Value}",
+                                    viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                                    GUIManager.Instance.AveriaSerifBold, 16, Color.white,
+                                    true, Color.black, 650f, 30f, false);
+                            }
                         }
                     }
                 }
@@ -540,32 +604,26 @@ namespace TestMod
         private void AddLocalizations()
         {
             // Add translations for the custom item in AddClonedItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
-                    {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
-                    {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
-                    {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
-                    {"evilsword_effectstop", "You feel nice again"}
-                }
+                {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
+                {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
+                {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
+                {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
+                {"evilsword_effectstop", "You feel nice again"}
             });
 
             // Add translations for the custom piece in AddPieceCategories
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
-                    { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
-                }
+                { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
+                { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
             });
 
             // Add translations for the custom variant in AddClonedItems
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
-                }
+                { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
             });
         }
 
@@ -727,7 +785,7 @@ namespace TestMod
 
             // Create and add custom pieces
             var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
-            var makebp = new CustomPiece(makebp_prefab,
+            var makebp = new CustomPiece(makebp_prefab, fixReference: false,
                 new PieceConfig
                 {
                     PieceTable = "_BlueprintTestTable",
@@ -736,7 +794,7 @@ namespace TestMod
             PieceManager.Instance.AddPiece(makebp);
 
             var placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
-            var placebp = new CustomPiece(placebp_prefab,
+            var placebp = new CustomPiece(placebp_prefab, fixReference: false,
                 new PieceConfig
                 {
                     PieceTable = "_BlueprintTestTable",
@@ -754,7 +812,7 @@ namespace TestMod
             foreach (var textAsset in textAssets)
             {
                 var lang = textAsset.name.Replace(".json", null);
-                LocalizationManager.Instance.AddJson(lang, textAsset.ToString());
+                Localization.AddJsonFile(lang, textAsset.ToString());
             }
 
             // Override "default" KeyHint with an empty config
@@ -790,11 +848,9 @@ namespace TestMod
             GUIManager.Instance.AddKeyHint(KHC_piece);
 
             // Add additional localization manually
-            LocalizationManager.Instance.AddLocalization(new LocalizationConfig("English")
+            Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                Translations = {
-                    {"bprune_make", "Capture Blueprint"}, {"bprune_piece", "Place Blueprint"}
-                }
+                { "bprune_make", "Capture Blueprint"}, { "bprune_piece", "Place Blueprint"}
             });
 
             // Don't forget to unload the bundle to free the resources
@@ -845,6 +901,12 @@ namespace TestMod
 
                 assetBundle.Unload(false);
             }
+
+            // Load completely mocked "Shit Sword" (Cheat Sword copy)
+            var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword", typeof(TestMod).Assembly);
+            var cheaty = cheatybundle.LoadAsset<GameObject>("Cheaty");
+            ItemManager.Instance.AddItem(new CustomItem(cheaty, fixReference: true));
+            cheatybundle.Unload(false);
         }
 
         // Adds Kitbashed pieces
@@ -933,15 +995,17 @@ namespace TestMod
                     // We've added a CapsuleCollider to the skeleton, this is no longer needed
                     Object.Destroy(kitbashObject.Prefab.transform.Find("new/pivot/default").GetComponent<MeshCollider>());
                 };
-                PieceManager.Instance.AddPiece(new CustomPiece(kitbashObject.Prefab, new PieceConfig
-                {
-                    PieceTable = "Hammer",
-                    Requirements = new RequirementConfig[]
-                    {
-                        new RequirementConfig { Item = "Obsidian" , Recover = true},
-                        new RequirementConfig { Item = "Bronze", Recover = true }
-                    }
-                }));
+                PieceManager.Instance.AddPiece(
+                    new CustomPiece(kitbashObject.Prefab, fixReference: false,
+                        new PieceConfig
+                        {
+                            PieceTable = "Hammer",
+                            Requirements = new RequirementConfig[]
+                            {
+                                new RequirementConfig { Item = "Obsidian" , Recover = true},
+                                new RequirementConfig { Item = "Bronze", Recover = true }
+                            }
+                        }));
             }
             finally
             {
@@ -1099,10 +1163,6 @@ namespace TestMod
                 {
                     Name = "$lulz_shield",
                     Description = "$lulz_shield_desc",
-                    Requirements = new RequirementConfig[]
-                    {
-                        new RequirementConfig{ Item = "Wood", Amount = 1 }
-                    },
                     Icons = new Sprite[]
                     {
                         var1, var2
@@ -1119,6 +1179,64 @@ namespace TestMod
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
                 PrefabManager.OnVanillaPrefabsAvailable -= AddVariants;
+            }
+        }
+        
+        private void AddCustomVariants()
+        {
+            try
+            {
+                Sprite var1 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var1.png");
+                Sprite var2 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var2.png");
+                Sprite var3 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var3.png");
+                Sprite var4 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var4.png");
+                Texture2D styleTex = AssetUtils.LoadTexture("TestMod/Assets/test_varpaint.png");
+
+                CustomItem sword = new CustomItem("item_swordvariants", "SwordBronze", new ItemConfig
+                {
+                    Name = "Lulz Sword",
+                    Description = "Lulz on a stick",
+                    Icons = new Sprite[]
+                    {
+                        var1, var2, var3, var4
+                    },
+                    StyleTex = styleTex
+                });
+                ItemManager.Instance.AddItem(sword);
+                
+                CustomItem cape = new CustomItem("item_lulzcape", "CapeLinen", new ItemConfig
+                {
+                    Name = "Lulz Cape",
+                    Description = "Lulz to the rescue",
+                    Icons = new Sprite[]
+                    {
+                        var1, var2, var3, var4
+                    },
+                    StyleTex = styleTex
+                });
+                ItemManager.Instance.AddItem(cape);
+                
+                Texture2D styleTexArmor = AssetUtils.LoadTexture("TestMod/Assets/test_varpaintarmor.png");
+                CustomItem chest = new CustomItem("item_lulzchest", "ArmorIronChest", new ItemConfig
+                {
+                    Name = "Lulz Armor",
+                    Description = "Lol, that hit",
+                    Icons = new Sprite[]
+                    {
+                        var1, var2, var3, var4
+                    },
+                    StyleTex = styleTexArmor
+                });
+                ItemManager.Instance.AddItem(chest);
+            }
+            catch (Exception ex)
+            {
+                Jotunn.Logger.LogError($"Error while adding variant item: {ex}");
+            }
+            finally
+            {
+                // You want that to run only once, Jotunn has the item cached for the game session
+                PrefabManager.OnVanillaPrefabsAvailable -= AddCustomVariants;
             }
         }
 

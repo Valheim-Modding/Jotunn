@@ -345,9 +345,7 @@ namespace Jotunn.Managers
                     colorImage.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
                     foreach (Text pickerTxt in colorPicker.GetComponentsInChildren<Text>(true))
                     {
-                        pickerTxt.font = AveriaSerifBold;
-                        pickerTxt.color = ValheimOrange;
-                        pickerTxt.gameObject.AddComponent<Outline>().effectColor = Color.black;
+                        ApplyTextStyle(pickerTxt, ValheimOrange, pickerTxt.fontSize);
                     }
                     foreach (InputField pickerInput in colorPicker.GetComponentsInChildren<InputField>(true))
                     {
@@ -371,9 +369,7 @@ namespace Jotunn.Managers
                     gradientImage.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
                     foreach (Text pickerTxt in gradientPicker.GetComponentsInChildren<Text>(true))
                     {
-                        pickerTxt.font = AveriaSerifBold;
-                        pickerTxt.color = ValheimOrange;
-                        pickerTxt.gameObject.AddComponent<Outline>().effectColor = Color.black;
+                        ApplyTextStyle(pickerTxt, ValheimOrange, pickerTxt.fontSize);
                     }
                     foreach (InputField pickerInput in gradientPicker.GetComponentsInChildren<InputField>(true))
                     {
@@ -1182,11 +1178,6 @@ namespace Jotunn.Managers
         {
             GameObject go = new GameObject("Text", typeof(RectTransform), typeof(Text));
 
-            if (outline)
-            {
-                go.AddComponent<Outline>().effectColor = outlineColor;
-            }
-
             var tf = go.GetComponent<RectTransform>();
             tf.anchorMin = anchorMin;
             tf.anchorMax = anchorMax;
@@ -1200,11 +1191,16 @@ namespace Jotunn.Managers
             {
                 go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             }
+
             var txt = go.GetComponent<Text>();
-            txt.font = font;
-            txt.color = color;
-            txt.fontSize = fontSize;
             txt.text = text;
+
+            ApplyTextStyle(txt, font, color, fontSize, outline);
+
+            if (go.TryGetComponent<Outline>(out var outlineComponent))
+            {
+                outlineComponent.effectColor = outlineColor;
+            }
 
             go.transform.SetParent(parent, false);
 
@@ -1411,10 +1407,10 @@ namespace Jotunn.Managers
             button.GetComponent<Button>().image = button.GetComponent<Image>();
             button.GetComponent<Image>().sprite = GetSprite("text_field");
 
-            var bindString = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleCenter();
-            bindString.GetComponent<Text>().text = "";
-            bindString.GetComponent<Text>().font = AveriaSerifBold;
-            bindString.GetComponent<Text>().color = new Color(1, 1, 1, 1);
+            var bindString = new GameObject("Text", typeof(RectTransform), typeof(Text)).SetMiddleCenter();
+            Text textComponent = bindString.GetComponent<Text>();
+            ApplyTextStyle(textComponent, textComponent.fontSize);
+            textComponent.text = "";
 
             bindString.SetToTextHeight().SetWidth(button.GetComponent<RectTransform>().rect.width);
             bindString.SetMiddleLeft().GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
@@ -1446,6 +1442,51 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Apply Valheim style to a <see cref="Text"/> Component
+        /// </summary>
+        /// <param name="text">Target component</param>
+        /// <param name="font">Own font or <code>GUIManager.Instance.AveriaSerifBold</code>/<code>GUIManager.Instance.AveriaSerif</code></param>
+        /// <param name="color">Custom color or <code>GUIManager.Instance.ValheimOrange</code></param>
+        /// <param name="createOutline">creates an <see cref="Outline"/> component when true</param>
+        /// <param name="fontSize">Optional font size, defaults to 16</param>
+        public void ApplyTextStyle(Text text, Font font, Color color, int fontSize = 16, bool createOutline = true)
+        {
+            text.font = font;
+            text.fontSize = fontSize;
+            text.color = color;
+
+            if (createOutline)
+            {
+                Outline outline = text.gameObject.GetOrAddComponent<Outline>();
+                outline.effectColor = Color.black;
+            }
+        }
+
+        /// <summary>
+        ///     Apply Valheim style to a <see cref="Text"/> Component.
+        ///     Uses <code>GUIManager.Instance.AveriaSerifBold</code> by default
+        /// </summary>
+        /// <param name="text">Target component</param>
+        /// <param name="color">Custom color or <code>GUIManager.Instance.ValheimOrange</code></param>
+        /// <param name="createOutline">creates an <see cref="Outline"/> component when true</param>
+        /// <param name="fontSize">Optional font size, defaults to 16</param>
+        public void ApplyTextStyle(Text text, Color color, int fontSize = 16, bool createOutline = true)
+        {
+            ApplyTextStyle(text, AveriaSerifBold, color, fontSize, createOutline);
+        }
+
+        /// <summary>
+        ///     Apply Valheim style to a <see cref="Text"/> Component.
+        ///     Uses <code>GUIManager.Instance.AveriaSerifBold</code>, <code>Color.white</code> and creates an outline by default
+        /// </summary>
+        /// <param name="text">Target component</param>
+        /// <param name="fontSize">Optional font size, defaults to 16</param>
+        public void ApplyTextStyle(Text text, int fontSize = 16)
+        {
+            ApplyTextStyle(text, AveriaSerifBold, Color.white, fontSize, true);
+        }
+
+        /// <summary>
         ///     Apply valheim style to a <see cref="Button"/> Component
         /// </summary>
         /// <param name="button">Component to apply the style to</param>
@@ -1466,31 +1507,25 @@ namespace Jotunn.Managers
             {
                 sfx = go.AddComponent<ButtonSfx>();
             }
+
             sfx.m_sfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_button");
             sfx.m_selectSfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_select");
 
             // Colors
             go.GetComponent<Button>().colors = ValheimButtonColorBlock;
-            
+
             // Text
-            var txt = go.GetComponentInChildren<Text>()?.gameObject;
+            var txt = go.GetComponentInChildren<Text>();
 
             if (!txt)
             {
                 return;
             }
 
-            Text txtComponent = txt.GetComponent<Text>();
-            txtComponent.font = AveriaSerifBold;
-            txtComponent.fontSize = fontSize;
-            txtComponent.color = new Color(1f, 0.631f, 0.235f, 1f);
-            txtComponent.alignment = TextAnchor.MiddleCenter;
-
-            // Text Outline
-            Outline outline = txt.GetOrAddComponent<Outline>();
-            outline.effectColor = Color.black;
+            ApplyTextStyle(txt, ValheimOrange, fontSize);
+            txt.alignment = TextAnchor.MiddleCenter;
         }
-        
+
         /// <summary>
         ///     Apply Valheim style to an <see cref="InputField"/> Component.
         /// </summary>
@@ -1523,18 +1558,12 @@ namespace Jotunn.Managers
                 placeholder.color = Color.grey;
                 placeholder.fontSize = fontSize;
             }
-            
+
             // Text
             if (field.textComponent)
             {
-                field.textComponent.font = AveriaSerifBold;
-                field.textComponent.color = Color.white;
-                field.textComponent.fontSize = fontSize;
+                ApplyTextStyle(field.textComponent, fontSize);
             }
-            
-            // Text Outline
-            Outline outline = field.textComponent.gameObject.GetOrAddComponent<Outline>();
-            outline.effectColor = Color.black;
         }
 
         /// <summary>
@@ -1569,20 +1598,14 @@ namespace Jotunn.Managers
         public void ApplyDropdownStyle(Dropdown dropdown, int fontSize = 16)
         {
             // Dropdown
-            if (dropdown.captionText is Text captionText)
+            if (dropdown.captionText)
             {
-                captionText.font = AveriaSerifBold;
-                captionText.fontSize = fontSize;
-                captionText.color = Color.white;
-                captionText.gameObject.GetOrAddComponent<Outline>().effectColor = Color.black;
+                ApplyTextStyle(dropdown.captionText, fontSize);
             }
 
-            if (dropdown.itemText is Text itemText)
+            if (dropdown.itemText)
             {
-                itemText.font = AveriaSerifBold;
-                itemText.fontSize = fontSize;
-                itemText.color = Color.white;
-                itemText.gameObject.GetOrAddComponent<Outline>().effectColor = Color.black;
+                ApplyTextStyle(dropdown.itemText, fontSize);
             }
 
             if (dropdown.TryGetComponent<Image>(out var dropdownImage))

@@ -53,9 +53,9 @@ namespace Jotunn.Managers
             AddConsoleCommand(new HelpCommand());
             AddConsoleCommand(new ClearCommand());
 
-            IL.Console.InputText += GatherVanillaCommands;
+            IL.Terminal.InputText += GatherVanillaCommands;
 
-            On.Console.InputText += HandleCustomCommands;
+            On.Terminal.InputText += HandleCustomCommands;
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private void HandleCustomCommands(On.Console.orig_InputText orig, Console self)
+        private void HandleCustomCommands(On.Terminal.orig_InputText orig, Terminal self)
         {
             orig(self);
 

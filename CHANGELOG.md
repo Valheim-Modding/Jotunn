@@ -1,5 +1,21 @@
 ﻿# Changelog
 
+## Version 2.3.0
+* Basic H&H compatibility. Looks like everything works but problems might still arise
+* __Please report any problems you encounter, preferably on our Discord__
+* Added possibility to traverse child GameObjects when resolving mocks (FixReference = true)
+* Mock references added via Config are resolved automatically, set FixReference = false if your actual GO does not use mocks
+* __Check your mod's items and pieces if they really need FixReference set to true__
+* Fundamentally refactored the Localization system - mods can and should add a CustomLocalization wrapper for all mod specific localization from now on
+* Localization is stored per mod, so you can create / add only one custom localization instance, which behaves like the LocalizationManager in older releases
+* Marked the old API obsolete, __existing mods are encouraged to adapt the new system__
+* See https://valheim-modding.github.io/Jotunn/tutorials/localization.html for more information about the new localization system
+* Added ApplyTextStyle to GUIManager (thx MSchmoecker)
+* Enabled item style variants for items which do not support variants in vanilla (e.g. swords or armor)
+
+## Version 2.2.9
+* Fixed compat errors
+
 ## Version 2.2.8
 * Added global mod registry, collecting added entities per mod
 * Added entity CustomPrefab including the possibility to let Jötunn fix mock references
