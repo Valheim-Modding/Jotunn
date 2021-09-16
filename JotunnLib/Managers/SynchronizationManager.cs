@@ -232,7 +232,7 @@ namespace Jotunn.Managers
             orig(self);
 
             // Check if it really is the admin list
-            if (self == ZNet.instance.m_adminList)
+            if (ZNet.instance != null && self == ZNet.instance.m_adminList)
             {
                 SynchronizeAdminStatus();
             }
@@ -248,7 +248,7 @@ namespace Jotunn.Managers
             orig(self);
 
             // Check if it really is the admin list
-            if (self == ZNet.instance.m_adminList)
+            if (ZNet.instance != null && self == ZNet.instance.m_adminList)
             {
                 SynchronizeAdminStatus();
             }
