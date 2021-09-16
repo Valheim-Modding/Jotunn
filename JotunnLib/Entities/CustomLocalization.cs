@@ -193,14 +193,17 @@ namespace Jotunn.Entities
                 return;
             }
 
-            var json = (IDictionary<string, object>)SimpleJson.SimpleJson.DeserializeObject(fileContent);
+            if (!SimpleJson.SimpleJson.TryDeserializeObject(fileContent, out var json))
+            {
+                Logger.LogWarning($"Error cought while reading JSON localization: Invalid JSON string");
+            }
 
             if (!Map.ContainsKey(language))
             {
                 Map.Add(language, new Dictionary<string, string>());
             }
 
-            foreach (var tv in json)
+            foreach (var tv in json as IDictionary<string, object>)
             {
                 var translation = tv.Value as string;
                 var token = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
