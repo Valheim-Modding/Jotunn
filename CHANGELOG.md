@@ -1,6 +1,8 @@
 ﻿# Changelog
 
 ## Version 2.3.0
+* Basic H&H compatibility. Looks like everything works but problems might still arise
+* __Please report any problems you encounter, preferably on our Discord__
 * Added possibility to traverse child GameObjects when resolving mocks (FixReference = true)
 * Mock references added via Config are resolved automatically, set FixReference = false if your actual GO does not use mocks
 * __Check your mod's items and pieces if they really need FixReference set to true__
