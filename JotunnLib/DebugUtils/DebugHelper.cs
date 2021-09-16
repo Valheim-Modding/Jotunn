@@ -15,7 +15,7 @@ namespace Jotunn.DebugUtils
             Main.RootObject.AddComponent<ZNetDiddelybug>();
             Main.RootObject.AddComponent<ZoneCounter>();
 
-            On.Console.Awake += (orig, self) => { orig(self); self.m_cheat = true; };
+            On.Terminal.Awake += (orig, self) => { orig(self); Terminal.m_cheat = true; };
             On.Player.OnSpawned += (orig, self) => { self.m_firstSpawn = false; orig(self); };
             On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch;
         }
