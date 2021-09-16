@@ -109,6 +109,7 @@ jobs:
           git add JotunnLib/Main.cs
           git commit -m "deploy: Released ${{ steps.get_version.outputs.VERSION }}"
           git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn HEAD:dev
+          git push https://${{ secrets.PUSH_TO_PROTECTED_BRANCH }}@github.com/Valheim-Modding/Jotunn dev:prod
 
       - name: Build solution
         run: |
