@@ -2,6 +2,7 @@
 
 ## Version 2.3.1
 * Added support for double values in the mod settings
+* Collected new H&H dumps at https://valheim-modding.github.io/Jotunn/data/intro.html
 
 ## Version 2.3.0
 * Basic H&H compatibility. Looks like everything works but problems might still arise
