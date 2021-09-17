@@ -456,6 +456,34 @@ namespace Jotunn.GUI
                         });
                         preferredHeight += go.GetHeight();
                     }
+                    else if (entry.Value.SettingType == typeof(double))
+                    {
+                        var description = entry.Value.Description.Description;
+                        if (entry.Value.Description.AcceptableValues != null)
+                        {
+                            description += Environment.NewLine + "(" +
+                                           entry.Value.Description.AcceptableValues.ToDescriptionString().TrimStart('#')
+                                               .Trim() + ")";
+                        }
+
+                        // Create input field double
+                        var go = CreateTextInputField(contentViewport,
+                            entry.Key.Key + ":",
+                            entryAttributes.EntryColor,
+                            description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
+                            entryAttributes.DescriptionColor, innerWidth);
+                        go.AddComponent<ConfigBoundDouble>()
+                            .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                        go.transform.Find("Input").GetComponent<InputField>().characterValidation =
+                            InputField.CharacterValidation.Decimal;
+                        SetProperties(go.GetComponent<ConfigBoundDouble>(), entry);
+                        go.transform.Find("Input").GetComponent<InputField>().onValueChanged.AddListener(x =>
+                        {
+                            go.transform.Find("Input").GetComponent<InputField>().textComponent.color =
+                                go.GetComponent<ConfigBoundDouble>().IsValid() ? Color.white : Color.red;
+                        });
+                        preferredHeight += go.GetHeight();
+                    }
                     else if (entry.Value.SettingType == typeof(KeyCode) &&
                              ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
                     {
@@ -1107,6 +1135,54 @@ namespace Jotunn.GUI
             }
 
             internal override void SetValue(float value)
+            {
+                gameObject.transform.Find("Input").GetComponent<InputField>().text = value.ToString("F3");
+            }
+
+            public override void SetEnabled(bool enabled)
+            {
+                gameObject.transform.Find("Input").GetComponent<InputField>().enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
+                gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
+            }
+        }
+
+        /// <summary>
+        ///     Double binding
+        /// </summary>
+        internal class ConfigBoundDouble : ConfigBound<double>
+        {
+            internal override double GetValueFromConfig()
+            {
+                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
+                var entry = pluginConfig[Section, Key];
+                return (double)entry.BoxedValue;
+            }
+
+            public override void SetValueInConfig(double value)
+            {
+                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
+                var entry = pluginConfig[Section, Key] as ConfigEntry<double>;
+                entry.Value = value;
+            }
+
+            public override double GetValue()
+            {
+                double temp;
+                var text = gameObject.transform.Find("Input").GetComponent<InputField>();
+                if (!double.TryParse(text.text, NumberStyles.Number, CultureInfo.CurrentCulture.NumberFormat, out temp))
+                {
+                    temp = Default;
+                }
+
+                return temp;
+            }
+
+            internal override void SetValue(double value)
             {
                 gameObject.transform.Find("Input").GetComponent<InputField>().text = value.ToString("F3");
             }
