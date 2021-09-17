@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Jotunn.Entities;
-using Jotunn.ConsoleCommands;
-using System.Text.RegularExpressions;
 using System.Linq;
-using MonoMod.Cil;
-using Mono.Cecil.Cil;
-using Mono.Cecil;
+using System.Text.RegularExpressions;
+using Jotunn.ConsoleCommands;
+using Jotunn.Entities;
 
 namespace Jotunn.Managers
 {
@@ -30,14 +27,6 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     The console commands that are built-in to Valheim. These cannot be changed or overriden, and
-        ///     no other commands can be declared with the same names as these.
-        /// </summary>
-        public static ReadOnlyCollection<string> VanillaCommands => _vanillaCommands.AsReadOnly();
-
-        private static List<string> _vanillaCommands = new List<string>();
-
-        /// <summary>
         ///     A list of all the custom console commands that have been added to the game through this manager,
         ///     either by Jotunn or by mods using Jotunn.
         /// </summary>
@@ -53,8 +42,7 @@ namespace Jotunn.Managers
             AddConsoleCommand(new HelpCommand());
             AddConsoleCommand(new ClearCommand());
 
-            IL.Terminal.InputText += GatherVanillaCommands;
-
+            On.Console.Awake += AddCustomCommands;
             On.Terminal.InputText += HandleCustomCommands;
         }
 
@@ -64,60 +52,41 @@ namespace Jotunn.Managers
         /// <param name="cmd">The console command to add</param>
         public void AddConsoleCommand(ConsoleCommand cmd)
         {
-            // Cannot override vanilla commands
-            if (_vanillaCommands.Contains(cmd.Name))
-            {
-                Logger.LogError($"Cannot override vanilla command: {cmd.Name}");
-                return;
-            }
-
             // Cannot have two commands with same name
             if (_customCommands.Exists(c => c.Name == cmd.Name))
             {
-                Logger.LogError($"Cannot have two console commands with same name: {cmd.Name}");
+                Logger.LogWarning($"Cannot have two console commands with same name: {cmd.Name}");
                 return;
             }
 
             // Cannot have command with space in it
             if (cmd.Name.Contains(" "))
             {
-                Logger.LogError($"Cannot have command containing space: '{cmd.Name}'");
+                Logger.LogWarning($"Cannot have command containing space: '{cmd.Name}'");
                 return;
             }
 
             _customCommands.Add(cmd);
         }
-
-        private static void GatherVanillaCommands(ILContext il)
+        
+        private void AddCustomCommands(On.Console.orig_Awake orig, Console self)
         {
-            var c = new ILCursor(il);
+            orig(self);
 
-            foreach (var i in c.Instrs)
+            if (_customCommands.Any())
             {
-                if (i.OpCode == OpCodes.Ldstr)
+                Logger.LogInfo($"Adding {_customCommands.Count} commands to the Console");
+
+                foreach (var cmd in _customCommands)
                 {
-                    var str = (string)i.Operand;
-
-                    bool IsACmd(Instruction i)
+                    // Cannot override vanilla commands
+                    if (self.m_commandList.Contains(cmd.Name))
                     {
-                        if (i.Next.OpCode == OpCodes.Call || i.Next.OpCode == OpCodes.Callvirt)
-                        {
-                            var methodReference = (MethodReference)i.Next.Operand;
-                            var methodName = methodReference.Name;
-                            if (methodName == nameof(string.StartsWith) ||
-                                methodName == "op_Equality")
-                            {
-                                return true;
-                            }
-                        }
-
-                        return false;
+                        Logger.LogWarning($"Cannot override vanilla command: {cmd.Name}");
+                        return;
                     }
 
-                    if (IsACmd(i))
-                    {
-                        _vanillaCommands.Add(str.Trim());
-                    }
+                    self.m_commandList.Add(cmd.Name);
                 }
             }
         }

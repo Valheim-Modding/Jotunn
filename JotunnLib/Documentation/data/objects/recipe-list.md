@@ -38,13 +38,16 @@ Recipe_AxeIron|Iron axe|1|<ul><li>4 Wood</li><li>20 Iron</li><li>2 Leather scrap
 Recipe_AxeStone|Stone axe|1|<ul><li>5 Wood</li><li>4 Stone</li></ul>|
 Recipe_BarleyWineBase|Barley wine base: Fire resistance|1|<ul><li>10 Barley</li><li>10 Cloudberries</li></ul>|
 Recipe_Battleaxe|Battleaxe|1|<ul><li>30 Ancient bark</li><li>35 Iron</li><li>4 Leather scraps</li></ul>|
+Recipe_Battleaxe_Crystal|Crystal battleaxe|1|<ul><li>40 Ancient bark</li><li>30 Silver</li><li>10 Crystal</li></ul>|
+Recipe_Blacksoup|Black soup|1|<ul><li>1 Bloodbag</li><li>1 Honey</li><li>1 Turnip</li></ul>|
 Recipe_BloodPudding|Blood pudding|1|<ul><li>2 Thistle</li><li>2 Bloodbag</li><li>4 Barley flour</li></ul>|
-Recipe_BombOoze|Ooze bomb|5|<ul><li>5 Leather scraps</li><li>10 Ooze</li><li>3 Resin</li></ul>|
+Recipe_BoarJerky|Boar jerky|2|<ul><li>1 Boar meat</li><li>1 Honey</li></ul>|
+Recipe_BombOoze|Ooze bomb|5|<ul><li>5 Leather scraps</li><li>5 Ooze</li><li>3 Resin</li></ul>|
 Recipe_Bow|Crude bow|1|<ul><li>10 Wood</li><li>8 Leather scraps</li><li>0 Deer hide</li></ul>|
 Recipe_BowDraugrFang|Draugr fang|1|<ul><li>10 Ancient bark</li><li>20 Silver</li><li>2 Deer hide</li><li>10 Guck</li></ul>|
 Recipe_BowFineWood|Finewood bow|1|<ul><li>10 Fine wood</li><li>10 Core wood</li><li>2 Deer hide</li></ul>|
 Recipe_BowHuntsman|Huntsman bow|1|<ul><li>10 Fine wood</li><li>20 Iron</li><li>10 Feathers</li><li>2 Deer hide</li></ul>|
-Recipe_Bread|Bread|1|<ul><li>10 Barley flour</li></ul>|
+Recipe_Bread|Bread dough|2|<ul><li>10 Barley flour</li></ul>|
 Recipe_Bronze|Bronze|1|<ul><li>2 Copper</li><li>1 Tin</li></ul>|
 Recipe_Bronze5|Bronze|5|<ul><li>10 Copper</li><li>5 Tin</li></ul>|
 Recipe_BronzeNails|Bronze nails|20|<ul><li>1 Bronze</li></ul>|
@@ -58,6 +61,8 @@ Recipe_CarrotSoup|Carrot soup|1|<ul><li>1 Mushroom</li><li>3 Carrot</li></ul>|
 Recipe_Chisel|NULL|1|<ul><li>3 Wood</li><li>1 Iron</li></ul>|
 Recipe_Club|Club|1|<ul><li>6 Wood</li><li>0 Bone fragments</li></ul>|
 Recipe_Cultivator|Cultivator|1|<ul><li>5 Core wood</li><li>5 Bronze</li></ul>|
+Recipe_DeerStew|Deer stew|1|<ul><li>1 Cooked deer meat</li><li>1 Blueberries</li><li>1 Carrot</li></ul>|
+Recipe_Eyescream|Eyescream|1|<ul><li>3 Greydwarf eye</li><li>1 Freeze gland</li></ul>|
 Recipe_FishWraps|Fish wraps|1|<ul><li>2 Cooked fish</li><li>4 Barley flour</li></ul>|
 Recipe_Hammer|Hammer|1|<ul><li>3 Wood</li><li>2 Stone</li></ul>|
 Recipe_HelmetBronze|Bronze helmet|1|<ul><li>5 Bronze</li><li>2 Deer hide</li></ul>|
@@ -70,10 +75,12 @@ Recipe_HelmetTrollLeather|Troll leather helmet|1|<ul><li>5 Troll hide</li><li>3 
 Recipe_Hoe|Hoe|1|<ul><li>5 Wood</li><li>2 Stone</li></ul>|
 Recipe_IronNails|Iron nails|10|<ul><li>1 Iron</li></ul>|
 Recipe_KnifeBlackmetal|Blackmetal knife|1|<ul><li>4 Fine wood</li><li>10 Black metal</li><li>5 Linen thread</li></ul>|
+Recipe_KnifeButcher|Butcher knife|1|<ul><li>2 Wood</li><li>4 Tin</li></ul>|
 Recipe_KnifeChitin|Abyssal razor|1|<ul><li>4 Fine wood</li><li>20 Chitin</li><li>2 Leather scraps</li></ul>|
 Recipe_KnifeCopper|Copper knife|1|<ul><li>2 Wood</li><li>8 Copper</li><li>0 Greydwarf eye</li></ul>|
 Recipe_KnifeFlint|Flint knife|1|<ul><li>2 Wood</li><li>4 Flint</li><li>2 Leather scraps</li></ul>|
-Recipe_LoxPie|Lox meat pie|1|<ul><li>2 Cloudberries</li><li>2 Cooked lox meat</li><li>4 Barley flour</li></ul>|
+Recipe_KnifeSilver|Silver knife|1|<ul><li>2 Wood</li><li>10 Silver</li><li>3 Leather scraps</li><li>2 Iron</li></ul>|
+Recipe_LoxPie|Unbaked lox pie|1|<ul><li>2 Cloudberries</li><li>2 Lox meat</li><li>4 Barley flour</li></ul>|
 Recipe_MaceBronze|Bronze mace|1|<ul><li>4 Wood</li><li>8 Bronze</li><li>3 Leather scraps</li></ul>|
 Recipe_MaceIron|Iron mace|1|<ul><li>4 Wood</li><li>20 Iron</li><li>3 Leather scraps</li></ul>|
 Recipe_MaceNeedle|Porcupine|1|<ul><li>5 Fine wood</li><li>20 Iron</li><li>5 Needle</li><li>10 Linen thread</li></ul>|
@@ -85,26 +92,32 @@ Recipe_MeadBasePoisonResist|Mead base: Poison resistance|1|<ul><li>10 Honey</li>
 Recipe_MeadBaseStaminaMedium|Mead base: Medium stamina|1|<ul><li>10 Honey</li><li>10 Cloudberries</li><li>10 Yellow mushroom</li></ul>|
 Recipe_MeadBaseStaminaMinor|Mead base: Minor stamina|1|<ul><li>10 Honey</li><li>10 Raspberries</li><li>10 Yellow mushroom</li></ul>|
 Recipe_MeadBaseTasty|Mead base: Tasty|1|<ul><li>10 Honey</li><li>10 Raspberries</li><li>5 Blueberries</li></ul>|
+Recipe_MinceMeatSauce|Minced Meat Sauce|1|<ul><li>1 Boar meat</li><li>1 Neck tail</li><li>1 Carrot</li></ul>|
+Recipe_Onionsoup|Onion soup|1|<ul><li>3 Onion</li></ul>|
 Recipe_PickaxeAntler|Antler pickaxe|1|<ul><li>10 Wood</li><li>1 Hard antler</li></ul>|
 Recipe_PickaxeBronze|Bronze pickaxe|1|<ul><li>3 Core wood</li><li>10 Bronze</li></ul>|
 Recipe_PickaxeIron|Iron pickaxe|1|<ul><li>3 Core wood</li><li>20 Iron</li></ul>|
 Recipe_PickaxeStone|Stone pickaxe|1|<ul><li>3 Wood</li><li>10 Stone</li></ul>|
 Recipe_PotionHealthMinor|Minor healing mead|1|<ul><li>1 Mushroom</li><li>1 Blueberries</li><li>1 Dandelion</li></ul>|
 Recipe_PotionStaminaMinor|Minor stamina mead|1|<ul><li>1 Yellow mushroom</li><li>1 Raspberries</li><li>1 Honey</li></ul>|
-Recipe_QueensJam|Queens jam|4|<ul><li>8 Raspberries</li><li>8 Blueberries</li></ul>|
-Recipe_Sausages|Sausages|4|<ul><li>2 Entrails</li><li>1 Raw meat</li><li>4 Thistle</li></ul>|
+Recipe_QueensJam|Queens jam|4|<ul><li>8 Raspberries</li><li>6 Blueberries</li></ul>|
+Recipe_SadleLox|Lox saddle|1|<ul><li>10 Leather scraps</li><li>20 Linen thread</li><li>15 Black metal</li></ul>|
+Recipe_Sausages|Sausages|4|<ul><li>4 Entrails</li><li>1 Boar meat</li><li>1 Thistle</li></ul>|
 Recipe_SerpentStew|Serpent stew|1|<ul><li>1 Mushroom</li><li>1 Cooked serpent meat</li><li>2 Honey</li></ul>|
 Recipe_SharpeningStone|Sharpening stone|1|<ul><li>5 Stone</li></ul>|
 Recipe_ShieldBanded|Banded shield|1|<ul><li>10 Fine wood</li><li>8 Iron</li></ul>|
 Recipe_ShieldBlackmetal|Black metal shield|1|<ul><li>10 Fine wood</li><li>8 Black metal</li><li>5 Chain</li></ul>|
 Recipe_ShieldBlackmetalTower|Black metal tower shield|1|<ul><li>15 Fine wood</li><li>10 Black metal</li><li>7 Chain</li></ul>|
+Recipe_ShieldBoneTower|Bone tower shield|1|<ul><li>10 Wood</li><li>10 Bone fragments</li><li>3 Skeleton trophy</li></ul>|
 Recipe_ShieldBronzeBuckler|Bronze buckler|1|<ul><li>10 Bronze</li><li>4 Wood</li></ul>|
+Recipe_ShieldIronBuckler|Iron buckler|1|<ul><li>10 Iron</li><li>4 Ancient bark</li></ul>|
 Recipe_ShieldIronSquare|Iron shield|1|<ul><li>10 Fine wood</li><li>6 Iron</li></ul>|
 Recipe_ShieldIronTower|Iron tower shield|1|<ul><li>15 Fine wood</li><li>10 Iron</li></ul>|
 Recipe_ShieldSerpentscale|Serpent scale shield|1|<ul><li>10 Fine wood</li><li>4 Iron</li><li>8 Serpent scale</li></ul>|
 Recipe_ShieldSilver|Silver shield|1|<ul><li>10 Fine wood</li><li>8 Silver</li></ul>|
 Recipe_ShieldWood|Wood shield|1|<ul><li>10 Wood</li><li>4 Resin</li><li>4 Leather scraps</li></ul>|
 Recipe_ShieldWoodTower|Wood tower shield|1|<ul><li>10 Wood</li><li>6 Leather scraps</li></ul>|
+Recipe_ShocklateSmoothie|Muckshake|1|<ul><li>1 Ooze</li><li>2 Raspberries</li><li>2 Blueberries</li></ul>|
 Recipe_SledgeIron|Iron sledge|1|<ul><li>10 Ancient bark</li><li>30 Iron</li><li>4 Ymir flesh</li><li>1 Draugr Elite trophy</li></ul>|
 Recipe_SledgeStagbreaker|Stagbreaker|1|<ul><li>20 Core wood</li><li>5 Deer trophy</li><li>2 Leather scraps</li><li>0 Bone fragments</li></ul>|
 Recipe_SpearBronze|Bronze spear|1|<ul><li>5 Wood</li><li>6 Bronze</li><li>2 Deer hide</li></ul>|
@@ -120,4 +133,6 @@ Recipe_SwordSilver|Silver sword|1|<ul><li>2 Wood</li><li>40 Silver</li><li>3 Lea
 Recipe_Tankard|Tankard|1|<ul><li>5 Fine wood</li><li>2 Resin</li></ul>|
 Recipe_TankardOdin|Mead horn of Odin|1|<ul><li>4 Fine wood</li><li>1 Deer trophy</li><li>2 Resin</li></ul>|
 Recipe_Torch|Torch|1|<ul><li>1 Wood</li><li>1 Resin</li></ul>|
-Recipe_TurnipStew|Turnip stew|1|<ul><li>1 Raw meat</li><li>3 Turnip</li></ul>|
+Recipe_TurnipStew|Turnip stew|1|<ul><li>1 Boar meat</li><li>3 Turnip</li></ul>|
+Recipe_WolfJerky|Wolf jerky|2|<ul><li>1 Wolf meat</li><li>1 Honey</li></ul>|
+Recipe_WolfSkewer|Wolf skewer|1|<ul><li>1 Wolf meat</li><li>2 Mushroom</li><li>1 Onion</li></ul>|

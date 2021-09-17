@@ -28,6 +28,11 @@ BuildPrev|Q||False|
 BuildNext|E||False|
 BuildMenu|Mouse1||False|
 Remove|Mouse2||False|
+AutoPickup|V||False|
+ScrollChatUp|PageUp||False|
+ScrollChatDown|PageDown||False|
+ChatUp|UpArrow||False|
+ChatDown|DownArrow||False|
 JoyUse|JoystickButton0||True|
 JoyHide|JoystickButton9||True|
 JoyJump|JoystickButton1||True|
@@ -63,3 +68,4 @@ JoyLTrigger|None|JoyAxis 3|True|
 JoyRTrigger|None|JoyAxis 3|True|
 JoyLStick|JoystickButton8||True|
 JoyRStick|JoystickButton9||True|
+DebugDeleteObject!com.jotunn.jotunn|KeypadMinus||False|

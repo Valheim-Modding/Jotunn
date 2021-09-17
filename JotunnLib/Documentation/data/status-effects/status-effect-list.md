@@ -6,6 +6,7 @@ Object |Name |Category |
 SetEffect_TrollArmor|Sneaky|NULL|
 Potion_barleywine|Fire resistance barley wine|NULL|
 BeltStrength|Megingjord|NULL|
+Tared|Tared|NULL|
 GoblinShaman_shield|GD Heal|NULL|
 SE_Greydwarf_shaman_heal|GD Heal|NULL|
 Potion_frostresist|Frost resistance mead|NULL|
@@ -14,6 +15,7 @@ Potion_health_minor|Minor healing mead|healthpotion|
 Potion_poisonresist|Poison resistance mead|NULL|
 Potion_stamina_medium|Medium stamina mead|staminapotion|
 Potion_stamina_minor|Minor stamina mead|staminapotion|
-Potion_tasty|Mead|NULL|
+Potion_tasty|Tasty mead|NULL|
+Puke|Feeling sick|NULL|
 Harpooned|Harpooned|NULL|
 Wishbone|Wishbone|NULL|
