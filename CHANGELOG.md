@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.3.1
+* Added support for double values in the mod settings
+
 ## Version 2.3.0
 * Basic H&H compatibility. Looks like everything works but problems might still arise
 * __Please report any problems you encounter, preferably on our Discord__
