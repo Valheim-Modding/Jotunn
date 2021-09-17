@@ -96,3 +96,5 @@ These people have been integral to pushing JVL out of the door, and without them
 *MarcoPogo#6095*: [github](https://github.com/MathiasDecrock), [nexus](https://www.nexusmods.com/users/3030830?tab=user+files)
 
 *blaxxun#9098*: [github](https://github.com/blaxxun-boop) - Creator of the superb [ServerSync](https://github.com/blaxxun-boop/ServerSync) mod which Jötunn adapted
+
+*Tekla#1012*: [github](https://github.com/T3kla/ValMods/wiki)
