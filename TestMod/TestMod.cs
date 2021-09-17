@@ -509,32 +509,46 @@ namespace TestMod
             // Add server config which gets pushed to all clients connecting and can only be edited by admins
             // In local/single player games the player is always considered the admin
             Config.Bind(JotunnTestModConfigSection, "StringValue1", "StringValue",
-                new ConfigDescription("Server side string", null, new ConfigurationManagerAttributes { IsAdminOnly = true }));
+                new ConfigDescription("Server side string", null, 
+                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "FloatValue1", 750f,
-                new ConfigDescription("Server side float", new AcceptableValueRange<float>(500, 1000),
+                new ConfigDescription("Server side float", 
+                    new AcceptableValueRange<float>(500f, 1000f),
+                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind(JotunnTestModConfigSection, "DoubleValue1", 20d,
+                new ConfigDescription("Server side integer", 
+                    new AcceptableValueRange<double>(5d, 25d), 
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "IntegerValue1", 200,
-                new ConfigDescription("Server side integer", new AcceptableValueRange<int>(5, 25), new ConfigurationManagerAttributes { IsAdminOnly = true }));
+                new ConfigDescription("Server side integer", 
+                    new AcceptableValueRange<int>(5, 25), 
+                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             // Test Color value support
             Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
-                new ConfigDescription("Server side Color", null, new ConfigurationManagerAttributes() { IsAdminOnly = true }));
+                new ConfigDescription("Server side Color", null, 
+                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             // Test colored text configs
             Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
-                new ConfigDescription("Server side bool", null, new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
+                new ConfigDescription("Server side bool", null, 
+                    new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
 
             // Test invisible configs
             Config.Bind(JotunnTestModConfigSection, "InvisibleInt", 150,
-                new ConfigDescription("Invisible int, testing browsable=false", null, new ConfigurationManagerAttributes() { Browsable = false }));
+                new ConfigDescription("Invisible int, testing browsable=false", null, 
+                    new ConfigurationManagerAttributes() { Browsable = false }));
 
             // Add client config to test ModCompatibility
-            EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, new ConfigDescription("Enable to test ModCompatibility module"));
-            EnableExtVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableExtVersionMismatch), false, new ConfigDescription("Enable to test external version mismatch"));
+            EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, 
+                new ConfigDescription("Enable to test ModCompatibility module"));
+            EnableExtVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableExtVersionMismatch), false, 
+                new ConfigDescription("Enable to test external version mismatch"));
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
-            EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+            EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, 
+                new ConfigDescription("Key to unleash evil with the Evil Sword"));
 
             // Test KeyboardShortcut
             Config.Bind<KeyboardShortcut>(JotunnTestModConfigSection, "KeyboardShortcutValue",
