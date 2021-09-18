@@ -46,8 +46,8 @@ namespace Jotunn.Managers
         internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private Piece.PieceCategory PieceCategoryMax = Piece.PieceCategory.Max;
 
-        private const float PieceCategorySize = 540f;
-        private const float PieceCategoryTabSize = 120f;
+        private const float PieceCategorySize = 700f;
+        private const float PieceCategoryTabSize = 150f;
 
         /// <summary>
         ///     Creates the piece table container and registers all hooks.
@@ -441,6 +441,7 @@ namespace Jotunn.Managers
             foreach (GameObject go in newTabs)
             {
                 go.SetMiddleLeft();
+                go.SetWidth(PieceCategoryTabSize);
                 RectTransform tf = go.transform as RectTransform;
                 tf.anchoredPosition = new Vector2(offset, 0f);
                 offset += PieceCategoryTabSize;
