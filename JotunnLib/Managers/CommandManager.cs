@@ -39,11 +39,10 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            AddConsoleCommand(new HelpCommand());
             AddConsoleCommand(new ClearCommand());
 
             On.Console.Awake += AddCustomCommands;
-            On.Terminal.InputText += HandleCustomCommands;
+            //On.Terminal.InputText += HandleCustomCommands;
         }
 
         /// <summary>
@@ -76,22 +75,28 @@ namespace Jotunn.Managers
             if (_customCommands.Any())
             {
                 Logger.LogInfo($"Adding {_customCommands.Count} commands to the Console");
-
+                
                 foreach (var cmd in _customCommands)
                 {
                     // Cannot override vanilla commands
                     if (self.m_commandList.Contains(cmd.Name))
                     {
-                        Logger.LogWarning($"Cannot override vanilla command: {cmd.Name}");
+                        Logger.LogWarning($"Cannot override existing command: {cmd.Name}");
                         return;
                     }
 
-                    self.m_commandList.Add(cmd.Name);
+                    // Add to the vanilla system
+                    new Terminal.ConsoleCommand(cmd.Name, cmd.Help, args =>
+                    {
+                        cmd.Run(args.Args.Skip(1).ToArray());
+                    });
                 }
+
+                self.updateCommandList();
             }
         }
 
-        private void HandleCustomCommands(On.Terminal.orig_InputText orig, Terminal self)
+        /*private void HandleCustomCommands(On.Terminal.orig_InputText orig, Terminal self)
         {
             orig(self);
 
@@ -124,6 +129,6 @@ namespace Jotunn.Managers
 
                 cmd.Run(args);
             }
-        }
+        }*/
     }
 }
