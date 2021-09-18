@@ -2,6 +2,7 @@
 
 ## Version 2.3.2
 * Adapted the custom piece categories to the new width
+* Inject custom commands into the new Terminal system
 
 ## Version 2.3.1
 * Added support for double values in the mod settings
