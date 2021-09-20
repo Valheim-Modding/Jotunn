@@ -20,11 +20,15 @@ internal class TestMod : BaseUnityPlugin
 
 The compatibility levels define if your mod has to be loaded on both sides and if your mod's version must be checked by Jötunn.
 
-**NoNeedForSync:** The compatibility check ignores if the mod is installed or not and also does not check the version at all. VersionStrictness value is ignored.
+**NotEnforced:** The compatibility check ignores if the mod is installed or not and also does not check the version at all. VersionStrictness value is ignored.
 
-**OnlySyncWhenInstalled:** The compatibility check ignores the mod if it is not installed on both sides. If it is installed on both sides the version is checked according to the VersionStrictness value.
+**VersionCheckOnly:** The compatibility check ignores the mod if it is not installed on both sides. If it is installed on both sides the version is checked according to the VersionStrictness value.
 
 **EveryoneMustHaveMod:** It is checked if the mod is installed and if the version matches the requirements of the VersionStrictness value.
+
+**ClientMustHaveMod:** If the mod is installed on the server, every client must have it, too. VersionStrictness does apply when installed on both sides.
+
+**ServerMustHaveMod:** If the mod is installed on the client, the server must have it, too. VersionStrictness does apply when installed on both sides.
 
 ## Version Strictness
 
