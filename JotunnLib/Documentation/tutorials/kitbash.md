@@ -94,7 +94,7 @@ new KitbashSourceConfig
 We now have all the KitbashSourceConfigs we need, so we can put it all together:
 
 ```cs
-var simpleKitbashPiece = new CustomPiece("piece_simple_kitbash", "Hammer"); 
+var simpleKitbashPiece = new CustomPiece("piece_simple_kitbash", true, "Hammer"); 
 var piece = simpleKitbashPiece.Piece;
 piece.m_icon = testSprite; 
 simpleKitbashPiece.FixReference = true;
