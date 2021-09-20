@@ -138,10 +138,10 @@ namespace Jotunn.Utils
             if (!ZNet.instance.IsClientInstance())
             {
                 ClientVersions[sender.m_socket.GetEndPointString()] = data;
-                var clientVersion = new ModuleVersionData(ClientVersions[sender.GetSocket().GetEndPointString()]);
-                var serverVersion = new ModuleVersionData(GetEnforcableMods().ToList());
+                var serverData = new ModuleVersionData(GetEnforcableMods().ToList());
+                var clientData = new ModuleVersionData(data);
 
-                if (!clientVersion.Equals(serverVersion))
+                if (!CompareVersionData(serverData, clientData))
                 {
                     // Disconnect if mods are not network compatible
                     sender.Invoke("Error", 3);
@@ -151,6 +151,79 @@ namespace Jotunn.Utils
             {
                 LastServerVersion = data;
             }
+        }
+
+        private static bool CompareVersionData(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            if (ReferenceEquals(serverData, clientData))
+            {
+                return true;
+            }
+
+            if (!Equals(serverData.ValheimVersion, clientData.ValheimVersion))
+            {
+                return false;
+            }
+
+            // Check server enforced mods
+            foreach (var module in serverData.Modules.Where(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod || x.Item3 == CompatibilityLevel.ClientMustHaveMod))
+            {
+                if (!clientData.Modules.Any(x => x.Item1 == module.Item1 && x.Item3 == module.Item3))
+                {
+                    return false;
+                }
+            }
+            
+            // Check client enforced mods
+            foreach (var module in clientData.Modules.Where(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod || x.Item3 == CompatibilityLevel.ServerMustHaveMod))
+            {
+                if (!serverData.Modules.Any(x => x.Item1 == module.Item1 && x.Item3 == module.Item3))
+                {
+                    return false;
+                }
+            }
+            
+            // Compare modules
+            foreach (var serverModule in serverData.Modules)
+            {
+                if (serverModule.Item3 == CompatibilityLevel.NoNeedForSync || serverModule.Item3 == CompatibilityLevel.NotEnforced)
+                {
+                    continue;
+                }
+
+                var clientModule = clientData.Modules.FirstOrDefault(x => x.Item1 == serverModule.Item1);
+
+                if (clientModule == null && 
+                    (serverModule.Item3 != CompatibilityLevel.OnlySyncWhenInstalled || serverModule.Item3 == CompatibilityLevel.VersionCheckOnly))
+                {
+                    return false;
+                }
+                
+                if (clientModule == null)
+                {
+                    return false;
+                }
+
+                if (serverModule.Item2.Major != clientModule.Item2.Major &&
+                    (serverModule.Item4 >= VersionStrictness.Major || clientModule.Item4 >= VersionStrictness.Major))
+                {
+                    return false;
+                }
+
+                if (serverModule.Item2.Minor != clientModule.Item2.Minor &&
+                    (serverModule.Item4 >= VersionStrictness.Minor || clientModule.Item4 >= VersionStrictness.Minor))
+                {
+                    return false;
+                }
+
+                if (serverModule.Item2.Build != clientModule.Item2.Build &&
+                    (serverModule.Item4 >= VersionStrictness.Patch || clientModule.Item4 >= VersionStrictness.Patch))
+                {
+                    return false;
+                }
+            }
+            
+            return true;
         }
 
         /// <summary>
@@ -220,52 +293,60 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Create the error message(s) from the server and client message data
         /// </summary>
-        /// <param name="server">server data</param>
-        /// <param name="client">client data</param>
+        /// <param name="serverData">server data</param>
+        /// <param name="clientData">client data</param>
         /// <returns></returns>
-        private static IEnumerable<Tuple<Color, string>> CreateErrorMessage(ModuleVersionData server, ModuleVersionData client)
+        private static IEnumerable<Tuple<Color, string>> CreateErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
             // Check Valheim version first
-            if (server.ValheimVersion != client.ValheimVersion)
+            if (serverData.ValheimVersion != clientData.ValheimVersion)
             {
                 yield return new Tuple<Color, string>(Color.red, "Valheim version error:");
-                if (server.ValheimVersion > client.ValheimVersion)
+                if (serverData.ValheimVersion > clientData.ValheimVersion)
                 {
-                    yield return new Tuple<Color, string>(Color.white, $"Please update your client to version {server.ValheimVersion}");
+                    yield return new Tuple<Color, string>(Color.white, $"Please update your client to version {serverData.ValheimVersion}");
                 }
 
-                if (server.ValheimVersion < client.ValheimVersion)
+                if (serverData.ValheimVersion < clientData.ValheimVersion)
                 {
                     yield return new Tuple<Color, string>(Color.white,
-                        $"The server you tried to connect runs {server.ValheimVersion}, which is lower than your version ({client.ValheimVersion})");
+                        $"The server you tried to connect runs {serverData.ValheimVersion}, which is lower than your version ({clientData.ValheimVersion})");
                     yield return new Tuple<Color, string>(Color.white, "Please contact the server admin for a server update." + Environment.NewLine);
                 }
             }
-
+            
             // And then each module
-            foreach (var module in server.Modules)
+            foreach (var serverModule in serverData.Modules)
             {
                 // Check first for missing modules on the client side
-                if (module.Item3 == CompatibilityLevel.EveryoneMustHaveMod)
+                if (serverModule.Item3 == CompatibilityLevel.EveryoneMustHaveMod || serverModule.Item3 == CompatibilityLevel.ClientMustHaveMod)
                 {
-                    if (client.Modules.All(x => x.Item1 != module.Item1))
+                    if (clientData.Modules.All(x => x.Item1 != serverModule.Item1))
                     {
                         // client is missing needed module
                         yield return new Tuple<Color, string>(Color.red, "Missing mod:");
-                        yield return new Tuple<Color, string>(Color.white, $"Please install mod {module.Item1} v{module.Item2}" + Environment.NewLine);
+                        yield return new Tuple<Color, string>(Color.white, $"Please install mod {serverModule.Item1} v{serverModule.Item2}" + Environment.NewLine);
+                        continue;
+                    }
+
+                    if (!clientData.Modules.Any(x => x.Item1 == serverModule.Item1 && x.Item3 == serverModule.Item3))
+                    {
+                        // module is there but mod compat level is lower
+                        yield return new Tuple<Color, string>(Color.red, "Compatibility level mismatch:");
+                        yield return new Tuple<Color, string>(Color.white, $"Please update mod {serverModule.Item1} version v{serverModule.Item2}." + Environment.NewLine);
                         continue;
                     }
                 }
 
                 // Then all version checks
-                var clientModule = client.Modules.First(x => x.Item1 == module.Item1);
+                var clientModule = clientData.Modules.First(x => x.Item1 == serverModule.Item1);
 
                 // Major
-                if (module.Item4 >= VersionStrictness.Major || clientModule.Item4 >= VersionStrictness.Major)
+                if (serverModule.Item4 >= VersionStrictness.Major || clientModule.Item4 >= VersionStrictness.Major)
                 {
-                    if (module.Item2.Major > clientModule.Item2.Major)
+                    if (serverModule.Item2.Major > clientModule.Item2.Major)
                     {
-                        foreach (var messageLine in ClientVersionLowerMessage(module))
+                        foreach (var messageLine in ClientVersionLowerMessage(serverModule))
                         {
                             yield return messageLine;
                         }
@@ -273,9 +354,9 @@ namespace Jotunn.Utils
                         continue;
                     }
 
-                    if (module.Item2.Major < clientModule.Item2.Major)
+                    if (serverModule.Item2.Major < clientModule.Item2.Major)
                     {
-                        foreach (var messageLine in ServerVersionLowerMessage(module, clientModule))
+                        foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
                         {
                             yield return messageLine;
                         }
@@ -284,11 +365,11 @@ namespace Jotunn.Utils
                     }
 
                     // Minor
-                    if (module.Item4 >= VersionStrictness.Minor || clientModule.Item4 >= VersionStrictness.Minor)
+                    if (serverModule.Item4 >= VersionStrictness.Minor || clientModule.Item4 >= VersionStrictness.Minor)
                     {
-                        if (module.Item2.Minor > clientModule.Item2.Minor)
+                        if (serverModule.Item2.Minor > clientModule.Item2.Minor)
                         {
-                            foreach (var messageLine in ClientVersionLowerMessage(module))
+                            foreach (var messageLine in ClientVersionLowerMessage(serverModule))
                             {
                                 yield return messageLine;
                             }
@@ -296,9 +377,9 @@ namespace Jotunn.Utils
                             continue;
                         }
 
-                        if (module.Item2.Minor < clientModule.Item2.Minor)
+                        if (serverModule.Item2.Minor < clientModule.Item2.Minor)
                         {
-                            foreach (var messageLine in ServerVersionLowerMessage(module, clientModule))
+                            foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
                             {
                                 yield return messageLine;
                             }
@@ -308,11 +389,11 @@ namespace Jotunn.Utils
                     }
 
                     // Patch
-                    if (module.Item4 >= VersionStrictness.Patch || clientModule.Item4 >= VersionStrictness.Patch)
+                    if (serverModule.Item4 >= VersionStrictness.Patch || clientModule.Item4 >= VersionStrictness.Patch)
                     {
-                        if (module.Item2.Build > clientModule.Item2.Build)
+                        if (serverModule.Item2.Build > clientModule.Item2.Build)
                         {
-                            foreach (var messageLine in ClientVersionLowerMessage(module))
+                            foreach (var messageLine in ClientVersionLowerMessage(serverModule))
                             {
                                 yield return messageLine;
                             }
@@ -320,9 +401,9 @@ namespace Jotunn.Utils
                             continue;
                         }
 
-                        if (module.Item2.Build < clientModule.Item2.Build)
+                        if (serverModule.Item2.Build < clientModule.Item2.Build)
                         {
-                            foreach (var messageLine in ServerVersionLowerMessage(module, clientModule))
+                            foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
                             {
                                 yield return messageLine;
                             }
@@ -332,18 +413,26 @@ namespace Jotunn.Utils
             }
 
             // Now lets find additional modules with NetworkCompatibility attribute in the client's list
-            foreach (var module in client.Modules.Where(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod))
+            foreach (var clientModule in clientData.Modules.Where(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod || x.Item3 == CompatibilityLevel.ServerMustHaveMod))
             {
-                if (server.Modules.All(x => x.Item1 != module.Item1))
+                if (serverData.Modules.All(x => x.Item1 != clientModule.Item1))
                 {
                     yield return new Tuple<Color, string>(Color.red, "Additional mod detected:");
                     yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
-                        $"Mod {module.Item1} v{module.Item2} is not installed on the server.");
+                        $"Mod {clientModule.Item1} v{clientModule.Item2} is not installed on the server.");
                     yield return new Tuple<Color, string>(Color.white, "Please consider uninstalling this mod." + Environment.NewLine);
+                    continue;
+                }
+
+                if (!serverData.Modules.Any(x => x.Item1 == clientModule.Item1 && x.Item3 == clientModule.Item3))
+                {
+                    yield return new Tuple<Color, string>(Color.red, "Compatibility level mismatch:");
+                    yield return new Tuple<Color, string>(Color.white, $"Please update mod {clientModule.Item1} version v{clientModule.Item2} on the server." + Environment.NewLine);
+                    continue;
                 }
             }
         }
-
+        
         /// <summary>
         ///     Generate message for client's mod version lower than server's version
         /// </summary>
@@ -398,7 +487,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Deserialize version string into a usable format.
         /// </summary>
-        private class ModuleVersionData : IEquatable<ModuleVersionData>
+        private class ModuleVersionData
         {
             /// <summary>
             ///     Create from module data
@@ -452,105 +541,6 @@ namespace Jotunn.Utils
                 new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
 
 
-            /// <inheritdoc />
-            public bool Equals(ModuleVersionData other)
-            {
-                if (ReferenceEquals(null, other))
-                {
-                    return false;
-                }
-
-                if (ReferenceEquals(this, other))
-                {
-                    return true;
-                }
-
-                if (!Equals(ValheimVersion, other.ValheimVersion))
-                {
-                    return false;
-                }
-
-                // Check if server modules exist on client side 
-                foreach (var module in Modules)
-                {
-                    if (module.Item3 == CompatibilityLevel.NoNeedForSync)
-                    {
-                        continue;
-                    }
-
-                    var otherModule = other.Modules.FirstOrDefault(x => x.Item1 == module.Item1);
-
-                    if (otherModule == null && module.Item3 == CompatibilityLevel.OnlySyncWhenInstalled)
-                    {
-                        continue;
-                    }
-
-                    if (otherModule == null)
-                    {
-                        return false;
-                    }
-
-                    if (module.Item2.Major != otherModule.Item2.Major &&
-                        (module.Item4 >= VersionStrictness.Major || otherModule.Item4 >= VersionStrictness.Major))
-                    {
-                        return false;
-                    }
-
-                    if (module.Item2.Minor != otherModule.Item2.Minor &&
-                        (module.Item4 >= VersionStrictness.Minor || otherModule.Item4 >= VersionStrictness.Minor))
-                    {
-                        return false;
-                    }
-
-                    if (module.Item2.Build != otherModule.Item2.Build &&
-                        (module.Item4 >= VersionStrictness.Patch || otherModule.Item4 >= VersionStrictness.Patch))
-                    {
-                        return false;
-                    }
-                }
-
-                // Check if client modules exist on server side
-                foreach (var module in other.Modules)
-                {
-                    if (module.Item3 == CompatibilityLevel.NoNeedForSync)
-                    {
-                        continue;
-                    }
-
-                    var serverModule = Modules.FirstOrDefault(x => x.Item1 == module.Item1);
-
-                    if (serverModule == null && module.Item3 == CompatibilityLevel.OnlySyncWhenInstalled)
-                    {
-                        continue;
-                    }
-
-                    if (serverModule == null)
-                    {
-                        return false;
-                    }
-
-                    if (module.Item2.Major != serverModule.Item2.Major &&
-                        (module.Item4 >= VersionStrictness.Major || serverModule.Item4 >= VersionStrictness.Major))
-                    {
-                        return false;
-                    }
-
-                    if (module.Item2.Minor != serverModule.Item2.Minor &&
-                        (module.Item4 >= VersionStrictness.Minor || serverModule.Item4 >= VersionStrictness.Minor))
-                    {
-                        return false;
-                    }
-
-                    if (module.Item2.Build != serverModule.Item2.Build &&
-                        (module.Item4 >= VersionStrictness.Patch || serverModule.Item4 >= VersionStrictness.Patch))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-
             /// <summary>
             ///     Create ZPackage
             /// </summary>
@@ -576,29 +566,7 @@ namespace Jotunn.Utils
 
                 return pkg;
             }
-
-
-            /// <inheritdoc />
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj))
-                {
-                    return false;
-                }
-
-                if (ReferenceEquals(this, obj))
-                {
-                    return true;
-                }
-
-                if (obj.GetType() != GetType())
-                {
-                    return false;
-                }
-
-                return Equals((ModuleVersionData)obj);
-            }
-
+            
             /// <inheritdoc />
             public override int GetHashCode()
             {
