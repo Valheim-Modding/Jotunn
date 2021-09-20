@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Jotunn.Managers;
@@ -14,7 +13,7 @@ namespace Jotunn.Utils
     /// <summary>
     ///     Implementation of the mod compatibility features.
     /// </summary>
-    public class ModCompatibility
+    public static class ModCompatibility
     {
         /// <summary>
         ///     Stores the last server message.
@@ -173,7 +172,7 @@ namespace Jotunn.Utils
                     return false;
                 }
             }
-            
+
             // Check client enforced mods
             foreach (var module in clientData.Modules.Where(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod || x.Item3 == CompatibilityLevel.ServerMustHaveMod))
             {
@@ -182,7 +181,7 @@ namespace Jotunn.Utils
                     return false;
                 }
             }
-            
+
             // Compare modules
             foreach (var serverModule in serverData.Modules)
             {
@@ -196,13 +195,13 @@ namespace Jotunn.Utils
                 var clientModule = clientData.Modules.FirstOrDefault(x => x.Item1 == serverModule.Item1);
 
 #pragma warning disable CS0618 // Type or member is obsolete
-                if (clientModule == null && 
+                if (clientModule == null &&
                     (serverModule.Item3 != CompatibilityLevel.OnlySyncWhenInstalled || serverModule.Item3 == CompatibilityLevel.VersionCheckOnly))
                 {
                     return false;
                 }
 #pragma warning restore CS0618 // Type or member is obsolete
-                
+
                 if (clientModule == null)
                 {
                     return false;
@@ -226,7 +225,7 @@ namespace Jotunn.Utils
                     return false;
                 }
             }
-            
+
             return true;
         }
 
@@ -318,7 +317,7 @@ namespace Jotunn.Utils
                     yield return new Tuple<Color, string>(Color.white, "Please contact the server admin for a server update." + Environment.NewLine);
                 }
             }
-            
+
             // And then each module
             foreach (var serverModule in serverData.Modules)
             {
@@ -436,7 +435,7 @@ namespace Jotunn.Utils
                 }
             }
         }
-        
+
         /// <summary>
         ///     Generate message for client's mod version lower than server's version
         /// </summary>
@@ -570,7 +569,7 @@ namespace Jotunn.Utils
 
                 return pkg;
             }
-            
+
             /// <inheritdoc />
             public override int GetHashCode()
             {
