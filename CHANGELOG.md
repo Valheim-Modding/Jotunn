@@ -1,5 +1,11 @@
 ﻿# Changelog
 
+## Version 2.3.3
+* Reworked the mod compatibility checks
+* Obsoleted and replaced some misleading named compat level
+* Added two new mod compat level: ServerMustHaveMod and ClientMustHaveMod
+* __Please check your mod's compat level and change appropriately__
+
 ## Version 2.3.2
 * Adapted the custom piece categories to the new width
 * Inject custom commands into the new Terminal system
