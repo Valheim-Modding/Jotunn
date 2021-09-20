@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml.Linq;
 using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -99,7 +98,7 @@ namespace Jotunn.Utils
                 // If we got this far, clear lastServerVersion again
                 LastServerVersion = null;
             }
-            
+
             orig(self, rpc, password);
         }
 
@@ -108,34 +107,10 @@ namespace Jotunn.Utils
         {
             if (!ZNet.instance.IsClientInstance())
             {
-                try
+                // Vanilla client trying to connect?
+                if (!ClientVersions.ContainsKey(rpc.GetSocket().GetEndPointString()))
                 {
-                    var clientVersion = new ModuleVersionData(ClientVersions[rpc.GetSocket().GetEndPointString()]);
-                    var serverVersion = new ModuleVersionData(GetEnforcableMods().ToList());
-
-                    // Remove from list
-                    ClientVersions.Remove(rpc.GetSocket().GetEndPointString());
-
-                    // Compare and disconnect when not equal
-                    if (!clientVersion.Equals(serverVersion))
-                    {
-                        rpc.Invoke("Error", 3);
-                        return;
-                    }
-                }
-                catch (EndOfStreamException)
-                {
-                    Logger.LogError("Reading beyond end of stream. Probably client without Jotunn tried to connect.");
-
-                    // Client did not send appended package, just disconnect with the incompatible version error
-                    rpc.Invoke("Error", 3);
-                    return;
-                }
-                catch (KeyNotFoundException)
-                {
-                    // Vanilla client trying to connect?
                     // Check mods, if there are some installed on the server which need also to be on the client
-
                     if (GetEnforcableMods().Any(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod))
                     {
                         // There is a mod, which needs to be client side too
@@ -197,12 +172,12 @@ namespace Jotunn.Utils
             var tf = scroll.transform.Find("Scroll View/Viewport/Content") as RectTransform;
 
             GUIManager.Instance.CreateText(
-                "Remote version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 
+                "Remote version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
                 new Color(0, 0, 0, 1), 600f, 40f, false);
             GUIManager.Instance.CreateText(
-                remote.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 
-                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true, 
+                remote.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
                 new Color(0, 0, 0, 1), 600f, 40f, false);
             GUIManager.Instance.CreateText(
                 "Local version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
@@ -216,7 +191,7 @@ namespace Jotunn.Utils
             foreach (var part in CreateErrorMessage(remote, local))
             {
                 GUIManager.Instance.CreateText(
-                    part.Item2, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), 
+                    part.Item2, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                     GUIManager.Instance.AveriaSerifBold, 19, part.Item1, true,
                     new Color(0, 0, 0, 1), 600f, 40f, false);
             }
@@ -405,12 +380,17 @@ namespace Jotunn.Utils
         {
             foreach (var plugin in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Key))
             {
-                var networkCompatibilityAttribute = plugin.Value.GetType().GetCustomAttributes(typeof(NetworkCompatibilityAttribute), true).Cast<NetworkCompatibilityAttribute>()
+                var networkCompatibilityAttribute = plugin.Value.GetType()
+                    .GetCustomAttributes(typeof(NetworkCompatibilityAttribute), true)
+                    .Cast<NetworkCompatibilityAttribute>()
                     .FirstOrDefault();
                 if (networkCompatibilityAttribute != null)
                 {
-                    yield return new Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>(plugin.Value.Info.Metadata.Name,
-                        plugin.Value.Info.Metadata.Version, networkCompatibilityAttribute.EnforceModOnClients, networkCompatibilityAttribute.EnforceSameVersion);
+                    yield return new Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>(
+                        plugin.Value.Info.Metadata.Name,
+                        plugin.Value.Info.Metadata.Version,
+                        networkCompatibilityAttribute.EnforceModOnClients,
+                        networkCompatibilityAttribute.EnforceSameVersion);
                 }
             }
         }
