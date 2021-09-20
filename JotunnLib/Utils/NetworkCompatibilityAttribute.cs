@@ -12,15 +12,33 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Mod is not checked at all, VersionsStrictness does not apply.
         /// </summary>
+        [Obsolete("Use NotEnforced instead")]
         NoNeedForSync = 0,
         /// <summary>
         ///     Mod is checked only if the client and server have loaded it and ignores if just one side has it.
         /// </summary>
+        [Obsolete("Use VersionCheckOnly")]
         OnlySyncWhenInstalled = 1,
         /// <summary>
         ///     Mod must be loaded on server and client. Version checking depends on the VersionStrictness.
         /// </summary>
-        EveryoneMustHaveMod = 2
+        EveryoneMustHaveMod = 2,
+        /// <summary>
+        ///     If mod is installed on the server, every client has to have it. VersionStrictness does not apply.
+        /// </summary>
+        ClientMustHaveMod = 3,
+        /// <summary>
+        ///     If mod is installed on the client, the server has to have it. VersionStrictness does not apply.
+        /// </summary>
+        ServerMustHaveMod = 4,
+        /// <summary>
+        ///     Version check is performed when both server and client have the mod, no check if the mod is actually installed.
+        /// </summary>
+        VersionCheckOnly = 5,
+        /// <summary>
+        ///     Mod is not checked at all, VersionsStrictness does not apply.
+        /// </summary>
+        NotEnforced = 6
     }
 
     /// <summary>
