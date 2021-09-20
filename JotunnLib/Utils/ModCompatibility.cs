@@ -186,18 +186,22 @@ namespace Jotunn.Utils
             // Compare modules
             foreach (var serverModule in serverData.Modules)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 if (serverModule.Item3 == CompatibilityLevel.NoNeedForSync || serverModule.Item3 == CompatibilityLevel.NotEnforced)
                 {
                     continue;
                 }
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 var clientModule = clientData.Modules.FirstOrDefault(x => x.Item1 == serverModule.Item1);
 
+#pragma warning disable CS0618 // Type or member is obsolete
                 if (clientModule == null && 
                     (serverModule.Item3 != CompatibilityLevel.OnlySyncWhenInstalled || serverModule.Item3 == CompatibilityLevel.VersionCheckOnly))
                 {
                     return false;
                 }
+#pragma warning restore CS0618 // Type or member is obsolete
                 
                 if (clientModule == null)
                 {
