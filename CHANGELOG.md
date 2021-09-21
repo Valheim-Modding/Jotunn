@@ -5,6 +5,7 @@
 * Obsoleted and replaced some misleading named compat level
 * Added two new mod compat level: ServerMustHaveMod and ClientMustHaveMod
 * __Please check your mod's compat level and change appropriately__
+* See https://valheim-modding.github.io/Jotunn/tutorials/networkcompatibility.html for a list of the new compat levels
 
 ## Version 2.3.2
 * Adapted the custom piece categories to the new width
