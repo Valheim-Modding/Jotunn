@@ -17,7 +17,7 @@ namespace TestMod
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     [BepInDependency(Main.ModGuid)]
-    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch)]
+    [NetworkCompatibility(CompatibilityLevel.NotEnforced, VersionStrictness.Patch)]
     internal class TestMod2 : BaseUnityPlugin
     {
         private const string ModGUID = "com.jotunn.testmod2";

@@ -344,7 +344,14 @@ namespace Jotunn.Utils
                 }
 
                 // Then all version checks
-                var clientModule = clientData.Modules.First(x => x.Item1 == serverModule.Item1);
+                var clientModule = clientData.Modules.FirstOrDefault(x => x.Item1 == serverModule.Item1);
+
+                #pragma warning disable CS0618 // Type or member is obsolete
+                if (clientModule == null && (serverModule.Item3 == CompatibilityLevel.NotEnforced || serverModule.Item3 == CompatibilityLevel.NoNeedForSync))
+                {
+                    continue;
+                }
+                #pragma warning restore CS0618 // Type or member is obsolete
 
                 // Major
                 if (serverModule.Item4 >= VersionStrictness.Major || clientModule.Item4 >= VersionStrictness.Major)
