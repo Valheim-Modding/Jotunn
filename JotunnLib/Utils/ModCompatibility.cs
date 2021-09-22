@@ -152,7 +152,7 @@ namespace Jotunn.Utils
             }
         }
 
-        private static bool CompareVersionData(ModuleVersionData serverData, ModuleVersionData clientData)
+        internal static bool CompareVersionData(ModuleVersionData serverData, ModuleVersionData clientData)
         {
             if (ReferenceEquals(serverData, clientData))
             {
@@ -301,7 +301,7 @@ namespace Jotunn.Utils
         /// <param name="serverData">server data</param>
         /// <param name="clientData">client data</param>
         /// <returns></returns>
-        internal static IEnumerable<Tuple<Color, string>> CreateErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        private static IEnumerable<Tuple<Color, string>> CreateErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
             // Check Valheim version first
             if (serverData.ValheimVersion != clientData.ValheimVersion)
