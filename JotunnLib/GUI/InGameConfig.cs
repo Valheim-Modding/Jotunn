@@ -49,12 +49,7 @@ namespace Jotunn.GUI
         ///     Our own mod config tabs
         /// </summary>
         private static readonly List<Transform> Configs = new List<Transform>();
-
-        /// <summary>
-        ///     Key currently in the binding process
-        /// </summary>
-        private static ConfigBoundKeyCode KeyInBinding;
-
+        
         /// <summary>
         ///     Cache keybinds
         /// </summary>
@@ -1255,7 +1250,6 @@ namespace Jotunn.GUI
                 var buttonName = entry.GetBoundButtonName();
                 gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    KeyInBinding = this;
                     Settings.instance.OpenBindDialog(buttonName);
                 });
             }
