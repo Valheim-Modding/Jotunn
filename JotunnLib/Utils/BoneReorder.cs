@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace Jotunn.Utils
@@ -105,31 +106,38 @@ namespace Jotunn.Utils
         {
             if (visEquipment != null)
             {
-                Transform skeletonRoot = visEquipment.transform.Find("Visual/Armature/Hips");
-                GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabHash);
-                if (!skeletonRoot || !itemPrefab)
+                try
                 {
-                    Logger.LogDebug($"Prefab missing components. Skipping {itemPrefab} {skeletonRoot}");
-                    return;
-                }
-                Logger.LogDebug($"Reordering bones");
-                int childCount = itemPrefab.transform.childCount;
-                int num = 0;
-                for (var i = 0; i < childCount; i++)
-                {
-                    var itemPrefabChilds = itemPrefab.transform.GetChild(i);
-                    if (itemPrefabChilds.name.StartsWith("attach_skin"))
+                    Transform skeletonRoot = visEquipment.transform.Find("Visual/Armature/Hips");
+                    GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemPrefabHash);
+                    if (!skeletonRoot || !itemPrefab)
                     {
-                        int j = 0;
-                        var meshRenderersToReorder = instancesToFix[num].GetComponentsInChildren<SkinnedMeshRenderer>();
-                        foreach (var meshRenderer in itemPrefabChilds.GetComponentsInChildren<SkinnedMeshRenderer>())
-                        {
-                            var meshRendererThatNeedFix = meshRenderersToReorder[j];
-                            meshRendererThatNeedFix.SetBones(meshRenderer.GetBoneNames(), skeletonRoot);
-                            j++;
-                        }
-                        num++;
+                        Logger.LogDebug($"Prefab missing components. Skipping {itemPrefab} {skeletonRoot}");
+                        return;
                     }
+                    Logger.LogDebug($"Reordering bones");
+                    int childCount = itemPrefab.transform.childCount;
+                    int num = 0;
+                    for (var i = 0; i < childCount; i++)
+                    {
+                        var itemPrefabChilds = itemPrefab.transform.GetChild(i);
+                        if (itemPrefabChilds.name.StartsWith("attach_skin"))
+                        {
+                            int j = 0;
+                            var meshRenderersToReorder = instancesToFix[num].GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                            foreach (var meshRenderer in itemPrefabChilds.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                            {
+                                var meshRendererThatNeedFix = meshRenderersToReorder[j];
+                                meshRendererThatNeedFix.SetBones(meshRenderer.GetBoneNames(), skeletonRoot);
+                                j++;
+                            }
+                            num++;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning($"Exception caught while reordering bones: {ex}");
                 }
             }
         }
