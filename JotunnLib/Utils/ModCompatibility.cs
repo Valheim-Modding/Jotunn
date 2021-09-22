@@ -246,8 +246,10 @@ namespace Jotunn.Utils
             var scroll = GUIManager.Instance.CreateScrollView(
                 panel.transform, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
                 new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f), 650f, 400f);
+            var scrolltf = scroll.GetComponent<RectTransform>();
+            scrolltf.anchoredPosition = new Vector2(scrolltf.anchoredPosition.x, scrolltf.anchoredPosition.y + 15f);
 
-            var tf = scroll.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+            var tf = scrolltf.Find("Scroll View/Viewport/Content") as RectTransform;
 
             GUIManager.Instance.CreateText(
                 "Remote version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
