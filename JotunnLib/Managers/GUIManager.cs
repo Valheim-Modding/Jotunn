@@ -961,7 +961,7 @@ namespace Jotunn.Managers
             // Add draggable component
             if (draggable)
             {
-                DragWindowCntrl.ApplyDragWindowCntrl(newPanel);
+                newPanel.AddComponent<DragWindowCntrl>();
             }
 
             return newPanel;
