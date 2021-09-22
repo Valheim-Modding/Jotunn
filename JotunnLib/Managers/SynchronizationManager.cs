@@ -513,7 +513,7 @@ namespace Jotunn.Managers
                 foreach (var cd in plugin.Value.Config.Keys)
                 {
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
-                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly))
+                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes {IsAdminOnly: true}))
                     {
                         var value = new Tuple<string, string, string, string>(
                             plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
@@ -540,8 +540,7 @@ namespace Jotunn.Managers
                 {
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
                     if (cx.Description.Tags.Any(x =>
-                        x is ConfigurationManagerAttributes && ((ConfigurationManagerAttributes)x).IsAdminOnly &&
-                        ((ConfigurationManagerAttributes)x).IsUnlocked))
+                        x is ConfigurationManagerAttributes {IsAdminOnly: true, IsUnlocked: true}))
                     {
                         var value = new Tuple<string, string, string, string>(
                             plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
