@@ -5,6 +5,7 @@
 // Project: JotunnLib
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -144,7 +145,7 @@ namespace Jotunn.GUI
                     {
                         try
                         {
-                            CreateWindow();
+                            modSettingsButton.StartCoroutine(CreateWindow());
                         }
                         catch (Exception ex)
                         {
@@ -176,13 +177,14 @@ namespace Jotunn.GUI
         /// <summary>
         ///     Create custom configuration window
         /// </summary>
-        private static void CreateWindow()
+        private static IEnumerator CreateWindow()
         {
             // Reset
             Configs.Clear();
 
             // Create settings window
             SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
+            SettingsRoot.SetActive(false);
             SettingsRoot.name = "ModSettings";
             SettingsRoot.transform.GetComponentInChildren<Text>().gameObject.SetWidth(500f);
             SettingsRoot.transform.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuName);
@@ -262,11 +264,14 @@ namespace Jotunn.GUI
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
-                CreatePlugin(mod, viewport);
+                yield return CreatePlugin(mod, viewport);
             }
 
             // Scroll back to top
             scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
+
+            // Finally show the window
+            SettingsRoot.SetActive(true);
         }
 
         private class EscBehaviour : MonoBehaviour
@@ -277,7 +282,7 @@ namespace Jotunn.GUI
             }
         }
 
-        private static void CreatePlugin(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform pluginViewport)
+        private static IEnumerator CreatePlugin(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform pluginViewport)
         {
             // Create a header if there are any relevant configuration entries
             if (GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible() && x.Value.IsWritable()).GroupBy(x => x.Key.Section).Any())
@@ -339,13 +344,13 @@ namespace Jotunn.GUI
                     }
                 });
 
-                CreateContent(mod, contentViewport);
+                yield return CreateContent(mod, contentViewport);
 
                 Configs.Add(contentViewport);
             }
         }
 
-        private static void CreateContent(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform contentViewport)
+        private static IEnumerator CreateContent(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform contentViewport)
         {
             float innerWidth = contentViewport.rect.width - 25f;
             float preferredHeight = 0f;
@@ -562,6 +567,8 @@ namespace Jotunn.GUI
             }
 
             contentViewport.GetComponent<LayoutElement>().preferredHeight = preferredHeight;
+
+            yield return null;
         }
 
         /// <summary>
