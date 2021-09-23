@@ -517,10 +517,26 @@ namespace Jotunn.GUI
 
                         var go = CreateKeybindElement(contentViewport,
                             entry.Key.Key + ":", buttonText,
-                            mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key, buttonName, innerWidth);
-                        go.GetComponent<ConfigBoundKeyCode>()
+                            buttonName, innerWidth);
+                        go.AddComponent<ConfigBoundKeyCode>()
                             .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         SetProperties(go.GetComponent<ConfigBoundKeyCode>(), entry);
+                        preferredHeight += go.GetHeight();
+                    }
+                    else if (entry.Value.SettingType == typeof(KeyboardShortcut))
+                    {
+                        var description = entry.Value.Description.Description;
+
+                        // Create shortcut binder
+                        var go = CreateShortcutbindElement(contentViewport,
+                            entry.Key.Key + ":",
+                            entry.Value.Description.Description + (entryAttributes.IsAdminOnly
+                                ? $"{Environment.NewLine}(Server side setting)"
+                                : ""),
+                            $"{mod.Value.Info.Metadata.GUID}:{entry.Key.Section}:{entry.Key.Key}", innerWidth);
+                        go.AddComponent<ConfigBoundKeyboardShortcut>()
+                            .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                        SetProperties(go.GetComponent<ConfigBoundKeyboardShortcut>(), entry);
                         preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(string))
@@ -623,6 +639,13 @@ namespace Jotunn.GUI
                     if (childKeyCode != null)
                     {
                         childKeyCode.WriteBack();
+                        continue;
+                    }
+                    
+                    var childShortcut = values.gameObject.GetComponent<ConfigBoundKeyboardShortcut>();
+                    if (childShortcut != null)
+                    {
+                        childShortcut.WriteBack();
                         continue;
                     }
 
@@ -914,16 +937,14 @@ namespace Jotunn.GUI
         /// ´<param name="buttonName">buttonName</param>
         /// <param name="width">width</param>
         /// <returns></returns>
-        private static GameObject CreateKeybindElement(Transform parent, string labelname, string description, string modguid, string section, string key,
-            string buttonName, float width)
+        private static GameObject CreateKeybindElement(Transform parent, string labelname, string description, string buttonName, float width)
         {
             // Create label and keybind button
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
-
+            
             // Add this keybinding to the list in Settings to utilize valheim's keybind dialog
             Settings.instance.m_keys.Add(new Settings.KeySetting
             {
-                //m_keyName = $"{buttonName}!{modguid}", m_keyTransform = result.GetComponent<RectTransform>()
                 m_keyName = buttonName,
                 m_keyTransform = result.GetComponent<RectTransform>()
             });
@@ -949,10 +970,46 @@ namespace Jotunn.GUI
             // set height and add the layout element
             result.SetHeight(-desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
             result.AddComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
+            
+            return result;
+        }
+        
+        /// <summary>
+        ///     Create a KeyboardShortcut binding element
+        /// </summary>
+        /// <param name="parent">parent transform</param>
+        /// <param name="labelname">label text</param>
+        /// <param name="description">description text</param>
+        /// ´<param name="buttonName">buttonName</param>
+        /// <param name="width">width</param>
+        /// <returns></returns>
+        private static GameObject CreateShortcutbindElement(Transform parent, string labelname, string description, string buttonName, float width)
+        {
+            // Create label and keybind button
+            var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
 
-            // and add the config binding
-            result.AddComponent<ConfigBoundKeyCode>().SetData(modguid, section, key);
+            // Create description text
+            var idx = 0;
+            var lastPosition = new Vector2(0, -result.GetComponent<RectTransform>().rect.height - 3f);
+            GameObject desc = null;
+            foreach (var part in description.Split(Environment.NewLine[0]))
+            {
+                var p2 = part.Trim();
+                desc = GUIManager.Instance.CreateText(p2, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
+                    GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black, width - 150f, 0, false);
+                desc.name = $"Description{idx}";
+                desc.SetUpperLeft().SetToTextHeight();
 
+                desc.GetComponent<RectTransform>().anchoredPosition = lastPosition;
+                lastPosition = new Vector2(0, lastPosition.y - desc.GetTextHeight() - 3);
+
+                idx++;
+            }
+
+            // set height and add the layout element
+            result.SetHeight(-desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
+            result.AddComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
+            
             return result;
         }
 
@@ -1250,7 +1307,7 @@ namespace Jotunn.GUI
                 gameObject.transform.Find("Button/Text").GetComponent<Text>().text = value.ToString();
             }
 
-            public void Awake()
+            public void Start()
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
                 var entry = pluginConfig[Section, Key];
@@ -1259,6 +1316,78 @@ namespace Jotunn.GUI
                 {
                     Settings.instance.OpenBindDialog(buttonName);
                 });
+            }
+
+            public override void SetEnabled(bool enabled)
+            {
+                gameObject.transform.Find("Button").GetComponent<Button>().enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                gameObject.transform.Find("Button").GetComponent<Button>().enabled &= readOnly;
+                gameObject.transform.Find("Button/Text").GetComponent<Text>().color = readOnly ? Color.grey : Color.white;
+            }
+        }
+        
+        /// <summary>
+        ///     KeyboardShortcut binding
+        /// </summary>
+        internal class ConfigBoundKeyboardShortcut : ConfigBound<KeyboardShortcut>
+        {
+            private static readonly IEnumerable<KeyCode> KeysToCheck = KeyboardShortcut.AllKeyCodes.Except(new[] { KeyCode.Mouse0, KeyCode.None }).ToArray();
+
+            internal override KeyboardShortcut GetValueFromConfig()
+            {
+                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
+                var entry = pluginConfig[Section, Key];
+                return (KeyboardShortcut)entry.BoxedValue;
+            }
+
+            public override void SetValueInConfig(KeyboardShortcut value)
+            {
+                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
+                var entry = pluginConfig[Section, Key] as ConfigEntry<KeyboardShortcut>;
+                entry.Value = value;
+            }
+
+            public override KeyboardShortcut GetValue()
+            {
+                var text = gameObject.transform.Find("Button/Text").GetComponent<Text>().text;
+                var temp = KeyboardShortcut.Deserialize(text);
+                
+                return temp;
+            }
+
+            internal override void SetValue(KeyboardShortcut value)
+            {
+                gameObject.transform.Find("Button/Text").GetComponent<Text>().text = value.ToString();
+            }
+
+            public void Start()
+            {
+                gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    ZInput.instance.AddButton($"{ModGUID}:{Section}:{Key}", KeyCode.None);
+                    Settings.instance.OpenBindDialog($"{ModGUID}:{Section}:{Key}");
+                    On.ZInput.EndBindKey += ZInput_EndBindKey;
+                });
+            }
+
+            private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
+            {
+                foreach (var key in KeysToCheck)
+                {
+                    if (Input.GetKeyUp(key))
+                    {
+                        SetValue(new KeyboardShortcut(key, KeysToCheck.Where(Input.GetKey).ToArray()));
+                        On.ZInput.EndBindKey -= ZInput_EndBindKey;
+                        self.m_buttons.Remove($"{ModGUID}:{Section}:{Key}");
+                        return true;
+                    }
+                }
+
+                return false;
             }
 
             public override void SetEnabled(bool enabled)
