@@ -552,7 +552,9 @@ namespace TestMod
 
             // Test KeyboardShortcut
             Config.Bind<KeyboardShortcut>(JotunnTestModConfigSection, "KeyboardShortcutValue",
-                new KeyboardShortcut(KeyCode.A, KeyCode.LeftControl), "Testing how KeyboardShortcut behaves");
+                new KeyboardShortcut(KeyCode.A, KeyCode.LeftControl), 
+                new ConfigDescription("Testing how KeyboardShortcut behaves", null, 
+                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
         }
 
