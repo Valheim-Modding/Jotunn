@@ -1,9 +1,11 @@
 ﻿# Changelog
 
 ## Version 2.3.4
-* Fixed BoneReorder for equip with disabled attach points
+* Fixed BoneReorder for equip with disabled attach points (thx GoldenJude)
 * Fixed DragWindowCntrl not respecting the screen size sometimes (thx MSchmoecker)
 * Fixed ModCompat NRE with missing "NotEnforced" mods
+* Fixed double values not saving in mod settings
+* Added support for KeyboardShortcuts in mod settings
 
 ## Version 2.3.3
 * Reworked the mod compatibility checks
