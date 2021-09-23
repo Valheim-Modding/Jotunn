@@ -25,7 +25,7 @@ namespace Jotunn.Configs
         ///     Unity KeyCode this config should be bound to. If Key and Axis are both set, Axis will be used.
         /// </summary>
         public KeyCode Key { get; set; }
-
+        
         /// <summary>
         ///     BepInEx configuration entry of a KeyCode that should be used. Sets the <see cref="Key"/>
         ///     value of this config when added to the InputManager.

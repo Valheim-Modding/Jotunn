@@ -1401,7 +1401,7 @@ namespace Jotunn.Managers
 
             input.transform.SetParent(parent, false);
 
-            GameObject button = new GameObject("Button", typeof(RectTransform), typeof(Image), typeof(Button)).SetUpperRight().SetSize(100f, label.GetTextHeight());
+            GameObject button = new GameObject("Button", typeof(RectTransform), typeof(Image), typeof(Button)).SetUpperRight().SetSize(140f, label.GetTextHeight());
 
             button.transform.SetParent(input.transform, false);
             button.GetComponent<Button>().image = button.GetComponent<Image>();
