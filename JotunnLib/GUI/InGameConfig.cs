@@ -49,7 +49,7 @@ namespace Jotunn.GUI
         ///     Our own mod config tabs
         /// </summary>
         private static readonly List<Transform> Configs = new List<Transform>();
-        
+
         /// <summary>
         ///     Cache keybinds
         /// </summary>
@@ -627,7 +627,7 @@ namespace Jotunn.GUI
                         childFloat.WriteBack();
                         continue;
                     }
-                    
+
                     var childDouble = values.gameObject.GetComponent<ConfigBoundDouble>();
                     if (childDouble != null)
                     {
@@ -641,7 +641,7 @@ namespace Jotunn.GUI
                         childKeyCode.WriteBack();
                         continue;
                     }
-                    
+
                     var childShortcut = values.gameObject.GetComponent<ConfigBoundKeyboardShortcut>();
                     if (childShortcut != null)
                     {
@@ -931,9 +931,6 @@ namespace Jotunn.GUI
         /// <param name="parent">parent transform</param>
         /// <param name="labelname">label text</param>
         /// <param name="description">description text</param>
-        /// <param name="modguid">module GUID</param>
-        /// <param name="section">section</param>
-        /// <param name="key">key</param>
         /// ´<param name="buttonName">buttonName</param>
         /// <param name="width">width</param>
         /// <returns></returns>
@@ -941,7 +938,7 @@ namespace Jotunn.GUI
         {
             // Create label and keybind button
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
-            
+
             // Add this keybinding to the list in Settings to utilize valheim's keybind dialog
             Settings.instance.m_keys.Add(new Settings.KeySetting
             {
@@ -970,10 +967,10 @@ namespace Jotunn.GUI
             // set height and add the layout element
             result.SetHeight(-desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
             result.AddComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
-            
+
             return result;
         }
-        
+
         /// <summary>
         ///     Create a KeyboardShortcut binding element
         /// </summary>
@@ -1009,7 +1006,7 @@ namespace Jotunn.GUI
             // set height and add the layout element
             result.SetHeight(-desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
             result.AddComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
-            
+
             return result;
         }
 
@@ -1329,7 +1326,7 @@ namespace Jotunn.GUI
                 gameObject.transform.Find("Button/Text").GetComponent<Text>().color = readOnly ? Color.grey : Color.white;
             }
         }
-        
+
         /// <summary>
         ///     KeyboardShortcut binding
         /// </summary>
@@ -1355,7 +1352,7 @@ namespace Jotunn.GUI
             {
                 var text = gameObject.transform.Find("Button/Text").GetComponent<Text>().text;
                 var temp = KeyboardShortcut.Deserialize(text);
-                
+
                 return temp;
             }
 
