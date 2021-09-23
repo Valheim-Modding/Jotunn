@@ -611,6 +611,13 @@ namespace Jotunn.GUI
                         childFloat.WriteBack();
                         continue;
                     }
+                    
+                    var childDouble = values.gameObject.GetComponent<ConfigBoundDouble>();
+                    if (childDouble != null)
+                    {
+                        childDouble.WriteBack();
+                        continue;
+                    }
 
                     var childKeyCode = values.gameObject.GetComponent<ConfigBoundKeyCode>();
                     if (childKeyCode != null)
