@@ -265,7 +265,7 @@ namespace TestMod
 
                 // Add the Jötunn draggable Component to the panel
                 // Note: This is normally automatically added when using CreateWoodpanel()
-                DragWindowCntrl.ApplyDragWindowCntrl(TestPanel);
+                TestPanel.AddComponent<DragWindowCntrl>();
 
                 // Create the text object
                 GUIManager.Instance.CreateText(
