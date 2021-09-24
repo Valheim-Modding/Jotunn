@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.3.5
+* Added support for custom Obliterator/Incinerator item conversions
+
 ## Version 2.3.4
 * Fixed BoneReorder for equip with disabled attach points (thx GoldenJude)
 * Fixed DragWindowCntrl not respecting the screen size sometimes (thx MSchmoecker)

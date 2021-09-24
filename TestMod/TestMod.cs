@@ -733,6 +733,21 @@ namespace TestMod
                 ToItem = "CookedLoxMeat"
             });
             ItemManager.Instance.AddItemConversion(faultConversion);
+
+            // Add an incinerator conversion. This one is special since the incinerator conversion script 
+            // takes one or more items to produce any amount of a new item
+            var inciConversion = new CustomItemConversion(new IncineratorConversionConfig
+            {
+                //Station = "incinerator"  // Use the default from the config
+                Requirements = new List<IncineratorRequirementConfig>
+                {
+                    new IncineratorRequirementConfig {Item = "Wood", Amount = 1},
+                    new IncineratorRequirementConfig {Item = "Stone", Amount = 1}
+                },
+                ToItem = "Coins",
+                ProducedItems = 20
+            });
+            ItemManager.Instance.AddItemConversion(inciConversion);
         }
 
         // Add custom item conversion (gives a steel ingot to smelter)

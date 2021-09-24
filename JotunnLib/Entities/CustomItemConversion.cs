@@ -26,7 +26,11 @@ namespace Jotunn.Entities
             /// <summary>
             ///     Add a conversion to a station with the Smelter component attached.
             /// </summary>
-            Smelter
+            Smelter,
+            /// <summary>
+            ///     Add a conversion to a station with the Incinerator component attached.
+            /// </summary>
+            Incinerator
         };
 
         /// <summary>
@@ -56,6 +60,7 @@ namespace Jotunn.Entities
                     ConversionType.CookingStation => _cookingConversion,
                     ConversionType.Fermenter => _fermenterConversion,
                     ConversionType.Smelter => _smelterConversion,
+                    ConversionType.Incinerator => _incineratorConversion,
                     _ => null,
                 };
             }
@@ -63,6 +68,7 @@ namespace Jotunn.Entities
         private CookingStation.ItemConversion _cookingConversion;
         private Fermenter.ItemConversion _fermenterConversion;
         private Smelter.ItemConversion _smelterConversion;
+        private Incinerator.IncineratorConversion _incineratorConversion;
 
         /// <summary>
         ///     Create a custom item conversion. Depending on the config class this custom
@@ -90,6 +96,11 @@ namespace Jotunn.Entities
             {
                 Type = ConversionType.Smelter;
                 _smelterConversion = smeltConfig.GetItemConversion();
+            }
+            if (config is IncineratorConversionConfig inciConfig)
+            {
+                Type = ConversionType.Incinerator;
+                _incineratorConversion = inciConfig.GetIncineratorConversion();
             }
 
             Config = config;

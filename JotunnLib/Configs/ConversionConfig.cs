@@ -13,7 +13,7 @@
         /// <summary>
         ///     The name of the item prefab you need to put ín the station.
         /// </summary>
-        public string FromItem { get; set; }
+        public virtual string FromItem { get; set; }
 
         /// <summary>
         ///     The name of the item prefab that your "FromItem" will be turned into.

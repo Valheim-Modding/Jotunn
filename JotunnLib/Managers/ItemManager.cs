@@ -544,7 +544,7 @@ namespace Jotunn.Managers
                             conversion.FixReference = false;
                         }
 
-                        // Sure, make three almost identical classes but dont have a common base class, Iron Gate
+                        // Sure, make four almost identical classes but dont have a common base class, Iron Gate
                         switch (conversion.Type)
                         {
                             case CustomItemConversion.ConversionType.CookingStation:
@@ -586,6 +586,19 @@ namespace Jotunn.Managers
                                 smelterStation.m_conversion.Add(smelterConversion);
 
                                 break;
+                            case CustomItemConversion.ConversionType.Incinerator:
+                                var incineratorStation = stationPrefab.GetComponent<Incinerator>();
+                                var incineratorConversion = (Incinerator.IncineratorConversion)conversion.ItemConversion;
+
+                                if (incineratorStation.m_conversions.Exists(c => c.m_requirements == incineratorConversion.m_requirements))
+                                {
+                                    Logger.LogDebug($"Already added conversion ${conversion}");
+                                    continue;
+                                }
+
+                                incineratorStation.m_conversions.Add(incineratorConversion);
+
+                                break;
                             default:
                                 throw new Exception($"Unknown conversion type");
                         }
@@ -613,9 +626,9 @@ namespace Jotunn.Managers
         private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
         {
 
-#pragma warning disable 612
+            #pragma warning disable 612
             InvokeOnVanillaItemsAvailable();
-#pragma warning restore 612
+            #pragma warning restore 612
             InvokeOnKitbashItemsAvailable();
 
             RegisterCustomItems(other);
