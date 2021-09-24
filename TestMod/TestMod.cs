@@ -745,7 +745,9 @@ namespace TestMod
                     new IncineratorRequirementConfig {Item = "Stone", Amount = 1}
                 },
                 ToItem = "Coins",
-                ProducedItems = 20
+                ProducedItems = 20,
+                RequireOnlyOneIngredient = false,  // true = only one of the requirements is needed to produce the output
+                Priority = 5                       // Higher priorities get preferred when multiple requirements are met
             });
             ItemManager.Instance.AddItemConversion(inciConversion);
         }

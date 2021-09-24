@@ -1,17 +1,18 @@
 ﻿# Item Conversions
 
-An _item conversion_ in Valheim is the process of turning one item into another item using a specific station. For example the cooking of raw meat into cooked meat on the cooking station. Or the creation of ingots from ores in the furnace. Jötunn provides a common interface for adding custom conversions with vanilla items or your own custom items. Adding of custom item conversions is done through the [ItemManager](xref:Jotunn.Managers.ItemManager) singleton class and JVLs abstraction [CustomItemConversion](xref:Jotunn.Entities.CustomItemConversion).
+An _item conversion_ in Valheim is the process of turning one or more items into another item using a specific station. For example the cooking of raw meat into cooked meat on the cooking station. Or the creation of ingots from ores in the furnace. Jötunn provides a common interface for adding custom conversions with vanilla items or your own custom items. Adding of custom item conversions is done through the [ItemManager](xref:Jotunn.Managers.ItemManager) singleton class and JVLs abstraction [CustomItemConversion](xref:Jotunn.Entities.CustomItemConversion).
 
 All item conversions will always be loaded **after** all items. However, item conversions will be loaded in the order that you call the `AddItemConversion` function.
 
 ## Valheim's builtin conversion system
 
-Valheim has three different types of conversion components, which are used in one or more pieces:
+Valheim has four different types of conversion components, which are used in one or more pieces:
 
 Component|Piece
 ----|----
 CookingStation|piece_cookingstation
 Fermenter|fermenter
+Incinerator|incinerator
 Smelter|smelter
 Smelter|blastfurnace
 Smelter|charcoal_kiln
@@ -23,6 +24,8 @@ Each of these components can do a conversion from one item to another, some with
 ## CookingStation Conversion Example
 
 To add a conversion for a piece with the CookingStation component use the [CookingConversionConfig](xref:Jotunn.Configs.CookingConversionConfig). You can specify the time needed to cook the item with that config.
+
+**Note**: The `FromItem` prefab needs to have an attach point. Adding prefabs without it result in errors in the game.
 
 ```cs
 // Add an item conversion for the CookingStation. The items must have an "attach" child GameObject to display it on the station.
@@ -48,6 +51,29 @@ var fermentConversion = new CustomItemConversion(new FermenterConversionConfig
     ProducedItems = 10
 });
 ItemManager.Instance.AddItemConversion(fermentConversion);
+```
+
+## Incinerator Conversion Example
+
+To add a conversion for a piece with the Incinerator component use the [IncineratorConversionConfig](xref:Jotunn.Configs.IncineratorConversionConfig). This one takes one or more items with varying amounts as requirements. These lists are created using the [IncineratorRequirementConfig](xref:Jotunn.Configs.IncineratorRequirementConfig). You can also specify the resulting item as well as a priority if more than one of all conversion's requirements are met.
+
+```cs
+// Add an incinerator conversion. This one is special since the incinerator conversion script 
+// takes one or more items to produce any amount of a new item
+var inciConversion = new CustomItemConversion(new IncineratorConversionConfig
+{
+    //Station = "incinerator"  // Use the default from the config
+    Requirements = new List<IncineratorRequirementConfig>
+    {
+        new IncineratorRequirementConfig {Item = "Wood", Amount = 1},
+        new IncineratorRequirementConfig {Item = "Stone", Amount = 1}
+    },
+    ToItem = "Coins",
+    ProducedItems = 20,
+    RequireOnlyOneIngredient = false,  // true = only one of the requirements is needed to produce the output
+    Priority = 5                       // Higher priorities get preferred when multiple requirements are met
+});
+ItemManager.Instance.AddItemConversion(inciConversion);
 ```
 
 ## Smelter Conversion Example
