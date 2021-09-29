@@ -476,7 +476,7 @@ namespace Jotunn.GUI
                             {
                                 if (float.TryParse(text, out var value))
                                 {
-                                    slider.value = value;
+                                    slider.value = Mathf.Round(value*1000f)/1000f;
                                 }
                             });
                         }
@@ -519,7 +519,7 @@ namespace Jotunn.GUI
                             {
                                 if (double.TryParse(text, out var value))
                                 {
-                                    slider.value = (float) value;
+                                    slider.value = Mathf.Round((float)value*1000f)/1000f;
                                 }
                             });
                         }
