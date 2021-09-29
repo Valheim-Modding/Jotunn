@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## Version 2.3.6
+* Added JSON helper methods to PieceConfig
+* Item property in ItemConfig is publicly readable now so it can be serialized
+
 ## Version 2.3.5
 * Added support for custom Obliterator/Incinerator item conversions
 
