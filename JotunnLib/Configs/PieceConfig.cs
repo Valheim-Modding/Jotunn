@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using UnityEngine;
@@ -140,6 +141,26 @@ namespace Jotunn.Configs
             }
 
             return reqs;
+        }
+
+        /// <summary>
+        ///     Loads a single PieceConfig from a JSON string
+        /// </summary>
+        /// <param name="json">JSON text</param>
+        /// <returns>Loaded PieceConfig</returns>
+        public static PieceConfig FromJson(string json)
+        {
+            return SimpleJson.SimpleJson.DeserializeObject<PieceConfig>(json);
+        }
+
+        /// <summary>
+        ///     Loads a list of PieceConfigs from a JSON string
+        /// </summary>
+        /// <param name="json">JSON text</param>
+        /// <returns>Loaded list of PieceConfigs</returns>
+        public static List<PieceConfig> ListFromJson(string json)
+        {
+            return SimpleJson.SimpleJson.DeserializeObject<List<PieceConfig>>(json);
         }
     }
 }
