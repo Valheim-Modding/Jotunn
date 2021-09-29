@@ -428,12 +428,14 @@ namespace Jotunn.GUI
                             slider.minValue = acceptableValueRange.MinValue;
                             slider.maxValue = acceptableValueRange.MaxValue;
                             slider.value = configBoundInt.Value;
-                            slider.onValueChanged.AddListener(value => inputField.text = ((int)value).ToString(CultureInfo.CurrentCulture));
+                            slider.onValueChanged.AddListener(value => 
+                                inputField.SetTextWithoutNotify(((int)value)
+                                    .ToString(CultureInfo.CurrentCulture)));
                             inputField.onValueChanged.AddListener(text =>
                             {
                                 if (int.TryParse(text, out var value))
                                 {
-                                    slider.value = value;
+                                    slider.SetValueWithoutNotify(value);
                                 }
                             });
                         }
@@ -471,12 +473,15 @@ namespace Jotunn.GUI
                             slider.minValue = acceptableValueRange.MinValue;
                             slider.maxValue = acceptableValueRange.MaxValue;
                             slider.value = configBoundFloat.Value;
-                            slider.onValueChanged.AddListener(value => inputField.text = value.ToString(CultureInfo.CurrentCulture));
+                            var step = Mathf.Clamp(slider.minValue / slider.maxValue, 0.1f, 1f);
+                            slider.onValueChanged.AddListener(value => 
+                                inputField.SetTextWithoutNotify((Mathf.Round(value/step)*step)
+                                    .ToString("#0.000", CultureInfo.CurrentCulture)));
                             inputField.onValueChanged.AddListener(text =>
                             {
                                 if (float.TryParse(text, out var value))
                                 {
-                                    slider.value = Mathf.Round(value*1000f)/1000f;
+                                    slider.SetValueWithoutNotify(value);
                                 }
                             });
                         }
@@ -514,12 +519,15 @@ namespace Jotunn.GUI
                             slider.minValue = (float) acceptableValueRange.MinValue;
                             slider.maxValue = (float) acceptableValueRange.MaxValue;
                             slider.value = (float) configBoundDouble.Value;
-                            slider.onValueChanged.AddListener(value => inputField.text = value.ToString(CultureInfo.CurrentCulture));
+                            var step = Mathf.Clamp(slider.minValue / slider.maxValue, 0.1f, 1f);
+                            slider.onValueChanged.AddListener(value => 
+                                inputField.SetTextWithoutNotify((Mathf.Round(value / step) * step)
+                                    .ToString("#0.000", CultureInfo.CurrentCulture)));
                             inputField.onValueChanged.AddListener(text =>
                             {
                                 if (double.TryParse(text, out var value))
                                 {
-                                    slider.value = Mathf.Round((float)value*1000f)/1000f;
+                                    slider.SetValueWithoutNotify((float)value);
                                 }
                             });
                         }
