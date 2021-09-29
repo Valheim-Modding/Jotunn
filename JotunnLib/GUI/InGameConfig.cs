@@ -813,10 +813,8 @@ namespace Jotunn.GUI
             // create the slider
             var slider = DefaultControls.CreateSlider(GUIManager.Instance.ValheimControlResources);
             slider.transform.SetParent(field.transform, false);
-            ((RectTransform)slider.transform).pivot = new Vector2(1, 0.5f);
-            var inputFieldWidth = ((RectTransform)inputField.transform).sizeDelta.x;
-            ((RectTransform)slider.transform).anchoredPosition = new Vector2(-inputFieldWidth / 2f - 10f, 0);
-            ((RectTransform)slider.transform).sizeDelta = new Vector2(120, 30);
+            ((RectTransform)slider.transform).anchoredPosition = new Vector2(0, -25);
+            ((RectTransform)slider.transform).sizeDelta = new Vector2(140, 30);
             GUIManager.Instance.ApplySliderStyle(slider.GetComponent<Slider>());
             slider.SetActive(false);
 
