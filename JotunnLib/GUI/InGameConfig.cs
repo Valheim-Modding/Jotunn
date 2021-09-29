@@ -427,12 +427,19 @@ namespace Jotunn.GUI
                             slider.gameObject.SetActive(true);
                             slider.minValue = acceptableValueRange.MinValue;
                             slider.maxValue = acceptableValueRange.MaxValue;
+                            slider.value = configBoundInt.Value;
                             slider.onValueChanged.AddListener(value => inputField.text = ((int)value).ToString(CultureInfo.CurrentCulture));
+                            inputField.onValueChanged.AddListener(text =>
+                            {
+                                if (int.TryParse(text, out var value))
+                                {
+                                    slider.value = value;
+                                }
+                            });
                         }
-                        go.transform.Find("Input").GetComponent<InputField>().onValueChanged.AddListener(x =>
+                        inputField.onValueChanged.AddListener(x =>
                         {
-                            go.transform.Find("Input").GetComponent<InputField>().textComponent.color =
-                                go.GetComponent<ConfigBoundInt>().IsValid() ? Color.white : Color.red;
+                            inputField.textComponent.color = configBoundInt.IsValid() ? Color.white : Color.red;
                         });
                         preferredHeight += go.GetHeight();
                     }
@@ -463,7 +470,15 @@ namespace Jotunn.GUI
                             slider.gameObject.SetActive(true);
                             slider.minValue = acceptableValueRange.MinValue;
                             slider.maxValue = acceptableValueRange.MaxValue;
+                            slider.value = configBoundFloat.Value;
                             slider.onValueChanged.AddListener(value => inputField.text = value.ToString(CultureInfo.CurrentCulture));
+                            inputField.onValueChanged.AddListener(text =>
+                            {
+                                if (float.TryParse(text, out var value))
+                                {
+                                    slider.value = value;
+                                }
+                            });
                         }
                         inputField.onValueChanged.AddListener(x =>
                         {
@@ -498,7 +513,15 @@ namespace Jotunn.GUI
                             slider.gameObject.SetActive(true);
                             slider.minValue = (float) acceptableValueRange.MinValue;
                             slider.maxValue = (float) acceptableValueRange.MaxValue;
+                            slider.value = (float) configBoundDouble.Value;
                             slider.onValueChanged.AddListener(value => inputField.text = value.ToString(CultureInfo.CurrentCulture));
+                            inputField.onValueChanged.AddListener(text =>
+                            {
+                                if (double.TryParse(text, out var value))
+                                {
+                                    slider.value = (float) value;
+                                }
+                            });
                         }
                         inputField.onValueChanged.AddListener(x =>
                         {
