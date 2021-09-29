@@ -25,7 +25,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     The name of the item prefab. Is automatically set in <see cref="CustomItem"/>.
         /// </summary>
-        internal string Item { get; set; }
+        public string Item { get; internal set; }
 
         /// <summary>
         ///     The amount of <see cref="Item"/> that will be created when crafting this item. Defaults to <c>1</c>.
