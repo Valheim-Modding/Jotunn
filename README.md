@@ -98,3 +98,5 @@ These people have been integral to pushing JVL out of the door, and without them
 *blaxxun#9098*: [github](https://github.com/blaxxun-boop) - Creator of the superb [ServerSync](https://github.com/blaxxun-boop/ServerSync) mod which Jötunn adapted
 
 *Tekla#1012*: [github](https://github.com/T3kla/ValMods/wiki)
+
+*Margmas#9562*: [github](https://github.com/MSchmoecker), [thunderstore](https://valheim.thunderstore.io/package/MSchmoecker/), [nexus](https://www.nexusmods.com/users/111418768)
