@@ -1725,5 +1725,34 @@ namespace Jotunn.Managers
                 image.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
         }
+
+        /// <summary>
+        ///     Apply Valheim style to a <see cref="Slider"/> component.
+        /// </summary>
+        /// <param name="slider"></param>
+        public void ApplySliderStyle(Slider slider)
+        {
+            slider.handleRect.sizeDelta = new Vector2(40, 10);
+
+            if (slider.fillRect && slider.fillRect.TryGetComponent<Image>(out var image))
+            {
+                image.sprite = GetSprite("UISprite");
+                image.color = ValheimOrange;
+            }
+
+            if (slider.handleRect && slider.handleRect.transform.parent)
+            {
+                RectTransform handleSlideArea = (RectTransform)slider.handleRect.transform.parent;
+                handleSlideArea.offsetMin = new Vector2(5f, handleSlideArea.offsetMin.y);
+                handleSlideArea.offsetMax = new Vector2(-5f, handleSlideArea.offsetMax.y);
+            }
+
+            if (slider.handleRect && slider.fillRect.transform.parent)
+            {
+                RectTransform fillArea = (RectTransform)slider.fillRect.transform.parent;
+                fillArea.offsetMin = new Vector2(5f, fillArea.offsetMin.y);
+                fillArea.offsetMax = new Vector2(-5f, fillArea.offsetMax.y);
+            }
+        }
     }
 }

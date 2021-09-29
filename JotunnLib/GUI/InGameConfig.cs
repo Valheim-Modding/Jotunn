@@ -416,11 +416,19 @@ namespace Jotunn.GUI
                             entryAttributes.EntryColor,
                             description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
                             entryAttributes.DescriptionColor, innerWidth);
-                        go.AddComponent<ConfigBoundInt>()
-                            .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                        go.transform.Find("Input").GetComponent<InputField>().characterValidation =
-                            InputField.CharacterValidation.Integer;
-                        SetProperties(go.GetComponent<ConfigBoundInt>(), entry);
+                        var configBoundInt = go.AddComponent<ConfigBoundInt>();
+                        var inputField = go.transform.Find("Input").GetComponent<InputField>();
+                        configBoundInt.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                        inputField.characterValidation = InputField.CharacterValidation.Integer;
+                        SetProperties(configBoundInt, entry);
+                        if (configBoundInt.Clamp is AcceptableValueRange<int> acceptableValueRange)
+                        {
+                            var slider = go.GetComponentInChildren<Slider>(true);
+                            slider.gameObject.SetActive(true);
+                            slider.minValue = acceptableValueRange.MinValue;
+                            slider.maxValue = acceptableValueRange.MaxValue;
+                            slider.onValueChanged.AddListener(value => inputField.text = ((int)value).ToString(CultureInfo.CurrentCulture));
+                        }
                         go.transform.Find("Input").GetComponent<InputField>().onValueChanged.AddListener(x =>
                         {
                             go.transform.Find("Input").GetComponent<InputField>().textComponent.color =
@@ -444,15 +452,22 @@ namespace Jotunn.GUI
                             entryAttributes.EntryColor,
                             description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
                             entryAttributes.DescriptionColor, innerWidth);
-                        go.AddComponent<ConfigBoundFloat>()
-                            .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                        go.transform.Find("Input").GetComponent<InputField>().characterValidation =
-                            InputField.CharacterValidation.Decimal;
-                        SetProperties(go.GetComponent<ConfigBoundFloat>(), entry);
-                        go.transform.Find("Input").GetComponent<InputField>().onValueChanged.AddListener(x =>
+                        var configBoundFloat = go.AddComponent<ConfigBoundFloat>();
+                        var inputField = go.transform.Find("Input").GetComponent<InputField>();
+                        configBoundFloat.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                        inputField.characterValidation = InputField.CharacterValidation.Decimal;
+                        SetProperties(configBoundFloat, entry);
+                        if (configBoundFloat.Clamp is AcceptableValueRange<float> acceptableValueRange)
                         {
-                            go.transform.Find("Input").GetComponent<InputField>().textComponent.color =
-                                go.GetComponent<ConfigBoundFloat>().IsValid() ? Color.white : Color.red;
+                            var slider = go.GetComponentInChildren<Slider>(true);
+                            slider.gameObject.SetActive(true);
+                            slider.minValue = acceptableValueRange.MinValue;
+                            slider.maxValue = acceptableValueRange.MaxValue;
+                            slider.onValueChanged.AddListener(value => inputField.text = value.ToString(CultureInfo.CurrentCulture));
+                        }
+                        inputField.onValueChanged.AddListener(x =>
+                        {
+                            inputField.textComponent.color = configBoundFloat.IsValid() ? Color.white : Color.red;
                         });
                         preferredHeight += go.GetHeight();
                     }
@@ -472,15 +487,22 @@ namespace Jotunn.GUI
                             entryAttributes.EntryColor,
                             description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
                             entryAttributes.DescriptionColor, innerWidth);
-                        go.AddComponent<ConfigBoundDouble>()
-                            .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                        go.transform.Find("Input").GetComponent<InputField>().characterValidation =
-                            InputField.CharacterValidation.Decimal;
-                        SetProperties(go.GetComponent<ConfigBoundDouble>(), entry);
-                        go.transform.Find("Input").GetComponent<InputField>().onValueChanged.AddListener(x =>
+                        var configBoundDouble =go.AddComponent<ConfigBoundDouble>();
+                        var inputField = go.transform.Find("Input").GetComponent<InputField>();
+                        configBoundDouble.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                        inputField.characterValidation = InputField.CharacterValidation.Decimal;
+                        SetProperties(configBoundDouble, entry);
+                        if (configBoundDouble.Clamp is AcceptableValueRange<double> acceptableValueRange)
                         {
-                            go.transform.Find("Input").GetComponent<InputField>().textComponent.color =
-                                go.GetComponent<ConfigBoundDouble>().IsValid() ? Color.white : Color.red;
+                            var slider = go.GetComponentInChildren<Slider>(true);
+                            slider.gameObject.SetActive(true);
+                            slider.minValue = (float) acceptableValueRange.MinValue;
+                            slider.maxValue = (float) acceptableValueRange.MaxValue;
+                            slider.onValueChanged.AddListener(value => inputField.text = value.ToString(CultureInfo.CurrentCulture));
+                        }
+                        inputField.onValueChanged.AddListener(x =>
+                        {
+                            inputField.textComponent.color = configBoundDouble.IsValid() ? Color.white : Color.red;
                         });
                         preferredHeight += go.GetHeight();
                     }
@@ -764,6 +786,16 @@ namespace Jotunn.GUI
             placeholder.GetComponent<Text>().color = Color.gray;
             placeholder.transform.SetParent(field.transform, false);
             placeholder.GetComponent<RectTransform>().anchoredPosition = new Vector2(5, 0);
+
+            // create the slider
+            var slider = DefaultControls.CreateSlider(GUIManager.Instance.ValheimControlResources);
+            slider.transform.SetParent(field.transform, false);
+            ((RectTransform)slider.transform).pivot = new Vector2(1, 0.5f);
+            var inputFieldWidth = ((RectTransform)inputField.transform).sizeDelta.x;
+            ((RectTransform)slider.transform).anchoredPosition = new Vector2(-inputFieldWidth / 2f - 10f, 0);
+            ((RectTransform)slider.transform).sizeDelta = new Vector2(120, 30);
+            GUIManager.Instance.ApplySliderStyle(slider.GetComponent<Slider>());
+            slider.SetActive(false);
 
             // set the preferred height on the layout element
             result.GetComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
