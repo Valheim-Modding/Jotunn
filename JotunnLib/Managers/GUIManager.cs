@@ -1415,7 +1415,7 @@ namespace Jotunn.Managers
             bindString.SetToTextHeight().SetWidth(button.GetComponent<RectTransform>().rect.width);
             bindString.SetMiddleLeft().GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
 
-            button.SetHeight(bindString.GetTextHeight() + 4f);
+            button.SetHeight(bindString.GetTextHeight() + height);
 
             bindString.transform.SetParent(button.transform, false);
 

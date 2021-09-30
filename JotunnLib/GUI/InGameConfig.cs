@@ -1023,15 +1023,8 @@ namespace Jotunn.GUI
         private static GameObject CreateKeybindElement(Transform parent, string labelname, string description, string buttonName, float width)
         {
             // Create label and keybind button
-            var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
-
-            // Add this keybinding to the list in Settings to utilize valheim's keybind dialog
-            /*Settings.instance.m_keys.Add(new Settings.KeySetting
-            {
-                m_keyName = buttonName,
-                m_keyTransform = result.GetComponent<RectTransform>()
-            });*/
-
+            var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 4f);
+            
             // Create description text
             var idx = 0;
             var lastPosition = new Vector2(0, -result.GetComponent<RectTransform>().rect.height - 3f);
@@ -1069,7 +1062,7 @@ namespace Jotunn.GUI
         private static GameObject CreateShortcutbindElement(Transform parent, string labelname, string description, string buttonName, float width)
         {
             // Create label and keybind button
-            var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
+            var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 24f);
 
             // Create description text
             var idx = 0;
