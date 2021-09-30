@@ -106,7 +106,8 @@ namespace Jotunn
                 throw new ArgumentNullException(nameof(configurationEntry));
             }
 
-            if (configurationEntry.SettingType != typeof(KeyCode))
+            if (configurationEntry.SettingType != typeof(KeyCode) &&
+                configurationEntry.SettingType != typeof(KeyboardShortcut))
             {
                 return false;
             }
@@ -133,7 +134,8 @@ namespace Jotunn
                 throw new ArgumentNullException(nameof(configurationEntry));
             }
 
-            if (configurationEntry.SettingType != typeof(KeyCode))
+            if (configurationEntry.SettingType != typeof(KeyCode) &&
+                configurationEntry.SettingType != typeof(KeyboardShortcut))
             {
                 return null;
             }
@@ -162,7 +164,8 @@ namespace Jotunn
                 throw new ArgumentNullException(nameof(configurationEntry));
             }
 
-            if (configurationEntry.SettingType != typeof(KeyCode))
+            if (configurationEntry.SettingType != typeof(KeyCode) &&
+                configurationEntry.SettingType != typeof(KeyboardShortcut))
             {
                 return null;
             }
