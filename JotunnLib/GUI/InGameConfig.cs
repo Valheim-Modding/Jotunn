@@ -542,8 +542,11 @@ namespace Jotunn.GUI
                     {
                         // Create key binder
                         var buttonName = entry.Value.GetBoundButtonName();
-                        var buttonText =
-                            $"{entry.Value.Description.Description}{Environment.NewLine}This key is bound to button '{buttonName.Split('!')[0]}'.";
+                        var buttonText = $"{entry.Value.Description.Description}";
+                        buttonText += $"{Environment.NewLine}This key is bound to button '{buttonName.Split('!')[0]}'.";
+                        buttonText += entryAttributes.IsAdminOnly
+                            ? $"{Environment.NewLine}(Server side setting)"
+                            : "";
                         if (!string.IsNullOrEmpty(buttonName) && ConfigurationKeybindings.ContainsKey(buttonName))
                         {
                             var duplicateKeybindingText = "";
@@ -583,8 +586,11 @@ namespace Jotunn.GUI
 
                         // Create shortcut binder
                         var buttonName = entry.Value.GetBoundButtonName();
-                        var buttonText =
-                            $"{entry.Value.Description.Description}{Environment.NewLine}This key is bound to button '{buttonName.Split('!')[0]}'.";
+                        var buttonText = $"{entry.Value.Description.Description}";
+                        buttonText += $"{Environment.NewLine}This shortcut is bound to button '{buttonName.Split('!')[0]}'.";
+                        buttonText += entryAttributes.IsAdminOnly
+                            ? $"{Environment.NewLine}(Server side setting)"
+                            : "";
                         if (!string.IsNullOrEmpty(buttonName) && ConfigurationKeybindings.ContainsKey(buttonName))
                         {
                             var duplicateKeybindingText = "";
