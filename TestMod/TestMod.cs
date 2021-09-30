@@ -508,29 +508,48 @@ namespace TestMod
 
             // Add server config which gets pushed to all clients connecting and can only be edited by admins
             // In local/single player games the player is always considered the admin
-            Config.Bind(JotunnTestModConfigSection, "StringValue1", "StringValue",
+            Config.Bind(JotunnTestModConfigSection, "Server String", "StringValue",
                 new ConfigDescription("Server side string", null, 
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind(JotunnTestModConfigSection, "FloatValue1", 750f,
+            Config.Bind(JotunnTestModConfigSection, "Server Float", 750f,
                 new ConfigDescription("Server side float", 
                     new AcceptableValueRange<float>(500f, 1000f),
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind(JotunnTestModConfigSection, "DoubleValue1", 20d,
-                new ConfigDescription("Server side integer", 
+            Config.Bind(JotunnTestModConfigSection, "Server Double", 20d,
+                new ConfigDescription("Server side double", 
                     new AcceptableValueRange<double>(5d, 25d), 
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind(JotunnTestModConfigSection, "IntegerValue1", 200,
+            Config.Bind(JotunnTestModConfigSection, "Server Integer", 200,
                 new ConfigDescription("Server side integer", 
                     new AcceptableValueRange<int>(5, 25), 
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
-            // Test Color value support
-            Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
+            Config.Bind(JotunnTestModConfigSection, "Server Color", new Color(0f, 1f, 0f, 1f),
                 new ConfigDescription("Server side Color", null, 
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
+            // Keys
+            var serverKey = 
+                Config.Bind(JotunnTestModConfigSection, "Server KeyCode", KeyCode.Alpha0,
+                    new ConfigDescription("Server side KeyCode", null, 
+                        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            InputManager.Instance.AddButton(ModGUID, new ButtonConfig
+            {
+                Name = "ServerKeyCode",
+                Config = serverKey
+            });
+            var serverShortcut =
+                Config.Bind(JotunnTestModConfigSection, "Server KeyboardShortcut",
+                    new KeyboardShortcut(KeyCode.A, KeyCode.LeftControl), 
+                    new ConfigDescription("Testing how KeyboardShortcut behaves", null, 
+                        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            /*InputManager.Instance.AddButton(ModGUID, new ButtonConfig
+            {
+                Name = "ServerKeyboardShortcut",
+                Config = serverShortcut
+            });*/
+
             // Test colored text configs
-            Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
+            Config.Bind(JotunnTestModConfigSection, "Server Bool", false,
                 new ConfigDescription("Server side bool", null, 
                     new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
 
@@ -549,13 +568,7 @@ namespace TestMod
             // Add a client side custom input key for the EvilSword
             EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, 
                 new ConfigDescription("Key to unleash evil with the Evil Sword"));
-
-            // Test KeyboardShortcut
-            Config.Bind<KeyboardShortcut>(JotunnTestModConfigSection, "KeyboardShortcutValue",
-                new KeyboardShortcut(KeyCode.A, KeyCode.LeftControl), 
-                new ConfigDescription("Testing how KeyboardShortcut behaves", null, 
-                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
+            
         }
 
         // React on changed settings
