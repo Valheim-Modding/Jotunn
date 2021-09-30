@@ -50,6 +50,11 @@ namespace TestMod
         private ButtonConfig EvilSwordSpecialButton;
         private CustomStatusEffect EvilSwordEffect;
 
+        private ConfigEntry<KeyCode> ServerKeyCodeConfig;
+        private ButtonConfig ServerKeyCodeButton;
+        private ConfigEntry<KeyboardShortcut> ServerShortcutConfig;
+        private ButtonConfig ServerShortcutButton;
+
         private ConfigEntry<bool> EnableVersionMismatch;
         private ConfigEntry<bool> EnableExtVersionMismatch;
 
@@ -158,6 +163,22 @@ namespace TestMod
                     if (ZInput.GetButtonDown(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
+                    }
+                }
+                
+                // Use the name of the ButtonConfig to identify the button pressed
+                if (ServerKeyCodeButton != null && MessageHud.instance != null)
+                {
+                    if (ZInput.GetButtonDown(ServerKeyCodeButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                    {
+                        MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "Server KeyCode pressed");
+                    }
+                }
+                if (ServerShortcutButton != null && MessageHud.instance != null)
+                {
+                    if (ZInput.GetButtonDown(ServerShortcutButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                    {
+                        MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "Server Shortcut pressed");
                     }
                 }
 
@@ -508,29 +529,39 @@ namespace TestMod
 
             // Add server config which gets pushed to all clients connecting and can only be edited by admins
             // In local/single player games the player is always considered the admin
-            Config.Bind(JotunnTestModConfigSection, "StringValue1", "StringValue",
+            Config.Bind(JotunnTestModConfigSection, "Server String", "StringValue",
                 new ConfigDescription("Server side string", null, 
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind(JotunnTestModConfigSection, "FloatValue1", 750f,
+            Config.Bind(JotunnTestModConfigSection, "Server Float", 750f,
                 new ConfigDescription("Server side float", 
                     new AcceptableValueRange<float>(500f, 1000f),
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind(JotunnTestModConfigSection, "DoubleValue1", 20d,
-                new ConfigDescription("Server side integer", 
+            Config.Bind(JotunnTestModConfigSection, "Server Double", 20d,
+                new ConfigDescription("Server side double", 
                     new AcceptableValueRange<double>(5d, 25d), 
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Config.Bind(JotunnTestModConfigSection, "IntegerValue1", 200,
+            Config.Bind(JotunnTestModConfigSection, "Server Integer", 200,
                 new ConfigDescription("Server side integer", 
                     new AcceptableValueRange<int>(5, 25), 
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
-            // Test Color value support
-            Config.Bind(JotunnTestModConfigSection, "Server color", new Color(0f, 1f, 0f, 1f),
+            Config.Bind(JotunnTestModConfigSection, "Server Color", new Color(0f, 1f, 0f, 1f),
                 new ConfigDescription("Server side Color", null, 
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
+            // Keys
+            ServerKeyCodeConfig = 
+                Config.Bind(JotunnTestModConfigSection, "Server KeyCode", KeyCode.Alpha0,
+                    new ConfigDescription("Server side KeyCode", null, 
+                        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            
+            ServerShortcutConfig =
+                Config.Bind(JotunnTestModConfigSection, "Server KeyboardShortcut",
+                    new KeyboardShortcut(KeyCode.A, KeyCode.LeftControl), 
+                    new ConfigDescription("Testing how KeyboardShortcut behaves", null, 
+                        new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            
             // Test colored text configs
-            Config.Bind(JotunnTestModConfigSection, "BoolValue1", false,
+            Config.Bind(JotunnTestModConfigSection, "Server Bool", false,
                 new ConfigDescription("Server side bool", null, 
                     new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
 
@@ -549,13 +580,7 @@ namespace TestMod
             // Add a client side custom input key for the EvilSword
             EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, 
                 new ConfigDescription("Key to unleash evil with the Evil Sword"));
-
-            // Test KeyboardShortcut
-            Config.Bind<KeyboardShortcut>(JotunnTestModConfigSection, "KeyboardShortcutValue",
-                new KeyboardShortcut(KeyCode.A, KeyCode.LeftControl), 
-                new ConfigDescription("Testing how KeyboardShortcut behaves", null, 
-                    new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
+            
         }
 
         // React on changed settings
@@ -614,6 +639,12 @@ namespace TestMod
             // Add a key binding to test skill raising
             RaiseSkillButton = new ButtonConfig { Name = "TestMod_RaiseSkill", Key = KeyCode.Insert, ActiveInGUI = true, ActiveInCustomGUI = true };
             InputManager.Instance.AddButton(ModGUID, RaiseSkillButton);
+
+            // Server config test keys
+            ServerKeyCodeButton = new ButtonConfig {Name = "ServerKeyCode", Config = ServerKeyCodeConfig};
+            InputManager.Instance.AddButton(ModGUID, ServerKeyCodeButton);
+            ServerShortcutButton = new ButtonConfig {Name = "ServerShortcut", ShortcutConfig = ServerShortcutConfig};
+            InputManager.Instance.AddButton(ModGUID, ServerShortcutButton);
         }
 
         // Adds localizations with configs

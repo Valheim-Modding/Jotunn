@@ -16,21 +16,32 @@ namespace Jotunn.Configs
         public string Name { get; set; }
 
         /// <summary>
-        ///     Axis string this config should be bound to. If Key and Axis are both set, Axis will be used.<br />
+        ///     Axis string this config should be bound to.<br />
         ///     Use special Axis "Mouse ScrollWheel" to display the scroll icon as the key hint.
         /// </summary>
-        public string Axis { get; set; } = null;
+        public string Axis { get; set; } = string.Empty;
 
         /// <summary>
-        ///     Unity KeyCode this config should be bound to. If Key and Axis are both set, Axis will be used.
+        ///     Unity KeyCode this config should be bound to.
         /// </summary>
-        public KeyCode Key { get; set; }
+        public KeyCode Key { get; set; } = KeyCode.None;
         
         /// <summary>
-        ///     BepInEx configuration entry of a KeyCode that should be used. Sets the <see cref="Key"/>
-        ///     value of this config when added to the InputManager.
+        ///     BepInEx configuration entry of a KeyCode that should be used.
+        ///     Overrides the <see cref="Key"/> value of this config.
         /// </summary>
         public ConfigEntry<KeyCode> Config { get; set; }
+        
+        /// <summary>
+        ///     BepInEx KeyboardShortcut this config should be bound to.
+        /// </summary>
+        public KeyboardShortcut Shortcut { get; set; } = KeyboardShortcut.Empty;
+        
+        /// <summary>
+        ///     BepInEx configuration entry of a KeyCode that should be used.
+        ///     Overrides the <see cref="Shortcut"/> value of this config.
+        /// </summary>
+        public ConfigEntry<KeyboardShortcut> ShortcutConfig { get; set; }
 
         /// <summary>
         ///     Should the Axis value be inverted?

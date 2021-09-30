@@ -4,6 +4,8 @@
 * Added JSON helper methods to PieceConfig
 * Item property in ItemConfig is publicly readable now so it can be serialized
 * Added slider for numerical values in the mod settings GUI
+* Fixed button config in mod settings for control keys
+* Added support for BepInEx' KeyboardShortcuts in ButtonConfig and InputManager
 
 ## Version 2.3.5
 * Added support for custom Obliterator/Incinerator item conversions

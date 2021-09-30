@@ -62,21 +62,39 @@ namespace Jotunn.Managers
                 throw new ArgumentException($"{nameof(modGuid)} can not be empty or null", nameof(modGuid));
             }
 
-            if ((buttonConfig.Config == null) && (buttonConfig.Key == KeyCode.None) && string.IsNullOrEmpty(buttonConfig.Axis))
+            if (buttonConfig.Config == null && buttonConfig.Key == KeyCode.None && 
+                buttonConfig.ShortcutConfig == null && buttonConfig.Shortcut.MainKey == KeyCode.None &&
+                string.IsNullOrEmpty(buttonConfig.Axis))
             {
-                throw new ArgumentException($"{nameof(buttonConfig)} needs either Key, Axis or Config set.", nameof(buttonConfig));
+                throw new ArgumentException($"{nameof(buttonConfig)} needs either Axis, Key, Shortcut or a Config set.", nameof(buttonConfig));
             }
 
             if (Buttons.ContainsKey(buttonConfig.Name + "!" + modGuid))
             {
-                Logger.LogError($"Cannot have duplicate button: {buttonConfig.Name} (Mod {modGuid})");
+                Logger.LogWarning($"Cannot have duplicate button: {buttonConfig.Name} (Mod {modGuid})");
+                return;
+            }
+            
+            if (buttonConfig.Key != KeyCode.None && buttonConfig.Shortcut.MainKey != KeyCode.None)
+            {
+                Logger.LogWarning($"Cannot have a Key and Shortcut in button config {buttonConfig.Name} (Mod {modGuid})");
+                return;
+            }
+
+            if (buttonConfig.Config != null && buttonConfig.ShortcutConfig != null)
+            {
+                Logger.LogWarning($"Cannot have a Key and Shortcut config in button config {buttonConfig.Name} (Mod {modGuid})");
                 return;
             }
 
             if (buttonConfig.Config != null)
             {
-                buttonConfig.Key = buttonConfig.Config.Value;
                 ButtonToConfigDict.Add(buttonConfig.Config, buttonConfig);
+            }
+
+            if (buttonConfig.ShortcutConfig != null)
+            {
+                ButtonToConfigDict.Add(buttonConfig.ShortcutConfig, buttonConfig);
             }
 
             buttonConfig.Name += "!" + modGuid;
@@ -94,14 +112,26 @@ namespace Jotunn.Managers
                 foreach (var pair in Buttons)
                 {
                     var btn = pair.Value;
-
+                    
                     if (!string.IsNullOrEmpty(btn.Axis))
                     {
                         self.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
                     }
-                    else
+                    else if (btn.Config != null)
+                    {
+                        self.AddButton(btn.Name, btn.Config.Value, btn.RepeatDelay, btn.RepeatInterval);
+                    }
+                    else if (btn.Key != KeyCode.None)
                     {
                         self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
+                    }
+                    else if (btn.ShortcutConfig != null)
+                    {
+                        self.AddButton(btn.Name, btn.ShortcutConfig.Value.MainKey, btn.RepeatDelay, btn.RepeatInterval);
+                    }
+                    else if (btn.Shortcut.MainKey != KeyCode.None)
+                    {
+                        self.AddButton(btn.Name, btn.Shortcut.MainKey, btn.RepeatDelay, btn.RepeatInterval);
                     }
 
                     Logger.LogDebug($"Registered input {pair.Key}");
@@ -111,41 +141,67 @@ namespace Jotunn.Managers
 
         private bool ZInput_GetButtonUp(On.ZInput.orig_GetButtonUp orig, string name)
         {
-            if (orig(name))
+            if (!orig(name))
             {
-                return TakeInput(name);
+                return false;
             }
 
-            return false;
+            if (!Buttons.TryGetValue(name, out var button))
+            {
+                return true;
+            }
+
+            if (button.ShortcutConfig != null && !button.ShortcutConfig.Value.IsUp())
+            {
+                return false;
+            }
+
+            if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsUp())
+            {
+                return false;
+            }
+            
+            return TakeInput(button);
         }
 
         private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
         {
-            if (orig(name))
+            if (!orig(name))
             {
-                return TakeInput(name);
+                return false;
+            }
+            
+            if (!Buttons.TryGetValue(name, out var button))
+            {
+                return true;
             }
 
-            return false;
+            if (button.ShortcutConfig != null && !button.ShortcutConfig.Value.IsDown())
+            {
+                return false;
+            }
+
+            if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsDown())
+            {
+                return false;
+            }
+            
+            return TakeInput(button);
         }
 
-        private bool TakeInput(string name)
+        private bool TakeInput(ButtonConfig button)
         {
             if (Player.m_localPlayer == null)
             {
                 return true;
             }
+            
+            if (button.ActiveInGUI && !GUIManager.InputBlocked)
+            {
+                return true;
+            }
 
-            var button = Buttons.FirstOrDefault(x => x.Key.Equals(name));
-            if (button.Key == null)
-            {
-                return true;
-            }
-            if (button.Value.ActiveInGUI && !GUIManager.InputBlocked)
-            {
-                return true;
-            }
-            if (button.Value.ActiveInCustomGUI && GUIManager.InputBlocked)
+            if (button.ActiveInCustomGUI && GUIManager.InputBlocked)
             {
                 return true;
             }

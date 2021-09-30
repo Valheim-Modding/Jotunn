@@ -268,7 +268,7 @@ namespace Jotunn.GUI
             // Finally show the window
             SettingsRoot.SetActive(true);
         }
-
+        
         private class EscBehaviour : MonoBehaviour
         {
             private void OnDestroy()
@@ -576,17 +576,42 @@ namespace Jotunn.GUI
                         SetProperties(go.GetComponent<ConfigBoundKeyCode>(), entry);
                         preferredHeight += go.GetHeight();
                     }
-                    else if (entry.Value.SettingType == typeof(KeyboardShortcut))
+                    else if (entry.Value.SettingType == typeof(KeyboardShortcut) &&
+                             ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
                     {
                         var description = entry.Value.Description.Description;
 
                         // Create shortcut binder
+                        var buttonName = entry.Value.GetBoundButtonName();
+                        var buttonText =
+                            $"{entry.Value.Description.Description}{Environment.NewLine}This key is bound to button '{buttonName.Split('!')[0]}'.";
+                        if (!string.IsNullOrEmpty(buttonName) && ConfigurationKeybindings.ContainsKey(buttonName))
+                        {
+                            var duplicateKeybindingText = "";
+                            if (ConfigurationKeybindings[buttonName].Count > 1)
+                            {
+                                duplicateKeybindingText +=
+                                    $"{Environment.NewLine}Other mods using this button:{Environment.NewLine}";
+                                foreach (var buttons in ConfigurationKeybindings[buttonName])
+                                {
+                                    // If it is the same config entry, just skip it
+                                    if (buttons.Item2 == entry.Key && buttons.Item1 == mod.Key)
+                                    {
+                                        continue;
+                                    }
+
+                                    // Add modguid as text
+                                    duplicateKeybindingText += $"{buttons.Item1}, ";
+                                }
+
+                                // add to buttonText, but without last ', '
+                                buttonText += duplicateKeybindingText.Trim(' ').TrimEnd(',');
+                            }
+                        }
+
                         var go = CreateShortcutbindElement(contentViewport,
-                            entry.Key.Key + ":",
-                            entry.Value.Description.Description + (entryAttributes.IsAdminOnly
-                                ? $"{Environment.NewLine}(Server side setting)"
-                                : ""),
-                            $"{mod.Value.Info.Metadata.GUID}:{entry.Key.Section}:{entry.Key.Key}", innerWidth);
+                            entry.Key.Key + ":", buttonText,
+                            buttonName, innerWidth);
                         go.AddComponent<ConfigBoundKeyboardShortcut>()
                             .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         SetProperties(go.GetComponent<ConfigBoundKeyboardShortcut>(), entry);
@@ -1001,11 +1026,11 @@ namespace Jotunn.GUI
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
 
             // Add this keybinding to the list in Settings to utilize valheim's keybind dialog
-            Settings.instance.m_keys.Add(new Settings.KeySetting
+            /*Settings.instance.m_keys.Add(new Settings.KeySetting
             {
                 m_keyName = buttonName,
                 m_keyTransform = result.GetComponent<RectTransform>()
-            });
+            });*/
 
             // Create description text
             var idx = 0;
@@ -1344,24 +1369,17 @@ namespace Jotunn.GUI
 
             public override KeyCode GetValue()
             {
-                // TODO: Get and parse value from input field
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                var temp = KeyCode.None;
-                if (Enum.TryParse(gameObject.transform.Find("Button/Text").GetComponent<Text>().text, out temp))
+                if (Enum.TryParse(gameObject.transform.Find("Button/Text").GetComponent<Text>().text, out KeyCode temp))
                 {
                     return temp;
                 }
 
                 Logger.LogError($"Error parsing Keycode {gameObject.transform.Find("Button/Text").GetComponent<Text>().text}");
-                return temp;
+                return KeyCode.None;
             }
 
             internal override void SetValue(KeyCode value)
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                var buttonName = entry.GetBoundButtonName();
                 gameObject.transform.Find("Button/Text").GetComponent<Text>().text = value.ToString();
             }
 
@@ -1373,9 +1391,26 @@ namespace Jotunn.GUI
                 gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() =>
                 {
                     Settings.instance.OpenBindDialog(buttonName);
+                    On.ZInput.EndBindKey += ZInput_EndBindKey;
                 });
             }
 
+            private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
+            {
+                foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
+                {
+                    if (Input.GetKeyDown(key))
+                    {
+                        SetValue(key);
+                        ZInput.m_binding.m_key = key;
+                        On.ZInput.EndBindKey -= ZInput_EndBindKey;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            
             public override void SetEnabled(bool enabled)
             {
                 gameObject.transform.Find("Button").GetComponent<Button>().enabled = enabled;
@@ -1424,10 +1459,12 @@ namespace Jotunn.GUI
 
             public void Start()
             {
+                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
+                var entry = pluginConfig[Section, Key];
+                var buttonName = entry.GetBoundButtonName();
                 gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    ZInput.instance.AddButton($"{ModGUID}:{Section}:{Key}", KeyCode.None);
-                    Settings.instance.OpenBindDialog($"{ModGUID}:{Section}:{Key}");
+                    Settings.instance.OpenBindDialog(buttonName);
                     On.ZInput.EndBindKey += ZInput_EndBindKey;
                 });
             }
@@ -1439,8 +1476,8 @@ namespace Jotunn.GUI
                     if (Input.GetKeyUp(key))
                     {
                         SetValue(new KeyboardShortcut(key, KeysToCheck.Where(Input.GetKey).ToArray()));
+                        ZInput.m_binding.m_key = key;
                         On.ZInput.EndBindKey -= ZInput_EndBindKey;
-                        self.m_buttons.Remove($"{ModGUID}:{Section}:{Key}");
                         return true;
                     }
                 }

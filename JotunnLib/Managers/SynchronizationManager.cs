@@ -547,10 +547,17 @@ namespace Jotunn.Managers
                         valuesToSend.Add(value);
                     }
 
+                    // Set buttons if changed
                     string buttonName = cx.GetBoundButtonName();
-                    if (cx.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.ContainsKey(buttonName))
+                    if (cx.SettingType == typeof(KeyCode) && ZInput.instance != null &&
+                        ZInput.instance.m_buttons.ContainsKey(buttonName))
                     {
                         ZInput.instance.Setbutton(buttonName, (KeyCode)cx.BoxedValue);
+                    }
+                    if (cx.SettingType == typeof(KeyboardShortcut) && ZInput.instance != null &&
+                        ZInput.instance.m_buttons.ContainsKey(buttonName))
+                    {
+                        ZInput.instance.Setbutton(buttonName, ((KeyboardShortcut)cx.BoxedValue).MainKey);
                     }
                 }
             }
@@ -794,8 +801,20 @@ namespace Jotunn.Managers
                         if (entry.IsSyncable())
                         {
                             Logger.LogDebug($"Setting config value {modguid}.{section}.{key} to {serializedValue}");
-                            //loadedPlugins[modguid].Config[section, key].SetSerializedValue(serializedValue);
                             entry.BoxedValue = TomlTypeConverter.ConvertToValue(serializedValue, entry.SettingType);
+
+                            // Set buttons after receive
+                            string buttonName = entry.GetBoundButtonName();
+                            if (entry.SettingType == typeof(KeyCode) && ZInput.instance != null &&
+                                ZInput.instance.m_buttons.ContainsKey(buttonName))
+                            {
+                                ZInput.instance.Setbutton(buttonName, (KeyCode)entry.BoxedValue);
+                            }
+                            if (entry.SettingType == typeof(KeyboardShortcut) && ZInput.instance != null &&
+                                ZInput.instance.m_buttons.ContainsKey(buttonName))
+                            {
+                                ZInput.instance.Setbutton(buttonName, ((KeyboardShortcut)entry.BoxedValue).MainKey);
+                            }
                         }
                         else
                         {
