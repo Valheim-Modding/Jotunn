@@ -75,7 +75,7 @@ namespace Jotunn.Managers
 
             if (buttonConfig.Config != null)
             {
-                buttonConfig.Key = buttonConfig.Config.Value;
+                //buttonConfig.Key = buttonConfig.Config.Value;
                 ButtonToConfigDict.Add(buttonConfig.Config, buttonConfig);
             }
 
@@ -98,6 +98,10 @@ namespace Jotunn.Managers
                     if (!string.IsNullOrEmpty(btn.Axis))
                     {
                         self.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
+                    }
+                    else if (btn.Config != null)
+                    {
+                        self.AddButton(btn.Name, btn.Config.Value, btn.RepeatDelay, btn.RepeatInterval);
                     }
                     else
                     {

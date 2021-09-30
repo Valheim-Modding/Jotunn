@@ -268,7 +268,7 @@ namespace Jotunn.GUI
             // Finally show the window
             SettingsRoot.SetActive(true);
         }
-
+        
         private class EscBehaviour : MonoBehaviour
         {
             private void OnDestroy()
@@ -1001,11 +1001,11 @@ namespace Jotunn.GUI
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 0);
 
             // Add this keybinding to the list in Settings to utilize valheim's keybind dialog
-            Settings.instance.m_keys.Add(new Settings.KeySetting
+            /*Settings.instance.m_keys.Add(new Settings.KeySetting
             {
                 m_keyName = buttonName,
                 m_keyTransform = result.GetComponent<RectTransform>()
-            });
+            });*/
 
             // Create description text
             var idx = 0;
@@ -1344,38 +1344,48 @@ namespace Jotunn.GUI
 
             public override KeyCode GetValue()
             {
-                // TODO: Get and parse value from input field
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                var temp = KeyCode.None;
-                if (Enum.TryParse(gameObject.transform.Find("Button/Text").GetComponent<Text>().text, out temp))
+                if (Enum.TryParse(gameObject.transform.Find("Button/Text").GetComponent<Text>().text, out KeyCode temp))
                 {
                     return temp;
                 }
 
                 Logger.LogError($"Error parsing Keycode {gameObject.transform.Find("Button/Text").GetComponent<Text>().text}");
-                return temp;
+                return KeyCode.None;
             }
 
             internal override void SetValue(KeyCode value)
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                var buttonName = entry.GetBoundButtonName();
                 gameObject.transform.Find("Button/Text").GetComponent<Text>().text = value.ToString();
             }
 
             public void Start()
             {
                 var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
+                var entry = pluginConfig[Section, Key] as ConfigEntry<KeyCode>;
                 var buttonName = entry.GetBoundButtonName();
                 gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() =>
                 {
                     Settings.instance.OpenBindDialog(buttonName);
+                    On.ZInput.EndBindKey += ZInput_EndBindKey;
                 });
             }
 
+            private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
+            {
+                foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
+                {
+                    if (Input.GetKeyDown(key))
+                    {
+                        SetValue(key);
+                        ZInput.m_binding.m_key = key;
+                        On.ZInput.EndBindKey -= ZInput_EndBindKey;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            
             public override void SetEnabled(bool enabled)
             {
                 gameObject.transform.Find("Button").GetComponent<Button>().enabled = enabled;
