@@ -27,8 +27,8 @@ namespace Jotunn.Configs
         public KeyCode Key { get; set; } = KeyCode.None;
         
         /// <summary>
-        ///     BepInEx configuration entry of a KeyCode that should be used. Sets the <see cref="Key"/>
-        ///     value of this config when added to the InputManager.
+        ///     BepInEx configuration entry of a KeyCode that should be used.
+        ///     Overrides the <see cref="Key"/> value of this config.
         /// </summary>
         public ConfigEntry<KeyCode> Config { get; set; }
         
@@ -38,8 +38,8 @@ namespace Jotunn.Configs
         public KeyboardShortcut Shortcut { get; set; } = KeyboardShortcut.Empty;
         
         /// <summary>
-        ///     BepInEx configuration entry of a KeyCode that should be used. Sets the <see cref="Shortcut"/>
-        ///     value of this config when added to the InputManager.
+        ///     BepInEx configuration entry of a KeyCode that should be used.
+        ///     Overrides the <see cref="Shortcut"/> value of this config.
         /// </summary>
         public ConfigEntry<KeyboardShortcut> ShortcutConfig { get; set; }
 

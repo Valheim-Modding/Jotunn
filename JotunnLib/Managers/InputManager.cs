@@ -141,41 +141,67 @@ namespace Jotunn.Managers
 
         private bool ZInput_GetButtonUp(On.ZInput.orig_GetButtonUp orig, string name)
         {
-            if (orig(name))
+            if (!orig(name))
             {
-                return TakeInput(name);
+                return false;
             }
 
-            return false;
+            if (!Buttons.TryGetValue(name, out var button))
+            {
+                return true;
+            }
+
+            if (button.ShortcutConfig != null && !button.ShortcutConfig.Value.IsUp())
+            {
+                return false;
+            }
+
+            if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsUp())
+            {
+                return false;
+            }
+            
+            return TakeInput(button);
         }
 
         private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
         {
-            if (orig(name))
+            if (!orig(name))
             {
-                return TakeInput(name);
+                return false;
+            }
+            
+            if (!Buttons.TryGetValue(name, out var button))
+            {
+                return true;
             }
 
-            return false;
+            if (button.ShortcutConfig != null && !button.ShortcutConfig.Value.IsDown())
+            {
+                return false;
+            }
+
+            if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsDown())
+            {
+                return false;
+            }
+            
+            return TakeInput(button);
         }
 
-        private bool TakeInput(string name)
+        private bool TakeInput(ButtonConfig button)
         {
             if (Player.m_localPlayer == null)
             {
                 return true;
             }
+            
+            if (button.ActiveInGUI && !GUIManager.InputBlocked)
+            {
+                return true;
+            }
 
-            var button = Buttons.FirstOrDefault(x => x.Key.Equals(name));
-            if (button.Key == null)
-            {
-                return true;
-            }
-            if (button.Value.ActiveInGUI && !GUIManager.InputBlocked)
-            {
-                return true;
-            }
-            if (button.Value.ActiveInCustomGUI && GUIManager.InputBlocked)
+            if (button.ActiveInCustomGUI && GUIManager.InputBlocked)
             {
                 return true;
             }
