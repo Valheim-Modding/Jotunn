@@ -1435,7 +1435,7 @@ namespace Jotunn.GUI
             {
                 Input = gameObject.transform.Find("Input").GetComponent<InputField>();
                 Input.characterValidation = InputField.CharacterValidation.None;
-                Input.contentType = InputField.ContentType.Alphanumeric;
+                Input.contentType = InputField.ContentType.Standard;
             }
             
             public override string GetValue()
