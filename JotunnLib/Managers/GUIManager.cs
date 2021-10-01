@@ -1412,7 +1412,7 @@ namespace Jotunn.Managers
             ApplyTextStyle(textComponent, textComponent.fontSize);
             textComponent.text = "";
 
-            bindString.SetHeight(bindString.GetTextHeight() + height).SetWidth(button.GetComponent<RectTransform>().rect.width);
+            bindString.SetHeight(bindString.GetTextHeight() + height - 2f).SetWidth(button.GetComponent<RectTransform>().rect.width);
             bindString.SetMiddleLeft().GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
 
             button.SetHeight(bindString.GetTextHeight() + height);

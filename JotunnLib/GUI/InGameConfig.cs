@@ -395,9 +395,9 @@ namespace Jotunn.GUI
                             entry.Value.Description.Description + (entryAttributes.IsAdminOnly
                                 ? $"{Environment.NewLine}(Server side setting)"
                                 : ""),
-                            entryAttributes.DescriptionColor, mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key,
-                            innerWidth);
-                        SetProperties(go.GetComponent<ConfigBoundBoolean>(), entry);
+                            entryAttributes.DescriptionColor, innerWidth);
+                        var conf = go.AddComponent<ConfigBoundBoolean>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(int))
@@ -416,33 +416,8 @@ namespace Jotunn.GUI
                             entryAttributes.EntryColor,
                             description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
                             entryAttributes.DescriptionColor, innerWidth);
-                        var configBoundInt = go.AddComponent<ConfigBoundInt>();
-                        var inputField = go.transform.Find("Input").GetComponent<InputField>();
-                        configBoundInt.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                        inputField.characterValidation = InputField.CharacterValidation.Integer;
-                        SetProperties(configBoundInt, entry);
-                        if (configBoundInt.Clamp is AcceptableValueRange<int> acceptableValueRange)
-                        {
-                            var slider = go.GetComponentInChildren<Slider>(true);
-                            slider.gameObject.SetActive(true);
-                            slider.minValue = acceptableValueRange.MinValue;
-                            slider.maxValue = acceptableValueRange.MaxValue;
-                            slider.value = configBoundInt.Value;
-                            slider.onValueChanged.AddListener(value => 
-                                inputField.SetTextWithoutNotify(((int)value)
-                                    .ToString(CultureInfo.CurrentCulture)));
-                            inputField.onValueChanged.AddListener(text =>
-                            {
-                                if (int.TryParse(text, out var value))
-                                {
-                                    slider.SetValueWithoutNotify(value);
-                                }
-                            });
-                        }
-                        inputField.onValueChanged.AddListener(x =>
-                        {
-                            inputField.textComponent.color = configBoundInt.IsValid() ? Color.white : Color.red;
-                        });
+                        var conf = go.AddComponent<ConfigBoundInt>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(float))
@@ -461,34 +436,8 @@ namespace Jotunn.GUI
                             entryAttributes.EntryColor,
                             description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
                             entryAttributes.DescriptionColor, innerWidth);
-                        var configBoundFloat = go.AddComponent<ConfigBoundFloat>();
-                        var inputField = go.transform.Find("Input").GetComponent<InputField>();
-                        configBoundFloat.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                        inputField.characterValidation = InputField.CharacterValidation.Decimal;
-                        SetProperties(configBoundFloat, entry);
-                        if (configBoundFloat.Clamp is AcceptableValueRange<float> acceptableValueRange)
-                        {
-                            var slider = go.GetComponentInChildren<Slider>(true);
-                            slider.gameObject.SetActive(true);
-                            slider.minValue = acceptableValueRange.MinValue;
-                            slider.maxValue = acceptableValueRange.MaxValue;
-                            slider.value = configBoundFloat.Value;
-                            var step = Mathf.Clamp(slider.minValue / slider.maxValue, 0.1f, 1f);
-                            slider.onValueChanged.AddListener(value => 
-                                inputField.SetTextWithoutNotify((Mathf.Round(value/step)*step)
-                                    .ToString("#0.000", CultureInfo.CurrentCulture)));
-                            inputField.onValueChanged.AddListener(text =>
-                            {
-                                if (float.TryParse(text, out var value))
-                                {
-                                    slider.SetValueWithoutNotify(value);
-                                }
-                            });
-                        }
-                        inputField.onValueChanged.AddListener(x =>
-                        {
-                            inputField.textComponent.color = configBoundFloat.IsValid() ? Color.white : Color.red;
-                        });
+                        var conf = go.AddComponent<ConfigBoundFloat>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(double))
@@ -507,34 +456,8 @@ namespace Jotunn.GUI
                             entryAttributes.EntryColor,
                             description + (entryAttributes.IsAdminOnly ? $"{Environment.NewLine}(Server side setting)" : ""),
                             entryAttributes.DescriptionColor, innerWidth);
-                        var configBoundDouble =go.AddComponent<ConfigBoundDouble>();
-                        var inputField = go.transform.Find("Input").GetComponent<InputField>();
-                        configBoundDouble.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                        inputField.characterValidation = InputField.CharacterValidation.Decimal;
-                        SetProperties(configBoundDouble, entry);
-                        if (configBoundDouble.Clamp is AcceptableValueRange<double> acceptableValueRange)
-                        {
-                            var slider = go.GetComponentInChildren<Slider>(true);
-                            slider.gameObject.SetActive(true);
-                            slider.minValue = (float) acceptableValueRange.MinValue;
-                            slider.maxValue = (float) acceptableValueRange.MaxValue;
-                            slider.value = (float) configBoundDouble.Value;
-                            var step = Mathf.Clamp(slider.minValue / slider.maxValue, 0.1f, 1f);
-                            slider.onValueChanged.AddListener(value => 
-                                inputField.SetTextWithoutNotify((Mathf.Round(value / step) * step)
-                                    .ToString("#0.000", CultureInfo.CurrentCulture)));
-                            inputField.onValueChanged.AddListener(text =>
-                            {
-                                if (double.TryParse(text, out var value))
-                                {
-                                    slider.SetValueWithoutNotify((float)value);
-                                }
-                            });
-                        }
-                        inputField.onValueChanged.AddListener(x =>
-                        {
-                            inputField.textComponent.color = configBoundDouble.IsValid() ? Color.white : Color.red;
-                        });
+                        var conf = go.AddComponent<ConfigBoundDouble>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(KeyCode) &&
@@ -574,9 +497,8 @@ namespace Jotunn.GUI
                         var go = CreateKeybindElement(contentViewport,
                             entry.Key.Key + ":", buttonText,
                             buttonName, innerWidth);
-                        go.AddComponent<ConfigBoundKeyCode>()
-                            .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                        SetProperties(go.GetComponent<ConfigBoundKeyCode>(), entry);
+                        var conf = go.AddComponent<ConfigBoundKeyCode>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(KeyboardShortcut) &&
@@ -618,9 +540,8 @@ namespace Jotunn.GUI
                         var go = CreateShortcutbindElement(contentViewport,
                             entry.Key.Key + ":", buttonText,
                             buttonName, innerWidth);
-                        go.AddComponent<ConfigBoundKeyboardShortcut>()
-                            .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                        SetProperties(go.GetComponent<ConfigBoundKeyboardShortcut>(), entry);
+                        var conf = go.AddComponent<ConfigBoundKeyboardShortcut>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(string))
@@ -633,11 +554,8 @@ namespace Jotunn.GUI
                                 ? $"{Environment.NewLine}(Server side setting)"
                                 : ""),
                             entryAttributes.DescriptionColor, innerWidth);
-                        go.AddComponent<ConfigBoundString>()
-                            .SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                        go.transform.Find("Input").GetComponent<InputField>().characterValidation =
-                            InputField.CharacterValidation.None;
-                        SetProperties(go.GetComponent<ConfigBoundString>(), entry);
+                        var conf = go.AddComponent<ConfigBoundString>(); 
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         preferredHeight += go.GetHeight();
                     }
                     else if (entry.Value.SettingType == typeof(Color))
@@ -651,19 +569,15 @@ namespace Jotunn.GUI
                                 : ""),
                             entryAttributes.DescriptionColor, innerWidth);
                         var conf = go.AddComponent<ConfigBoundColor>();
-                        conf.Register();
                         conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
-                        conf.Input.characterValidation = InputField.CharacterValidation.None;
-                        conf.Input.contentType = InputField.ContentType.Alphanumeric;
-                        SetProperties(conf, entry);
                         preferredHeight += go.GetHeight();
                     }
                 }
+
+                yield return null;
             }
 
             contentViewport.GetComponent<LayoutElement>().preferredHeight = preferredHeight;
-
-            yield return null;
         }
 
         /// <summary>
@@ -752,44 +666,7 @@ namespace Jotunn.GUI
             // Sync changed config
             SynchronizationManager.Instance.SynchronizeChangedConfig();
         }
-
-        /// <summary>
-        ///     Set the properties of the <see cref="ConfigBound{T}" />
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="binding"></param>
-        /// <param name="entry"></param>
-        private static void SetProperties<T>(ConfigBound<T> binding, KeyValuePair<ConfigDefinition, ConfigEntryBase> entry)
-        {
-            var configurationManagerAttribute =
-                (ConfigurationManagerAttributes)entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes);
-
-            // Only act, if we have a valid ConfigurationManagerAttributes tag
-            if (configurationManagerAttribute != null)
-            {
-                binding.SetReadOnly(configurationManagerAttribute.ReadOnly == true);
-
-                // Disable the input field if it is a synchronizable and not unlocked
-                if (configurationManagerAttribute.IsAdminOnly && !configurationManagerAttribute.IsUnlocked)
-                {
-                    binding.SetEnabled(false);
-                }
-                else
-                {
-                    binding.SetEnabled(true);
-                }
-
-                // and set it's default value
-                binding.Default = (T)entry.Value.DefaultValue;
-            }
-
-            // Set clamp
-            binding.Clamp = entry.Value.Description.AcceptableValues;
-
-            // set the value from the configuration
-            binding.Value = binding.GetValueFromConfig();
-        }
-
+        
         /// <summary>
         ///     Create a text input field (used for string, int, float)
         /// </summary>
@@ -969,13 +846,9 @@ namespace Jotunn.GUI
         /// <param name="labelColor">Color of the label</param>
         /// <param name="description">Description text</param>
         /// <param name="descriptionColor">Color of the description text</param>
-        /// <param name="modguid">module GUID</param>
-        /// <param name="section">section</param>
-        /// <param name="key">key</param>
         /// <param name="width">width</param>
         /// <returns></returns>
-        private static GameObject CreateToggleElement(Transform parent, string labelname, Color labelColor, string description, Color descriptionColor,
-            string modguid, string section, string key, float width)
+        private static GameObject CreateToggleElement(Transform parent, string labelname, Color labelColor, string description, Color descriptionColor, float width)
         {
             // Create the outer gameobject first
             var result = new GameObject("Toggler", typeof(RectTransform));
@@ -1000,8 +873,7 @@ namespace Jotunn.GUI
             desc.GetComponent<Text>().text = description;
             desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(result.transform.Find("Text").gameObject.GetTextHeight() + 3f));
             desc.SetToTextHeight();
-
-
+            
             result.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
                 -desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
 
@@ -1010,10 +882,7 @@ namespace Jotunn.GUI
             layoutElement.preferredHeight =
                 Math.Max(38f, -desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight) + 15f;
             result.SetHeight(layoutElement.preferredHeight);
-
-            // Bind to config entry
-            result.AddComponent<ConfigBoundBoolean>().SetData(modguid, section, key);
-
+            
             return result;
         }
 
@@ -1108,7 +977,11 @@ namespace Jotunn.GUI
             public string Section { get; set; }
             public string Key { get; set; }
 
+            public ConfigEntry<T> Entry { get; set; }
+
             public AcceptableValueBase Clamp { get; set; }
+
+            public ConfigurationManagerAttributes Attributes { get; set; }
 
             public T Default { get; set; }
 
@@ -1117,18 +990,13 @@ namespace Jotunn.GUI
                 get => GetValue();
                 set => SetValue(value);
             }
-
-            internal abstract T GetValueFromConfig();
-
-            public abstract void SetValueInConfig(T value);
-
+            
             public abstract T GetValue();
-            internal abstract void SetValue(T value);
-
-
+            public abstract void SetValue(T value);
+            
             public void WriteBack()
             {
-                SetValueInConfig(GetValue());
+                Entry.Value = Value;
             }
 
             public void SetData(string modGuid, string section, string key)
@@ -1136,10 +1004,37 @@ namespace Jotunn.GUI
                 ModGUID = modGuid;
                 Section = section;
                 Key = key;
-                var value = GetValueFromConfig();
 
-                SetValue(value);
+                var pluginConfig = BepInExUtils.GetDependentPlugins(true)
+                    .First(x => x.Key == ModGUID).Value.Config;
+                Entry = pluginConfig[Section, Key] as ConfigEntry<T>;
+                
+                Register();
+                
+                Value = (T)Entry.BoxedValue;
+                Clamp = Entry.Description.AcceptableValues;
+                Attributes =
+                    Entry.Description.Tags.FirstOrDefault(x =>
+                        x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
+                
+                if (Attributes != null)
+                {
+                    SetReadOnly(Attributes.ReadOnly == true);
+                    
+                    if (Attributes.IsAdminOnly && !Attributes.IsUnlocked)
+                    {
+                        SetEnabled(false);
+                    }
+                    else
+                    {
+                        SetEnabled(true);
+                    }
+                    
+                    Default = (T)Entry.DefaultValue;
+                }
             }
+            
+            public abstract void Register();
 
             public abstract void SetEnabled(bool enabled);
 
@@ -1155,8 +1050,7 @@ namespace Jotunn.GUI
             {
                 if (Clamp != null)
                 {
-                    var value = GetValue();
-                    return Clamp.IsValid(value);
+                    return Clamp.IsValid(Value);
                 }
 
                 return true;
@@ -1168,38 +1062,31 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundBoolean : ConfigBound<bool>
         {
-            internal override bool GetValueFromConfig()
-            {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                return (bool)entry.BoxedValue;
-            }
+            private Toggle Toggle;
 
-            public override void SetValueInConfig(bool value)
+            public override void Register()
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key] as ConfigEntry<bool>;
-                entry.Value = value;
+                Toggle = gameObject.transform.Find("Toggle").GetComponent<Toggle>();
             }
-
+            
             public override bool GetValue()
             {
-                return gameObject.transform.Find("Toggle").GetComponent<Toggle>().isOn;
+                return Toggle.isOn;
             }
 
-            internal override void SetValue(bool value)
+            public override void SetValue(bool value)
             {
-                gameObject.transform.Find("Toggle").GetComponent<Toggle>().isOn = value;
+                Toggle.isOn = value;
             }
 
             public override void SetEnabled(bool enabled)
             {
-                gameObject.transform.Find("Toggle").GetComponent<Toggle>().enabled = enabled;
+                Toggle.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                gameObject.transform.Find("Toggle").GetComponent<Toggle>().enabled = !readOnly;
+                Toggle.enabled = !readOnly;
             }
         }
 
@@ -1208,25 +1095,40 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundInt : ConfigBound<int>
         {
-            internal override int GetValueFromConfig()
-            {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                return (int)entry.BoxedValue;
-            }
+            private InputField Input;
 
-            public override void SetValueInConfig(int value)
+            public override void Register()
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key] as ConfigEntry<int>;
-                entry.Value = value;
-            }
+                Input = gameObject.transform.Find("Input").GetComponent<InputField>();
+                Input.characterValidation = InputField.CharacterValidation.Integer;
 
+                if (Entry.Description.AcceptableValues is AcceptableValueRange<int> acceptableValueRange)
+                {
+                    var slider = Input.transform.Find("Slider").GetComponent<Slider>();
+                    slider.gameObject.SetActive(true);
+                    slider.minValue = acceptableValueRange.MinValue;
+                    slider.maxValue = acceptableValueRange.MaxValue;
+                    slider.onValueChanged.AddListener(value => 
+                        Input.SetTextWithoutNotify(((int)value)
+                            .ToString(CultureInfo.CurrentCulture)));
+                    Input.onValueChanged.AddListener(text =>
+                    {
+                        if (int.TryParse(text, out var value))
+                        {
+                            slider.SetValueWithoutNotify(value);
+                        }
+                    });
+                }
+                Input.onValueChanged.AddListener(x =>
+                {
+                    Input.textComponent.color = IsValid() ? Color.white : Color.red;
+                });
+            }
+            
             public override int GetValue()
             {
                 int temp;
-                var text = gameObject.transform.Find("Input").GetComponent<InputField>();
-                if (!int.TryParse(text.text, out temp))
+                if (!int.TryParse(Input.text, out temp))
                 {
                     temp = Default;
                 }
@@ -1234,20 +1136,20 @@ namespace Jotunn.GUI
                 return temp;
             }
 
-            internal override void SetValue(int value)
+            public override void SetValue(int value)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().text = value.ToString();
+                Input.text = value.ToString();
             }
 
             public override void SetEnabled(bool enabled)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().enabled = enabled;
+                Input.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
-                gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
+                Input.readOnly = readOnly;
+                Input.textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -1256,25 +1158,42 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundFloat : ConfigBound<float>
         {
-            internal override float GetValueFromConfig()
-            {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                return (float)entry.BoxedValue;
-            }
+            private InputField Input;
 
-            public override void SetValueInConfig(float value)
+            public override void Register()
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key] as ConfigEntry<float>;
-                entry.Value = value;
+                Input = gameObject.transform.Find("Input").GetComponent<InputField>();
+                Input.characterValidation = InputField.CharacterValidation.Decimal;
+
+                if (Entry.Description.AcceptableValues is AcceptableValueRange<float> acceptableValueRange)
+                {
+                    var slider = gameObject.GetComponentInChildren<Slider>(true);
+                    slider.gameObject.SetActive(true);
+                    slider.minValue = acceptableValueRange.MinValue;
+                    slider.maxValue = acceptableValueRange.MaxValue;
+                    var step = Mathf.Clamp(slider.minValue / slider.maxValue, 0.1f, 1f);
+                    slider.onValueChanged.AddListener(value => 
+                        Input.SetTextWithoutNotify((Mathf.Round(value/step)*step)
+                            .ToString("F3", CultureInfo.CurrentCulture)));
+                    Input.onValueChanged.AddListener(text =>
+                    {
+                        if (float.TryParse(text, out var value))
+                        {
+                            slider.SetValueWithoutNotify(value);
+                        }
+                    });
+                }
+                Input.onValueChanged.AddListener(x =>
+                {
+                    Input.textComponent.color = IsValid() ? Color.white : Color.red;
+                });
             }
 
             public override float GetValue()
             {
                 float temp;
-                var text = gameObject.transform.Find("Input").GetComponent<InputField>();
-                if (!float.TryParse(text.text, NumberStyles.Number, CultureInfo.CurrentCulture.NumberFormat, out temp))
+
+                if (!float.TryParse(Input.text, NumberStyles.Number, CultureInfo.CurrentCulture.NumberFormat, out temp))
                 {
                     temp = Default;
                 }
@@ -1282,20 +1201,20 @@ namespace Jotunn.GUI
                 return temp;
             }
 
-            internal override void SetValue(float value)
+            public override void SetValue(float value)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().text = value.ToString("F3");
+                Input.text = value.ToString("F3");
             }
 
             public override void SetEnabled(bool enabled)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().enabled = enabled;
+                Input.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
-                gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
+                Input.readOnly = readOnly;
+                Input.textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -1304,25 +1223,42 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundDouble : ConfigBound<double>
         {
-            internal override double GetValueFromConfig()
-            {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                return (double)entry.BoxedValue;
-            }
+            private InputField Input;
 
-            public override void SetValueInConfig(double value)
+            public override void Register()
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key] as ConfigEntry<double>;
-                entry.Value = value;
+                Input = gameObject.transform.Find("Input").GetComponent<InputField>();
+                Input.characterValidation = InputField.CharacterValidation.Decimal;
+
+                if (Entry.Description.AcceptableValues is AcceptableValueRange<double> acceptableValueRange)
+                {
+                    var slider = GetComponentInChildren<Slider>(true);
+                    slider.gameObject.SetActive(true);
+                    slider.minValue = (float) acceptableValueRange.MinValue;
+                    slider.maxValue = (float) acceptableValueRange.MaxValue;
+                    var step = Mathf.Clamp(slider.minValue / slider.maxValue, 0.1f, 1f);
+                    slider.onValueChanged.AddListener(value => 
+                        Input.SetTextWithoutNotify((Mathf.Round(value / step) * step)
+                            .ToString("F3", CultureInfo.CurrentCulture)));
+                    Input.onValueChanged.AddListener(text =>
+                    {
+                        if (double.TryParse(text, out var value))
+                        {
+                            slider.SetValueWithoutNotify((float)value);
+                        }
+                    });
+                }
+                Input.onValueChanged.AddListener(x =>
+                {
+                    Input.textComponent.color = IsValid() ? Color.white : Color.red;
+                });
             }
 
             public override double GetValue()
             {
                 double temp;
-                var text = gameObject.transform.Find("Input").GetComponent<InputField>();
-                if (!double.TryParse(text.text, NumberStyles.Number, CultureInfo.CurrentCulture.NumberFormat, out temp))
+
+                if (!double.TryParse(Input.text, NumberStyles.Number, CultureInfo.CurrentCulture.NumberFormat, out temp))
                 {
                     temp = Default;
                 }
@@ -1330,20 +1266,20 @@ namespace Jotunn.GUI
                 return temp;
             }
 
-            internal override void SetValue(double value)
+            public override void SetValue(double value)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().text = value.ToString("F3");
+                Input.text = value.ToString("F3");
             }
 
             public override void SetEnabled(bool enabled)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().enabled = enabled;
+                Input.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
-                gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
+                Input.readOnly = readOnly;
+                Input.textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -1352,42 +1288,35 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundKeyCode : ConfigBound<KeyCode>
         {
-            internal override KeyCode GetValueFromConfig()
-            {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                return (KeyCode)entry.BoxedValue;
-            }
+            private Text Text;
+            private Button Button;
 
-            public override void SetValueInConfig(KeyCode value)
+            public override void Register()
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key] as ConfigEntry<KeyCode>;
-                entry.Value = value;
+                Text = gameObject.transform.Find("Button/Text").GetComponent<Text>();
+                Button = gameObject.transform.Find("Button").GetComponent<Button>();
             }
 
             public override KeyCode GetValue()
             {
-                if (Enum.TryParse(gameObject.transform.Find("Button/Text").GetComponent<Text>().text, out KeyCode temp))
+                if (Enum.TryParse(Text.text, out KeyCode temp))
                 {
                     return temp;
                 }
 
-                Logger.LogError($"Error parsing Keycode {gameObject.transform.Find("Button/Text").GetComponent<Text>().text}");
+                Logger.LogError($"Error parsing Keycode {Text.text}");
                 return KeyCode.None;
             }
 
-            internal override void SetValue(KeyCode value)
+            public override void SetValue(KeyCode value)
             {
-                gameObject.transform.Find("Button/Text").GetComponent<Text>().text = value.ToString();
+                Text.text = value.ToString();
             }
 
             public void Start()
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                var buttonName = entry.GetBoundButtonName();
-                gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() =>
+                var buttonName = Entry.GetBoundButtonName();
+                Button.onClick.AddListener(() =>
                 {
                     Settings.instance.OpenBindDialog(buttonName);
                     On.ZInput.EndBindKey += ZInput_EndBindKey;
@@ -1412,13 +1341,13 @@ namespace Jotunn.GUI
             
             public override void SetEnabled(bool enabled)
             {
-                gameObject.transform.Find("Button").GetComponent<Button>().enabled = enabled;
+                Button.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                gameObject.transform.Find("Button").GetComponent<Button>().enabled &= readOnly;
-                gameObject.transform.Find("Button/Text").GetComponent<Text>().color = readOnly ? Color.grey : Color.white;
+                Button.enabled &= readOnly;
+                Text.color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -1428,40 +1357,30 @@ namespace Jotunn.GUI
         internal class ConfigBoundKeyboardShortcut : ConfigBound<KeyboardShortcut>
         {
             private static readonly IEnumerable<KeyCode> KeysToCheck = KeyboardShortcut.AllKeyCodes.Except(new[] { KeyCode.Mouse0, KeyCode.None }).ToArray();
+            
+            private Text Text;
+            private Button Button;
 
-            internal override KeyboardShortcut GetValueFromConfig()
+            public override void Register()
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                return (KeyboardShortcut)entry.BoxedValue;
-            }
-
-            public override void SetValueInConfig(KeyboardShortcut value)
-            {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key] as ConfigEntry<KeyboardShortcut>;
-                entry.Value = value;
+                Text = gameObject.transform.Find("Button/Text").GetComponent<Text>();
+                Button = gameObject.transform.Find("Button").GetComponent<Button>();
             }
 
             public override KeyboardShortcut GetValue()
             {
-                var text = gameObject.transform.Find("Button/Text").GetComponent<Text>().text;
-                var temp = KeyboardShortcut.Deserialize(text);
-
-                return temp;
+                return KeyboardShortcut.Deserialize(Text.text);
             }
 
-            internal override void SetValue(KeyboardShortcut value)
+            public override void SetValue(KeyboardShortcut value)
             {
-                gameObject.transform.Find("Button/Text").GetComponent<Text>().text = value.ToString();
+                Text.text = value.ToString();
             }
 
             public void Start()
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                var buttonName = entry.GetBoundButtonName();
-                gameObject.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() =>
+                var buttonName = Entry.GetBoundButtonName();
+                Button.onClick.AddListener(() =>
                 {
                     Settings.instance.OpenBindDialog(buttonName);
                     On.ZInput.EndBindKey += ZInput_EndBindKey;
@@ -1486,13 +1405,13 @@ namespace Jotunn.GUI
 
             public override void SetEnabled(bool enabled)
             {
-                gameObject.transform.Find("Button").GetComponent<Button>().enabled = enabled;
+                Button.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                gameObject.transform.Find("Button").GetComponent<Button>().enabled &= readOnly;
-                gameObject.transform.Find("Button/Text").GetComponent<Text>().color = readOnly ? Color.grey : Color.white;
+                Button.enabled &= readOnly;
+                Text.color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -1501,71 +1420,56 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundString : ConfigBound<string>
         {
-            internal override string GetValueFromConfig()
+            private InputField Input;
+            
+            public override void Register()
             {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key];
-                return (string)entry.BoxedValue;
+                Input = gameObject.transform.Find("Input").GetComponent<InputField>();
+                Input.characterValidation = InputField.CharacterValidation.None;
+                Input.contentType = InputField.ContentType.Alphanumeric;
             }
-
-            public override void SetValueInConfig(string value)
-            {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key] as ConfigEntry<string>;
-                entry.Value = value;
-            }
-
+            
             public override string GetValue()
             {
-                return gameObject.transform.Find("Input").GetComponent<InputField>().text;
+                return Input.text;
             }
 
-            internal override void SetValue(string value)
+            public override void SetValue(string value)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().text = value;
+                Input.text = value;
             }
 
             public override void SetEnabled(bool enabled)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().enabled = enabled;
+                Input.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                gameObject.transform.Find("Input").GetComponent<InputField>().readOnly = readOnly;
-                gameObject.transform.Find("Input").GetComponent<InputField>().textComponent.color = readOnly ? Color.grey : Color.white;
+                Input.readOnly = readOnly;
+                Input.textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
 
         internal class ConfigBoundColor : ConfigBound<Color>
         {
-            internal InputField Input;
-            internal Button Button;
-            internal Image Image;
+            private InputField Input;
+            private Button Button;
+            private Image Image;
 
-            internal void Register()
+            public override void Register()
             {
                 Input = gameObject.transform.Find("Layout/Input").GetComponent<InputField>();
                 Input.onEndEdit.AddListener(SetButtonColor);
+                Input.characterValidation = InputField.CharacterValidation.None;
+                Input.contentType = InputField.ContentType.Alphanumeric;
+
                 Button = gameObject.transform.Find("Layout/Button").GetComponent<Button>();
                 Button.onClick.AddListener(ShowColorPicker);
+
                 Image = gameObject.transform.Find("Layout/Button").GetComponent<Image>();
             }
-
-            internal override Color GetValueFromConfig()
-            {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key] as ConfigEntry<Color>;
-                return (Color)entry.BoxedValue;
-            }
-
-            public override void SetValueInConfig(Color value)
-            {
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                var entry = pluginConfig[Section, Key] as ConfigEntry<Color>;
-                entry.Value = value;
-            }
-
+            
             public override Color GetValue()
             {
                 var col = Input.text;
@@ -1576,14 +1480,12 @@ namespace Jotunn.GUI
                 catch (Exception e)
                 {
                     Logger.LogWarning(e);
-                    var pluginConfig = BepInExUtils.GetDependentPlugins(true).First(x => x.Key == ModGUID).Value.Config;
-                    var entry = pluginConfig[Section, Key] as ConfigEntry<Color>;
-                    Logger.LogWarning($"Using default value ({(Color)entry.DefaultValue}) instead.");
-                    return (Color)entry.DefaultValue;
+                    Logger.LogWarning($"Using default value ({(Color)Entry.DefaultValue}) instead.");
+                    return (Color)Entry.DefaultValue;
                 }
             }
 
-            internal override void SetValue(Color value)
+            public override void SetValue(Color value)
             {
                 Input.text = StringFromColor(value);
                 Image.color = value;
