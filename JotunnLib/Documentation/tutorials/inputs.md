@@ -18,6 +18,10 @@ private ButtonConfig RaiseSkillButton;
 // Variable button backed by a config
 private ConfigEntry<KeyCode> EvilSwordSpecialConfig;
 private ButtonConfig EvilSwordSpecialButton;
+
+// Variable BepInEx Shortcut backed by a config
+private ConfigEntry<KeyboardShortcut> ShortcutConfig;
+private ButtonConfig ShortcutButton;
 ```
 
 For the configuration backed button, you will need to create the configuration binding *before* creating and adding the actual button. For more information on configuration bindings see [our configuration tutorial](config.md).
@@ -30,6 +34,11 @@ private void CreateConfigValues()
 
     // Add a client side custom input key for the EvilSword
     EvilSwordSpecialConfig = Config.Bind("Client config", "EvilSword Special Attack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+
+    // BepInEx' KeyboardShortcut class is supported, too
+    ShortcutConfig = Config.Bind("Client config", "Keycodes with modifiers",
+        new KeyboardShortcut(KeyCode.L, KeyCode.LeftControl, KeyCode.LeftAlt),
+        new ConfigDescription("Secret key combination"));
 }
 ```
 
@@ -67,6 +76,15 @@ private void AddInputs()
         HintToken = "$evilsword_beevil"
     };
     InputManager.Instance.AddButton(PluginGUID, EvilSwordSpecialButton);
+
+    // Supply your KeyboardShortcut configs to ShortcutConfig instead.
+    ShortcutButton = new ButtonConfig
+    {
+        Name = "SecretShortcut",
+        ShortcutConfig = ShortcutConfig,
+        HintToken = "$lulzcut"
+    };
+    InputManager.Instance.AddButton(PluginGUID, ShortcutButton);
 }
 ```
 
@@ -105,6 +123,14 @@ private void Update()
             }
         }
 
+        // KeyboardShortcuts are also injected into the ZInput system
+        if (ShortcutButton != null && MessageHud.instance != null)
+        {
+            if (ZInput.GetButtonDown(ShortcutButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+            {
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$lulzcut_message");
+            }
+        }
     }
 }
 ```
