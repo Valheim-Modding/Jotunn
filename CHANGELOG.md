@@ -2,10 +2,10 @@
 
 ## Version 2.3.6
 * Added JSON helper methods to PieceConfig
-* Item property in ItemConfig is publicly readable now so it can be serialized
-* Added slider for numerical values in the mod settings GUI
-* Fixed button config in mod settings for control keys
 * Added support for BepInEx' KeyboardShortcuts in ButtonConfig and InputManager
+* Added slider for numerical values in the mod settings GUI
+* Item property in ItemConfig is publicly readable now so it can be serialized
+* Fixed button config in mod settings for control keys
 * Fixed the localization for Jötunn tokens
 
 ## Version 2.3.5
