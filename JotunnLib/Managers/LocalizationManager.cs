@@ -82,8 +82,6 @@ namespace Jotunn.Managers
         {
             On.FejdStartup.SetupGui += LoadAndSetupModLanguages;
 
-            AddLocalization(JotunnLocalization);
-
             DoQuoteLineSplit = (Func<StringReader, List<List<string>>>)
                 Delegate.CreateDelegate(
                     typeof(Func<StringReader, List<List<string>>>),
@@ -98,7 +96,7 @@ namespace Jotunn.Managers
         private void LoadAndSetupModLanguages(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
             orig(self);
-
+            
             On.Localization.LoadLanguages += Localization_LoadLanguages;
             On.Localization.SetupLanguage += Localization_SetupLanguage;
 
@@ -117,9 +115,9 @@ namespace Jotunn.Managers
             {
                 Localization.instance.SetupLanguage(lang);
             }
-
+            
             InvokeOnLocalizationAdded();
-
+            
             On.Localization.LoadLanguages -= Localization_LoadLanguages;
             On.Localization.SetupLanguage -= Localization_SetupLanguage;
         }
@@ -136,6 +134,9 @@ namespace Jotunn.Managers
             Logger.LogInfo("Loading custom localizations");
 
             AutomaticLocalizationLoading();
+            
+            // Add Jötunn's default localization at the end of the list
+            AddLocalization(JotunnLocalization);
 
             // Add in localized languages that do not yet exist
             foreach (var ct in Localizations)
@@ -263,6 +264,11 @@ namespace Jotunn.Managers
                 return ret;
             }
 
+            if (sourceMod == Main.Instance.Info.Metadata)
+            {
+                return JotunnLocalization;
+            }
+
             ret = new CustomLocalization(sourceMod);
             Localizations.Add(ret);
             return ret;
@@ -280,7 +286,7 @@ namespace Jotunn.Managers
             foreach (var ct in Localizations)
             {
                 var translation = ct.TryTranslate(word);
-                if (translation != null)
+                if (translation != null && translation[0] != '[')
                 {
                     return translation;
                 }
