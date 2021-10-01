@@ -23,7 +23,7 @@ namespace Jotunn.GUI
     /// <summary>
     ///     An ingame GUI for BepInEx config files
     /// </summary>
-    internal class InGameConfig
+    internal static class InGameConfig
     {
         /// <summary>
         ///     Name of the menu entry
@@ -48,7 +48,7 @@ namespace Jotunn.GUI
         /// <summary>
         ///     Our own mod config tabs
         /// </summary>
-        private static readonly List<Transform> Configs = new List<Transform>();
+        private static readonly Dictionary<string, RectTransform> Configs = new Dictionary<string, RectTransform>();
 
         /// <summary>
         ///     Cache keybinds
@@ -265,8 +265,17 @@ namespace Jotunn.GUI
             // Scroll back to top
             scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
 
-            // Finally show the window
+            // Show the window and fake that we are finished loading (whole thing needs a rework...)
             SettingsRoot.SetActive(true);
+
+            // Iterate over all plugins again, creating the actual config values
+            foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
+            {
+                if (Configs.ContainsKey(mod.Key))
+                {
+                    yield return CreateContent(mod, Configs[mod.Key]);
+                }
+            }
         }
         
         private class EscBehaviour : MonoBehaviour
@@ -339,9 +348,9 @@ namespace Jotunn.GUI
                     }
                 });
 
-                yield return CreateContent(mod, contentViewport);
+                Configs.Add(mod.Key, contentViewport);
 
-                Configs.Add(contentViewport);
+                yield return null;
             }
         }
 
@@ -573,11 +582,11 @@ namespace Jotunn.GUI
                         preferredHeight += go.GetHeight();
                     }
                 }
-
-                yield return null;
             }
 
             contentViewport.GetComponent<LayoutElement>().preferredHeight = preferredHeight;
+
+            yield return null;
         }
 
         /// <summary>
@@ -600,7 +609,7 @@ namespace Jotunn.GUI
         private static void SaveConfiguration()
         {
             // Iterate over all configs
-            foreach (Transform config in Configs)
+            foreach (Transform config in Configs.Values)
             {
                 // Just iterate over the children in the scroll view and act if we find a ConfigBound<T> component
                 foreach (Transform values in config)
