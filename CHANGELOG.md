@@ -2,6 +2,7 @@
 
 ## Version 2.3.7
 * Fixed translation of the custom skill raise message
+* Added ZInput.GetButton support for custom buttons
 
 ## Version 2.3.6
 * Added JSON helper methods to PieceConfig
