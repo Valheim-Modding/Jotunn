@@ -208,25 +208,30 @@ namespace Jotunn.Managers
         private void Skills_RaiseSkill(MonoMod.Cil.ILContext il)
         {
             ILCursor c = new ILCursor(il);
-            c.GotoNext(MoveType.After,
-                zz => zz.MatchLdstr("$msg_skillup $skill_"));
-            c.EmitDelegate<Func<string, string>>(_ => "$msg_skillup ");
-            c.GotoNext(MoveType.After,
-                    zz => zz.MatchConstrained(out _),
-                    zz => zz.MatchCallOrCallvirt<System.Object>("ToString"),
-                    zz => zz.MatchCallOrCallvirt<System.String>("ToLower")
-                );
-            c.EmitDelegate<Func<string, string>>((string skillID) =>
+            
+            if (c.TryGotoNext(MoveType.After,
+                zz => zz.MatchLdstr("$msg_skillup $skill_")))
             {
-                var asd = Enum.TryParse<global::Skills.SkillType>(skillID, out var result);
+                c.EmitDelegate<Func<string, string>>(_ => "$msg_skillup ");
+            }
 
-                if (asd && Skills.ContainsKey(result))
+            if (c.TryGotoNext(MoveType.After,
+                zz => zz.MatchConstrained(out _),
+                zz => zz.MatchCallOrCallvirt<System.Object>("ToString"),
+                zz => zz.MatchCallOrCallvirt<System.String>("ToLower")))
+            {
+                c.EmitDelegate<Func<string, string>>((string skillID) =>
                 {
-                    Jotunn.Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
-                    return Skills[result].Name;
-                }
-                return $"$skill_{skillID}";
-            });
+                    var asd = Enum.TryParse<global::Skills.SkillType>(skillID, out var result);
+
+                    if (asd && Skills.ContainsKey(result))
+                    {
+                        Jotunn.Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
+                        return Skills[result].Name;
+                    }
+                    return $"$skill_{skillID}";
+                });
+            }
         }
 
         private void Skills_CheatRaiseSkill(On.Skills.orig_CheatRaiseSkill orig, Skills self, string name, float value)
