@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.3.7
+* Fixed translation of the custom skill raise message
+
 ## Version 2.3.6
 * Added JSON helper methods to PieceConfig
 * Added support for BepInEx' KeyboardShortcuts in ButtonConfig and InputManager
