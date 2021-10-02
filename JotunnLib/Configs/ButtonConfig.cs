@@ -22,20 +22,58 @@ namespace Jotunn.Configs
         public string Axis { get; set; } = string.Empty;
 
         /// <summary>
+        ///     Private store for the Key property
+        /// </summary>
+        private KeyCode _key = KeyCode.None;
+
+        /// <summary>
         ///     Unity KeyCode this config should be bound to.
         /// </summary>
-        public KeyCode Key { get; set; } = KeyCode.None;
+        public KeyCode Key {
+            get
+            {
+                if (_key != KeyCode.None)
+                {
+                    return _key;
+                }
+
+                return Config?.Value ?? KeyCode.None;
+            }
+            set
+            {
+                _key = value;
+            }
+        }
         
         /// <summary>
         ///     BepInEx configuration entry of a KeyCode that should be used.
         ///     Overrides the <see cref="Key"/> value of this config.
         /// </summary>
         public ConfigEntry<KeyCode> Config { get; set; }
-        
+
+        /// <summary>
+        ///     Private store for the shortcut
+        /// </summary>
+        private KeyboardShortcut _shortcut = KeyboardShortcut.Empty;
+
         /// <summary>
         ///     BepInEx KeyboardShortcut this config should be bound to.
         /// </summary>
-        public KeyboardShortcut Shortcut { get; set; } = KeyboardShortcut.Empty;
+        public KeyboardShortcut Shortcut {
+            get
+            {
+                if (_shortcut.MainKey != KeyCode.None)
+                {
+                    return _shortcut;
+                }
+
+                return ShortcutConfig?.Value ?? KeyboardShortcut.Empty;
+            }
+            set
+            {
+                _shortcut = value;
+            }
+        }
         
         /// <summary>
         ///     BepInEx configuration entry of a KeyCode that should be used.
