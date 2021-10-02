@@ -225,7 +225,7 @@ namespace Jotunn.Managers
                     Jotunn.Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
                     return Skills[result].Name;
                 }
-                return $"$msg_skillup $skill_{skillID}";
+                return $"$skill_{skillID}";
             });
         }
 

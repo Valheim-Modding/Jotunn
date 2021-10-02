@@ -155,6 +155,7 @@ namespace TestMod
                 if (Player.m_localPlayer != null && ZInput.GetButtonDown(RaiseSkillButton.Name))
                 {
                     Player.m_localPlayer.RaiseSkill(TestSkill, 1f);
+                    Player.m_localPlayer.RaiseSkill(Skills.SkillType.Swords, 1f);
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
