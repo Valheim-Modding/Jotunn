@@ -151,12 +151,7 @@ namespace Jotunn.Managers
             {
                 return true;
             }
-
-            if (button.ShortcutConfig != null && !button.ShortcutConfig.Value.IsDown())
-            {
-                return false;
-            }
-
+            
             if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsDown())
             {
                 return false;
@@ -176,12 +171,7 @@ namespace Jotunn.Managers
             {
                 return true;
             }
-
-            if (button.ShortcutConfig != null && !button.ShortcutConfig.Value.IsPressed())
-            {
-                return false;
-            }
-
+            
             if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsPressed())
             {
                 return false;
@@ -201,12 +191,7 @@ namespace Jotunn.Managers
             {
                 return true;
             }
-
-            if (button.ShortcutConfig != null && !button.ShortcutConfig.Value.IsUp())
-            {
-                return false;
-            }
-
+            
             if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsUp())
             {
                 return false;
