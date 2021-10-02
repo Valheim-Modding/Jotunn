@@ -41,6 +41,7 @@ namespace Jotunn.Managers
             {
                 On.ZInput.Load += RegisterCustomInputs;
                 On.ZInput.GetButtonDown += ZInput_GetButtonDown;
+                On.ZInput.GetButton += ZInput_GetButton;
                 On.ZInput.GetButtonUp += ZInput_GetButtonUp;
             }
         }
@@ -138,6 +139,56 @@ namespace Jotunn.Managers
                 }
             }
         }
+        
+        private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
+        {
+            if (!orig(name))
+            {
+                return false;
+            }
+            
+            if (!Buttons.TryGetValue(name, out var button))
+            {
+                return true;
+            }
+
+            if (button.ShortcutConfig != null && !button.ShortcutConfig.Value.IsDown())
+            {
+                return false;
+            }
+
+            if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsDown())
+            {
+                return false;
+            }
+            
+            return TakeInput(button);
+        }
+
+        private bool ZInput_GetButton(On.ZInput.orig_GetButton orig, string name)
+        {
+            if (!orig(name))
+            {
+                return false;
+            }
+            
+            if (!Buttons.TryGetValue(name, out var button))
+            {
+                return true;
+            }
+
+            if (button.ShortcutConfig != null && !button.ShortcutConfig.Value.IsPressed())
+            {
+                return false;
+            }
+
+            if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsPressed())
+            {
+                return false;
+            }
+            
+            return TakeInput(button);
+        }
 
         private bool ZInput_GetButtonUp(On.ZInput.orig_GetButtonUp orig, string name)
         {
@@ -157,31 +208,6 @@ namespace Jotunn.Managers
             }
 
             if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsUp())
-            {
-                return false;
-            }
-            
-            return TakeInput(button);
-        }
-
-        private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
-        {
-            if (!orig(name))
-            {
-                return false;
-            }
-            
-            if (!Buttons.TryGetValue(name, out var button))
-            {
-                return true;
-            }
-
-            if (button.ShortcutConfig != null && !button.ShortcutConfig.Value.IsDown())
-            {
-                return false;
-            }
-
-            if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsDown())
             {
                 return false;
             }
