@@ -209,6 +209,9 @@ namespace Jotunn.Managers
         {
             ILCursor c = new ILCursor(il);
             c.GotoNext(MoveType.After,
+                zz => zz.MatchLdstr("$msg_skillup $skill_"));
+            c.EmitDelegate<Func<string, string>>(_ => "$msg_skillup ");
+            c.GotoNext(MoveType.After,
                     zz => zz.MatchConstrained(out _),
                     zz => zz.MatchCallOrCallvirt<System.Object>("ToString"),
                     zz => zz.MatchCallOrCallvirt<System.String>("ToLower")
@@ -222,7 +225,7 @@ namespace Jotunn.Managers
                     Jotunn.Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
                     return Skills[result].Name;
                 }
-                return skillID;
+                return $"$msg_skillup $skill_{skillID}";
             });
         }
 
