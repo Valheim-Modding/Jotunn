@@ -209,8 +209,15 @@ namespace Jotunn.GUI
             GameObject scrollView = GUIManager.Instance.CreateScrollView(
                 panel, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
                 new Color(0, 0, 0, 1), tabs.rect.width, tabs.rect.height);
+
+            var group = scrollView.AddComponent<UIGroupHandler>();
+            group.m_canvasGroup = scrollView.GetComponent<CanvasGroup>();
+            group.m_groupPriority = 20;
+            group.m_defaultElement = scrollView;
+            
             RectTransform viewport =
                 scrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+
             VerticalLayoutGroup scrollLayout = viewport.GetComponent<VerticalLayoutGroup>();
             scrollLayout.childControlWidth = true;
             scrollLayout.childControlHeight = true;
@@ -261,7 +268,7 @@ namespace Jotunn.GUI
             {
                 yield return CreatePlugin(mod, viewport);
             }
-
+            
             // Scroll back to top
             scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
 
@@ -309,8 +316,18 @@ namespace Jotunn.GUI
                 GameObject button = GUIManager.Instance.CreateButton(
                     $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}", plugin.transform,
                     Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), plugin.GetWidth(), 40f);
-                button.name = "button";
-                button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
+                button.name = mod.Key;
+                button.GetComponent<Button>().colors = new ColorBlock
+                {
+                    normalColor = new Color(0.824f, 0.824f, 0.824f, 0.5f),
+                    highlightedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
+                    pressedColor = new Color(0.537f, 0.556f, 0.556f, 0.8f),
+                    selectedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
+                    disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
+                    colorMultiplier = 1f,
+                    fadeDuration = 0.1f
+                };
+                button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_bkg_128_transparent");
                 button.GetComponentInChildren<Text>().fontSize = 20;
                 button.AddComponent<LayoutElement>().preferredHeight = 40f;
                 button.SetActive(true);
@@ -318,6 +335,7 @@ namespace Jotunn.GUI
                 // Create content element
                 GameObject content = new GameObject("content", typeof(RectTransform), typeof(LayoutElement));
                 content.SetWidth(plugin.GetWidth());
+                
                 RectTransform contentViewport = content.GetComponent<RectTransform>();
                 contentViewport.SetParent(plugin.transform, false);
 
