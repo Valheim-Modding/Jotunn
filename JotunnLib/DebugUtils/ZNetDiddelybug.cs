@@ -59,6 +59,13 @@ namespace Jotunn.DebugUtils
                     {
                         string method = pkg.ReadString();
 
+                        if (method == "RoutedRPC")
+                        {
+                            ZPackage wrapped = pkg.ReadPackage();
+                            _ = wrapped.ReadInt();
+                            method = pkg.ReadString();
+                        }
+
                         Logger.LogMessage($"Sending RPC {method} to {self.GetHostName()}");
                     }
                     catch (Exception) { }
