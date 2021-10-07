@@ -216,46 +216,7 @@ namespace TestMod
                 }
             }
         }
-
-        // Called every frame for rendering GUI
-        private void OnGUI()
-        {
-            // Displays the current equiped tool/weapon and hover object
-            if (Player.m_localPlayer)
-            {
-                var bez = "Tool: ";
-
-                var item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
-                if (item != null)
-                {
-                    if (item.m_dropPrefab)
-                    {
-                        bez += item.m_dropPrefab.name;
-                    }
-                    else
-                    {
-                        bez += item.m_shared.m_name;
-                    }
-
-                    Piece piece = Player.m_localPlayer.m_buildPieces?.GetSelectedPiece();
-                    if (piece != null)
-                    {
-                        bez += ":" + piece.name;
-                    }
-                }
-
-                bez += " | Hover: ";
-
-                var hover = Player.m_localPlayer.GetHoverObject();
-                if (hover && hover.name != null)
-                {
-                    bez += hover.name;
-                }
-
-                GUI.Label(new Rect(10, 10, 500, 25), bez);
-            }
-        }
-
+        
         // Toggle our test panel with button
         private void TogglePanel()
         {

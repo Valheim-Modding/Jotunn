@@ -30,12 +30,19 @@ namespace Jotunn.DebugUtils
             }
         }
 
+        public TwoColumnPanel SetAnchor(Vector2 anchor)
+        {
+            _panel.GetComponent<RectTransform>().anchorMin = anchor;
+            _panel.GetComponent<RectTransform>().anchorMax = anchor;
+            return this;
+        }
+
         public TwoColumnPanel SetPosition(Vector2 position)
         {
             _panel.GetComponent<RectTransform>().anchoredPosition = position;
             return this;
         }
-
+        
         void CreatePanel(Transform parent)
         {
             _panel = new GameObject("TwoColumnPanel", typeof(RectTransform));

@@ -10,6 +10,7 @@ namespace Jotunn.DebugUtils
         private void Awake()
         {
             Main.RootObject.AddComponent<Eraser>();
+            Main.RootObject.AddComponent<DebugInfo>();
             Main.RootObject.AddComponent<HoverInfo>();
             Main.RootObject.AddComponent<UEInputBlocker>();
             Main.RootObject.AddComponent<ZNetDiddelybug>();
