@@ -37,7 +37,7 @@ namespace Jotunn.DebugUtils
                 Main.Instance.Config.Bind(
                     nameof(DebugInfo),
                     "DebugInfoPanelPosition",
-                    new Vector2(40f, -200f),
+                    new Vector2(40f, -300f),
                     "Position of the DebugInfo panel.");
 
             _debugPanelPosition.SettingChanged +=
