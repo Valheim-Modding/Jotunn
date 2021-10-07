@@ -29,7 +29,8 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Unity KeyCode this config should be bound to.
         /// </summary>
-        public KeyCode Key {
+        public KeyCode Key
+        {
             get
             {
                 if (_key != KeyCode.None)
@@ -59,7 +60,8 @@ namespace Jotunn.Configs
         /// <summary>
         ///     BepInEx KeyboardShortcut this config should be bound to.
         /// </summary>
-        public KeyboardShortcut Shortcut {
+        public KeyboardShortcut Shortcut 
+        {
             get
             {
                 if (_shortcut.MainKey != KeyCode.None)

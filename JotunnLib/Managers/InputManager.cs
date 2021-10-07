@@ -78,13 +78,13 @@ namespace Jotunn.Managers
             
             if (buttonConfig.Key != KeyCode.None && buttonConfig.Shortcut.MainKey != KeyCode.None)
             {
-                Logger.LogWarning($"Cannot have a Key and Shortcut in button config {buttonConfig.Name} (Mod {modGuid})");
+                Logger.LogWarning($"Cannot have both a Key and Shortcut in button config {buttonConfig.Name} (Mod {modGuid})");
                 return;
             }
 
             if (buttonConfig.Config != null && buttonConfig.ShortcutConfig != null)
             {
-                Logger.LogWarning($"Cannot have a Key and Shortcut config in button config {buttonConfig.Name} (Mod {modGuid})");
+                Logger.LogWarning($"Cannot have both a Key and Shortcut config in button config {buttonConfig.Name} (Mod {modGuid})");
                 return;
             }
 
