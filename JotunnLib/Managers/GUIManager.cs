@@ -516,13 +516,15 @@ namespace Jotunn.Managers
         private GameObject CreateKeyHintObject(KeyHintConfig config)
         {
             // Clone BuildHints and add it under KeyHints to get the position right
-            var baseKeyHint = Object.Instantiate(KeyHintContainer.Find("BuildHints").gameObject, KeyHintContainer, false);
+            var keyHints = KeyHintContainer.GetComponent<KeyHints>();
+            var baseKeyHint = Object.Instantiate(keyHints.m_buildHints, KeyHintContainer, false);
             baseKeyHint.name = config.ToString();
             baseKeyHint.SetActive(false);
 
             // Get the Transforms of Keyboard and Gamepad
-            var kb = baseKeyHint.transform.Find("Keyboard");
-            var gp = baseKeyHint.transform.Find("Gamepad");
+            var inputHint = baseKeyHint.GetComponent<UIInputHint>();
+            var kb = inputHint.m_mouseKeyboardHint?.transform;
+            var gp = inputHint.m_gamepadHint?.transform;
 
             if (kb == null || gp == null)
             {
