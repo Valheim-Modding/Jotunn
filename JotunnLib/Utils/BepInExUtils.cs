@@ -131,7 +131,8 @@ namespace Jotunn.Utils
         {
             foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
             {
-                if (Path.GetDirectoryName(path).IndexOf(Path.GetDirectoryName(info.Location)) >= 0)
+                if (Path.GetDirectoryName(path).IndexOf(Path.GetDirectoryName(info.Location)) >= 0 &&
+                    Path.GetDirectoryName(info.Location) != BepInEx.Paths.PluginPath)
                 {
                     return info;
                 }
