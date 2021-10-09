@@ -540,14 +540,16 @@ namespace Jotunn.Managers
             // Clone vanilla key hint objects and use it as the base for custom key hints
             var origKey = kb.transform.Find("Place")?.gameObject;
             var origRotate = kb.transform.Find("rotate")?.gameObject;
+            var origButton = gp.transform.Find("BuildMenu")?.gameObject;
 
-            if (!origKey || !origRotate)
+            if (!origKey || !origRotate || !origButton)
             {
                 throw new Exception("Could not find child objects for KeyHints");
             }
 
             var baseKey = Object.Instantiate(origKey);
             var baseRotate = Object.Instantiate(origRotate);
+            var baseButton = Object.Instantiate(origButton);
 
             // Destroy all child objects
             foreach (RectTransform child in kb)
@@ -574,17 +576,26 @@ namespace Jotunn.Managers
 
                 if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                 {
-                    var customObject = Object.Instantiate(baseKey, kb, false);
-                    customObject.name = buttonConfig.Name;
-                    customObject.transform.Find("key_bkg/Key").gameObject.SetText(key);
-                    customObject.transform.Find("Text").gameObject.SetText(hint);
-                    customObject.SetActive(true);
+                    var customKeyboard = Object.Instantiate(baseKey, kb, false);
+                    customKeyboard.name = buttonConfig.Name;
+                    customKeyboard.transform.Find("key_bkg/Key").gameObject.SetText(key);
+                    customKeyboard.transform.Find("Text").gameObject.SetText(hint);
+                    customKeyboard.SetActive(true);
                 }
                 else
                 {
-                    var customObject = Object.Instantiate(baseRotate, kb, false);
-                    customObject.transform.Find("Text").gameObject.SetText(hint);
-                    customObject.SetActive(true);
+                    var customKeyboard = Object.Instantiate(baseRotate, kb, false);
+                    customKeyboard.transform.Find("Text").gameObject.SetText(hint);
+                    customKeyboard.SetActive(true);
+                }
+
+                if (buttonConfig.GamepadKey != KeyCode.None)
+                {
+                    var customGamepad = Object.Instantiate(baseButton, gp, false);
+                    customGamepad.name = buttonConfig.Name;
+                    customGamepad.transform.Find("Button/Key").gameObject.SetText(key);
+                    customGamepad.transform.Find("Text").gameObject.SetText(hint);
+                    customGamepad.SetActive(true);
                 }
             }
 

@@ -97,6 +97,11 @@ namespace Jotunn.Managers
             {
                 ButtonToConfigDict.Add(buttonConfig.ShortcutConfig, buttonConfig);
             }
+            
+            if (buttonConfig.GamepadConfig != null)
+            {
+                ButtonToConfigDict.Add(buttonConfig.GamepadConfig, buttonConfig);
+            }
 
             buttonConfig.Name += "!" + modGuid;
             Buttons.Add(buttonConfig.Name, buttonConfig);
@@ -118,21 +123,18 @@ namespace Jotunn.Managers
                     {
                         self.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
                     }
-                    else if (btn.Config != null)
-                    {
-                        self.AddButton(btn.Name, btn.Config.Value, btn.RepeatDelay, btn.RepeatInterval);
-                    }
                     else if (btn.Key != KeyCode.None)
                     {
                         self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
                     }
-                    else if (btn.ShortcutConfig != null)
-                    {
-                        self.AddButton(btn.Name, btn.ShortcutConfig.Value.MainKey, btn.RepeatDelay, btn.RepeatInterval);
-                    }
                     else if (btn.Shortcut.MainKey != KeyCode.None)
                     {
                         self.AddButton(btn.Name, btn.Shortcut.MainKey, btn.RepeatDelay, btn.RepeatInterval);
+                    }
+
+                    if (btn.GamepadKey != KeyCode.None)
+                    {
+                        self.AddButton($"Joy!{btn.Name}", btn.GamepadKey, btn.RepeatDelay, btn.RepeatInterval);
                     }
 
                     Logger.LogDebug($"Registered input {pair.Key}");
@@ -142,7 +144,12 @@ namespace Jotunn.Managers
         
         private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
         {
-            if (!orig(name))
+            if (name.StartsWith("EvilSword"))
+            {
+
+            }
+
+            if (!orig(name) && !orig($"Joy!{name}"))
             {
                 return false;
             }

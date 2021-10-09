@@ -82,6 +82,37 @@ namespace Jotunn.Configs
         ///     Overrides the <see cref="Shortcut"/> value of this config.
         /// </summary>
         public ConfigEntry<KeyboardShortcut> ShortcutConfig { get; set; }
+        
+        /// <summary>
+        ///     Private store for the GamepadKey property
+        /// </summary>
+        private KeyCode _gamepadKey = KeyCode.None;
+
+        /// <summary>
+        ///     Unity KeyCode this config should be bound to for gamepads.
+        /// </summary>
+        public KeyCode GamepadKey
+        {
+            get
+            {
+                if (_gamepadKey != KeyCode.None)
+                {
+                    return _gamepadKey;
+                }
+
+                return GamepadConfig?.Value ?? KeyCode.None;
+            }
+            set
+            {
+                _gamepadKey = value;
+            }
+        }
+        
+        /// <summary>
+        ///     BepInEx configuration entry of a KeyCode that should be used.
+        ///     Overrides the <see cref="GamepadKey"/> value of this config.
+        /// </summary>
+        public ConfigEntry<KeyCode> GamepadConfig { get; set; }
 
         /// <summary>
         ///     Should the Axis value be inverted?
