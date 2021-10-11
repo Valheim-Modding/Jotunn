@@ -179,46 +179,49 @@ namespace Jotunn.Managers
             return result;
         }
 
+        private IEnumerable<FileInfo> GetTranslationFiles(string path, string searchPattern) => GetTranslationFiles(new DirectoryInfo(path), searchPattern);
+
+        private IEnumerable<FileInfo> GetTranslationFiles(DirectoryInfo pathDirectoryInfo, string searchPattern)
+        {
+            if (!pathDirectoryInfo.Exists) yield break;
+
+            foreach (var path in Directory.GetFiles(pathDirectoryInfo.FullName, searchPattern, SearchOption.AllDirectories).Where(path => new DirectoryInfo(path).Parent?.Parent?.Name == "Translations"))
+            {
+                yield return new FileInfo(path);
+            }
+        }
+
         private void AutomaticLocalizationLoading()
         {
-            static string GetDirName(in string str) => Path.GetDirectoryName(str);
-            var jsonFormat = new HashSet<string>();
-            var unityFormat = new HashSet<string>();
+            var jsonFormat = new HashSet<FileInfo>();
+            var unityFormat = new HashSet<FileInfo>();
 
             // Json format community files
-            var paths = Directory.GetFiles(Paths.LanguageTranslationsFolder, CommunityTranslationFileName, SearchOption.AllDirectories);
-            foreach (var path in paths)
+            foreach (var fileInfo in GetTranslationFiles(Paths.LanguageTranslationsFolder, CommunityTranslationFileName))
             {
-                if (GetDirName(GetDirName(path)).EndsWith(TranslationsFolderName))
-                {
-                    jsonFormat.Add(path);
-                }
+                jsonFormat.Add(fileInfo);
             }
 
-            paths = Directory.GetFiles(Paths.LanguageTranslationsFolder, "*.json", SearchOption.AllDirectories);
-            foreach (var path in paths)
+            foreach (var fileInfo in GetTranslationFiles(Paths.LanguageTranslationsFolder, "*.json"))
             {
-                if (GetDirName(GetDirName(path)).EndsWith(TranslationsFolderName))
-                {
-                    jsonFormat.Add(path);
-                }
+                jsonFormat.Add(fileInfo);
             }
 
-            paths = Directory.GetFiles(Paths.LanguageTranslationsFolder, "*.language", SearchOption.AllDirectories);
-            foreach (var path in paths)
+            foreach (var fileInfo in GetTranslationFiles(Paths.LanguageTranslationsFolder, "*.language"))
             {
-                unityFormat.Add(path);
+                unityFormat.Add(fileInfo);
             }
 
-            foreach (var path in jsonFormat)
+            foreach (var fileInfo in jsonFormat)
             {
-                var mod = BepInExUtils.GetPluginInfoFromPath(path)?.Metadata;
-                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(path, true);
+                var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
+                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.DirectoryName, true);
             }
-            foreach (var path in unityFormat)
+
+            foreach (var fileInfo in unityFormat)
             {
-                var mod = BepInExUtils.GetPluginInfoFromPath(path)?.Metadata;
-                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(path);
+                var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
+                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.DirectoryName);
             }
         }
 

@@ -87,7 +87,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Get <see cref="PluginInfo"/> from a <see cref="Type"/>
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="type"><see cref="Type"/> of the plugin main class</param>
         /// <returns></returns>
         public static PluginInfo GetPluginInfoFromType(Type type)
         {
@@ -106,7 +106,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Get <see cref="PluginInfo"/> from an <see cref="Assembly"/>
         /// </summary>
-        /// <param name="assembly"></param>
+        /// <param name="assembly"><see cref="Assembly"/> of the plugin</param>
         /// <returns></returns>
         public static PluginInfo GetPluginInfoFromAssembly(Assembly assembly)
         {
@@ -125,21 +125,11 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Get <see cref="PluginInfo"/> from a path, also matches subfolder paths
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="fileInfo"><see cref="FileInfo"/> object of the plugin path</param>
         /// <returns></returns>
-        public static PluginInfo GetPluginInfoFromPath(string path)
-        {
-            foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
-            {
-                if (Path.GetDirectoryName(path).IndexOf(Path.GetDirectoryName(info.Location)) >= 0 &&
-                    Path.GetDirectoryName(info.Location) != BepInEx.Paths.PluginPath)
-                {
-                    return info;
-                }
-            }
-
-            return null;
-        }
+        public static PluginInfo GetPluginInfoFromPath(FileInfo fileInfo) =>
+            BepInEx.Bootstrap.Chainloader.PluginInfos.Values.FirstOrDefault(pi =>
+                fileInfo.DirectoryName != null && pi.Location.Contains(fileInfo.DirectoryName));
 
         /// <summary>
         ///     Get metadata information from the current calling mod
