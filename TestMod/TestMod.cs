@@ -47,7 +47,7 @@ namespace TestMod
         private Skills.SkillType TestSkill;
 
         private ConfigEntry<KeyCode> EvilSwordSpecialConfig;
-        private ConfigEntry<KeyCode> EvilSwordGamepadConfig;
+        private ConfigEntry<InputManager.GamepadButton> EvilSwordGamepadConfig;
         private ButtonConfig EvilSwordSpecialButton;
         private CustomStatusEffect EvilSwordEffect;
 
@@ -543,7 +543,7 @@ namespace TestMod
             // Add a client side custom input key for the EvilSword
             EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, 
                 new ConfigDescription("Key to unleash evil with the Evil Sword"));
-            EvilSwordGamepadConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttackGamepad", KeyCode.Joystick1Button0, 
+            EvilSwordGamepadConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttackGamepad", InputManager.GamepadButton.ButtonSouth,
                 new ConfigDescription("Button to unleash evil with the Evil Sword"));
             
         }

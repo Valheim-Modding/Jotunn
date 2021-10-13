@@ -12,13 +12,65 @@ namespace Jotunn.Managers
     /// </summary>
     public class InputManager : IManager
     {
-        private static InputManager _instance;
+        public enum GamepadButton
+        {
+            None,
+            DPadUp,
+            DPadDown,
+            DPadLeft,
+            DPadRight,
+            ButtonNorth,
+            ButtonSouth,
+            ButtonWest,
+            ButtonEast,
+            LeftShoulder,
+            RightShoulder,
+            LeftTrigger,
+            RightTrigger,
+            StartButton,
+            SelectButton,
+            LeftStickButton,
+            RightStickButton
+        }
+
+        private static KeyCode GetGamepadKeyCode(GamepadButton @enum)
+        {
+            return @enum switch
+            {
+                GamepadButton.ButtonNorth => KeyCode.JoystickButton3,
+                GamepadButton.ButtonSouth => KeyCode.JoystickButton0,
+                GamepadButton.ButtonWest => KeyCode.JoystickButton2,
+                GamepadButton.ButtonEast => KeyCode.JoystickButton1,
+                GamepadButton.LeftShoulder => KeyCode.JoystickButton4,
+                GamepadButton.RightShoulder => KeyCode.JoystickButton5,
+                GamepadButton.StartButton => KeyCode.JoystickButton7,
+                GamepadButton.SelectButton => KeyCode.JoystickButton6,
+                GamepadButton.LeftStickButton => KeyCode.JoystickButton8,
+                GamepadButton.RightStickButton => KeyCode.JoystickButton9,
+                _ => KeyCode.None
+            };
+        }
+
+        private static string GetGamepadAxis(GamepadButton @enum)
+        {
+            return @enum switch
+            {
+                GamepadButton.DPadUp => "JoyAxis 7",
+                GamepadButton.DPadDown => "-JoyAxis 7",
+                GamepadButton.DPadLeft => "-JoyAxis 6",
+                GamepadButton.DPadRight => "JoyAxis 6",
+                GamepadButton.LeftTrigger => "-JoyAxis 3",
+                GamepadButton.RightTrigger => "JoyAxis 3",
+                _ => string.Empty
+            };
+        }
 
         // Internal holder for all buttons added via Jotunn
         internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
 
         internal static Dictionary<ConfigEntryBase, ButtonConfig> ButtonToConfigDict = new Dictionary<ConfigEntryBase, ButtonConfig>();
 
+        private static InputManager _instance;
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -63,7 +115,7 @@ namespace Jotunn.Managers
                 throw new ArgumentException($"{nameof(modGuid)} can not be empty or null", nameof(modGuid));
             }
 
-            if (buttonConfig.Config == null && buttonConfig.Key == KeyCode.None && 
+            if (buttonConfig.Config == null && buttonConfig.Key == KeyCode.None &&
                 buttonConfig.ShortcutConfig == null && buttonConfig.Shortcut.MainKey == KeyCode.None &&
                 string.IsNullOrEmpty(buttonConfig.Axis))
             {
@@ -75,7 +127,7 @@ namespace Jotunn.Managers
                 Logger.LogWarning($"Cannot have duplicate button: {buttonConfig.Name} (Mod {modGuid})");
                 return;
             }
-            
+
             if (buttonConfig.Key != KeyCode.None && buttonConfig.Shortcut.MainKey != KeyCode.None)
             {
                 Logger.LogWarning($"Cannot have both a Key and Shortcut in button config {buttonConfig.Name} (Mod {modGuid})");
@@ -97,7 +149,7 @@ namespace Jotunn.Managers
             {
                 ButtonToConfigDict.Add(buttonConfig.ShortcutConfig, buttonConfig);
             }
-            
+
             if (buttonConfig.GamepadConfig != null)
             {
                 ButtonToConfigDict.Add(buttonConfig.GamepadConfig, buttonConfig);
@@ -118,7 +170,7 @@ namespace Jotunn.Managers
                 foreach (var pair in Buttons)
                 {
                     var btn = pair.Value;
-                    
+
                     if (!string.IsNullOrEmpty(btn.Axis))
                     {
                         self.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
@@ -132,38 +184,45 @@ namespace Jotunn.Managers
                         self.AddButton(btn.Name, btn.Shortcut.MainKey, btn.RepeatDelay, btn.RepeatInterval);
                     }
 
-                    if (btn.GamepadKey != KeyCode.None)
+                    if (btn.Gamepad != GamepadButton.None)
                     {
-                        self.AddButton($"Joy!{btn.Name}", btn.GamepadKey, btn.RepeatDelay, btn.RepeatInterval);
+                        KeyCode keyCode = GetGamepadKeyCode(btn.Gamepad);
+                        string axis = GetGamepadAxis(btn.Gamepad);
+
+                        if (keyCode != KeyCode.None)
+                        {
+                            self.AddButton($"Joy!{btn.Name}", keyCode, btn.RepeatDelay, btn.RepeatInterval);
+                        }
+
+                        if (!string.IsNullOrEmpty(axis))
+                        {
+                            bool invert = axis.StartsWith("-");
+                            self.AddButton($"Joy!{btn.Name}", axis.TrimStart('-'), invert, btn.RepeatDelay, btn.RepeatInterval);
+                        }
                     }
 
                     Logger.LogDebug($"Registered input {pair.Key}");
                 }
             }
         }
-        
+
         private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
         {
-            if (name.StartsWith("EvilSword"))
-            {
-
-            }
-
             if (!orig(name) && !orig($"Joy!{name}"))
             {
                 return false;
             }
-            
+
             if (!Buttons.TryGetValue(name, out var button))
             {
                 return true;
             }
-            
+
             if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsDown())
             {
                 return false;
             }
-            
+
             return TakeInput(button);
         }
 
@@ -173,17 +232,17 @@ namespace Jotunn.Managers
             {
                 return false;
             }
-            
+
             if (!Buttons.TryGetValue(name, out var button))
             {
                 return true;
             }
-            
+
             if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsPressed())
             {
                 return false;
             }
-            
+
             return TakeInput(button);
         }
 
@@ -198,12 +257,12 @@ namespace Jotunn.Managers
             {
                 return true;
             }
-            
+
             if (button.Shortcut.MainKey != KeyCode.None && !button.Shortcut.IsUp())
             {
                 return false;
             }
-            
+
             return TakeInput(button);
         }
 
@@ -213,7 +272,7 @@ namespace Jotunn.Managers
             {
                 return true;
             }
-            
+
             if (button.ActiveInGUI && !GUIManager.InputBlocked)
             {
                 return true;

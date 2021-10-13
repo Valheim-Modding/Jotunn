@@ -589,7 +589,7 @@ namespace Jotunn.Managers
                     customKeyboard.SetActive(true);
                 }
 
-                if (buttonConfig.GamepadKey != KeyCode.None)
+                if (buttonConfig.Gamepad != InputManager.GamepadButton.None)
                 {
                     var customGamepad = Object.Instantiate(baseButton, gp, false);
                     customGamepad.name = buttonConfig.Name;

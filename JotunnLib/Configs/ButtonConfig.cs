@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using Jotunn.Managers;
 using UnityEngine;
 
 namespace Jotunn.Configs
@@ -45,7 +46,7 @@ namespace Jotunn.Configs
                 _key = value;
             }
         }
-        
+
         /// <summary>
         ///     BepInEx configuration entry of a KeyCode that should be used.
         ///     Overrides the <see cref="Key"/> value of this config.
@@ -60,7 +61,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     BepInEx KeyboardShortcut this config should be bound to.
         /// </summary>
-        public KeyboardShortcut Shortcut 
+        public KeyboardShortcut Shortcut
         {
             get
             {
@@ -76,43 +77,43 @@ namespace Jotunn.Configs
                 _shortcut = value;
             }
         }
-        
+
         /// <summary>
         ///     BepInEx configuration entry of a KeyCode that should be used.
         ///     Overrides the <see cref="Shortcut"/> value of this config.
         /// </summary>
         public ConfigEntry<KeyboardShortcut> ShortcutConfig { get; set; }
-        
+
         /// <summary>
-        ///     Private store for the GamepadKey property
+        ///     Private store for the Gamepad property
         /// </summary>
-        private KeyCode _gamepadKey = KeyCode.None;
+        private InputManager.GamepadButton _gamepad = InputManager.GamepadButton.None;
 
         /// <summary>
         ///     Unity KeyCode this config should be bound to for gamepads.
         /// </summary>
-        public KeyCode GamepadKey
+        public InputManager.GamepadButton Gamepad
         {
             get
             {
-                if (_gamepadKey != KeyCode.None)
+                if (_gamepad != InputManager.GamepadButton.None)
                 {
-                    return _gamepadKey;
+                    return _gamepad;
                 }
 
-                return GamepadConfig?.Value ?? KeyCode.None;
+                return GamepadConfig?.Value ?? InputManager.GamepadButton.None;
             }
             set
             {
-                _gamepadKey = value;
+                _gamepad = value;
             }
         }
-        
+
         /// <summary>
         ///     BepInEx configuration entry of a KeyCode that should be used.
-        ///     Overrides the <see cref="GamepadKey"/> value of this config.
+        ///     Overrides the <see cref="Gamepad"/> value of this config.
         /// </summary>
-        public ConfigEntry<KeyCode> GamepadConfig { get; set; }
+        public ConfigEntry<InputManager.GamepadButton> GamepadConfig { get; set; }
 
         /// <summary>
         ///     Should the Axis value be inverted?
