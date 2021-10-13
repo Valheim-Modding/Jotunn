@@ -12,24 +12,78 @@ namespace Jotunn.Managers
     /// </summary>
     public class InputManager : IManager
     {
+        /// <summary>
+        ///     Abstraction for gamepad buttons and axes used as inputs
+        /// </summary>
         public enum GamepadButton
         {
+            /// <summary>
+            ///     No gamepad button, internally treated as null
+            /// </summary>
             None,
+            /// <summary>
+            ///     Up direction on the directional pad
+            /// </summary>
             DPadUp,
+            /// <summary>
+            ///     Down direction on the directional pad
+            /// </summary>
             DPadDown,
+            /// <summary>
+            ///     Left direction on the directional pad
+            /// </summary>
             DPadLeft,
+            /// <summary>
+            ///     Right direction on the directional pad
+            /// </summary>
             DPadRight,
+            /// <summary>
+            ///     Southern button on the gamepad (A on XBox-like)
+            /// </summary>
             ButtonSouth,
+            /// <summary>
+            ///     Eastern button on the gamepad (B on XBox-like)
+            /// </summary>
             ButtonEast,
+            /// <summary>
+            ///     Western button on the gamepad (X on XBox-like)
+            /// </summary>
             ButtonWest,
+            /// <summary>
+            ///     Nothern button on the gamepad (Y on XBox-like)
+            /// </summary>
             ButtonNorth,
+            /// <summary>
+            ///     Left shoulder button
+            /// </summary>
             LeftShoulder,
+            /// <summary>
+            ///     Right shoulder button
+            /// </summary>
             RightShoulder,
+            /// <summary>
+            ///     Left trigger
+            /// </summary>
             LeftTrigger,
+            /// <summary>
+            ///     Right trigger
+            /// </summary>
             RightTrigger,
+            /// <summary>
+            ///     Left special button (Back on XBox-like)
+            /// </summary>
             SelectButton,
+            /// <summary>
+            ///     Right special button (Menu on XBox-like)
+            /// </summary>
             StartButton,
+            /// <summary>
+            ///     Left Joystick press
+            /// </summary>
             LeftStickButton,
+            /// <summary>
+            ///     Right Joystick press
+            /// </summary>
             RightStickButton
         }
 
@@ -82,8 +136,8 @@ namespace Jotunn.Managers
                 GamepadButton.RightShoulder => "RB",
                 GamepadButton.LeftTrigger => "LT",
                 GamepadButton.RightTrigger => "RT",
-                GamepadButton.StartButton => "Start",
-                GamepadButton.SelectButton => "Select",
+                GamepadButton.StartButton => "Menu",
+                GamepadButton.SelectButton => "Back",
                 GamepadButton.LeftStickButton => "L",
                 GamepadButton.RightStickButton => "R",
                 _ => string.Empty

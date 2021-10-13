@@ -90,7 +90,7 @@ namespace Jotunn.Configs
         private GamepadButton _gamepadButton = GamepadButton.None;
 
         /// <summary>
-        ///     Unity KeyCode this config should be bound to for gamepads.
+        ///     GamepadButton this config should be bound to for gamepads.
         /// </summary>
         public GamepadButton GamepadButton
         {
@@ -110,7 +110,7 @@ namespace Jotunn.Configs
         }
 
         /// <summary>
-        ///     BepInEx configuration entry of a KeyCode that should be used.
+        ///     BepInEx configuration entry of a GamepadButton that should be used.
         ///     Overrides the <see cref="GamepadButton"/> value of this config.
         /// </summary>
         public ConfigEntry<GamepadButton> GamepadConfig { get; set; }
