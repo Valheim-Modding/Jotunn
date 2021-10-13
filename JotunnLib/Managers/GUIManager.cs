@@ -598,20 +598,7 @@ namespace Jotunn.Managers
                     customGamepad.SetActive(true);
                 }
             }
-
-            // Add UIInputHint to automatically switch between Keyboard and Gamepad objects
-            /*var uihint = hint.AddComponent<UIInputHint>();
-            var kb = hint.transform.Find("Keyboard");
-            if (kb != null)
-            {
-                uihint.m_mouseKeyboardHint = kb.gameObject;
-            }
-            var gp = hint.transform.Find("GamePad");
-            if (gp != null)
-            {
-                uihint.m_gamepadHint = gp.gameObject;
-            }*/
-
+            
             Logger.LogDebug($"Added key hints for Item : {config}");
 
             return baseKeyHint;
