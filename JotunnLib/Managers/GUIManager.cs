@@ -10,6 +10,7 @@ using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.U2D;
 using UnityEngine.UI;
+using static Jotunn.Managers.InputManager;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
 using Object = UnityEngine.Object;
@@ -508,7 +509,7 @@ namespace Jotunn.Managers
                 }
             }
         }
-
+        
         /// <summary>
         ///     Copy vanilla BuildHints object and create a custom one from a KeyHintConfig.
         /// </summary>
@@ -541,8 +542,11 @@ namespace Jotunn.Managers
             var origKey = kb.transform.Find("Place")?.gameObject;
             var origRotate = kb.transform.Find("rotate")?.gameObject;
             var origButton = gp.transform.Find("BuildMenu")?.gameObject;
+            var origTrigger = gp.transform.Find("Place")?.gameObject;
+            var origShoulder = gp.transform.Find("Remove")?.gameObject;
+            var origStick = gp.transform.Find("rotate")?.gameObject;
 
-            if (!origKey || !origRotate || !origButton)
+            if (!origKey || !origRotate || !origButton || !origTrigger || !origShoulder || !origStick)
             {
                 throw new Exception("Could not find child objects for KeyHints");
             }
@@ -550,6 +554,11 @@ namespace Jotunn.Managers
             var baseKey = Object.Instantiate(origKey);
             var baseRotate = Object.Instantiate(origRotate);
             var baseButton = Object.Instantiate(origButton);
+            var baseTrigger = Object.Instantiate(origTrigger);
+            var baseShoulder = Object.Instantiate(origShoulder);
+            var baseStick = Object.Instantiate(origStick);
+            Object.DestroyImmediate(baseStick.transform.Find("Trigger").gameObject);
+            Object.DestroyImmediate(baseStick.transform.Find("plus").gameObject);
 
             // Destroy all child objects
             foreach (RectTransform child in kb)
@@ -588,14 +597,59 @@ namespace Jotunn.Managers
                     customKeyboard.transform.Find("Text").gameObject.SetText(hint);
                     customKeyboard.SetActive(true);
                 }
-
-                if (buttonConfig.Gamepad != InputManager.GamepadButton.None)
+                
+                var gamepadButton = buttonConfig.GamepadButton == GamepadButton.None
+                    ? GetGamepadButtonFromVanilla($"Joy{buttonConfig.Name}")
+                    : buttonConfig.GamepadButton;
+                if (gamepadButton != GamepadButton.None)
                 {
-                    var customGamepad = Object.Instantiate(baseButton, gp, false);
-                    customGamepad.name = buttonConfig.Name;
-                    customGamepad.transform.Find("Button/Key").gameObject.SetText(key);
-                    customGamepad.transform.Find("Text").gameObject.SetText(hint);
-                    customGamepad.SetActive(true);
+                    string buttonString = GetGamepadString(gamepadButton);
+                    
+                    switch (gamepadButton)
+                    {
+                        case GamepadButton.DPadUp:
+                        case GamepadButton.DPadDown:
+                        case GamepadButton.DPadLeft:
+                        case GamepadButton.DPadRight:
+                        case GamepadButton.StartButton:
+                        case GamepadButton.SelectButton:
+                        case GamepadButton.ButtonNorth:
+                        case GamepadButton.ButtonSouth:
+                        case GamepadButton.ButtonWest:
+                        case GamepadButton.ButtonEast:
+                            var customButton = Object.Instantiate(baseButton, gp, false);
+                            customButton.name = buttonConfig.Name;
+                            customButton.transform.Find("Button/Key").gameObject.SetText(buttonString);
+                            customButton.transform.Find("Text").gameObject.SetText(hint);
+                            customButton.SetActive(true);
+                            break;
+                        case GamepadButton.LeftShoulder:
+                        case GamepadButton.RightShoulder:
+                            var customShoulder = Object.Instantiate(baseShoulder, gp, false);
+                            customShoulder.name = buttonConfig.Name;
+                            customShoulder.transform.Find("Trigger/Key").gameObject.SetText(buttonString);
+                            customShoulder.transform.Find("Text").gameObject.SetText(hint);
+                            customShoulder.SetActive(true);
+                            break;
+                        case GamepadButton.LeftTrigger:
+                        case GamepadButton.RightTrigger:
+                            var customTrigger = Object.Instantiate(baseTrigger, gp, false);
+                            customTrigger.name = buttonConfig.Name;
+                            customTrigger.transform.Find("Trigger/Key").gameObject.SetText(buttonString);
+                            customTrigger.transform.Find("Text").gameObject.SetText(hint);
+                            customTrigger.SetActive(true);
+                            break;
+                        case GamepadButton.LeftStickButton:
+                        case GamepadButton.RightStickButton:
+                            var customStick = Object.Instantiate(baseStick, gp, false);
+                            customStick.name = buttonConfig.Name;
+                            customStick.GetComponentInChildren<Text>().text = buttonString;
+                            customStick.SetActive(true);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                    
                 }
             }
             

@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
-using Jotunn.Managers;
 using UnityEngine;
+using static Jotunn.Managers.InputManager;
 
 namespace Jotunn.Configs
 {
@@ -85,35 +85,35 @@ namespace Jotunn.Configs
         public ConfigEntry<KeyboardShortcut> ShortcutConfig { get; set; }
 
         /// <summary>
-        ///     Private store for the Gamepad property
+        ///     Private store for the GamepadButton property
         /// </summary>
-        private InputManager.GamepadButton _gamepad = InputManager.GamepadButton.None;
+        private GamepadButton _gamepadButton = GamepadButton.None;
 
         /// <summary>
         ///     Unity KeyCode this config should be bound to for gamepads.
         /// </summary>
-        public InputManager.GamepadButton Gamepad
+        public GamepadButton GamepadButton
         {
             get
             {
-                if (_gamepad != InputManager.GamepadButton.None)
+                if (_gamepadButton != GamepadButton.None)
                 {
-                    return _gamepad;
+                    return _gamepadButton;
                 }
 
-                return GamepadConfig?.Value ?? InputManager.GamepadButton.None;
+                return GamepadConfig?.Value ?? GamepadButton.None;
             }
             set
             {
-                _gamepad = value;
+                _gamepadButton = value;
             }
         }
 
         /// <summary>
         ///     BepInEx configuration entry of a KeyCode that should be used.
-        ///     Overrides the <see cref="Gamepad"/> value of this config.
+        ///     Overrides the <see cref="GamepadButton"/> value of this config.
         /// </summary>
-        public ConfigEntry<InputManager.GamepadButton> GamepadConfig { get; set; }
+        public ConfigEntry<GamepadButton> GamepadConfig { get; set; }
 
         /// <summary>
         ///     Should the Axis value be inverted?

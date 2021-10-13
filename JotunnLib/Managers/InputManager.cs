@@ -19,16 +19,16 @@ namespace Jotunn.Managers
             DPadDown,
             DPadLeft,
             DPadRight,
-            ButtonNorth,
             ButtonSouth,
-            ButtonWest,
             ButtonEast,
+            ButtonWest,
+            ButtonNorth,
             LeftShoulder,
             RightShoulder,
             LeftTrigger,
             RightTrigger,
-            StartButton,
             SelectButton,
+            StartButton,
             LeftStickButton,
             RightStickButton
         }
@@ -37,14 +37,14 @@ namespace Jotunn.Managers
         {
             return @enum switch
             {
-                GamepadButton.ButtonNorth => KeyCode.JoystickButton3,
                 GamepadButton.ButtonSouth => KeyCode.JoystickButton0,
-                GamepadButton.ButtonWest => KeyCode.JoystickButton2,
                 GamepadButton.ButtonEast => KeyCode.JoystickButton1,
+                GamepadButton.ButtonWest => KeyCode.JoystickButton2,
+                GamepadButton.ButtonNorth => KeyCode.JoystickButton3,
                 GamepadButton.LeftShoulder => KeyCode.JoystickButton4,
                 GamepadButton.RightShoulder => KeyCode.JoystickButton5,
-                GamepadButton.StartButton => KeyCode.JoystickButton7,
                 GamepadButton.SelectButton => KeyCode.JoystickButton6,
+                GamepadButton.StartButton => KeyCode.JoystickButton7,
                 GamepadButton.LeftStickButton => KeyCode.JoystickButton8,
                 GamepadButton.RightStickButton => KeyCode.JoystickButton9,
                 _ => KeyCode.None
@@ -63,6 +63,77 @@ namespace Jotunn.Managers
                 GamepadButton.RightTrigger => "JoyAxis 3",
                 _ => string.Empty
             };
+        }
+        
+        internal static string GetGamepadString(GamepadButton @enum)
+        {
+            return @enum switch
+            {
+                GamepadButton.None => string.Empty,
+                GamepadButton.DPadUp => "up",
+                GamepadButton.DPadDown => "down",
+                GamepadButton.DPadLeft => "left",
+                GamepadButton.DPadRight => "right",
+                GamepadButton.ButtonNorth => "Y",
+                GamepadButton.ButtonSouth => "A",
+                GamepadButton.ButtonWest => "X",
+                GamepadButton.ButtonEast => "B",
+                GamepadButton.LeftShoulder => "LB",
+                GamepadButton.RightShoulder => "RB",
+                GamepadButton.LeftTrigger => "LT",
+                GamepadButton.RightTrigger => "RT",
+                GamepadButton.StartButton => "Start",
+                GamepadButton.SelectButton => "Select",
+                GamepadButton.LeftStickButton => "L",
+                GamepadButton.RightStickButton => "R",
+                _ => string.Empty
+            };
+        }
+
+        internal static GamepadButton GetGamepadButtonFromVanilla(string name)
+        {
+            if (ZInput.instance == null)
+            {
+                return GamepadButton.None;
+            }
+
+            if (!ZInput.instance.m_buttons.TryGetValue(name, out var buttonDef))
+            {
+                return GamepadButton.None;
+            }
+
+            if (!string.IsNullOrEmpty(buttonDef.m_axis))
+            {
+                string axis = $"{(buttonDef.m_inverted ? "-" : null)}{buttonDef.m_axis}";
+                return axis switch
+                {
+                    "JoyAxis 7" => GamepadButton.DPadUp,
+                    "-JoyAxis 7" => GamepadButton.DPadDown,
+                    "-JoyAxis 6" => GamepadButton.DPadLeft,
+                    "JoyAxis 6" => GamepadButton.DPadRight,
+                    "-JoyAxis 3" => GamepadButton.LeftTrigger,
+                    "JoyAxis 3" => GamepadButton.RightTrigger
+                };
+            }
+
+            if (buttonDef.m_key != KeyCode.None)
+            {
+                return buttonDef.m_key switch
+                {
+                    KeyCode.JoystickButton0 => GamepadButton.ButtonSouth,
+                    KeyCode.JoystickButton1 => GamepadButton.ButtonEast,
+                    KeyCode.JoystickButton2 => GamepadButton.ButtonWest,
+                    KeyCode.JoystickButton3 => GamepadButton.ButtonNorth,
+                    KeyCode.JoystickButton4 => GamepadButton.LeftShoulder,
+                    KeyCode.JoystickButton5 => GamepadButton.RightShoulder,
+                    KeyCode.JoystickButton6 => GamepadButton.SelectButton,
+                    KeyCode.JoystickButton7 => GamepadButton.StartButton,
+                    KeyCode.JoystickButton8 => GamepadButton.LeftStickButton,
+                    KeyCode.JoystickButton9 => GamepadButton.RightStickButton
+                };
+            }
+
+            return GamepadButton.None;
         }
 
         // Internal holder for all buttons added via Jotunn
@@ -184,10 +255,10 @@ namespace Jotunn.Managers
                         self.AddButton(btn.Name, btn.Shortcut.MainKey, btn.RepeatDelay, btn.RepeatInterval);
                     }
 
-                    if (btn.Gamepad != GamepadButton.None)
+                    if (btn.GamepadButton != GamepadButton.None)
                     {
-                        KeyCode keyCode = GetGamepadKeyCode(btn.Gamepad);
-                        string axis = GetGamepadAxis(btn.Gamepad);
+                        KeyCode keyCode = GetGamepadKeyCode(btn.GamepadButton);
+                        string axis = GetGamepadAxis(btn.GamepadButton);
 
                         if (keyCode != KeyCode.None)
                         {
