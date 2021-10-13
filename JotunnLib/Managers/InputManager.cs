@@ -33,7 +33,7 @@ namespace Jotunn.Managers
             RightStickButton
         }
 
-        private static KeyCode GetGamepadKeyCode(GamepadButton @enum)
+        internal static KeyCode GetGamepadKeyCode(GamepadButton @enum)
         {
             return @enum switch
             {
@@ -51,7 +51,7 @@ namespace Jotunn.Managers
             };
         }
 
-        private static string GetGamepadAxis(GamepadButton @enum)
+        internal static string GetGamepadAxis(GamepadButton @enum)
         {
             return @enum switch
             {
@@ -90,52 +90,38 @@ namespace Jotunn.Managers
             };
         }
 
-        internal static GamepadButton GetGamepadButtonFromVanilla(string name)
+        internal static GamepadButton GetGamepadButton(string axis)
         {
-            if (ZInput.instance == null)
+            return axis switch
             {
-                return GamepadButton.None;
-            }
-
-            if (!ZInput.instance.m_buttons.TryGetValue(name, out var buttonDef))
-            {
-                return GamepadButton.None;
-            }
-
-            if (!string.IsNullOrEmpty(buttonDef.m_axis))
-            {
-                string axis = $"{(buttonDef.m_inverted ? "-" : null)}{buttonDef.m_axis}";
-                return axis switch
-                {
-                    "JoyAxis 7" => GamepadButton.DPadUp,
-                    "-JoyAxis 7" => GamepadButton.DPadDown,
-                    "-JoyAxis 6" => GamepadButton.DPadLeft,
-                    "JoyAxis 6" => GamepadButton.DPadRight,
-                    "-JoyAxis 3" => GamepadButton.LeftTrigger,
-                    "JoyAxis 3" => GamepadButton.RightTrigger
-                };
-            }
-
-            if (buttonDef.m_key != KeyCode.None)
-            {
-                return buttonDef.m_key switch
-                {
-                    KeyCode.JoystickButton0 => GamepadButton.ButtonSouth,
-                    KeyCode.JoystickButton1 => GamepadButton.ButtonEast,
-                    KeyCode.JoystickButton2 => GamepadButton.ButtonWest,
-                    KeyCode.JoystickButton3 => GamepadButton.ButtonNorth,
-                    KeyCode.JoystickButton4 => GamepadButton.LeftShoulder,
-                    KeyCode.JoystickButton5 => GamepadButton.RightShoulder,
-                    KeyCode.JoystickButton6 => GamepadButton.SelectButton,
-                    KeyCode.JoystickButton7 => GamepadButton.StartButton,
-                    KeyCode.JoystickButton8 => GamepadButton.LeftStickButton,
-                    KeyCode.JoystickButton9 => GamepadButton.RightStickButton
-                };
-            }
-
-            return GamepadButton.None;
+                "JoyAxis 7" => GamepadButton.DPadUp,
+                "-JoyAxis 7" => GamepadButton.DPadDown,
+                "-JoyAxis 6" => GamepadButton.DPadLeft,
+                "JoyAxis 6" => GamepadButton.DPadRight,
+                "-JoyAxis 3" => GamepadButton.LeftTrigger,
+                "JoyAxis 3" => GamepadButton.RightTrigger,
+                _ => GamepadButton.None
+            };
         }
 
+        internal static GamepadButton GetGamepadButton(KeyCode key)
+        {
+            return key switch
+            {
+                KeyCode.JoystickButton0 => GamepadButton.ButtonSouth,
+                KeyCode.JoystickButton1 => GamepadButton.ButtonEast,
+                KeyCode.JoystickButton2 => GamepadButton.ButtonWest,
+                KeyCode.JoystickButton3 => GamepadButton.ButtonNorth,
+                KeyCode.JoystickButton4 => GamepadButton.LeftShoulder,
+                KeyCode.JoystickButton5 => GamepadButton.RightShoulder,
+                KeyCode.JoystickButton6 => GamepadButton.SelectButton,
+                KeyCode.JoystickButton7 => GamepadButton.StartButton,
+                KeyCode.JoystickButton8 => GamepadButton.LeftStickButton,
+                KeyCode.JoystickButton9 => GamepadButton.RightStickButton,
+                _ => GamepadButton.None
+            };
+        }
+        
         // Internal holder for all buttons added via Jotunn
         internal static Dictionary<string, ButtonConfig> Buttons = new Dictionary<string, ButtonConfig>();
 

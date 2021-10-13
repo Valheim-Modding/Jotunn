@@ -597,10 +597,21 @@ namespace Jotunn.Managers
                     customKeyboard.transform.Find("Text").gameObject.SetText(hint);
                     customKeyboard.SetActive(true);
                 }
-                
-                var gamepadButton = buttonConfig.GamepadButton == GamepadButton.None
-                    ? GetGamepadButtonFromVanilla($"Joy{buttonConfig.Name}")
-                    : buttonConfig.GamepadButton;
+
+                var gamepadButton = buttonConfig.GamepadButton;
+                if (gamepadButton == GamepadButton.None && ZInput.instance.m_buttons.TryGetValue($"Joy{buttonConfig.Name}", out var buttonDef))
+                {
+                    if (!string.IsNullOrEmpty(buttonDef.m_axis))
+                    {
+                        string invAxis = $"{(buttonDef.m_inverted ? "-" : null)}{buttonDef.m_axis}";
+                        gamepadButton = GetGamepadButton(invAxis);
+                    }
+                    else
+                    {
+                        gamepadButton = GetGamepadButton(buttonDef.m_key);
+                    }
+                }
+
                 if (gamepadButton != GamepadButton.None)
                 {
                     string buttonString = GetGamepadString(gamepadButton);
@@ -619,7 +630,7 @@ namespace Jotunn.Managers
                         case GamepadButton.ButtonEast:
                             var customButton = Object.Instantiate(baseButton, gp, false);
                             customButton.name = buttonConfig.Name;
-                            customButton.transform.Find("Button/Key").gameObject.SetText(buttonString);
+                            customButton.GetComponentInChildren<Text>().text = buttonString;
                             customButton.transform.Find("Text").gameObject.SetText(hint);
                             customButton.SetActive(true);
                             break;
@@ -627,7 +638,7 @@ namespace Jotunn.Managers
                         case GamepadButton.RightShoulder:
                             var customShoulder = Object.Instantiate(baseShoulder, gp, false);
                             customShoulder.name = buttonConfig.Name;
-                            customShoulder.transform.Find("Trigger/Key").gameObject.SetText(buttonString);
+                            customShoulder.GetComponentInChildren<Text>().text = buttonString;
                             customShoulder.transform.Find("Text").gameObject.SetText(hint);
                             customShoulder.SetActive(true);
                             break;
@@ -635,7 +646,7 @@ namespace Jotunn.Managers
                         case GamepadButton.RightTrigger:
                             var customTrigger = Object.Instantiate(baseTrigger, gp, false);
                             customTrigger.name = buttonConfig.Name;
-                            customTrigger.transform.Find("Trigger/Key").gameObject.SetText(buttonString);
+                            customTrigger.GetComponentInChildren<Text>().text = buttonString;
                             customTrigger.transform.Find("Text").gameObject.SetText(hint);
                             customTrigger.SetActive(true);
                             break;
@@ -644,6 +655,7 @@ namespace Jotunn.Managers
                             var customStick = Object.Instantiate(baseStick, gp, false);
                             customStick.name = buttonConfig.Name;
                             customStick.GetComponentInChildren<Text>().text = buttonString;
+                            customStick.transform.Find("Text").gameObject.SetText(hint);
                             customStick.SetActive(true);
                             break;
                         default:
