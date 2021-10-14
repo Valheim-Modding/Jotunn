@@ -339,7 +339,7 @@ namespace Jotunn.Managers
 
         private bool ZInput_GetButton(On.ZInput.orig_GetButton orig, string name)
         {
-            if (!orig(name))
+            if (!orig(name) && !orig($"Joy!{name}"))
             {
                 return false;
             }
@@ -359,7 +359,7 @@ namespace Jotunn.Managers
 
         private bool ZInput_GetButtonUp(On.ZInput.orig_GetButtonUp orig, string name)
         {
-            if (!orig(name))
+            if (!orig(name) && !orig($"Joy!{name}"))
             {
                 return false;
             }
