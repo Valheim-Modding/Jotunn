@@ -520,13 +520,28 @@ namespace Jotunn.GUI
                                 buttonText += duplicateKeybindingText.Trim(' ').TrimEnd(',');
                             }
                         }
-
+                        
                         var go = CreateKeybindElement(contentViewport,
                             entry.Key.Key + ":", buttonText,
                             buttonName, innerWidth);
                         var conf = go.AddComponent<ConfigBoundKeyCode>();
                         conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         preferredHeight += go.GetHeight();
+
+                        if (entry.Value.GetButtonConfig().GamepadConfig != null)
+                        {
+                            // Create dropdown
+                            var dropdown = GUIManager.Instance.CreateDropDown(
+                                    go.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0), 14)
+                                .SetMiddleRight().SetSize(140f, 22f);
+                            var rect = dropdown.GetComponent<RectTransform>();
+                            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y - 3f);
+                            var conf2 = dropdown.AddComponent<ConfigBoundGamepadButton>();
+                            conf2.SetData(mod.Value.Info.Metadata.GUID,
+                                entry.Value.GetButtonConfig().GamepadConfig.Definition.Section,
+                                entry.Value.GetButtonConfig().GamepadConfig.Definition.Key);
+                            preferredHeight += dropdown.GetHeight();
+                        }
                     }
                     else if (entry.Value.SettingType == typeof(KeyboardShortcut) &&
                              ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
@@ -664,6 +679,11 @@ namespace Jotunn.GUI
                     if (childKeyCode != null)
                     {
                         childKeyCode.WriteBack();
+                        var childGamepadButton = values.gameObject.GetComponentInChildren<ConfigBoundGamepadButton>();
+                        if (childGamepadButton != null)
+                        {
+                            childGamepadButton.WriteBack();
+                        }
                         continue;
                     }
 
@@ -765,7 +785,7 @@ namespace Jotunn.GUI
             result.GetComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
             return result;
         }
-
+        
         /// <summary>
         ///     Create a text input field and a ColorPicker button (used for Color)
         /// </summary>
@@ -1586,5 +1606,48 @@ namespace Jotunn.GUI
                 throw new ArgumentException($"'{str}' is no valid color value");
             }
         }
+
+        /// <summary>
+        ///     Enum binding
+        /// </summary>
+        internal class ConfigBoundGamepadButton : ConfigBound<InputManager.GamepadButton>
+        {
+            private Dropdown Dropdown;
+            
+            public override void Register()
+            {
+                Dropdown = gameObject.GetComponentInChildren<Dropdown>();
+                Dropdown.AddOptions(Enum.GetNames(typeof(InputManager.GamepadButton)).ToList());
+            }
+            
+            public override InputManager.GamepadButton GetValue()
+            {
+                if (Enum.TryParse<InputManager.GamepadButton>(Dropdown.options[Dropdown.value].text, out var ret))
+                {
+                    return ret;
+                }
+
+                return InputManager.GamepadButton.None;
+            }
+
+            public override void SetValue(InputManager.GamepadButton value)
+            {
+                Dropdown.value = Dropdown.options.IndexOf(Dropdown.options.FirstOrDefault(x =>
+                    x.text.Equals(Enum.GetName(typeof(InputManager.GamepadButton), value))));
+                Dropdown.RefreshShownValue();
+            }
+
+            public override void SetEnabled(bool enabled)
+            {
+                Dropdown.enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                Dropdown.enabled = !readOnly;
+                Dropdown.itemText.color = readOnly ? Color.grey : Color.white;
+            }
+        }
+
     }
 }

@@ -1673,11 +1673,13 @@ namespace Jotunn.Managers
             if (dropdown.captionText)
             {
                 ApplyTextStyle(dropdown.captionText, fontSize);
+                dropdown.captionText.verticalOverflow = VerticalWrapMode.Overflow;
             }
 
             if (dropdown.itemText)
             {
                 ApplyTextStyle(dropdown.itemText, fontSize);
+                dropdown.captionText.verticalOverflow = VerticalWrapMode.Overflow;
             }
 
             if (dropdown.TryGetComponent<Image>(out var dropdownImage))
