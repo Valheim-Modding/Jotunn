@@ -49,13 +49,7 @@ namespace Jotunn.GUI
         ///     Our own mod config tabs
         /// </summary>
         private static readonly Dictionary<string, RectTransform> Configs = new Dictionary<string, RectTransform>();
-
-        /// <summary>
-        ///     Cache keybinds
-        /// </summary>
-        internal static Dictionary<string, List<Tuple<string, ConfigDefinition, ConfigEntryBase>>> ConfigurationKeybindings =
-            new Dictionary<string, List<Tuple<string, ConfigDefinition, ConfigEntryBase>>>();
-
+        
         /// <summary>
         ///     Hook into settings setup
         /// </summary>
@@ -244,25 +238,7 @@ namespace Jotunn.GUI
             });
 
             SettingsRoot.AddComponent<EscBehaviour>();
-
-            // Reset keybinding cache
-            ConfigurationKeybindings.Clear();
-            foreach (var mod in BepInExUtils.GetDependentPlugins(true))
-            {
-                foreach (var kv in GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible() && x.Value.IsButtonBound()))
-                {
-                    var buttonName = kv.Value.GetBoundButtonName();
-                    if (!string.IsNullOrEmpty(buttonName))
-                    {
-                        if (!ConfigurationKeybindings.ContainsKey(buttonName))
-                        {
-                            ConfigurationKeybindings.Add(buttonName, new List<Tuple<string, ConfigDefinition, ConfigEntryBase>>());
-                        }
-                        ConfigurationKeybindings[buttonName].Add(new Tuple<string, ConfigDefinition, ConfigEntryBase>(mod.Key, kv.Key, kv.Value));
-                    }
-                }
-            }
-
+            
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
@@ -497,29 +473,6 @@ namespace Jotunn.GUI
                         buttonText += entryAttributes.IsAdminOnly
                             ? $"{Environment.NewLine}(Server side setting)"
                             : "";
-                        if (!string.IsNullOrEmpty(buttonName) && ConfigurationKeybindings.ContainsKey(buttonName))
-                        {
-                            var duplicateKeybindingText = "";
-                            if (ConfigurationKeybindings[buttonName].Count > 1)
-                            {
-                                duplicateKeybindingText +=
-                                    $"{Environment.NewLine}Other mods using this button:{Environment.NewLine}";
-                                foreach (var buttons in ConfigurationKeybindings[buttonName])
-                                {
-                                    // If it is the same config entry, just skip it
-                                    if (buttons.Item2 == entry.Key && buttons.Item1 == mod.Key)
-                                    {
-                                        continue;
-                                    }
-
-                                    // Add modguid as text
-                                    duplicateKeybindingText += $"{buttons.Item1}, ";
-                                }
-
-                                // add to buttonText, but without last ', '
-                                buttonText += duplicateKeybindingText.Trim(' ').TrimEnd(',');
-                            }
-                        }
                         
                         var go = CreateKeybindElement(contentViewport,
                             entry.Key.Key + ":", buttonText,
@@ -555,29 +508,6 @@ namespace Jotunn.GUI
                         buttonText += entryAttributes.IsAdminOnly
                             ? $"{Environment.NewLine}(Server side setting)"
                             : "";
-                        if (!string.IsNullOrEmpty(buttonName) && ConfigurationKeybindings.ContainsKey(buttonName))
-                        {
-                            var duplicateKeybindingText = "";
-                            if (ConfigurationKeybindings[buttonName].Count > 1)
-                            {
-                                duplicateKeybindingText +=
-                                    $"{Environment.NewLine}Other mods using this button:{Environment.NewLine}";
-                                foreach (var buttons in ConfigurationKeybindings[buttonName])
-                                {
-                                    // If it is the same config entry, just skip it
-                                    if (buttons.Item2 == entry.Key && buttons.Item1 == mod.Key)
-                                    {
-                                        continue;
-                                    }
-
-                                    // Add modguid as text
-                                    duplicateKeybindingText += $"{buttons.Item1}, ";
-                                }
-
-                                // add to buttonText, but without last ', '
-                                buttonText += duplicateKeybindingText.Trim(' ').TrimEnd(',');
-                            }
-                        }
 
                         var go = CreateShortcutbindElement(contentViewport,
                             entry.Key.Key + ":", buttonText,
