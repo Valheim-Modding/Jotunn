@@ -269,7 +269,7 @@ namespace Jotunn.Managers
             buttonConfig.Name += "!" + modGuid;
             Buttons.Add(buttonConfig.Name, buttonConfig);
         }
-
+        
         private void RegisterCustomInputs(On.ZInput.orig_Load orig, ZInput self)
         {
             orig(self);
@@ -297,18 +297,19 @@ namespace Jotunn.Managers
 
                     if (btn.GamepadButton != GamepadButton.None)
                     {
+                        var joyBtnName = $"Joy!{btn.Name}";
                         KeyCode keyCode = GetGamepadKeyCode(btn.GamepadButton);
                         string axis = GetGamepadAxis(btn.GamepadButton);
 
                         if (keyCode != KeyCode.None)
                         {
-                            self.AddButton($"Joy!{btn.Name}", keyCode, btn.RepeatDelay, btn.RepeatInterval);
+                            self.AddButton(joyBtnName, keyCode, btn.RepeatDelay, btn.RepeatInterval);
                         }
 
                         if (!string.IsNullOrEmpty(axis))
                         {
                             bool invert = axis.StartsWith("-");
-                            self.AddButton($"Joy!{btn.Name}", axis.TrimStart('-'), invert, btn.RepeatDelay, btn.RepeatInterval);
+                            self.AddButton(joyBtnName, axis.TrimStart('-'), invert, btn.RepeatDelay, btn.RepeatInterval);
                         }
                     }
 
