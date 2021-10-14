@@ -1461,6 +1461,85 @@ namespace Jotunn.GUI
                 Text.color = readOnly ? Color.grey : Color.white;
             }
         }
+        
+        /// <summary>
+        ///     GamepadButton binding
+        /// </summary>
+        internal class ConfigBoundGamepadButton : ConfigBound<InputManager.GamepadButton>
+        {
+            private Dropdown Dropdown;
+            
+            public override void Register()
+            {
+                Dropdown = gameObject.GetComponentInChildren<Dropdown>();
+                Dropdown.AddOptions(Enum.GetNames(typeof(InputManager.GamepadButton)).ToList());
+            }
+            
+            public override InputManager.GamepadButton GetValue()
+            {
+                if (Enum.TryParse<InputManager.GamepadButton>(Dropdown.options[Dropdown.value].text, out var ret))
+                {
+                    return ret;
+                }
+
+                return InputManager.GamepadButton.None;
+            }
+
+            public override void SetValue(InputManager.GamepadButton value)
+            {
+                Dropdown.value = Dropdown.options.IndexOf(Dropdown.options.FirstOrDefault(x =>
+                    x.text.Equals(Enum.GetName(typeof(InputManager.GamepadButton), value))));
+                Dropdown.RefreshShownValue();
+            }
+            
+            public void Start()
+            {
+                var buttonName = $"Joy!{Entry.GetBoundButtonName()}";
+                Dropdown.onValueChanged.AddListener(index =>
+                {
+                    var btn =
+                        (InputManager.GamepadButton)Enum.Parse(typeof(InputManager.GamepadButton),
+                            Dropdown.options[index].text);
+                    var def = ZInput.instance.m_buttons[buttonName];
+
+                    if (btn != InputManager.GamepadButton.None)
+                    {
+                        KeyCode keyCode = InputManager.GetGamepadKeyCode(btn);
+                        string axis = InputManager.GetGamepadAxis(btn);
+
+                        if (keyCode != KeyCode.None)
+                        {
+                            def.m_key = keyCode;
+                        }
+
+                        if (!string.IsNullOrEmpty(axis))
+                        {
+                            bool invert = axis.StartsWith("-");
+                            def.m_axis = axis.TrimStart('-');
+                            def.m_inverted = invert;
+                        }
+                    }
+                });
+            }
+
+            private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
+            {
+                
+                On.ZInput.EndBindKey -= ZInput_EndBindKey;
+                return true;
+            }
+
+            public override void SetEnabled(bool enabled)
+            {
+                Dropdown.enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                Dropdown.enabled = !readOnly;
+                Dropdown.itemText.color = readOnly ? Color.grey : Color.white;
+            }
+        }
 
         /// <summary>
         ///     String binding
@@ -1606,48 +1685,5 @@ namespace Jotunn.GUI
                 throw new ArgumentException($"'{str}' is no valid color value");
             }
         }
-
-        /// <summary>
-        ///     Enum binding
-        /// </summary>
-        internal class ConfigBoundGamepadButton : ConfigBound<InputManager.GamepadButton>
-        {
-            private Dropdown Dropdown;
-            
-            public override void Register()
-            {
-                Dropdown = gameObject.GetComponentInChildren<Dropdown>();
-                Dropdown.AddOptions(Enum.GetNames(typeof(InputManager.GamepadButton)).ToList());
-            }
-            
-            public override InputManager.GamepadButton GetValue()
-            {
-                if (Enum.TryParse<InputManager.GamepadButton>(Dropdown.options[Dropdown.value].text, out var ret))
-                {
-                    return ret;
-                }
-
-                return InputManager.GamepadButton.None;
-            }
-
-            public override void SetValue(InputManager.GamepadButton value)
-            {
-                Dropdown.value = Dropdown.options.IndexOf(Dropdown.options.FirstOrDefault(x =>
-                    x.text.Equals(Enum.GetName(typeof(InputManager.GamepadButton), value))));
-                Dropdown.RefreshShownValue();
-            }
-
-            public override void SetEnabled(bool enabled)
-            {
-                Dropdown.enabled = enabled;
-            }
-
-            public override void SetReadOnly(bool readOnly)
-            {
-                Dropdown.enabled = !readOnly;
-                Dropdown.itemText.color = readOnly ? Color.grey : Color.white;
-            }
-        }
-
     }
 }
