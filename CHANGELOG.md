@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.3.8
+* Fixed automatic mod recognition from filesystem paths (thx Digitalroot)
+
 ## Version 2.3.7
 * Fixed translation of the custom skill raise message
 * Added ZInput.GetButton support for custom buttons
