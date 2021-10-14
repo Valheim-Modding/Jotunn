@@ -1427,38 +1427,28 @@ namespace Jotunn.GUI
                 var buttonName = $"Joy!{Entry.GetBoundButtonName()}";
                 Dropdown.onValueChanged.AddListener(index =>
                 {
-                    var btn =
-                        (InputManager.GamepadButton)Enum.Parse(typeof(InputManager.GamepadButton),
-                            Dropdown.options[index].text);
-                    var def = ZInput.instance.m_buttons[buttonName];
-
-                    if (btn != InputManager.GamepadButton.None)
+                    if (Enum.TryParse<InputManager.GamepadButton>(Dropdown.options[index].text, out var btn) &&
+                        ZInput.instance.m_buttons.TryGetValue(buttonName, out var def))
                     {
                         KeyCode keyCode = InputManager.GetGamepadKeyCode(btn);
                         string axis = InputManager.GetGamepadAxis(btn);
-
-                        if (keyCode != KeyCode.None)
-                        {
-                            def.m_key = keyCode;
-                        }
-
+                        
                         if (!string.IsNullOrEmpty(axis))
                         {
+                            def.m_key = KeyCode.None;
                             bool invert = axis.StartsWith("-");
                             def.m_axis = axis.TrimStart('-');
                             def.m_inverted = invert;
                         }
+                        else
+                        {
+                            def.m_axis = null;
+                            def.m_key = keyCode;
+                        }
                     }
                 });
             }
-
-            private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
-            {
-                
-                On.ZInput.EndBindKey -= ZInput_EndBindKey;
-                return true;
-            }
-
+            
             public override void SetEnabled(bool enabled)
             {
                 Dropdown.enabled = enabled;
