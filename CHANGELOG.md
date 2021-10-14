@@ -3,6 +3,7 @@
 ## Version 2.3.8
 * Added GamepadButton to the InputManager and ButtonConfig - custom inputs can now define a gamepad button corresponding to the keyboard input
 * Added gamepad buttons to KeyHints for custom inputs as well as vanilla key overrides
+* Gamepad buttons can be defined in the mod settings if they are bound to a config
 
 ## Version 2.3.7
 * Fixed translation of the custom skill raise message
