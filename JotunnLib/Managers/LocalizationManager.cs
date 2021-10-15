@@ -133,21 +133,28 @@ namespace Jotunn.Managers
 
             Logger.LogInfo("Loading custom localizations");
 
-            AutomaticLocalizationLoading();
-            
-            // Add Jötunn's default localization at the end of the list
-            AddLocalization(JotunnLocalization);
-
-            // Add in localized languages that do not yet exist
-            foreach (var ct in Localizations)
+            try
             {
-                foreach (var language in ct.GetLanguages())
+                AutomaticLocalizationLoading();
+            
+                // Add Jötunn's default localization at the end of the list
+                AddLocalization(JotunnLocalization);
+
+                // Add in localized languages that do not yet exist
+                foreach (var ct in Localizations)
                 {
-                    if (!result.Contains(language))
+                    foreach (var language in ct.GetLanguages())
                     {
-                        result.Add(language);
+                        if (!result.Contains(language))
+                        {
+                            result.Add(language);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception caught while loading custom localizations: {ex}");
             }
 
             return result;
@@ -156,24 +163,31 @@ namespace Jotunn.Managers
         private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
         {
             var result = orig(self, language);
-
+            
             Logger.LogInfo($"Adding tokens for language '{language}'");
-
-            foreach (var ct in Localizations)
+            
+            try
             {
-                var langDic = ct.GetTranslations(language);
-                if (langDic == null)
+                foreach (var ct in Localizations)
                 {
-                    continue;
-                }
+                    var langDic = ct.GetTranslations(language);
+                    if (langDic == null)
+                    {
+                        continue;
+                    }
 
-                Logger.LogDebug($"Adding tokens for '{ct}'");
+                    Logger.LogDebug($"Adding tokens for '{ct}'");
 
-                foreach (var pair in langDic)
-                {
-                    Logger.LogDebug($"Added translation: {pair.Key} -> {pair.Value}");
-                    self.AddWord(pair.Key, pair.Value);
+                    foreach (var pair in langDic)
+                    {
+                        Logger.LogDebug($"Added translation: {pair.Key} -> {pair.Value}");
+                        self.AddWord(pair.Key, pair.Value);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception caught while adding custom localizations: {ex}");
             }
 
             return result;
