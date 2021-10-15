@@ -188,7 +188,7 @@ namespace Jotunn.Managers
 
                 var skillConfig = Skills[skill.m_info.m_skill];
                 var name = skillConfig.Name.StartsWith("$") ? Localization.instance.Localize(skillConfig.Name) : skillConfig.Name;
-                Logger.LogDebug($"Updated skill: {skillConfig.Name} -> {name}");
+                Logger.LogDebug($"Translated skill text: {skillConfig.Name} -> {name}");
                 global::Utils.FindChild(elem.transform, "name").GetComponent<Text>().text = name;
             }
         }
@@ -220,13 +220,13 @@ namespace Jotunn.Managers
                 zz => zz.MatchCallOrCallvirt<System.Object>("ToString"),
                 zz => zz.MatchCallOrCallvirt<System.String>("ToLower")))
             {
-                c.EmitDelegate<Func<string, string>>((string skillID) =>
+                c.EmitDelegate<Func<string, string>>(skillID =>
                 {
                     var asd = Enum.TryParse<global::Skills.SkillType>(skillID, out var result);
 
                     if (asd && Skills.ContainsKey(result))
                     {
-                        Jotunn.Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
+                        Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
                         return Skills[result].Name;
                     }
                     return $"$skill_{skillID}";
@@ -247,6 +247,7 @@ namespace Jotunn.Managers
                     skill.m_level = Mathf.Clamp(skill.m_level, 0f, 100f);
                     self.m_player.Message(MessageHud.MessageType.TopLeft, "Skill increased " + localizedName + ": " + (int)skill.m_level, 0, skill.m_info.m_icon);
                     Console.instance.Print("Skill " + config.Name + " = " + skill.m_level);
+                    Logger.LogDebug($"Raised skill {config.Name} to {skill.m_level}");
 
                     return;
                 }
@@ -262,6 +263,7 @@ namespace Jotunn.Managers
                 if (config.IsFromName(name))
                 {
                     self.m_player.GetSkills().ResetSkill(config.UID);
+                    Logger.LogDebug($"Reset skill {config.Name}");
                     return;
                 }
             }
