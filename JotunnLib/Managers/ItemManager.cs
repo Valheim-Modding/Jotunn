@@ -676,6 +676,7 @@ namespace Jotunn.Managers
         {
             if (SceneManager.GetActiveScene().name == "main")
             {
+                self.UpdateItemHashes();
                 RegisterCustomItems(self);
                 RegisterCustomRecipes(self);
                 RegisterCustomStatusEffects(self);
