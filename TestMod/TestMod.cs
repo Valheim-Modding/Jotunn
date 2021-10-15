@@ -649,7 +649,6 @@ namespace TestMod
             CommandManager.Instance.AddConsoleCommand(new TpCommand());
             CommandManager.Instance.AddConsoleCommand(new ListPlayersCommand());
             CommandManager.Instance.AddConsoleCommand(new SkinColorCommand());
-            CommandManager.Instance.AddConsoleCommand(new RaiseSkillCommand());
             CommandManager.Instance.AddConsoleCommand(new BetterSpawnCommand());
         }
 

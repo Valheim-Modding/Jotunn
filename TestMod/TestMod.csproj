@@ -446,7 +446,6 @@
   <ItemGroup>
     <Compile Include="ColorChanger.cs" />
     <Compile Include="ConsoleCommands\ListPlayersCommand.cs" />
-    <Compile Include="ConsoleCommands\RaiseSkillCommand.cs" />
     <Compile Include="ConsoleCommands\SkinColorCommand.cs" />
     <Compile Include="ConsoleCommands\BetterSpawnCommand.cs" />
     <Compile Include="ConsoleCommands\PrintItemsCommand.cs" />

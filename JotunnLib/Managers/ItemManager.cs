@@ -631,6 +631,7 @@ namespace Jotunn.Managers
             #pragma warning restore 612
             InvokeOnKitbashItemsAvailable();
 
+            other.UpdateItemHashes();
             RegisterCustomItems(other);
 
             orig(self, other);
@@ -675,6 +676,7 @@ namespace Jotunn.Managers
         {
             if (SceneManager.GetActiveScene().name == "main")
             {
+                self.UpdateItemHashes();
                 RegisterCustomItems(self);
                 RegisterCustomRecipes(self);
                 RegisterCustomStatusEffects(self);

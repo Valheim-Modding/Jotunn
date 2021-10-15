@@ -1,6 +1,8 @@
 ﻿# Changelog
 
 ## Version 2.3.8
+* Fixed automatic mod recognition from filesystem paths (thx Digitalroot)
+* Fixed duplication check on ObjectDB not always working correctly
 * Added GamepadButton to the InputManager and ButtonConfig - custom inputs can now define a gamepad button corresponding to the keyboard input
 * Added gamepad buttons to KeyHints for custom inputs as well as vanilla key overrides
 * Gamepad buttons can be defined in the mod settings if they are bound to a config
