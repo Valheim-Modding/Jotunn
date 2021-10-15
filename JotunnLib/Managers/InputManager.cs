@@ -391,7 +391,7 @@ namespace Jotunn.Managers
                 foreach (var btn in ZInput.instance.m_buttons.Where(x =>
                     x.Value.m_key == button.Key ||
                     x.Value.m_key == GetGamepadKeyCode(button.GamepadButton) ||
-                    x.Value.m_axis == GetGamepadAxis(button.GamepadButton).TrimStart('-')))
+                    (x.Value.m_axis == GetGamepadAxis(button.GamepadButton).TrimStart('-') && x.Value.m_inverted == GetGamepadAxis(button.GamepadButton).StartsWith("-"))))
                 {
                     ZInput.ResetButtonStatus(btn.Key);
                     btn.Value.m_pressed = false;
