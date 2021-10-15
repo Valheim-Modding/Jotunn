@@ -4,6 +4,7 @@ using System.Linq;
 using BepInEx.Configuration;
 using Jotunn.Configs;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Jotunn.Managers
 {
@@ -354,7 +355,7 @@ namespace Jotunn.Managers
             {
                 return false;
             }
-
+            
             return TakeInput(button);
         }
 
@@ -383,6 +384,19 @@ namespace Jotunn.Managers
             if (Player.m_localPlayer == null)
             {
                 return true;
+            }
+
+            if (button.BlockOtherInputs)
+            {
+                foreach (var btn in ZInput.instance.m_buttons.Where(x =>
+                    x.Value.m_key == button.Key ||
+                    x.Value.m_key == GetGamepadKeyCode(button.GamepadButton) ||
+                    x.Value.m_axis == GetGamepadAxis(button.GamepadButton).TrimStart('-')))
+                {
+                    ZInput.ResetButtonStatus(btn.Key);
+                    btn.Value.m_pressed = false;
+                    btn.Value.m_pressedFixed = false;
+                }
             }
 
             if (button.ActiveInGUI && !GUIManager.InputBlocked)

@@ -160,9 +160,10 @@ namespace TestMod
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (EvilSwordSpecialButton != null && MessageHud.instance != null)
+                if (EvilSwordSpecialButton != null && MessageHud.instance != null && 
+                    Player.m_localPlayer != null && Player.m_localPlayer.m_visEquipment.m_rightItem == "EvilSword")
                 {
-                    if (ZInput.GetButtonDown(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                    if (ZInput.GetButton(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
@@ -598,7 +599,8 @@ namespace TestMod
                 Name = "EvilSwordSpecialAttack",
                 Config = EvilSwordSpecialConfig,
                 GamepadConfig = EvilSwordGamepadConfig,
-                HintToken = "$evilsword_beevil"
+                HintToken = "$evilsword_beevil",
+                BlockOtherInputs = true
             };
             InputManager.Instance.AddButton(ModGUID, EvilSwordSpecialButton);
 

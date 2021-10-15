@@ -144,5 +144,12 @@ namespace Jotunn.Configs
         ///     Should this button react on key presses when a custom GUI is open and requested to block input? Defaults to <c>false</c>.
         /// </summary>
         public bool ActiveInCustomGUI { get; set; } = false;
+
+        /// <summary>
+        ///     Should this button block all other inputs using the same key or button? Defaults to <c>false</c>.<br/>
+        ///     <b>Warning:</b> If set to <c>true</c>, all other input using the same key or axis is reset when queried via ZInput.
+        ///     Make sure to gate your usage properly.
+        /// </summary>
+        public bool BlockOtherInputs { get; set; } = false;
     }
 }
