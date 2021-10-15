@@ -199,7 +199,9 @@ namespace Jotunn.Managers
         {
             if (!pathDirectoryInfo.Exists) yield break;
 
-            foreach (var path in Directory.GetFiles(pathDirectoryInfo.FullName, searchPattern, SearchOption.AllDirectories).Where(path => new DirectoryInfo(path).Parent?.Parent?.Name == "Translations"))
+            foreach (var path in Directory
+                .GetFiles(pathDirectoryInfo.FullName, searchPattern, SearchOption.AllDirectories).Where(path =>
+                    new DirectoryInfo(path).Parent?.Parent?.Name == TranslationsFolderName))
             {
                 yield return new FileInfo(path);
             }
@@ -229,13 +231,13 @@ namespace Jotunn.Managers
             foreach (var fileInfo in jsonFormat)
             {
                 var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
-                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.DirectoryName, true);
+                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.FullName, true);
             }
 
             foreach (var fileInfo in unityFormat)
             {
                 var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
-                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.DirectoryName);
+                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.FullName);
             }
         }
 

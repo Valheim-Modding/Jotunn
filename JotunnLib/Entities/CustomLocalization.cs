@@ -163,7 +163,7 @@ namespace Jotunn.Entities
             {
                 throw new ArgumentNullException(nameof(path));
             }
-
+            
             var fileContent = File.ReadAllText(path);
 
             if (fileContent is null)
