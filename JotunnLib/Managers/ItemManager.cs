@@ -631,6 +631,7 @@ namespace Jotunn.Managers
             #pragma warning restore 612
             InvokeOnKitbashItemsAvailable();
 
+            other.UpdateItemHashes();
             RegisterCustomItems(other);
 
             orig(self, other);
