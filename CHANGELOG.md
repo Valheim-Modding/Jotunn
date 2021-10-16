@@ -3,6 +3,7 @@
 ## Version 2.3.8
 * Fixed automatic mod recognition from filesystem paths (thx Digitalroot)
 * Fixed duplication check on ObjectDB not always working correctly
+* Fixed NRE in ModCompat for VersionCheckOnly mods
 
 ## Version 2.3.7
 * Fixed translation of the custom skill raise message
