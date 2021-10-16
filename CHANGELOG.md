@@ -3,6 +3,7 @@
 ## Version 2.3.8
 * Fixed automatic mod recognition from filesystem paths (thx Digitalroot)
 * Fixed duplication check on ObjectDB not always working correctly
+* Fixed NRE in ModCompat for VersionCheckOnly mods
 * Added GamepadButton to the InputManager and ButtonConfig - custom inputs can now define a gamepad button corresponding to the keyboard input
 * Added gamepad buttons to KeyHints for custom inputs as well as vanilla key overrides
 * Gamepad buttons can be defined in the mod settings if they are bound to a config
@@ -14,7 +15,7 @@
 ## Version 2.3.6
 * Added JSON helper methods to PieceConfig
 * Added support for BepInEx' KeyboardShortcuts in ButtonConfig and InputManager
-* Added slider for numerical values in the mod settings GUI
+* Added slider for numerical values in the mod settings GUI (thx MSchmoecker)
 * Item property in ItemConfig is publicly readable now so it can be serialized
 * Fixed button config in mod settings for control keys
 * Fixed the localization for Jötunn tokens

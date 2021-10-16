@@ -129,7 +129,9 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static PluginInfo GetPluginInfoFromPath(FileInfo fileInfo) =>
             BepInEx.Bootstrap.Chainloader.PluginInfos.Values.FirstOrDefault(pi =>
-                fileInfo.DirectoryName != null && pi.Location.Contains(fileInfo.DirectoryName));
+                fileInfo.DirectoryName != null &&
+                fileInfo.DirectoryName.Contains(new FileInfo(pi.Location).DirectoryName) &&
+                new FileInfo(pi.Location).DirectoryName != BepInEx.Paths.PluginPath);
 
         /// <summary>
         ///     Get metadata information from the current calling mod

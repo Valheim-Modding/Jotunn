@@ -354,6 +354,16 @@ namespace Jotunn.Utils
                     continue;
                 }
                 #pragma warning restore CS0618 // Type or member is obsolete
+                
+                #pragma warning disable CS0618 // Type or member is obsolete
+                if (clientModule == null &&
+                    (serverModule.Item3 == CompatibilityLevel.OnlySyncWhenInstalled || 
+                     serverModule.Item3 == CompatibilityLevel.VersionCheckOnly ||
+                     serverModule.Item3 == CompatibilityLevel.ServerMustHaveMod))
+                {
+                    continue;
+                }
+                #pragma warning restore CS0618 // Type or member is obsolete
 
                 // Major
                 if (serverModule.Item4 >= VersionStrictness.Major || clientModule.Item4 >= VersionStrictness.Major)
