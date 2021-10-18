@@ -3,18 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using MonoMod.RuntimeDetour;
+using UnityEngine.SceneManagement;
 
 namespace Jotunn.Managers
 {
     /// <summary>
     ///     Manager for adding custom Map Overlays to the game.
     /// </summary>
-    class MapOverlayManager : IManager
+    public class MapOverlayManager : IManager
     {
+        /// <summary>
+        ///     Event that gets fired once the Map for a World has started and Mods can begin to draw.
+        /// </summary>
         public static event Action OnVanillaMapAvailable;
 
+        /// <summary>
+        ///     Event that gets fired once data for a specific Map for a world has been loaded. Eg, Pins are available after this has fired.
+        /// </summary>
+        public static event Action OnVanillaMapDataLoaded;
+
+        //internal GameObject ImageDictContainer;
+
         private static MapOverlayManager _instance;
-        private Dictionary<string, MapOverlay> imgDict;
+        private Dictionary<string, MapOverlay> imgDict = new Dictionary<string, MapOverlay>();
         private int defaultOverlaySize = 2048;
         private int magicScaleFactor = 434;
         private int overlayID = 0;
@@ -65,13 +76,14 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            imgDict = new Dictionary<string, MapOverlay>();
-
             using (new DetourContext(int.MaxValue - 1000))
             {
                 On.Minimap.Start += Minimap_Start;
                 On.Minimap.Start += InvokeOnVanillaMapAvailable;
+                On.Minimap.LoadMapData += InvokeOnVanillaMapDataLoaded;
             }
+
+            SceneManager.activeSceneChanged += EmptyDict;
         }
 
 
@@ -92,6 +104,12 @@ namespace Jotunn.Managers
         /// <returns>Reference to MapOverlay for modder to edit</returns>
         public MapOverlay AddMapOverlay(string name)
         {
+            if (imgDict.ContainsKey(name))
+            {
+                Jotunn.Logger.LogInfo($"Returning existing overlay from MapOverlayManager for overlay with name {name}");
+                return imgDict[name];
+            }
+
             MapOverlay res = new MapOverlay();
             res.mapName = name;
             AddOverlay(res);
@@ -170,7 +188,9 @@ namespace Jotunn.Managers
             RawImage rawImage = ((Minimap.instance.m_mode == Minimap.MapMode.Large) ? Minimap.instance.m_mapImageLarge : Minimap.instance.m_mapImageSmall);
             Minimap.instance.WorldToMapPoint(Vector3.zero, out var mx, out var my);
             Vector2 anchoredPosition = Minimap.instance.MapPointToLocalGuiPos(mx, my, rawImage);
-            float zoom_factor = 1 / Minimap.instance.m_largeZoom; // not using m._smallZoom when using smaller map may lead to scaling bugs.
+            // NOTE: small map scaling factor still to be found.
+            float zoom = ((Minimap.instance.m_mode == Minimap.MapMode.Large) ? Minimap.instance.m_largeZoom : Minimap.instance.m_smallZoom);
+            float zoom_factor = 1 / zoom;
             float size = zoom_factor * 2 * magicScaleFactor;
 
             foreach (var m in imgDict)
@@ -191,7 +211,6 @@ namespace Jotunn.Managers
         /// <param name="ovl">The overlay to be added</param>
         private void AddOverlay(MapOverlay ovl)
         {
-
             Texture2D drawn_tex = new Texture2D(defaultOverlaySize, defaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             ovl.helper = new GameObject();
             ovl.img = ovl.helper.AddComponent<Image>();
@@ -199,7 +218,7 @@ namespace Jotunn.Managers
             ovl.img.sprite = Sprite.Create(drawn_tex, new Rect(0f, 0f, defaultOverlaySize, defaultOverlaySize), Vector2.zero);
             ovl.img.rectTransform.anchorMin = new Vector2(0f, 0f);
             ovl.img.rectTransform.anchorMax = new Vector2(0f, 0f);
-
+            
             imgDict.Add(ovl.mapName, ovl);
         }
 
@@ -212,6 +231,13 @@ namespace Jotunn.Managers
             OnVanillaMapAvailable?.SafeInvoke();
         }
 
+        private void InvokeOnVanillaMapDataLoaded(On.Minimap.orig_LoadMapData orig, Minimap self)
+        {
+            orig(self);
+            OnVanillaMapDataLoaded?.SafeInvoke();
+        }
+
+
         /// <summary>
         ///     Monomod hook into the Minimap Awake method. MapManager adds its helper component after the Minimap does its thing.
         /// </summary>
@@ -219,6 +245,14 @@ namespace Jotunn.Managers
         {
             orig(self);
             self.gameObject.AddComponent<MapManagerHelper>();
+        }
+
+        /// <summary>
+        ///     Empty the dict so that no null objects remain after changing scenes.
+        /// </summary>
+        private void EmptyDict(Scene current, Scene next)
+        {
+            imgDict.Clear();
         }
     }
 }
