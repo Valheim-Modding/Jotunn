@@ -149,6 +149,36 @@ namespace Jotunn.Managers
             return imgDict[name];
         }
 
+        /// <summary>
+        ///     Helper function to set pixels on the overlay image completely transparent if there is map fog over that pixel.
+        ///     The end effect is to "put fog over top of the overlay".
+        /// </summary>
+        /// <param name="ovl">The overlay to place fog on top of</param>
+        public void MaskWithFog(MapOverlay ovl)
+        {
+            int scale = ovl.textureSize / Minimap.instance.m_textureSize;  // 2048/256=8, 8192/256=32, so for a small overlay each fog pixel corresponds to 8 overlay pixels.
+
+            for (int i = 0; i < Minimap.instance.m_textureSize; i++)
+            {
+                for (int j = 0; j < Minimap.instance.m_textureSize; j++)
+                {
+                    if (!Minimap.instance.m_explored[j * Minimap.instance.m_textureSize + i])
+                    {
+                        // once we find an unexplored pixel we translate to our overlay and draw that overlay pixel as completely transparent.
+                        // multiple by scale, then set all pixels from point to point+scale.
+                        for (int m = i * scale; m < (i * scale + scale); m++)
+                        {
+                            for (int n = j * scale; n < (j * scale + scale); n++)
+                            {
+                                ovl.img.sprite.texture.SetPixel(m, n, Color.clear);
+                            }
+                        }
+                    }
+                }
+            }
+            ovl.img.sprite.texture.Apply();
+        }
+
 
         /// <summary>
         ///     Input a World Coordinate and the size of the overlay texture to retrieve the translated overlay coordinates. 
