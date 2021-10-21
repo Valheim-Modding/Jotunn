@@ -27,7 +27,8 @@ namespace Jotunn.Managers
         private static MapOverlayManager _instance;
         private Dictionary<string, MapOverlay> imgDict = new Dictionary<string, MapOverlay>();
         private int defaultOverlaySize = 2048;
-        private int magicScaleFactor = 434;
+        private int magicScaleFactorLarge = 434; // scale factor for large minimap
+        private int magicScaleFactorSmall = 94;  // scale factor for small minimap
         private int overlayID = 0;
         private string overlayNamePrefix = "custom_map_overlay_";
 
@@ -218,10 +219,10 @@ namespace Jotunn.Managers
             RawImage rawImage = ((Minimap.instance.m_mode == Minimap.MapMode.Large) ? Minimap.instance.m_mapImageLarge : Minimap.instance.m_mapImageSmall);
             Minimap.instance.WorldToMapPoint(Vector3.zero, out var mx, out var my);
             Vector2 anchoredPosition = Minimap.instance.MapPointToLocalGuiPos(mx, my, rawImage);
-            // NOTE: small map scaling factor still to be found.
             float zoom = ((Minimap.instance.m_mode == Minimap.MapMode.Large) ? Minimap.instance.m_largeZoom : Minimap.instance.m_smallZoom);
+            int msf = (Minimap.instance.m_mode == Minimap.MapMode.Large) ? magicScaleFactorLarge : magicScaleFactorSmall;
             float zoom_factor = 1 / zoom;
-            float size = zoom_factor * 2 * magicScaleFactor;
+            float size = zoom_factor * 2 * msf;
 
             foreach (var m in imgDict)
             {
