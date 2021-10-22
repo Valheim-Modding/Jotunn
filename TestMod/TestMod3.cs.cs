@@ -5,10 +5,7 @@
 // Project: TestMod
 
 using BepInEx;
-using BepInEx.Configuration;
 using Jotunn;
-using Jotunn.Configs;
-using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -59,7 +56,7 @@ namespace TestMod3
                 //Minimap.instance.pin
                 if (p.m_name == "ch_test" || p.m_name == "CH_TEST")
                 {
-                    DrawSquare(t, MapOverlayManager.Instance.WorldToOverlayCoords(p.m_pos, t.textureSize), Color.blue, 50);
+                    DrawSquare(t, MapOverlayManager.Instance.WorldToOverlayCoords(p.m_pos, t.TextureSize), Color.blue, 5);
                 }
             }
             Jotunn.Logger.LogInfo("Finished drawsquaresonmarks");
@@ -68,14 +65,14 @@ namespace TestMod3
         public void FillImgWithColour(MapOverlayManager.MapOverlay ovl, Color32 c)
         {
             Jotunn.Logger.LogInfo("Starting fill img with colour");
-            Color32[] arr = new Color32[ovl.textureSize * ovl.textureSize];
-            for (int i = 0; i < ovl.textureSize * ovl.textureSize; i++)
+            Color32[] arr = new Color32[ovl.TextureSize * ovl.TextureSize];
+            for (int i = 0; i < ovl.TextureSize * ovl.TextureSize; i++)
             {
                 //array2[i] = new Color32(byte.MinValue, 50, byte.MaxValue, 100);
                 arr[i] = c;
             }
-            ovl.img.sprite.texture.SetPixels32(arr);
-            ovl.img.sprite.texture.Apply();
+            ovl.Img.sprite.texture.SetPixels32(arr);
+            ovl.Img.sprite.texture.Apply();
         }
 
         // where start coord is the bottom left coordinate
@@ -86,10 +83,10 @@ namespace TestMod3
             {
                 for (float j = start.y; j < start.y + square_size; j++)
                 {
-                    ovl.img.sprite.texture.SetPixel((int)i, (int)j, col);
+                    ovl.Img.sprite.texture.SetPixel((int)i, (int)j, col);
                 }
             }
-            ovl.img.sprite.texture.Apply();
+            ovl.Img.sprite.texture.Apply();
         }
 
     }
