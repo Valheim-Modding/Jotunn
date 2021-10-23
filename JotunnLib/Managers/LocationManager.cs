@@ -68,6 +68,7 @@ namespace Jotunn.Managers
                 zoneLocation.m_prefab = customLocation.Prefab;
                 zoneLocation.m_hash = zoneLocation.m_prefab.name.GetStableHashCode();
                 Location location = customLocation.Location;
+                zoneLocation.m_location = location;
                 zoneLocation.m_interiorRadius = (location.m_hasInterior ? location.m_interiorRadius : 0f);
                 zoneLocation.m_exteriorRadius = location.m_exteriorRadius;
                 if (Application.isPlaying)
