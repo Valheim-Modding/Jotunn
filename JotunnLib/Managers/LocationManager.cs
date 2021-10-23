@@ -39,9 +39,7 @@ namespace Jotunn.Managers
         /// </summary>
         internal GameObject LocationContainer;
 
-        private readonly Dictionary<string, Location> locationsDict = new Dictionary<string, Location>();
-        private readonly List<ZoneLocation> customZoneLocations = new List<ZoneLocation>();
-        private readonly List<Location> customLocations = new List<Location>();
+        private readonly List<CustomLocation> customLocations = new List<CustomLocation>(); 
 
         public void Init()
         {
@@ -49,9 +47,40 @@ namespace Jotunn.Managers
             LocationContainer = new GameObject("Locations");
             LocationContainer.transform.parent = Main.RootObject.transform;
             LocationContainer.SetActive(false);
- 
-            IL.ZoneSystem.SetupLocations += ZoneSystem_SetupLocations_IL;
+  
+            On.ZoneSystem.SetupLocations += ZoneSystem_SetupLocations;
             On.ZNetView.Awake += ZNetView_Awake;
+        }
+
+        private void ZoneSystem_SetupLocations(On.ZoneSystem.orig_SetupLocations orig, ZoneSystem self)
+        { 
+            orig(self);
+            OnVanillaLocationsAvailable.SafeInvoke();
+
+            Logger.LogInfo("Injecting custom locations");
+            foreach (CustomLocation customLocation in customLocations)
+            {
+                Logger.LogInfo($"Adding custom location {customLocation.Prefab.name}");
+                 
+                var zoneLocation = customLocation.ToZoneLocation();
+                self.m_locations.Add(zoneLocation);
+
+                zoneLocation.m_prefab = customLocation.Prefab;
+                zoneLocation.m_hash = zoneLocation.m_prefab.name.GetStableHashCode();
+                Location location = customLocation.Location;
+                zoneLocation.m_interiorRadius = (location.m_hasInterior ? location.m_interiorRadius : 0f);
+                zoneLocation.m_exteriorRadius = location.m_exteriorRadius;
+                if (Application.isPlaying)
+                {
+                    PrepareNetViews(zoneLocation.m_prefab, zoneLocation.m_netViews);
+                    PrepareRandomSpawns(zoneLocation.m_prefab, zoneLocation.m_randomSpawns);
+                    if (!self.m_locationsByHash.ContainsKey(zoneLocation.m_hash))
+                    {
+                        self.m_locationsByHash.Add(zoneLocation.m_hash, zoneLocation);
+                    }
+                }
+            } 
+             
         }
 
         private void ZNetView_Awake(On.ZNetView.orig_Awake orig, ZNetView self)
@@ -64,56 +93,10 @@ namespace Jotunn.Managers
 #endif
             orig(self);
         }
-
-        private void ZoneSystem_SetupLocations_IL(ILContext il)
-        { 
-            ILCursor c = new ILCursor(il);
-            int locationsLoc = 0;
-            c.GotoNext(MoveType.Before, 
-                zz => zz.MatchNewobj<List<Location>>(),
-                zz => zz.MatchStloc(out locationsLoc)
-            );
-            //Restart cursor in case order changes in updates
-            c = new ILCursor(il); 
-            int locationListsLoc = 0;
-            c.GotoNext(MoveType.Before,
-                zz => zz.MatchNewobj<List<LocationList>>(),
-                zz => zz.MatchStloc(out locationListsLoc)
-            );
-            c = new ILCursor(il);
-            c.GotoNext(MoveType.Before,
-                zz => zz.MatchCallOrCallvirt(typeof(List<LocationList>).GetMethod(nameof(List<LocationList>.Sort), new Type[] { typeof(Comparison<LocationList>) }))
-            );
-            c.Emit(OpCodes.Ldloc, locationsLoc);
-            c.Emit(OpCodes.Ldloc, locationListsLoc);
-            var method = typeof(LocationManager).GetMethod(nameof(VanillaLocationsCallback), BindingFlags.Static | BindingFlags.NonPublic);
-            c.Emit(OpCodes.Call, method);  
-        }
-
-        private static void VanillaLocationsCallback(List<Location> locations, List<LocationList> locationLists)
+        
+        public ZoneLocation GetZoneLocation(string name)
         {
-            LocationManager.Instance.RegisterVanillaLocation(locations, locationLists); 
-        }
-
-        private void RegisterVanillaLocation(List<Location> locations, List<LocationList> locationLists)
-        {
-#if DEBUG
-            Jotunn.Logger.LogInfo($"Vanilla locations: {locations.Count}, locationLists: {locationLists.Count}");
-#endif
-            foreach (Location location in locations)
-            {
-                locationsDict.Add(location.name, location);
-            }
-            OnVanillaLocationsAvailable.SafeInvoke();
-
-            Jotunn.Logger.LogInfo($"Adding {customLocations.Count} custom locations");
-            locations.AddRange(customLocations);
-            ZoneSystem.instance.m_locations.AddRange(customZoneLocations);
-        }
-
-        public Location GetLocation(string name)
-        {
-            if(locationsDict.TryGetValue(name, out Location location))
+            if(ZoneSystem.instance.m_locationsByHash.TryGetValue(name.GetStableHashCode(), out ZoneLocation location))
             {
                 return location;
             }
@@ -135,10 +118,8 @@ namespace Jotunn.Managers
         }
           
         public bool AddCustomLocation(CustomLocation customLocation)
-        {    
-            customLocation.Prefab.transform.SetParent(LocationContainer.transform);
-            customZoneLocations.Add(customLocation.ToZoneLocation());
-            customLocations.Add(customLocation.Location);
+        {
+            customLocations.Add(customLocation);
             return true;
         }
     }
