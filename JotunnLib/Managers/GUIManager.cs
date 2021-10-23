@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using Jotunn.Configs;
 using Jotunn.GUI;
 using Jotunn.Utils;
@@ -10,7 +8,6 @@ using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.U2D;
 using UnityEngine.UI;
-using static Jotunn.Managers.InputManager;
 using Button = UnityEngine.UI.Button;
 using Image = UnityEngine.UI.Image;
 using Object = UnityEngine.Object;
@@ -113,7 +110,7 @@ namespace Jotunn.Managers
             colorMultiplier = 1f,
             fadeDuration = 0.1f
         };
-        
+
         /// <summary>
         ///     Button color block in Valheim style
         /// </summary>
@@ -142,16 +139,6 @@ namespace Jotunn.Managers
         ///     <see cref="DefaultControls.Resources"/> with default Valheim assets.
         /// </summary>
         public DefaultControls.Resources ValheimControlResources;
-
-        /// <summary>
-        ///     Internal Dictionary holding the references to the custom key hints added to the manager.
-        /// </summary>
-        internal readonly Dictionary<string, KeyHintConfig> KeyHints = new Dictionary<string, KeyHintConfig>();
-
-        /// <summary>
-        ///     Reference to the games "KeyHint" GameObjects RectTransform.
-        /// </summary>
-        private RectTransform KeyHintContainer;
 
         /// <summary>
         ///     SpriteAtlas holding the references to the sprites used in the helper methods.
@@ -279,7 +266,6 @@ namespace Jotunn.Managers
             {
                 SceneManager.sceneLoaded += InitialLoad;
                 SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-                On.KeyHints.UpdateHints += ShowCustomKeyHint;
             }
         }
 
@@ -321,7 +307,7 @@ namespace Jotunn.Managers
                     // DefaultControls.Resources pack
                     AssetBundle jotunnBundle = AssetUtils.LoadAssetBundleFromResources("jotunn", typeof(Main).Assembly);
                     GameObject stub = jotunnBundle.LoadAsset<GameObject>("UIMaskStub");
-                    
+
                     ValheimControlResources.standard = GetSprite("button");
                     ValheimControlResources.background = GetSprite("text_field");
                     ValheimControlResources.inputField = GetSprite("text_field");
@@ -385,7 +371,7 @@ namespace Jotunn.Managers
                     }
 
                     PrefabManager.Instance.AddPrefab(gradientPicker, Main.Instance.Info.Metadata);
-                    
+
                     colorWheelBundle.Unload(false);
                 }
                 catch (Exception ex)
@@ -430,12 +416,6 @@ namespace Jotunn.Managers
                 ResetInputBlock();
 
                 GUIInStart = false;
-
-                // Get the KeyHints transform for this scene to create new KeyHint objects
-                KeyHintContainer = (RectTransform)gui?.Find("PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints");
-
-                // Create all custom KeyHints
-                RegisterKeyHints();
             }
         }
 
@@ -478,199 +458,6 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Create custom KeyHint objects for every config added.
-        /// </summary>
-        private void RegisterKeyHints()
-        {
-            if (KeyHints.Count > 0)
-            {
-                Logger.LogInfo($"Adding {KeyHints.Count} custom key hints");
-
-                List<string> toDelete = new List<string>();
-
-                // Create hint objects for all configs
-                foreach (var entry in KeyHints)
-                {
-                    try
-                    {
-                        CreateKeyHintObject(entry.Value);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogWarning($"Exception caught while creating KeyHint for {entry.Key}: {ex}");
-                        toDelete.Add(entry.Key);
-                    }
-                }
-
-                // Delete key hints with errors
-                foreach (string key in toDelete)
-                {
-                    KeyHints.Remove(key);
-                }
-            }
-        }
-        
-        /// <summary>
-        ///     Copy vanilla BuildHints object and create a custom one from a KeyHintConfig.
-        /// </summary>
-        /// <param name="config"></param>
-        private GameObject CreateKeyHintObject(KeyHintConfig config)
-        {
-            // Clone BuildHints and add it under KeyHints to get the position right
-            var keyHints = KeyHintContainer?.GetComponent<KeyHints>();
-
-            if (keyHints == null)
-            {
-                throw new Exception("Could not find KeyHints component");
-            }
-
-            var baseKeyHint = Object.Instantiate(keyHints.m_buildHints, KeyHintContainer, false);
-            baseKeyHint.name = config.ToString();
-            baseKeyHint.SetActive(false);
-
-            // Get the Transforms of Keyboard and Gamepad
-            var inputHint = baseKeyHint.GetComponent<UIInputHint>();
-            var kb = inputHint?.m_mouseKeyboardHint?.transform;
-            var gp = inputHint?.m_gamepadHint?.transform;
-
-            if (kb == null || gp == null)
-            {
-                throw new Exception("Could not find child objects for KeyHints");
-            }
-
-            // Clone vanilla key hint objects and use it as the base for custom key hints
-            var origKey = kb.transform.Find("Place")?.gameObject;
-            var origRotate = kb.transform.Find("rotate")?.gameObject;
-            var origButton = gp.transform.Find("BuildMenu")?.gameObject;
-            var origTrigger = gp.transform.Find("Place")?.gameObject;
-            var origShoulder = gp.transform.Find("Remove")?.gameObject;
-            var origStick = gp.transform.Find("rotate")?.gameObject;
-
-            if (!origKey || !origRotate || !origButton || !origTrigger || !origShoulder || !origStick)
-            {
-                throw new Exception("Could not find child objects for KeyHints");
-            }
-
-            var baseKey = Object.Instantiate(origKey);
-            var baseRotate = Object.Instantiate(origRotate);
-            var baseButton = Object.Instantiate(origButton);
-            var baseTrigger = Object.Instantiate(origTrigger);
-            var baseShoulder = Object.Instantiate(origShoulder);
-            var baseStick = Object.Instantiate(origStick);
-            Object.DestroyImmediate(baseStick.transform.Find("Trigger").gameObject);
-            Object.DestroyImmediate(baseStick.transform.Find("plus").gameObject);
-
-            // Destroy all child objects
-            foreach (RectTransform child in kb)
-            {
-                Object.Destroy(child.gameObject);
-            }
-            foreach (RectTransform child in gp)
-            {
-                Object.Destroy(child.gameObject);
-            }
-
-            foreach (var buttonConfig in config.ButtonConfigs)
-            {
-                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
-                if (key.Contains("MISSING"))
-                {
-                    key = buttonConfig.Name;
-                }
-                if (key[0].Equals(LocalizationManager.TokenFirstChar))
-                {
-                    key = LocalizationManager.Instance.TryTranslate(key);
-                }
-                string hint = LocalizationManager.Instance.TryTranslate(buttonConfig.HintToken);
-
-                if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
-                {
-                    var customKeyboard = Object.Instantiate(baseKey, kb, false);
-                    customKeyboard.name = buttonConfig.Name;
-                    customKeyboard.transform.Find("key_bkg/Key").gameObject.SetText(key);
-                    customKeyboard.transform.Find("Text").gameObject.SetText(hint);
-                    customKeyboard.SetActive(true);
-                }
-                else
-                {
-                    var customKeyboard = Object.Instantiate(baseRotate, kb, false);
-                    customKeyboard.transform.Find("Text").gameObject.SetText(hint);
-                    customKeyboard.SetActive(true);
-                }
-
-                var gamepadButton = buttonConfig.GamepadButton;
-                if (gamepadButton == GamepadButton.None && ZInput.instance.m_buttons.TryGetValue($"Joy{buttonConfig.Name}", out var buttonDef))
-                {
-                    if (!string.IsNullOrEmpty(buttonDef.m_axis))
-                    {
-                        string invAxis = $"{(buttonDef.m_inverted ? "-" : null)}{buttonDef.m_axis}";
-                        gamepadButton = GetGamepadButton(invAxis);
-                    }
-                    else
-                    {
-                        gamepadButton = GetGamepadButton(buttonDef.m_key);
-                    }
-                }
-
-                if (gamepadButton != GamepadButton.None)
-                {
-                    string buttonString = GetGamepadString(gamepadButton);
-                    
-                    switch (gamepadButton)
-                    {
-                        case GamepadButton.DPadUp:
-                        case GamepadButton.DPadDown:
-                        case GamepadButton.DPadLeft:
-                        case GamepadButton.DPadRight:
-                        case GamepadButton.StartButton:
-                        case GamepadButton.SelectButton:
-                        case GamepadButton.ButtonNorth:
-                        case GamepadButton.ButtonSouth:
-                        case GamepadButton.ButtonWest:
-                        case GamepadButton.ButtonEast:
-                            var customButton = Object.Instantiate(baseButton, gp, false);
-                            customButton.name = buttonConfig.Name;
-                            customButton.GetComponentInChildren<Text>().text = buttonString;
-                            customButton.transform.Find("Text").gameObject.SetText(hint);
-                            customButton.SetActive(true);
-                            break;
-                        case GamepadButton.LeftShoulder:
-                        case GamepadButton.RightShoulder:
-                            var customShoulder = Object.Instantiate(baseShoulder, gp, false);
-                            customShoulder.name = buttonConfig.Name;
-                            customShoulder.GetComponentInChildren<Text>().text = buttonString;
-                            customShoulder.transform.Find("Text").gameObject.SetText(hint);
-                            customShoulder.SetActive(true);
-                            break;
-                        case GamepadButton.LeftTrigger:
-                        case GamepadButton.RightTrigger:
-                            var customTrigger = Object.Instantiate(baseTrigger, gp, false);
-                            customTrigger.name = buttonConfig.Name;
-                            customTrigger.GetComponentInChildren<Text>().text = buttonString;
-                            customTrigger.transform.Find("Text").gameObject.SetText(hint);
-                            customTrigger.SetActive(true);
-                            break;
-                        case GamepadButton.LeftStickButton:
-                        case GamepadButton.RightStickButton:
-                            var customStick = Object.Instantiate(baseStick, gp, false);
-                            customStick.name = buttonConfig.Name;
-                            customStick.GetComponentInChildren<Text>().text = buttonString;
-                            customStick.transform.Find("Text").gameObject.SetText(hint);
-                            customStick.SetActive(true);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                    
-                }
-            }
-            
-            Logger.LogDebug($"Added key hints for Item : {config}");
-
-            return baseKeyHint;
-        }
-
-        /// <summary>
         ///     Add a <see cref="KeyHintConfig"/> to the manager.<br />
         ///     Checks if the custom key hint is unique (i.e. the first one registered for an item).<br />
         ///     Custom status effects are displayed in the game instead of the default 
@@ -678,165 +465,20 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="hintConfig">The custom key hint config to add.</param>
         /// <returns>true if the custom key hint config was added to the manager.</returns>
+        [Obsolete("Use KeyHintManager.AddKeyHint instead")]
         public bool AddKeyHint(KeyHintConfig hintConfig)
         {
-            if (hintConfig.Item == null)
-            {
-                Logger.LogWarning($"Key hint config {hintConfig} is not valid");
-                return false;
-            }
-            if (KeyHints.ContainsKey(hintConfig.ToString()))
-            {
-                Logger.LogWarning($"Key hint config for item {hintConfig} already added");
-                return false;
-            }
-
-            KeyHints.Add(hintConfig.ToString(), hintConfig);
-            return true;
+            return KeyHintManager.Instance.AddKeyHint(hintConfig);
         }
 
         /// <summary>
         ///     Removes a <see cref="KeyHintConfig"/> from the game.
         /// </summary>
         /// <param name="hintConfig">The custom key hint config to add.</param>
+        [Obsolete("Use KeyHintManager.RemoveKeyHint instead")]
         public void RemoveKeyHint(KeyHintConfig hintConfig)
         {
-            if (KeyHints.ContainsKey(hintConfig.ToString()))
-            {
-                KeyHints.Remove(hintConfig.ToString());
-            }
-            if (SceneManager.GetActiveScene().name == "main")
-            {
-                var keyHintObject = KeyHintContainer.Find(hintConfig.ToString())?.gameObject;
-                if (keyHintObject)
-                {
-                    Object.Destroy(keyHintObject);
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Hook on <see cref="global::KeyHints.UpdateHints" /> to show custom key hints instead of the vanilla ones.
-        /// </summary>
-        /// <param name="orig"></param>
-        /// <param name="self"></param>
-        private void ShowCustomKeyHint(On.KeyHints.orig_UpdateHints orig, KeyHints self)
-        {
-            orig(self);
-
-            // Needs at least a localPlayer
-            if (Player.m_localPlayer == null)
-            {
-                return;
-            }
-
-            // If something went wrong, dont NRE every Update
-            if (KeyHintContainer == null)
-            {
-                return;
-            }
-
-            // First disable all custom key hints
-            foreach (RectTransform transform in KeyHintContainer)
-            {
-                if (KeyHints.ContainsKey(transform.name))
-                {
-                    transform.gameObject?.SetActive(false);
-                }
-            }
-
-            // Don't show hints when chat window is visible
-            if (Chat.instance.IsChatDialogWindowVisible())
-            {
-                return;
-            }
-
-            // Get the current equipped item name
-            ItemDrop.ItemData item = null;
-            try
-            {
-                item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
-            if (item == null)
-            {
-                return;
-            }
-            string prefabName = item.m_dropPrefab?.name;
-            if (string.IsNullOrEmpty(prefabName))
-            {
-                return;
-            }
-
-            // Get the current selected piece name if any
-            string pieceName = null;
-            try
-            {
-                pieceName = Player.m_localPlayer.m_buildPieces.GetSelectedPiece()?.name;
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
-            // Try to get a KeyHint for the item and piece selected or just the item without a piece
-            KeyHintConfig hintConfig = null;
-            if (!string.IsNullOrEmpty(pieceName))
-            {
-                KeyHints.TryGetValue($"{prefabName}:{pieceName}", out hintConfig);
-            }
-            if (hintConfig == null)
-            {
-                KeyHints.TryGetValue(prefabName, out hintConfig);
-            }
-            if (hintConfig == null)
-            {
-                return;
-            }
-
-            // Display the KeyHint instead the vanilla one or remove the config if it fails
-            var hintObject = KeyHintContainer.Find(hintConfig.ToString())?.gameObject;
-            if (!hintObject)
-            {
-                try
-                {
-                    hintObject = CreateKeyHintObject(hintConfig);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWarning($"Exception caught while creating dynamic KeyHint {hintConfig}: {ex}");
-                    KeyHints.Remove(hintConfig.ToString());
-                    return;
-                }
-            }
-
-            self.m_buildHints.SetActive(false);
-            self.m_combatHints.SetActive(false);
-
-            // Update bound keys
-            foreach (var buttonConfig in hintConfig.ButtonConfigs)
-            {
-                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
-                if (key.Contains("MISSING"))
-                {
-                    key = buttonConfig.Name;
-                }
-                if (key[0].Equals(LocalizationManager.TokenFirstChar))
-                {
-                    key = LocalizationManager.Instance.TryTranslate(key);
-                }
-                if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
-                {
-                    hintObject.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
-                }
-            }
-
-            hintObject.SetActive(true);
-            hintObject.GetComponent<UIInputHint>()?.Update();
+            KeyHintManager.Instance.RemoveKeyHint(hintConfig);
         }
 
         /// <summary>
@@ -1038,7 +680,7 @@ namespace Jotunn.Managers
 
             return newPanel;
         }
-        
+
         /// <summary>
         ///     Create a complete scroll view
         /// </summary>
@@ -1278,7 +920,7 @@ namespace Jotunn.Managers
 
             return go;
         }
-        
+
         /// <summary>
         ///     Create a new button (Valheim style).
         /// </summary>
@@ -1291,7 +933,7 @@ namespace Jotunn.Managers
         /// <param name="height">Set height if > 0</param>
         /// <returns>Button GameObject in Valheim style</returns>
         public GameObject CreateButton(
-            string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
+            string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
             float width = 0f, float height = 0f)
         {
             GameObject newButton = DefaultControls.CreateButton(ValheimControlResources);
@@ -1323,7 +965,7 @@ namespace Jotunn.Managers
 
             return newButton;
         }
-        
+
         /// <summary>
         ///     Create a new InputField (Valheim style).
         /// </summary>
@@ -1338,8 +980,8 @@ namespace Jotunn.Managers
         /// <param name="height">Set height if > 0</param>
         /// <returns>Input field GameObject in Valheim style</returns>
         public GameObject CreateInputField(
-            Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
-            InputField.ContentType contentType = InputField.ContentType.Standard, 
+            Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
+            InputField.ContentType contentType = InputField.ContentType.Standard,
             string placeholderText = null, int fontSize = 16, float width = 0f, float height = 0f)
         {
             GameObject inputField = DefaultControls.CreateInputField(ValheimControlResources);
@@ -1355,7 +997,7 @@ namespace Jotunn.Managers
             {
                 txt.text = placeholderText;
             }
-            
+
             // Set positions and anchors
             RectTransform tf = inputField.transform as RectTransform;
             tf.anchoredPosition = position;
@@ -1414,7 +1056,7 @@ namespace Jotunn.Managers
         /// <param name="height">Set height if > 0</param>
         /// <returns></returns>
         public GameObject CreateDropDown(
-            Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, 
+            Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position,
             int fontSize = 16, float width = 0f, float height = 0f)
         {
             GameObject dropdown = DefaultControls.CreateDropdown(ValheimControlResources);
@@ -1422,13 +1064,13 @@ namespace Jotunn.Managers
             Dropdown dropdownComponent = dropdown.GetComponent<Dropdown>();
             dropdownComponent.ClearOptions();
             ApplyDropdownStyle(dropdownComponent, fontSize);
-            
+
             // Set positions and anchors
             RectTransform tf = dropdown.transform as RectTransform;
             tf.anchoredPosition = position;
             tf.anchorMin = anchorMin;
             tf.anchorMax = anchorMax;
-            
+
             // Optionally set width and height
             if (width > 0f)
             {
@@ -1691,7 +1333,7 @@ namespace Jotunn.Managers
             // Arrow
             GameObject arrow = dropdown.transform.Find("Arrow").gameObject;
             arrow.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 180f));
-            
+
             if (arrow.TryGetComponent<Image>(out var arrowImage))
             {
                 arrow.SetSize(25f, 25f);
@@ -1699,7 +1341,7 @@ namespace Jotunn.Managers
                 arrowImage.color = Color.white;
                 arrowImage.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
             }
-            
+
             // Template
             if (dropdown.template && dropdown.template.TryGetComponent<ScrollRect>(out var scrollRect))
             {
@@ -1720,7 +1362,7 @@ namespace Jotunn.Managers
             {
                 toggle.toggleTransition = Toggle.ToggleTransition.None;
                 toggle.colors = ValheimToggleColorBlock;
-                toggle.spriteState = new SpriteState {highlightedSprite = GetSprite("button_highlight")};
+                toggle.spriteState = new SpriteState { highlightedSprite = GetSprite("button_highlight") };
 
                 if (toggle.targetGraphic is Image background)
                 {
