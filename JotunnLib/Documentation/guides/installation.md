@@ -1,10 +1,10 @@
 ﻿# Manual Installation Guide
 
-This section will cover how to manually install Jötunn, without using a mod manager.
+This section will cover how to manually install Jötunn, without using a mod manager. This guide applies to client installations as well as installations on a dedicated server, though paths on a dedicated server installation might vary slighty depending on the server's operating system.
 
 ## 0. Installing BepInEx
 
-Before we even start, be sure that you have [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) downloaded and installed correctly. (If you have any other mods, odds are you'll have this installed.)
+Before we even start, be sure that you have [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) downloaded and installed correctly. (If you have any other mods or rented a "modding enabled" server, odds are you'll have this installed.)
 
 If this is a manual install, extract the ZIP archive and move everything from `BepInEx_Valheim` into your Valheim directory (eg. `C:\<PathToYourSteamLibary>\steamapps\common\Valheim`).
 It should look something like this:
@@ -45,9 +45,9 @@ First, navigate to your Valheim BepInEx directory (eg. `C:\<PathToYourSteamLibar
 
 That's it, you're done! Now you can launch Valheim and enjoy your modding!  
 
-You can tell it worked by either looking at the console output, or if you see `Jotunn Vx.x.x` in the top-right corner of the main menu, like so:
+You can tell it worked by looking at the console output, which, depending on your environment, should look something like this, telling you it loaded BepInEx, HookGenPatcher and Jötunn:
 
-![In-game Message](../images/installation/in-game.png)
+![Console output](../images/installation/console.png)
 
 > [!NOTE]
 > Your first run of the game may take a few seconds longer than it would without any mods. **This is normal.** This is due to MMHookGen creating the MMHook DLL files that are needed for Jötunn and various mods to run. This will only take longer on first install, and after Valheim updates.
