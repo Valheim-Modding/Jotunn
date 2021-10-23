@@ -6,10 +6,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static Jotunn.Managers.InputManager;
+using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
 {
-    internal class KeyHintManager : IManager
+    public class KeyHintManager : IManager
     {
         private static KeyHintManager _instance;
         public static KeyHintManager Instance
@@ -27,38 +28,140 @@ namespace Jotunn.Managers
         internal readonly Dictionary<string, KeyHintConfig> KeyHints = new Dictionary<string, KeyHintConfig>();
 
         /// <summary>
-        ///     Reference to the games "KeyHint" GameObjects RectTransform.
+        ///     Reference to the current "KeyHints" instance
+        /// </summary>
+        private KeyHints KeyHintInstance;
+
+        /// <summary>
+        ///     Reference to the games "KeyHint" GameObjects RectTransform
         /// </summary>
         private RectTransform KeyHintContainer;
 
+        /// <summary>
+        ///     Base GameObjects of vanilla key hint parts
+        /// </summary>
+        private GameObject BaseKey;
+        private GameObject BaseRotate;
+        private GameObject BaseButton;
+        private GameObject BaseTrigger;
+        private GameObject BaseShoulder;
+        private GameObject BaseStick;
+
+        /// <summary>
+        ///     Initialize the manager
+        /// </summary>
         public void Init()
         {
             // Dont init on a headless server
             if (!GUIManager.IsHeadless())
             {
-                SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-                On.KeyHints.UpdateHints += ShowCustomKeyHint;
+                On.KeyHints.Awake += KeyHints_Awake;
+                On.KeyHints.UpdateHints += KeyHints_UpdateHints;
             }
         }
 
-        private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
+        /// <summary>
+        ///     Add a <see cref="KeyHintConfig"/> to the manager.<br />
+        ///     Checks if the custom key hint is unique (i.e. the first one registered for an item).<br />
+        ///     Custom status effects are displayed in the game instead of the default 
+        ///     KeyHints for equipped tools or weapons they are registered for.
+        /// </summary>
+        /// <param name="hintConfig">The custom key hint config to add.</param>
+        /// <returns>true if the custom key hint config was added to the manager.</returns>
+        public bool AddKeyHint(KeyHintConfig hintConfig)
         {
-            if (scene.name == "main")
+            if (hintConfig.Item == null)
             {
-                GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
-                Transform gui = root?.transform.Find("GUI");
-                if (!gui)
-                {
-                    Logger.LogWarning("_GameMain GUI not found, not creating custom GUI");
-                    return;
-                }
+                Logger.LogWarning($"Key hint config {hintConfig} is not valid");
+                return false;
+            }
+            if (KeyHints.ContainsKey(hintConfig.ToString()))
+            {
+                Logger.LogWarning($"Key hint config for item {hintConfig} already added");
+                return false;
+            }
 
-                // Get the KeyHints transform for this scene to create new KeyHint objects
-                KeyHintContainer = (RectTransform)gui?.Find("PixelFix/IngameGui(Clone)/HUD/hudroot/KeyHints");
+            KeyHints.Add(hintConfig.ToString(), hintConfig);
+            return true;
+        }
 
-                // Create all custom KeyHints
+        /// <summary>
+        ///     Removes a <see cref="KeyHintConfig"/> from the game.
+        /// </summary>
+        /// <param name="hintConfig">The custom key hint config to add.</param>
+        public void RemoveKeyHint(KeyHintConfig hintConfig)
+        {
+            if (KeyHints.ContainsKey(hintConfig.ToString()))
+            {
+                KeyHints.Remove(hintConfig.ToString());
+            }
+
+            var keyHintObject = KeyHintContainer?.Find(hintConfig.ToString())?.gameObject;
+            if (keyHintObject)
+            {
+                Object.Destroy(keyHintObject);
+            }
+        }
+
+        /// <summary>
+        ///     Extract base key hint elements and create key hint objects.
+        /// </summary>
+        private void KeyHints_Awake(On.KeyHints.orig_Awake orig, KeyHints self)
+        {
+            try
+            {
+                orig(self);
+
+                KeyHintInstance = self;
+                KeyHintContainer = self.transform as RectTransform;
+
+                GetBaseGameObjects();
                 RegisterKeyHints();
             }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception caught while creating key hint objects: {ex}");
+            }
+        }
+
+        /// <summary>
+        ///     Instantiate base GameObjects from vanilla KeyHints to use in our custom key hints
+        /// </summary>
+        private void GetBaseGameObjects()
+        {
+            var baseKeyHint = KeyHintInstance.m_buildHints;
+
+            // Get the Transforms of Keyboard and Gamepad
+            var inputHint = baseKeyHint.GetComponent<UIInputHint>();
+            var kb = inputHint?.m_mouseKeyboardHint?.transform;
+            var gp = inputHint?.m_gamepadHint?.transform;
+
+            if (kb == null || gp == null)
+            {
+                throw new Exception("Could not find child objects for KeyHints");
+            }
+
+            // Clone vanilla key hint objects and use it as the base for custom key hints
+            var origKey = kb.transform.Find("Place")?.gameObject;
+            var origRotate = kb.transform.Find("rotate")?.gameObject;
+            var origButton = gp.transform.Find("BuildMenu")?.gameObject;
+            var origTrigger = gp.transform.Find("Place")?.gameObject;
+            var origShoulder = gp.transform.Find("Remove")?.gameObject;
+            var origStick = gp.transform.Find("rotate")?.gameObject;
+
+            if (!origKey || !origRotate || !origButton || !origTrigger || !origShoulder || !origStick)
+            {
+                throw new Exception("Could not find child objects for KeyHints");
+            }
+
+            BaseKey = Object.Instantiate(origKey);
+            BaseRotate = Object.Instantiate(origRotate);
+            BaseButton = Object.Instantiate(origButton);
+            BaseTrigger = Object.Instantiate(origTrigger);
+            BaseShoulder = Object.Instantiate(origShoulder);
+            BaseStick = Object.Instantiate(origStick);
+            Object.DestroyImmediate(BaseStick.transform.Find("Trigger").gameObject);
+            Object.DestroyImmediate(BaseStick.transform.Find("plus").gameObject);
         }
 
         /// <summary>
@@ -101,14 +204,7 @@ namespace Jotunn.Managers
         private GameObject CreateKeyHintObject(KeyHintConfig config)
         {
             // Clone BuildHints and add it under KeyHints to get the position right
-            var keyHints = KeyHintContainer?.GetComponent<KeyHints>();
-
-            if (keyHints == null)
-            {
-                throw new Exception("Could not find KeyHints component");
-            }
-
-            var baseKeyHint = UnityEngine.Object.Instantiate(keyHints.m_buildHints, KeyHintContainer, false);
+            var baseKeyHint = Object.Instantiate(KeyHintInstance.m_buildHints, KeyHintContainer, false);
             baseKeyHint.name = config.ToString();
             baseKeyHint.SetActive(false);
 
@@ -122,36 +218,14 @@ namespace Jotunn.Managers
                 throw new Exception("Could not find child objects for KeyHints");
             }
 
-            // Clone vanilla key hint objects and use it as the base for custom key hints
-            var origKey = kb.transform.Find("Place")?.gameObject;
-            var origRotate = kb.transform.Find("rotate")?.gameObject;
-            var origButton = gp.transform.Find("BuildMenu")?.gameObject;
-            var origTrigger = gp.transform.Find("Place")?.gameObject;
-            var origShoulder = gp.transform.Find("Remove")?.gameObject;
-            var origStick = gp.transform.Find("rotate")?.gameObject;
-
-            if (!origKey || !origRotate || !origButton || !origTrigger || !origShoulder || !origStick)
-            {
-                throw new Exception("Could not find child objects for KeyHints");
-            }
-
-            var baseKey = UnityEngine.Object.Instantiate(origKey);
-            var baseRotate = UnityEngine.Object.Instantiate(origRotate);
-            var baseButton = UnityEngine.Object.Instantiate(origButton);
-            var baseTrigger = UnityEngine.Object.Instantiate(origTrigger);
-            var baseShoulder = UnityEngine.Object.Instantiate(origShoulder);
-            var baseStick = UnityEngine.Object.Instantiate(origStick);
-            UnityEngine.Object.DestroyImmediate(baseStick.transform.Find("Trigger").gameObject);
-            UnityEngine.Object.DestroyImmediate(baseStick.transform.Find("plus").gameObject);
-
             // Destroy all child objects
-            foreach (RectTransform child in kb)
+            foreach (Transform child in kb)
             {
-                UnityEngine.Object.Destroy(child.gameObject);
+                Object.Destroy(child.gameObject);
             }
-            foreach (RectTransform child in gp)
+            foreach (Transform child in gp)
             {
-                UnityEngine.Object.Destroy(child.gameObject);
+                Object.Destroy(child.gameObject);
             }
 
             foreach (var buttonConfig in config.ButtonConfigs)
@@ -169,7 +243,7 @@ namespace Jotunn.Managers
 
                 if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                 {
-                    var customKeyboard = UnityEngine.Object.Instantiate(baseKey, kb, false);
+                    var customKeyboard = Object.Instantiate(BaseKey, kb, false);
                     customKeyboard.name = buttonConfig.Name;
                     customKeyboard.transform.Find("key_bkg/Key").gameObject.SetText(key);
                     customKeyboard.transform.Find("Text").gameObject.SetText(hint);
@@ -177,13 +251,14 @@ namespace Jotunn.Managers
                 }
                 else
                 {
-                    var customKeyboard = UnityEngine.Object.Instantiate(baseRotate, kb, false);
+                    var customKeyboard = Object.Instantiate(BaseRotate, kb, false);
                     customKeyboard.transform.Find("Text").gameObject.SetText(hint);
                     customKeyboard.SetActive(true);
                 }
 
                 var gamepadButton = buttonConfig.GamepadButton;
-                if (gamepadButton == InputManager.GamepadButton.None && ZInput.instance.m_buttons.TryGetValue($"Joy{buttonConfig.Name}", out var buttonDef))
+                if (gamepadButton == GamepadButton.None &&
+                    ZInput.instance.m_buttons.TryGetValue($"Joy{buttonConfig.Name}", out var buttonDef))
                 {
                     if (!string.IsNullOrEmpty(buttonDef.m_axis))
                     {
@@ -196,47 +271,47 @@ namespace Jotunn.Managers
                     }
                 }
 
-                if (gamepadButton != InputManager.GamepadButton.None)
+                if (gamepadButton != GamepadButton.None)
                 {
                     string buttonString = GetGamepadString(gamepadButton);
 
                     switch (gamepadButton)
                     {
-                        case InputManager.GamepadButton.DPadUp:
-                        case InputManager.GamepadButton.DPadDown:
-                        case InputManager.GamepadButton.DPadLeft:
-                        case InputManager.GamepadButton.DPadRight:
-                        case InputManager.GamepadButton.StartButton:
-                        case InputManager.GamepadButton.SelectButton:
-                        case InputManager.GamepadButton.ButtonNorth:
-                        case InputManager.GamepadButton.ButtonSouth:
-                        case InputManager.GamepadButton.ButtonWest:
-                        case InputManager.GamepadButton.ButtonEast:
-                            var customButton = UnityEngine.Object.Instantiate(baseButton, gp, false);
+                        case GamepadButton.DPadUp:
+                        case GamepadButton.DPadDown:
+                        case GamepadButton.DPadLeft:
+                        case GamepadButton.DPadRight:
+                        case GamepadButton.StartButton:
+                        case GamepadButton.SelectButton:
+                        case GamepadButton.ButtonNorth:
+                        case GamepadButton.ButtonSouth:
+                        case GamepadButton.ButtonWest:
+                        case GamepadButton.ButtonEast:
+                            var customButton = Object.Instantiate(BaseButton, gp, false);
                             customButton.name = buttonConfig.Name;
                             customButton.GetComponentInChildren<Text>().text = buttonString;
                             customButton.transform.Find("Text").gameObject.SetText(hint);
                             customButton.SetActive(true);
                             break;
-                        case InputManager.GamepadButton.LeftShoulder:
-                        case InputManager.GamepadButton.RightShoulder:
-                            var customShoulder = UnityEngine.Object.Instantiate(baseShoulder, gp, false);
+                        case GamepadButton.LeftShoulder:
+                        case GamepadButton.RightShoulder:
+                            var customShoulder = Object.Instantiate(BaseShoulder, gp, false);
                             customShoulder.name = buttonConfig.Name;
                             customShoulder.GetComponentInChildren<Text>().text = buttonString;
                             customShoulder.transform.Find("Text").gameObject.SetText(hint);
                             customShoulder.SetActive(true);
                             break;
-                        case InputManager.GamepadButton.LeftTrigger:
-                        case InputManager.GamepadButton.RightTrigger:
-                            var customTrigger = UnityEngine.Object.Instantiate(baseTrigger, gp, false);
+                        case GamepadButton.LeftTrigger:
+                        case GamepadButton.RightTrigger:
+                            var customTrigger = Object.Instantiate(BaseTrigger, gp, false);
                             customTrigger.name = buttonConfig.Name;
                             customTrigger.GetComponentInChildren<Text>().text = buttonString;
                             customTrigger.transform.Find("Text").gameObject.SetText(hint);
                             customTrigger.SetActive(true);
                             break;
-                        case InputManager.GamepadButton.LeftStickButton:
-                        case InputManager.GamepadButton.RightStickButton:
-                            var customStick = UnityEngine.Object.Instantiate(baseStick, gp, false);
+                        case GamepadButton.LeftStickButton:
+                        case GamepadButton.RightStickButton:
+                            var customStick = Object.Instantiate(BaseStick, gp, false);
                             customStick.name = buttonConfig.Name;
                             customStick.GetComponentInChildren<Text>().text = buttonString;
                             customStick.transform.Find("Text").gameObject.SetText(hint);
@@ -255,56 +330,11 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Add a <see cref="KeyHintConfig"/> to the manager.<br />
-        ///     Checks if the custom key hint is unique (i.e. the first one registered for an item).<br />
-        ///     Custom status effects are displayed in the game instead of the default 
-        ///     KeyHints for equipped tools or weapons they are registered for.
-        /// </summary>
-        /// <param name="hintConfig">The custom key hint config to add.</param>
-        /// <returns>true if the custom key hint config was added to the manager.</returns>
-        public bool AddKeyHint(KeyHintConfig hintConfig)
-        {
-            if (hintConfig.Item == null)
-            {
-                Logger.LogWarning($"Key hint config {hintConfig} is not valid");
-                return false;
-            }
-            if (KeyHints.ContainsKey(hintConfig.ToString()))
-            {
-                Logger.LogWarning($"Key hint config for item {hintConfig} already added");
-                return false;
-            }
-
-            KeyHints.Add(hintConfig.ToString(), hintConfig);
-            return true;
-        }
-
-        /// <summary>
-        ///     Removes a <see cref="KeyHintConfig"/> from the game.
-        /// </summary>
-        /// <param name="hintConfig">The custom key hint config to add.</param>
-        public void RemoveKeyHint(KeyHintConfig hintConfig)
-        {
-            if (KeyHints.ContainsKey(hintConfig.ToString()))
-            {
-                KeyHints.Remove(hintConfig.ToString());
-            }
-            if (SceneManager.GetActiveScene().name == "main")
-            {
-                var keyHintObject = KeyHintContainer.Find(hintConfig.ToString())?.gameObject;
-                if (keyHintObject)
-                {
-                    UnityEngine.Object.Destroy(keyHintObject);
-                }
-            }
-        }
-
-        /// <summary>
         ///     Hook on <see cref="global::KeyHints.UpdateHints" /> to show custom key hints instead of the vanilla ones.
         /// </summary>
         /// <param name="orig"></param>
         /// <param name="self"></param>
-        private void ShowCustomKeyHint(On.KeyHints.orig_UpdateHints orig, KeyHints self)
+        private void KeyHints_UpdateHints(On.KeyHints.orig_UpdateHints orig, KeyHints self)
         {
             orig(self);
 
