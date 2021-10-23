@@ -87,7 +87,7 @@ namespace TestMod
             AddKitbashedPieces();
             AddPieceCategories();
             AddInvalidEntities();
-            AddCustomLocations();
+            AddCustomLocationsAndVegetation();
 
             // Add custom items cloned from vanilla items
             PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
@@ -1266,12 +1266,13 @@ namespace TestMod
             }
         }
 
-        private void AddCustomLocations()
+        private void AddCustomLocationsAndVegetation()
         {
-            CustomLocation cubesLocation = LocationManager.Instance.CreateLocationContainer("lulzcube_location");
+            //Use locations for larger structures
+            CustomLocation cubesLocation = ZoneManager.Instance.CreateLocationContainer("lulzcube_location");
 
             cubesLocation.Biome = Heightmap.Biome.Meadows;
-            cubesLocation.Quantity = 3000;
+            cubesLocation.Quantity = 100;
             cubesLocation.Priotized = true;
             cubesLocation.ChanceToSpawn = 100;
             cubesLocation.ExteriorRadius = 2f;
@@ -1281,9 +1282,22 @@ namespace TestMod
             location.m_exteriorRadius = 5f;
 
             var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
-            Instantiate(lulzCubePrefab, new Vector3(0, 1, 0), Quaternion.identity, cubesLocation.Prefab.transform);
+            for (int i = 0; i < 10; i++)
+            {
+                Instantiate(lulzCubePrefab, new Vector3(0, i + 1, 0), Quaternion.Euler(0, i * 30, 0), cubesLocation.Prefab.transform);
+            }
 
-            LocationManager.Instance.AddCustomLocation(cubesLocation);
+            ZoneManager.Instance.AddCustomLocation(cubesLocation);
+
+            //Use vegetation for singular prefabs
+            CustomVegetation customVegetation = new Jotunn.Entities.CustomVegetation
+            {
+                Prefab = lulzCubePrefab,
+                Biome = Heightmap.Biome.Meadows,
+                BlockCheck = true                
+            };
+
+            ZoneManager.Instance.AddCustomVegetation(customVegetation);
         }
 
         // Set version of the plugin for the mod compatibility test
