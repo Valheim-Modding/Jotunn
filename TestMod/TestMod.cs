@@ -87,6 +87,7 @@ namespace TestMod
             AddKitbashedPieces();
             AddPieceCategories();
             AddInvalidEntities();
+            AddCustomLocations();
 
             // Add custom items cloned from vanilla items
             PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
@@ -1047,7 +1048,7 @@ namespace TestMod
                 Description = "$piece_lul_description",
                 Icon = TestSprite,
                 PieceTable = "Hammer",
-                ExtendStation = "piece_workbench", // Test station extension
+               // ExtendStation = "piece_workbench", // Test station extension
                 Category = "Lulzies."  // Test custom category
             });
 
@@ -1263,6 +1264,26 @@ namespace TestMod
                 // You want that to run only once, Jotunn has the item cached for the game session
                 PrefabManager.OnVanillaPrefabsAvailable -= AddCustomVariants;
             }
+        }
+
+        private void AddCustomLocations()
+        {
+            CustomLocation cubesLocation = LocationManager.Instance.CreateLocationContainer("lulzcube_location");
+
+            cubesLocation.Biome = Heightmap.Biome.Meadows;
+            cubesLocation.Quantity = 3000;
+            cubesLocation.Priotized = true;
+            cubesLocation.ChanceToSpawn = 100;
+            cubesLocation.ExteriorRadius = 2f;
+
+            var location = cubesLocation.Location;
+            location.m_clearArea = true;
+            location.m_exteriorRadius = 5f;
+
+            var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
+            Instantiate(lulzCubePrefab, new Vector3(0, 1, 0), Quaternion.identity, cubesLocation.Prefab.transform);
+
+            LocationManager.Instance.AddCustomLocation(cubesLocation);
         }
 
         // Set version of the plugin for the mod compatibility test

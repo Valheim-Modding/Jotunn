@@ -442,6 +442,9 @@ namespace Jotunn.Managers
             // Harmony patch BepInEx to ensure locked values are not overwritten
             Harmony.CreateAndPatchAll(typeof(ConfigEntryBase_SetSerializedValue));
             Harmony.CreateAndPatchAll(typeof(ConfigEntryBase_GetSerializedValue));
+#if DEBUG
+            Harmony.CreateAndPatchAll(typeof(Debug_isDebugBuild));
+#endif
 
             orig(self);
         }
@@ -489,6 +492,22 @@ namespace Jotunn.Managers
                 return false;
             }
         }
+
+#if DEBUG
+
+        /// <summary>
+        ///     Pretend to be a debugBuild :)
+        /// </summary>
+[HarmonyPatch(typeof(Debug), "get_isDebugBuild")]
+private static class Debug_isDebugBuild
+{
+    private static bool Prefix(Debug __instance, ref bool __result)
+    {
+        __result = true;
+        return false;
+    }
+}
+#endif
 
         /// <summary>
         ///     Cache the synchronizable configuration values for comparison
