@@ -47,6 +47,7 @@ namespace TestMod
         private Skills.SkillType TestSkill;
 
         private ConfigEntry<KeyCode> EvilSwordSpecialConfig;
+        private ConfigEntry<InputManager.GamepadButton> EvilSwordGamepadConfig;
         private ButtonConfig EvilSwordSpecialButton;
         private CustomStatusEffect EvilSwordEffect;
 
@@ -159,9 +160,10 @@ namespace TestMod
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (EvilSwordSpecialButton != null && MessageHud.instance != null)
+                if (EvilSwordSpecialButton != null && MessageHud.instance != null && 
+                    Player.m_localPlayer != null && Player.m_localPlayer.m_visEquipment.m_rightItem == "EvilSword")
                 {
-                    if (ZInput.GetButtonDown(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                    if (ZInput.GetButton(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
@@ -542,6 +544,8 @@ namespace TestMod
             // Add a client side custom input key for the EvilSword
             EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, 
                 new ConfigDescription("Key to unleash evil with the Evil Sword"));
+            EvilSwordGamepadConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttackGamepad", InputManager.GamepadButton.ButtonSouth,
+                new ConfigDescription("Button to unleash evil with the Evil Sword"));
             
         }
 
@@ -594,7 +598,9 @@ namespace TestMod
             {
                 Name = "EvilSwordSpecialAttack",
                 Config = EvilSwordSpecialConfig,
-                HintToken = "$evilsword_beevil"
+                GamepadConfig = EvilSwordGamepadConfig,
+                HintToken = "$evilsword_beevil",
+                BlockOtherInputs = true
             };
             InputManager.Instance.AddButton(ModGUID, EvilSwordSpecialButton);
 
@@ -845,7 +851,7 @@ namespace TestMod
             {
                 Item = "BlueprintTestRune"
             };
-            GUIManager.Instance.AddKeyHint(KHC_base);
+            KeyHintManager.Instance.AddKeyHint(KHC_base);
 
             // Add custom KeyHints for specific pieces
             KeyHintConfig KHC_make = new KeyHintConfig
@@ -858,7 +864,7 @@ namespace TestMod
                     new ButtonConfig { Name = "Attack", HintToken = "$bprune_make" }
                 }
             };
-            GUIManager.Instance.AddKeyHint(KHC_make);
+            KeyHintManager.Instance.AddKeyHint(KHC_make);
 
             KeyHintConfig KHC_piece = new KeyHintConfig
             {
@@ -870,7 +876,7 @@ namespace TestMod
                     new ButtonConfig { Name = "Attack", HintToken = "$bprune_piece" }
                 }
             };
-            GUIManager.Instance.AddKeyHint(KHC_piece);
+            KeyHintManager.Instance.AddKeyHint(KHC_piece);
 
             // Add additional localization manually
             Localization.AddTranslation("English", new Dictionary<string, string>
@@ -1163,7 +1169,7 @@ namespace TestMod
                         new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
                     }
                 };
-                GUIManager.Instance.AddKeyHint(KHC);
+                KeyHintManager.Instance.AddKeyHint(KHC);
             }
             catch (Exception ex)
             {
