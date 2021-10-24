@@ -8,6 +8,7 @@
 * Added gamepad buttons to KeyHints for custom inputs as well as vanilla key overrides
 * Gamepad buttons can be defined in the mod settings if they are bound to a config
 * Refactored custom KeyHints into their own KeyHintManager and obsoleted the API in the GUIManager
+* Fixed a strange hard crash when using GUIManager.IsHeadless()
 
 ## Version 2.3.7
 * Fixed translation of the custom skill raise message
