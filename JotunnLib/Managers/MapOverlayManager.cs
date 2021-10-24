@@ -10,7 +10,7 @@ namespace Jotunn.Managers
     /// <summary>
     ///     Manager for adding custom Map Overlays to the game.
     /// </summary>
-    public class MapOverlayManager : IManager
+    internal class MapOverlayManager : IManager
     {
         private static MapOverlayManager _instance;
 
