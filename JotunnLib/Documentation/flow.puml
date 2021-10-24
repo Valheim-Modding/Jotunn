@@ -1,0 +1,78 @@
+﻿@startuml
+'' flow
+!pragma teoz true
+hide footbox
+
+participant Valheim
+
+box JotunnMods
+    collections JotunnMod
+end box
+
+box Jotunn
+    participant LocalizationManager
+    participant PrefabManager
+    participant ItemManager
+    participant PieceManager
+    participant GUIManager
+    participant ZoneManager
+    participant MapOverlayManager
+end box
+
+group For each mod
+    ?->JotunnMod **: Loaded by\nBepInEx
+    JotunnMod -> JotunnMod ++ #lightgreen: Awake
+end group
+
+== Main Menu Scene ==
+
+Valheim -> Valheim++: SceneManager.sceneLoaded
+    hnote over GUIManager: OnPixelFixCreated
+    hnote over GUIManager: OnCustomGUIAvailable
+deactivate Valheim
+
+Valheim -> Valheim++: SetupGUI
+    hnote over LocalizationManager: OnLocalizationAdded
+deactivate Valheim
+
+Valheim -> Valheim++: ObjectDB.CopyOtherDB
+    hnote over PrefabManager: OnVanillaPrefabsAvailable 
+    hnote over ItemManager #salmon: OnVanillaItemsAvailable  
+    hnote over ItemManager #salmon: OnKitbashItemsAvailable
+    hnote over ItemManager: OnItemsRegisteredFejd
+deactivate Valheim
+
+note over Valheim #lightblue: Main menu interactable
+
+== Loading Scene ==
+== Game Scene  ==
+
+Valheim -> Valheim ++: ZNetScene.Awake
+    hnote over PrefabManager: OnPrefabsRegistered
+deactivate Valheim
+
+Valheim -> Valheim++ : ObjectDB.Awake
+    hnote over ItemManager: OnItemsRegistered
+    hnote over PieceManager: OnPiecesRegistered
+deactivate Valheim 
+
+Valheim -> Valheim++: SceneManager.sceneLoaded
+    hnote over GUIManager: OnPixelFixCreated
+    hnote over GUIManager: OnCustomGUIAvailable
+deactivate Valheim
+
+Valheim -> Valheim ++: ZoneSystem.SetupLocations
+    hnote over ZoneManager: OnVanillaLocationsAvailable
+deactivate Valheim
+
+Valheim -> Valheim ++: Minimap.Awake
+    hnote over MapOverlayManager: OnVanillaMapAvailable
+deactivate Valheim
+
+Valheim -> Valheim ++: Minimap.LoadMapData
+    hnote over MapOverlayManager: OnVanillaMapDataLoaded
+deactivate Valheim
+ 
+note over Valheim #lightblue: Game interactable
+ 
+@enduml

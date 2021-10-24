@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Jotunn.Entities;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using ZoneLocation = ZoneSystem.ZoneLocation;
 
 namespace Jotunn.Managers
@@ -43,12 +44,18 @@ namespace Jotunn.Managers
 
             On.ZoneSystem.SetupLocations += ZoneSystem_SetupLocations;
             On.ZNetView.Awake += ZNetView_Awake;
+
         }
 
         private void ZoneSystem_SetupLocations(On.ZoneSystem.orig_SetupLocations orig, ZoneSystem self)
         {
             orig(self);
+
+            DebugVanillaLocations(self);
+
+
             OnVanillaLocationsAvailable.SafeInvoke();
+
 
             Logger.LogInfo("Injecting custom locations");
             foreach (CustomLocation customLocation in customLocations)
@@ -83,6 +90,22 @@ namespace Jotunn.Managers
 
         }
 
+        private void DebugVanillaLocations(ZoneSystem self)
+        {
+            HashSet<string> groups = new HashSet<string>();
+            foreach (ZoneLocation zoneLocation in self.m_locations)
+            {
+                if(zoneLocation.m_group != null && zoneLocation.m_group != "")
+                {
+                    groups.Add(zoneLocation.m_group);
+                }
+            }
+            foreach(string group in groups)
+            {
+                Logger.LogInfo($"Available group {group}");
+            }
+        }
+
         private void ZNetView_Awake(On.ZNetView.orig_Awake orig, ZNetView self)
         {
 #if DEBUG
@@ -111,6 +134,16 @@ namespace Jotunn.Managers
             };
             container.transform.SetParent(LocationContainer.transform);
             return container;
+        }
+
+        public CustomLocation CreateClonedLocation(string name, string baseName)
+        {
+            var baseZoneLocation = GetZoneLocation(baseName);
+            var copiedPrefab = Object.Instantiate(baseZoneLocation.m_prefab, LocationContainer.transform);
+            copiedPrefab.name = name;
+            var clonedLocation = new CustomLocation(copiedPrefab, new Configs.LocationConfig(baseZoneLocation));
+            AddCustomLocation(clonedLocation);
+            return clonedLocation;
         }
 
         public bool AddCustomLocation(CustomLocation customLocation)

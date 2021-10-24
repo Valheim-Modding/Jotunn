@@ -1274,11 +1274,15 @@ namespace TestMod
             {
                 var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
 
+                //Create a clone of a vanilla location
+                CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
+                var eikhtyrCube2 = Instantiate(lulzCubePrefab, myEikthyrLocation.ZoneLocation.m_prefab.transform);
+                eikhtyrCube2.transform.localPosition = new Vector3(0f, 5.37f, 0f);
+              
                 //modify existing locations
                 var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
                 var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
                 eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
-                eikhtyrLocation.m_netViews.Add(eikhtyrCube.GetComponent<ZNetView>());
 
                 //Use locations for larger structures
                 GameObject cubesLocation = ZoneManager.Instance.CreateLocationContainer("lulzcube_location");

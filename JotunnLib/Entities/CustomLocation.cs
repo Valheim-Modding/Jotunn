@@ -13,7 +13,7 @@ namespace Jotunn.Entities
         public GameObject Prefab { get; set; }
         public ZoneSystem.ZoneLocation ZoneLocation { get; private set; }
         public Location Location { get; private set; }
-
+          
         public CustomLocation(GameObject prefab, LocationConfig config)
         {
             Prefab = prefab;
