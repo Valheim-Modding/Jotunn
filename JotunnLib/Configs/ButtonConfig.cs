@@ -151,5 +151,10 @@ namespace Jotunn.Configs
         ///     Make sure to gate your usage properly.
         /// </summary>
         public bool BlockOtherInputs { get; set; } = false;
+
+        /// <summary>
+        ///     Internal flag if this button config is backed by any BepInEx ConfigEntry
+        /// </summary>
+        internal bool IsConfigBacked => Config != null || ShortcutConfig != null || GamepadConfig != null;
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Jotunn.Configs;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static Jotunn.Managers.InputManager;
 using Object = UnityEngine.Object;
@@ -63,7 +62,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Add a <see cref="KeyHintConfig"/> to the manager.<br />
         ///     Checks if the custom key hint is unique (i.e. the first one registered for an item).<br />
-        ///     Custom status effects are displayed in the game instead of the default 
+        ///     Custom key hints are displayed in the game instead of the default 
         ///     KeyHints for equipped tools or weapons they are registered for.
         /// </summary>
         /// <param name="hintConfig">The custom key hint config to add.</param>
@@ -79,6 +78,25 @@ namespace Jotunn.Managers
             {
                 Logger.LogWarning($"Key hint config for item {hintConfig} already added");
                 return false;
+            }
+
+            // Register events for every ConfigEntry backed ButtonConfig to mark the KeyHint dirty
+            foreach (var buttonConfig in hintConfig.ButtonConfigs.Where(x => x.IsConfigBacked))
+            {
+                if (buttonConfig.Config != null)
+                {
+                    buttonConfig.Config.SettingChanged += (sender, args) => hintConfig.Dirty = true;
+                }
+
+                if (buttonConfig.ShortcutConfig != null)
+                {
+                    buttonConfig.ShortcutConfig.SettingChanged += (sender, args) => hintConfig.Dirty = true;
+                }
+
+                if (buttonConfig.GamepadConfig != null)
+                {
+                    buttonConfig.GamepadConfig.SettingChanged += (sender, args) => hintConfig.Dirty = true;
+                }
             }
 
             KeyHints.Add(hintConfig.ToString(), hintConfig);
@@ -324,7 +342,7 @@ namespace Jotunn.Managers
                 }
             }
 
-            Logger.LogDebug($"Added key hints for Item : {config}");
+            config.Dirty = false;
 
             return baseKeyHint;
         }
@@ -345,7 +363,7 @@ namespace Jotunn.Managers
             }
 
             // If something went wrong, dont NRE every Update
-            if (KeyHintContainer == null)
+            if (KeyHintInstance == null || KeyHintContainer == null)
             {
                 return;
             }
@@ -412,8 +430,16 @@ namespace Jotunn.Managers
                 return;
             }
 
-            // Display the KeyHint instead the vanilla one or remove the config if it fails
+            // Try to get the hint object
             var hintObject = KeyHintContainer.Find(hintConfig.ToString())?.gameObject;
+
+            // If the keyhint is "dirty" (i.e. some config backed button changed), destroy the hint object
+            if (hintObject && hintConfig.Dirty)
+            {
+                Object.DestroyImmediate(hintObject);
+            }
+
+            // Display the KeyHint instead the vanilla one or remove the config if it fails
             if (!hintObject)
             {
                 try
@@ -427,12 +453,9 @@ namespace Jotunn.Managers
                     return;
                 }
             }
-
-            self.m_buildHints.SetActive(false);
-            self.m_combatHints.SetActive(false);
-
-            // Update bound keys
-            foreach (var buttonConfig in hintConfig.ButtonConfigs)
+            
+            // Update bound key strings if not backed by a ConfigEntry
+            foreach (var buttonConfig in hintConfig.ButtonConfigs.Where(x => !x.IsConfigBacked))
             {
                 string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
                 if (key.Contains("MISSING"))
@@ -448,6 +471,9 @@ namespace Jotunn.Managers
                     hintObject.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
                 }
             }
+
+            self.m_buildHints.SetActive(false);
+            self.m_combatHints.SetActive(false);
 
             hintObject.SetActive(true);
             hintObject.GetComponent<UIInputHint>()?.Update();
