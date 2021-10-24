@@ -44,11 +44,12 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **GUI Manager** - Allows invocation of UI prefabs on the fly via code.
 - **Input Manager** - Provides an interface for binding keys via ZInput in a consistent manner, facilitating custom keybind hints.
 - **Item Manager** - Abstracts away implementation details of configurations applied to items/recipes to provide a consistent developer experience in adding new items. tl;dr items are easy!
-- **KitbashManager** - Create custom assets with individual pieces from vanilla prefabs.
-- **KeyHintManager** - Create custom key hints for your weapons and tools, even down to the selected piece.
+- **Kitbash Manager** - Create custom assets with individual pieces from vanilla prefabs.
+- **KeyHint Manager** - Create custom key hints for your weapons and tools, even down to the selected piece.
 - **Localization Manager** - Provides multiple methods of loading localization data into the game, as well as exposing an interface for adding additional languages to provide localizations to unsupported languages.
 - **Piece Manager** - Very similar to the Item Manager, abstracting implementation details of configurations for pieces/recipe's.
 - **Prefab Manager** - Provides a cache of prefabs registered through other managers, mostly developers will only query the cache for prefabs added via other managers.
+- **Render Manager** - Provides a custom render queue to render visual GameObjects into a Sprite - Useful to generate icons for your custom items.
 - **Skill Manager** - Facilitates additional custom skills.
 
 #### Utilities
