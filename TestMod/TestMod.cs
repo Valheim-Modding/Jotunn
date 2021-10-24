@@ -1304,7 +1304,7 @@ namespace TestMod
             finally
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
-                PrefabManager.OnVanillaPrefabsAvailable -= AddCustomVariants;
+                PrefabManager.OnVanillaPrefabsAvailable -= AddItemsWithRenderedIcons;
             }
         }
 
