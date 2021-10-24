@@ -147,7 +147,7 @@ private void Update()
 
 ## Creating custom KeyHints
 
-Key hints are displayed in Valheim when you equip weapons or tools to show which keys execute a certain action. With Jötunn you can add your own key hints for your custom weapons and tools by the means of the same [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) class you can use to define custom key bindings. You need to create a [KeyHintConfig](xref:Jotunn.Configs.KeyHintConfig) with one or more instances of [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) in it. In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use the custom key bindings from the EvilSword to display a key hint for it and also override vanilla Valheim key hint messages. 
+Key hints are displayed in Valheim when you equip weapons or tools to show which keys execute a certain action. With Jötunn you can add your own key hints for your custom weapons and tools by the means of the same [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) class you can use to define custom key bindings. You need to create a [KeyHintConfig](xref:Jotunn.Configs.KeyHintConfig) with one or more instances of [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) in it and add it to the [KeyHintManager](xref:Jotunn.Managers.KeyHintManager). In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use the custom key bindings from the EvilSword to display a key hint for it and also override vanilla Valheim key hint messages. 
 
 Note the use of the special Axis "Mouse ScrollWheel" to override the Valheim scroll icon text.
 
@@ -170,13 +170,13 @@ private void KeyHintsEvilSword()
             new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
         }
     };
-    GUIManager.Instance.AddKeyHint(KHC);
+    KeyHintManager.Instance.AddKeyHint(KHC);
 }
 ```
 
-The resulting KeyHints look like this
+The resulting KeyHints look like this for Keyboard and Gamepad input respectively
 
-![Custom Key Hints](../images/data/EvilSwordKeyHints.png)
+![Custom Keyboard Key Hints](../images/data/EvilSwordKeyHints.png) ![Custom Gamepad Key Hints](../images/data/EvilSwordKeyHintsButton.png)
 
 Note that all texts are tokenized and translated ingame. The translations are also provided by Jötunn. Read the [tutorial on Localizations](localization.md) for more information on that topic.
 
@@ -190,7 +190,7 @@ KeyHintConfig KHC_base = new KeyHintConfig
 {
     Item = "BlueprintTestRune"
 };
-GUIManager.Instance.AddKeyHint(KHC_base);
+KeyHintManager.Instance.AddKeyHint(KHC_base);
 
 // Add custom KeyHints for specific pieces
 KeyHintConfig KHC_make = new KeyHintConfig
@@ -203,7 +203,7 @@ KeyHintConfig KHC_make = new KeyHintConfig
         new ButtonConfig { Name = "Attack", HintToken = "$bprune_make" }
     }
 };
-GUIManager.Instance.AddKeyHint(KHC_make);
+KeyHintManager.Instance.AddKeyHint(KHC_make);
 
 KeyHintConfig KHC_piece = new KeyHintConfig
 {
@@ -215,5 +215,5 @@ KeyHintConfig KHC_piece = new KeyHintConfig
         new ButtonConfig { Name = "Attack", HintToken = "$bprune_piece" }
     }
 };
-GUIManager.Instance.AddKeyHint(KHC_piece);
+KeyHintManager.Instance.AddKeyHint(KHC_piece);
 ```

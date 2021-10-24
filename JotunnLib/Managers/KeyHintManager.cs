@@ -9,9 +9,15 @@ using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
 {
+    /// <summary>
+    ///     Manager for handling custom key hints
+    /// </summary>
     public class KeyHintManager : IManager
     {
         private static KeyHintManager _instance;
+        /// <summary>
+        ///     Singleton instance
+        /// </summary>
         public static KeyHintManager Instance
         {
             get

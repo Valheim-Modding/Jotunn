@@ -851,7 +851,7 @@ namespace TestMod
             {
                 Item = "BlueprintTestRune"
             };
-            GUIManager.Instance.AddKeyHint(KHC_base);
+            KeyHintManager.Instance.AddKeyHint(KHC_base);
 
             // Add custom KeyHints for specific pieces
             KeyHintConfig KHC_make = new KeyHintConfig
@@ -864,7 +864,7 @@ namespace TestMod
                     new ButtonConfig { Name = "Attack", HintToken = "$bprune_make" }
                 }
             };
-            GUIManager.Instance.AddKeyHint(KHC_make);
+            KeyHintManager.Instance.AddKeyHint(KHC_make);
 
             KeyHintConfig KHC_piece = new KeyHintConfig
             {
@@ -876,7 +876,7 @@ namespace TestMod
                     new ButtonConfig { Name = "Attack", HintToken = "$bprune_piece" }
                 }
             };
-            GUIManager.Instance.AddKeyHint(KHC_piece);
+            KeyHintManager.Instance.AddKeyHint(KHC_piece);
 
             // Add additional localization manually
             Localization.AddTranslation("English", new Dictionary<string, string>
@@ -1169,7 +1169,7 @@ namespace TestMod
                         new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
                     }
                 };
-                GUIManager.Instance.AddKeyHint(KHC);
+                KeyHintManager.Instance.AddKeyHint(KHC);
             }
             catch (Exception ex)
             {
