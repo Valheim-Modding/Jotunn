@@ -120,11 +120,6 @@ namespace Jotunn.Managers
                 KeyHints.Remove(hintConfig.ToString());
             }
 
-            /*var keyHintObject = KeyHintContainer?.Find(hintConfig.ToString())?.gameObject;
-            if (keyHintObject)
-            {
-                Object.Destroy(keyHintObject);
-            }*/
             if (KeyHintObjects.TryGetValue(hintConfig.ToString(), out var hintObject))
             {
                 Object.Destroy(hintObject);
@@ -194,7 +189,7 @@ namespace Jotunn.Managers
             BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
             BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().sizeDelta = new Vector2(25f, 25f);
         }
-        
+
         /// <summary>
         ///     Copy vanilla BuildHints object and create a custom one from a KeyHintConfig.
         /// </summary>
@@ -368,13 +363,6 @@ namespace Jotunn.Managers
             }
 
             // First disable all custom key hints
-            /*foreach (RectTransform transform in KeyHintContainer)
-            {
-                if (KeyHints.ContainsKey(transform.name))
-                {
-                    transform.gameObject?.SetActive(false);
-                }
-            }*/
             foreach (var obj in KeyHintObjects.Values)
             {
                 obj.SetActive(false);
@@ -433,10 +421,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            // Try to get the hint object
-            //var hintObject = KeyHintContainer.Find(hintConfig.ToString())?.gameObject;
-
-            // If the keyhint is "dirty" (i.e. some config backed button changed), destroy the hint object
+            // Try to get the hint object, if the keyhint is "dirty" (i.e. some config backed button changed), destroy the hint object
             if (KeyHintObjects.TryGetValue(hintConfig.ToString(), out var hintObject) && hintConfig.Dirty)
             {
                 Object.DestroyImmediate(hintObject);
@@ -456,7 +441,7 @@ namespace Jotunn.Managers
                     return;
                 }
             }
-            
+
             // Update bound key strings if not backed by a ConfigEntry
             foreach (var buttonConfig in hintConfig.ButtonConfigs.Where(x => !x.IsConfigBacked))
             {
