@@ -643,6 +643,12 @@ namespace TestMod
             {
                 { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
             });
+            
+            // Add translations for the rendered tree
+            Localization.AddTranslation("English", new Dictionary<string, string>
+            {
+                {"rendered_tree", "Rendered Tree"}, {"rendered_tree_desc", "A powerful tree, that can render its own icon. Magic!"}
+            });
         }
 
         // Register new console commands
@@ -1274,16 +1280,16 @@ namespace TestMod
             }
         }
 
-        // Test for rendering icons
+        // Create rendered icons from prefabs
         private void AddItemsWithRenderedIcons()
         {
             try
             {
-                // create the tree-item
-                CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds", new ItemConfig()
+                // Create the tree-item from a vanilla prefab without providing an icon
+                CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds", new ItemConfig
                 {
-                    Name = "Tree",
-                    Description = "A powerful tree",
+                    Name = "$rendered_tree",
+                    Description = "$rendered_tree_desc",
                     Requirements = new[]
                     {
                         new RequirementConfig()
@@ -1298,6 +1304,8 @@ namespace TestMod
 
                 // render the icon from a beech tree
                 GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
+        
+                // Get the beech tree prefab to render our icon from
                 RenderManager.Instance.QueueRender(beech, sprite =>
                 {
                     treeItem.ItemDrop.m_itemData.m_shared.m_icons = new[] { sprite };
