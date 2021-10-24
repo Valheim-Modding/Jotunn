@@ -134,7 +134,6 @@ namespace Jotunn.Managers
                 KeyHintContainer = self.transform as RectTransform;
 
                 GetBaseGameObjects();
-                RegisterKeyHints();
             }
             catch (Exception ex)
             {
@@ -181,40 +180,7 @@ namespace Jotunn.Managers
             Object.DestroyImmediate(BaseStick.transform.Find("Trigger").gameObject);
             Object.DestroyImmediate(BaseStick.transform.Find("plus").gameObject);
         }
-
-        /// <summary>
-        ///     Create custom KeyHint objects for every config added.
-        /// </summary>
-        private void RegisterKeyHints()
-        {
-            if (KeyHints.Count > 0)
-            {
-                Logger.LogInfo($"Adding {KeyHints.Count} custom key hints");
-
-                List<string> toDelete = new List<string>();
-
-                // Create hint objects for all configs
-                foreach (var entry in KeyHints)
-                {
-                    try
-                    {
-                        CreateKeyHintObject(entry.Value);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogWarning($"Exception caught while creating KeyHint for {entry.Key}: {ex}");
-                        toDelete.Add(entry.Key);
-                    }
-                }
-
-                // Delete key hints with errors
-                foreach (string key in toDelete)
-                {
-                    KeyHints.Remove(key);
-                }
-            }
-        }
-
+        
         /// <summary>
         ///     Copy vanilla BuildHints object and create a custom one from a KeyHintConfig.
         /// </summary>
