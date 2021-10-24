@@ -6,16 +6,18 @@ The code snippets are taken from our [example mod](https://github.com/Valheim-Mo
 
 ## Creating custom inputs
 
-First, define members in your mod class for all buttons you want to use in your mod. Having a reference to the defined buttons makes it easier for us to poll for button presses. These can also be used to add custom [KeyHints](#creating-custom-keyhints) to the game.
+First, define [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) members in your mod class for all buttons you want to use in your mod. Having a reference to the defined buttons makes it easier for us to poll for button presses. These can also be used to add custom [KeyHints](#creating-custom-keyhints) for your buttons to the game later on.
 
 You can have key bindings defined "on the fly" which binds a specific key to an artificial button name. To be more versatile you can have the custom binding be defined in a BepInEx configuration file and let the user change it to his preference.
+
+Jötunn supports multiple types of key bindings. You can use Unity's "KeyCode" or BepInEx' KeyboardShortcut and/or a GamepadButton, which is provided via Jötunn's [InputManager](xref:Jotunn.Managers.InputManager.GamepadButton).
 
 ```cs
 // Fixed buttons
 private ButtonConfig ShowGUIButton;
 private ButtonConfig RaiseSkillButton;
 
-// Variable button backed by a config
+// Variable button backed by a KeyCode and a GamepadButton config
 private ConfigEntry<KeyCode> EvilSwordSpecialConfig;
 private ConfigEntry<InputManager.GamepadButton> EvilSwordGamepadConfig;
 private ButtonConfig EvilSwordSpecialButton;
@@ -97,7 +99,9 @@ private void AddInputs()
 
 Note that `AddButton` takes your PluginGUID as the first parameter. This is how Jötunn tries to avoid conflicts between multiple plugins which might create the same button. Internally the GUID of the mod is appended to the button's name. That means you can be sure that you receive your defined button when polling for it using your button config reference and other mods can't overwrite your binding when adding a button with the same name.
 
-Now, to use our input, we can use the `ZInput` class provided by Valheim.
+Now, to use our input, we can use the `ZInput` class provided by Valheim. 
+> [!WARNING]
+> When you set BlockOtherInputs = true in your ButtonConfig, every call to ZInput checking for your custom key will prevent other mods or the base game from receiving those key events - even if you don't actually react to it. It is important that you only call any ZInput.GetButton method for those buttons, if you actually intend to react to it. That functionality is intended for custom input also using GamepadButton, since gamepad input is very limited. __If you don't use GamepadButton, don't set BlockOtherInputs = true__.
 
 ```cs
 // Called every frame
