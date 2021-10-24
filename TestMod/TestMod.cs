@@ -98,6 +98,9 @@ namespace TestMod
             // Create a custom item with variants
             PrefabManager.OnVanillaPrefabsAvailable += AddCustomVariants;
 
+            // Crate a custom item with rendered icons
+            PrefabManager.OnVanillaPrefabsAvailable += AddItemsWithRenderedIcons;
+
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
             {
@@ -1268,6 +1271,46 @@ namespace TestMod
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
                 PrefabManager.OnVanillaPrefabsAvailable -= AddCustomVariants;
+            }
+        }
+
+        // Test for rendering icons
+        private void AddItemsWithRenderedIcons()
+        {
+            try
+            {
+                // create the tree-item
+                CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds", new ItemConfig()
+                {
+                    Name = "Tree",
+                    Description = "A powerful tree",
+                    Requirements = new[]
+                    {
+                        new RequirementConfig()
+                        {
+                            Item = "Wood",
+                            Amount = 1,
+                            Recover = true
+                        }
+                    }
+                });
+                ItemManager.Instance.AddItem(treeItem);
+
+                // render the icon from a beech tree
+                GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
+                RenderManager.Instance.QueueRender(beech, sprite =>
+                {
+                    treeItem.ItemDrop.m_itemData.m_shared.m_icons = new[] { sprite };
+                });
+            }
+            catch (Exception ex)
+            {
+                Jotunn.Logger.LogError($"Error while adding item with rendering: {ex}");
+            }
+            finally
+            {
+                // You want that to run only once, Jotunn has the item cached for the game session
+                PrefabManager.OnVanillaPrefabsAvailable -= AddItemsWithRenderedIcons;
             }
         }
 
