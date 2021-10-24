@@ -31,6 +31,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - [b]CustomPieceTable[/b] - Represent ingame building tables. Support for custom categories included.
 - [b]CustomStatusEffect[/b] - Represents ingame status effects from weapon hit effects to guardian powers.
 - [b]CustomItemConversion[/b] - Represents ingame item conversions for the CookingStation, Fermenter and Smelter in one abstraction.
+- [b]CustomLocalization[/b] - Represents custom localizations for your mod.
 - [b]KitbashObject[/b] - Represents a custom object assembled from various other prefabs' components.
 - [b]Mocks[/b] - Fake any vanilla prefab and use it in your custom assets - Jötunn resolves the references to the vanilla objects at runtime.
 - [b]Config classes[/b] - There are many more abstractions beside the main entities which allow for easy creation of things like key bindings, custom commands, skills and more.
@@ -40,11 +41,12 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - [b]GUI Manager[/b] - Allows invocation of UI prefabs on the fly via code.
 - [b]Input Manager[/b] - Provides an interface for binding keys via ZInput in a consistent manner, facilitating custom keybind hints.
 - [b]Item Manager[/b] - Abstracts away implementation details of configurations applied to items/recipes to provide a consistent developer experience in adding new items. tl;dr items are easy!
+- [b]Kitbash Manager[/b] - Create custom assets with individual pieces from vanilla prefabs.
+- [b]KeyHintManager[/b] - Create custom key hints for your weapons and tools, even down to the selected piece.
 - [b]Localization Manager[/b] - Provides multiple methods of loading localisation data into the game, as well as exposing an interface for adding additional languages to provide localizations to unsupported languages.
 - [b]Piece Manager[/b] - Very similar to the Item Manager, abstracting implementation details of configurations for pieces/recipe's.
 - [b]Prefab Manager[/b] - Provides a cache of prefabs registered through other managers, mostly developers will only query the cache for prefabs added via other managers.
 - [b]Skill Manager[/b] - Facilitates additional custom skills.
-- [b]Kitbash Manager[/b] - Create custom assets with individual pieces from vanilla prefabs.
 
 [size=4][b]Utilities[/b][/size]
 - [b]Asset Helpers[/b] - Methods to facilitate referencing and loading of assets.
@@ -81,3 +83,4 @@ These people have been integral to pushing JVL out of the door, and without them
 - MarcoPogo#6095: [url=https://github.com/MathiasDecrock]github[/url], [url=https://www.nexusmods.com/users/3030830?tab=user+files]nexus[/url]
 - blaxxun#9098: [url=https://github.com/blaxxun-boop]github[/url] - Creator of the superb [url=https://github.com/blaxxun-boop/ServerSync]ServerSync[/url] mod which Jötunn adapted.
 - Tekla#1012: [url=https://github.com/T3kla/ValMods/wiki]github[/url]
+- Margmas#9562: [url=https://github.com/MSchmoecker]github[/url], [url=https://valheim.thunderstore.io/package/MSchmoecker/]thunderstore[/url], [url=https://www.nexusmods.com/users/111418768]nexus[/url]
