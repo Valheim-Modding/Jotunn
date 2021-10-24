@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,11 +31,11 @@ namespace Jotunn.Managers
         /// </summary>
         private const int Layer = 3;
 
-        private readonly Queue<RenderRequest> renderQueue = new Queue<RenderRequest>();
+        private readonly Queue<RenderRequest> RenderRequestQueue = new Queue<RenderRequest>();
 
         private static readonly Vector3 SpawnPoint = new Vector3(10000f, 10000f, 10000f);
-        private Camera renderer;
-        private Light light;
+        private Camera Renderer;
+        private Light Light;
 
         /// <summary>
         ///     Initialize the manager
@@ -61,41 +61,41 @@ namespace Jotunn.Managers
                 return false;
             }
 
-            renderQueue.Enqueue(new RenderRequest(target, callback, width, height));
+            RenderRequestQueue.Enqueue(new RenderRequest(target, callback, width, height));
             return true;
         }
 
         private void Render(RenderObject renderObject)
         {
-            int width = renderObject.request.width;
-            int height = renderObject.request.height;
+            int width = renderObject.Request.Width;
+            int height = renderObject.Request.Height;
 
             RenderTexture oldRenderTexture = RenderTexture.active;
-            renderer.targetTexture = RenderTexture.GetTemporary(width, height, 32);
-            RenderTexture.active = renderer.targetTexture;
+            Renderer.targetTexture = RenderTexture.GetTemporary(width, height, 32);
+            RenderTexture.active = Renderer.targetTexture;
 
-            renderObject.spawn.SetActive(true);
+            renderObject.Spawn.SetActive(true);
 
             // calculate the Z position of the prefab as it needs to be far away from the camera
             // the FOV is small to simulate orthographic view. An orthographic camera is not possible because of shaders
-            float maxMeshSize = Mathf.Max(renderObject.size.x, renderObject.size.y) + 0.1f;
-            float distance = maxMeshSize / Mathf.Tan(renderer.fieldOfView * Mathf.Deg2Rad);
-            renderer.transform.position = SpawnPoint + new Vector3(0, 0, distance);
+            float maxMeshSize = Mathf.Max(renderObject.Size.x, renderObject.Size.y) + 0.1f;
+            float distance = maxMeshSize / Mathf.Tan(Renderer.fieldOfView * Mathf.Deg2Rad);
+            Renderer.transform.position = SpawnPoint + new Vector3(0, 0, distance);
 
-            renderer.Render();
+            Renderer.Render();
 
-            renderObject.spawn.SetActive(false);
-            Object.Destroy(renderObject.spawn);
+            renderObject.Spawn.SetActive(false);
+            Object.Destroy(renderObject.Spawn);
 
             Texture2D previewImage = new Texture2D(width, height, TextureFormat.RGBA32, false);
             previewImage.ReadPixels(new Rect(0, 0, width, height), 0, 0);
             previewImage.Apply();
 
-            RenderTexture.ReleaseTemporary(renderer.targetTexture);
+            RenderTexture.ReleaseTemporary(Renderer.targetTexture);
             RenderTexture.active = oldRenderTexture;
 
             Sprite sprite = Sprite.Create(previewImage, new Rect(0, 0, width, height), Vector2.one / 2f);
-            renderObject.request.callback?.Invoke(sprite);
+            renderObject.Request.Callback?.Invoke(sprite);
         }
 
         private IEnumerator RenderQueue()
@@ -104,11 +104,11 @@ namespace Jotunn.Managers
             {
                 Queue<RenderObject> spawnQueue = new Queue<RenderObject>();
 
-                while (renderQueue.Count > 0)
+                while (RenderRequestQueue.Count > 0)
                 {
-                    RenderRequest request = renderQueue.Dequeue();
-                    RenderObject spawn = SpawnSafe(request.target);
-                    spawn.request = request;
+                    RenderRequest request = RenderRequestQueue.Dequeue();
+                    RenderObject spawn = SpawnSafe(request.Target);
+                    spawn.Request = request;
                     spawnQueue.Enqueue(spawn);
                 }
 
@@ -131,27 +131,27 @@ namespace Jotunn.Managers
 
         private void SetupRendering()
         {
-            renderer = new GameObject("Render Camera", typeof(Camera)).GetComponent<Camera>();
-            renderer.backgroundColor = new Color(0, 0, 0, 0);
-            renderer.clearFlags = CameraClearFlags.SolidColor;
-            renderer.transform.position = SpawnPoint;
-            renderer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+            Renderer = new GameObject("Render Camera", typeof(Camera)).GetComponent<Camera>();
+            Renderer.backgroundColor = new Color(0, 0, 0, 0);
+            Renderer.clearFlags = CameraClearFlags.SolidColor;
+            Renderer.transform.position = SpawnPoint;
+            Renderer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
             // small FOV to simulate orthographic view. An orthographic camera is not possible because of shaders
-            renderer.fieldOfView = 0.5f;
-            renderer.farClipPlane = 100000;
-            renderer.cullingMask = 1 << Layer;
+            Renderer.fieldOfView = 0.5f;
+            Renderer.farClipPlane = 100000;
+            Renderer.cullingMask = 1 << Layer;
 
-            light = new GameObject("Render Light", typeof(Light)).GetComponent<Light>();
-            light.transform.position = SpawnPoint;
-            light.transform.rotation = Quaternion.Euler(5f, 180f, 5f);
-            light.type = LightType.Directional;
-            light.cullingMask = 1 << Layer;
+            Light = new GameObject("Render Light", typeof(Light)).GetComponent<Light>();
+            Light.transform.position = SpawnPoint;
+            Light.transform.rotation = Quaternion.Euler(5f, 180f, 5f);
+            Light.type = LightType.Directional;
+            Light.cullingMask = 1 << Layer;
         }
 
         private void ClearRendering()
         {
-            Object.Destroy(renderer.gameObject);
-            Object.Destroy(light.gameObject);
+            Object.Destroy(Renderer.gameObject);
+            Object.Destroy(Light.gameObject);
         }
 
         private static bool IsVisualComponent(Component component)
@@ -237,30 +237,30 @@ namespace Jotunn.Managers
 
         private class RenderObject
         {
-            public GameObject spawn;
-            public Vector3 size;
-            public RenderRequest request;
+            public readonly GameObject Spawn;
+            public readonly Vector3 Size;
+            public RenderRequest Request;
 
             public RenderObject(GameObject spawn, Vector3 size)
             {
-                this.spawn = spawn;
-                this.size = size;
+                Spawn = spawn;
+                Size = size;
             }
         }
 
         private class RenderRequest
         {
-            public readonly GameObject target;
-            public readonly Action<Sprite> callback;
-            public readonly int width;
-            public readonly int height;
+            public readonly GameObject Target;
+            public readonly Action<Sprite> Callback;
+            public readonly int Width;
+            public readonly int Height;
 
             public RenderRequest(GameObject target, Action<Sprite> callback, int width, int height)
             {
-                this.target = target;
-                this.callback = callback;
-                this.width = width;
-                this.height = height;
+                Target = target;
+                Callback = callback;
+                Width = width;
+                Height = height;
             }
         }
     }
