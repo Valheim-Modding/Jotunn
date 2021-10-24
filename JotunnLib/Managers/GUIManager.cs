@@ -156,12 +156,17 @@ namespace Jotunn.Managers
         private bool GUIInStart;
 
         /// <summary>
+        ///     Cache headless state
+        /// </summary>
+        private static bool Headless;
+
+        /// <summary>
         ///     Detect headless mode (aka dedicated server)
         /// </summary>
         /// <returns></returns>
         public static bool IsHeadless()
         {
-            return SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
+            return Headless;
         }
 
         /// <summary>
@@ -261,6 +266,9 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
+            // Cache headless state
+            Headless = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
+
             // Dont init on a headless server
             if (!IsHeadless())
             {
