@@ -1,6 +1,6 @@
 ﻿# Inputs
 
-_Inputs_ (or "Buttons") in Valheim are virtual mappings of strings to either keyboard/mouse or joypad inputs. Custom buttons can be registered through the [InputManager](xref:Jotunn.Managers.InputManager) singleton using Jötunn's abstraction [ButtonConfig](xref:Jotunn.Configs.ButtonConfig).
+_Inputs_ (or "Buttons") in Valheim are virtual mappings of strings to either keyboard/mouse or gamepad inputs. Custom buttons can be registered through the [InputManager](xref:Jotunn.Managers.InputManager) singleton using Jötunn's abstraction [ButtonConfig](xref:Jotunn.Configs.ButtonConfig).
 
 The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
 
@@ -17,6 +17,7 @@ private ButtonConfig RaiseSkillButton;
 
 // Variable button backed by a config
 private ConfigEntry<KeyCode> EvilSwordSpecialConfig;
+private ConfigEntry<InputManager.GamepadButton> EvilSwordGamepadConfig;
 private ButtonConfig EvilSwordSpecialButton;
 
 // Variable BepInEx Shortcut backed by a config
@@ -34,6 +35,9 @@ private void CreateConfigValues()
 
     // Add a client side custom input key for the EvilSword
     EvilSwordSpecialConfig = Config.Bind("Client config", "EvilSword Special Attack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+    // Also add an alternative Gamepad button for the EvilSword
+    EvilSwordGamepadConfig = Config.Bind("Client config", "EvilSword Special Attack Gamepad", InputManager.GamepadButton.ButtonSouth,
+        new ConfigDescription("Button to unleash evil with the Evil Sword"));
 
     // BepInEx' KeyboardShortcut class is supported, too
     ShortcutConfig = Config.Bind("Client config", "Keycodes with modifiers",
@@ -68,12 +72,15 @@ private void AddInputs()
 
 
     // Add key bindings backed by a config value
+    // Also adds the alternative Config for the gamepad button
     // The HintToken is used for the custom KeyHint of the EvilSword
     EvilSwordSpecialButton = new ButtonConfig
     {
         Name = "EvilSwordSpecialAttack",
-        Config = EvilSwordSpecialConfig,
-        HintToken = "$evilsword_beevil"
+        Config = EvilSwordSpecialConfig,        // Keyboard input
+        GamepadConfig = EvilSwordGamepadConfig, // Gamepad input
+        HintToken = "$evilsword_beevil",        // Displayed KeyHint
+        BlockOtherInputs = true   // Blocks all other input for this Key / Button
     };
     InputManager.Instance.AddButton(PluginGUID, EvilSwordSpecialButton);
 
@@ -115,9 +122,12 @@ private void Update()
 
         // Use the name of the ButtonConfig to identify the button pressed
         // without knowing what key the user bound to this button in his configuration.
-        if (EvilSwordSpecialButton != null && MessageHud.instance != null)
+        // Our button is configured to block all other input, so we just want to query
+        // ZInput when our custom item is equipped.
+        if (EvilSwordSpecialButton != null && MessageHud.instance != null && 
+            Player.m_localPlayer != null && Player.m_localPlayer.m_visEquipment.m_rightItem == "EvilSword")
         {
-            if (ZInput.GetButtonDown(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+            if (ZInput.GetButton(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
             {
                 MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
             }
