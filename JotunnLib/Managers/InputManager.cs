@@ -125,10 +125,10 @@ namespace Jotunn.Managers
             return @enum switch
             {
                 GamepadButton.None => string.Empty,
-                GamepadButton.DPadUp => "up",
-                GamepadButton.DPadDown => "down",
-                GamepadButton.DPadLeft => "left",
-                GamepadButton.DPadRight => "right",
+                GamepadButton.DPadLeft => "<",
+                GamepadButton.DPadUp => ">",
+                GamepadButton.DPadRight => ">",
+                GamepadButton.DPadDown => "<",
                 GamepadButton.ButtonNorth => "Y",
                 GamepadButton.ButtonSouth => "A",
                 GamepadButton.ButtonWest => "X",

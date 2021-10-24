@@ -22,9 +22,14 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Internal Dictionary holding the references to the custom key hints added to the manager.
+        ///     Internal Dictionary holding the references to the custom key hints added to the manager
         /// </summary>
-        internal readonly Dictionary<string, KeyHintConfig> KeyHints = new Dictionary<string, KeyHintConfig>();
+        private readonly Dictionary<string, KeyHintConfig> KeyHints = new Dictionary<string, KeyHintConfig>();
+
+        /// <summary>
+        ///     Internal Dictionary holding the references to the key hint GameObjects created per KeyHintConfig
+        /// </summary>
+        private readonly Dictionary<string, GameObject> KeyHintObjects = new Dictionary<string, GameObject>();
 
         /// <summary>
         ///     Reference to the current "KeyHints" instance
@@ -45,6 +50,7 @@ namespace Jotunn.Managers
         private GameObject BaseTrigger;
         private GameObject BaseShoulder;
         private GameObject BaseStick;
+        private GameObject BaseDPad;
 
         /// <summary>
         ///     Initialize the manager
@@ -54,7 +60,7 @@ namespace Jotunn.Managers
             // Dont init on a headless server
             if (!GUIManager.IsHeadless())
             {
-                On.KeyHints.Awake += KeyHints_Awake;
+                On.KeyHints.Start += KeyHints_Start;
                 On.KeyHints.UpdateHints += KeyHints_UpdateHints;
             }
         }
@@ -114,17 +120,22 @@ namespace Jotunn.Managers
                 KeyHints.Remove(hintConfig.ToString());
             }
 
-            var keyHintObject = KeyHintContainer?.Find(hintConfig.ToString())?.gameObject;
+            /*var keyHintObject = KeyHintContainer?.Find(hintConfig.ToString())?.gameObject;
             if (keyHintObject)
             {
                 Object.Destroy(keyHintObject);
+            }*/
+            if (KeyHintObjects.TryGetValue(hintConfig.ToString(), out var hintObject))
+            {
+                Object.Destroy(hintObject);
+                KeyHintObjects.Remove(hintConfig.ToString());
             }
         }
 
         /// <summary>
         ///     Extract base key hint elements and create key hint objects.
         /// </summary>
-        private void KeyHints_Awake(On.KeyHints.orig_Awake orig, KeyHints self)
+        private void KeyHints_Start(On.KeyHints.orig_Start orig, KeyHints self)
         {
             try
             {
@@ -179,6 +190,9 @@ namespace Jotunn.Managers
             BaseStick = Object.Instantiate(origStick);
             Object.DestroyImmediate(BaseStick.transform.Find("Trigger").gameObject);
             Object.DestroyImmediate(BaseStick.transform.Find("plus").gameObject);
+            BaseDPad = Object.Instantiate(BaseTrigger);
+            BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().sizeDelta = new Vector2(25f, 25f);
         }
         
         /// <summary>
@@ -261,12 +275,31 @@ namespace Jotunn.Managers
 
                     switch (gamepadButton)
                     {
-                        case GamepadButton.DPadUp:
-                        case GamepadButton.DPadDown:
                         case GamepadButton.DPadLeft:
                         case GamepadButton.DPadRight:
+                            var customPadNoRotate = Object.Instantiate(BaseDPad, gp, false);
+                            customPadNoRotate.name = buttonConfig.Name;
+                            customPadNoRotate.GetComponentInChildren<Text>().text = buttonString;
+                            customPadNoRotate.transform.Find("Text").gameObject.SetText(hint);
+                            customPadNoRotate.SetActive(true);
+                            break;
+                        case GamepadButton.DPadUp:
+                        case GamepadButton.DPadDown:
+                            var customPadRotate = Object.Instantiate(BaseDPad, gp, false);
+                            customPadRotate.name = buttonConfig.Name;
+                            customPadRotate.transform.Find("Trigger").GetComponent<RectTransform>().Rotate(new Vector3(0, 0, 1f), 90f);
+                            customPadRotate.GetComponentInChildren<Text>().text = buttonString;
+                            customPadRotate.transform.Find("Text").gameObject.SetText(hint);
+                            customPadRotate.SetActive(true);
+                            break;
                         case GamepadButton.StartButton:
                         case GamepadButton.SelectButton:
+                            var customPad = Object.Instantiate(BaseKey, gp, false);
+                            customPad.name = buttonConfig.Name;
+                            customPad.GetComponentInChildren<Text>().text = buttonString;
+                            customPad.transform.Find("Text").gameObject.SetText(hint);
+                            customPad.SetActive(true);
+                            break;
                         case GamepadButton.ButtonNorth:
                         case GamepadButton.ButtonSouth:
                         case GamepadButton.ButtonWest:
@@ -308,8 +341,8 @@ namespace Jotunn.Managers
                 }
             }
 
+            KeyHintObjects[config.ToString()] = baseKeyHint;
             config.Dirty = false;
-
             return baseKeyHint;
         }
 
@@ -335,12 +368,16 @@ namespace Jotunn.Managers
             }
 
             // First disable all custom key hints
-            foreach (RectTransform transform in KeyHintContainer)
+            /*foreach (RectTransform transform in KeyHintContainer)
             {
                 if (KeyHints.ContainsKey(transform.name))
                 {
                     transform.gameObject?.SetActive(false);
                 }
+            }*/
+            foreach (var obj in KeyHintObjects.Values)
+            {
+                obj.SetActive(false);
             }
 
             // Don't show hints when chat window is visible
@@ -397,10 +434,10 @@ namespace Jotunn.Managers
             }
 
             // Try to get the hint object
-            var hintObject = KeyHintContainer.Find(hintConfig.ToString())?.gameObject;
+            //var hintObject = KeyHintContainer.Find(hintConfig.ToString())?.gameObject;
 
             // If the keyhint is "dirty" (i.e. some config backed button changed), destroy the hint object
-            if (hintObject && hintConfig.Dirty)
+            if (KeyHintObjects.TryGetValue(hintConfig.ToString(), out var hintObject) && hintConfig.Dirty)
             {
                 Object.DestroyImmediate(hintObject);
             }
@@ -414,7 +451,7 @@ namespace Jotunn.Managers
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWarning($"Exception caught while creating dynamic KeyHint {hintConfig}: {ex}");
+                    Logger.LogWarning($"Exception caught while creating KeyHint {hintConfig}: {ex}");
                     KeyHints.Remove(hintConfig.ToString());
                     return;
                 }
