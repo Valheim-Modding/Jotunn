@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jotunn.Configs;
+using Jotunn.Managers;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -10,21 +12,14 @@ namespace Jotunn.Entities
     public class CustomVegetation : CustomEntity
     {
         public GameObject Prefab { get; set; }
-        public Heightmap.Biome Biome { get; set; }
-        public Heightmap.BiomeArea BiomeArea { get; set; } = Heightmap.BiomeArea.Everything;  
-        public bool BlockCheck { get; set; }
+        public ZoneSystem.ZoneVegetation Vegetation { get; private set; }
 
-        internal ZoneSystem.ZoneVegetation ToVegetation()
+        public CustomVegetation(GameObject prefab, VegetationConfig config)
         {
-            return new ZoneSystem.ZoneVegetation
-            {
-                m_biome = Biome,
-                m_biomeArea = BiomeArea,
-                m_enable = true,
-                m_prefab = Prefab,
-                m_blockCheck = BlockCheck,
-                
-            };
+            Prefab = prefab;
+
+            Vegetation = config.ToVegetation();
+            Vegetation.m_prefab = prefab;
         }
     }
 }

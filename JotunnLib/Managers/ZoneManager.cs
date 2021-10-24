@@ -53,9 +53,9 @@ namespace Jotunn.Managers
             Logger.LogInfo("Injecting custom locations");
             foreach (CustomLocation customLocation in customLocations)
             {
-                Logger.LogInfo($"Adding custom location {customLocation.Prefab.name} in {customLocation.Biome}");
+                Logger.LogInfo($"Adding custom location {customLocation.Prefab.name} in {customLocation.ZoneLocation.m_biome}");
 
-                var zoneLocation = customLocation.ToZoneLocation();
+                var zoneLocation = customLocation.ZoneLocation;
                 self.m_locations.Add(zoneLocation);
 
                 zoneLocation.m_prefab = customLocation.Prefab;
@@ -77,8 +77,8 @@ namespace Jotunn.Managers
             Logger.LogInfo("Injecting custom vegetation");
             foreach(CustomVegetation customVegetation in customVegetations)
             {
-                Logger.LogInfo($"Adding custom location {customVegetation.Prefab.name} in {customVegetation.Biome}"); 
-                self.m_vegetation.Add(customVegetation.ToVegetation());
+                Logger.LogInfo($"Adding custom location {customVegetation.Prefab.name} in {customVegetation.Vegetation.m_biome}"); 
+                self.m_vegetation.Add(customVegetation.Vegetation);
             }
 
         }
@@ -103,22 +103,20 @@ namespace Jotunn.Managers
             return null;
         }
 
-        public CustomLocation CreateLocationContainer(string name)
+        public GameObject CreateLocationContainer(string name)
         {
             GameObject container = new GameObject()
             {
                 name = name
             };
             container.transform.SetParent(LocationContainer.transform);
-            return new CustomLocation
-            {
-                Prefab = container,
-                Location = container.AddComponent<Location>()
-            };
+            return container;
         }
 
         public bool AddCustomLocation(CustomLocation customLocation)
         {
+            customLocation.Prefab.transform.SetParent(LocationContainer.transform);
+
             customLocations.Add(customLocation);
             return true;
         }
