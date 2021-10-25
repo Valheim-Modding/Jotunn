@@ -47,17 +47,18 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Queues a new prefab to be rendered. The resulting <see cref="Sprite"/> will be ready at the next frame.
-        ///     If there is no active visual Mesh attached to the target, this function does nothing.
+        ///     If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately.
         /// </summary>
         /// <param name="target">Object to be rendered. A copy of the provided GameObject will be created for rendering</param>
         /// <param name="callback">Action that gets called when the rendering is complete</param>
         /// <param name="width">Width of the resulting <see cref="Sprite"/></param>
         /// <param name="height">Height of the resulting <see cref="Sprite"/></param>
         /// <returns>Only true if the target was queued for rendering</returns>
-        public bool EnqeueRender(GameObject target, Action<Sprite> callback, int width = 128, int height = 128)
+        public bool EnqueueRender(GameObject target, Action<Sprite> callback, int width = 128, int height = 128)
         {
             if (!target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
             {
+                callback?.Invoke(null);
                 return false;
             }
 

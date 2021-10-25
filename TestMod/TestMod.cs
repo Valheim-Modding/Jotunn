@@ -1285,31 +1285,26 @@ namespace TestMod
         {
             try
             {
-                // Create the tree-item from a vanilla prefab without providing an icon
-                CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds", new ItemConfig
+                // local function that will get called when the rendering is done
+                void CreateTreeItem(Sprite sprite)
                 {
-                    Name = "$rendered_tree",
-                    Description = "$rendered_tree_desc",
-                    Requirements = new[]
-                    {
-                        new RequirementConfig()
+                    CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds",
+                        new ItemConfig
                         {
-                            Item = "Wood",
-                            Amount = 1,
-                            Recover = true
-                        }
-                    }
-                });
-                ItemManager.Instance.AddItem(treeItem);
+                            Name = "$rendered_tree",
+                            Description = "$rendered_tree_desc",
+                            Icons = new[] { sprite },
+                            Requirements = new[]
+                            {
+                                new RequirementConfig { Item = "Wood", Amount = 1, Recover = true }
+                            }
+                        });
+                    ItemManager.Instance.AddItem(treeItem);
+                }
 
-                // render the icon from a beech tree
+                // use the vanilla beech tree prefab to render our icon from
                 GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
-        
-                // Get the beech tree prefab to render our icon from
-                RenderManager.Instance.EnqeueRender(beech, sprite =>
-                {
-                    treeItem.ItemDrop.m_itemData.m_shared.m_icons = new[] { sprite };
-                });
+                RenderManager.Instance.EnqueueRender(beech, CreateTreeItem);
             }
             catch (Exception ex)
             {
