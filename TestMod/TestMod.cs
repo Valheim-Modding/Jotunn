@@ -1276,9 +1276,14 @@ namespace TestMod
 
                 //Create a clone of a vanilla location
                 CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
-                var eikhtyrCube2 = Instantiate(lulzCubePrefab, myEikthyrLocation.ZoneLocation.m_prefab.transform);
-                eikhtyrCube2.transform.localPosition = new Vector3(0f, 5.37f, 0f);
-              
+                myEikthyrLocation.ZoneLocation.m_exteriorRadius = 1f; // Easy to place :D
+                myEikthyrLocation.ZoneLocation.m_quantity = 3000; //MOAR
+                
+                for (int i = 0; i < 40; i++)
+                {
+                    Instantiate(lulzCubePrefab, new Vector3(0, i + 3, 0), Quaternion.Euler(0, i * 30, 0), myEikthyrLocation.ZoneLocation.m_prefab.transform);
+                }
+
                 //modify existing locations
                 var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
                 var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);

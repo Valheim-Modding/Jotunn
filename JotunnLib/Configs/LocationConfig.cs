@@ -49,6 +49,17 @@ namespace Jotunn.Configs
             MaxDistance = zoneLocation.m_maxDistance;
             MinAltitude = zoneLocation.m_minAltitude;
             MaxAltitude = zoneLocation.m_maxAltitude;
+            Group = zoneLocation.m_group;
+            InForest = zoneLocation.m_inForest;
+            MinTerrainDelta = zoneLocation.m_minTerrainDelta;
+            MaxTerrainDelta = zoneLocation.m_maxTerrainDelta;
+            MinDistanceFromSimilar = zoneLocation.m_minDistanceFromSimilar;
+            InteriorRadius = zoneLocation.m_interiorRadius;
+            SlopeRotation = zoneLocation.m_slopeRotation;
+            RandomRotation = zoneLocation.m_randomRotation;
+            SnapToWater = zoneLocation.m_snapToWater;
+            IconPlaced = zoneLocation.m_iconPlaced;
+            IconAlways = zoneLocation.m_iconAlways;
         }
 
         public ZoneSystem.ZoneLocation GetZoneLocation()
