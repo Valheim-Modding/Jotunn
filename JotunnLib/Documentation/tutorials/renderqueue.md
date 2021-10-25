@@ -15,7 +15,7 @@ private void Awake()
 }
 ```
 
-In our method we clone the vanilla BeechSeeds to a new [CustomItem](xref:Jotunn.Entities.CustomItem) (see our [tutorial on items](items.md) for more information about cloning vanilla prefabs) and enqueue the Beech1 prefab for rendering into the RenderManager. [RenderManager.QueueRender](xref:Jotunn.Managers.RenderManager.QueueRender(UnityEngine.GameObject,System.Action{UnityEngine.Sprite},System.Int32,System.Int32)) provides a delegate for notification after the render process completes. There we can set the created Sprite as the icon for our custom item.
+In our method we clone the vanilla BeechSeeds to a new [CustomItem](xref:Jotunn.Entities.CustomItem) (see our [tutorial on items](items.md) for more information about cloning vanilla prefabs) and enqueue the Beech1 prefab for rendering into the RenderManager. [RenderManager.EnqueueRender](xref:Jotunn.Managers.RenderManager.EnqueueRender(UnityEngine.GameObject,System.Action{UnityEngine.Sprite},System.Int32,System.Int32)) provides a delegate for notification after the render process completes. There we can set the created Sprite as the icon for our custom item.
 
 ```cs
 // Create rendered icons from prefabs
@@ -44,7 +44,7 @@ private void AddItemsWithRenderedIcons()
         GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
         
         // RenderManager provides a delegate, called after rendering finished
-        RenderManager.Instance.QueueRender(beech, sprite =>
+        RenderManager.Instance.EnqueueRender(beech, sprite =>
         {
             treeItem.ItemDrop.m_itemData.m_shared.m_icons = new[] { sprite };
         });

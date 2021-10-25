@@ -1306,7 +1306,7 @@ namespace TestMod
                 GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
         
                 // Get the beech tree prefab to render our icon from
-                RenderManager.Instance.QueueRender(beech, sprite =>
+                RenderManager.Instance.EnqeueRender(beech, sprite =>
                 {
                     treeItem.ItemDrop.m_itemData.m_shared.m_icons = new[] { sprite };
                 });
