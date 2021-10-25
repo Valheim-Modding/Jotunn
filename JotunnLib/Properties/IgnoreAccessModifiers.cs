@@ -1,4 +1,5 @@
-﻿using System.Security.Permissions;
+﻿using System.Runtime.CompilerServices;
+using System.Security.Permissions;
 
 // SecurityPermision set to minimum
 // for skipping access modifiers check from the mono JIT
@@ -9,3 +10,4 @@
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+[assembly: InternalsVisibleTo("JotunnTests")]

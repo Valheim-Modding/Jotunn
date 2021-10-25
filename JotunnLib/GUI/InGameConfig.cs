@@ -49,13 +49,7 @@ namespace Jotunn.GUI
         ///     Our own mod config tabs
         /// </summary>
         private static readonly Dictionary<string, RectTransform> Configs = new Dictionary<string, RectTransform>();
-
-        /// <summary>
-        ///     Cache keybinds
-        /// </summary>
-        internal static Dictionary<string, List<Tuple<string, ConfigDefinition, ConfigEntryBase>>> ConfigurationKeybindings =
-            new Dictionary<string, List<Tuple<string, ConfigDefinition, ConfigEntryBase>>>();
-
+        
         /// <summary>
         ///     Hook into settings setup
         /// </summary>
@@ -209,8 +203,15 @@ namespace Jotunn.GUI
             GameObject scrollView = GUIManager.Instance.CreateScrollView(
                 panel, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
                 new Color(0, 0, 0, 1), tabs.rect.width, tabs.rect.height);
+
+            var group = scrollView.AddComponent<UIGroupHandler>();
+            group.m_canvasGroup = scrollView.GetComponent<CanvasGroup>();
+            group.m_groupPriority = 20;
+            group.m_defaultElement = scrollView;
+            
             RectTransform viewport =
                 scrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+
             VerticalLayoutGroup scrollLayout = viewport.GetComponent<VerticalLayoutGroup>();
             scrollLayout.childControlWidth = true;
             scrollLayout.childControlHeight = true;
@@ -237,31 +238,13 @@ namespace Jotunn.GUI
             });
 
             SettingsRoot.AddComponent<EscBehaviour>();
-
-            // Reset keybinding cache
-            ConfigurationKeybindings.Clear();
-            foreach (var mod in BepInExUtils.GetDependentPlugins(true))
-            {
-                foreach (var kv in GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible() && x.Value.IsButtonBound()))
-                {
-                    var buttonName = kv.Value.GetBoundButtonName();
-                    if (!string.IsNullOrEmpty(buttonName))
-                    {
-                        if (!ConfigurationKeybindings.ContainsKey(buttonName))
-                        {
-                            ConfigurationKeybindings.Add(buttonName, new List<Tuple<string, ConfigDefinition, ConfigEntryBase>>());
-                        }
-                        ConfigurationKeybindings[buttonName].Add(new Tuple<string, ConfigDefinition, ConfigEntryBase>(mod.Key, kv.Key, kv.Value));
-                    }
-                }
-            }
-
+            
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
                 yield return CreatePlugin(mod, viewport);
             }
-
+            
             // Scroll back to top
             scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
 
@@ -309,8 +292,18 @@ namespace Jotunn.GUI
                 GameObject button = GUIManager.Instance.CreateButton(
                     $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}", plugin.transform,
                     Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), plugin.GetWidth(), 40f);
-                button.name = "button";
-                button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
+                button.name = mod.Key;
+                button.GetComponent<Button>().colors = new ColorBlock
+                {
+                    normalColor = new Color(0.824f, 0.824f, 0.824f, 0.5f),
+                    highlightedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
+                    pressedColor = new Color(0.537f, 0.556f, 0.556f, 0.8f),
+                    selectedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
+                    disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
+                    colorMultiplier = 1f,
+                    fadeDuration = 0.1f
+                };
+                button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_bkg_128_transparent");
                 button.GetComponentInChildren<Text>().fontSize = 20;
                 button.AddComponent<LayoutElement>().preferredHeight = 40f;
                 button.SetActive(true);
@@ -318,6 +311,7 @@ namespace Jotunn.GUI
                 // Create content element
                 GameObject content = new GameObject("content", typeof(RectTransform), typeof(LayoutElement));
                 content.SetWidth(plugin.GetWidth());
+                
                 RectTransform contentViewport = content.GetComponent<RectTransform>();
                 contentViewport.SetParent(plugin.transform, false);
 
@@ -479,36 +473,28 @@ namespace Jotunn.GUI
                         buttonText += entryAttributes.IsAdminOnly
                             ? $"{Environment.NewLine}(Server side setting)"
                             : "";
-                        if (!string.IsNullOrEmpty(buttonName) && ConfigurationKeybindings.ContainsKey(buttonName))
-                        {
-                            var duplicateKeybindingText = "";
-                            if (ConfigurationKeybindings[buttonName].Count > 1)
-                            {
-                                duplicateKeybindingText +=
-                                    $"{Environment.NewLine}Other mods using this button:{Environment.NewLine}";
-                                foreach (var buttons in ConfigurationKeybindings[buttonName])
-                                {
-                                    // If it is the same config entry, just skip it
-                                    if (buttons.Item2 == entry.Key && buttons.Item1 == mod.Key)
-                                    {
-                                        continue;
-                                    }
-
-                                    // Add modguid as text
-                                    duplicateKeybindingText += $"{buttons.Item1}, ";
-                                }
-
-                                // add to buttonText, but without last ', '
-                                buttonText += duplicateKeybindingText.Trim(' ').TrimEnd(',');
-                            }
-                        }
-
+                        
                         var go = CreateKeybindElement(contentViewport,
                             entry.Key.Key + ":", buttonText,
                             buttonName, innerWidth);
                         var conf = go.AddComponent<ConfigBoundKeyCode>();
                         conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
                         preferredHeight += go.GetHeight();
+
+                        if (entry.Value.GetButtonConfig().GamepadConfig != null)
+                        {
+                            // Create dropdown
+                            var dropdown = GUIManager.Instance.CreateDropDown(
+                                    go.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0), 14)
+                                .SetMiddleRight().SetSize(140f, 22f);
+                            var rect = dropdown.GetComponent<RectTransform>();
+                            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y - 3f);
+                            var conf2 = dropdown.AddComponent<ConfigBoundGamepadButton>();
+                            conf2.SetData(mod.Value.Info.Metadata.GUID,
+                                entry.Value.GetButtonConfig().GamepadConfig.Definition.Section,
+                                entry.Value.GetButtonConfig().GamepadConfig.Definition.Key);
+                            preferredHeight += dropdown.GetHeight();
+                        }
                     }
                     else if (entry.Value.SettingType == typeof(KeyboardShortcut) &&
                              ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
@@ -522,29 +508,6 @@ namespace Jotunn.GUI
                         buttonText += entryAttributes.IsAdminOnly
                             ? $"{Environment.NewLine}(Server side setting)"
                             : "";
-                        if (!string.IsNullOrEmpty(buttonName) && ConfigurationKeybindings.ContainsKey(buttonName))
-                        {
-                            var duplicateKeybindingText = "";
-                            if (ConfigurationKeybindings[buttonName].Count > 1)
-                            {
-                                duplicateKeybindingText +=
-                                    $"{Environment.NewLine}Other mods using this button:{Environment.NewLine}";
-                                foreach (var buttons in ConfigurationKeybindings[buttonName])
-                                {
-                                    // If it is the same config entry, just skip it
-                                    if (buttons.Item2 == entry.Key && buttons.Item1 == mod.Key)
-                                    {
-                                        continue;
-                                    }
-
-                                    // Add modguid as text
-                                    duplicateKeybindingText += $"{buttons.Item1}, ";
-                                }
-
-                                // add to buttonText, but without last ', '
-                                buttonText += duplicateKeybindingText.Trim(' ').TrimEnd(',');
-                            }
-                        }
 
                         var go = CreateShortcutbindElement(contentViewport,
                             entry.Key.Key + ":", buttonText,
@@ -646,6 +609,11 @@ namespace Jotunn.GUI
                     if (childKeyCode != null)
                     {
                         childKeyCode.WriteBack();
+                        var childGamepadButton = values.gameObject.GetComponentInChildren<ConfigBoundGamepadButton>();
+                        if (childGamepadButton != null)
+                        {
+                            childGamepadButton.WriteBack();
+                        }
                         continue;
                     }
 
@@ -747,7 +715,7 @@ namespace Jotunn.GUI
             result.GetComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
             return result;
         }
-
+        
         /// <summary>
         ///     Create a text input field and a ColorPicker button (used for Color)
         /// </summary>
@@ -1421,6 +1389,75 @@ namespace Jotunn.GUI
             {
                 Button.enabled &= readOnly;
                 Text.color = readOnly ? Color.grey : Color.white;
+            }
+        }
+        
+        /// <summary>
+        ///     GamepadButton binding
+        /// </summary>
+        internal class ConfigBoundGamepadButton : ConfigBound<InputManager.GamepadButton>
+        {
+            private Dropdown Dropdown;
+            
+            public override void Register()
+            {
+                Dropdown = gameObject.GetComponentInChildren<Dropdown>();
+                Dropdown.AddOptions(Enum.GetNames(typeof(InputManager.GamepadButton)).ToList());
+            }
+            
+            public override InputManager.GamepadButton GetValue()
+            {
+                if (Enum.TryParse<InputManager.GamepadButton>(Dropdown.options[Dropdown.value].text, out var ret))
+                {
+                    return ret;
+                }
+
+                return InputManager.GamepadButton.None;
+            }
+
+            public override void SetValue(InputManager.GamepadButton value)
+            {
+                Dropdown.value = Dropdown.options.IndexOf(Dropdown.options.FirstOrDefault(x =>
+                    x.text.Equals(Enum.GetName(typeof(InputManager.GamepadButton), value))));
+                Dropdown.RefreshShownValue();
+            }
+            
+            public void Start()
+            {
+                var buttonName = $"Joy!{Entry.GetBoundButtonName()}";
+                Dropdown.onValueChanged.AddListener(index =>
+                {
+                    if (Enum.TryParse<InputManager.GamepadButton>(Dropdown.options[index].text, out var btn) &&
+                        ZInput.instance.m_buttons.TryGetValue(buttonName, out var def))
+                    {
+                        KeyCode keyCode = InputManager.GetGamepadKeyCode(btn);
+                        string axis = InputManager.GetGamepadAxis(btn);
+                        
+                        if (!string.IsNullOrEmpty(axis))
+                        {
+                            def.m_key = KeyCode.None;
+                            bool invert = axis.StartsWith("-");
+                            def.m_axis = axis.TrimStart('-');
+                            def.m_inverted = invert;
+                        }
+                        else
+                        {
+                            def.m_axis = null;
+                            def.m_key = keyCode;
+                        }
+                    }
+                });
+            }
+            
+            public override void SetEnabled(bool enabled)
+            {
+                Dropdown.enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                Dropdown.enabled = !readOnly;
+                Dropdown.itemText.color = readOnly ? Color.grey : Color.white;
             }
         }
 

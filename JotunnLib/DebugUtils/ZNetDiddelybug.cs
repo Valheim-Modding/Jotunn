@@ -23,6 +23,7 @@ namespace Jotunn.DebugUtils
 
             On.ZNet.Awake += ZNet_Awake;
             On.ZSteamSocket.Send += ZSteamSocket_Send;
+            On.ZSteamSocket.Recv += ZSteamSocket_Recv;
         }
 
         private void ZNet_Awake(On.ZNet.orig_Awake orig, ZNet self)
@@ -47,11 +48,45 @@ namespace Jotunn.DebugUtils
             
             pkg.SetPos(0);
             int methodHash = pkg.ReadInt();
-            if (ZRpc.m_DEBUG)
+            if (methodHash == 0)
             {
+                Logger.LogMessage($"Sending RPC Ping to {self.GetHostName()}");
+            }
+            else
+            {
+                try
+                {
+                    string method = pkg.ReadString();
+
+                    if (method == "RoutedRPC")
+                    {
+                        ZPackage wrapped = pkg.ReadPackage();
+                        _ = wrapped.ReadInt();
+                        method = pkg.ReadString();
+                    }
+
+                    Logger.LogMessage($"Sending RPC {method} to {self.GetHostName()}");
+                }
+                catch (Exception) { }
+            }
+
+            orig(self, pkg);
+        }
+        private ZPackage ZSteamSocket_Recv(On.ZSteamSocket.orig_Recv orig, ZSteamSocket self)
+        {
+            if (!(_isModEnabled.Value && _isOutputEnabled.Value))
+            {
+                return orig(self);
+            }
+
+            var pkg = orig(self);
+
+            if (pkg != null)
+            {
+                int methodHash = pkg.ReadInt();
                 if (methodHash == 0)
                 {
-                    Logger.LogMessage($"Sending RPC Ping to {self.GetHostName()}");
+                    Logger.LogMessage($"Received RPC Ping");
                 }
                 else
                 {
@@ -59,12 +94,21 @@ namespace Jotunn.DebugUtils
                     {
                         string method = pkg.ReadString();
 
-                        Logger.LogMessage($"Sending RPC {method} to {self.GetHostName()}");
+                        if (method == "RoutedRPC")
+                        {
+                            ZPackage wrapped = pkg.ReadPackage();
+                            _ = wrapped.ReadInt();
+                            method = pkg.ReadString();
+                        }
+
+                        Logger.LogMessage($"Received RPC {method}");
                     }
                     catch (Exception) { }
                 }
+                pkg.SetPos(0);
             }
-            orig(self, pkg);
+
+            return pkg;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using Jotunn.Managers;
 
 namespace Jotunn.Configs
@@ -23,7 +23,13 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Array of <see cref="ButtonConfig"/>s used for this key hint.
         /// </summary>
-        public ButtonConfig[] ButtonConfigs { get; set; } = new ButtonConfig[0];
+        public ButtonConfig[] ButtonConfigs { get; set; } = Array.Empty<ButtonConfig>();
+
+        /// <summary>
+        ///     Internal marker if any of the button configs backed by a BepInEx ConfigEntry did change
+        ///     to regenerate the key hint object
+        /// </summary>
+        internal bool Dirty;
 
         /// <inheritdoc/>
         public override string ToString()

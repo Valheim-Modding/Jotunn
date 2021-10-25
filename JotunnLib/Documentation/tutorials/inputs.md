@@ -1,22 +1,25 @@
 ﻿# Inputs
 
-_Inputs_ (or "Buttons") in Valheim are virtual mappings of strings to either keyboard/mouse or joypad inputs. Custom buttons can be registered through the [InputManager](xref:Jotunn.Managers.InputManager) singleton using Jötunn's abstraction [ButtonConfig](xref:Jotunn.Configs.ButtonConfig).
+_Inputs_ (or "Buttons") in Valheim are virtual mappings of strings to either keyboard/mouse or gamepad inputs. Custom buttons can be registered through the [InputManager](xref:Jotunn.Managers.InputManager) singleton using Jötunn's abstraction [ButtonConfig](xref:Jotunn.Configs.ButtonConfig).
 
 The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
 
 ## Creating custom inputs
 
-First, define members in your mod class for all buttons you want to use in your mod. Having a reference to the defined buttons makes it easier for us to poll for button presses. These can also be used to add custom [KeyHints](#creating-custom-keyhints) to the game.
+First, define [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) members in your mod class for all buttons you want to use in your mod. Having a reference to the defined buttons makes it easier for us to poll for button presses. These can also be used to add custom [KeyHints](#creating-custom-keyhints) for your buttons to the game later on.
 
 You can have key bindings defined "on the fly" which binds a specific key to an artificial button name. To be more versatile you can have the custom binding be defined in a BepInEx configuration file and let the user change it to his preference.
+
+Jötunn supports multiple types of key bindings. You can use Unity's "KeyCode" or BepInEx' KeyboardShortcut and/or a GamepadButton, which is provided via Jötunn's [InputManager](xref:Jotunn.Managers.InputManager.GamepadButton).
 
 ```cs
 // Fixed buttons
 private ButtonConfig ShowGUIButton;
 private ButtonConfig RaiseSkillButton;
 
-// Variable button backed by a config
+// Variable button backed by a KeyCode and a GamepadButton config
 private ConfigEntry<KeyCode> EvilSwordSpecialConfig;
+private ConfigEntry<InputManager.GamepadButton> EvilSwordGamepadConfig;
 private ButtonConfig EvilSwordSpecialButton;
 
 // Variable BepInEx Shortcut backed by a config
@@ -34,6 +37,9 @@ private void CreateConfigValues()
 
     // Add a client side custom input key for the EvilSword
     EvilSwordSpecialConfig = Config.Bind("Client config", "EvilSword Special Attack", KeyCode.B, new ConfigDescription("Key to unleash evil with the Evil Sword"));
+    // Also add an alternative Gamepad button for the EvilSword
+    EvilSwordGamepadConfig = Config.Bind("Client config", "EvilSword Special Attack Gamepad", InputManager.GamepadButton.ButtonSouth,
+        new ConfigDescription("Button to unleash evil with the Evil Sword"));
 
     // BepInEx' KeyboardShortcut class is supported, too
     ShortcutConfig = Config.Bind("Client config", "Keycodes with modifiers",
@@ -68,12 +74,15 @@ private void AddInputs()
 
 
     // Add key bindings backed by a config value
+    // Also adds the alternative Config for the gamepad button
     // The HintToken is used for the custom KeyHint of the EvilSword
     EvilSwordSpecialButton = new ButtonConfig
     {
         Name = "EvilSwordSpecialAttack",
-        Config = EvilSwordSpecialConfig,
-        HintToken = "$evilsword_beevil"
+        Config = EvilSwordSpecialConfig,        // Keyboard input
+        GamepadConfig = EvilSwordGamepadConfig, // Gamepad input
+        HintToken = "$evilsword_beevil",        // Displayed KeyHint
+        BlockOtherInputs = true   // Blocks all other input for this Key / Button
     };
     InputManager.Instance.AddButton(PluginGUID, EvilSwordSpecialButton);
 
@@ -90,7 +99,9 @@ private void AddInputs()
 
 Note that `AddButton` takes your PluginGUID as the first parameter. This is how Jötunn tries to avoid conflicts between multiple plugins which might create the same button. Internally the GUID of the mod is appended to the button's name. That means you can be sure that you receive your defined button when polling for it using your button config reference and other mods can't overwrite your binding when adding a button with the same name.
 
-Now, to use our input, we can use the `ZInput` class provided by Valheim.
+Now, to use our input, we can use the `ZInput` class provided by Valheim. 
+> [!WARNING]
+> When you set BlockOtherInputs = true in your ButtonConfig, every call to ZInput checking for your custom key will prevent other mods or the base game from receiving those key events - even if you don't actually react to it. It is important that you only call any ZInput.GetButton method for those buttons, if you actually intend to react to it. That functionality is intended for custom input also using GamepadButton, since gamepad input is very limited. __If you don't use GamepadButton, don't set BlockOtherInputs = true__.
 
 ```cs
 // Called every frame
@@ -115,9 +126,12 @@ private void Update()
 
         // Use the name of the ButtonConfig to identify the button pressed
         // without knowing what key the user bound to this button in his configuration.
-        if (EvilSwordSpecialButton != null && MessageHud.instance != null)
+        // Our button is configured to block all other input, so we just want to query
+        // ZInput when our custom item is equipped.
+        if (EvilSwordSpecialButton != null && MessageHud.instance != null && 
+            Player.m_localPlayer != null && Player.m_localPlayer.m_visEquipment.m_rightItem == "EvilSword")
         {
-            if (ZInput.GetButtonDown(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+            if (ZInput.GetButton(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
             {
                 MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
             }
@@ -137,7 +151,7 @@ private void Update()
 
 ## Creating custom KeyHints
 
-Key hints are displayed in Valheim when you equip weapons or tools to show which keys execute a certain action. With Jötunn you can add your own key hints for your custom weapons and tools by the means of the same [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) class you can use to define custom key bindings. You need to create a [KeyHintConfig](xref:Jotunn.Configs.KeyHintConfig) with one or more instances of [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) in it. In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use the custom key bindings from the EvilSword to display a key hint for it and also override vanilla Valheim key hint messages. 
+Key hints are displayed in Valheim when you equip weapons or tools to show which keys execute a certain action. With Jötunn you can add your own key hints for your custom weapons and tools by the means of the same [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) class you can use to define custom key bindings. You need to create a [KeyHintConfig](xref:Jotunn.Configs.KeyHintConfig) with one or more instances of [ButtonConfig](xref:Jotunn.Configs.ButtonConfig) in it and add it to the [KeyHintManager](xref:Jotunn.Managers.KeyHintManager). In our [example mod](https://github.com/Valheim-Modding/JotunnModExample) we use the custom key bindings from the EvilSword to display a key hint for it and also override vanilla Valheim key hint messages. 
 
 Note the use of the special Axis "Mouse ScrollWheel" to override the Valheim scroll icon text.
 
@@ -160,13 +174,13 @@ private void KeyHintsEvilSword()
             new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
         }
     };
-    GUIManager.Instance.AddKeyHint(KHC);
+    KeyHintManager.Instance.AddKeyHint(KHC);
 }
 ```
 
-The resulting KeyHints look like this
+The resulting KeyHints look like this for Keyboard and Gamepad input respectively
 
-![Custom Key Hints](../images/data/EvilSwordKeyHints.png)
+![Custom Keyboard Key Hints](../images/data/EvilSwordKeyHints.png) ![Custom Gamepad Key Hints](../images/data/EvilSwordKeyHintsButton.png)
 
 Note that all texts are tokenized and translated ingame. The translations are also provided by Jötunn. Read the [tutorial on Localizations](localization.md) for more information on that topic.
 
@@ -180,7 +194,7 @@ KeyHintConfig KHC_base = new KeyHintConfig
 {
     Item = "BlueprintTestRune"
 };
-GUIManager.Instance.AddKeyHint(KHC_base);
+KeyHintManager.Instance.AddKeyHint(KHC_base);
 
 // Add custom KeyHints for specific pieces
 KeyHintConfig KHC_make = new KeyHintConfig
@@ -193,7 +207,7 @@ KeyHintConfig KHC_make = new KeyHintConfig
         new ButtonConfig { Name = "Attack", HintToken = "$bprune_make" }
     }
 };
-GUIManager.Instance.AddKeyHint(KHC_make);
+KeyHintManager.Instance.AddKeyHint(KHC_make);
 
 KeyHintConfig KHC_piece = new KeyHintConfig
 {
@@ -205,5 +219,5 @@ KeyHintConfig KHC_piece = new KeyHintConfig
         new ButtonConfig { Name = "Attack", HintToken = "$bprune_piece" }
     }
 };
-GUIManager.Instance.AddKeyHint(KHC_piece);
+KeyHintManager.Instance.AddKeyHint(KHC_piece);
 ```
