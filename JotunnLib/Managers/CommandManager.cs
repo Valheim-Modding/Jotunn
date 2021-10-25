@@ -89,7 +89,7 @@ namespace Jotunn.Managers
                     new Terminal.ConsoleCommand(cmd.Name, cmd.Help, args =>
                     {
                         cmd.Run(args.Args.Skip(1).ToArray());
-                    });
+                    }, isCheat: cmd.IsCheat, isNetwork: cmd.IsNetwork, onlyServer: cmd.OnlyServer, isSecret: cmd.IsSecret);
                 }
 
                 self.updateCommandList();
