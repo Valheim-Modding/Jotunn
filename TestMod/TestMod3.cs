@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace TestMod3
 {
-    [BepInPlugin(ModGUID, ModName, ModVersion)]
+/*    [BepInPlugin(ModGUID, ModName, ModVersion)]
     [BepInDependency(Main.ModGuid)]
     [NetworkCompatibility(CompatibilityLevel.NotEnforced, VersionStrictness.Patch)]
     internal class TestMod3 : BaseUnityPlugin
@@ -89,5 +89,5 @@ namespace TestMod3
             ovl.Img.sprite.texture.Apply();
         }
 
-    }
+    }*/
 }

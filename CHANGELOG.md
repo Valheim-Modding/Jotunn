@@ -1,9 +1,15 @@
 ﻿# Changelog
 
 ## Version 2.3.8
+* Added RenderManager to render Sprites from GameObjects at runtime (thx MSchmoecker)
+* Added GamepadButton to the InputManager and ButtonConfig - custom inputs can now define a gamepad button corresponding to the keyboard input
+* Added gamepad buttons to KeyHints for custom inputs as well as vanilla key overrides
+* Gamepad buttons can be defined in the mod settings if they are bound to a config
+* Refactored custom KeyHints into their own KeyHintManager and obsoleted the API in the GUIManager
 * Fixed automatic mod recognition from filesystem paths (thx Digitalroot)
 * Fixed duplication check on ObjectDB not always working correctly
 * Fixed NRE in ModCompat for VersionCheckOnly mods
+* Fixed a strange hard crash when using GUIManager.IsHeadless()
 
 ## Version 2.3.7
 * Fixed translation of the custom skill raise message

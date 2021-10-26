@@ -19,7 +19,7 @@ namespace Jotunn
         /// <summary>
         ///     The current version of the Jotunn library.
         /// </summary>
-        public const string Version = "2.3.7";
+        public const string Version = "2.3.8";
 
         /// <summary>
         ///     The name of the library.
@@ -61,10 +61,12 @@ namespace Jotunn
                 MockManager.Instance,
                 KitbashManager.Instance,
                 GUIManager.Instance,
+                KeyHintManager.Instance,
                 //SaveManager.Instance,  // Temporarely disabled, causes FPS issues in the current implementation
                 ZoneManager.Instance,
                 SynchronizationManager.Instance,
-                MapOverlayManager.Instance
+                //MapOverlayManager.Instance,  // Not ready yet
+                RenderManager.Instance,
             };
             foreach (IManager manager in Managers)
             {

@@ -567,17 +567,7 @@ private static class Debug_isDebugBuild
                     }
 
                     // Set buttons if changed
-                    string buttonName = cx.GetBoundButtonName();
-                    if (cx.SettingType == typeof(KeyCode) && ZInput.instance != null &&
-                        ZInput.instance.m_buttons.ContainsKey(buttonName))
-                    {
-                        ZInput.instance.Setbutton(buttonName, (KeyCode)cx.BoxedValue);
-                    }
-                    if (cx.SettingType == typeof(KeyboardShortcut) && ZInput.instance != null &&
-                        ZInput.instance.m_buttons.ContainsKey(buttonName))
-                    {
-                        ZInput.instance.Setbutton(buttonName, ((KeyboardShortcut)cx.BoxedValue).MainKey);
-                    }
+                    SetInputButtons(cx);
                 }
             }
 
@@ -608,6 +598,53 @@ private static class Debug_isDebugBuild
                 
                 // Rebuild config cache
                 CacheConfigurationValues();
+            }
+        }
+
+        private void SetInputButtons(ConfigEntryBase entry)
+        {
+            if (ZInput.instance == null)
+            {
+                return;
+            }
+
+            string buttonName = entry.GetBoundButtonName();
+
+            if (string.IsNullOrEmpty(buttonName))
+            {
+                return;
+            }
+
+            ZInput.ButtonDef def;
+
+            if (entry.SettingType == typeof(KeyCode) &&
+                ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
+            {
+                def.m_key = (KeyCode)entry.BoxedValue;
+            }
+
+            if (entry.SettingType == typeof(KeyboardShortcut) &&
+                ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
+            {
+                def.m_key = ((KeyboardShortcut)entry.BoxedValue).MainKey;
+            }
+
+            if (entry.SettingType == typeof(InputManager.GamepadButton) &&
+                ZInput.instance.m_buttons.TryGetValue($"Joy!{buttonName}", out def))
+            {
+                var keyCode = InputManager.GetGamepadKeyCode((InputManager.GamepadButton)entry.BoxedValue);
+                var axis = InputManager.GetGamepadAxis((InputManager.GamepadButton)entry.BoxedValue);
+                
+                if (!string.IsNullOrEmpty(axis))
+                {
+                    bool invert = axis.StartsWith("-");
+                    def.m_axis = axis.TrimStart('-');
+                    def.m_inverted = invert;
+                }
+                else
+                {
+                    def.m_key = keyCode;
+                }
             }
         }
 
@@ -823,17 +860,7 @@ private static class Debug_isDebugBuild
                             entry.BoxedValue = TomlTypeConverter.ConvertToValue(serializedValue, entry.SettingType);
 
                             // Set buttons after receive
-                            string buttonName = entry.GetBoundButtonName();
-                            if (entry.SettingType == typeof(KeyCode) && ZInput.instance != null &&
-                                ZInput.instance.m_buttons.ContainsKey(buttonName))
-                            {
-                                ZInput.instance.Setbutton(buttonName, (KeyCode)entry.BoxedValue);
-                            }
-                            if (entry.SettingType == typeof(KeyboardShortcut) && ZInput.instance != null &&
-                                ZInput.instance.m_buttons.ContainsKey(buttonName))
-                            {
-                                ZInput.instance.Setbutton(buttonName, ((KeyboardShortcut)entry.BoxedValue).MainKey);
-                            }
+                            SetInputButtons(entry);
                         }
                         else
                         {

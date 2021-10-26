@@ -38,4 +38,5 @@ Each section will have examples showing how this is done. All of the examples sh
 
 * [Network Compatibility](networkcompatibility.md): Make sure that clients are running compatible versions of the plugin and it's assets.
 * [Config Sync](config.md): Ensures the synchronization of plugin config files between server and client.
+* [Rendering Queue](renderqueue.md): Create rendered Sprites from GameObjects with visual components at runtime.
 * [JSON](https://github.com/mhallin/SimpleJSON.NET): JVL integrates the MIT licensed SimpleJSON, accessible via its namespace.

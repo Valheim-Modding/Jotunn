@@ -55,3 +55,5 @@
 - name: Config / Sync
   href: config.md
   
+- name: Rendering Queue
+  href: renderqueue.md
