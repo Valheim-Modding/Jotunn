@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.3.9
+* Fixed exception for mods loaded without PluginInfo.Location set
+
 ## Version 2.3.8
 * Added RenderManager to render Sprites from GameObjects at runtime (thx MSchmoecker)
 * Added GamepadButton to the InputManager and ButtonConfig - custom inputs can now define a gamepad button corresponding to the keyboard input
