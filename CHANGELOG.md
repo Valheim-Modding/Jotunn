@@ -1,6 +1,8 @@
 ﻿# Changelog
 
 ## Version 2.3.9
+* Added the possibility to define vanilla console command modifiers in ConsoleCommand
+* Added the possibility to define command options in ConsoleCommand
 * Fixed exception for mods loaded without PluginInfo.Location set
 
 ## Version 2.3.8
