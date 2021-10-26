@@ -20,3 +20,7 @@
 - name: GUI
   href: gui/toc.yml
   topicHref: gui/overview.md
+
+- name: Locations / Vegetation
+  href: locations/toc.yml
+  topicHref: locations/overview.md

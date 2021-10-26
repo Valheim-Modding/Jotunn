@@ -115,8 +115,8 @@ Recipe_ShieldIronSquare|Iron shield|1|<ul><li>10 Fine wood</li><li>6 Iron</li>
 Recipe_ShieldIronTower|Iron tower shield|1|<ul><li>15 Fine wood</li><li>10 Iron</li></ul>|
 Recipe_ShieldSerpentscale|Serpent scale shield|1|<ul><li>10 Fine wood</li><li>4 Iron</li><li>8 Serpent scale</li></ul>|
 Recipe_ShieldSilver|Silver shield|1|<ul><li>10 Fine wood</li><li>8 Silver</li></ul>|
-Recipe_ShieldWood|Wood shield|1|<ul><li>10 Wood</li><li>4 Resin</li><li>4 Leather scraps</li></ul>|
-Recipe_ShieldWoodTower|Wood tower shield|1|<ul><li>10 Wood</li><li>6 Leather scraps</li></ul>|
+Recipe_ShieldWood|Wood shield|1|<ul><li>10 Wood</li><li>4 Resin</li><li>4 Leather scraps</li></ul>|
+Recipe_ShieldWoodTower|Wood tower shield|1|<ul><li>10 Wood</li><li>6 Leather scraps</li></ul>|
 Recipe_ShocklateSmoothie|Muckshake|1|<ul><li>1 Ooze</li><li>2 Raspberries</li><li>2 Blueberries</li></ul>|
 Recipe_SledgeIron|Iron sledge|1|<ul><li>10 Ancient bark</li><li>30 Iron</li><li>4 Ymir flesh</li><li>1 Draugr Elite trophy</li></ul>|
 Recipe_SledgeStagbreaker|Stagbreaker|1|<ul><li>20 Core wood</li><li>5 Deer trophy</li><li>2 Leather scraps</li><li>0 Bone fragments</li></ul>|
@@ -136,3 +136,7 @@ Recipe_Torch|Torch|1|<ul><li>1 Wood</li><li>1 Resin</li></ul>|
 Recipe_TurnipStew|Turnip stew|1|<ul><li>1 Boar meat</li><li>3 Turnip</li></ul>|
 Recipe_WolfJerky|Wolf jerky|2|<ul><li>1 Wolf meat</li><li>1 Honey</li></ul>|
 Recipe_WolfSkewer|Wolf skewer|1|<ul><li>1 Wolf meat</li><li>2 Mushroom</li><li>1 Onion</li></ul>|
+Recipe_BlueprintRune|Blueprint Rune|1|<ul><li>1 Stone</li></ul>|
+CapeIronBackpack|Rugged Backpack|1|<ul><li>10 Leather scraps</li><li>2 Deer hide</li><li>4 Iron</li></ul>|
+CapeSilverBackpack|Fine Backpack|1|<ul><li>5 Leather scraps</li><li>6 Wolf pelt</li><li>4 Silver</li></ul>|
+Recipe_PlanCrystal|Skuld Crystal|1|<ul><li>1 Ruby</li><li>1 Greydwarf eye</li></ul>|

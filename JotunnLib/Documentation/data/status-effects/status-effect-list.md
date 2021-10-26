@@ -19,3 +19,6 @@ Potion_tasty|Tasty mead|NULL|
 Puke|Feeling sick|NULL|
 Harpooned|Harpooned|NULL|
 Wishbone|Wishbone|NULL|
+IronBackpackStrength|[item_ironbackpackstrength]|NULL|
+SilverBackpackStrength|[item_silverbackpackstrength]|NULL|
+|NULL|NULL|

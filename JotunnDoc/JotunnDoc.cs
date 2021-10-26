@@ -26,7 +26,8 @@ namespace JotunnDoc
                 new RPCDoc(),
                 new ShaderDoc(),
                 new SpriteDoc(),
-                new StatusEffectDoc()
+                new StatusEffectDoc(),
+                new LocationDoc()
             };
 
             Debug.Log("Initialized JotunnDoc");

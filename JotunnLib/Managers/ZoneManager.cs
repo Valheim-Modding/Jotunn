@@ -8,9 +8,15 @@ using ZoneLocation = ZoneSystem.ZoneLocation;
 
 namespace Jotunn.Managers
 {
+    /// <summary>
+    ///     Manager for adding custom Locations and Vegetation.
+    /// </summary>
     public class ZoneManager : IManager
     {
         private static ZoneManager _instance;
+        /// <summary>
+        ///     The singleton instance of this manager.
+        /// </summary>
         public static ZoneManager Instance
         {
             get
@@ -33,9 +39,12 @@ namespace Jotunn.Managers
         /// </summary>
         internal GameObject LocationContainer;
 
-        private readonly List<CustomLocation> customLocations = new List<CustomLocation>();
-        private readonly List<CustomVegetation> customVegetations = new List<CustomVegetation>();
+        private readonly Dictionary<string, CustomLocation> Locations = new Dictionary<string, CustomLocation>();
+        private readonly Dictionary<string, CustomVegetation> Vegetations = new Dictionary<string, CustomVegetation>();
 
+        /// <summary>
+        ///     Initialize the manager
+        /// </summary>
         public void Init()
         {
 
@@ -51,15 +60,12 @@ namespace Jotunn.Managers
         private void ZoneSystem_SetupLocations(On.ZoneSystem.orig_SetupLocations orig, ZoneSystem self)
         {
             orig(self);
-
-            DebugVanillaLocations(self);
-
-
+             
             OnVanillaLocationsAvailable.SafeInvoke();
 
 
             Logger.LogInfo("Injecting custom locations");
-            foreach (CustomLocation customLocation in customLocations)
+            foreach (CustomLocation customLocation in Locations.Values)
             {
                 Logger.LogInfo($"Adding custom location {customLocation.Prefab.name} in {customLocation.ZoneLocation.m_biome}");
 
@@ -81,30 +87,14 @@ namespace Jotunn.Managers
                 }
             }
             Logger.LogInfo("Injecting custom vegetation");
-            foreach(CustomVegetation customVegetation in customVegetations)
+            foreach(CustomVegetation customVegetation in Vegetations.Values)
             {
                 Logger.LogInfo($"Adding custom location {customVegetation.Prefab.name} in {customVegetation.Vegetation.m_biome}"); 
                 self.m_vegetation.Add(customVegetation.Vegetation);
             }
 
         }
-
-        private void DebugVanillaLocations(ZoneSystem self)
-        {
-            HashSet<string> groups = new HashSet<string>();
-            foreach (ZoneLocation zoneLocation in self.m_locations)
-            {
-                if(zoneLocation.m_group != null && zoneLocation.m_group != "")
-                {
-                    groups.Add(zoneLocation.m_group);
-                }
-            }
-            foreach(string group in groups)
-            {
-                Logger.LogInfo($"Available group {group}");
-            }
-        }
-
+         
         private void ZNetView_Awake(On.ZNetView.orig_Awake orig, ZNetView self)
         {
 #if DEBUG
@@ -116,8 +106,24 @@ namespace Jotunn.Managers
             orig(self);
         }
 
+
+        /// <summary>
+        ///     Get a ZoneLocation by its name.<br /><br />
+        ///     Search hierarchy:
+        ///     <list type="number">
+        ///         <item>Custom Location with the exact name</item>
+        ///         <item>Vanilla Location with the exact name from <see cref="ZoneSystem"/></item>
+        ///     </list>
+        /// </summary>
+        /// <param name="name">Name of the ZoneLocation to search for.</param>
+        /// <returns>The existing ZoneLocation, or null if none exists with given name</returns>
         public ZoneLocation GetZoneLocation(string name)
         {
+            if(Locations.TryGetValue(name, out CustomLocation customLocation))
+            {
+                return customLocation.ZoneLocation;
+            }
+
             if (ZoneSystem.instance.m_locationsByHash.TryGetValue(name.GetStableHashCode(), out ZoneLocation location))
             {
                 return location;
@@ -125,6 +131,11 @@ namespace Jotunn.Managers
             return null;
         }
 
+        /// <summary>
+        ///     Create an empty GameObject that is disabled, so any Components in instantiated GameObjects will not start their lifecycle.
+        /// </summary>
+        /// <param name="name">Name of the location</param>
+        /// <returns></returns>
         public GameObject CreateLocationContainer(string name)
         {
             GameObject container = new GameObject()
@@ -135,8 +146,14 @@ namespace Jotunn.Managers
             return container;
         }
 
-        private Regex copyRegex = new Regex(@" \([0-9]+\)");
+        private readonly Regex copyRegex = new Regex(@" \([0-9]+\)");
 
+        /// <summary>
+        ///     Create a copy that is disabled, so any Components in instantiated GameObjects will not start their lifecycle     
+        /// </summary>
+        /// <param name="gameObject">Prefab to copy</param>
+        /// <param name="fixLocationReferences">Replace JVLmock GameObjects with a copy of their real prefab</param>
+        /// <returns></returns>
         public GameObject CreateLocationContainer(GameObject gameObject, bool fixLocationReferences = false)
         {
             var locationContainer = Object.Instantiate(gameObject, LocationContainer.transform);
@@ -148,10 +165,13 @@ namespace Jotunn.Managers
                     var child = transform.GetChild(i);
                     if(!child.name.StartsWith("JVLmock_"))
                     {
+                        //Allow nested component references to JVLmock
+                        child.gameObject.FixReferences();
                         continue;
                     }
                     string prefabName = child.name.Substring("JVLmock_".Length);
                      
+                    //Allow duplicated JVLmocks (child names must be unique)
                     Match match = copyRegex.Match(prefabName);
                     if (match.Success)
                     {
@@ -175,6 +195,13 @@ namespace Jotunn.Managers
             return locationContainer;
         }
 
+        /// <summary>
+        ///     Create a CustomLocation that is a deep copy of the original.
+        ///     Changes will not affect the original. The CustomLocation is already registered to be added.
+        /// </summary>
+        /// <param name="name">name of the custom location</param>
+        /// <param name="baseName">name of the existing location to copy</param>
+        /// <returns></returns>
         public CustomLocation CreateClonedLocation(string name, string baseName)
         {
             var baseZoneLocation = GetZoneLocation(baseName);
@@ -185,18 +212,33 @@ namespace Jotunn.Managers
             return clonedLocation;
         }
 
+        /// <summary>
+        ///     Register a CustomLocation to be added to the ZoneSystem
+        /// </summary>
+        /// <param name="customLocation"></param>
+        /// <returns></returns>
         public bool AddCustomLocation(CustomLocation customLocation)
         {
+            if(Locations.TryGetValue(customLocation.Name, out CustomLocation existingLocation))
+            {
+                Logger.LogWarning($"Location {customLocation.Name} already exists");
+                return false;
+            }
+
             customLocation.Prefab.transform.SetParent(LocationContainer.transform);
 
-            customLocations.Add(customLocation);
+            Locations.Add(customLocation.Name, customLocation);
             return true;
         }
           
-
+        /// <summary>
+        ///     Register a CustomVegetation to be added to the ZoneSystem
+        /// </summary>
+        /// <param name="customVegetation"></param>
+        /// <returns></returns>
         public bool AddCustomVegetation(CustomVegetation customVegetation)
         {
-            customVegetations.Add(customVegetation);
+            Vegetations.Add(customVegetation.Name, customVegetation);
             return true;
         }
 

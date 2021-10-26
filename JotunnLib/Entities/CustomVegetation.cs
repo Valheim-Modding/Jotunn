@@ -13,11 +13,12 @@ namespace Jotunn.Entities
     {
         public GameObject Prefab { get; set; }
         public ZoneSystem.ZoneVegetation Vegetation { get; private set; }
+        public string Name { get; internal set; }
 
         public CustomVegetation(GameObject prefab, VegetationConfig config)
         {
             Prefab = prefab;
-
+            Name = prefab.name;
             Vegetation = config.ToVegetation();
             Vegetation.m_prefab = prefab;
         }

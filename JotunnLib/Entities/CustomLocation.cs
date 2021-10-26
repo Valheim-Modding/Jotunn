@@ -11,12 +11,15 @@ namespace Jotunn.Entities
     public class CustomLocation: CustomEntity
     { 
         public GameObject Prefab { get; set; }
+        
         public ZoneSystem.ZoneLocation ZoneLocation { get; private set; }
         public Location Location { get; private set; }
-          
+        public string Name { get; internal set; }
+
         public CustomLocation(GameObject prefab, LocationConfig config)
         {
             Prefab = prefab;
+            Name = prefab.name;
 
             ZoneLocation = config.GetZoneLocation();
             ZoneLocation.m_prefab = prefab;

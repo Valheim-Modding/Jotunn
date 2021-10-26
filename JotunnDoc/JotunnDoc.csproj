@@ -366,6 +366,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Doc.cs" />
+    <Compile Include="Docs\LocationDoc.cs" />
     <Compile Include="Docs\MaterialDoc.cs" />
     <Compile Include="Docs\ShaderDoc.cs" />
     <Compile Include="Docs\SpriteDoc.cs" />
@@ -393,4 +394,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="../Environment.props" />
+  <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'" AfterTargets="Build">
+    <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot; -ProjectPath &quot;$(ProjectDir.TrimEnd('\'))&quot;" />
+  </Target>
 </Project>

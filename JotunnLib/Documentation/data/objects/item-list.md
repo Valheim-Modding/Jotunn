@@ -310,8 +310,8 @@ ShieldIronTower|$item_shield_iron_tower|Iron tower shield|Shield|A tall sh
 ShieldKnight|Knight shield|Knight shield|Shield|A wooden shield reinforced with iron.|
 ShieldSerpentscale|$item_shield_serpentscale|Serpent scale shield|Shield|A sturdy shield of overlapping scales.|
 ShieldSilver|$item_shield_silver|Silver shield|Shield|A shield of radiant silver.|
-ShieldWood|$item_shield_wood|Wood shield|Shield|A simple wooden shield.|
-ShieldWoodTower|$item_shield_woodtower|Wood tower shield|Shield|A rough but heavy wooden shield.|
+ShieldWood|$item_shield_wood|Wood shield|Shield|A simple wooden shield.|
+ShieldWoodTower|$item_shield_woodtower|Wood tower shield|Shield|A rough but heavy wooden shield.|
 ShocklateSmoothie|$item_shocklatesmoothie|Muckshake|Consumable|Wakes you up!|
 Silver|$item_silver|Silver|Material|A bar of pure silver ready to be worked.|
 SilverNecklace|$item_silvernecklace|Silver Necklace|Material|<color=yellow>Valuable</color>|
