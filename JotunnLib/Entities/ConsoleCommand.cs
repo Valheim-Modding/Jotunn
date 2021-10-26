@@ -1,4 +1,7 @@
-﻿namespace Jotunn.Entities
+﻿using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
+
+namespace Jotunn.Entities
 {
     /// <summary>
     ///     A custom console command.
@@ -41,10 +44,19 @@
         /// <param name="args">The arguments the user types, with spaces being the delimiter.</param>
         public abstract void Run(string[] args);
 
+        /// <summary>
+        ///     Override this function to return a list of strings that are valid options for your command
+        /// </summary>
+        /// <returns>List of valid command options</returns>
+        public virtual List<string> CommandOptionList()
+        {
+            return null;
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
-            return Name;
+            return Name.ToLower();
         }
     }
 }
