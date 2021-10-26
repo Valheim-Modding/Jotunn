@@ -56,6 +56,11 @@ namespace Jotunn.Managers
         /// <returns>Only true if the target was queued for rendering</returns>
         public bool EnqueueRender(GameObject target, Action<Sprite> callback, int width = 128, int height = 128)
         {
+            if (GUIManager.IsHeadless())
+            {
+                return false;
+            }
+
             if (!target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
             {
                 callback?.Invoke(null);
