@@ -16,6 +16,26 @@
         public abstract string Help { get; }
 
         /// <summary>
+        ///     If true, this command will only work after `devcommands` is run in the console.
+        /// </summary>
+        public virtual bool IsCheat => false;
+
+        /// <summary>
+        ///     If true, this command will be allowed in networked play.
+        /// </summary>
+        public virtual bool IsNetwork => false;
+
+        /// <summary>
+        ///     If true, and IsNetwork is true, this command will be allowed in networked play, but only for the server.
+        /// </summary>
+        public virtual bool OnlyServer => false;
+
+        /// <summary>
+        ///     If true, this command will not be shown when the user types `help` into their console.
+        /// </summary>
+        public virtual bool IsSecret => false;
+
+        /// <summary>
         ///     The function that will be called when the user runs your console command, with space-delimited arguments.
         /// </summary>
         /// <param name="args">The arguments the user types, with spaces being the delimiter.</param>
