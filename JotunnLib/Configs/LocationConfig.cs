@@ -11,24 +11,24 @@ namespace Jotunn.Configs
         public Heightmap.BiomeArea BiomeArea { get; set; } = Heightmap.BiomeArea.Everything;
         public bool Priotized { get; set; }
         public int Quantity { get; set; }
-        public float ChanceToSpawn { get; set; }
-        public float ExteriorRadius { get; set; }
+        public float ChanceToSpawn { get; set; } = 10f;
+        public float ExteriorRadius { get; set; } = 10f;
         public bool CenterFirst { get; set; }
         public float ForestTresholdMin { get; set; }
-        public float ForestTrasholdMax { get; set; }
+        public float ForestTrasholdMax { get; set; } = 1f;
         public bool Unique { get; set; }
-        public float MaxAltitude { get; set; }
-        public float MinAltitude { get; set; }
+        public float MinAltitude { get; set; } = -1000f;
+        public float MaxAltitude { get; set; } = 1000f;
         public float MinDistance { get; set; }
         public float MaxDistance { get; set; }
-        public string Group { get; private set; }
+        public string Group { get; private set; } = "";
         public bool InForest { get; private set; }
         public float MinTerrainDelta { get; private set; }
-        public float MaxTerrainDelta { get; private set; }
+        public float MaxTerrainDelta { get; private set; } = 2f;
         public float MinDistanceFromSimilar { get; private set; }
-        public float InteriorRadius { get; private set; }
+        public float InteriorRadius { get; private set; } = 10f;
         public bool SlopeRotation { get; private set; }
-        public bool RandomRotation { get; private set; } 
+        public bool RandomRotation { get; private set; } = true;
         public bool SnapToWater { get; private set; }
         public bool IconPlaced { get; private set; }
         public bool IconAlways { get; private set; }

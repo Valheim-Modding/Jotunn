@@ -1270,14 +1270,29 @@ namespace TestMod
 
         private void AddCustomLocations()
         {
+            
+            AssetBundle locationsAssetBundle = AssetUtils.LoadAssetBundleFromResources("custom_locations", typeof(TestMod).Assembly);
             try
             {
                 var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
 
+                var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true);
+                cubeArchLocation.FixReferences();
+                ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubeArchLocation, new LocationConfig
+                {
+                    Biome = Heightmap.Biome.BlackForest,
+                    Quantity = 10000,
+                    Priotized = true,
+                    ChanceToSpawn = 100,
+                    ExteriorRadius = 2f,
+                    MinAltitude = 1f,
+                    ClearArea = true,
+                }));
+
                 //Create a clone of a vanilla location
                 CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
                 myEikthyrLocation.ZoneLocation.m_exteriorRadius = 1f; // Easy to place :D
-                myEikthyrLocation.ZoneLocation.m_quantity = 3000; //MOAR
+                myEikthyrLocation.ZoneLocation.m_quantity = 300; //MOAR
                 
                 for (int i = 0; i < 40; i++)
                 {
@@ -1320,6 +1335,7 @@ namespace TestMod
             finally
             {
                 ZoneManager.OnVanillaLocationsAvailable -= AddCustomLocations;
+                locationsAssetBundle.Unload(false);
             }
         }
 

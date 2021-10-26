@@ -463,6 +463,7 @@
     <EmbeddedResource Include="AssetsEmbedded\steel" />
     <EmbeddedResource Include="AssetsEmbedded\kitbash" />
     <EmbeddedResource Include="AssetsEmbedded\cheatsword" />
+    <EmbeddedResource Include="AssetsEmbedded\custom_locations" />
     <None Include="Assets\jotunnlibtest" />
     <EmbeddedResource Include="AssetsEmbedded\capeironbackpack" />
     <None Include="Assets\recipes.json" />

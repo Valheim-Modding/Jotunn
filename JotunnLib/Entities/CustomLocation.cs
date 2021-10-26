@@ -34,9 +34,16 @@ namespace Jotunn.Entities
 
             ZoneLocation.m_netViews = netViews;
 
-            Location = prefab.AddComponent<Location>();
-            Location.m_exteriorRadius = config.ExteriorRadius;
-            Location.m_clearArea = config.ClearArea;
+            if (prefab.TryGetComponent<Location>(out var location))
+            {
+                Location = location;
+            }
+            else
+            {
+                Location = prefab.AddComponent<Location>();
+                Location.m_exteriorRadius = config.ExteriorRadius;
+                Location.m_clearArea = config.ClearArea;
+            }
         } 
     }
 }

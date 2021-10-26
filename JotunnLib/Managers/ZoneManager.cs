@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Jotunn.Entities;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -68,9 +69,7 @@ namespace Jotunn.Managers
                 zoneLocation.m_prefab = customLocation.Prefab;
                 zoneLocation.m_hash = zoneLocation.m_prefab.name.GetStableHashCode();
                 Location location = customLocation.Location;
-                zoneLocation.m_location = location;
-                zoneLocation.m_interiorRadius = (location.m_hasInterior ? location.m_interiorRadius : 0f);
-                zoneLocation.m_exteriorRadius = location.m_exteriorRadius;
+                zoneLocation.m_location = location; 
                 if (Application.isPlaying)
                 {
                     ZoneSystem.PrepareNetViews(zoneLocation.m_prefab, zoneLocation.m_netViews);
@@ -136,6 +135,46 @@ namespace Jotunn.Managers
             return container;
         }
 
+        private Regex copyRegex = new Regex(@" \([0-9]+\)");
+
+        public GameObject CreateLocationContainer(GameObject gameObject, bool fixLocationReferences = false)
+        {
+            var locationContainer = Object.Instantiate(gameObject, LocationContainer.transform);
+            if(fixLocationReferences)
+            {
+                var transform = locationContainer.transform;
+                for (int i = 0; i < transform.childCount; i++)
+                {
+                    var child = transform.GetChild(i);
+                    if(!child.name.StartsWith("JVLmock_"))
+                    {
+                        continue;
+                    }
+                    string prefabName = child.name.Substring("JVLmock_".Length);
+                     
+                    Match match = copyRegex.Match(prefabName);
+                    if (match.Success)
+                    {
+                        prefabName = prefabName.Substring(0, match.Index);
+                    }
+                    
+                    var replacementPrefab = PrefabManager.Instance.GetPrefab(prefabName);
+                    if(!replacementPrefab)
+                    {
+                        Logger.LogWarning($"No replacement prefab found for {prefabName}");
+                    } else
+                    {
+                        var replacement = Object.Instantiate(replacementPrefab, child.localPosition, child.localRotation, transform);
+                        replacement.transform.localScale = child.localScale;
+                        Object.Destroy(child.gameObject);
+                    } 
+                }
+            }
+
+
+            return locationContainer;
+        }
+
         public CustomLocation CreateClonedLocation(string name, string baseName)
         {
             var baseZoneLocation = GetZoneLocation(baseName);
@@ -160,5 +199,6 @@ namespace Jotunn.Managers
             customVegetations.Add(customVegetation);
             return true;
         }
+
     }
 }
