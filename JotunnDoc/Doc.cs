@@ -48,7 +48,7 @@ namespace JotunnDoc
 
         public void AddTableHeader(params string[] columns)
         {
-            string text = "";
+            string text = "|";
 
             foreach (string col in columns)
             {
@@ -68,7 +68,7 @@ namespace JotunnDoc
 
         public void AddTableRow(params string[] vals)
         {
-            string text = "";
+            string text = "|";
 
             foreach (string val in vals)
             {

@@ -166,7 +166,7 @@ namespace TestMod
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (EvilSwordSpecialButton != null && MessageHud.instance != null && 
+                if (EvilSwordSpecialButton != null && MessageHud.instance != null &&
                     Player.m_localPlayer != null && Player.m_localPlayer.m_visEquipment.m_rightItem == "EvilSword")
                 {
                     if (ZInput.GetButton(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
@@ -552,7 +552,7 @@ namespace TestMod
                 new ConfigDescription("Key to unleash evil with the Evil Sword"));
             EvilSwordGamepadConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttackGamepad", InputManager.GamepadButton.ButtonSouth,
                 new ConfigDescription("Button to unleash evil with the Evil Sword"));
-            
+
         }
 
         // React on changed settings
@@ -646,7 +646,7 @@ namespace TestMod
             {
                 { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
             });
-            
+
             // Add translations for the rendered tree
             Localization.AddTranslation("English", new Dictionary<string, string>
             {
@@ -1322,7 +1322,7 @@ namespace TestMod
 
         private void AddCustomLocations()
         {
-            
+
             AssetBundle locationsAssetBundle = AssetUtils.LoadAssetBundleFromResources("custom_locations", typeof(TestMod).Assembly);
             try
             {
@@ -1345,7 +1345,7 @@ namespace TestMod
                 CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
                 myEikthyrLocation.ZoneLocation.m_exteriorRadius = 1f; // Easy to place :D
                 myEikthyrLocation.ZoneLocation.m_quantity = 300; //MOAR
-                
+
                 for (int i = 0; i < 40; i++)
                 {
                     Instantiate(lulzCubePrefab, new Vector3(0, i + 3, 0), Quaternion.Euler(0, i * 30, 0), myEikthyrLocation.ZoneLocation.m_prefab.transform);

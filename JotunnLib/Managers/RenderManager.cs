@@ -21,7 +21,11 @@ namespace Jotunn.Managers
         {
             get
             {
-                if (_instance == null) _instance = new RenderManager();
+                if (_instance == null)
+                {
+                    _instance = new RenderManager();
+                }
+
                 return _instance;
             }
         }
@@ -45,24 +49,20 @@ namespace Jotunn.Managers
             Main.Instance.StartCoroutine(RenderQueue());
         }
 
-        /// <summary>
-        ///     Queues a new prefab to be rendered. The resulting <see cref="Sprite"/> will be ready at the next frame.
-        ///     If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately.
-        /// </summary>
-        /// <param name="target">Object to be rendered. A copy of the provided GameObject will be created for rendering</param>
-        /// <param name="callback">Action that gets called when the rendering is complete</param>
-        /// <param name="width">Width of the resulting <see cref="Sprite"/></param>
-        /// <param name="height">Height of the resulting <see cref="Sprite"/></param>
-        /// <returns>Only true if the target was queued for rendering</returns>
-        public bool EnqueueRender(GameObject target, Action<Sprite> callback, int width = 128, int height = 128)
+        public bool EnqueueRender(GameObject target, Action<Sprite> callback)
         {
-            if (!target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
+            return EnqueueRender(new RenderRequest(target), callback);
+        }
+
+        public bool EnqueueRender(RenderRequest renderRequest, Action<Sprite> callback)
+        {
+            if (!renderRequest.Target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
             {
                 callback?.Invoke(null);
                 return false;
             }
-
-            RenderRequestQueue.Enqueue(new RenderRequest(target, callback, width, height));
+            renderRequest.Callback = callback;
+            RenderRequestQueue.Enqueue(renderRequest);
             return true;
         }
 
@@ -73,14 +73,15 @@ namespace Jotunn.Managers
 
             RenderTexture oldRenderTexture = RenderTexture.active;
             Renderer.targetTexture = RenderTexture.GetTemporary(width, height, 32);
+            Renderer.fieldOfView = renderObject.Request.FieldOfView;
             RenderTexture.active = Renderer.targetTexture;
 
             renderObject.Spawn.SetActive(true);
 
             // calculate the Z position of the prefab as it needs to be far away from the camera
-            // the FOV is small to simulate orthographic view. An orthographic camera is not possible because of shaders
             float maxMeshSize = Mathf.Max(renderObject.Size.x, renderObject.Size.y) + 0.1f;
-            float distance = maxMeshSize / Mathf.Tan(Renderer.fieldOfView * Mathf.Deg2Rad);
+            float distance = maxMeshSize / Mathf.Tan(Renderer.fieldOfView * Mathf.Deg2Rad) * renderObject.Request.DistanceMultiplier;
+
             Renderer.transform.position = SpawnPoint + new Vector3(0, 0, distance);
 
             Renderer.Render();
@@ -107,10 +108,8 @@ namespace Jotunn.Managers
 
                 while (RenderRequestQueue.Count > 0)
                 {
-                    RenderRequest request = RenderRequestQueue.Dequeue();
-                    RenderObject spawn = SpawnSafe(request.Target);
-                    spawn.Request = request;
-                    spawnQueue.Enqueue(spawn);
+                    RenderRequest request = RenderRequestQueue.Dequeue();  
+                    spawnQueue.Enqueue(SpawnSafe(request));
                 }
 
                 // wait one frame to allow Unity destroy components properly
@@ -137,7 +136,7 @@ namespace Jotunn.Managers
             Renderer.clearFlags = CameraClearFlags.SolidColor;
             Renderer.transform.position = SpawnPoint;
             Renderer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-            // small FOV to simulate orthographic view. An orthographic camera is not possible because of shaders
+            
             Renderer.fieldOfView = 0.5f;
             Renderer.farClipPlane = 100000;
             Renderer.cullingMask = 1 << Layer;
@@ -163,18 +162,18 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Spawn a prefab without any Components except visuals. Also prevents calling Awake methods of the prefab.
         /// </summary>
-        /// <param name="prefab"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
-        private static RenderObject SpawnSafe(GameObject prefab)
+        private static RenderObject SpawnSafe(RenderRequest request)
         {
+            GameObject prefab = request.Target;
             // remember activeSelf to not mess with prefab data
             bool wasActiveSelf = prefab.activeSelf;
             prefab.SetActive(false);
 
             // spawn the prefab inactive
-            GameObject spawn = Object.Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
-            spawn.name = prefab.name;
-            spawn.transform.rotation = Quaternion.Euler(0, -30f, 0);
+            GameObject spawn = Object.Instantiate(prefab, new Vector3(0, 0, 0), request.Rotation);
+            spawn.name = prefab.name; 
             SetLayerRecursive(spawn.transform, Layer);
 
             prefab.SetActive(wasActiveSelf);
@@ -223,7 +222,10 @@ namespace Jotunn.Managers
             TimedDestruction timedDestruction = spawn.AddComponent<TimedDestruction>();
             timedDestruction.Trigger(1f);
 
-            return new RenderObject(spawn, size);
+            return new RenderObject(spawn, size)
+            {
+                Request = request
+            };
         }
 
         private static void SetLayerRecursive(Transform transform, int layer)
@@ -249,19 +251,31 @@ namespace Jotunn.Managers
             }
         }
 
-        private class RenderRequest
+
+        /// <summary>
+        ///     Queues a new prefab to be rendered. The resulting <see cref="Sprite"/> will be ready at the next frame.
+        ///     If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately.
+        /// </summary>
+        /// <returns>Only true if the target was queued for rendering</returns>
+        public class RenderRequest
         {
             public readonly GameObject Target;
-            public readonly Action<Sprite> Callback;
-            public readonly int Width;
-            public readonly int Height;
 
-            public RenderRequest(GameObject target, Action<Sprite> callback, int width, int height)
+            public int Width { get; set; } = 128;
+            public int Height { get; set; } = 128;
+            public Quaternion Rotation { get; set; } = Quaternion.identity;
+            public float FieldOfView { get; set; } = 0.5f; // small FOV to simulate orthographic view. An orthographic camera is not possible because of shaders
+            public float DistanceMultiplier { get; set; }
+
+            public Action<Sprite> Callback { get; internal set; }
+
+            /// <summary>
+            ///     Create a new RenderRequest
+            /// </summary>
+            /// <param name="target">Object to be rendered. A copy of the provided GameObject will be created for rendering</param> 
+            public RenderRequest(GameObject target)
             {
                 Target = target;
-                Callback = callback;
-                Width = width;
-                Height = height;
             }
         }
     }

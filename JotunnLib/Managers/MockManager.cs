@@ -82,16 +82,13 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main")
+            if (SceneManager.GetActiveScene().name == "main" && MockPrefabContainer.transform.childCount > 0)
             {
-                if (MockPrefabContainer.transform.childCount > 0)
-                {
-                    Logger.LogInfo("Destroying Mock prefabs");
+                Logger.LogInfo("Destroying Mock prefabs");
 
-                    foreach (var transform in MockPrefabContainer.transform)
-                    {
-                        Object.Destroy(((Transform)transform).gameObject);
-                    }
+                foreach (var transform in MockPrefabContainer.transform)
+                {
+                    Object.Destroy(((Transform)transform).gameObject);
                 }
             }
         }
