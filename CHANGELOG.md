@@ -4,6 +4,7 @@
 * Added the possibility to define vanilla console command modifiers in ConsoleCommand
 * Added the possibility to define command options in ConsoleCommand
 * Fixed exception for mods loaded without PluginInfo.Location set
+* Fixed NRE on missing KeyHint objects
 
 ## Version 2.3.8
 * Added RenderManager to render Sprites from GameObjects at runtime (thx MSchmoecker)
