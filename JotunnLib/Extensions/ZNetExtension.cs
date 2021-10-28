@@ -1,6 +1,4 @@
-﻿using Jotunn.Managers;
-
-namespace Jotunn
+﻿namespace Jotunn
 {
     /// <summary>
     ///     Extends ZNet with a clear diversion between local, client and server instances.

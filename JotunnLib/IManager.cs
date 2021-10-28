@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Jotunn
+﻿namespace Jotunn
 {
     /// <summary>
     ///     The base class for all the library's various Managers

@@ -22,5 +22,5 @@
   topicHref: gui/overview.md
 
 - name: Locations / Vegetation
-  href: locations/toc.yml
-  topicHref: locations/overview.md
+  href: zones/toc.yml
+  topicHref: zones/overview.md

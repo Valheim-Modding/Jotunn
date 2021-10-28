@@ -4,7 +4,6 @@ using System.Linq;
 using BepInEx.Configuration;
 using Jotunn.Configs;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Jotunn.Managers
 {

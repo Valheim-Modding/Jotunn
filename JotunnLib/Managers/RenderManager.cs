@@ -8,10 +8,15 @@ using Object = UnityEngine.Object;
 namespace Jotunn.Managers
 {
     /// <summary>
-    ///     Manager for rendering sprites of GameObjects
+    ///     Manager for rendering <see cref="Sprite">Sprites</see> of <see cref="GameObject">GameObjects</see>
     /// </summary>
     public class RenderManager : IManager
     {
+        /// <summary>
+        ///     Rotation of the prefab that will result in an isometric view
+        /// </summary>
+        public static readonly Quaternion IsometricRotation = Quaternion.Euler(-24, -231, 26);
+
         private static RenderManager _instance;
 
         /// <summary>
@@ -49,16 +54,36 @@ namespace Jotunn.Managers
             Main.Instance.StartCoroutine(RenderQueue());
         }
 
+        /// <summary>
+        ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
+        /// </summary>
+        /// <param name="target">GameObject to render</param>
+        /// <param name="callback">Callback for the generated <see cref="Sprite"/></param>
+        /// <returns>If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
         public bool EnqueueRender(GameObject target, Action<Sprite> callback)
         {
             return EnqueueRender(new RenderRequest(target), callback);
         }
 
+        /// <summary>
+        ///     Enqueue a render of the <see cref="RenderRequest"/>
+        /// </summary>
+        /// <param name="renderRequest"></param>
+        /// <param name="callback">Callback for the generated <see cref="Sprite"/></param>
+        /// <returns>If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
         public bool EnqueueRender(RenderRequest renderRequest, Action<Sprite> callback)
         {
+            if(!renderRequest.Target)
+            {
+                throw new ArgumentException("Target is required");
+            }
+            if(callback == null)
+            {
+                throw new ArgumentException("Callback is required");
+            }
             if (!renderRequest.Target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
             {
-                callback?.Invoke(null);
+                callback.Invoke(null);
                 return false;
             }
             renderRequest.Callback = callback;
@@ -178,23 +203,6 @@ namespace Jotunn.Managers
 
             prefab.SetActive(wasActiveSelf);
 
-            // calculate visual center
-            Vector3 min = new Vector3(1000f, 1000f, 1000f);
-            Vector3 max = new Vector3(-1000f, -1000f, -1000f);
-
-            foreach (Renderer meshRenderer in spawn.GetComponentsInChildren<Renderer>())
-            {
-                min = Vector3.Min(min, meshRenderer.bounds.min);
-                max = Vector3.Max(max, meshRenderer.bounds.max);
-            }
-
-            // center the prefab
-            spawn.transform.position = SpawnPoint - (min + max) / 2f;
-            Vector3 size = new Vector3(
-                Mathf.Abs(min.x) + Mathf.Abs(max.x),
-                Mathf.Abs(min.y) + Mathf.Abs(max.y),
-                Mathf.Abs(min.z) + Mathf.Abs(max.z));
-
             // needs to be destroyed first as Character depend on it
             foreach (CharacterDrop characterDrop in spawn.GetComponentsInChildren<CharacterDrop>())
             {
@@ -217,6 +225,23 @@ namespace Jotunn.Managers
 
                 Object.Destroy(component);
             }
+
+            // calculate visual center
+            Vector3 min = new Vector3(1000f, 1000f, 1000f);
+            Vector3 max = new Vector3(-1000f, -1000f, -1000f);
+
+            foreach (Renderer meshRenderer in spawn.GetComponentsInChildren<Renderer>())
+            {
+                min = Vector3.Min(min, meshRenderer.bounds.min);
+                max = Vector3.Max(max, meshRenderer.bounds.max);
+            }
+
+            // center the prefab
+            spawn.transform.position = SpawnPoint - (min + max) / 2f;
+            Vector3 size = new Vector3(
+                Mathf.Abs(min.x) + Mathf.Abs(max.x),
+                Mathf.Abs(min.y) + Mathf.Abs(max.y),
+                Mathf.Abs(min.z) + Mathf.Abs(max.z));
 
             // just in case it doesn't gets deleted properly later
             TimedDestruction timedDestruction = spawn.AddComponent<TimedDestruction>();
@@ -253,20 +278,40 @@ namespace Jotunn.Managers
 
 
         /// <summary>
-        ///     Queues a new prefab to be rendered. The resulting <see cref="Sprite"/> will be ready at the next frame.
-        ///     If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately.
+        ///     Queues a new prefab to be rendered. The resulting <see cref="Sprite"/> will be ready at the next frame. 
         /// </summary>
         /// <returns>Only true if the target was queued for rendering</returns>
         public class RenderRequest
         {
+            /// <summary>
+            ///     Target GameObject to create a <see cref="Sprite"/> from
+            /// </summary>
             public readonly GameObject Target;
 
+            /// <summary>
+            ///     Width of the generated <see cref="Sprite"/>
+            /// </summary>
             public int Width { get; set; } = 128;
+            /// <summary>
+            ///     Height of the generated <see cref="Sprite"/>
+            /// </summary>
             public int Height { get; set; } = 128;
+            /// <summary>
+            ///     Rotation of the prefab to capture
+            /// </summary>
             public Quaternion Rotation { get; set; } = Quaternion.identity;
-            public float FieldOfView { get; set; } = 0.5f; // small FOV to simulate orthographic view. An orthographic camera is not possible because of shaders
-            public float DistanceMultiplier { get; set; }
+            /// <summary>
+            ///     Field of view of the camera used to create the <see cref="Sprite"/>. Default is small to simulate orthographic view. An orthographic camera is not possible because of shaders
+            /// </summary>
+            public float FieldOfView { get; set; } = 0.5f;
+            /// <summary>
+            ///     Distance multiplier, should not be required with the default <see cref="FieldOfView"/>
+            /// </summary>
+            public float DistanceMultiplier { get; set; } = 1f;
 
+            /// <summary>
+            ///     Callback for the generated <see cref="Sprite"/>
+            /// </summary>
             public Action<Sprite> Callback { get; internal set; }
 
             /// <summary>

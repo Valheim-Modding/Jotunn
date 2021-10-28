@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using BepInEx;
+using BepInEx.Configuration;
 
 namespace JotunnDoc
 {
@@ -7,12 +8,14 @@ namespace JotunnDoc
     {
         public bool Generated { get; private set; }
         public string FilePath { get; protected set; }
+        internal static ConfigEntry<string> DocumentationDirConfig { get => documentationDirConfig; set => documentationDirConfig = value; }
 
         private StreamWriter writer;
+        private static ConfigEntry<string> documentationDirConfig;
 
         public Doc(string filePath)
         {
-            FilePath = Path.Combine(Paths.PluginPath, nameof(JotunnDoc), "Docs", "data", filePath);
+            FilePath = Path.Combine(documentationDirConfig.Value, "data", filePath);
 
             // Ensure we only create markdown files
             if (!FilePath.EndsWith(".md"))
