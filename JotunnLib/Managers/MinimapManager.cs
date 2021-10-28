@@ -55,6 +55,8 @@ namespace Jotunn.Managers
         private Texture2D WaterTexVanilla;
         private Texture2D MountainTexVanilla;
         private Texture2D MainTexVanilla;
+
+        private Texture2D MountainTexRef;
         
 
         // working copies of vanilla textures
@@ -74,8 +76,10 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Object for modders to use to access and modify their Overlay.
-        ///     Modders should modify the Image's shader's texture directly.
+        ///     Modders should modify the texture directly.
         ///     MapName and TextureSize should not be modified.
+        ///     
+        ///     Although fog gets updated on the vanilla texture, it is possible for the MapOverlay to get a snapshot of old Fog data, then continuously apply that outdated info.
         /// </summary>
         public class MapOverlay
         {
@@ -125,55 +129,72 @@ namespace Jotunn.Managers
                 //On.Minimap.Start += Minimap_Start;
                 On.Minimap.Start += InvokeOnVanillaMapAvailable;
                 On.Minimap.LoadMapData += InvokeOnVanillaMapDataLoaded;
+                On.Minimap.Explore_int_int += InvokeOnVanillaMapExplore;
+                On.Minimap.ExploreOthers += InvokeOnVanillaMapExploreOthers;
+                On.Minimap.Reset += InvokeOnVanillaMapReset;
             }
 
+            
             SceneManager.activeSceneChanged += (current, next) => Instance.Overlays.Clear();
+            //OnVanillaMapAvailable += InitializeTextures;
             OnVanillaMapDataLoaded += SetupTextures;
             
         }
-        private void SetupTextures()
+
+        private void InitializeTextures()
         {
-            Logger.LogInfo("Setting up MinimapOverlay Textures");
+            Logger.LogInfo("Initializing MinimapOverlay Textures");
             ForestFilterVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             ForestFilterVanilla.wrapMode = TextureWrapMode.Clamp;
-            ForestFilterVanilla.SetPixels(Minimap.instance.m_forestMaskTexture.GetPixels());
             HeightFilterVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RFloat, mipChain: false);
             HeightFilterVanilla.wrapMode = TextureWrapMode.Clamp;
-            HeightFilterVanilla.SetPixels(Minimap.instance.m_heightTexture.GetPixels());
             FogFilterVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             FogFilterVanilla.wrapMode = TextureWrapMode.Clamp;
-            FogFilterVanilla.SetPixels(Minimap.instance.m_fogTexture.GetPixels());
-
 
             MainTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             MainTexVanilla.wrapMode = TextureWrapMode.Clamp;
-            MainTexVanilla.SetPixels(Minimap.instance.m_mapTexture.GetPixels());
             BackgroundTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             BackgroundTexVanilla.wrapMode = TextureWrapMode.Clamp;
             WaterTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             WaterTexVanilla.wrapMode = TextureWrapMode.Clamp;
             MountainTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             MountainTexVanilla.wrapMode = TextureWrapMode.Clamp;
-/*
-            BackgroundTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            BackgroundTex.wrapMode = TextureWrapMode.Clamp;
-            MainTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            MainTex.wrapMode = TextureWrapMode.Clamp;
-            FogFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            FogFilter.wrapMode = TextureWrapMode.Clamp;
-            HeightFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RFloat, mipChain: false);
-            HeightFilter.wrapMode = TextureWrapMode.Clamp;
-            ForestFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            ForestFilter.wrapMode = TextureWrapMode.Clamp;
-            WaterTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            WaterTex.wrapMode = TextureWrapMode.Clamp;
-            MountainTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            MountainTex.wrapMode = TextureWrapMode.Clamp;
-*/
+        }
+        private void SetupTextures()
+        {
+            Logger.LogInfo("Setting up MinimapOverlay Textures");
+            ForestFilterVanilla.SetPixels(Minimap.instance.m_forestMaskTexture.GetPixels());
+            HeightFilterVanilla.SetPixels(Minimap.instance.m_heightTexture.GetPixels());
+            FogFilterVanilla.SetPixels(Minimap.instance.m_fogTexture.GetPixels());
+
+            MainTexVanilla.SetPixels(Minimap.instance.m_mapTexture.GetPixels());
+            MountainTexRef = (Texture2D)Minimap.instance.m_mapImageLarge.material.GetTexture("_MountainTex");
+            /*
+                        BackgroundTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+                        BackgroundTex.wrapMode = TextureWrapMode.Clamp;
+                        MainTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+                        MainTex.wrapMode = TextureWrapMode.Clamp;
+                        FogFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+                        FogFilter.wrapMode = TextureWrapMode.Clamp;
+                        HeightFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RFloat, mipChain: false);
+                        HeightFilter.wrapMode = TextureWrapMode.Clamp;
+                        ForestFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+                        ForestFilter.wrapMode = TextureWrapMode.Clamp;
+                        WaterTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+                        WaterTex.wrapMode = TextureWrapMode.Clamp;
+                        MountainTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+                        MountainTex.wrapMode = TextureWrapMode.Clamp;
+            */
             // copy unreadable textures.
             BackupTexture(WaterTexVanilla, "_WaterTex");
             BackupTexture(BackgroundTexVanilla, "_BackgroundTex");
             BackupTexture(MountainTexVanilla, "_MountainTex");
+
+            //typeof(Texture2D).GetField("isReadable", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(MountainTexRef, true);
+
+            Logger.LogInfo($"is readable mountaintex? {MountainTexRef.isReadable}");
+            Logger.LogInfo($"is readable maintex? {Minimap.instance.m_mapTexture.isReadable}");
+
         }
 
 
@@ -306,14 +327,12 @@ namespace Jotunn.Managers
             Minimap.instance.m_mapTexture.SetPixels(MainTexVanilla.GetPixels());
             Minimap.instance.m_forestMaskTexture.SetPixels(ForestFilterVanilla.GetPixels());
             Minimap.instance.m_heightTexture.SetPixels(HeightFilterVanilla.GetPixels());
+            //MountainTexRef.SetPixels(MountainTexVanilla.GetPixels());
         }
 
         public void ComposeOverlays()
         {
             ResetVanillaMap();
-            bool forest_flag = true;
-            bool height_flag = true;
-            bool fog_flag = true;
 
             foreach (var m in Overlays)
             {
@@ -393,10 +412,12 @@ namespace Jotunn.Managers
         /// </summary>
         private void InvokeOnVanillaMapAvailable(On.Minimap.orig_Start orig, Minimap self)
         {
+            InitializeTextures();
             orig(self);
             OnVanillaMapAvailable?.SafeInvoke();
         }
-        
+
+
         /// <summary>
         ///     Safely invoke InvokeOnVanillaMapDataLoaded event.
         /// </summary>
@@ -405,5 +426,34 @@ namespace Jotunn.Managers
             orig(self);
             OnVanillaMapDataLoaded?.SafeInvoke();
         }
+
+        private bool InvokeOnVanillaMapExplore(On.Minimap.orig_Explore_int_int orig, Minimap self, int x, int y)
+        {
+            if (!self.m_explored[y * self.m_textureSize + x])
+            {
+                FogFilterVanilla.SetPixel(x, y, new Color(0, 0, 0));
+            }
+
+            return orig(self, x, y);
+
+        }
+
+        private bool InvokeOnVanillaMapExploreOthers(On.Minimap.orig_ExploreOthers orig, Minimap self, int x, int y)
+        {
+            if (!self.m_explored[y * self.m_textureSize + x])
+            {
+                FogFilterVanilla.SetPixel(x, y, new Color(0, 0, 0));
+            }
+
+            return orig(self, x, y);
+        }
+
+        
+        private void InvokeOnVanillaMapReset(On.Minimap.orig_Reset orig, Minimap self)
+        {
+            orig(self);
+            FogFilterVanilla.SetPixels(self.m_fogTexture.GetPixels());
+        }
+
     }
 }

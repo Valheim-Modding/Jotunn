@@ -21,6 +21,21 @@ namespace TestMod3
         private const string ModGUID = "com.jotunn.testmod3";
         private const string ModName = "Jotunn Test Mod #3";
         private const string ModVersion = "0.1.0";
+        /*
+         * 
+         * 
+There is still a fairly long list of features needed to be complete before this Manager is released. Eg:
+
+- Overlay enable/disable GUI interface
+- Proper documentation for methods + a bit of clean up
+- Properly update / revert Fog layer to vanilla state
+- Properly revert Background/Water/Mountain textures to vanilla states
+
+Additional Future Changes which may be added later:
+
+- A smooth brain "make an overlay" helper
+- Support for space/cloud/fog colours
+         */
 
         public void Awake()
         {
@@ -44,6 +59,11 @@ namespace TestMod3
         private void TestMapDataLoaded()
         {
             MinimapManager.MapOverlay t = MinimapManager.Instance.AddMapOverlay("test2_overlay");
+            t.MainFlag = true;
+            t.FogFlag = true;
+            t.ForestFlag = true;
+            t.BackgroundFlag = true;
+            t.HeightFlag = true;
             Color32 c = new Color32(byte.MinValue, 0, byte.MaxValue, 100);
             Color meadowColour = new Color(31, 0, 0);
 
@@ -133,6 +153,7 @@ namespace TestMod3
             public override void Run(string[] args)
             {
                 var t = MinimapManager.Instance.AddMapOverlay("testflatten");
+                t.HeightFlag = true;
                 if (t.Enabled)
                 {
                     for(int i = 0; i < t.TextureSize; i++)
