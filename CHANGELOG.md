@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.3.10
+* Fixed mock resolving of generic List types
+
 ## Version 2.3.9
 * Added the possibility to define vanilla console command modifiers in ConsoleCommand (thx joeyparrish)
 * Added the possibility to define command options in ConsoleCommand
