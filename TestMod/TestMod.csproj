@@ -453,6 +453,7 @@
     <Compile Include="GradientChanger.cs" />
     <Compile Include="PatchInit\TestPatchInitialization.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
+    <Compile Include="TestReferences.cs" />
     <Compile Include="TestMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestMod2.cs" />
