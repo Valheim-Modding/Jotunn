@@ -845,17 +845,17 @@ namespace Jotunn.Managers
                         }
                         else
                         {
-                            Logger.LogError($"Setting for GUID: {modguid}, Section {section}, Key {key} is not syncable");
+                            Logger.LogWarning($"Setting for GUID: {modguid}, Section {section}, Key {key} is not syncable");
                         }
                     }
                     else
                     {
-                        Logger.LogError($"Did not find Value for GUID: {modguid}, Section {section}, Key {key}");
+                        Logger.LogWarning($"Did not find Value for GUID: {modguid}, Section {section}, Key {key}");
                     }
                 }
                 else
                 {
-                    Logger.LogError($"No plugin with GUID {modguid} is loaded");
+                    Logger.LogWarning($"No plugin with GUID {modguid} is loaded");
                 }
 
                 numberOfEntries--;

@@ -1,7 +1,7 @@
 ﻿# Changelog
 
 ## Version 2.3.9
-* Added the possibility to define vanilla console command modifiers in ConsoleCommand
+* Added the possibility to define vanilla console command modifiers in ConsoleCommand (thx joeyparrish)
 * Added the possibility to define command options in ConsoleCommand
 * Fixed exception for mods loaded without PluginInfo.Location set
 * Fixed NRE on missing KeyHint objects
