@@ -8,10 +8,15 @@ using Object = UnityEngine.Object;
 namespace Jotunn.Managers
 {
     /// <summary>
-    ///     Manager for rendering sprites of GameObjects
+    ///     Manager for rendering <see cref="Sprite">Sprites</see> of <see cref="GameObject">GameObjects</see>
     /// </summary>
     public class RenderManager : IManager
     {
+        /// <summary>
+        ///     Rotation of the prefab that will result in an isometric view
+        /// </summary>
+        public static readonly Quaternion IsometricRotation = Quaternion.Euler(23, 51, 25.8f);
+
         private static RenderManager _instance;
 
         /// <summary>
@@ -21,7 +26,11 @@ namespace Jotunn.Managers
         {
             get
             {
-                if (_instance == null) _instance = new RenderManager();
+                if (_instance == null)
+                {
+                    _instance = new RenderManager();
+                }
+
                 return _instance;
             }
         }
@@ -46,6 +55,43 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
+        /// </summary>
+        /// <param name="target">GameObject to render</param>
+        /// <param name="callback">Callback for the generated <see cref="Sprite"/></param>
+        /// <returns>If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
+        public bool EnqueueRender(GameObject target, Action<Sprite> callback)
+        {
+            return EnqueueRender(new RenderRequest(target), callback);
+        }
+
+        /// <summary>
+        ///     Enqueue a render of the <see cref="RenderRequest"/>
+        /// </summary>
+        /// <param name="renderRequest"></param>
+        /// <param name="callback">Callback for the generated <see cref="Sprite"/></param>
+        /// <returns>If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
+        public bool EnqueueRender(RenderRequest renderRequest, Action<Sprite> callback)
+        {
+            if(!renderRequest.Target)
+            {
+                throw new ArgumentException("Target is required");
+            }
+            if(callback == null)
+            {
+                throw new ArgumentException("Callback is required");
+            }
+            if (!renderRequest.Target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
+            {
+                callback.Invoke(null);
+                return false;
+            }
+            renderRequest.Callback = callback;
+            RenderRequestQueue.Enqueue(renderRequest);
+            return true;
+        }
+
+        /// <summary>
         ///     Queues a new prefab to be rendered. The resulting <see cref="Sprite"/> will be ready at the next frame.
         ///     If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately.
         /// </summary>
@@ -54,21 +100,16 @@ namespace Jotunn.Managers
         /// <param name="width">Width of the resulting <see cref="Sprite"/></param>
         /// <param name="height">Height of the resulting <see cref="Sprite"/></param>
         /// <returns>Only true if the target was queued for rendering</returns>
+        [Obsolete("Use RenderRequest instead")]
+#pragma warning disable S3427 // Method overloads with default parameter values should not overlap 
         public bool EnqueueRender(GameObject target, Action<Sprite> callback, int width = 128, int height = 128)
+#pragma warning restore S3427 // Method overloads with default parameter values should not overlap 
         {
-            if (GUIManager.IsHeadless())
+            return EnqueueRender(new RenderRequest(target)
             {
-                return false;
-            }
-
-            if (!target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
-            {
-                callback?.Invoke(null);
-                return false;
-            }
-
-            RenderRequestQueue.Enqueue(new RenderRequest(target, callback, width, height));
-            return true;
+                Width = width,
+                Height = height
+            }, callback);
         }
 
         private void Render(RenderObject renderObject)
@@ -78,14 +119,15 @@ namespace Jotunn.Managers
 
             RenderTexture oldRenderTexture = RenderTexture.active;
             Renderer.targetTexture = RenderTexture.GetTemporary(width, height, 32);
+            Renderer.fieldOfView = renderObject.Request.FieldOfView;
             RenderTexture.active = Renderer.targetTexture;
 
             renderObject.Spawn.SetActive(true);
 
             // calculate the Z position of the prefab as it needs to be far away from the camera
-            // the FOV is small to simulate orthographic view. An orthographic camera is not possible because of shaders
             float maxMeshSize = Mathf.Max(renderObject.Size.x, renderObject.Size.y) + 0.1f;
-            float distance = maxMeshSize / Mathf.Tan(Renderer.fieldOfView * Mathf.Deg2Rad);
+            float distance = maxMeshSize / Mathf.Tan(Renderer.fieldOfView * Mathf.Deg2Rad) * renderObject.Request.DistanceMultiplier;
+
             Renderer.transform.position = SpawnPoint + new Vector3(0, 0, distance);
 
             Renderer.Render();
@@ -112,10 +154,8 @@ namespace Jotunn.Managers
 
                 while (RenderRequestQueue.Count > 0)
                 {
-                    RenderRequest request = RenderRequestQueue.Dequeue();
-                    RenderObject spawn = SpawnSafe(request.Target);
-                    spawn.Request = request;
-                    spawnQueue.Enqueue(spawn);
+                    RenderRequest request = RenderRequestQueue.Dequeue();  
+                    spawnQueue.Enqueue(SpawnSafe(request));
                 }
 
                 // wait one frame to allow Unity destroy components properly
@@ -168,18 +208,18 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Spawn a prefab without any Components except visuals. Also prevents calling Awake methods of the prefab.
         /// </summary>
-        /// <param name="prefab"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
-        private static RenderObject SpawnSafe(GameObject prefab)
+        private static RenderObject SpawnSafe(RenderRequest request)
         {
+            GameObject prefab = request.Target;
             // remember activeSelf to not mess with prefab data
             bool wasActiveSelf = prefab.activeSelf;
             prefab.SetActive(false);
 
             // spawn the prefab inactive
-            GameObject spawn = Object.Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
-            spawn.name = prefab.name;
-            spawn.transform.rotation = Quaternion.Euler(0, -30f, 0);
+            GameObject spawn = Object.Instantiate(prefab, new Vector3(0, 0, 0), request.Rotation);
+            spawn.name = prefab.name; 
             SetLayerRecursive(spawn.transform, Layer);
 
             prefab.SetActive(wasActiveSelf);
@@ -228,7 +268,10 @@ namespace Jotunn.Managers
             TimedDestruction timedDestruction = spawn.AddComponent<TimedDestruction>();
             timedDestruction.Trigger(1f);
 
-            return new RenderObject(spawn, size);
+            return new RenderObject(spawn, size)
+            {
+                Request = request
+            };
         }
 
         private static void SetLayerRecursive(Transform transform, int layer)
@@ -254,19 +297,51 @@ namespace Jotunn.Managers
             }
         }
 
-        private class RenderRequest
-        {
-            public readonly GameObject Target;
-            public readonly Action<Sprite> Callback;
-            public readonly int Width;
-            public readonly int Height;
 
-            public RenderRequest(GameObject target, Action<Sprite> callback, int width, int height)
+        /// <summary>
+        ///     Queues a new prefab to be rendered. The resulting <see cref="Sprite"/> will be ready at the next frame. 
+        /// </summary>
+        /// <returns>Only true if the target was queued for rendering</returns>
+        public class RenderRequest
+        {
+            /// <summary>
+            ///     Target GameObject to create a <see cref="Sprite"/> from
+            /// </summary>
+            public readonly GameObject Target;
+
+            /// <summary>
+            ///     Width of the generated <see cref="Sprite"/>
+            /// </summary>
+            public int Width { get; set; } = 128;
+            /// <summary>
+            ///     Height of the generated <see cref="Sprite"/>
+            /// </summary>
+            public int Height { get; set; } = 128;
+            /// <summary>
+            ///     Rotation of the prefab to capture
+            /// </summary>
+            public Quaternion Rotation { get; set; } = Quaternion.identity;
+            /// <summary>
+            ///     Field of view of the camera used to create the <see cref="Sprite"/>. Default is small to simulate orthographic view. An orthographic camera is not possible because of shaders
+            /// </summary>
+            public float FieldOfView { get; set; } = 0.5f;
+            /// <summary>
+            ///     Distance multiplier, should not be required with the default <see cref="FieldOfView"/>
+            /// </summary>
+            public float DistanceMultiplier { get; set; } = 1f;
+
+            /// <summary>
+            ///     Callback for the generated <see cref="Sprite"/>
+            /// </summary>
+            public Action<Sprite> Callback { get; internal set; }
+
+            /// <summary>
+            ///     Create a new RenderRequest
+            /// </summary>
+            /// <param name="target">Object to be rendered. A copy of the provided GameObject will be created for rendering</param> 
+            public RenderRequest(GameObject target)
             {
                 Target = target;
-                Callback = callback;
-                Width = width;
-                Height = height;
             }
         }
     }
