@@ -114,6 +114,7 @@ namespace Jotunn
                         if (currentValues != null)
                         {
                             var isArray = fieldType.IsArray;
+                            var isList = fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(List<>);
                             var newI = isArray ? (IEnumerable<Object>)Array.CreateInstance(enumeratedType, currentValues.Count()) : (IEnumerable<Object>)Activator.CreateInstance(fieldType);
                             var list = new List<Object>();
                             foreach (var unityObject in currentValues)
@@ -139,6 +140,19 @@ namespace Jotunn
 
                                     var array = toArrayT.Invoke(null, new object[] { correctTypeList });
                                     field.SetValue(objectToFix, array);
+                                }
+                                else if (isList)
+                                {
+                                    var toList = ReflectionHelper.Cache.EnumerableToList;
+                                    var toListT = toList.MakeGenericMethod(enumeratedType);
+
+                                    // mono...
+                                    var cast = ReflectionHelper.Cache.EnumerableCast;
+                                    var castT = cast.MakeGenericMethod(enumeratedType);
+                                    var correctTypeList = castT.Invoke(null, new object[] { list });
+
+                                    var newList = toListT.Invoke(null, new object[] { correctTypeList });
+                                    field.SetValue(objectToFix, newList);
                                 }
                                 else
                                 {
@@ -208,6 +222,7 @@ namespace Jotunn
                         if (currentValues != null)
                         {
                             var isArray = propertyType.IsArray;
+                            var isList = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>);
                             var newI = isArray ? (IEnumerable<Object>)Array.CreateInstance(enumeratedType, currentValues.Count()) : (IEnumerable<Object>)Activator.CreateInstance(propertyType);
                             var list = new List<Object>();
                             foreach (var unityObject in currentValues)
@@ -233,6 +248,19 @@ namespace Jotunn
 
                                     var array = toArrayT.Invoke(null, new object[] { correctTypeList });
                                     property.SetValue(objectToFix, array, null);
+                                }
+                                else if (isList)
+                                {
+                                    var toList = ReflectionHelper.Cache.EnumerableToList;
+                                    var toListT = toList.MakeGenericMethod(enumeratedType);
+
+                                    // mono...
+                                    var cast = ReflectionHelper.Cache.EnumerableCast;
+                                    var castT = cast.MakeGenericMethod(enumeratedType);
+                                    var correctTypeList = castT.Invoke(null, new object[] { list });
+
+                                    var newList = toListT.Invoke(null, new object[] { correctTypeList });
+                                    property.SetValue(objectToFix, newList, null);
                                 }
                                 else
                                 {
