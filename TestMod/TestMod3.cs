@@ -6,6 +6,7 @@
 
 using BepInEx;
 using Jotunn;
+using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -23,70 +24,130 @@ namespace TestMod3
 
         public void Awake()
         {
-            MapOverlayManager.OnVanillaMapAvailable += TestMapAvailiable;
-            MapOverlayManager.OnVanillaMapDataLoaded += TestMapDataLoaded;
+            //MapOverlayManager.OnVanillaMapAvailable += TestMapAvailiable;
+            MinimapManager.OnVanillaMapDataLoaded += TestMapDataLoaded;
+            CommandManager.Instance.AddConsoleCommand(new CHCommands_toggle());
+            CommandManager.Instance.AddConsoleCommand(new CHCommands_flatten());
         }
 
 
         private void TestMapAvailiable()
         {
             Jotunn.Logger.LogInfo("Starting testMM");
-            MapOverlayManager.MapOverlay t = MapOverlayManager.Instance.AddMapOverlay("test_overlay");
+            MinimapManager.MapOverlay t = MinimapManager.Instance.AddMapOverlay("test_overlay");
             Color32 c = new Color32(byte.MinValue, 50, byte.MaxValue, 100);
-            FillImgWithColour(t, c);
-            //MapOverlayManager.OnVanillaMapAvailable -= TestMapAvailiable;
+            FillImgWithColour(t.MainImg, c);
+            MinimapManager.Instance.ComposeOverlays();
         }
 
         // pins are only available once data is loaded.
         private void TestMapDataLoaded()
         {
-            MapOverlayManager.MapOverlay t = MapOverlayManager.Instance.AddMapOverlay("test2_overlay");
-            Color32 c = new Color32(byte.MinValue, 50, byte.MaxValue, 0);
-            FillImgWithColour(t, c);
+            MinimapManager.MapOverlay t = MinimapManager.Instance.AddMapOverlay("test2_overlay");
+            Color32 c = new Color32(byte.MinValue, 0, byte.MaxValue, 100);
+            Color meadowColour = new Color(31, 0, 0);
+
+            FillImgWithColour(t.MainImg, c);
+            FillQuarterImgWithColour(t.FogFilter, c);
+            //FillImgWithColour(t.FilterHeight, meadowColour);
             DrawSquaresOnMarks(t);
-            //MapOverlayManager.OnVanillaMapDataLoaded -= TestMapDataLoaded;
+            MinimapManager.Instance.ComposeOverlays();
         }
 
 
-        public void DrawSquaresOnMarks(MapOverlayManager.MapOverlay t)
+        public void DrawSquaresOnMarks(MinimapManager.MapOverlay ovl)
         {
             Jotunn.Logger.LogInfo("Starting drawsquaresonmarks");
             foreach (var p in Minimap.instance.m_pins)
             {
-                //Minimap.instance.pin
-                if (p.m_name == "ch_test" || p.m_name == "CH_TEST")
-                {
-                    DrawSquare(t, MapOverlayManager.Instance.WorldToOverlayCoords(p.m_pos, t.TextureSize), Color.blue, 5);
-                }
+                    DrawSquare(ovl.MainImg, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), Color.red, 10);
+                    DrawSquare(ovl.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), Color.clear, 10);
+                    DrawSquare(ovl.BackgroundImg, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), Color.clear, 10);
+                    DrawSquare(ovl.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), new Color(31, 0, 0), 10);
             }
             Jotunn.Logger.LogInfo("Finished drawsquaresonmarks");
         }
 
-        public void FillImgWithColour(MapOverlayManager.MapOverlay ovl, Color32 c)
+        public void FillImgWithColour(Texture2D tex, Color c)
         {
             Jotunn.Logger.LogInfo("Starting fill img with colour");
-            Color32[] arr = new Color32[ovl.TextureSize * ovl.TextureSize];
-            for (int i = 0; i < ovl.TextureSize * ovl.TextureSize; i++)
+            for(int i = 0; i < tex.width; i++)
             {
-                //array2[i] = new Color32(byte.MinValue, 50, byte.MaxValue, 100);
-                arr[i] = c;
+                for(int j = 0; j < tex.height; j++)
+                {
+                    tex.SetPixel(i, j, c);
+                }
             }
-            ovl.Img.sprite.texture.SetPixels32(arr);
-            ovl.Img.sprite.texture.Apply();
+            tex.Apply();
         }
 
-        // where start coord is the bottom left coordinate
-        private void DrawSquare(MapOverlayManager.MapOverlay ovl, Vector2 start, Color col, int square_size)
+        public void FillQuarterImgWithColour(Texture2D tex, Color c)
         {
-            Jotunn.Logger.LogInfo("Starting drawsquare");
+            Jotunn.Logger.LogInfo("Starting fill quarter img with colour");
+            for (int i = 0; i < tex.width/2; i++)
+            {
+                for (int j = 0; j < tex.height/2; j++)
+                {
+                    tex.SetPixel(i, j, c);
+                }
+            }
+            tex.Apply();
+        }
+
+
+        // where start coord is the bottom left coordinate
+        private void DrawSquare(Texture2D tex, Vector2 start, Color col, int square_size)
+        {
+            Jotunn.Logger.LogInfo($"Starting drawsquare at {start}");
             for (float i = start.x; i < start.x + square_size; i++)
             {
                 for (float j = start.y; j < start.y + square_size; j++)
                 {
-                    ovl.Img.sprite.texture.SetPixel((int)i, (int)j, col);
+                    tex.SetPixel((int)i, (int)j, col);
                 }
             }
-            ovl.Img.sprite.texture.Apply();
+            tex.Apply();
+        }
+
+        class CHCommands_toggle : ConsoleCommand
+        {
+            public override string Name => "ch";
+
+            public override string Help => "run the channel helper";
+
+            public override void Run(string[] args)
+            {
+                var t = MinimapManager.Instance.GetMapOverlay("test2_overlay");
+                t.Enabled = !t.Enabled; // toggle
+                MinimapManager.Instance.ComposeOverlays();
+            }
+        }
+
+        class CHCommands_flatten : ConsoleCommand
+        {
+            // NOTE: call this command twice to get it to display.
+            public override string Name => "chf";
+
+            public override string Help => "run the channel helper";
+
+            public override void Run(string[] args)
+            {
+                var t = MinimapManager.Instance.AddMapOverlay("testflatten");
+                if (t.Enabled)
+                {
+                    for(int i = 0; i < t.TextureSize; i++)
+                    {
+                        for(int j = 0; j < t.TextureSize; j++)
+                        {
+                            t.HeightFilter.SetPixel(i, j, new Color(31, 0, 0));
+                        }
+                    }
+                    t.HeightFilter.Apply();
+                }
+
+                t.Enabled = !t.Enabled; // toggle
+                MinimapManager.Instance.ComposeOverlays();
+            }
         }
 
     }
