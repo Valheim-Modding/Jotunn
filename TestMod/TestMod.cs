@@ -293,7 +293,7 @@ namespace TestMod
                     anchorMax: new Vector2(0.5f, 0.5f),
                     position: new Vector2(-250f, -250f),
                     fontSize: 16,
-                    width: 100f,
+                    width: 160f,
                     height: 30f);
                 dropdownObject.GetComponent<Dropdown>().AddOptions(new List<string>
                 {
