@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using MonoMod.RuntimeDetour;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Jotunn.Managers
 {
@@ -39,6 +42,8 @@ namespace Jotunn.Managers
         private const int DefaultOverlaySize = 2048;
         private const string OverlayNamePrefix = "custom_map_overlay_";
 
+        private CoroutineHelper helper;
+        private GameObject ScrollView;
         private Dictionary<string, MapOverlay> Overlays = new Dictionary<string, MapOverlay>();
         private int OverlayID;
 
@@ -57,22 +62,242 @@ namespace Jotunn.Managers
         private Texture2D MainTexVanilla;
 
         private Texture2D MountainTexRef;
-        
+
+        private Texture2D TransparentTex;
 
         // working copies of vanilla textures
-/*
-        private Texture2D SpaceTex;
-        private Texture2D CloudTex;
-        private Texture2D FogTex;
+        /*
+                private Texture2D SpaceTex;
+                private Texture2D CloudTex;
+                private Texture2D FogTex;
 
-        private Texture2D FogFilter;
-        private Texture2D HeightFilter;
-        private Texture2D ForestFilter;
-        private Texture2D BackgroundTex;
-        private Texture2D MountainTex;
-        private Texture2D MainTex;
-        private Texture2D WaterTex;
-*/
+                private Texture2D FogFilter;
+                private Texture2D HeightFilter;
+                private Texture2D ForestFilter;
+                private Texture2D BackgroundTex;
+                private Texture2D MountainTex;
+                private Texture2D MainTex;
+                private Texture2D WaterTex;
+        */
+
+        public class CoroutineHelper: MonoBehaviour
+        {
+
+            public void Compose(int strategy)
+            {
+                StartCoroutine(CheckJobComplete(strategy));
+            }
+
+            private IEnumerator<WaitForSeconds> CheckJobComplete(int strategy)
+            {
+                var watch = new System.Diagnostics.Stopwatch();
+                watch.Start();
+                Logger.LogInfo("Resetting vanilla maps");
+                Minimap.instance.m_fogTexture.SetPixels(Instance.FogFilterVanilla.GetPixels());
+                Minimap.instance.m_mapTexture.SetPixels(Instance.MainTexVanilla.GetPixels());
+                Minimap.instance.m_forestMaskTexture.SetPixels(Instance.ForestFilterVanilla.GetPixels());
+                Minimap.instance.m_heightTexture.SetPixels(Instance.HeightFilterVanilla.GetPixels());
+                yield return null;
+                watch.Stop();
+                Logger.LogInfo($"Resetting to vanilla maps took {watch.ElapsedMilliseconds}ms time");
+                //Paint();
+                StartCoroutine(Paint(strategy));
+                Logger.LogInfo("finished resetting vanilla maps");
+            }
+
+
+            private IEnumerator<WaitForSeconds> Paint(int strategy)
+            {
+                Logger.LogInfo("starting composing");
+                var watch = new System.Diagnostics.Stopwatch();
+                watch.Start();
+                foreach (var m in Instance.Overlays)
+                {
+                    if (!m.Value.Enabled) { continue; }
+                    Logger.LogInfo("Drawing on map");
+
+                    if (strategy == 0)
+                    {
+                        if (m.Value.MainFlag)
+                        {
+                            for (int i = 0; i < DefaultOverlaySize; i++)
+                            {
+                                for (int j = 0; j < DefaultOverlaySize; j++)
+                                {
+                                    var p = m.Value.MainImg.GetPixel(i, j);
+                                    Minimap.instance.m_mapTexture.SetPixel(i, j, p);
+                                }
+                            }
+                        }
+                        //yield return null;
+
+                        if (m.Value.FogFlag)
+                        {
+                            for (int i = 0; i < DefaultOverlaySize; i++)
+                            {
+                                for (int j = 0; j < DefaultOverlaySize; j++)
+                                {
+                                    var p = m.Value.FogFilter.GetPixel(i, j);
+                                    Minimap.instance.m_fogTexture.SetPixel(i, j, p);
+                                }
+                            }
+                        }
+
+                        if (m.Value.ForestFlag)
+                        {
+                            for (int i = 0; i < DefaultOverlaySize; i++)
+                            {
+                                for (int j = 0; j < DefaultOverlaySize; j++)
+                                {
+                                    var p = m.Value.ForestFilter.GetPixel(i, j);
+                                    Minimap.instance.m_forestMaskTexture.SetPixel(i, j, p);
+                                }
+                            }
+                        }
+
+                        if (m.Value.HeightFlag)
+                        {
+                            for (int i = 0; i < DefaultOverlaySize; i++)
+                            {
+                                for (int j = 0; j < DefaultOverlaySize; j++)
+                                {
+                                    var p = m.Value.HeightFilter.GetPixel(i, j);
+                                    Minimap.instance.m_heightTexture.SetPixel(i, j, p);
+                                }
+                            }
+                        }
+                    }
+                    else if (strategy == 1)
+                    {
+                        for (int i = 0; i < DefaultOverlaySize; i++)
+                        {
+                            for (int j = 0; j < DefaultOverlaySize; j++)
+                            {
+                                // Note: if this function is too slow try iterating over each texture by itself. 
+
+                                var p = m.Value.MainImg.GetPixel(i, j);
+                                if (m.Value.MainFlag)
+                                {
+                                    Minimap.instance.m_mapTexture.SetPixel(i, j, p);
+                                }
+
+                                p = m.Value.FogFilter.GetPixel(i, j);
+                                if (m.Value.FogFlag)
+                                {
+                                    Minimap.instance.m_fogTexture.SetPixel(i, j, p);
+                                }
+
+                                p = m.Value.ForestFilter.GetPixel(i, j);
+                                if (m.Value.ForestFlag)
+                                {
+                                    Minimap.instance.m_forestMaskTexture.SetPixel(i, j, p);
+                                }
+
+                                p = m.Value.HeightFilter.GetPixel(i, j);
+                                if (m.Value.HeightFlag)
+                                {
+                                    Minimap.instance.m_heightTexture.SetPixel(i, j, p);
+                                }
+                            }
+                           // yield return null;
+                        }
+                        //yield return null;
+                    }
+                    else if (strategy == 2)
+                    {
+                        if (m.Value.MainFlag)
+                        {
+                            for (int i = 0; i < DefaultOverlaySize; i++)
+                            {
+                                for (int j = 0; j < DefaultOverlaySize; j++)
+                                {
+                                    var p = m.Value.MainImg.GetPixel(i, j);
+                                    if(p.a > 0)
+                                    {
+                                        Minimap.instance.m_mapTexture.SetPixel(i, j, p);
+                                    }
+                                    
+                                }
+                            }
+                        }
+                        //yield return null;
+
+                        if (m.Value.FogFlag)
+                        {
+                            for (int i = 0; i < DefaultOverlaySize; i++)
+                            {
+                                for (int j = 0; j < DefaultOverlaySize; j++)
+                                {
+                                    var p = m.Value.FogFilter.GetPixel(i, j);
+                                    Minimap.instance.m_fogTexture.SetPixel(i, j, p);
+                                }
+                            }
+                        }
+
+                        if (m.Value.ForestFlag)
+                        {
+                            for (int i = 0; i < DefaultOverlaySize; i++)
+                            {
+                                for (int j = 0; j < DefaultOverlaySize; j++)
+                                {
+                                    var p = m.Value.ForestFilter.GetPixel(i, j);
+                                    Minimap.instance.m_forestMaskTexture.SetPixel(i, j, p);
+                                }
+                            }
+                        }
+
+                        if (m.Value.HeightFlag)
+                        {
+                            for (int i = 0; i < DefaultOverlaySize; i++)
+                            {
+                                for (int j = 0; j < DefaultOverlaySize; j++)
+                                {
+                                    var p = m.Value.HeightFilter.GetPixel(i, j);
+                                    Minimap.instance.m_heightTexture.SetPixel(i, j, p);
+                                }
+                            }
+                        }
+                    } else if (strategy == 3)
+                    {
+                        // use rendertexture
+                        RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
+
+                        // Blit the pixels on texture to the RenderTexture
+                        Graphics.Blit(m.Value.MainImg, tmp);
+
+                        // Backup the currently set RenderTexture
+                        RenderTexture previous = RenderTexture.active;
+
+                        // Set the current RenderTexture to the temporary one we created
+                        RenderTexture.active = tmp;
+
+                        // Copy the pixels from the RenderTexture to the new Texture
+                        //tex.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+                        //tex.Apply();
+                        Minimap.instance.m_mapTexture.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+                        Minimap.instance.m_mapTexture.Apply();
+                        // Reset the active RenderTexture
+                        RenderTexture.active = previous;
+
+                        // Release the temporary RenderTexture
+                        RenderTexture.ReleaseTemporary(tmp);
+
+
+                    }
+
+
+                }
+                yield return null;
+                watch.Stop();
+                Logger.LogInfo($"Strategy {strategy} took {watch.ElapsedMilliseconds}ms time");
+                Minimap.instance.m_mapTexture.Apply();
+                Minimap.instance.m_forestMaskTexture.Apply();
+                Minimap.instance.m_heightTexture.Apply();
+                Minimap.instance.m_fogTexture.Apply();
+                Logger.LogInfo("Finished applying new maps data from coroutine");
+            }
+        }
+
 
         /// <summary>
         ///     Object for modders to use to access and modify their Overlay.
@@ -138,7 +363,9 @@ namespace Jotunn.Managers
             SceneManager.activeSceneChanged += (current, next) => Instance.Overlays.Clear();
             //OnVanillaMapAvailable += InitializeTextures;
             OnVanillaMapDataLoaded += SetupTextures;
-            
+            OnVanillaMapDataLoaded += MapGUICreate;
+            OnVanillaMapAvailable += SetupCoroutineObject;
+
         }
 
         private void InitializeTextures()
@@ -159,6 +386,9 @@ namespace Jotunn.Managers
             WaterTexVanilla.wrapMode = TextureWrapMode.Clamp;
             MountainTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             MountainTexVanilla.wrapMode = TextureWrapMode.Clamp;
+
+            TransparentTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+            TransparentTex.wrapMode = TextureWrapMode.Clamp;
         }
         private void SetupTextures()
         {
@@ -189,6 +419,15 @@ namespace Jotunn.Managers
             BackupTexture(WaterTexVanilla, "_WaterTex");
             BackupTexture(BackgroundTexVanilla, "_BackgroundTex");
             BackupTexture(MountainTexVanilla, "_MountainTex");
+
+            for(int i = 0; i < DefaultOverlaySize; i++)
+            {
+                for(int j = 0; j < DefaultOverlaySize; j++)
+                {
+                    TransparentTex.SetPixel(i, j, Color.clear);
+                }
+            }
+            TransparentTex.Apply();
 
             //typeof(Texture2D).GetField("isReadable", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(MountainTexRef, true);
 
@@ -310,12 +549,19 @@ namespace Jotunn.Managers
         /// <param name="input">The 2D Overlay coordinate</param>
         /// <param name="texSize">The size of the Overlay</param>
         /// <returns>The 3D World coordinate that corresponds to the input Vector</returns>
+        /// 
         public Vector3 OverlayToWorldCoords(Vector2 input, int texSize)
         {
             input.x /= texSize;
             input.y /= texSize;
             return Minimap.instance.MapPointToWorld(input.x, input.y);
         }
+        /*        public Vector3 OverlayToWorldCoords(Vector2 input, int texSize)
+                {
+                    input.x /= texSize;
+                    input.y /= texSize;
+                    return Minimap.instance.MapPointToWorld(input.x, input.y);
+                }*/
 
         /// <summary>
         ///     Reset all vanilla textures to their original values by using our stored backups
@@ -330,9 +576,11 @@ namespace Jotunn.Managers
             //MountainTexRef.SetPixels(MountainTexVanilla.GetPixels());
         }
 
-        public void ComposeOverlays()
+        public void ComposeOverlays(int strategy=0)
         {
-            ResetVanillaMap();
+            //ResetVanillaMap();
+            helper.Compose(strategy);
+            return;
 
             foreach (var m in Overlays)
             {
@@ -393,6 +641,7 @@ namespace Jotunn.Managers
                 var t = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, fmt, mipChain: false);
                 t.wrapMode = TextureWrapMode.Clamp;
                 t.SetPixels(van.GetPixels());
+                //t.SetPixels(TransparentTex.GetPixels());
                 return t;
             };
 
@@ -404,6 +653,7 @@ namespace Jotunn.Managers
             ovl.ForestFilter = Create(TextureFormat.RGBA32, ForestFilterVanilla);
             ovl.HeightFilter = Create(TextureFormat.RFloat, HeightFilterVanilla);
 
+            AddOverlayToGUI(ovl);
             Overlays.Add(ovl.MapName, ovl);
         }
 
@@ -453,6 +703,114 @@ namespace Jotunn.Managers
         {
             orig(self);
             FogFilterVanilla.SetPixels(self.m_fogTexture.GetPixels());
+        }
+
+
+        private void MapGUICreate()
+        {
+            Jotunn.Logger.LogInfo("Creating wood panels and shizz");
+            int pWidth = 300;
+            int pHeight = 400;
+            int toggleHeight = 30;
+
+            var wp = GUIManager.Instance.CreateWoodpanel(
+                //Minimap.instance.m_pinRootLarge,
+                Minimap.instance.m_largeRoot.transform,
+                anchorMin: new Vector2(1f, 1f),
+                anchorMax: new Vector2(1f, 1f),
+                new Vector2(-pWidth/2, -pHeight/2),
+                /*                anchorMin: new Vector2(0.5f, 0.5f),
+                                anchorMax: new Vector2(0.5f, 0.5f),
+                                new Vector2(500, 500),*/
+                pWidth,
+                pHeight
+            );
+
+            GUIManager.Instance.CreateText(
+                "Hide/Show Overlay Layers",
+                wp.transform,
+                anchorMin: new Vector2(0.5f, 1f),
+                anchorMax: new Vector2(0.5f, 1f),
+                new Vector2(20, -50),
+                GUIManager.Instance.AveriaSerifBold,
+                fontSize: 16,
+                GUIManager.Instance.ValheimOrange,
+                outline: true,
+                Color.black,
+                width: pWidth,
+                height: 50,
+                false
+            );
+
+
+             ScrollView = GUIManager.Instance.CreateScrollView(
+                wp.transform,
+                //Minimap.instance.m_pinRootLarge,
+                true,
+                true,
+                10,
+                5,
+                GUIManager.Instance.ValheimScrollbarHandleColorBlock,
+                Color.black,
+                //pWidth-150, 
+                //pHeight -200
+                pWidth - 50,
+                pHeight - 100
+
+            );
+
+            List<string> testnames = new List<string>();
+            for(int i = 0; i < 20; i++)
+            {
+                testnames.Add("test"+i);
+            }
+
+            foreach (var n in testnames)
+            {
+                RectTransform viewport = ScrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+                //GameObject go = new GameObject();
+                //RectTransform rt = go.AddComponent<RectTransform>();
+                //rt. = pWidth - 20;
+                //rt.SetParent(viewport);
+                //GUIManager.Instance.CreateToggle(rt, 10, 10);
+                /*                var txt = GUIManager.Instance.CreateText(n,
+                                    viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                                    GUIManager.Instance.AveriaSerifBold, fontSize: 16, GUIManager.Instance.ValheimOrange,
+                                    true, Color.black, 650f, 40f, false);*/
+
+                //var tg = GUIManager.Instance.CreateToggle(txt.transform, 10, 10);
+                //var tg = GUIManager.Instance.CreateToggle(viewport, 10, 10);
+                //tg.GetComponent<Text>();
+                //tg.GetComponent<Text>()
+                //var tg = GUIManager.Instance.CreateButton();
+
+                //tg.GetComponentInChildren<Text>().text = "test";
+            }
+
+        }
+
+        private void AddOverlayToGUI(MapOverlay ovl)
+        {
+            int pWidth = 300;
+            int pHeight = 400;
+            Logger.LogInfo($"Adding overlay to GUI with name {ovl.MapName}");
+
+            RectTransform viewport = ScrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
+            //GameObject go = new GameObject();
+            //RectTransform rt =  go.AddComponent<RectTransform>();
+            //rt. = pWidth - 20;
+            //rt.SetParent(viewport);
+            GUIManager.Instance.CreateToggle(viewport, 20, 20);
+            GUIManager.Instance.CreateText(ovl.MapName,
+                viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                GUIManager.Instance.AveriaSerifBold, fontSize: 16, GUIManager.Instance.ValheimOrange,
+                true, Color.black, 650f, 40f, false);
+            //GUIManager.Instance.CreateDropDown;
+        }
+
+        private void SetupCoroutineObject()
+        {
+            helper = Minimap.instance.gameObject.AddComponent<CoroutineHelper>();
         }
 
     }
