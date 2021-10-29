@@ -162,6 +162,7 @@ namespace Jotunn.Managers
         public Piece.PieceCategory AddPieceCategory(string table, string name)
         {
             Piece.PieceCategory categoryID;
+            bool isNew = false;
 
             // Get or create global category ID
             if (Enum.IsDefined(typeof(Piece.PieceCategory), name))
@@ -177,6 +178,7 @@ namespace Jotunn.Managers
                 categoryID = PieceCategories.Count + Piece.PieceCategory.Max;
                 PieceCategories.Add(name, categoryID);
                 PieceCategoryMax++;
+                isNew = true;
             }
 
             // Add category to table map
@@ -189,9 +191,19 @@ namespace Jotunn.Managers
                 PieceTableCategoriesMap[table].Add(name, categoryID);
             }
 
+            // When called in-game, directly create newly added categories
+            if (isNew & SceneManager.GetActiveScene().name == "main")
+            {
+                CreatePieceTableCategories();
+            }
+            if (Hud.instance != null)
+            {
+                CreateCategoryTabs();
+            }
+
             return categoryID;
         }
-
+        
         /// <summary>
         ///     Get a list of all custom piece category names
         /// </summary>
@@ -316,7 +328,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            Logger.LogInfo($"Adding {PieceCategories.Count} custom piece table categories");
+            //Logger.LogInfo($"Adding {PieceCategories.Count} custom piece table categories");
 
             // All piece tables using categories
             foreach (var table in PieceTableMap.Values.Where(x => x.m_useCategories))
@@ -385,24 +397,27 @@ namespace Jotunn.Managers
                 }
             }
 
-            // Hook sceneLoaded for generation of custom category tabs
-            SceneManager.sceneLoaded += CreateCategoryTabs;
+            // Hook for generation of custom category tabs
+            On.Hud.Awake -= CreateCategoryTabs;
+            On.Hud.Awake += CreateCategoryTabs;
 
             // Hook for custom category tab toggle
+            On.Hud.UpdateBuild -= TogglePieceCategories;
             On.Hud.UpdateBuild += TogglePieceCategories;
         }
-
+        
         /// <summary>
         ///     Create tabs for the ingame GUI for every piece table category.
-        ///     Only executes when custom piece table categories were added.
+        ///     Only executes when custom piece table catego-ries were added.
         /// </summary>
-        private void CreateCategoryTabs(Scene scene, LoadSceneMode loadSceneMode)
+        private void CreateCategoryTabs(On.Hud.orig_Awake orig, Hud self)
         {
-            if (scene.name != "main")
-            {
-                return;
-            }
+            orig(self);
+            CreateCategoryTabs();
+        }
 
+        private void CreateCategoryTabs()
+        {
             // Get the GUI elements
             GameObject root = Hud.instance.m_pieceCategoryRoot;
             if (root.GetComponent<RectMask2D>() == null)
@@ -413,6 +428,7 @@ namespace Jotunn.Managers
                 Transform border = root.transform.Find("TabBorder");
                 border?.SetParent(root.transform.parent, true);
             }
+
             List<string> newNames = new List<string>(Hud.instance.m_buildCategoryNames);
             List<GameObject> newTabs = new List<GameObject>(Hud.instance.m_pieceCategoryTabs);
 
@@ -450,9 +466,6 @@ namespace Jotunn.Managers
             // Replace the HUD arrays
             Hud.instance.m_buildCategoryNames = newNames.ToList();
             Hud.instance.m_pieceCategoryTabs = newTabs.ToArray();
-
-            // Remove ourself from the SceneManager
-            SceneManager.sceneLoaded -= CreateCategoryTabs;
         }
 
         /// <summary>
