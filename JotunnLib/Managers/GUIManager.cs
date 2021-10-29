@@ -437,6 +437,8 @@ namespace Jotunn.Managers
             CustomGUIFront.layer = UILayer;
             CustomGUIFront.transform.SetParent(parent.transform, false);
             CustomGUIFront.transform.SetAsLastSibling();
+            CustomGUIFront.GetComponent<RectTransform>().anchorMin = Vector2.zero;
+            CustomGUIFront.GetComponent<RectTransform>().anchorMax = Vector2.one;
 
 #pragma warning disable CS0618 // Type or member is obsolete
             PixelFix = CustomGUIFront;
@@ -446,6 +448,8 @@ namespace Jotunn.Managers
             CustomGUIBack.layer = UILayer;
             CustomGUIBack.transform.SetParent(parent.transform, false);
             CustomGUIBack.transform.SetAsFirstSibling();
+            CustomGUIBack.GetComponent<RectTransform>().anchorMin = Vector2.zero;
+            CustomGUIBack.GetComponent<RectTransform>().anchorMax = Vector2.one;
 
 #pragma warning disable CS0612 // Type or member is obsolete
             InvokeOnPixelFixCreated();
