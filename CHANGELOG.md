@@ -1,6 +1,7 @@
 ﻿# Changelog
 
 ## Version 2.3.10
+* Added custom piece table category injection at runtime
 * Fixed mock resolving of generic List types
 * Fixed CustomGUI anchor settings
 * Fixed Dropdown list sizing (thx joeyparrish)
