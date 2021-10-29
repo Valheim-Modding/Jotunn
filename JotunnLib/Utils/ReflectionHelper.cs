@@ -198,6 +198,23 @@ namespace Jotunn.Utils
                     return _enumerableToArray;
                 }
             }
+            
+            private static MethodInfo _enumerableToList;
+            /// <summary>
+            ///     <see cref="MethodInfo"/> of <see cref="Enumerable.ToList{TSource}"/>
+            /// </summary>
+            public static MethodInfo EnumerableToList
+            {
+                get
+                {
+                    if (_enumerableToList == null)
+                    {
+                        _enumerableToList = typeof(Enumerable).GetMethod("ToList", AllBindingFlags);
+                    }
+
+                    return _enumerableToList;
+                }
+            }
 
             private static MethodInfo _enumerableCast;
             /// <summary>

@@ -66,6 +66,7 @@ namespace Jotunn.Managers
             // Dont init on a headless server
             if (!GUIManager.IsHeadless())
             {
+                On.KeyHints.Start += GetBaseGameObjects;
                 On.KeyHints.Start += KeyHints_Start;
                 On.KeyHints.UpdateHints += KeyHints_UpdateHints;
             }
@@ -132,33 +133,15 @@ namespace Jotunn.Managers
                 KeyHintObjects.Remove(hintConfig.ToString());
             }
         }
-
-        /// <summary>
-        ///     Extract base key hint elements and create key hint objects.
-        /// </summary>
-        private void KeyHints_Start(On.KeyHints.orig_Start orig, KeyHints self)
-        {
-            try
-            {
-                orig(self);
-
-                KeyHintInstance = self;
-                KeyHintContainer = self.transform as RectTransform;
-
-                GetBaseGameObjects();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning($"Exception caught while creating key hint objects: {ex}");
-            }
-        }
-
+        
         /// <summary>
         ///     Instantiate base GameObjects from vanilla KeyHints to use in our custom key hints
         /// </summary>
-        private void GetBaseGameObjects()
+        private void GetBaseGameObjects(On.KeyHints.orig_Start orig, KeyHints self)
         {
-            var baseKeyHint = KeyHintInstance.m_buildHints;
+            orig(self);
+
+            var baseKeyHint = self.m_buildHints;
 
             // Get the Transforms of Keyboard and Gamepad
             var inputHint = baseKeyHint.GetComponent<UIInputHint>();
@@ -184,18 +167,60 @@ namespace Jotunn.Managers
             }
 
             BaseKey = Object.Instantiate(origKey);
+            BaseKey.name = "JotunnKeyHintBaseKey";
+            PrefabManager.Instance.AddPrefab(BaseKey);
+
             BaseRotate = Object.Instantiate(origRotate);
+            BaseRotate.name = "JotunnKeyHintBaseRotate";
+            PrefabManager.Instance.AddPrefab(BaseRotate);
+
             BaseButton = Object.Instantiate(origButton);
+            BaseButton.name = "JotunnKeyHintBaseButton";
+            PrefabManager.Instance.AddPrefab(BaseButton);
+
             BaseTrigger = Object.Instantiate(origTrigger);
+            BaseTrigger.name = "JotunnKeyHintBaseTrigger";
+            PrefabManager.Instance.AddPrefab(BaseTrigger);
+
             BaseShoulder = Object.Instantiate(origShoulder);
+            BaseShoulder.name = "JotunnKeyHintBaseShoulder";
+            PrefabManager.Instance.AddPrefab(BaseShoulder);
+
             BaseStick = Object.Instantiate(origStick);
+            BaseStick.name = "JotunnKeyHintBaseStick";
             Object.DestroyImmediate(BaseStick.transform.Find("Trigger").gameObject);
             Object.DestroyImmediate(BaseStick.transform.Find("plus").gameObject);
+            PrefabManager.Instance.AddPrefab(BaseStick);
+
             BaseDPad = Object.Instantiate(BaseTrigger);
+            BaseDPad.name = "JotunnKeyHintBaseDPad";
             BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
             BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().sizeDelta = new Vector2(25f, 25f);
-        }
+            PrefabManager.Instance.AddPrefab(BaseDPad);
 
+            // Prefabs are cached in the PrefabManager
+            On.KeyHints.Start -= GetBaseGameObjects;
+        }
+        
+        /// <summary>
+        ///     Extract base key hint elements and create key hint objects.
+        /// </summary>
+        private void KeyHints_Start(On.KeyHints.orig_Start orig, KeyHints self)
+        {
+            try
+            {
+                orig(self);
+
+                KeyHintInstance = self;
+                KeyHintContainer = self.transform as RectTransform;
+                KeyHintObjects.Clear();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception caught while creating key hint objects: {ex}");
+            }
+        }
+        
         /// <summary>
         ///     Copy vanilla BuildHints object and create a custom one from a KeyHintConfig.
         /// </summary>

@@ -57,6 +57,34 @@ namespace Jotunn
                 }
             }
         }
+        
+        /// <summary>
+        ///     try/catch the delegate chain so that it doesnt break on the first failing Delegate.
+        /// </summary>
+        /// <typeparam name="TArg1"></typeparam>
+        /// <typeparam name="TArg2"></typeparam>
+        /// <param name="events"></param>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        public static void SafeInvoke<TArg1, TArg2>(this Action<TArg1, TArg2> events, TArg1 arg1, TArg2 arg2)
+        {
+            if (events == null)
+            {
+                return;
+            }
+
+            foreach (Action<TArg1, TArg2> @event in events.GetInvocationList())
+            {
+                try
+                {
+                    @event(arg1, arg2);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogWarning($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {@event.Method.DeclaringType.Name}.{@event.Method.Name}:\n{e}");
+                }
+            }
+        }
 
         /// <summary>
         ///     try/catch the delegate chain so that it doesnt break on the first failing Delegate.
