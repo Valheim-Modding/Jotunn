@@ -178,13 +178,7 @@ namespace Jotunn.Managers
         ///     Counter to track multiple block requests.
         /// </summary>
         private static int InputBlockRequests;
-
-        /// <summary>
-        ///     The difference in width between a Dropdown and its contents, to allow
-        ///     room for the selection indicator.
-        /// </summary>
-        private const float DropdownContentOffset = 50f;
-
+        
         /// <summary>
         ///     Block all input except GUI
         /// </summary>
@@ -1092,7 +1086,7 @@ namespace Jotunn.Managers
             // Optionally set width and height
             if (width > 0f)
             {
-                float contentWidth = width - DropdownContentOffset;
+                float contentWidth = width - 50f;
                 dropdown.SetWidth(width);
                 dropdownComponent.captionText.gameObject.SetMiddleLeft();
                 dropdownComponent.captionText.gameObject.SetWidth(contentWidth);
