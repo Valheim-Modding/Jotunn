@@ -61,9 +61,7 @@ namespace Jotunn.Managers
         private Texture2D WaterTexVanilla;
         private Texture2D MountainTexVanilla;
         private Texture2D MainTexVanilla;
-
-        private Texture2D MountainTexRef;
-
+        
         private Texture2D TransparentTex;
         
         /// <summary>
@@ -211,31 +209,16 @@ namespace Jotunn.Managers
         private void SetupTextures()
         {
             Logger.LogInfo("Setting up MinimapOverlay Textures");
-            ForestFilterVanilla.SetPixels(Minimap.instance.m_forestMaskTexture.GetPixels());
-            HeightFilterVanilla.SetPixels(Minimap.instance.m_heightTexture.GetPixels());
-            FogFilterVanilla.SetPixels(Minimap.instance.m_fogTexture.GetPixels());
+            
+            // copy instance textures
+            Graphics.CopyTexture(Minimap.instance.m_forestMaskTexture, ForestFilterVanilla);
+            Graphics.CopyTexture(Minimap.instance.m_heightTexture, HeightFilterVanilla);
+            Graphics.CopyTexture(Minimap.instance.m_fogTexture, FogFilterVanilla);
+            Graphics.CopyTexture(Minimap.instance.m_mapTexture, MainTexVanilla);
 
-            MainTexVanilla.SetPixels(Minimap.instance.m_mapTexture.GetPixels());
-            MountainTexRef = (Texture2D)Minimap.instance.m_mapImageLarge.material.GetTexture("_MountainTex");
-            /*
-                        BackgroundTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-                        BackgroundTex.wrapMode = TextureWrapMode.Clamp;
-                        MainTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-                        MainTex.wrapMode = TextureWrapMode.Clamp;
-                        FogFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-                        FogFilter.wrapMode = TextureWrapMode.Clamp;
-                        HeightFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RFloat, mipChain: false);
-                        HeightFilter.wrapMode = TextureWrapMode.Clamp;
-                        ForestFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-                        ForestFilter.wrapMode = TextureWrapMode.Clamp;
-                        WaterTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-                        WaterTex.wrapMode = TextureWrapMode.Clamp;
-                        MountainTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-                        MountainTex.wrapMode = TextureWrapMode.Clamp;
-            */
             // copy unreadable textures.
-            BackupTexture(WaterTexVanilla, "_WaterTex");
             BackupTexture(BackgroundTexVanilla, "_BackgroundTex");
+            BackupTexture(WaterTexVanilla, "_WaterTex");
             BackupTexture(MountainTexVanilla, "_MountainTex");
 
             for(int i = 0; i < DefaultOverlaySize; i++)
@@ -246,12 +229,6 @@ namespace Jotunn.Managers
                 }
             }
             TransparentTex.Apply();
-
-            //typeof(Texture2D).GetField("isReadable", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(MountainTexRef, true);
-
-            Logger.LogInfo($"is readable mountaintex? {MountainTexRef.isReadable}");
-            Logger.LogInfo($"is readable maintex? {Minimap.instance.m_mapTexture.isReadable}");
-
         }
 
 
@@ -621,125 +598,47 @@ namespace Jotunn.Managers
             private bool _dirty;
             
             // bools per tex
-
-            public bool ForestDirty
-            {
-                get
-                {
-                    return _forestFilter != null && _forestDirty;
-                }
-                set
-                {
-                    _forestDirty = value;
-                }
-            }
-            private bool _forestDirty;
-
-            public bool FogDirty
-            {
-                get
-                {
-                    return _fogFilter != null && _fogDirty;
-                }
-                set
-                {
-                    _fogDirty = value;
-                }
-            }
-            private bool _fogDirty;
-
-            public bool HeightDirty 
-            {
-                get
-                {
-                    return _heightFilter != null && _heightDirty;
-                }
-                set
-                {
-                    _heightDirty = value;
-                }
-            }
-            private bool _heightDirty;
             
-            public bool MainDirty
-            {
-                get
-                {
-                    return _mainTex != null && _mainDirty;
-                }
-                set
-                {
-                    _mainDirty = value;
-                }
-            }
+            private bool _forestDirty;
+            private bool _fogDirty;
+            private bool _heightDirty;
             private bool _mainDirty;
+            private bool _backgroundDirty;
+            
+            private Texture2D _forestFilter;
+            private Texture2D _fogFilter;
+            private Texture2D _heightFilter;
+            private Texture2D _mainTex;
+            private Texture2D _backgroundTex;
+
+            public bool ForestDirty => _forestFilter != null && _forestDirty;
+
+            public bool FogDirty => _fogFilter != null && _fogDirty;
+
+            public bool HeightDirty => _heightFilter != null && _heightDirty;
+            
+            public bool MainDirty => _mainTex != null && _mainDirty;
 
             /*public bool WaterFlag { get; set; }
             public bool MountainFlag { get; set; }*/
             
-            public bool BackgroundDirty
-            {
-                get
-                {
-                    return _backgroundTex != null && _backgroundDirty;
-                }
-                set
-                {
-                    _backgroundDirty = value;
-                }
-            }
-            private bool _backgroundDirty;
+            public bool BackgroundDirty => _backgroundTex != null && _backgroundDirty;
 
             /// <summary>
             ///     Texture components holding the overlay texture data
             /// </summary>
-            public Texture2D ForestFilter
-            {
-                get
-                {
-                    return _forestFilter ??= Create(TextureFormat.RGBA32, Instance.ForestFilterVanilla);
-                }
-            }
-            private Texture2D _forestFilter;
+            public Texture2D ForestFilter => _forestFilter ??= Create(TextureFormat.RGBA32, Instance.ForestFilterVanilla);
 
-            public Texture2D FogFilter
-            {
-                get
-                {
-                    return _fogFilter ??= Create(TextureFormat.RGBA32, Instance.FogFilterVanilla);
-                }
-            }
-            private Texture2D _fogFilter;
+            public Texture2D FogFilter => _fogFilter ??= Create(TextureFormat.RGBA32, Instance.FogFilterVanilla);
 
-            public Texture2D HeightFilter
-            {
-                get
-                {
-                    return _heightFilter ??= Create(TextureFormat.RFloat, Instance.HeightFilterVanilla);
-                }
-            }
-            private Texture2D _heightFilter;
+            public Texture2D HeightFilter => _heightFilter ??= Create(TextureFormat.RFloat, Instance.HeightFilterVanilla);
 
-            public Texture2D MainTex
-            {
-                get
-                {
-                    return _mainTex ??= Create(TextureFormat.RGBA32, Instance.MainTexVanilla);
-                }
-            }
-            private Texture2D _mainTex;
+            public Texture2D MainTex => _mainTex ??= Create(TextureFormat.RGBA32, Instance.MainTexVanilla);
 
             /*public Texture2D WaterTex { get; internal set; }
             public Texture2D MountainTex { get; internal set; }*/
 
-            public Texture2D BackgroundTex
-            {
-                get
-                {
-                    return _backgroundTex ??= Create(TextureFormat.RGBA32, Instance.BackgroundTexVanilla);
-                }
-            }
-            private Texture2D _backgroundTex;
+            public Texture2D BackgroundTex => _backgroundTex ??= Create(TextureFormat.RGBA32, Instance.BackgroundTexVanilla);
             
             private Func<TextureFormat, Texture2D, Texture2D> Create = (fmt, van) =>
             {
