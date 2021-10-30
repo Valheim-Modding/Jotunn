@@ -5,11 +5,13 @@
 // Project: TestMod
 
 using System.Collections.Generic;
+using System.Linq;
 using BepInEx;
 using Jotunn;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
+using On.Steamworks;
 using UnityEngine;
 
 namespace TestMod3
@@ -52,24 +54,37 @@ Additional Future Changes which may be added later:
         private void MinimapManager_OnVanillaMapDataLoaded()
         {
             flattenoverlay = MinimapManager.Instance.AddMapOverlay("testflatten_overlay");
-            for(int i = 0; i < flattenoverlay.TextureSize; i++)
-            {
-                for(int j = 0; j < flattenoverlay.TextureSize; j++)
-                {
-                    flattenoverlay.HeightFilter.SetPixel(i, j, new Color(31, 0, 0));
-                }
-            }
-            flattenoverlay.HeightFilter.Apply();
+            FlattenMap(32);
 
             squareoverlay = MinimapManager.Instance.AddMapOverlay("testsquares_overlay");
+            DrawSquaresOnMapPins(Color.red);
+        }
+
+        private static void FlattenMap(int height)
+        {
+            for (int i = 0; i < flattenoverlay.TextureSize; i++)
+            {
+                for (int j = 0; j < flattenoverlay.TextureSize; j++)
+                {
+                    flattenoverlay.HeightFilter.SetPixel(i, j, new Color(height, 0, 0));
+                }
+            }
+
+            flattenoverlay.HeightFilter.Apply();
+        }
+        
+        private static void DrawSquaresOnMapPins(Color color)
+        {
             foreach (var p in Minimap.instance.m_pins)
             {
-                DrawSquare(squareoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, squareoverlay.TextureSize), Color.red, 10);
+                DrawSquare(squareoverlay.MainTex,
+                    MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, squareoverlay.TextureSize), color, 10);
             }
+
             squareoverlay.MainTex.Apply();
         }
 
-        private void DrawSquare(Texture2D tex, Vector2 start, Color col, int square_size)
+        private static void DrawSquare(Texture2D tex, Vector2 start, Color col, int square_size)
         {
             Jotunn.Logger.LogInfo($"Starting drawsquare at {start}");
             for (float i = start.x; i < start.x + square_size; i++)
@@ -83,12 +98,26 @@ Additional Future Changes which may be added later:
 
         private class CHCommands_squares : ConsoleCommand
         {
+            private readonly Dictionary<string, Color> colors = new Dictionary<string, Color>();
+
             public override string Name => "chsq";
 
             public override string Help => "run the channel helper";
 
+            public CHCommands_squares()
+            {
+                colors.Add("red", Color.red);
+                colors.Add("green", Color.green);
+                colors.Add("blue", Color.blue);
+            }
+
             public override void Run(string[] args)
             {
+                if (args.Length == 1 && colors.TryGetValue(args[0], out Color color))
+                {
+                    DrawSquaresOnMapPins(color);
+                    return;
+                }
                 squareoverlay.Enabled = !squareoverlay.Enabled; // toggle
             }
         }
@@ -97,10 +126,15 @@ Additional Future Changes which may be added later:
         {
             public override string Name => "chf";
 
-            public override string Help => "run the channel helper";
+            public override string Help => "Change map height information";
 
             public override void Run(string[] args)
             {
+                if (args.Length == 1 && int.TryParse(args[0], out int height))
+                {
+                    FlattenMap(height);
+                    return;
+                }
                 flattenoverlay.Enabled = !flattenoverlay.Enabled; // toggle
             }
         }
