@@ -23,7 +23,6 @@ namespace Jotunn.GUI
             set
             {
                 var handler = value.GetComponent<ISubmitHandler>();
-                if(handler != null)
                 {
                     _interactionTarget = value;
                     interactionTargetSubmitHandler = handler;
@@ -39,9 +38,6 @@ namespace Jotunn.GUI
                     selectable.OnDeselect(new BaseEventData(EventSystem.current));
 
 
-                } else
-                {
-                    Debug.LogError("GameObject '" + gameObject.name + "' does not have a component that implements ISubmitHandler");
                 }
             }
         }
@@ -57,7 +53,14 @@ namespace Jotunn.GUI
         {
             if (InteractionTarget != null)
             {
-                interactionTargetSubmitHandler.OnSubmit(eventData);
+                if (interactionTargetSubmitHandler == null)
+                {
+                    InteractionTarget.GetComponent<Selectable>()?.Select();
+                }
+                else
+                {
+                    interactionTargetSubmitHandler.OnSubmit(eventData);
+                }
             }
         }
 
