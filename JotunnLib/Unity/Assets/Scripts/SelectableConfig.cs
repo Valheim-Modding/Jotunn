@@ -28,13 +28,13 @@ namespace Jotunn.GUI
                     _interactionTarget = value;
                     interactionTargetSubmitHandler = handler;
                     var selectable = value.GetComponent<Selectable>();
-                    this.transition = selectable.transition;
-                    this.spriteState = selectable.spriteState;
-                    this.navigation = selectable.navigation;
-                    this.interactable = selectable.interactable;
-                    this.image = selectable.image;
-                    this.colors = selectable.colors;
-                    this.animationTriggers = selectable.animationTriggers;
+                    transition = selectable.transition;
+                    spriteState = selectable.spriteState;
+                    navigation = selectable.navigation;
+                    interactable = selectable.interactable;
+                    image = selectable.image;
+                    colors = selectable.colors;
+                    animationTriggers = selectable.animationTriggers;
                     targetGraphic = selectable.targetGraphic;
                     selectable.OnDeselect(new BaseEventData(EventSystem.current));
 
