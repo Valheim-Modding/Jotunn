@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using MonoMod.RuntimeDetour;
 using Unity.Collections;
 using Unity.Jobs;
@@ -41,8 +43,7 @@ namespace Jotunn.Managers
         private Color MainTexHeightColour = new Color(10f, 0f, 0f);
         private const int DefaultOverlaySize = 2048;
         private const string OverlayNamePrefix = "custom_map_overlay_";
-
-        private CoroutineHelper helper;
+        
         private GameObject ScrollView;
         private Dictionary<string, MapOverlay> Overlays = new Dictionary<string, MapOverlay>();
         private int OverlayID;
@@ -64,308 +65,125 @@ namespace Jotunn.Managers
         private Texture2D MountainTexRef;
 
         private Texture2D TransparentTex;
-
-        // working copies of vanilla textures
-        /*
-                private Texture2D SpaceTex;
-                private Texture2D CloudTex;
-                private Texture2D FogTex;
-
-                private Texture2D FogFilter;
-                private Texture2D HeightFilter;
-                private Texture2D ForestFilter;
-                private Texture2D BackgroundTex;
-                private Texture2D MountainTex;
-                private Texture2D MainTex;
-                private Texture2D WaterTex;
-        */
-
-        public class CoroutineHelper: MonoBehaviour
-        {
-
-            public void Compose(int strategy)
-            {
-                StartCoroutine(CheckJobComplete(strategy));
-            }
-
-            private IEnumerator<WaitForSeconds> CheckJobComplete(int strategy)
-            {
-                var watch = new System.Diagnostics.Stopwatch();
-                watch.Start();
-                Logger.LogInfo("Resetting vanilla maps");
-                Minimap.instance.m_fogTexture.SetPixels(Instance.FogFilterVanilla.GetPixels());
-                Minimap.instance.m_mapTexture.SetPixels(Instance.MainTexVanilla.GetPixels());
-                Minimap.instance.m_forestMaskTexture.SetPixels(Instance.ForestFilterVanilla.GetPixels());
-                Minimap.instance.m_heightTexture.SetPixels(Instance.HeightFilterVanilla.GetPixels());
-                yield return null;
-                watch.Stop();
-                Logger.LogInfo($"Resetting to vanilla maps took {watch.ElapsedMilliseconds}ms time");
-                //Paint();
-                StartCoroutine(Paint(strategy));
-                Logger.LogInfo("finished resetting vanilla maps");
-            }
-
-
-            private IEnumerator<WaitForSeconds> Paint(int strategy)
-            {
-                Logger.LogInfo("starting composing");
-                var watch = new System.Diagnostics.Stopwatch();
-                watch.Start();
-                foreach (var m in Instance.Overlays)
-                {
-                    if (!m.Value.Enabled) { continue; }
-                    Logger.LogInfo("Drawing on map");
-
-                    if (strategy == 0)
-                    {
-                        if (m.Value.MainFlag)
-                        {
-                            for (int i = 0; i < DefaultOverlaySize; i++)
-                            {
-                                for (int j = 0; j < DefaultOverlaySize; j++)
-                                {
-                                    var p = m.Value.MainImg.GetPixel(i, j);
-                                    Minimap.instance.m_mapTexture.SetPixel(i, j, p);
-                                }
-                            }
-                        }
-                        //yield return null;
-
-                        if (m.Value.FogFlag)
-                        {
-                            for (int i = 0; i < DefaultOverlaySize; i++)
-                            {
-                                for (int j = 0; j < DefaultOverlaySize; j++)
-                                {
-                                    var p = m.Value.FogFilter.GetPixel(i, j);
-                                    Minimap.instance.m_fogTexture.SetPixel(i, j, p);
-                                }
-                            }
-                        }
-
-                        if (m.Value.ForestFlag)
-                        {
-                            for (int i = 0; i < DefaultOverlaySize; i++)
-                            {
-                                for (int j = 0; j < DefaultOverlaySize; j++)
-                                {
-                                    var p = m.Value.ForestFilter.GetPixel(i, j);
-                                    Minimap.instance.m_forestMaskTexture.SetPixel(i, j, p);
-                                }
-                            }
-                        }
-
-                        if (m.Value.HeightFlag)
-                        {
-                            for (int i = 0; i < DefaultOverlaySize; i++)
-                            {
-                                for (int j = 0; j < DefaultOverlaySize; j++)
-                                {
-                                    var p = m.Value.HeightFilter.GetPixel(i, j);
-                                    Minimap.instance.m_heightTexture.SetPixel(i, j, p);
-                                }
-                            }
-                        }
-                    }
-                    else if (strategy == 1)
-                    {
-                        for (int i = 0; i < DefaultOverlaySize; i++)
-                        {
-                            for (int j = 0; j < DefaultOverlaySize; j++)
-                            {
-                                // Note: if this function is too slow try iterating over each texture by itself. 
-
-                                var p = m.Value.MainImg.GetPixel(i, j);
-                                if (m.Value.MainFlag)
-                                {
-                                    Minimap.instance.m_mapTexture.SetPixel(i, j, p);
-                                }
-
-                                p = m.Value.FogFilter.GetPixel(i, j);
-                                if (m.Value.FogFlag)
-                                {
-                                    Minimap.instance.m_fogTexture.SetPixel(i, j, p);
-                                }
-
-                                p = m.Value.ForestFilter.GetPixel(i, j);
-                                if (m.Value.ForestFlag)
-                                {
-                                    Minimap.instance.m_forestMaskTexture.SetPixel(i, j, p);
-                                }
-
-                                p = m.Value.HeightFilter.GetPixel(i, j);
-                                if (m.Value.HeightFlag)
-                                {
-                                    Minimap.instance.m_heightTexture.SetPixel(i, j, p);
-                                }
-                            }
-                           // yield return null;
-                        }
-                        //yield return null;
-                    }
-                    else if (strategy == 2)
-                    {
-                        if (m.Value.MainFlag)
-                        {
-                            for (int i = 0; i < DefaultOverlaySize; i++)
-                            {
-                                for (int j = 0; j < DefaultOverlaySize; j++)
-                                {
-                                    var p = m.Value.MainImg.GetPixel(i, j);
-                                    if(p.a > 0)
-                                    {
-                                        Minimap.instance.m_mapTexture.SetPixel(i, j, p);
-                                    }
-                                    
-                                }
-                            }
-                        }
-                        //yield return null;
-
-                        if (m.Value.FogFlag)
-                        {
-                            for (int i = 0; i < DefaultOverlaySize; i++)
-                            {
-                                for (int j = 0; j < DefaultOverlaySize; j++)
-                                {
-                                    var p = m.Value.FogFilter.GetPixel(i, j);
-                                    Minimap.instance.m_fogTexture.SetPixel(i, j, p);
-                                }
-                            }
-                        }
-
-                        if (m.Value.ForestFlag)
-                        {
-                            for (int i = 0; i < DefaultOverlaySize; i++)
-                            {
-                                for (int j = 0; j < DefaultOverlaySize; j++)
-                                {
-                                    var p = m.Value.ForestFilter.GetPixel(i, j);
-                                    Minimap.instance.m_forestMaskTexture.SetPixel(i, j, p);
-                                }
-                            }
-                        }
-
-                        if (m.Value.HeightFlag)
-                        {
-                            for (int i = 0; i < DefaultOverlaySize; i++)
-                            {
-                                for (int j = 0; j < DefaultOverlaySize; j++)
-                                {
-                                    var p = m.Value.HeightFilter.GetPixel(i, j);
-                                    Minimap.instance.m_heightTexture.SetPixel(i, j, p);
-                                }
-                            }
-                        }
-                    } else if (strategy == 3)
-                    {
-                        // use rendertexture
-                        RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
-
-                        // Blit the pixels on texture to the RenderTexture
-                        Graphics.Blit(m.Value.MainImg, tmp);
-
-                        // Backup the currently set RenderTexture
-                        RenderTexture previous = RenderTexture.active;
-
-                        // Set the current RenderTexture to the temporary one we created
-                        RenderTexture.active = tmp;
-
-                        // Copy the pixels from the RenderTexture to the new Texture
-                        //tex.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
-                        //tex.Apply();
-                        Minimap.instance.m_mapTexture.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
-                        Minimap.instance.m_mapTexture.Apply();
-                        // Reset the active RenderTexture
-                        RenderTexture.active = previous;
-
-                        // Release the temporary RenderTexture
-                        RenderTexture.ReleaseTemporary(tmp);
-
-
-                    }
-
-
-                }
-                yield return null;
-                watch.Stop();
-                Logger.LogInfo($"Strategy {strategy} took {watch.ElapsedMilliseconds}ms time");
-                Minimap.instance.m_mapTexture.Apply();
-                Minimap.instance.m_forestMaskTexture.Apply();
-                Minimap.instance.m_heightTexture.Apply();
-                Minimap.instance.m_fogTexture.Apply();
-                Logger.LogInfo("Finished applying new maps data from coroutine");
-            }
-        }
-
-
-        /// <summary>
-        ///     Object for modders to use to access and modify their Overlay.
-        ///     Modders should modify the texture directly.
-        ///     MapName and TextureSize should not be modified.
-        ///     
-        ///     Although fog gets updated on the vanilla texture, it is possible for the MapOverlay to get a snapshot of old Fog data, then continuously apply that outdated info.
-        /// </summary>
-        public class MapOverlay
-        {
-            /// <summary>
-            ///     Unique ID per overlay
-            /// </summary>
-            internal string MapName;
-
-            /// <summary>
-            ///     Initial texture size to calculate the relative drawing position
-            /// </summary>
-            public int TextureSize { get; internal set; }
-
-            public bool ForestFlag { get; set; } = false;
-            public bool FogFlag { get; set; } = false;
-            public bool HeightFlag { get; set; } = false;
-            public bool MainFlag { get; set; } = false;
-            public bool WaterFlag { get; set; } = false;
-            public bool MountainFlag { get; set; } = false;
-            public bool BackgroundFlag { get; set; } = false;
-
-            /// <summary>
-            ///     Image component holding the overlay texture data
-            /// </summary>
-            public Texture2D ForestFilter { get; internal set; }
-            public Texture2D FogFilter { get; internal set; }
-            public Texture2D HeightFilter { get; internal set; }
-            public Texture2D MainImg { get; internal set; }
-            public Texture2D WaterImg { get; internal set; }
-            public Texture2D MountainImg { get; internal set; }
-            public Texture2D BackgroundImg { get; internal set; }
-
-            /// <summary>
-            ///     Set true to render this overlay, false to hide
-            /// </summary>
-            public bool Enabled { get; set; }
-        }
         
         /// <summary>
         ///     Creates the Overlays and registers hooks.
         /// </summary>
         public void Init()
         {
-
-            using (new DetourContext(int.MaxValue - 1000))
-            {
-                //On.Minimap.Start += Minimap_Start;
-                On.Minimap.Start += InvokeOnVanillaMapAvailable;
-                On.Minimap.LoadMapData += InvokeOnVanillaMapDataLoaded;
-                On.Minimap.Explore_int_int += InvokeOnVanillaMapExplore;
-                On.Minimap.ExploreOthers += InvokeOnVanillaMapExploreOthers;
-                On.Minimap.Reset += InvokeOnVanillaMapReset;
-            }
-
+            On.Minimap.Start += InvokeOnVanillaMapAvailable;
+            On.Minimap.LoadMapData += InvokeOnVanillaMapDataLoaded;
+            On.Minimap.Explore_int_int += Minimap_Explore;
+            On.Minimap.ExploreOthers += Minimap_ExploreOthers;
+            On.Minimap.Reset += Minimap_Reset;
             
             SceneManager.activeSceneChanged += (current, next) => Instance.Overlays.Clear();
-            //OnVanillaMapAvailable += InitializeTextures;
             OnVanillaMapDataLoaded += SetupTextures;
             OnVanillaMapDataLoaded += MapGUICreate;
-            OnVanillaMapAvailable += SetupCoroutineObject;
+            OnVanillaMapAvailable += StartWatchdog;
+        }
 
+        private void StartWatchdog()
+        {
+            IEnumerator watchdog()
+            {
+                while (true)
+                {
+                    if (Overlays.Values.Any(x => x.Dirty))
+                    {
+                        Logger.LogInfo("Redraw dirty");
+                        var watch = new System.Diagnostics.Stopwatch();
+                        watch.Start();
+                        DrawMain();
+                        DrawHeight();
+                        foreach(var overlay in Overlays.Values)
+                        {
+                            overlay.Dirty = false;
+                        }
+                        if (Minimap.instance.m_smallRoot.activeSelf)
+                        {
+                            Minimap.instance.m_smallRoot.SetActive(false);
+                            Minimap.instance.m_smallRoot.SetActive(true);
+                        }
+                        watch.Stop();
+                        Logger.LogInfo($"drawing took {watch.ElapsedMilliseconds}ms time");
+                    }
+
+                    yield return null;
+                }
+            }
+            Minimap.instance.StartCoroutine(watchdog());
+        }
+
+        private void DrawMain()
+        {
+            if (!Overlays.Values.Any(x => x.MainDirty))
+            {
+                return;
+            }
+
+            Logger.LogInfo("Redraw Main");
+
+            Texture2D texture =
+                new Texture2D(MainTexVanilla.width, MainTexVanilla.height, MainTexVanilla.format, false);
+            Graphics.CopyTexture(MainTexVanilla, texture);
+            foreach(var overlay in Overlays.Values.Where(x => x.MainDirty && x.Enabled))
+            {
+                texture.SetPixels32(overlay.MainTex.GetPixels32());
+            }
+            texture.Apply();
+            Minimap.instance.m_mapImageSmall.material.SetTexture("_MainTex", texture);
+            Minimap.instance.m_mapImageLarge.material.SetTexture("_MainTex", texture);
+        }
+        
+        private void DrawHeight()
+        {
+            if (!Overlays.Values.Any(x => x.HeightDirty))
+            {
+                return;
+            }
+            
+            Logger.LogInfo("Redraw Height");
+
+            Texture2D texture =
+                new Texture2D(HeightFilterVanilla.width, HeightFilterVanilla.height, HeightFilterVanilla.format, false);
+            Graphics.CopyTexture(HeightFilterVanilla, texture);
+            foreach(var overlay in Overlays.Values.Where(x => x.HeightDirty && x.Enabled))
+            {
+                texture.SetPixels(overlay.HeightFilter.GetPixels());
+            }
+            texture.Apply();
+            Minimap.instance.m_mapImageSmall.material.SetTexture("_HeightTex", texture);
+            Minimap.instance.m_mapImageLarge.material.SetTexture("_HeightTex", texture);
+        }
+
+        private void DrawOverlay(MapOverlay overlay)
+        {
+            // use rendertexture
+            RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
+
+            // Blit the pixels on texture to the RenderTexture
+            Graphics.Blit(overlay.MainTex, tmp);
+
+            // Backup the currently set RenderTexture
+            RenderTexture previous = RenderTexture.active;
+
+            // Set the current RenderTexture to the temporary one we created
+            RenderTexture.active = tmp;
+
+            // Copy the pixels from the RenderTexture to the new Texture
+            //tex.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+            //tex.Apply();
+            Minimap.instance.m_mapTexture.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+            Minimap.instance.m_mapTexture.Apply();
+            // Reset the active RenderTexture
+            RenderTexture.active = previous;
+
+            // Release the temporary RenderTexture
+            RenderTexture.ReleaseTemporary(tmp);
+
+            // clean the overlay
+            overlay.Dirty = false;
         }
 
         private void InitializeTextures()
@@ -575,56 +393,7 @@ namespace Jotunn.Managers
             Minimap.instance.m_heightTexture.SetPixels(HeightFilterVanilla.GetPixels());
             //MountainTexRef.SetPixels(MountainTexVanilla.GetPixels());
         }
-
-        public void ComposeOverlays(int strategy=0)
-        {
-            //ResetVanillaMap();
-            helper.Compose(strategy);
-            return;
-
-            foreach (var m in Overlays)
-            {
-                if (!m.Value.Enabled) { continue; }
-                Logger.LogInfo("Drawing on map");
-
-                for (int i = 0; i < DefaultOverlaySize; i++)
-                {
-                    for (int j = 0; j < DefaultOverlaySize; j++)
-                    {
-                        // Note: if this function is too slow try iterating over each texture by itself. 
-
-                        var p = m.Value.MainImg.GetPixel(i, j);
-                        if (m.Value.MainFlag)
-                        {
-                            Minimap.instance.m_mapTexture.SetPixel(i, j, p);
-                        }
-
-                        p = m.Value.FogFilter.GetPixel(i, j);
-                        if (m.Value.FogFlag)
-                        {
-                            Minimap.instance.m_fogTexture.SetPixel(i, j, p);
-                        }
-
-                        p = m.Value.ForestFilter.GetPixel(i, j);
-                        if (m.Value.ForestFlag)
-                        {
-                            Minimap.instance.m_forestMaskTexture.SetPixel(i, j, p);
-                        }
-
-                        p = m.Value.HeightFilter.GetPixel(i, j);
-                        if (m.Value.HeightFlag)
-                        {
-                            Minimap.instance.m_heightTexture.SetPixel(i, j, p);
-                        }
-                    }
-                }
-            }
-            Minimap.instance.m_mapTexture.Apply();
-            Minimap.instance.m_forestMaskTexture.Apply();
-            Minimap.instance.m_heightTexture.Apply();
-            Minimap.instance.m_fogTexture.Apply();
-        }
-
+        
         /// <summary>
         ///     Helper function to set default properties of a MapOverlay.
         ///     Create a new image of our custom default size and set its anchor min/max to the bottom left.
@@ -634,24 +403,8 @@ namespace Jotunn.Managers
         private void AddOverlay(MapOverlay ovl)
         {
             ovl.Enabled = true;
+            ovl.Dirty = true;
             ovl.TextureSize = DefaultOverlaySize;
-
-            Func<TextureFormat, Texture2D, Texture2D> Create = (fmt, van) =>
-            {
-                var t = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, fmt, mipChain: false);
-                t.wrapMode = TextureWrapMode.Clamp;
-                t.SetPixels(van.GetPixels());
-                //t.SetPixels(TransparentTex.GetPixels());
-                return t;
-            };
-
-            ovl.MainImg = Create(TextureFormat.RGBA32, MainTexVanilla);
-            ovl.MountainImg = Create(TextureFormat.RGBA32, MountainTexVanilla);
-            ovl.BackgroundImg = Create(TextureFormat.RGBA32, BackgroundTexVanilla);
-            ovl.WaterImg = Create(TextureFormat.RGBA32, WaterTexVanilla);
-            ovl.FogFilter = Create(TextureFormat.RGBA32, FogFilterVanilla);
-            ovl.ForestFilter = Create(TextureFormat.RGBA32, ForestFilterVanilla);
-            ovl.HeightFilter = Create(TextureFormat.RFloat, HeightFilterVanilla);
 
             AddOverlayToGUI(ovl);
             Overlays.Add(ovl.MapName, ovl);
@@ -677,7 +430,7 @@ namespace Jotunn.Managers
             OnVanillaMapDataLoaded?.SafeInvoke();
         }
 
-        private bool InvokeOnVanillaMapExplore(On.Minimap.orig_Explore_int_int orig, Minimap self, int x, int y)
+        private bool Minimap_Explore(On.Minimap.orig_Explore_int_int orig, Minimap self, int x, int y)
         {
             if (!self.m_explored[y * self.m_textureSize + x])
             {
@@ -688,7 +441,7 @@ namespace Jotunn.Managers
 
         }
 
-        private bool InvokeOnVanillaMapExploreOthers(On.Minimap.orig_ExploreOthers orig, Minimap self, int x, int y)
+        private bool Minimap_ExploreOthers(On.Minimap.orig_ExploreOthers orig, Minimap self, int x, int y)
         {
             if (!self.m_explored[y * self.m_textureSize + x])
             {
@@ -699,7 +452,7 @@ namespace Jotunn.Managers
         }
 
         
-        private void InvokeOnVanillaMapReset(On.Minimap.orig_Reset orig, Minimap self)
+        private void Minimap_Reset(On.Minimap.orig_Reset orig, Minimap self)
         {
             orig(self);
             FogFilterVanilla.SetPixels(self.m_fogTexture.GetPixels());
@@ -808,10 +561,193 @@ namespace Jotunn.Managers
             //GUIManager.Instance.CreateDropDown;
         }
 
-        private void SetupCoroutineObject()
+        /// <summary>
+        ///     Object for modders to use to access and modify their Overlay.
+        ///     Modders should modify the texture directly.
+        ///     
+        ///     Although fog gets updated on the vanilla texture, it is possible for the MapOverlay to get a snapshot of old Fog data, then continuously apply that outdated info.
+        /// </summary>
+        public class MapOverlay
         {
-            helper = Minimap.instance.gameObject.AddComponent<CoroutineHelper>();
-        }
+            /// <summary>
+            ///     Unique ID per overlay
+            /// </summary>
+            internal string MapName;
+            
+            /// <summary>
+            ///     Initial texture size to calculate the relative drawing position
+            /// </summary>
+            public int TextureSize { get; internal set; }
+            
+            /// <summary>
+            ///     Set true to render this overlay, false to hide
+            /// </summary>
+            public bool Enabled
+            {
+                get
+                {
+                    return _enabled;
+                }
+                set
+                {
+                    if (_enabled != value)
+                    {
+                        _enabled = value;
+                        Dirty = true;
+                    }
+                }
+            }
+            private bool _enabled;
 
+            /// <summary>
+            ///     Flag to determine if this overlay had changes since its last draw
+            /// </summary>
+            internal bool Dirty
+            {
+                get
+                {
+                    return _dirty | ForestDirty | FogDirty | HeightDirty | MainDirty | BackgroundDirty;
+                }
+                set
+                {
+                    _dirty = value;
+                    _forestDirty = value;
+                    _fogDirty = value;
+                    _heightDirty = value;
+                    _mainDirty = value;
+                    _backgroundDirty = value;
+                }
+            }
+            private bool _dirty;
+            
+            // bools per tex
+
+            public bool ForestDirty
+            {
+                get
+                {
+                    return _forestFilter != null && _forestDirty;
+                }
+                set
+                {
+                    _forestDirty = value;
+                }
+            }
+            private bool _forestDirty;
+
+            public bool FogDirty
+            {
+                get
+                {
+                    return _fogFilter != null && _fogDirty;
+                }
+                set
+                {
+                    _fogDirty = value;
+                }
+            }
+            private bool _fogDirty;
+
+            public bool HeightDirty 
+            {
+                get
+                {
+                    return _heightFilter != null && _heightDirty;
+                }
+                set
+                {
+                    _heightDirty = value;
+                }
+            }
+            private bool _heightDirty;
+            
+            public bool MainDirty
+            {
+                get
+                {
+                    return _mainTex != null && _mainDirty;
+                }
+                set
+                {
+                    _mainDirty = value;
+                }
+            }
+            private bool _mainDirty;
+
+            /*public bool WaterFlag { get; set; }
+            public bool MountainFlag { get; set; }*/
+            
+            public bool BackgroundDirty
+            {
+                get
+                {
+                    return _backgroundTex != null && _backgroundDirty;
+                }
+                set
+                {
+                    _backgroundDirty = value;
+                }
+            }
+            private bool _backgroundDirty;
+
+            /// <summary>
+            ///     Texture components holding the overlay texture data
+            /// </summary>
+            public Texture2D ForestFilter
+            {
+                get
+                {
+                    return _forestFilter ??= Create(TextureFormat.RGBA32, Instance.ForestFilterVanilla);
+                }
+            }
+            private Texture2D _forestFilter;
+
+            public Texture2D FogFilter
+            {
+                get
+                {
+                    return _fogFilter ??= Create(TextureFormat.RGBA32, Instance.FogFilterVanilla);
+                }
+            }
+            private Texture2D _fogFilter;
+
+            public Texture2D HeightFilter
+            {
+                get
+                {
+                    return _heightFilter ??= Create(TextureFormat.RFloat, Instance.HeightFilterVanilla);
+                }
+            }
+            private Texture2D _heightFilter;
+
+            public Texture2D MainTex
+            {
+                get
+                {
+                    return _mainTex ??= Create(TextureFormat.RGBA32, Instance.MainTexVanilla);
+                }
+            }
+            private Texture2D _mainTex;
+
+            /*public Texture2D WaterTex { get; internal set; }
+            public Texture2D MountainTex { get; internal set; }*/
+
+            public Texture2D BackgroundTex
+            {
+                get
+                {
+                    return _backgroundTex ??= Create(TextureFormat.RGBA32, Instance.BackgroundTexVanilla);
+                }
+            }
+            private Texture2D _backgroundTex;
+            
+            private Func<TextureFormat, Texture2D, Texture2D> Create = (fmt, van) =>
+            {
+                var t = new Texture2D(van.width, van.height, fmt, mipChain: false);
+                t.wrapMode = TextureWrapMode.Clamp;
+                Graphics.CopyTexture(van, t);
+                return t;
+            };
+        }
     }
 }
