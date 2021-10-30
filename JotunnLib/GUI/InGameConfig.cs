@@ -1415,11 +1415,11 @@ namespace Jotunn.GUI
             {
                 Button.onClick.AddListener(() =>
                 {
-                    StartCoroutine(nameof(CheckForKeysDown));
+                    StartCoroutine(nameof(CheckForKeysDownAndUp));
                 });
             }
 
-            private IEnumerator CheckForKeysDown()
+            private IEnumerator CheckForKeysDownAndUp()
             {
                 var anyKeyDown = false;
                 do
@@ -1427,7 +1427,7 @@ namespace Jotunn.GUI
                     anyKeyDown = false;
                     foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
                     {
-                        if (Input.GetKeyDown(key))
+                        if (Input.GetKeyDown(key) || Input.GetKey(key))
                         {
                             anyKeyDown = true;
                         }
