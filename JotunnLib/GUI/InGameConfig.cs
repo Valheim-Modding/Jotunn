@@ -711,6 +711,10 @@ namespace Jotunn.GUI
             GUIManager.Instance.ApplySliderStyle(slider.GetComponent<Slider>());
             slider.SetActive(false);
 
+            // Add SelectableConfig and pass field as target
+            var selectable = result.AddComponent<SelectableConfig>();
+            selectable.InteractionTarget = slider;
+
             // set the preferred height on the layout element
             result.GetComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
             return result;
@@ -784,6 +788,10 @@ namespace Jotunn.GUI
                 .SetUpperRight().SetSize(30f, label.GetTextHeight() + 6f);
             button.transform.SetParent(layout.transform, false);
 
+
+            // Add SelectableConfig and pass ColorPicker button as target
+            result.AddComponent<SelectableConfig>().InteractionTarget = button;
+
             // Image
             var image = button.GetComponent<Image>();
             var sprite = GUIManager.Instance.GetSprite("UISprite");
@@ -833,7 +841,10 @@ namespace Jotunn.GUI
             result.SetWidth(width);
 
             // and now the toggle itself
-            GUIManager.Instance.CreateToggle(result.transform, 20f, 20f).SetUpperRight();
+            var toggle = GUIManager.Instance.CreateToggle(result.transform, 20f, 20f).SetUpperRight();
+
+            // Add SelectableConfig and pass toggle as target
+            result.AddComponent<SelectableConfig>().InteractionTarget = toggle;
 
             // create the label text element
             var label = GUIManager.Instance.CreateText(labelname, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
@@ -876,7 +887,7 @@ namespace Jotunn.GUI
         {
             // Create label and keybind button
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 4f);
-            
+
             // Create description text
             var idx = 0;
             var lastPosition = new Vector2(0, -result.GetComponent<RectTransform>().rect.height - 3f);

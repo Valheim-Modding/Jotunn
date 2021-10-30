@@ -1141,6 +1141,10 @@ namespace Jotunn.Managers
 
             bindString.transform.SetParent(button.transform, false);
 
+            
+            // Add SelectableConfig and pass button as target
+            input.AddComponent<SelectableConfig>().InteractionTarget = button;
+
             return input;
         }
 
