@@ -104,7 +104,7 @@ namespace Jotunn.Managers
                             Minimap.instance.m_smallRoot.SetActive(true);
                         }
                         watch.Stop();
-                        Logger.LogInfo($"drawing took {watch.ElapsedMilliseconds}ms time");
+                        Logger.LogInfo($"Drawing took {watch.ElapsedMilliseconds}ms time");
                     }
 
                     yield return null;
@@ -186,7 +186,11 @@ namespace Jotunn.Managers
 
         private void InitializeTextures()
         {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+
             Logger.LogInfo("Initializing MinimapOverlay Textures");
+
             ForestFilterVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             ForestFilterVanilla.wrapMode = TextureWrapMode.Clamp;
             HeightFilterVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RFloat, mipChain: false);
@@ -205,9 +209,15 @@ namespace Jotunn.Managers
 
             TransparentTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             TransparentTex.wrapMode = TextureWrapMode.Clamp;
+
+            watch.Stop();
+            Logger.LogInfo($"Init took {watch.ElapsedMilliseconds}ms time");
         }
         private void SetupTextures()
         {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+
             Logger.LogInfo("Setting up MinimapOverlay Textures");
             
             // copy instance textures
@@ -229,6 +239,9 @@ namespace Jotunn.Managers
                 }
             }
             TransparentTex.Apply();
+
+            watch.Stop();
+            Logger.LogInfo($"Setup took {watch.ElapsedMilliseconds}ms time");
         }
 
 
@@ -287,7 +300,7 @@ namespace Jotunn.Managers
             }
 
             MapOverlay res = new MapOverlay();
-            res.MapName = name;
+            res.ID = name;
             AddOverlay(res);
             return res;
         }
@@ -300,7 +313,7 @@ namespace Jotunn.Managers
         /// <param name="ovl">The MapOverlay to be registered</param>
         public void AddMapOverlay(MapOverlay ovl)
         {
-            Overlays.Add(ovl.MapName, ovl);
+            Overlays.Add(ovl.ID, ovl);
         }
 
 
@@ -384,7 +397,7 @@ namespace Jotunn.Managers
             ovl.TextureSize = DefaultOverlaySize;
 
             AddOverlayToGUI(ovl);
-            Overlays.Add(ovl.MapName, ovl);
+            Overlays.Add(ovl.ID, ovl);
         }
 
         /// <summary>
@@ -523,7 +536,7 @@ namespace Jotunn.Managers
         {
             int pWidth = 300;
             int pHeight = 400;
-            Logger.LogInfo($"Adding overlay to GUI with name {ovl.MapName}");
+            Logger.LogInfo($"Adding overlay to GUI with name {ovl.ID}");
 
             RectTransform viewport = ScrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
             //GameObject go = new GameObject();
@@ -531,7 +544,7 @@ namespace Jotunn.Managers
             //rt. = pWidth - 20;
             //rt.SetParent(viewport);
             GUIManager.Instance.CreateToggle(viewport, 20, 20);
-            GUIManager.Instance.CreateText(ovl.MapName,
+            GUIManager.Instance.CreateText(ovl.ID,
                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                 GUIManager.Instance.AveriaSerifBold, fontSize: 16, GUIManager.Instance.ValheimOrange,
                 true, Color.black, 650f, 40f, false);
@@ -546,36 +559,21 @@ namespace Jotunn.Managers
         /// </summary>
         public class MapOverlay
         {
-            /// <summary>
-            ///     Unique ID per overlay
-            /// </summary>
-            internal string MapName;
-            
-            /// <summary>
-            ///     Initial texture size to calculate the relative drawing position
-            /// </summary>
-            public int TextureSize { get; internal set; }
-            
-            /// <summary>
-            ///     Set true to render this overlay, false to hide
-            /// </summary>
-            public bool Enabled
-            {
-                get
-                {
-                    return _enabled;
-                }
-                set
-                {
-                    if (_enabled != value)
-                    {
-                        _enabled = value;
-                        Dirty = true;
-                    }
-                }
-            }
             private bool _enabled;
 
+            private bool _dirty;
+            private bool _forestDirty;
+            private bool _fogDirty;
+            private bool _heightDirty;
+            private bool _mainDirty;
+            private bool _backgroundDirty;
+            
+            private Texture2D _forestFilter;
+            private Texture2D _fogFilter;
+            private Texture2D _heightFilter;
+            private Texture2D _mainTex;
+            private Texture2D _backgroundTex;
+            
             /// <summary>
             ///     Flag to determine if this overlay had changes since its last draw
             /// </summary>
@@ -595,54 +593,68 @@ namespace Jotunn.Managers
                     _backgroundDirty = value;
                 }
             }
-            private bool _dirty;
             
-            // bools per tex
-            
-            private bool _forestDirty;
-            private bool _fogDirty;
-            private bool _heightDirty;
-            private bool _mainDirty;
-            private bool _backgroundDirty;
-            
-            private Texture2D _forestFilter;
-            private Texture2D _fogFilter;
-            private Texture2D _heightFilter;
-            private Texture2D _mainTex;
-            private Texture2D _backgroundTex;
+            internal bool ForestDirty => _forestFilter != null && _forestDirty;
 
-            public bool ForestDirty => _forestFilter != null && _forestDirty;
+            internal bool FogDirty => _fogFilter != null && _fogDirty;
 
-            public bool FogDirty => _fogFilter != null && _fogDirty;
-
-            public bool HeightDirty => _heightFilter != null && _heightDirty;
+            internal bool HeightDirty => _heightFilter != null && _heightDirty;
             
-            public bool MainDirty => _mainTex != null && _mainDirty;
+            internal bool MainDirty => _mainTex != null && _mainDirty;
 
             /*public bool WaterFlag { get; set; }
             public bool MountainFlag { get; set; }*/
             
-            public bool BackgroundDirty => _backgroundTex != null && _backgroundDirty;
+            internal bool BackgroundDirty => _backgroundTex != null && _backgroundDirty;
+
+            /// <summary>
+            ///     Unique ID per overlay
+            /// </summary>
+            public string ID { get; internal set; }
+            
+            /// <summary>
+            ///     Initial texture size to calculate the relative drawing position
+            /// </summary>
+            public int TextureSize { get; internal set; }
+
+            /// <summary>
+            ///     Set true to render this overlay, false to hide
+            /// </summary>
+            public bool Enabled
+            {
+                get
+                {
+                    return _enabled;
+                }
+                set
+                {
+                    if (_enabled != value)
+                    {
+                        _enabled = value;
+                        Dirty = true;
+                    }
+                }
+            }
 
             /// <summary>
             ///     Texture components holding the overlay texture data
             /// </summary>
-            public Texture2D ForestFilter => _forestFilter ??= Create(TextureFormat.RGBA32, Instance.ForestFilterVanilla);
+            public Texture2D ForestFilter => _forestFilter ??= Create(Instance.ForestFilterVanilla);
 
-            public Texture2D FogFilter => _fogFilter ??= Create(TextureFormat.RGBA32, Instance.FogFilterVanilla);
+            public Texture2D FogFilter => _fogFilter ??= Create(Instance.FogFilterVanilla);
 
-            public Texture2D HeightFilter => _heightFilter ??= Create(TextureFormat.RFloat, Instance.HeightFilterVanilla);
+            public Texture2D HeightFilter => _heightFilter ??= Create(Instance.HeightFilterVanilla);
 
-            public Texture2D MainTex => _mainTex ??= Create(TextureFormat.RGBA32, Instance.MainTexVanilla);
+            public Texture2D MainTex => _mainTex ??= Create(Instance.MainTexVanilla);
 
             /*public Texture2D WaterTex { get; internal set; }
             public Texture2D MountainTex { get; internal set; }*/
 
-            public Texture2D BackgroundTex => _backgroundTex ??= Create(TextureFormat.RGBA32, Instance.BackgroundTexVanilla);
+            public Texture2D BackgroundTex => _backgroundTex ??= Create(Instance.BackgroundTexVanilla);
             
-            private Func<TextureFormat, Texture2D, Texture2D> Create = (fmt, van) =>
+            private Func<Texture2D, Texture2D> Create = (van) =>
             {
-                var t = new Texture2D(van.width, van.height, fmt, mipChain: false);
+                var t = new Texture2D(van.width, van.height, van.format, mipChain: false);
                 t.wrapMode = TextureWrapMode.Clamp;
                 Graphics.CopyTexture(van, t);
                 return t;
