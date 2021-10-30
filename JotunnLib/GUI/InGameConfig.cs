@@ -1455,6 +1455,7 @@ namespace Jotunn.GUI
                 } while (anyKeyDown);
 
                 var buttonName = Entry.GetBoundButtonName();
+                GUIManager.BlockInput(true);
                 Settings.instance.OpenBindDialog(buttonName);
                 On.ZInput.EndBindKey += ZInput_EndBindKey;
             }
@@ -1468,6 +1469,8 @@ namespace Jotunn.GUI
                         SetValue(new KeyboardShortcut(key, KeysToCheck.Where(Input.GetKey).ToArray()));
                         ZInput.m_binding.m_key = key;
                         On.ZInput.EndBindKey -= ZInput_EndBindKey;
+
+                        GUIManager.BlockInput(false);
                         return true;
                     }
                 }
