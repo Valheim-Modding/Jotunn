@@ -49,6 +49,11 @@ namespace Jotunn.GUI
         ///     Our own mod config tabs
         /// </summary>
         private static readonly Dictionary<string, RectTransform> Configs = new Dictionary<string, RectTransform>();
+
+        /// <summary>
+        ///     Navigation with mode set to None
+        /// </summary>
+        private static readonly Navigation NavigationNone = new Navigation() { mode = Navigation.Mode.None };
         
         /// <summary>
         ///     Hook into settings setup
@@ -680,9 +685,9 @@ namespace Jotunn.GUI
             field.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("text_field");
             field.GetComponent<Image>().type = Image.Type.Sliced;
             field.transform.SetParent(result.transform, false);
-
+            SetNavigationNone(field);
             var inputField = field.GetComponent<InputField>();
-
+            
             var text = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleLeft().SetHeight(label.GetTextHeight() + 6f)
                 .SetWidth(130f);
             inputField.textComponent = text.GetComponent<Text>();
@@ -709,6 +714,7 @@ namespace Jotunn.GUI
             ((RectTransform)slider.transform).anchoredPosition = new Vector2(0, -25);
             ((RectTransform)slider.transform).sizeDelta = new Vector2(140, 30);
             GUIManager.Instance.ApplySliderStyle(slider.GetComponent<Slider>());
+            SetNavigationNone(slider);
             slider.SetActive(false);
 
             // Add SelectableConfig and pass field as target
@@ -760,6 +766,7 @@ namespace Jotunn.GUI
             field.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("text_field");
             field.GetComponent<Image>().type = Image.Type.Sliced;
             field.transform.SetParent(layout.transform, false);
+            SetNavigationNone(field);
 
             var inputField = field.GetComponent<InputField>();
 
@@ -787,9 +794,10 @@ namespace Jotunn.GUI
             var button = new GameObject("Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx))
                 .SetUpperRight().SetSize(30f, label.GetTextHeight() + 6f);
             button.transform.SetParent(layout.transform, false);
-
+            SetNavigationNone(button);
 
             // Add SelectableConfig and pass ColorPicker button as target
+
             result.AddComponent<SelectableConfig>().InteractionTarget = button;
 
             // Image
@@ -842,6 +850,7 @@ namespace Jotunn.GUI
 
             // and now the toggle itself
             var toggle = GUIManager.Instance.CreateToggle(result.transform, 20f, 20f).SetUpperRight();
+            SetNavigationNone(toggle);
 
             // Add SelectableConfig and pass toggle as target
             result.AddComponent<SelectableConfig>().InteractionTarget = toggle;
@@ -888,6 +897,11 @@ namespace Jotunn.GUI
             // Create label and keybind button
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 4f);
 
+            // Setup keybind button for controller navigation
+            var button = result.transform.Find("Button").gameObject;
+            SetNavigationNone(button);
+            result.AddComponent<SelectableConfig>().InteractionTarget = button;
+
             // Create description text
             var idx = 0;
             var lastPosition = new Vector2(0, -result.GetComponent<RectTransform>().rect.height - 3f);
@@ -927,6 +941,11 @@ namespace Jotunn.GUI
             // Create label and keybind button
             var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 24f);
 
+            // Setup keybind button for controller navigation
+            var button = result.transform.Find("Button").gameObject;
+            SetNavigationNone(button);
+            result.AddComponent<SelectableConfig>().InteractionTarget = button;
+
             // Create description text
             var idx = 0;
             var lastPosition = new Vector2(0, -result.GetComponent<RectTransform>().rect.height - 3f);
@@ -952,7 +971,18 @@ namespace Jotunn.GUI
             return result;
         }
 
-
+        /// <summary>
+        /// Sets Selectable Component navigation mode to None
+        /// </summary>
+        /// <param name="go">Game Object with a Selectable Component to be set to navigation mode None</param>
+        private static void SetNavigationNone(GameObject go)
+        {
+            var selectable = go.GetComponent<Selectable>();
+            if (selectable != null)
+            {
+                selectable.navigation = NavigationNone;
+            }
+        }
         // Helper classes 
 
         /// <summary>
