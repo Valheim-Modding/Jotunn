@@ -264,6 +264,23 @@ namespace Jotunn.GUI
                     yield return CreateContent(mod, Configs[mod.Key]);
                 }
             }
+
+            // Connect OK and Back's Navigation
+            var okButton = ok.GetComponent<Button>();
+            var backButton = back.GetComponent<Button>();
+
+            var okNavigation = okButton.navigation;
+            var backNavigation = backButton.navigation;
+
+            okNavigation.selectOnLeft = backButton;
+            backNavigation.selectOnRight = okButton;
+
+            // These don't seem to work, leaving in to show intention
+            okNavigation.selectOnUp = Configs.Values.Last().gameObject.GetComponent<Selectable>();
+            backNavigation.selectOnUp = Configs.Values.Last().gameObject.GetComponent<Selectable>();
+
+            okButton.navigation = okNavigation;
+            backButton.navigation = backNavigation;
         }
         
         private class EscBehaviour : MonoBehaviour
