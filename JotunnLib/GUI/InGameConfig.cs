@@ -714,7 +714,6 @@ namespace Jotunn.GUI
             ((RectTransform)slider.transform).anchoredPosition = new Vector2(0, -25);
             ((RectTransform)slider.transform).sizeDelta = new Vector2(140, 30);
             GUIManager.Instance.ApplySliderStyle(slider.GetComponent<Slider>());
-            SetNavigationNone(slider);
             slider.SetActive(false);
 
             // Add SelectableConfig and pass field as target
@@ -794,7 +793,6 @@ namespace Jotunn.GUI
             var button = new GameObject("Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx))
                 .SetUpperRight().SetSize(30f, label.GetTextHeight() + 6f);
             button.transform.SetParent(layout.transform, false);
-            SetNavigationNone(button);
 
             // Add SelectableConfig and pass ColorPicker button as target
 
@@ -850,7 +848,6 @@ namespace Jotunn.GUI
 
             // and now the toggle itself
             var toggle = GUIManager.Instance.CreateToggle(result.transform, 20f, 20f).SetUpperRight();
-            SetNavigationNone(toggle);
 
             // Add SelectableConfig and pass toggle as target
             result.AddComponent<SelectableConfig>().InteractionTarget = toggle;
@@ -899,7 +896,6 @@ namespace Jotunn.GUI
 
             // Setup keybind button for controller navigation
             var button = result.transform.Find("Button").gameObject;
-            SetNavigationNone(button);
             result.AddComponent<SelectableConfig>().InteractionTarget = button;
 
             // Create description text
@@ -943,7 +939,6 @@ namespace Jotunn.GUI
 
             // Setup keybind button for controller navigation
             var button = result.transform.Find("Button").gameObject;
-            SetNavigationNone(button);
             result.AddComponent<SelectableConfig>().InteractionTarget = button;
 
             // Create description text
@@ -1333,12 +1328,33 @@ namespace Jotunn.GUI
 
             public void Start()
             {
-                var buttonName = Entry.GetBoundButtonName();
                 Button.onClick.AddListener(() =>
                 {
-                    Settings.instance.OpenBindDialog(buttonName);
-                    On.ZInput.EndBindKey += ZInput_EndBindKey;
+                    StartCoroutine(nameof(CheckForKeysDown));
                 });
+            }
+
+            private IEnumerator CheckForKeysDown()
+            {
+                var anyKeyDown = false;
+                do
+                {
+                    anyKeyDown = false;
+                    foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
+                    {
+                        if (Input.GetKeyDown(key))
+                        {
+                            anyKeyDown = true;
+                        }
+                    }
+                    if (anyKeyDown)
+                        yield return null;
+
+                } while (anyKeyDown);
+
+                var buttonName = Entry.GetBoundButtonName();
+                Settings.instance.OpenBindDialog(buttonName);
+                On.ZInput.EndBindKey += ZInput_EndBindKey;
             }
 
             private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
@@ -1397,12 +1413,33 @@ namespace Jotunn.GUI
 
             public void Start()
             {
-                var buttonName = Entry.GetBoundButtonName();
                 Button.onClick.AddListener(() =>
                 {
-                    Settings.instance.OpenBindDialog(buttonName);
-                    On.ZInput.EndBindKey += ZInput_EndBindKey;
+                    StartCoroutine(nameof(CheckForKeysDown));
                 });
+            }
+
+            private IEnumerator CheckForKeysDown()
+            {
+                var anyKeyDown = false;
+                do
+                {
+                    anyKeyDown = false;
+                    foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
+                    {
+                        if (Input.GetKeyDown(key))
+                        {
+                            anyKeyDown = true;
+                        }
+                    }
+                    if (anyKeyDown)
+                        yield return null;
+
+                } while (anyKeyDown);
+
+                var buttonName = Entry.GetBoundButtonName();
+                Settings.instance.OpenBindDialog(buttonName);
+                On.ZInput.EndBindKey += ZInput_EndBindKey;
             }
 
             private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
