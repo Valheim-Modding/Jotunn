@@ -1,5 +1,17 @@
 ﻿# Changelog
 
+## Version 2.3.10
+* Added custom piece table category injection at runtime
+* Fixed mock resolving of generic List types
+* Fixed CustomGUI anchor settings
+* Fixed Dropdown list sizing (thx joeyparrish)
+
+## Version 2.3.9
+* Added the possibility to define vanilla console command modifiers in ConsoleCommand (thx joeyparrish)
+* Added the possibility to define command options in ConsoleCommand
+* Fixed exception for mods loaded without PluginInfo.Location set
+* Fixed NRE on missing KeyHint objects
+
 ## Version 2.3.8
 * Added RenderManager to render Sprites from GameObjects at runtime (thx MSchmoecker)
 * Added GamepadButton to the InputManager and ButtonConfig - custom inputs can now define a gamepad button corresponding to the keyboard input

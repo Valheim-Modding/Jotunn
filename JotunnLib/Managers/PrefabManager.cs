@@ -305,7 +305,7 @@ namespace Jotunn.Managers
                     {
                         if (customPrefab.FixReference)
                         {
-                            customPrefab.Prefab.FixReferences();
+                            customPrefab.Prefab.FixReferences(true);
                             customPrefab.FixReference = false;
                         }
 

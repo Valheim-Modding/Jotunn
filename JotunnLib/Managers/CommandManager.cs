@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Jotunn.ConsoleCommands;
 using Jotunn.Entities;
 
@@ -27,6 +26,11 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Internal Action delegate to add custom entities into vanilla command's option list
+        /// </summary>
+        internal static Action<string, List<string>> OnGetTabOptions;
+
+        /// <summary>
         ///     A list of all the custom console commands that have been added to the game through this manager,
         ///     either by Jotunn or by mods using Jotunn.
         /// </summary>
@@ -42,7 +46,7 @@ namespace Jotunn.Managers
             AddConsoleCommand(new ClearCommand());
 
             On.Console.Awake += AddCustomCommands;
-            //On.Terminal.InputText += HandleCustomCommands;
+            On.Terminal.ConsoleCommand.GetTabOptions += ConsoleCommand_GetTabOptions;
         }
 
         /// <summary>
@@ -67,7 +71,7 @@ namespace Jotunn.Managers
 
             _customCommands.Add(cmd);
         }
-        
+
         private void AddCustomCommands(On.Console.orig_Awake orig, Console self)
         {
             orig(self);
@@ -75,7 +79,7 @@ namespace Jotunn.Managers
             if (_customCommands.Any())
             {
                 Logger.LogInfo($"Adding {_customCommands.Count} commands to the Console");
-                
+
                 foreach (var cmd in _customCommands)
                 {
                     // Cannot override vanilla commands
@@ -87,48 +91,34 @@ namespace Jotunn.Managers
 
                     // Add to the vanilla system
                     new Terminal.ConsoleCommand(cmd.Name, cmd.Help, args =>
-                    {
-                        cmd.Run(args.Args.Skip(1).ToArray());
-                    });
+                        {
+                            cmd.Run(args.Args.Skip(1).ToArray());
+                        },
+                        isCheat: cmd.IsCheat, isNetwork: cmd.IsNetwork, onlyServer: cmd.OnlyServer,
+                        isSecret: cmd.IsSecret, optionsFetcher: cmd.CommandOptionList);
                 }
 
                 self.updateCommandList();
             }
         }
 
-        /*private void HandleCustomCommands(On.Terminal.orig_InputText orig, Terminal self)
+        /// <summary>
+        ///     Fire <see cref="OnGetTabOptions"/> for any ConsoleCommand when its tabOptions member
+        ///     is first populated to add Jötunn entities to the option list
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        private List<string> ConsoleCommand_GetTabOptions(On.Terminal.ConsoleCommand.orig_GetTabOptions orig, Terminal.ConsoleCommand self)
         {
-            orig(self);
-
-            string text = self.m_input.text;
-            if (string.IsNullOrEmpty(text))
+            if (self.m_tabOptions == null && self.m_tabOptionsFetcher != null)
             {
-                return;
+                var ret = orig(self);
+                OnGetTabOptions?.SafeInvoke(self.Command, ret);
+                return ret;
             }
 
-            string[] parts = text.Split(' ');
-
-            if (parts.Length == 0)
-            {
-                return;
-            }
-
-            ConsoleCommand cmd = CommandManager.Instance.CustomCommands.FirstOrDefault(c => c.Name.Equals(parts[0], StringComparison.InvariantCultureIgnoreCase));
-
-            // If we found a command, execute it
-            if (cmd != null)
-            {
-                // Prioritizing quoted strings, then all strings of non-white chars 
-                string[] args = Regex.Matches(text, @"""[^""]+""|\S+")
-                    .Cast<Match>()
-                    // get rid of the quotes around arguments
-                    .Select(x => x.Value.Trim('"'))
-                    // we don't need the command itself here
-                    .Skip(1)
-                    .ToArray();
-
-                cmd.Run(args);
-            }
-        }*/
+            return orig(self);
+        }
     }
 }

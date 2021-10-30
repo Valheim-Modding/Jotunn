@@ -196,6 +196,7 @@ namespace Jotunn.Entities
             if (!SimpleJson.SimpleJson.TryDeserializeObject(fileContent, out var json))
             {
                 Logger.LogWarning($"Error cought while reading JSON localization: Invalid JSON string");
+                return;
             }
 
             if (!Map.ContainsKey(language))

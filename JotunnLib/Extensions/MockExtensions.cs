@@ -103,18 +103,18 @@ namespace Jotunn
                     var isEnumerableOfUnityObjects = enumeratedType?.IsSameOrSubclass(typeof(Object)) == true;
                     if (isEnumerableOfUnityObjects)
                     {
-                        var isDict = fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
-                        if (isDict)
+                        var isArray = fieldType.IsArray;
+                        var isList = fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(List<>);
+
+                        if (!(isArray | isList))
                         {
-                            Logger.LogWarning($"Not fixing potential mock references for field {field.Name} : Dictionary is not supported.");
+                            Logger.LogWarning($"Not fixing potential mock references for field {field.Name} : {fieldType} is not supported.");
                             continue;
                         }
 
                         var currentValues = (IEnumerable<Object>)field.GetValue(objectToFix);
                         if (currentValues != null)
                         {
-                            var isArray = fieldType.IsArray;
-                            var newI = isArray ? (IEnumerable<Object>)Array.CreateInstance(enumeratedType, currentValues.Count()) : (IEnumerable<Object>)Activator.CreateInstance(fieldType);
                             var list = new List<Object>();
                             foreach (var unityObject in currentValues)
                             {
@@ -140,9 +140,18 @@ namespace Jotunn
                                     var array = toArrayT.Invoke(null, new object[] { correctTypeList });
                                     field.SetValue(objectToFix, array);
                                 }
-                                else
+                                else if (isList)
                                 {
-                                    field.SetValue(objectToFix, newI.Concat(list));
+                                    var toList = ReflectionHelper.Cache.EnumerableToList;
+                                    var toListT = toList.MakeGenericMethod(enumeratedType);
+
+                                    // mono...
+                                    var cast = ReflectionHelper.Cache.EnumerableCast;
+                                    var castT = cast.MakeGenericMethod(enumeratedType);
+                                    var correctTypeList = castT.Invoke(null, new object[] { list });
+
+                                    var newList = toListT.Invoke(null, new object[] { correctTypeList });
+                                    field.SetValue(objectToFix, newList);
                                 }
                             }
                         }
@@ -197,18 +206,18 @@ namespace Jotunn
                     var isEnumerableOfUnityObjects = enumeratedType?.IsSameOrSubclass(typeof(Object)) == true;
                     if (isEnumerableOfUnityObjects)
                     {
-                        var isDict = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
-                        if (isDict)
+                        var isArray = propertyType.IsArray;
+                        var isList = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>);
+
+                        if (!(isArray | isList))
                         {
-                            Logger.LogWarning($"Not fixing potential mock references for field {property.Name} : Dictionary is not supported.");
+                            Logger.LogWarning($"Not fixing potential mock references for property {property.Name} : {propertyType} is not supported.");
                             continue;
                         }
 
                         var currentValues = (IEnumerable<Object>)property.GetValue(objectToFix, null);
                         if (currentValues != null)
                         {
-                            var isArray = propertyType.IsArray;
-                            var newI = isArray ? (IEnumerable<Object>)Array.CreateInstance(enumeratedType, currentValues.Count()) : (IEnumerable<Object>)Activator.CreateInstance(propertyType);
                             var list = new List<Object>();
                             foreach (var unityObject in currentValues)
                             {
@@ -234,9 +243,18 @@ namespace Jotunn
                                     var array = toArrayT.Invoke(null, new object[] { correctTypeList });
                                     property.SetValue(objectToFix, array, null);
                                 }
-                                else
+                                else if (isList)
                                 {
-                                    property.SetValue(objectToFix, newI.Concat(list), null);
+                                    var toList = ReflectionHelper.Cache.EnumerableToList;
+                                    var toListT = toList.MakeGenericMethod(enumeratedType);
+
+                                    // mono...
+                                    var cast = ReflectionHelper.Cache.EnumerableCast;
+                                    var castT = cast.MakeGenericMethod(enumeratedType);
+                                    var correctTypeList = castT.Invoke(null, new object[] { list });
+
+                                    var newList = toListT.Invoke(null, new object[] { correctTypeList });
+                                    property.SetValue(objectToFix, newList, null);
                                 }
                             }
                         }

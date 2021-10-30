@@ -445,6 +445,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorChanger.cs" />
+    <Compile Include="ConsoleCommands\CreateCategoryTabCommand.cs" />
     <Compile Include="ConsoleCommands\ListPlayersCommand.cs" />
     <Compile Include="ConsoleCommands\SkinColorCommand.cs" />
     <Compile Include="ConsoleCommands\BetterSpawnCommand.cs" />
@@ -453,6 +454,7 @@
     <Compile Include="GradientChanger.cs" />
     <Compile Include="PatchInit\TestPatchInitialization.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
+    <Compile Include="TestReferences.cs" />
     <Compile Include="TestMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestMod2.cs" />
