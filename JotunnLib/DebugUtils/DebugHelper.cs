@@ -41,7 +41,7 @@ namespace Jotunn.DebugUtils
                     Console.instance.gameObject.GetComponentInChildren<Text>(true).font = fnt;
                     Console.instance.Print(jtn);
                 }
-                catch (Exception ex) {}
+                catch (Exception) {}
             };
             On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch;
         }
