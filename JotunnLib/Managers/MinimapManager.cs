@@ -260,9 +260,10 @@ namespace Jotunn.Managers
                     } else if (strategy == 3)
                     {
                         // use rendertexture
-                        RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
+                        RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 32, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
 
                         // Blit the pixels on texture to the RenderTexture
+                        Graphics.Blit(Instance.MainTexVanilla, tmp);
                         Graphics.Blit(m.Value.MainImg, tmp);
 
                         // Backup the currently set RenderTexture
@@ -640,8 +641,8 @@ namespace Jotunn.Managers
             {
                 var t = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, fmt, mipChain: false);
                 t.wrapMode = TextureWrapMode.Clamp;
-                t.SetPixels(van.GetPixels());
-                //t.SetPixels(TransparentTex.GetPixels());
+                //t.SetPixels(van.GetPixels());
+                t.SetPixels(TransparentTex.GetPixels());
                 return t;
             };
 
