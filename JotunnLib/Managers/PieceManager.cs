@@ -48,6 +48,7 @@ namespace Jotunn.Managers
 
         private const float PieceCategorySize = 700f;
         private const float PieceCategoryTabSize = 150f;
+        private const float PieceCategoryTabOffset = 50f;
 
         /// <summary>
         ///     Creates the piece table container and registers all hooks.
@@ -796,22 +797,22 @@ namespace Jotunn.Managers
                 var tab = Hud.instance.m_pieceCategoryTabs[(int)selectedCategory];
                 lastCategory = selectedCategory;
 
-                float minX = (tab.transform as RectTransform).anchoredPosition.x;
+                float minX = tab.GetComponent<RectTransform>().anchoredPosition.x - PieceCategoryTabOffset;
                 if (minX < 0f)
                 {
-                    float offsetX = selectedCategory == 0 ? minX * -1 : PieceCategoryTabSize;
+                    float offsetX = selectedCategory == 0 ? minX * -1 - PieceCategoryTabOffset : minX * -1;
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
-                        (go.transform as RectTransform).anchoredPosition += new Vector2(offsetX, 0);
+                        go.GetComponent<RectTransform>().anchoredPosition += new Vector2(offsetX, 0);
                     }
                 }
-                float maxX = (tab.transform as RectTransform).anchoredPosition.x + PieceCategoryTabSize;
+                float maxX = tab.GetComponent<RectTransform>().anchoredPosition.x + PieceCategoryTabSize + PieceCategoryTabOffset;
                 if (maxX > PieceCategorySize)
                 {
-                    float offsetX = selectedCategory == Values.Max() ? maxX - PieceCategorySize : PieceCategoryTabSize;
+                    float offsetX = selectedCategory == Values.Max() ? maxX - PieceCategorySize - PieceCategoryTabOffset: maxX - PieceCategorySize;
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
-                        (go.transform as RectTransform).anchoredPosition -= new Vector2(offsetX, 0);
+                        go.GetComponent<RectTransform>().anchoredPosition -= new Vector2(offsetX, 0);
                     }
                 }
             }
