@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -44,6 +45,9 @@ namespace Jotunn.DebugUtils
                 catch (Exception) {}
             };
             On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch;
+#if DEBUG
+            Harmony.CreateAndPatchAll(typeof(Debug_isDebugBuild));
+#endif
         }
 
         private void Update()
@@ -88,5 +92,22 @@ namespace Jotunn.DebugUtils
 
             orig(self, rpc, needPassword);
         }
+
+
+#if DEBUG
+
+        /// <summary>
+        ///     Pretend to be a debugBuild :)
+        /// </summary>
+        [HarmonyPatch(typeof(Debug), "get_isDebugBuild")]
+        private static class Debug_isDebugBuild
+        {
+            private static bool Prefix(Debug __instance, ref bool __result)
+            {
+                __result = true;
+                return false;
+            }
+        }
+#endif
     }
 }

@@ -442,9 +442,6 @@ namespace Jotunn.Managers
             // Harmony patch BepInEx to ensure locked values are not overwritten
             Harmony.CreateAndPatchAll(typeof(ConfigEntryBase_SetSerializedValue));
             Harmony.CreateAndPatchAll(typeof(ConfigEntryBase_GetSerializedValue));
-#if DEBUG
-            Harmony.CreateAndPatchAll(typeof(Debug_isDebugBuild));
-#endif
 
             orig(self);
         }
@@ -493,21 +490,6 @@ namespace Jotunn.Managers
             }
         }
 
-#if DEBUG
-
-        /// <summary>
-        ///     Pretend to be a debugBuild :)
-        /// </summary>
-[HarmonyPatch(typeof(Debug), "get_isDebugBuild")]
-private static class Debug_isDebugBuild
-{
-    private static bool Prefix(Debug __instance, ref bool __result)
-    {
-        __result = true;
-        return false;
-    }
-}
-#endif
 
         /// <summary>
         ///     Cache the synchronizable configuration values for comparison
@@ -532,7 +514,7 @@ private static class Debug_isDebugBuild
                 foreach (var cd in plugin.Value.Config.Keys)
                 {
                     var cx = plugin.Value.Config[cd.Section, cd.Key];
-                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes {IsAdminOnly: true}))
+                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes { IsAdminOnly: true }))
                     {
                         var value = new Tuple<string, string, string, string>(
                             plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
