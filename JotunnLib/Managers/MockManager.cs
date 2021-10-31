@@ -82,7 +82,7 @@ namespace Jotunn.Managers
         {
             orig(self);
 
-            if (SceneManager.GetActiveScene().name == "main" && MockPrefabContainer.transform.childCount > 0)
+            if (SceneManager.GetActiveScene().name == "main")
             {
                 Logger.LogInfo("Destroying Mock prefabs");
 
