@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Jotunn.Entities;
 using UnityEngine;
@@ -57,12 +58,13 @@ namespace Jotunn.Managers
             LocationContainer.SetActive(false);
 
             On.ZoneSystem.SetupLocations += ZoneSystem_SetupLocations;
-            On.ZNetView.Awake += ZNetView_Awake;
-
         }
 
         private void ZoneSystem_SetupLocations(On.ZoneSystem.orig_SetupLocations orig, ZoneSystem self)
         {
+            try
+            {
+
             orig(self);
 
             OnVanillaLocationsAvailable.SafeInvoke();
@@ -90,26 +92,35 @@ namespace Jotunn.Managers
                     }
                 }
             }
+
             Logger.LogInfo("Injecting custom vegetation");
             foreach (CustomVegetation customVegetation in Vegetations.Values)
             {
-                Logger.LogInfo($"Adding custom location {customVegetation.Prefab.name} in {customVegetation.Vegetation.m_biome}");
+                Logger.LogInfo($"Adding custom vegetation {customVegetation.Prefab.name} in {customVegetation.Vegetation.m_biome}");
                 self.m_vegetation.Add(customVegetation.Vegetation);
             }
 
-        }
-
-        private void ZNetView_Awake(On.ZNetView.orig_Awake orig, ZNetView self)
-        {
-#if DEBUG
-            if (ZNetView.m_forceDisableInit || ZDOMan.instance == null)
+            } finally
             {
-                Jotunn.Logger.LogWarning($"ZNetView of {self.name} will self-destruct");
+                On.ZoneSystem.SetupLocations -= ZoneSystem_SetupLocations;
             }
-#endif
-            orig(self);
         }
 
+        /// <summary>
+        ///     Return a <see cref="Heightmap.Biome"/> that matches any of the provided Biomes
+        /// </summary>
+        /// <param name="biomes">Biomes that should match</param> 
+#pragma warning disable S3265 // Non-flags enums should not be used in bitwise operations
+        public static Heightmap.Biome AnyBiomeOf(params Heightmap.Biome[] biomes)
+        {
+            Heightmap.Biome result = Heightmap.Biome.None;
+            foreach(var biome in biomes)
+            {
+                result |= biome;
+            }
+            return result;
+        }
+#pragma warning restore S3265 // Non-flags enums should not be used in bitwise operations
 
         /// <summary>
         ///     Get a ZoneLocation by its name.<br /><br />
@@ -210,7 +221,7 @@ namespace Jotunn.Managers
         public CustomLocation CreateClonedLocation(string name, string baseName)
         {
             var baseZoneLocation = GetZoneLocation(baseName);
-            var copiedPrefab = Object.Instantiate(baseZoneLocation.m_prefab, LocationContainer.transform);
+            var copiedPrefab = Object.Instantiate(baseZoneLocation.m_prefab, Vector3.zero, Quaternion.identity, LocationContainer.transform);
             copiedPrefab.name = name;
             var clonedLocation = new CustomLocation(copiedPrefab, new Configs.LocationConfig(baseZoneLocation));
             AddCustomLocation(clonedLocation);
@@ -243,9 +254,29 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public bool AddCustomVegetation(CustomVegetation customVegetation)
         {
+            Logger.LogDebug($"Registering custom vegetation {customVegetation.Name}");
             Vegetations.Add(customVegetation.Name, customVegetation);
             return true;
         }
-
+        /// <summary>
+        ///     Get a ZoneVegetation by its name.<br /><br />
+        ///     Search hierarchy:
+        ///     <list type="number">
+        ///         <item>Custom Vegetation with the exact name</item>
+        ///         <item>Vanilla Vegetation with the exact name from <see cref="ZoneSystem"/></item>
+        ///     </list>
+        /// </summary>
+        /// <param name="name">Name of the ZoneVegetation to search for.</param>
+        /// <returns>The existing ZoneVegetation, or null if none exists with given name</returns>
+        public ZoneSystem.ZoneVegetation GetZoneVegetation(string name)
+        {
+            if (Vegetations.TryGetValue(name, out CustomVegetation customVegetation))
+            {
+                return customVegetation.Vegetation;
+            }
+            return ZoneSystem.instance.m_vegetation 
+                .DefaultIfEmpty(null)
+                .FirstOrDefault(zv => zv.m_prefab && zv.m_prefab.name == name);
+        }
     }
 }

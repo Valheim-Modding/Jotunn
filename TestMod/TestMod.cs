@@ -101,7 +101,7 @@ namespace TestMod
             // Crate a custom item with rendered icons
             PrefabManager.OnVanillaPrefabsAvailable += AddItemsWithRenderedIcons;
 
-            ZoneManager.OnVanillaLocationsAvailable += AddCustomLocations;
+            ZoneManager.OnVanillaLocationsAvailable += AddCustomLocationsAndVegetation;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -1320,7 +1320,7 @@ namespace TestMod
             }
         }
 
-        private void AddCustomLocations()
+        private void AddCustomLocationsAndVegetation()
         {
 
             AssetBundle locationsAssetBundle = AssetUtils.LoadAssetBundleFromResources("custom_locations", typeof(TestMod).Assembly);
@@ -1328,14 +1328,14 @@ namespace TestMod
             {
                 var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
 
+                //Create location from AssetBundle
                 var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true);
                 cubeArchLocation.FixReferences();
                 ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubeArchLocation, new LocationConfig
                 {
                     Biome = Heightmap.Biome.BlackForest,
-                    Quantity = 10000,
-                    Priotized = true,
-                    ChanceToSpawn = 100,
+                    Quantity = 200,
+                    Priotized = true, 
                     ExteriorRadius = 2f,
                     MinAltitude = 1f,
                     ClearArea = true,
@@ -1344,11 +1344,14 @@ namespace TestMod
                 //Create a clone of a vanilla location
                 CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
                 myEikthyrLocation.ZoneLocation.m_exteriorRadius = 1f; // Easy to place :D
-                myEikthyrLocation.ZoneLocation.m_quantity = 300; //MOAR
+                myEikthyrLocation.ZoneLocation.m_quantity = 20; //MOAR
 
+                // Stack of lulzcubes to easily spot the instances
                 for (int i = 0; i < 40; i++)
                 {
-                    Instantiate(lulzCubePrefab, new Vector3(0, i + 3, 0), Quaternion.Euler(0, i * 30, 0), myEikthyrLocation.ZoneLocation.m_prefab.transform);
+                    var lulzCube = Instantiate(lulzCubePrefab, myEikthyrLocation.ZoneLocation.m_prefab.transform);
+                    lulzCube.transform.localPosition = new Vector3(0, i + 3, 0);
+                    lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
                 }
 
                 //modify existing locations
@@ -1359,9 +1362,12 @@ namespace TestMod
                 //Use locations for larger structures
                 GameObject cubesLocation = ZoneManager.Instance.CreateLocationContainer("lulzcube_location");
 
+                // Stack of lulzcubes to easily spot the instances
                 for (int i = 0; i < 10; i++)
                 {
-                    Instantiate(lulzCubePrefab, new Vector3(0, i + 1, 0), Quaternion.Euler(0, i * 30, 0), cubesLocation.transform);
+                    var lulzCube = Instantiate(lulzCubePrefab, cubesLocation.transform);
+                    lulzCube.transform.localPosition = new Vector3(0, i + 3, 0);
+                    lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
                 }
 
                 ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubesLocation, new LocationConfig
@@ -1369,7 +1375,6 @@ namespace TestMod
                     Biome = Heightmap.Biome.Meadows,
                     Quantity = 100,
                     Priotized = true,
-                    ChanceToSpawn = 100,
                     ExteriorRadius = 2f,
                     ClearArea = true,
                 }));
@@ -1383,10 +1388,19 @@ namespace TestMod
 
                 ZoneManager.Instance.AddCustomVegetation(customVegetation);
 
+                //Add more seed carrots to the meadows & black forest
+                ZoneSystem.ZoneVegetation pickableSeedCarrot = ZoneManager.Instance.GetZoneVegetation("Pickable_SeedCarrot");
+                ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(pickableSeedCarrot.m_prefab, new VegetationConfig(pickableSeedCarrot)
+                {
+                    Min = 3, Max = 10,
+                    GroupSizeMin = 3, GroupSizeMax = 10,
+                    GroupRadius = 10,
+                    Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest),
+                }));
             }
             finally
             {
-                ZoneManager.OnVanillaLocationsAvailable -= AddCustomLocations;
+                ZoneManager.OnVanillaLocationsAvailable -= AddCustomLocationsAndVegetation;
                 locationsAssetBundle.Unload(false);
             }
         }

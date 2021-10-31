@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.3.11
+* Added ZoneManager for custom Locations and Vegetation
+
 ## Version 2.3.10
 * Fixed mock resolving of generic List types
 

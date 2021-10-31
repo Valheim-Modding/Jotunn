@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Text;
 using BepInEx.Configuration;
+using Jotunn.Managers;
+using UnityEngine;
 
 namespace JotunnDoc
 {
@@ -96,6 +98,24 @@ namespace JotunnDoc
                 return m_min.ToString();
             }
             return $"{m_min} - {m_max}";
+        }
+
+        internal static bool RequestSprite(string path, GameObject prefab, Quaternion rotation)
+        {
+            return RenderManager.Instance.EnqueueRender(new RenderManager.RenderRequest(prefab)
+            {
+                Rotation = rotation,
+                FieldOfView = 20f,
+                DistanceMultiplier = 1.1f
+            }, (Sprite sprite) =>
+            {
+                if (sprite)
+                {
+                    var texture = sprite.texture;
+                    var bytes = texture.EncodeToPNG();
+                    File.WriteAllBytes(path, bytes);
+                } 
+            });
         }
 
     }

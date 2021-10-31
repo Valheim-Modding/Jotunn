@@ -103,25 +103,6 @@ namespace JotunnDoc.Docs
             return sb.ToString();
         }
 
-        private static bool RequestSprite(string path, GameObject exteriorPrefab, Quaternion rotation)
-        {
-            return RenderManager.Instance.EnqueueRender(new RenderManager.RenderRequest(exteriorPrefab)
-            {
-                Rotation = rotation,
-                FieldOfView = 20f,
-                DistanceMultiplier = 1.1f
-            }, (Sprite sprite) =>
-            {
-                if (sprite)
-                {
-                    var texture = sprite.texture;
-                    var bytes = texture.EncodeToPNG();
-                    File.WriteAllBytes(path, bytes);
-                }
-
-            });
-        }
-
         private string GetFilters(ZoneSystem.ZoneLocation zoneLocation)
         {
             var inForest = zoneLocation.m_inForest && (zoneLocation.m_forestTresholdMin > 0 || zoneLocation.m_forestTresholdMax < 1);
