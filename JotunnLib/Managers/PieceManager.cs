@@ -192,14 +192,21 @@ namespace Jotunn.Managers
                 PieceTableCategoriesMap[table].Add(name, categoryID);
             }
 
-            // When called in-game, directly create newly added categories
-            if (isNew & SceneManager.GetActiveScene().name == "main")
+            // When new categories are inserted in-game, directly create and update categories
+            if (isNew)
             {
-                CreatePieceTableCategories();
-            }
-            if (Hud.instance != null)
-            {
-                CreateCategoryTabs();
+                if (SceneManager.GetActiveScene().name == "main")
+                {
+                    CreatePieceTableCategories();
+                }
+                if (Hud.instance != null)
+                {
+                    CreateCategoryTabs();
+                }
+                if (Player.m_localPlayer != null)
+                {
+                    UpdatePieceCategories();
+                }
             }
 
             return categoryID;
@@ -453,23 +460,40 @@ namespace Jotunn.Managers
                 }
             }
 
-            // Reorder tabs
-            float offset = 0f;
+            // Resize tabs
+            //float offset = 0f;
             foreach (GameObject go in newTabs)
             {
                 go.SetMiddleLeft();
                 go.SetWidth(PieceCategoryTabSize);
-                if (go.activeSelf)
+                /*if (go.activeSelf)
                 {
                     var tf = go.GetComponent<RectTransform>();
                     tf.anchoredPosition = new Vector2(offset, 0f);
                     offset += PieceCategoryTabSize;
-                }
+                }*/
             }
 
             // Replace the HUD arrays
             Hud.instance.m_buildCategoryNames = newNames.ToList();
             Hud.instance.m_pieceCategoryTabs = newTabs.ToArray();
+        }
+
+        /// <summary>
+        ///     Reorder piece table tabs if the table if opened currently
+        /// </summary>
+        private void UpdatePieceCategories()
+        {
+            if (!Player.m_localPlayer)
+            {
+                return;
+            }
+
+            var table = Player.m_localPlayer.m_buildPieces;
+            if (table != null && table.m_useCategories && PieceTableCategoriesMap.ContainsKey(table.name))
+            {
+                PieceTableCategoriesMap[table.name].ReorderTableTabs();
+            }
         }
 
         /// <summary>
@@ -707,6 +731,21 @@ namespace Jotunn.Managers
                     On.Hud.OnLeftClickCategory -= Hud_OnLeftClickCategory;
 
                     currentActive = null;
+                }
+            }
+
+            internal void ReorderTableTabs()
+            {
+                if (currentActive != null && currentActive == this)
+                {
+                    // Activate all tabs for this categories
+                    foreach (GameObject tab in Hud.instance.m_pieceCategoryTabs)
+                    {
+                        tab.SetActive(Keys.Contains(tab.name));
+                    }
+
+                    // Reorder tabs
+                    ReorderActiveTabs();
                 }
             }
 
