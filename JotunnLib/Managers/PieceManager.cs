@@ -459,21 +459,7 @@ namespace Jotunn.Managers
                     newTabs.Add(newTab);
                 }
             }
-
-            // Resize tabs
-            //float offset = 0f;
-            foreach (GameObject go in newTabs)
-            {
-                go.SetMiddleLeft();
-                go.SetWidth(PieceCategoryTabSize);
-                /*if (go.activeSelf)
-                {
-                    var tf = go.GetComponent<RectTransform>();
-                    tf.anchoredPosition = new Vector2(offset, 0f);
-                    offset += PieceCategoryTabSize;
-                }*/
-            }
-
+            
             // Replace the HUD arrays
             Hud.instance.m_buildCategoryNames = newNames.ToList();
             Hud.instance.m_pieceCategoryTabs = newTabs.ToArray();
@@ -756,6 +742,7 @@ namespace Jotunn.Managers
                 {
                     go.SetMiddleLeft();
                     go.SetHeight(30f);
+                    go.SetWidth(PieceCategoryTabSize);
                     RectTransform tf = (go.transform as RectTransform);
                     tf.anchoredPosition = new Vector2(offset, 0f);
                     offset += PieceCategoryTabSize;
