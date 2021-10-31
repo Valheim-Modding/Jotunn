@@ -51,6 +51,11 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
+            if (GUIManager.IsHeadless())
+            {
+                return;
+            }
+
             Main.Instance.StartCoroutine(RenderQueue());
         }
 
