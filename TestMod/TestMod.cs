@@ -101,6 +101,7 @@ namespace TestMod
             // Crate a custom item with rendered icons
             PrefabManager.OnVanillaPrefabsAvailable += AddItemsWithRenderedIcons;
 
+            ZoneManager.OnVanillaLocationsAvailable += ModifyVanillaLocationsAndVegetation;
             ZoneManager.OnVanillaLocationsAvailable += AddCustomLocationsAndVegetation;
 
             // Test config sync event
@@ -130,6 +131,7 @@ namespace TestMod
             // Hook GetVersionString for ext version string compat test
             On.Version.GetVersionString += Version_GetVersionString;
         }
+
 
 
         // Called every frame
@@ -1321,6 +1323,25 @@ namespace TestMod
             }
         }
 
+        private void ModifyVanillaLocationsAndVegetation()
+        {
+            var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
+
+            //modify existing locations
+            var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
+            eikhtyrLocation.m_exteriorRadius = 20f; //More space around the altar
+
+            var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
+            eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
+
+            //modify existing vegetation
+            var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
+            raspberryBush.m_groupSizeMin = 10;
+            raspberryBush.m_groupSizeMax = 30;
+
+            //Not unregistering this hook, it needs to run every world load
+        }
+
         private void AddCustomLocationsAndVegetation()
         {
 
@@ -1354,13 +1375,6 @@ namespace TestMod
                     lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
                 }
 
-                //modify existing locations
-                var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
-                eikhtyrLocation.m_exteriorRadius = 20f; //More space around the altar
-
-                var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
-                eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
-
                 //Use locations for larger structures
                 GameObject cubesLocation = ZoneManager.Instance.CreateLocationContainer("lulzcube_location");
 
@@ -1390,10 +1404,6 @@ namespace TestMod
 
                 ZoneManager.Instance.AddCustomVegetation(customVegetation);
 
-                var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
-                raspberryBush.m_groupSizeMin = 5;
-                raspberryBush.m_groupSizeMax = 15;
-                 
                 //Add more seed carrots to the meadows & black forest
                 ZoneSystem.ZoneVegetation pickableSeedCarrot = ZoneManager.Instance.GetZoneVegetation("Pickable_SeedCarrot");
                 ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(pickableSeedCarrot.m_prefab, new VegetationConfig(pickableSeedCarrot)
@@ -1408,6 +1418,7 @@ namespace TestMod
             }
             finally
             {
+                //Custom locations and vegetations are added every time the game loads, we don't need to add every time
                 ZoneManager.OnVanillaLocationsAvailable -= AddCustomLocationsAndVegetation;
                 locationsAssetBundle.Unload(false);
             }

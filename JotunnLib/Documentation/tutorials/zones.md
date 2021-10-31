@@ -18,9 +18,10 @@ Make sure that every custom Prefab is registered to the PrefabManager!
 Modify existing Vegetation configuration to increase the group size:
 ```cs
 var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
-raspberryBush.m_groupSizeMin = 5;
-raspberryBush.m_groupSizeMax = 15;
+raspberryBush.m_groupSizeMin = 10;
+raspberryBush.m_groupSizeMax = 30;
 ```
+![](../images/data/moreRaspberryBushes.png)
 
 ### Adding vegetation
 Any prefab can be added as vegetation:
@@ -32,6 +33,7 @@ CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, new Veg
 });
 ```
 This example defines very little filters, so this prefab will be found all over every Meadows.
+![Lulzcube vegetation](../images/data/customVegetation.png)
 
 ## Locations
 Locations are bundles of objects that are placed randomly during world generation. These include the boss altars, crypts , Fulin villages and more. For a full overview, check the [Locations list](../data/zones/location-list.md)
@@ -55,6 +57,8 @@ var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
 var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
 eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
 ```
+
+![Modified Eikthyr Location](../images/data/modifyEikthyrLocation.png)
 
 ### Creating copies of existing locations
 Use `ZoneManager.Instance.CreateClonedLocation` to clone a location. The cloned location is automatically added.
