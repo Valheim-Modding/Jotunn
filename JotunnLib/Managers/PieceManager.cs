@@ -829,7 +829,7 @@ namespace Jotunn.Managers
                 float minX = tab.GetComponent<RectTransform>().anchoredPosition.x - PieceCategoryTabOffset;
                 if (minX < 0f)
                 {
-                    float offsetX = selectedCategory == 0 ? minX * -1 - PieceCategoryTabOffset : minX * -1;
+                    float offsetX = selectedCategory == Values.Min() ? minX * -1 - PieceCategoryTabOffset : minX * -1;
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
                         go.GetComponent<RectTransform>().anchoredPosition += new Vector2(offsetX, 0);
