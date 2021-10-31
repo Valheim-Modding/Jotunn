@@ -4,7 +4,11 @@
 * Added ZoneManager for custom Locations and Vegetation
 
 ## Version 2.3.10
+* Added custom piece table category injection at runtime
+* Added RenderRequest for the RenderManager to define options for the render process
 * Fixed mock resolving of generic List types
+* Fixed CustomGUI anchor settings
+* Fixed Dropdown list sizing (thx joeyparrish)
 
 ## Version 2.3.9
 * Added the possibility to define vanilla console command modifiers in ConsoleCommand (thx joeyparrish)
