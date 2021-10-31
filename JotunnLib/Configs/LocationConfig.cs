@@ -10,7 +10,7 @@ namespace Jotunn.Configs
     public class LocationConfig
     { 
         /// <summary>
-        ///     Associated Location component
+        ///     Associated <see cref="Location"/> component
         /// </summary>
         public Location Location { get; internal set; }
         /// <summary>

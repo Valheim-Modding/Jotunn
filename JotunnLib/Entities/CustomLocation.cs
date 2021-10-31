@@ -16,24 +16,43 @@ namespace Jotunn.Entities
         ///     The exterior prefab for this custom location.
         /// </summary>
         public GameObject Prefab { get; private set; }
-
+        /// <summary>
+        ///     Associated <see cref="ZoneSystem.ZoneLocation"/> component
+        /// </summary>
         public ZoneSystem.ZoneLocation ZoneLocation { get; private set; }
+        /// <summary>
+        ///     Associated <see cref="Location"/> component
+        /// </summary>
         public Location Location { get; private set; }
+        /// <summary>
+        ///     Name of this custom location
+        /// </summary>
         public string Name { get; private set; }
 
-        public CustomLocation(GameObject exteriorLocation, LocationConfig config) : this(exteriorLocation, null, config) { }
+        /// <summary>
+        ///     Custom location from a prefab with a <see cref="LocationConfig"/> attached.<br />
+        /// </summary>
+        /// <param name="exteriorPrefab">The exterior prefab for this custom location.</param>
+        /// <param name="locationConfig">The <see cref="LocationConfig"/> for this custom location.</param>
+        public CustomLocation(GameObject exteriorPrefab, LocationConfig locationConfig) : this(exteriorPrefab, null, locationConfig) { }
 
-        public CustomLocation(GameObject exteriorLocation, GameObject interiorPrefab, LocationConfig config)
+        /// <summary>
+        ///     Custom location from a prefab with a <see cref="LocationConfig"/> attached.<br />
+        /// </summary>
+        /// <param name="exteriorPrefab">The exterior prefab for this custom location.</param>
+        /// <param name="interiorPrefab">The interior prefab for this custom location.</param>
+        /// <param name="locationConfig">The <see cref="LocationConfig"/> for this custom location.</param>
+        public CustomLocation(GameObject exteriorPrefab, GameObject interiorPrefab, LocationConfig locationConfig)
         {
-            Prefab = exteriorLocation;
-            Name = exteriorLocation.name;
+            Prefab = exteriorPrefab;
+            Name = exteriorPrefab.name;
 
-            ZoneLocation = config.GetZoneLocation();
-            ZoneLocation.m_prefab = exteriorLocation;
-            ZoneLocation.m_prefabName = exteriorLocation.name;
+            ZoneLocation = locationConfig.GetZoneLocation();
+            ZoneLocation.m_prefab = exteriorPrefab;
+            ZoneLocation.m_prefabName = exteriorPrefab.name;
 
             List<ZNetView> netViews = new List<ZNetView>();
-            var transform = exteriorLocation.transform;
+            var transform = exteriorPrefab.transform;
             for (int i = 0; i < transform.childCount; i++)
             {
                 if (transform.GetChild(i).TryGetComponent(out ZNetView zNetView))
@@ -44,16 +63,16 @@ namespace Jotunn.Entities
 
             ZoneLocation.m_netViews = netViews;
 
-            if (exteriorLocation.TryGetComponent<Location>(out var location))
+            if (exteriorPrefab.TryGetComponent<Location>(out var location))
             {
                 Location = location;
             }
             else
             {
-                Location = exteriorLocation.AddComponent<Location>();
-                Location.m_hasInterior = config.InteriorRadius > 0f;
-                Location.m_exteriorRadius = config.ExteriorRadius;
-                Location.m_clearArea = config.ClearArea;
+                Location = exteriorPrefab.AddComponent<Location>();
+                Location.m_hasInterior = locationConfig.InteriorRadius > 0f;
+                Location.m_exteriorRadius = locationConfig.ExteriorRadius;
+                Location.m_clearArea = locationConfig.ClearArea;
                 Location.m_interiorPrefab = interiorPrefab;
             }
         }

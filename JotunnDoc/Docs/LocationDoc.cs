@@ -31,64 +31,106 @@ namespace JotunnDoc.Docs
             var imageDirectory = Path.Combine(DocumentationDirConfig.Value, "images/locations");
             Directory.CreateDirectory(imageDirectory);
 
-            var groups = ZoneSystem.instance.m_locations
-                .Where(zl => zl.m_enable && zl.m_prefab)
-                .GroupBy(zl => zl.m_group)
-                .OrderByDescending(grouping => grouping.Key == "")
-                .ThenBy(grouping => grouping.Key);
+            var enableGroups = ZoneSystem.instance.m_locations
+                .Where(zl => zl.m_prefab)
+                .GroupBy(zl => zl.m_enable && zl.m_quantity != 0)
+                .OrderByDescending(g => g.Key)
+                .ToList();
 
-            foreach (var group in groups)
+            foreach (var enableGroup in enableGroups)
             {
-                AddHeader(2, group.Key != "" ? group.Key : "No group");
-                AddTableHeader("Location", "Biome", "BiomeArea", "Quantity", "Exterior radius", "Properties", "Filters", "Interior");
-                foreach (var zoneLocation in group.OrderByDescending(zl => zl.m_prioritized).ThenBy(zl => zl.m_quantity))
+                AddHeader(1, enableGroup.Key ? "Locations" : "Unused locations");
+
+                var groups = enableGroup
+                    .GroupBy(zl => zl.m_group)
+                    .OrderByDescending(grouping => grouping.Key == "")
+                    .ThenBy(grouping => grouping.Key)
+                    .ToList();
+
+                foreach (var group in groups)
                 {
-                    var path = Path.Combine(imageDirectory, $"{zoneLocation.m_prefab.name}.png");
-
-                    var renderRequest = new RenderManager.RenderRequest(zoneLocation.m_prefab)
+                    AddHeader(2, group.Key != "" ? group.Key : "No group");
+                    AddTableHeader("Location", "Biome", "BiomeArea", "Quantity", "Exterior radius", "Properties", "Filters", "Interior");
+                    foreach (var zoneLocation in group.OrderByDescending(zl => zl.m_prioritized).ThenBy(zl => zl.m_quantity))
                     {
-                        Rotation = RenderManager.IsometricRotation,
-                        FieldOfView = 20f,
-                        DistanceMultiplier = 1.1f
-                    };
-
-                    bool hasSprite = RenderManager.Instance.EnqueueRender(renderRequest, (Sprite sprite) =>
-                    {
-                        if (sprite)
+                        GameObject exteriorPrefab = zoneLocation.m_prefab;
+                        if (zoneLocation.m_location.m_hasInterior)
                         {
-                            var texture = sprite.texture;
-                            var bytes = texture.EncodeToPNG();
-                            File.WriteAllBytes(path, bytes);
+                            var locationTransform = zoneLocation.m_location.transform;
+                            for (int i = 0; i < locationTransform.childCount; i++)
+                            {
+                                var childTransform = locationTransform.GetChild(i);
+                                if (childTransform.name.ToLowerInvariant().Equals("exterior"))
+                                {
+                                    exteriorPrefab = childTransform.gameObject;
+                                    break;
+                                }
+                            }
                         }
 
-                    });
-                     
-                    AddTableRow(
-                        $"{zoneLocation.m_prefab.name}{(hasSprite ? $"<br>![{zoneLocation.m_prefab.name}](../../images/locations/{zoneLocation.m_prefab.name}.png)" : "")}",
-                        GetBiome(zoneLocation.m_biome),
-                        GetBiomeArea(zoneLocation.m_biomeArea),
-                        zoneLocation.m_quantity.ToString(),
-                        zoneLocation.m_exteriorRadius.ToString(),
-                        GetProperties(zoneLocation),
-                        GetFilters(zoneLocation),
-                        GetInterior(zoneLocation)
-                    ); 
-                } 
+                        bool hasSprite = RequestSprite(Path.Combine(imageDirectory, $"{zoneLocation.m_prefab.name}-0.png"), exteriorPrefab, RenderManager.IsometricRotation);
+                        if (hasSprite)
+                        {
+                            RequestSprite(Path.Combine(imageDirectory, $"{zoneLocation.m_prefab.name}-1.png"), exteriorPrefab, RenderManager.IsometricRotation * Quaternion.Euler(0, 180, 0));
+                        }
+
+
+
+                        AddTableRow(
+                            GetNameBox(zoneLocation, hasSprite),
+                            GetBiome(zoneLocation.m_biome),
+                            GetBiomeArea(zoneLocation.m_biomeArea),
+                            zoneLocation.m_quantity.ToString(),
+                            zoneLocation.m_exteriorRadius.ToString(),
+                            GetProperties(zoneLocation),
+                            GetFilters(zoneLocation),
+                            GetInterior(zoneLocation)
+                        );
+                    }
+                }
             }
             Save();
+        }
+
+        private static string GetNameBox(ZoneSystem.ZoneLocation zoneLocation, bool hasSprite)
+        {
+            StringBuilder sb = new StringBuilder(zoneLocation.m_prefab.name);
+            if (hasSprite)
+            {
+                string image0 = $"../../images/locations/{zoneLocation.m_prefab.name}-0.png"; 
+                sb.Append($"<br><img src=\"{image0}\" onmouseover=\"this.src = this.src.replace('-0.png','-1.png')\" onmouseout=\"this.src = this.src.replace('-1.png','-0.png')\">");
+            }
+            return sb.ToString();
+        }
+
+        private static bool RequestSprite(string path, GameObject exteriorPrefab, Quaternion rotation)
+        {
+            return RenderManager.Instance.EnqueueRender(new RenderManager.RenderRequest(exteriorPrefab)
+            {
+                Rotation = rotation,
+                FieldOfView = 20f,
+                DistanceMultiplier = 1.1f
+            }, (Sprite sprite) =>
+            {
+                if (sprite)
+                {
+                    var texture = sprite.texture;
+                    var bytes = texture.EncodeToPNG();
+                    File.WriteAllBytes(path, bytes);
+                }
+
+            });
         }
 
         private string GetFilters(ZoneSystem.ZoneLocation zoneLocation)
         {
             var inForest = zoneLocation.m_inForest && (zoneLocation.m_forestTresholdMin > 0 || zoneLocation.m_forestTresholdMax < 1);
             return "<ul>" +
-                $"<li>MinAltitude: {zoneLocation.m_minAltitude}</li>" +
-                $"<li>MaxAltitude: {zoneLocation.m_maxAltitude}</li>" +
-                $"<li>MinTerrainDelta: {zoneLocation.m_minTerrainDelta}</li>" +
-                $"<li>MaxTerrainDelta: {zoneLocation.m_maxTerrainDelta}</li>" +
-                $"{(zoneLocation.m_minDistance != 0 ? $"<li>MinDistance: {zoneLocation.m_minDistance}" : "")}</li>" +
-                $"{(inForest ? "" : $"<li>ForestThresholdMin: {zoneLocation.m_forestTresholdMin}")}</li>" +
-                $"{(inForest ? "" : $"<li>ForestThresholdMax: {zoneLocation.m_forestTresholdMax}")}</li>" +
+                $"<li>Altitude: {RangeString(zoneLocation.m_minAltitude, zoneLocation.m_minAltitude)}</li>" +
+
+                $"<li>Terrain Delta: {RangeString(zoneLocation.m_minTerrainDelta, zoneLocation.m_maxTerrainDelta)}</li>" +
+                $"{(zoneLocation.m_minDistance != 0 ? $"<li>Min Distance: {zoneLocation.m_minDistance}" : "")}</li>" +
+                $"{(inForest ? "" : $"<li>Forest Threshold: {RangeString(zoneLocation.m_forestTresholdMin, zoneLocation.m_forestTresholdMax)}")}</li>" +
                 $"{(zoneLocation.m_minDistanceFromSimilar != 0 ? $"<li>MinDistanceFromSimilar: {zoneLocation.m_minDistanceFromSimilar}" : "")}</li>" +
                 "</ul>";
         }
@@ -111,10 +153,21 @@ namespace JotunnDoc.Docs
             return $"<ul>" +
                 $"{(zoneLocation.m_prioritized ? "<li>Prioritized</li>" : "")}" +
                 $"{(zoneLocation.m_unique ? "<li>Unique</li>" : "")}" +
-                $"{(zoneLocation.m_group == "" ? "" : $"<li>Group: </li>{zoneLocation.m_group}</li>")}" +
                 $"{(zoneLocation.m_snapToWater ? "<li>Snap to water</li>" : "")}" +
                 $"{(zoneLocation.m_centerFirst ? "<li>Place in center first</li>" : "")}" +
+                GetSpawns(zoneLocation) +
                 $"</ul>";
+        }
+
+        private static string GetSpawns(ZoneSystem.ZoneLocation zoneLocation)
+        {
+            return string.Join("",
+                zoneLocation.m_prefab.GetComponentsInChildren<CreatureSpawner>()
+                                    .Select(cs => cs.m_creaturePrefab.name)
+                                    .Distinct()
+                                    .OrderByDescending(cs => cs.ToString())
+                                    .Select(creatureName => $"<li>Spawns {creatureName}</li>")
+                );
         }
 
         private string GetBiomeArea(Heightmap.BiomeArea biomeArea)

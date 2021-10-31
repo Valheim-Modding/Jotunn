@@ -31,7 +31,7 @@ namespace JotunnDoc.Docs
             var imageDirectory = Path.Combine(DocumentationDirConfig.Value, "images/vegetation");
             Directory.CreateDirectory(imageDirectory);
              
-            AddTableHeader("Vegetation", "Biome", "BiomeArea", "Quantity", "Properties", "Filters");
+            AddTableHeader("Vegetation", "Biome", "BiomeArea", "Quantity per zone", "Properties", "Filters");
             foreach (var vegetation in ZoneSystem.instance.m_vegetation.Where(zl => zl.m_enable && zl.m_prefab))
             {
                 var path = Path.Combine(imageDirectory, $"{vegetation.m_prefab.name}.png");
@@ -57,7 +57,7 @@ namespace JotunnDoc.Docs
                     $"{vegetation.m_prefab.name}{(hasSprite ? $"<br>![{vegetation.m_prefab.name}](../../images/vegetation/{vegetation.m_prefab.name}.png)" : "")}",
                     GetBiome(vegetation.m_biome),
                     GetBiomeArea(vegetation.m_biomeArea),
-                    GetRange(vegetation.m_min, vegetation.m_max),
+                    GetQuantity(vegetation),
                     GetProperties(vegetation),
                     GetFilters(vegetation) 
                 ); 
@@ -65,38 +65,35 @@ namespace JotunnDoc.Docs
             Save();
         }
 
-        private string GetRange(float m_min, float m_max)
+        private static string GetQuantity(ZoneSystem.ZoneVegetation vegetation)
         {
-            if(m_min == m_max)
+            if(vegetation.m_groupSizeMax > 1)
             {
-                return m_min.ToString();
+                return $"<ul><li>{RangeString(vegetation.m_min, vegetation.m_max)} groups of {RangeString(vegetation.m_groupSizeMin, vegetation.m_groupSizeMax)}</li>{(vegetation.m_groupSizeMax > 1 ? $"<li>Group Radius: {vegetation.m_groupRadius}</li>": "")}</ul>";
             }
-            return $"{m_min} - {m_max}";
+            return $"{RangeString(vegetation.m_min, vegetation.m_max)}";
         }
 
         private string GetFilters(ZoneSystem.ZoneVegetation vegetation)
         {
+            
             var inForest = vegetation.m_inForest && (vegetation.m_forestTresholdMin > 0 || vegetation.m_forestTresholdMax < 1);
             return "<ul>" +
-                $"<li>MinAltitude: {vegetation.m_minAltitude}</li>" +
-                $"<li>MaxAltitude: {vegetation.m_maxAltitude}</li>" +
-                $"<li>MinTerrainDelta: {vegetation.m_minTerrainDelta}</li>" +
-                $"<li>MaxTerrainDelta: {vegetation.m_maxTerrainDelta}</li>" +
-              // $"{(zoneLocation.m_minDistance != 0 ? $"<li>MinDistance: {zoneLocation.m_minDistance}" : "")}</li>" +
-                $"{(inForest ? "" : $"<li>ForestThresholdMin: {vegetation.m_forestTresholdMin}")}</li>" +
-                $"{(inForest ? "" : $"<li>ForestThresholdMax: {vegetation.m_forestTresholdMax}")}</li>" +
-              // $"{(zoneLocation.m_minDistanceFromSimilar != 0 ? $"<li>MinDistanceFromSimilar: {zoneLocation.m_minDistanceFromSimilar}" : "")}</li>" +
-                "</ul>";
+                $"<li>Altitude: {RangeString(vegetation.m_minAltitude, vegetation.m_maxAltitude)}</li>" +
+                $"<li>Terrain Delta: {RangeString(vegetation.m_minTerrainDelta, vegetation.m_maxTerrainDelta)}</li>" +
+                $"<li>Terrain Delta Radius: {vegetation.m_terrainDeltaRadius}</li>" +
+                $"<li>Ocean Depth: {RangeString(vegetation.m_minOceanDepth, vegetation.m_maxOceanDepth)}</li>" +
+                $"<li>Tilt: {RangeString(vegetation.m_minTilt, vegetation.m_maxTilt)}</li>" +
+                $"{(inForest ? $"<li>Forest Threshold: {RangeString(vegetation.m_forestTresholdMin, vegetation.m_forestTresholdMax)}" : "")}</li>" +
+                 "</ul>";
         } 
 
         private string GetProperties(ZoneSystem.ZoneVegetation vegetation)
         {
             return $"<ul>" +
-              // $"{(vegetation.m_prioritized ? "<li>Prioritized</li>" : "")}" +
-              // $"{(vegetation.m_unique ? "<li>Unique</li>" : "")}" +
-              // $"{(vegetation.m_group == "" ? "" : $"<li>Group: </li>{vegetation.m_group}</li>")}" +
                 $"{(vegetation.m_snapToWater ? "<li>Snap to water</li>" : "")}" +
-              // $"{(vegetation.m_centerFirst ? "<li>Place in center first</li>" : "")}" +
+                $"{(vegetation.m_scaleMax > vegetation.m_scaleMin ? $"<li>Random scale: {RangeString(vegetation.m_scaleMin, vegetation.m_scaleMax)}</li>" : "")}" +
+                $"{(vegetation.m_groundOffset != 0 ? $"<li>Ground offset: {vegetation.m_groundOffset}" : "")}</li>" +
                 $"</ul>";
         }
 

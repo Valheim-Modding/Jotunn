@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using BepInEx;
+using System.Text;
 using BepInEx.Configuration;
 
 namespace JotunnDoc
@@ -37,32 +37,32 @@ namespace JotunnDoc
 
         public void AddHeader(int size, string headerText)
         {
-            string text = "";
+            StringBuilder text = new StringBuilder();
 
             for (int i = 0; i < size; i++)
             {
-                text += "#";
+                text.Append("#");
             }
 
-            text += " " + headerText;
+            text.Append(" " + headerText);
             writer.WriteLine(text);
             writer.Flush();
         }
 
         public void AddTableHeader(params string[] columns)
         {
-            string text = "|";
+            StringBuilder text = new StringBuilder("|");
 
             foreach (string col in columns)
             {
-                text += col + " |";
+                text.Append(col + " |");
             }
 
-            text += "\n";
-            
+            text.Append("\n|");
+
             for (int i = 0; i < columns.Length; i++)
             {
-                text += "---|";
+                text.Append("---|");
             }
 
             writer.WriteLine(text);
@@ -71,11 +71,11 @@ namespace JotunnDoc
 
         public void AddTableRow(params string[] vals)
         {
-            string text = "|";
+            StringBuilder text = new StringBuilder("|");
 
             foreach (string val in vals)
             {
-                text += val + "|";
+                text.Append(val + "|");
             }
 
             writer.WriteLine(text);
@@ -88,5 +88,15 @@ namespace JotunnDoc
             writer.Close();
             Generated = true;
         }
+
+        internal static string RangeString(float m_min, float m_max)
+        {
+            if (m_min == m_max)
+            {
+                return m_min.ToString();
+            }
+            return $"{m_min} - {m_max}";
+        }
+
     }
 }

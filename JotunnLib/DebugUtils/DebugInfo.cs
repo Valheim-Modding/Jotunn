@@ -121,11 +121,12 @@ namespace Jotunn.DebugUtils
                     _hoverValue.text += hover.name;
                 }
             }
-            
+
             _keyValue.text = string.Empty;
 
             var key = ZInput.instance.GetPressedKey(); 
             _keyValue.text += Enum.GetName(typeof(KeyCode), key);
+
         }
     }
 }
