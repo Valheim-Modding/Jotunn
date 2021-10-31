@@ -259,7 +259,14 @@ namespace Jotunn.Managers
                 return false;
             }
 
-            customLocation.Prefab.transform.SetParent(LocationContainer.transform);
+            customLocation.Prefab.transform.SetParent(LocationContainer.transform); 
+            foreach(var zNetView in customLocation.ZoneLocation.m_netViews)
+            { 
+                if (!PrefabManager.Instance.Prefabs.ContainsKey(zNetView.gameObject.name.GetStableHashCode()))
+                {
+                    PrefabManager.Instance.AddPrefab(zNetView.gameObject);
+                }
+            }
 
             Locations.Add(customLocation.Name, customLocation);
             return true;
@@ -273,6 +280,10 @@ namespace Jotunn.Managers
         public bool AddCustomVegetation(CustomVegetation customVegetation)
         {
             Logger.LogDebug($"Registering custom vegetation {customVegetation.Name}");
+            if (!PrefabManager.Instance.Prefabs.ContainsKey(customVegetation.Prefab.name.GetStableHashCode()))
+            {
+                PrefabManager.Instance.AddPrefab(customVegetation.Prefab);
+            }
             Vegetations.Add(customVegetation.Name, customVegetation);
             return true;
         }

@@ -12,8 +12,6 @@ Locations and Vegetation have many properties that are used to filter randomly s
 ## Vegetation
 Vegetation is placed for each Zone, so quantities are per zone. All possible vegetations are attempted to be placed for each zone, there is no limit to the total amount.
 
-Make sure that every custom Prefab is registered to the PrefabManager!
-
 ### Modifying existing vegetation
 Modify existing Vegetation configuration to increase the group size:
 ```cs
@@ -41,8 +39,6 @@ Locations are bundles of objects that are placed randomly during world generatio
 These are unpacked only when a player gets close to the position of a placed location. Once unpacked, the GameObjects are saved like regular pieces.
 
 Only GameObjects with a `ZNetView.m_persistent = true` will be saved and instantiated on load after unpacking.
-
-Make sure that every Prefab in the Location is registered to the PrefabManager!
 
 Each Zone can contain only 1 location. This means that the number of slots is limited. Try to keep the total number of locations added low so everything has a chance to place.
 
