@@ -459,9 +459,12 @@ namespace Jotunn.Managers
             {
                 go.SetMiddleLeft();
                 go.SetWidth(PieceCategoryTabSize);
-                RectTransform tf = go.transform as RectTransform;
-                tf.anchoredPosition = new Vector2(offset, 0f);
-                offset += PieceCategoryTabSize;
+                if (go.activeSelf)
+                {
+                    var tf = go.GetComponent<RectTransform>();
+                    tf.anchoredPosition = new Vector2(offset, 0f);
+                    offset += PieceCategoryTabSize;
+                }
             }
 
             // Replace the HUD arrays
