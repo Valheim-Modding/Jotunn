@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+using System.Linq; 
 using Jotunn.Entities;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -175,8 +174,6 @@ namespace Jotunn.Managers
             return container;
         }
 
-        private readonly Regex copyRegex = new Regex(@" \([0-9]+\)");
-
         /// <summary>
         ///     Create a copy that is disabled, so any Components in instantiated GameObjects will not start their lifecycle     
         /// </summary>
@@ -188,47 +185,12 @@ namespace Jotunn.Managers
             var locationContainer = Object.Instantiate(gameObject, LocationContainer.transform);
             if (fixLocationReferences)
             {
-                var transform = locationContainer.transform;
-                FixMockReferences(transform);
+                locationContainer.FixReferences(true);
             }
             
             return locationContainer;
         }
-
-        private void FixMockReferences(Transform transform)
-        {
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                var child = transform.GetChild(i);
-                if (!child.name.StartsWith(MockManager.JVLMockPrefix))
-                {
-                    //Allow nested component references to JVLmock
-                    FixMockReferences(child);
-                    continue;
-                }
-                string prefabName = child.name.Substring(MockManager.JVLMockPrefix.Length);
-
-                //Allow duplicated JVLmocks (child names must be unique)
-                Match match = copyRegex.Match(prefabName);
-                if (match.Success)
-                {
-                    prefabName = prefabName.Substring(0, match.Index);
-                }
-
-                var replacementPrefab = PrefabManager.Instance.GetPrefab(prefabName);
-                if (!replacementPrefab)
-                {
-                    Logger.LogWarning($"No replacement prefab found for {prefabName}");
-                }
-                else
-                {
-                    var replacement = Object.Instantiate(replacementPrefab, child.localPosition, child.localRotation, transform);
-                    replacement.transform.localScale = child.localScale;
-                    Object.Destroy(child.gameObject);
-                }
-            }
-        }
-
+          
         /// <summary>
         ///     Create a CustomLocation that is a deep copy of the original.
         ///     Changes will not affect the original. The CustomLocation is already registered to be added.

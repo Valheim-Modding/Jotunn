@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -103,7 +104,9 @@ namespace Jotunn.Managers
         {
             return (T)GetRealPrefabFromMock(unityObject, typeof(T));
         }
-        
+
+        private static readonly Regex copyRegex = new Regex(@" \([0-9]+\)");
+
 #pragma warning disable CS0618
         /// <summary>
         ///     Will try to find the real vanilla prefab from the given mock
@@ -131,6 +134,12 @@ namespace Jotunn.Managers
                         {
                             unityObjectName = unityObjectName.Substring(0, unityObjectName.Length - materialInstance.Length);
                         }
+                    }
+                    //Allow duplicated JVLmocks (child names must be unique)
+                    Match match = copyRegex.Match(unityObjectName);
+                    if (match.Success)
+                    {
+                        unityObjectName = unityObjectName.Substring(0, match.Index);
                     }
 
                     Object ret = PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);

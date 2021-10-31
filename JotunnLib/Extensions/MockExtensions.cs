@@ -54,9 +54,23 @@ namespace Jotunn
                 return;
             }
 
-            foreach (Transform tf in gameObject.transform)
+            var childCount = gameObject.transform.childCount;
+            for (int i = 0; i < childCount; i++)
             {
-                tf.gameObject.FixReferences(true);
+                Transform tf = gameObject.transform.GetChild(i);
+                 
+                var realPrefab = MockManager.GetRealPrefabFromMock<GameObject>(tf.gameObject);
+                if (realPrefab)
+                {
+                    var realInstance = Object.Instantiate(realPrefab, gameObject.transform);
+                    realInstance.transform.localPosition = tf.localPosition;
+                    realInstance.transform.localRotation = tf.localRotation;
+                    realInstance.transform.localScale = tf.localScale;
+                    Object.Destroy(tf.gameObject);
+                } else
+                {
+                    tf.gameObject.FixReferences(true);
+                }
             }
         }
 
