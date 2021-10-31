@@ -62,8 +62,6 @@ namespace Jotunn.Managers
 
         private void ZoneSystem_SetupLocations(On.ZoneSystem.orig_SetupLocations orig, ZoneSystem self)
         {
-            try
-            {
 
             orig(self);
 
@@ -73,7 +71,7 @@ namespace Jotunn.Managers
             Logger.LogInfo("Injecting custom locations");
             foreach (CustomLocation customLocation in Locations.Values)
             {
-                Logger.LogInfo($"Adding custom location {customLocation.Prefab.name} in {customLocation.ZoneLocation.m_biome}");
+                Logger.LogInfo($"Adding custom location {customLocation.Prefab.name} in {string.Join(", ", GetMatchingBiomes(customLocation.ZoneLocation.m_biome))}");
 
                 var zoneLocation = customLocation.ZoneLocation;
                 self.m_locations.Add(zoneLocation);
@@ -96,13 +94,8 @@ namespace Jotunn.Managers
             Logger.LogInfo("Injecting custom vegetation");
             foreach (CustomVegetation customVegetation in Vegetations.Values)
             {
-                Logger.LogInfo($"Adding custom vegetation {customVegetation.Prefab.name} in {customVegetation.Vegetation.m_biome}");
+                Logger.LogInfo($"Adding custom vegetation {customVegetation.Prefab.name} in {string.Join(", ", GetMatchingBiomes(customVegetation.Vegetation.m_biome))}");
                 self.m_vegetation.Add(customVegetation.Vegetation);
-            }
-
-            } finally
-            {
-                On.ZoneSystem.SetupLocations -= ZoneSystem_SetupLocations;
             }
         }
 
@@ -114,12 +107,33 @@ namespace Jotunn.Managers
         public static Heightmap.Biome AnyBiomeOf(params Heightmap.Biome[] biomes)
         {
             Heightmap.Biome result = Heightmap.Biome.None;
-            foreach(var biome in biomes)
+            foreach (var biome in biomes)
             {
                 result |= biome;
             }
             return result;
+        } 
+
+        /// <summary>
+        ///     Returns a list of all <see cref="Heightmap.Biome"/> that match <paramref name="biome"/>
+        /// </summary>
+        /// <param name="biome"></param>
+        /// <returns></returns>
+        public static List<Heightmap.Biome> GetMatchingBiomes(Heightmap.Biome biome)
+        {
+            List<Heightmap.Biome> biomes = new List<Heightmap.Biome>(); 
+            foreach (Heightmap.Biome area in Enum.GetValues(typeof(Heightmap.Biome)))
+            {
+                if (area == Heightmap.Biome.BiomesMax || (biome & area) == 0)
+                {
+                    continue;
+                }
+
+                biomes.Add(area);
+            }
+            return biomes;
         }
+
 #pragma warning restore S3265 // Non-flags enums should not be used in bitwise operations
 
         /// <summary>
@@ -274,7 +288,7 @@ namespace Jotunn.Managers
             {
                 return customVegetation.Vegetation;
             }
-            return ZoneSystem.instance.m_vegetation 
+            return ZoneSystem.instance.m_vegetation
                 .DefaultIfEmpty(null)
                 .FirstOrDefault(zv => zv.m_prefab && zv.m_prefab.name == name);
         }

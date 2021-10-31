@@ -34,11 +34,7 @@ namespace JotunnDoc.Docs
             AddTableHeader("Vegetation", "Biome", "BiomeArea", "Quantity per zone", "Properties", "Filters");
             foreach (var vegetation in ZoneSystem.instance.m_vegetation.Where(zl => zl.m_enable && zl.m_prefab))
             { 
-                bool hasSprite = RequestSprite(Path.Combine(imageDirectory, $"{vegetation.m_prefab.name}-0.png"), vegetation.m_prefab, RenderManager.IsometricRotation);
-                if (hasSprite)
-                {
-                    RequestSprite(Path.Combine(imageDirectory, $"{vegetation.m_prefab.name}-1.png"), vegetation.m_prefab, RenderManager.IsometricRotation * Quaternion.Euler(0, 180, 0));
-                }
+                bool hasSprite = RequestSprite(Path.Combine(imageDirectory, $"{vegetation.m_prefab.name}.png"), vegetation.m_prefab, RenderManager.IsometricRotation); 
                 
                 AddTableRow(
                     GetNameBox(vegetation, hasSprite),
@@ -56,9 +52,8 @@ namespace JotunnDoc.Docs
         {
             StringBuilder sb = new StringBuilder(zoneVegetation.m_prefab.name);
             if (hasSprite)
-            {
-                string image0 = $"../../images/prefabs/{zoneVegetation.m_prefab.name}-0.png";
-                sb.Append($"<br><img src=\"{image0}\" onmouseover=\"this.src = this.src.replace('-0.png','-1.png')\" onmouseout=\"this.src = this.src.replace('-1.png','-0.png')\">");
+            { 
+                sb.Append($"<br><img src=\"../../images/prefabs/{zoneVegetation.m_prefab.name}.png\">");
             }
             return sb.ToString();
         }
@@ -116,13 +111,8 @@ namespace JotunnDoc.Docs
         {
             StringBuilder biomeAreas = new StringBuilder("<ul>");
 
-            foreach (Heightmap.Biome area in Enum.GetValues(typeof(Heightmap.Biome)))
+            foreach (Heightmap.Biome area in ZoneManager.GetMatchingBiomes(biome))
             {
-                if (area == Heightmap.Biome.BiomesMax || (biome & area) == 0)
-                {
-                    continue;
-                }
-
                 biomeAreas.Append($"<li>{area}</li>");
             }
 

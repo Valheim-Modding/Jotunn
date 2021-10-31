@@ -68,12 +68,8 @@ namespace JotunnDoc.Docs
                             }
                         }
 
-                        bool hasSprite = RequestSprite(Path.Combine(imageDirectory, $"{zoneLocation.m_prefab.name}-0.png"), exteriorPrefab, RenderManager.IsometricRotation);
-                        if (hasSprite)
-                        {
-                            RequestSprite(Path.Combine(imageDirectory, $"{zoneLocation.m_prefab.name}-1.png"), exteriorPrefab, RenderManager.IsometricRotation * Quaternion.Euler(0, 180, 0));
-                        }
-
+                        bool hasSprite = RequestSprite(Path.Combine(imageDirectory, $"{zoneLocation.m_prefab.name}.png"), exteriorPrefab, RenderManager.IsometricRotation);
+                        
 
 
                         AddTableRow(
@@ -97,8 +93,7 @@ namespace JotunnDoc.Docs
             StringBuilder sb = new StringBuilder(zoneLocation.m_prefab.name);
             if (hasSprite)
             {
-                string image0 = $"../../images/locations/{zoneLocation.m_prefab.name}-0.png"; 
-                sb.Append($"<br><img src=\"{image0}\" onmouseover=\"this.src = this.src.replace('-0.png','-1.png')\" onmouseout=\"this.src = this.src.replace('-1.png','-0.png')\">");
+                sb.Append($"<br><img src=\"../../images/locations/{zoneLocation.m_prefab.name}.png\">");
             }
             return sb.ToString();
         }
@@ -172,13 +167,8 @@ namespace JotunnDoc.Docs
         {
             StringBuilder biomeAreas = new StringBuilder("<ul>");
 
-            foreach (Heightmap.Biome area in Enum.GetValues(typeof(Heightmap.Biome)))
+            foreach (Heightmap.Biome area in ZoneManager.GetMatchingBiomes(biome))
             {
-                if (area == Heightmap.Biome.BiomesMax || (biome & area) == 0)
-                {
-                    continue;
-                }
-
                 biomeAreas.Append($"<li>{area}</li>");
             }
 
