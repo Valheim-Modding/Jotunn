@@ -69,7 +69,7 @@ namespace JotunnDoc.Docs
                         }
 
                         bool hasSprite = RequestSprite(Path.Combine(imageDirectory, $"{zoneLocation.m_prefab.name}.png"), exteriorPrefab, RenderManager.IsometricRotation);
-                        
+
 
 
                         AddTableRow(
@@ -131,6 +131,7 @@ namespace JotunnDoc.Docs
                 $"{(zoneLocation.m_unique ? "<li>Unique</li>" : "")}" +
                 $"{(zoneLocation.m_snapToWater ? "<li>Snap to water</li>" : "")}" +
                 $"{(zoneLocation.m_centerFirst ? "<li>Place in center first</li>" : "")}" +
+                $"{(zoneLocation.m_location.m_clearArea ? "<li>Clear area</li>" : "")}" +
                 GetSpawns(zoneLocation) +
                 $"</ul>";
         }

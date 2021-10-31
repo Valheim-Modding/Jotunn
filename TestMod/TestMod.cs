@@ -1330,13 +1330,12 @@ namespace TestMod
                 var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
 
                 //Create location from AssetBundle
-                var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true);
-                cubeArchLocation.FixReferences();
+                var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true); 
                 ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubeArchLocation, new LocationConfig
                 {
                     Biome = Heightmap.Biome.BlackForest,
                     Quantity = 200,
-                    Priotized = true, 
+                    Priotized = true,
                     ExteriorRadius = 2f,
                     MinAltitude = 1f,
                     ClearArea = true,
@@ -1357,6 +1356,8 @@ namespace TestMod
 
                 //modify existing locations
                 var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
+                eikhtyrLocation.m_exteriorRadius = 20f; //More space around the altar
+
                 var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
                 eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
 
@@ -1389,12 +1390,18 @@ namespace TestMod
 
                 ZoneManager.Instance.AddCustomVegetation(customVegetation);
 
+                var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
+                raspberryBush.m_groupSizeMin = 5;
+                raspberryBush.m_groupSizeMax = 15;
+                 
                 //Add more seed carrots to the meadows & black forest
                 ZoneSystem.ZoneVegetation pickableSeedCarrot = ZoneManager.Instance.GetZoneVegetation("Pickable_SeedCarrot");
                 ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(pickableSeedCarrot.m_prefab, new VegetationConfig(pickableSeedCarrot)
                 {
-                    Min = 3, Max = 10,
-                    GroupSizeMin = 3, GroupSizeMax = 10,
+                    Min = 3,
+                    Max = 10,
+                    GroupSizeMin = 3,
+                    GroupSizeMax = 10,
                     GroupRadius = 10,
                     Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest),
                 }));

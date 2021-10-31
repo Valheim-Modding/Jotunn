@@ -1,5 +1,6 @@
 ﻿using System;
 using Jotunn.Entities;
+using Jotunn.Managers;
 
 namespace Jotunn.Configs
 {
@@ -14,7 +15,7 @@ namespace Jotunn.Configs
         /// </summary>
         public Location Location { get; internal set; }
         /// <summary>
-        ///     Biome to spawn in, can be bitwise or'ed toghether to allow multiple Biomes (Heightmap.Biome.Meadows | Heightmap.Biome.Forest)
+        ///     Biome to spawn in, multiple Biomes can be allowed with <see cref="ZoneManager.AnyBiomeOf"/>
         /// </summary>
         public Heightmap.Biome Biome { get; set; }
         /// <summary>

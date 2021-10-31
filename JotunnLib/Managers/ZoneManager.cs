@@ -189,40 +189,44 @@ namespace Jotunn.Managers
             if (fixLocationReferences)
             {
                 var transform = locationContainer.transform;
-                for (int i = 0; i < transform.childCount; i++)
+                FixMockReferences(transform);
+            }
+            
+            return locationContainer;
+        }
+
+        private void FixMockReferences(Transform transform)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                var child = transform.GetChild(i);
+                if (!child.name.StartsWith(MockManager.JVLMockPrefix))
                 {
-                    var child = transform.GetChild(i);
-                    if (!child.name.StartsWith(MockManager.JVLMockPrefix))
-                    {
-                        //Allow nested component references to JVLmock
-                        child.gameObject.FixReferences();
-                        continue;
-                    }
-                    string prefabName = child.name.Substring(MockManager.JVLMockPrefix.Length);
+                    //Allow nested component references to JVLmock
+                    FixMockReferences(child);
+                    continue;
+                }
+                string prefabName = child.name.Substring(MockManager.JVLMockPrefix.Length);
 
-                    //Allow duplicated JVLmocks (child names must be unique)
-                    Match match = copyRegex.Match(prefabName);
-                    if (match.Success)
-                    {
-                        prefabName = prefabName.Substring(0, match.Index);
-                    }
+                //Allow duplicated JVLmocks (child names must be unique)
+                Match match = copyRegex.Match(prefabName);
+                if (match.Success)
+                {
+                    prefabName = prefabName.Substring(0, match.Index);
+                }
 
-                    var replacementPrefab = PrefabManager.Instance.GetPrefab(prefabName);
-                    if (!replacementPrefab)
-                    {
-                        Logger.LogWarning($"No replacement prefab found for {prefabName}");
-                    }
-                    else
-                    {
-                        var replacement = Object.Instantiate(replacementPrefab, child.localPosition, child.localRotation, transform);
-                        replacement.transform.localScale = child.localScale;
-                        Object.Destroy(child.gameObject);
-                    }
+                var replacementPrefab = PrefabManager.Instance.GetPrefab(prefabName);
+                if (!replacementPrefab)
+                {
+                    Logger.LogWarning($"No replacement prefab found for {prefabName}");
+                }
+                else
+                {
+                    var replacement = Object.Instantiate(replacementPrefab, child.localPosition, child.localRotation, transform);
+                    replacement.transform.localScale = child.localScale;
+                    Object.Destroy(child.gameObject);
                 }
             }
-
-
-            return locationContainer;
         }
 
         /// <summary>
