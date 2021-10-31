@@ -476,9 +476,9 @@ namespace Jotunn.Managers
             }
 
             var table = Player.m_localPlayer.m_buildPieces;
-            if (table != null && table.m_useCategories && PieceTableCategoriesMap.ContainsKey(table.name))
+            if (table != null && table.m_useCategories && PieceTableCategoriesMap.TryGetValue(table.name, out var categories))
             {
-                PieceTableCategoriesMap[table.name].ReorderTableTabs();
+                categories.ReorderTableTabs();
             }
         }
 
@@ -491,9 +491,9 @@ namespace Jotunn.Managers
             try
             {
                 var table = Player.m_localPlayer.m_buildPieces;
-                if (table != null && table.m_useCategories && PieceTableCategoriesMap.ContainsKey(table.name))
+                if (table != null && table.m_useCategories && PieceTableCategoriesMap.TryGetValue(table.name, out var categories))
                 {
-                    PieceTableCategoriesMap[table.name].Toggle(Hud.instance.m_pieceSelectionWindow.activeSelf);
+                    categories.Toggle(Hud.instance.m_pieceSelectionWindow.activeSelf);
                 }
             }
             catch (Exception ex)
