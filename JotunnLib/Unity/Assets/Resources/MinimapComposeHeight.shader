@@ -33,16 +33,12 @@
 
                 sampler2D _MainTex, _OvlTex;
                 float4 _MainTex_ST;
-                //float4 _Color;
-                float4 _ColorPurple;
-                float4 _ColorGreen;
 
                 v2f vert(appdata v)
                 {
                     v2f o;
                     o.vertex = UnityObjectToClipPos(v.vertex);
                     o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                    //o.uv = v.uv;
                     return o;
                 }
 
@@ -54,20 +50,6 @@
                     if(col.r != 0){
                         col2.r = col.r;
                     }
-
-                    // use alpha as a filter channel
-                    //return col2;
-                    //if(col.a == 1){
-                    //    col2.r = col.r;
-                    //} else {
-                        //col2.r = col.r;
-                    //    col2.r = 1;
-                    //}
-                    //col2.r = c
-                    //col2.a = 0;
-
-                    //col2.rgb = lerp(col2.rgb, col.rgb, col.a);
-                    //col2.a = 1;
                     return col2;
                 }
                 ENDCG

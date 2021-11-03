@@ -47,14 +47,8 @@
                 {
                     fixed4 col = tex2D(_MainTex, i.uv);
                     fixed4 col2 = tex2D(_OvlTex, i.uv);
-                    //if(col.a == 0){
-                    //    col2.rgba = col2.rgba; // use vanilla texture
-                    //} else {
-                    //    col2.rgba = col.rgba; // use overlay texture
-                    //}
 
                     col2.rgba = lerp(col2.rgba, col.rgba, col.a);
-                    //col2.a = 1;
                     return col2;
                 }
                 ENDCG

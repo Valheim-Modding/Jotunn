@@ -31,7 +31,6 @@ There is still a fairly long list of features needed to be complete before this 
 
 - Overlay enable/disable GUI interface
 - Proper documentation for methods + a bit of clean up
-- Properly update / revert Fog layer to vanilla state
 - Properly revert Background/Water/Mountain textures to vanilla states
 
 Additional Future Changes which may be added later:
@@ -39,7 +38,8 @@ Additional Future Changes which may be added later:
 - A smooth brain "make an overlay" helper
 - Support for space/cloud/fog colours
          */
-        
+
+        private static MinimapManager.MapOverlay squarequadoverlay;
         private static MinimapManager.MapOverlay squareoverlay;
         private static MinimapManager.MapOverlay flatsquareoverlay;
         private static MinimapManager.MapOverlay alphaoverlay;
@@ -60,6 +60,7 @@ Additional Future Changes which may be added later:
             CommandManager.Instance.AddConsoleCommand(new CHCommands_flatten());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_alpha());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_flatsquares());
+            CommandManager.Instance.AddConsoleCommand(new CHCommands_toggle());
 
             MinimapManager.OnVanillaMapDataLoaded += MinimapManager_OnVanillaMapDataLoaded;
         }
@@ -81,14 +82,49 @@ Additional Future Changes which may be added later:
             //DrawQuarterQuadrant(alphaoverlay.MainTex, semiblue);
 
             DrawQuadTests();
+            SquareTest();
         }
 
-
+        // test flattening the entire map
         private void FlattenTest()
         {
-            // test flattening the entire map
             flattenoverlay = MinimapManager.Instance.AddMapOverlay("testflatten_overlay");
             FlattenMap(32, flattenoverlay);
+        }
+
+        // Draw one square in the center of each quadrant.
+        private void SquareTest()
+        {
+            squarequadoverlay = MinimapManager.Instance.AddMapOverlay("squarequad_overlay");
+            int size = 50;
+            Vector3 pos = new Vector3(5000, 0, 5000);
+            DrawSquare(squarequadoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), Color.blue, size);
+            DrawSquare(squarequadoverlay.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
+            DrawSquare(squarequadoverlay.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
+            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), meadowHeight, size);
+
+            pos.x = -5000;
+            DrawSquare(squarequadoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), Color.blue, size);
+            DrawSquare(squarequadoverlay.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
+            DrawSquare(squarequadoverlay.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
+            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), meadowHeight, size);
+
+            pos.z = -5000;
+            DrawSquare(squarequadoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), Color.blue, size);
+            DrawSquare(squarequadoverlay.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
+            DrawSquare(squarequadoverlay.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
+            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), meadowHeight, size);
+
+            pos.x = 5000;
+            DrawSquare(squarequadoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), Color.blue, size);
+            DrawSquare(squarequadoverlay.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
+            DrawSquare(squarequadoverlay.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
+            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), meadowHeight, size);
+
+            squarequadoverlay.MainTex.Apply();
+            squarequadoverlay.ForestFilter.Apply();
+            squarequadoverlay.FogFilter.Apply();
+            squarequadoverlay.HeightFilter.Apply();
         }
 
 
@@ -162,7 +198,7 @@ Additional Future Changes which may be added later:
             tex.Apply();
         }
 
-        // CCW starting top right, 0 indexed.
+        // Quadrants ordered CCW starting top right, 0 indexed.
         private static void DrawQuadrant(Texture2D tex, Color col, int quadrant)
         {
             int istart=0, iend=0, jstart=0, jend =0;
@@ -204,8 +240,6 @@ Additional Future Changes which may be added later:
             }
             tex.Apply();
         }
-
-
 
 
         private class CHCommands_squares : ConsoleCommand
@@ -304,6 +338,24 @@ Additional Future Changes which may be added later:
                 }
 
                 alphaoverlay.Enabled = !alphaoverlay.Enabled; // toggle
+            }
+        }
+
+        private class CHCommands_toggle : ConsoleCommand
+        {
+            public override string Name => "mtoggle";
+
+            public override string Help => "Toggle a specified map layer";
+
+            public override void Run(string[] args)
+            {
+                string name = args[0];
+                var ovl = MinimapManager.Instance.GetMapOverlay(name);
+                if(ovl != null)
+                {
+                    ovl.Enabled = !ovl.Enabled;
+                    Console.instance.Print($"Setting overlay {ovl.Name} to {ovl.Enabled}");
+                }
             }
         }
 

@@ -6,6 +6,7 @@ using HarmonyLib;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Jotunn.Managers
 {
@@ -46,6 +47,7 @@ namespace Jotunn.Managers
         private Dictionary<string, MapOverlay> Overlays = new Dictionary<string, MapOverlay>();
         private int OverlayID;
 
+        // When a boolean is true, we redraw all active overlays that have a specific texture active.
         private bool RedrawMain = false;
         private bool RedrawForest = false;
         private bool RedrawHeight = false;
@@ -58,6 +60,7 @@ namespace Jotunn.Managers
                 private Texture2D FogTexVanilla; // fog texture, not the filter.
         */
 
+        // Keep backups of all vanilla textures in order to revert overlays.
         private Texture2D FogFilterVanilla;
         private Texture2D HeightFilterVanilla;
         private Texture2D ForestFilterVanilla;
@@ -66,8 +69,10 @@ namespace Jotunn.Managers
         private Texture2D MountainTexVanilla;
         private Texture2D MainTexVanilla;
 
+        // Default transparent tex to provide to modders to draw on.
         private Texture2D TransparentTex;
 
+        // Materials that have shaders used to blit overlays onto the minimap.
         private Material ComposeMaterial;
         private Material ComposeHeightMaterial;
         private Material ComposeForestMaterial;
@@ -77,8 +82,11 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
+            // Provide hooks for modders for when Minimap is available.
             On.Minimap.Start += Minimap_Start;
             On.Minimap.LoadMapData += Minimap_LoadMapData;
+
+            // Setup methods to properly explore fog, and keep vanilla copy of fog properly updated.
             On.Minimap.Explore_int_int += Minimap_Explore;
             On.Minimap.Explore_Vector3_float += Minimap_Explore_2;
             On.Minimap.ExploreOthers += Minimap_ExploreOthers;
@@ -86,8 +94,10 @@ namespace Jotunn.Managers
             On.Minimap.AddSharedMapData += Minimap_AddSharedMapData;
             On.Minimap.Reset += Minimap_Reset;
 
+            // Properly clear the Overlays when exiting a world
             SceneManager.activeSceneChanged += (current, next) => Instance.Overlays.Clear();
 
+            // Load shaders and setup materials
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
             var ComposeShader = bundle.LoadAsset<Shader>("MinimapCompose");
             var ComposeHeightShader = bundle.LoadAsset<Shader>("MinimapComposeHeight");
@@ -95,7 +105,6 @@ namespace Jotunn.Managers
             ComposeMaterial = new Material(ComposeShader);
             ComposeHeightMaterial = new Material(ComposeHeightShader);
             ComposeForestMaterial = new Material(ComposeForestShader);
-
 
             Harmony.CreateAndPatchAll(typeof(Texture2D_Apply));
         }
@@ -168,7 +177,6 @@ namespace Jotunn.Managers
             
             foreach (var overlay in Overlays.Values.Where(x => (x.HeightDirty || (x.HeightRedrawable && RedrawHeight)) && x.Enabled))
             {
-                //DrawOverlayH(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial);
                 DrawOverlay(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial, RenderTextureFormat.ARGBFloat);
             }
             watch.Stop();
@@ -239,7 +247,6 @@ namespace Jotunn.Managers
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-
             Logger.LogInfo("Initializing MinimapOverlay Textures");
 
             ForestFilterVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
@@ -281,6 +288,7 @@ namespace Jotunn.Managers
             BackupTexture(WaterTexVanilla, "_WaterTex");
             BackupTexture(MountainTexVanilla, "_MountainTex");
 
+            // TODO: Load this texture from file, should be faster.
             Color c = new Color(0, 0, 0, 0);
             for (int i = 0; i < DefaultOverlaySize; i++)
             {
@@ -354,7 +362,7 @@ namespace Jotunn.Managers
             ret.Enabled = true;
             ret.TextureSize = DefaultOverlaySize;
             Overlays.Add(name, ret);
-            AddOverlayToGUI(ret);
+            //AddOverlayToGUI(ret);
             return ret;
         }
 
@@ -377,6 +385,20 @@ namespace Jotunn.Managers
         public MapOverlay GetMapOverlay(string name)
         {
             return Overlays[name];
+        }
+
+        /// <summary>
+        ///     Return a list of all current overlay names
+        /// </summary>
+        /// <returns>List of names</returns>
+        public List<string> GetOverlayNames()
+        {
+            List<string> res = new List<string>();
+            foreach(var ovl in Overlays)
+            {
+                res.Add(ovl.Value.Name);
+            }
+            return res;
         }
 
         /// <summary>
@@ -432,7 +454,7 @@ namespace Jotunn.Managers
         {
             orig(self);
             SetupTextures();
-            MapGUICreate();
+            //MapGUICreate(); // Add GUI portion to overlay
             InvokeOnVanillaMapDataLoaded();
             FogFilterVanilla.Apply(); // maybe not needed.
         }
@@ -458,7 +480,6 @@ namespace Jotunn.Managers
             if (!self.m_explored[y * self.m_textureSize + x])
             {
                 FogFilterVanilla.SetPixel(x, y, new Color(0, 0, 0));
-                //FogFilterVanilla.Apply(); // do not do this, too inefficient to apply here.
             }
             return orig(self, x, y);
         }
@@ -484,7 +505,6 @@ namespace Jotunn.Managers
             if (!self.m_explored[y * self.m_textureSize + x])
             {
                 FogFilterVanilla.SetPixel(x, y, new Color(0, 0, 0));
-                //FogFilterVanilla.Apply();
             }
 
             return orig(self, x, y);
@@ -502,17 +522,12 @@ namespace Jotunn.Managers
             Jotunn.Logger.LogInfo("Creating wood panels and shizz");
             int pWidth = 300;
             int pHeight = 400;
-            int toggleHeight = 30;
 
             var wp = GUIManager.Instance.CreateWoodpanel(
-                //Minimap.instance.m_pinRootLarge,
                 Minimap.instance.m_largeRoot.transform,
                 anchorMin: new Vector2(1f, 1f),
                 anchorMax: new Vector2(1f, 1f),
                 new Vector2(-pWidth / 2, -pHeight / 2),
-                /*                anchorMin: new Vector2(0.5f, 0.5f),
-                                anchorMax: new Vector2(0.5f, 0.5f),
-                                new Vector2(500, 500),*/
                 pWidth,
                 pHeight
             );
@@ -536,48 +551,21 @@ namespace Jotunn.Managers
 
             ScrollView = GUIManager.Instance.CreateScrollView(
                wp.transform,
-               //Minimap.instance.m_pinRootLarge,
                true,
                true,
                10,
                5,
                GUIManager.Instance.ValheimScrollbarHandleColorBlock,
                Color.black,
-               //pWidth-150, 
-               //pHeight -200
                pWidth - 50,
                pHeight - 100
-
            );
-
+            
             List<string> testnames = new List<string>();
             for (int i = 0; i < 20; i++)
             {
                 testnames.Add("test" + i);
             }
-
-            foreach (var n in testnames)
-            {
-                RectTransform viewport = ScrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
-                //GameObject go = new GameObject();
-                //RectTransform rt = go.AddComponent<RectTransform>();
-                //rt. = pWidth - 20;
-                //rt.SetParent(viewport);
-                //GUIManager.Instance.CreateToggle(rt, 10, 10);
-                /*                var txt = GUIManager.Instance.CreateText(n,
-                                    viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                    GUIManager.Instance.AveriaSerifBold, fontSize: 16, GUIManager.Instance.ValheimOrange,
-                                    true, Color.black, 650f, 40f, false);*/
-
-                //var tg = GUIManager.Instance.CreateToggle(txt.transform, 10, 10);
-                //var tg = GUIManager.Instance.CreateToggle(viewport, 10, 10);
-                //tg.GetComponent<Text>();
-                //tg.GetComponent<Text>()
-                //var tg = GUIManager.Instance.CreateButton();
-
-                //tg.GetComponentInChildren<Text>().text = "test";
-            }
-
         }
 
         private void AddOverlayToGUI(MapOverlay ovl)
@@ -587,16 +575,25 @@ namespace Jotunn.Managers
             Logger.LogInfo($"Adding overlay to GUI with name {ovl.Name}");
 
             RectTransform viewport = ScrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
-            //GameObject go = new GameObject();
-            //RectTransform rt =  go.AddComponent<RectTransform>();
-            //rt. = pWidth - 20;
-            //rt.SetParent(viewport);
-            GUIManager.Instance.CreateToggle(viewport, 20, 20);
-            GUIManager.Instance.CreateText(ovl.Name,
-                viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                GUIManager.Instance.AveriaSerifBold, fontSize: 16, GUIManager.Instance.ValheimOrange,
-                true, Color.black, 650f, 40f, false);
+            var t = GUIManager.Instance.CreateToggle(viewport, 20, 20);
+            var tt = t.GetComponent<Text>();
+            if(tt != null) { tt.name = "test"; }
+            
+            var ttt = t.GetComponentInChildren<Text>();
+            ttt.text = "atestty";
+            //tt.onValueChanged.AddListener(ToggleListener);
+
+            /*            GUIManager.Instance.CreateText(ovl.Name,
+                            viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(40f, 0f),
+                            GUIManager.Instance.AveriaSerifBold, fontSize: 16, GUIManager.Instance.ValheimOrange,
+                            true, Color.black, 650f, 40f, false);*/
             //GUIManager.Instance.CreateDropDown;
+        }
+
+        private void ToggleListener(bool arg0)
+        {
+            Logger.LogInfo($"button turned {arg0}");
+            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -636,7 +633,10 @@ namespace Jotunn.Managers
                     if (!value)
                     {
                         // when disabling overlay, redraw all other overlays.
-
+                        Instance.RedrawMain = Instance.RedrawMain || MainRedrawable;
+                        Instance.RedrawForest = Instance.RedrawForest || ForestRedrawable;
+                        Instance.RedrawFog = Instance.RedrawFog || FogRedrawable;
+                        Instance.RedrawHeight = Instance.RedrawHeight || HeightRedrawable;
                     }
                 }
             }
@@ -684,11 +684,11 @@ namespace Jotunn.Managers
 
             internal bool MainDirty => _mainTex != null && _mainDirty;
 
-            internal bool ForestRedrawable;
-            internal bool FogRedrawable;
-            internal bool HeightRedrawable;
-            internal bool MainRedrawable;
-            internal bool BackgroundRedrawable;
+            internal bool ForestRedrawable => _forestRedrawable;
+            internal bool FogRedrawable => _fogRedrawable;
+            internal bool HeightRedrawable => _heightRedrawable;
+            internal bool MainRedrawable => _mainRedrawable;
+            internal bool BackgroundRedrawable => _backgroundRedrawable;
 
             /*public bool WaterFlag { get; set; }
             public bool MountainFlag { get; set; }*/
@@ -697,11 +697,11 @@ namespace Jotunn.Managers
 
             private bool _enabled;
 
-            private bool _forestRedrawable;
-            private bool _fogRedrawable;
-            private bool _heightRedrawable;
-            private bool _mainRedrawable;
-            private bool _backgroundRedrawable;
+            private bool _forestRedrawable = false;
+            private bool _fogRedrawable = false;
+            private bool _heightRedrawable = false;
+            private bool _mainRedrawable = false;
+            private bool _backgroundRedrawable = false;
 
             private bool _forestDirty;
             private bool _fogDirty;
@@ -758,13 +758,6 @@ namespace Jotunn.Managers
                     _backgroundDirty = true;
                     _backgroundRedrawable = true;
                 }
-/*
-                _forestDirty = tex == _forestFilter;
-                _fogDirty = tex == _fogFilter;
-                _heightDirty = tex == _heightFilter;
-                _mainDirty = tex == _mainTex;
-                _backgroundDirty = tex == _backgroundTex;
-*/
             }
         }
 
