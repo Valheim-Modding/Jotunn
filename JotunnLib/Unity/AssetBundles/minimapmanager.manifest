@@ -1,0 +1,20 @@
+ManifestFileVersion: 0
+CRC: 2060854341
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: be5110d0db512d4832be8ead6bd1f958
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 55d48f4ad9c3b13330b9eb5ee5686477
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Resources/MinimapComposeForest.shader
+- Assets/Resources/MinimapCompose.shader
+- Assets/Resources/MinimapCompose_1.shader
+- Assets/Resources/MinimapComposeHeight.shader
+Dependencies: []

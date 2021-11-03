@@ -1,21 +1,16 @@
-﻿Shader "Manager/MinimapCompose"
+﻿Shader "MinimapCompose"
 {
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
-        _Coordinates("BrushCoordinates", Vector) = (0,0,0,0)
-        _Color("BrushColor", Color) = (0,0,0,0)
-        _SizeX("BrushSizeX", Float) = 50
-        _SizeY("BrushSizeY", Float) = 50
-        _BrushTex("BrushTex", 2D) = "white" {}
-        _Strength("Strength", Float) = 1
+        _OvlTex("Texture", 2D) = "white" {}
     }
         SubShader
         {
-            Tags {"RenderType"="Transparent" }
+            Tags {"Queue"="Transparent" "RenderType"="Transparent" }
             LOD 100
 
-            Pass
+            Pass 
             {
                 CGPROGRAM
                 #pragma vertex vert 
@@ -36,10 +31,9 @@
                     float4 vertex : SV_POSITION;
                 };
 
-                sampler2D _MainTex, _BrushTex;
+                sampler2D _MainTex, _BrushTex, _OvlTex;
                 float4 _MainTex_ST;
                 fixed4 _Color, _Coordinates;
-                float _Strength, _SizeX, _SizeY;
 
                 v2f vert(appdata v)
                 {
@@ -51,18 +45,17 @@
 
                 fixed4 frag(v2f i) : SV_Target
                 {
-                    half4 col = tex2D(_MainTex, i.uv);
-                    half2 diff = _Coordinates.xy - i.uv;
-                    half2 scaledDiff = diff * half2(_SizeX,_SizeY);
-                    if (abs(scaledDiff.x) < 0.5 && abs(scaledDiff.y) < 0.5)
-                    {
-                        half4 texVal = tex2D(_BrushTex, scaledDiff + half2(0.5, 0.5));
-                        return saturate(texVal.w > 0.01 ? _Color * texVal * _Strength + col : col);
-                    }
-                    else
-                    {
-                        return col;
-                    }
+                    fixed4 col = tex2D(_MainTex, i.uv);
+                    fixed4 col2 = tex2D(_OvlTex, i.uv);
+                    //if(col.a == 0){
+                    //    col2.rgba = col2.rgba; // use vanilla texture
+                    //} else {
+                    //    col2.rgba = col.rgba; // use overlay texture
+                    //}
+
+                    col2.rgba = lerp(col2.rgba, col.rgba, col.a);
+                    //col2.a = 1;
+                    return col2;
                 }
                 ENDCG
             }
