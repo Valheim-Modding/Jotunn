@@ -25,18 +25,9 @@ namespace TestMod3
         private const string ModName = "Jotunn Test Mod #3";
         private const string ModVersion = "0.1.0";
         /*
-         * 
-         * 
-There is still a fairly long list of features needed to be complete before this Manager is released. Eg:
-
-- Overlay enable/disable GUI interface
-- Proper documentation for methods + a bit of clean up
-- Properly revert Background/Water/Mountain textures to vanilla states
-
-Additional Future Changes which may be added later:
-
-- A smooth brain "make an overlay" helper
-- Support for space/cloud/fog colours
+            There is still a fairly long list of features needed to be complete before this Manager is released. Eg:
+                - Overlay enable/disable GUI interface
+                - Proper documentation for methods + a bit of clean up
          */
 
         private static MinimapManager.MapOverlay squarequadoverlay;

@@ -39,7 +39,23 @@ namespace Jotunn.Managers
         /// </summary>
         public static event Action OnVanillaMapDataLoaded;
 
-        //private Color MainTexHeightColour = new Color(10f, 0f, 0f);
+        /// <summary>
+        ///     Recommended height to set the height filter to in order to get good flat colouring on MainTex.
+        ///     Red values of 0 are ignored by the shader.
+        /// </summary>
+        public static Color meadowHeight = new Color(32, 0, 0, 255);
+
+        /// <summary>
+        ///     Colour which sets a filter on. Used for ForestFilter and FogFilter.
+        ///     A full alpha value enables this pixel, and then the red value is written to the result texture.
+        /// </summary>
+        public static Color FilterOn = new Color(1f, 0f, 0f, 255f);
+
+        /// <summary>
+        ///     Colour which sets a filter off. See FilterOn.
+        /// </summary>
+        public static Color FilterOff = new Color(0f, 0f, 0f, 255f);
+
         private const int DefaultOverlaySize = 2048;
         private const string OverlayNamePrefix = "custom_map_overlay_";
 
@@ -491,8 +507,6 @@ namespace Jotunn.Managers
             return;
         }
 
-
-        
         private void Minimap_ExploreAll(On.Minimap.orig_ExploreAll orig, Minimap self)
         {
             orig(self);
@@ -547,7 +561,6 @@ namespace Jotunn.Managers
                 height: 50,
                 false
             );
-
 
             ScrollView = GUIManager.Instance.CreateScrollView(
                wp.transform,
