@@ -69,8 +69,8 @@ Additional Future Changes which may be added later:
 
 
             // test drawing flat squares with no fog and no forest
-            flatsquareoverlay = MinimapManager.Instance.AddMapOverlay("testsquareflatten_overlay");
-            DrawSquaresOnMapPins(Color.blue, flatsquareoverlay, extras: true);
+            //flatsquareoverlay = MinimapManager.Instance.AddMapOverlay("testsquareflatten_overlay");
+            //DrawSquaresOnMapPins(Color.blue, flatsquareoverlay, extras: true);
 
             // test just drawing squares
             //squareoverlay = MinimapManager.Instance.AddMapOverlay("testsquares_overlay");
@@ -80,7 +80,7 @@ Additional Future Changes which may be added later:
             //alphaoverlay = MinimapManager.Instance.AddMapOverlay("alpha_overlay");
             //DrawQuarterQuadrant(alphaoverlay.MainTex, semiblue);
 
-            //DrawQuadTests();
+            DrawQuadTests();
         }
 
 
