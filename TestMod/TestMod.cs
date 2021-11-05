@@ -1286,26 +1286,24 @@ namespace TestMod
         {
             try
             {
-                // local function that will get called when the rendering is done
-                void CreateTreeItem(Sprite sprite)
-                {
-                    CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds",
-                        new ItemConfig
-                        {
-                            Name = "$rendered_tree",
-                            Description = "$rendered_tree_desc",
-                            Icons = new[] { sprite },
-                            Requirements = new[]
-                            {
-                                new RequirementConfig { Item = "Wood", Amount = 1, Recover = true }
-                            }
-                        });
-                    ItemManager.Instance.AddItem(treeItem);
-                }
-
                 // use the vanilla beech tree prefab to render our icon from
                 GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
-                RenderManager.Instance.EnqueueRender(beech, CreateTreeItem);
+
+                // create the custom item with the rendered icon
+                CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds", new ItemConfig
+                {
+                    Name = "$rendered_tree",
+                    Description = "$rendered_tree_desc",
+                    Icons = new[]
+                    {
+                        RenderManager.Instance.Render(beech)
+                    },
+                    Requirements = new[]
+                    {
+                        new RequirementConfig { Item = "Wood", Amount = 1, Recover = true }
+                    }
+                });
+                ItemManager.Instance.AddItem(treeItem);
             }
             catch (Exception ex)
             {
