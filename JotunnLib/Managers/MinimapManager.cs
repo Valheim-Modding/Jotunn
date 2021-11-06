@@ -144,7 +144,6 @@ namespace Jotunn.Managers
                         DrawForestFilter();
                         DrawFogFilter();
                         DrawHeight();
-                        DrawBackground();
                         foreach (var overlay in Overlays.Values)
                         {
                             overlay.Dirty = false;
@@ -236,25 +235,6 @@ namespace Jotunn.Managers
             }
             watch.Stop();
             Logger.LogInfo($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
-        }
-
-        private void DrawBackground()
-        {
-            if (!Overlays.Values.Any(x => x.BackgroundDirty)) { return; }
-
-            Logger.LogInfo("Redraw background");
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-
-            Graphics.CopyTexture(BackgroundTexVanilla, BackgroundTemp); // reset first.
-            ComposeMaterial.SetTexture("_OvlTex", BackgroundTemp); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => (x.BackgroundDirty || (x.BackgroundRedrawable && RedrawBackground)) && x.Enabled))
-            {
-                DrawOverlay(overlay.BackgroundTex, BackgroundTemp, ComposeMaterial);
-            }
-            
-            watch.Stop();
-            Logger.LogInfo($"DrawBackground loop took {watch.ElapsedMilliseconds}ms time");
         }
 
         private void DrawOverlay(Texture2D overlay, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
@@ -720,11 +700,6 @@ namespace Jotunn.Managers
 
             public Texture2D MainTex =>  _mainTex ??= Create(Instance.MainTexVanilla);
 
-            /*public Texture2D WaterTex { get; internal set; }
-            public Texture2D MountainTex { get; internal set; }*/
-
-            public Texture2D BackgroundTex => _backgroundTex ??= Create(Instance.BackgroundTexVanilla);
-
             /// <summary>
             ///     Flag to determine if this overlay had changes since its last draw
             /// </summary>
@@ -732,7 +707,7 @@ namespace Jotunn.Managers
             {
                 get
                 {
-                    return ForestDirty || FogDirty || HeightDirty || MainDirty || BackgroundDirty;
+                    return ForestDirty || FogDirty || HeightDirty || MainDirty;
                 }
                 set
                 {
@@ -740,7 +715,6 @@ namespace Jotunn.Managers
                     _fogDirty = value;
                     _heightDirty = value;
                     _mainDirty = value;
-                    _backgroundDirty = value;
                 }
             }
 
@@ -756,12 +730,6 @@ namespace Jotunn.Managers
             internal bool FogRedrawable => _fogRedrawable;
             internal bool HeightRedrawable => _heightRedrawable;
             internal bool MainRedrawable => _mainRedrawable;
-            internal bool BackgroundRedrawable => _backgroundRedrawable;
-
-            /*public bool WaterFlag { get; set; }
-            public bool MountainFlag { get; set; }*/
-
-            internal bool BackgroundDirty => _backgroundTex != null && _backgroundDirty;
 
             private bool _enabled;
 
@@ -769,19 +737,16 @@ namespace Jotunn.Managers
             private bool _fogRedrawable = false;
             private bool _heightRedrawable = false;
             private bool _mainRedrawable = false;
-            private bool _backgroundRedrawable = false;
 
             private bool _forestDirty;
             private bool _fogDirty;
             private bool _heightDirty;
             private bool _mainDirty;
-            private bool _backgroundDirty;
 
             private Texture2D _forestFilter;
             private Texture2D _fogFilter;
             private Texture2D _heightFilter;
             private Texture2D _mainTex;
-            private Texture2D _backgroundTex;
             
             /// <summary>
             ///     Helper function to create and copy overlay texture instances
@@ -820,11 +785,6 @@ namespace Jotunn.Managers
                 {
                     _heightDirty = true;
                     _heightRedrawable = true;
-                }
-                if(tex == _backgroundTex)
-                {
-                    _backgroundDirty = true;
-                    _backgroundRedrawable = true;
                 }
             }
         }

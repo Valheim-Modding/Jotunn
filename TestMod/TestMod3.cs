@@ -73,19 +73,8 @@ namespace TestMod3
             //alphaoverlay = MinimapManager.Instance.AddMapOverlay("alpha_overlay");
             //DrawQuarterQuadrant(alphaoverlay.MainTex, semiblue);
 
-            //DrawQuadTests();
-            //SquareTest();
-            DrawBackgroundTest();
-        }
-
-        private void DrawBackgroundTest()
-        {
-            backgroundtest = MinimapManager.Instance.AddMapOverlay("background_overlay");
-            DrawQuadrant(backgroundtest.BackgroundTex, Color.black, 0);
-            DrawQuadrant(backgroundtest.BackgroundTex, Color.red, 1);
-            DrawQuadrant(backgroundtest.BackgroundTex, Color.red, 2);
-            DrawQuadrant(backgroundtest.BackgroundTex, Color.red, 3);
-            backgroundtest.BackgroundTex.Apply();
+            DrawQuadTests();
+            SquareTest();
         }
 
         // test flattening the entire map
