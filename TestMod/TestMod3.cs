@@ -39,6 +39,7 @@ namespace TestMod3
         private static MinimapManager.MapOverlay quadtest1;
         private static MinimapManager.MapOverlay quadtest2;
         private static MinimapManager.MapOverlay quadtest3;
+        private static MinimapManager.MapOverlay backgroundtest;
 
         private Color semiblue = new Color(0, 0, 255, 50);
         private static Color meadowHeight = new Color(32, 0, 0, 255);
@@ -72,8 +73,19 @@ namespace TestMod3
             //alphaoverlay = MinimapManager.Instance.AddMapOverlay("alpha_overlay");
             //DrawQuarterQuadrant(alphaoverlay.MainTex, semiblue);
 
-            DrawQuadTests();
-            SquareTest();
+            //DrawQuadTests();
+            //SquareTest();
+            DrawBackgroundTest();
+        }
+
+        private void DrawBackgroundTest()
+        {
+            backgroundtest = MinimapManager.Instance.AddMapOverlay("background_overlay");
+            DrawQuadrant(backgroundtest.BackgroundTex, Color.black, 0);
+            DrawQuadrant(backgroundtest.BackgroundTex, Color.red, 1);
+            DrawQuadrant(backgroundtest.BackgroundTex, Color.red, 2);
+            DrawQuadrant(backgroundtest.BackgroundTex, Color.red, 3);
+            backgroundtest.BackgroundTex.Apply();
         }
 
         // test flattening the entire map

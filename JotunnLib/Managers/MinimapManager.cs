@@ -68,6 +68,7 @@ namespace Jotunn.Managers
         private bool RedrawForest = false;
         private bool RedrawHeight = false;
         private bool RedrawFog = false;
+        private bool RedrawBackground = false;
 
         /*
                 // vanilla backups of textures
@@ -81,6 +82,7 @@ namespace Jotunn.Managers
         private Texture2D HeightFilterVanilla;
         private Texture2D ForestFilterVanilla;
         private Texture2D BackgroundTexVanilla;
+        private Texture2D BackgroundTemp;
         private Texture2D WaterTexVanilla;
         private Texture2D MountainTexVanilla;
         private Texture2D MainTexVanilla;
@@ -142,6 +144,7 @@ namespace Jotunn.Managers
                         DrawForestFilter();
                         DrawFogFilter();
                         DrawHeight();
+                        DrawBackground();
                         foreach (var overlay in Overlays.Values)
                         {
                             overlay.Dirty = false;
@@ -235,6 +238,25 @@ namespace Jotunn.Managers
             Logger.LogInfo($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
         }
 
+        private void DrawBackground()
+        {
+            if (!Overlays.Values.Any(x => x.BackgroundDirty)) { return; }
+
+            Logger.LogInfo("Redraw background");
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+
+            Graphics.CopyTexture(BackgroundTexVanilla, BackgroundTemp); // reset first.
+            ComposeMaterial.SetTexture("_OvlTex", BackgroundTemp); // setup shader
+            foreach (var overlay in Overlays.Values.Where(x => (x.BackgroundDirty || (x.BackgroundRedrawable && RedrawBackground)) && x.Enabled))
+            {
+                DrawOverlay(overlay.BackgroundTex, BackgroundTemp, ComposeMaterial);
+            }
+            
+            watch.Stop();
+            Logger.LogInfo($"DrawBackground loop took {watch.ElapsedMilliseconds}ms time");
+        }
+
         private void DrawOverlay(Texture2D overlay, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
         {
             RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, format, RenderTextureReadWrite.Default);
@@ -259,6 +281,32 @@ namespace Jotunn.Managers
             RenderTexture.ReleaseTemporary(tmp);
         }
 
+        private void DrawOverlayB(Texture2D overlay, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
+        {
+            RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+
+            // Blit sets the source as _Maintex on the shader.
+            Graphics.Blit(overlay, tmp, mat);
+
+            // Backup the currently set RenderTexture
+            RenderTexture previous = RenderTexture.active;
+
+            // Set the current RenderTexture to the temporary one we created
+            RenderTexture.active = tmp;
+
+            // Copy the pixels from the RenderTexture to the new Texture
+            dest.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+            dest.Apply();
+
+            // Reset the active RenderTexture
+            RenderTexture.active = previous;
+
+            // Release the temporary RenderTexture
+            RenderTexture.ReleaseTemporary(tmp);
+        }
+
+
+
         private void InitializeTextures()
         {
             var watch = new System.Diagnostics.Stopwatch();
@@ -280,6 +328,9 @@ namespace Jotunn.Managers
             WaterTexVanilla.wrapMode = TextureWrapMode.Clamp;
             MountainTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             MountainTexVanilla.wrapMode = TextureWrapMode.Clamp;
+
+            BackgroundTemp = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+            BackgroundTemp.wrapMode = TextureWrapMode.Clamp;
 
             TransparentTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             TransparentTex.wrapMode = TextureWrapMode.Clamp;
@@ -303,6 +354,10 @@ namespace Jotunn.Managers
             BackupTexture(BackgroundTexVanilla, "_BackgroundTex");
             BackupTexture(WaterTexVanilla, "_WaterTex");
             BackupTexture(MountainTexVanilla, "_MountainTex");
+
+            Logger.LogInfo($"background width: {BackgroundTexVanilla.width}, height {BackgroundTexVanilla.height} FILTERMmode: {BackgroundTexVanilla.filterMode}, format: {BackgroundTexVanilla.format}, graphicsformat {BackgroundTexVanilla.graphicsFormat}");
+            Minimap.instance.m_mapImageLarge.material.SetTexture("_BackgroundTex", BackgroundTemp);
+            //Minimap.instance.m_mapImageLarge.material.SetTexture("_BackgroundTex", BackgroundTexVanilla);
 
             // TODO: Load this texture from file, should be faster.
             Color c = new Color(0, 0, 0, 0);
