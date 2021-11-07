@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.3.11
+* Added RenderManager.Render() which renders the given GameObject in the same frame instead of waiting for the next frame. Marked EnqueueRender obsolete.
+
 ## Version 2.3.10
 * Added custom piece table category injection at runtime
 * Added RenderRequest for the RenderManager to define options for the render process
