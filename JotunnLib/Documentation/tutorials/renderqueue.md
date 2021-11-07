@@ -18,8 +18,7 @@ private void Awake()
 }
 ```
 
-In our method we enqueue the Beech1 prefab for rendering into the RenderManager.
-[RenderManager.EnqueueRender](xref:Jotunn.Managers.RenderManager.EnqueueRender(UnityEngine.GameObject,System.Action{UnityEngine.Sprite},System.Int32,System.Int32)) provides a delegate for notification after the render process completes.
+In our method we render an icon of the Beech1 with [RenderManager.Render](xref:Jotunn.Managers.RenderManager.Render(Jotunn.Managers.RenderManager.RenderRequest)).
 Here we clone the vanilla BeechSeeds to a new [CustomItem](xref:Jotunn.Entities.CustomItem) (see our [tutorial on items](items.md) for more information about cloning vanilla prefabs).
 
 ```cs
@@ -28,26 +27,24 @@ private void AddItemsWithRenderedIcons()
 {
     try
     {
-        // local function that will get called when the rendering is done
-        void CreateTreeItem(Sprite sprite)
-        {
-            CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds",
-                new ItemConfig
-                {
-                    Name = "$rendered_tree",
-                    Description = "$rendered_tree_desc",
-                    Icons = new[] { sprite },
-                    Requirements = new[]
-                    {
-                        new RequirementConfig { Item = "Wood", Amount = 1, Recover = true }
-                    }
-                });
-            ItemManager.Instance.AddItem(treeItem);
-        }
-
         // use the vanilla beech tree prefab to render our icon from
         GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
-        RenderManager.Instance.EnqueueRender(beech, CreateTreeItem);
+
+        // create the custom item with the rendered icon
+        CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds", new ItemConfig
+        {
+            Name = "$rendered_tree",
+            Description = "$rendered_tree_desc",
+            Icons = new[]
+            {
+                RenderManager.Instance.Render(beech)
+            },
+            Requirements = new[]
+            {
+                new RequirementConfig { Item = "Wood", Amount = 1, Recover = true }
+            }
+        });
+        ItemManager.Instance.AddItem(treeItem);
     }
     catch (Exception ex)
     {
@@ -66,6 +63,3 @@ Note that all texts are tokenized and translated ingame. The translations are al
 The resulting item with the rendered icon in game:
 
 ![item with rendered icon](../images/data/renderedIcon.png)
-
-> [!NOTE]
->Because a copy of the prefab has to be spawned for rendering and the prefab needs one frame to destroy all components that are not Renderer or MeshFilter, this is done in a coroutine. While spawning the copy, no Awake methods from scripts are called.

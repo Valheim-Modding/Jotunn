@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -40,8 +39,6 @@ namespace Jotunn.Managers
         /// </summary>
         private const int Layer = 3;
 
-        private readonly Queue<RenderRequest> RenderRequestQueue = new Queue<RenderRequest>();
-
         private static readonly Vector3 SpawnPoint = new Vector3(10000f, 10000f, 10000f);
         private Camera Renderer;
         private Light Light;
@@ -56,7 +53,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            Main.Instance.StartCoroutine(RenderQueue());
+            Main.Instance.StartCoroutine(ClearRenderRoutine());
         }
 
         /// <summary>
@@ -65,6 +62,7 @@ namespace Jotunn.Managers
         /// <param name="target">GameObject to render</param>
         /// <param name="callback">Callback for the generated <see cref="Sprite"/></param>
         /// <returns>If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
+        [Obsolete("Use Render instead")]
         public bool EnqueueRender(GameObject target, Action<Sprite> callback)
         {
             return EnqueueRender(new RenderRequest(target), callback);
@@ -76,23 +74,27 @@ namespace Jotunn.Managers
         /// <param name="renderRequest"></param>
         /// <param name="callback">Callback for the generated <see cref="Sprite"/></param>
         /// <returns>If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
+        [Obsolete("Use Render instead")]
         public bool EnqueueRender(RenderRequest renderRequest, Action<Sprite> callback)
         {
-            if(!renderRequest.Target)
+            if (!renderRequest.Target)
             {
                 throw new ArgumentException("Target is required");
             }
-            if(callback == null)
+
+            if (callback == null)
             {
                 throw new ArgumentException("Callback is required");
             }
+
             if (!renderRequest.Target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
             {
                 callback.Invoke(null);
                 return false;
             }
+
             renderRequest.Callback = callback;
-            RenderRequestQueue.Enqueue(renderRequest);
+            callback?.Invoke(Render(renderRequest));
             return true;
         }
 
@@ -105,7 +107,7 @@ namespace Jotunn.Managers
         /// <param name="width">Width of the resulting <see cref="Sprite"/></param>
         /// <param name="height">Height of the resulting <see cref="Sprite"/></param>
         /// <returns>Only true if the target was queued for rendering</returns>
-        [Obsolete("Use RenderRequest instead")]
+        [Obsolete("Use Render instead")]
 #pragma warning disable S3427 // Method overloads with default parameter values should not overlap 
         public bool EnqueueRender(GameObject target, Action<Sprite> callback, int width = 128, int height = 128)
 #pragma warning restore S3427 // Method overloads with default parameter values should not overlap 
@@ -117,7 +119,43 @@ namespace Jotunn.Managers
             }, callback);
         }
 
-        private void Render(RenderObject renderObject)
+        /// <summary>
+        ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns>If there is no active visual Mesh attached to the target, this method returns null.</returns>
+        public Sprite Render(GameObject target)
+        {
+            return Render(new RenderRequest(target));
+        }
+
+        /// <summary>
+        ///     Render the provided <see cref="RenderRequest"/>
+        /// </summary>
+        /// <param name="renderRequest"></param>
+        /// <returns>If there is no active visual Mesh attached to the target, this method returns null.</returns>
+        public Sprite Render(RenderRequest renderRequest)
+        {
+            if (!renderRequest.Target)
+            {
+                throw new ArgumentException("Target is required");
+            }
+
+            if (!renderRequest.Target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
+            {
+                return null;
+            }
+
+            if (!Renderer)
+            {
+                SetupRendering();
+            }
+
+            RenderObject spawned = SpawnSafe(renderRequest);
+            return RenderSprite(spawned);
+        }
+
+        private Sprite RenderSprite(RenderObject renderObject)
         {
             int width = renderObject.Request.Width;
             int height = renderObject.Request.Height;
@@ -147,36 +185,19 @@ namespace Jotunn.Managers
             RenderTexture.ReleaseTemporary(Renderer.targetTexture);
             RenderTexture.active = oldRenderTexture;
 
-            Sprite sprite = Sprite.Create(previewImage, new Rect(0, 0, width, height), Vector2.one / 2f);
-            renderObject.Request.Callback?.Invoke(sprite);
+            return Sprite.Create(previewImage, new Rect(0, 0, width, height), Vector2.one / 2f);
         }
 
-        private IEnumerator RenderQueue()
+        private IEnumerator ClearRenderRoutine()
         {
             while (true)
             {
-                Queue<RenderObject> spawnQueue = new Queue<RenderObject>();
-
-                while (RenderRequestQueue.Count > 0)
+                if (Renderer)
                 {
-                    RenderRequest request = RenderRequestQueue.Dequeue();  
-                    spawnQueue.Enqueue(SpawnSafe(request));
-                }
-
-                // wait one frame to allow Unity destroy components properly
-                yield return null;
-
-                if (spawnQueue.Count > 0)
-                {
-                    SetupRendering();
-
-                    while (spawnQueue.Count > 0)
-                    {
-                        Render(spawnQueue.Dequeue());
-                    }
-
                     ClearRendering();
                 }
+
+                yield return null;
             }
         }
 
@@ -224,7 +245,7 @@ namespace Jotunn.Managers
 
             // spawn the prefab inactive
             GameObject spawn = Object.Instantiate(prefab, new Vector3(0, 0, 0), request.Rotation);
-            spawn.name = prefab.name; 
+            spawn.name = prefab.name;
             SetLayerRecursive(spawn.transform, Layer);
 
             prefab.SetActive(wasActiveSelf);
@@ -232,13 +253,13 @@ namespace Jotunn.Managers
             // needs to be destroyed first as Character depend on it
             foreach (CharacterDrop characterDrop in spawn.GetComponentsInChildren<CharacterDrop>())
             {
-                Object.Destroy(characterDrop);
+                Object.DestroyImmediate(characterDrop);
             }
 
             // needs to be destroyed first as Rigidbody depend on it
             foreach (Joint joint in spawn.GetComponentsInChildren<Joint>())
             {
-                Object.Destroy(joint);
+                Object.DestroyImmediate(joint);
             }
 
             // destroy all other components except visuals
@@ -249,7 +270,7 @@ namespace Jotunn.Managers
                     continue;
                 }
 
-                Object.Destroy(component);
+                Object.DestroyImmediate(component);
             }
 
             // calculate visual center
@@ -315,11 +336,11 @@ namespace Jotunn.Managers
             public readonly GameObject Target;
 
             /// <summary>
-            ///     Width of the generated <see cref="Sprite"/>
+            ///     Pixel width of the generated <see cref="Sprite"/>
             /// </summary>
             public int Width { get; set; } = 128;
             /// <summary>
-            ///     Height of the generated <see cref="Sprite"/>
+            ///     Pixel height of the generated <see cref="Sprite"/>
             /// </summary>
             public int Height { get; set; } = 128;
             /// <summary>
@@ -338,6 +359,7 @@ namespace Jotunn.Managers
             /// <summary>
             ///     Callback for the generated <see cref="Sprite"/>
             /// </summary>
+            [Obsolete]
             public Action<Sprite> Callback { get; internal set; }
 
             /// <summary>
