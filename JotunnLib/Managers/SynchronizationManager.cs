@@ -52,8 +52,7 @@ namespace Jotunn.Managers
         ///     the current world, always true on local games
         /// </summary>
         public bool PlayerIsAdmin { get; private set; }
-
-
+        
         /// <summary>
         ///     Manager's main init
         /// </summary>
@@ -166,7 +165,7 @@ namespace Jotunn.Managers
             if (!self.IsServer())
             {
                 peer.m_rpc.Register<bool>(nameof(RPC_Jotunn_IsAdmin), RPC_Jotunn_InitialAdmin);
-                peer.m_rpc.Register<ZPackage>(nameof(RPC_Jotunn_SyncConfig), RPC_Jotunn_SyncInitialConfig);
+                peer.m_rpc.Register<ZPackage>(nameof(RPC_Jotunn_SyncConfig), RPC_Jotunn_InitialConfig);
             }
         }
 
@@ -686,7 +685,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="rpc"></param>
         /// <param name="package"></param>
-        private void RPC_Jotunn_SyncInitialConfig(ZRpc rpc, ZPackage package) => RPC_Jotunn_SyncConfig(0, package);
+        private void RPC_Jotunn_InitialConfig(ZRpc rpc, ZPackage package) => RPC_Jotunn_SyncConfig(0, package);
 
         /// <summary>
         ///     Receive and apply a partial config and send to other clients when the server receives changed config.
