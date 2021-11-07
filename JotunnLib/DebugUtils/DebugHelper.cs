@@ -42,12 +42,10 @@ namespace Jotunn.DebugUtils
                     Console.instance.gameObject.GetComponentInChildren<Text>(true).font = fnt;
                     Console.instance.Print(jtn);
                 }
-                catch (Exception) {}
+                catch (Exception) { }
             };
-            On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch;
-#if DEBUG
-            Harmony.CreateAndPatchAll(typeof(Debug_isDebugBuild));
-#endif
+            On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch; 
+            Harmony.CreateAndPatchAll(typeof(Debug_isDebugBuild)); 
         }
 
         private void Update()
@@ -93,9 +91,6 @@ namespace Jotunn.DebugUtils
             orig(self, rpc, needPassword);
         }
 
-
-#if DEBUG
-
         /// <summary>
         ///     Pretend to be a debugBuild :)
         /// </summary>
@@ -108,6 +103,5 @@ namespace Jotunn.DebugUtils
                 return false;
             }
         }
-#endif
     }
 }

@@ -69,9 +69,7 @@ namespace JotunnDoc.Docs
                         }
 
                         bool hasSprite = RequestSprite(Path.Combine(imageDirectory, $"{zoneLocation.m_prefab.name}.png"), exteriorPrefab, RenderManager.IsometricRotation);
-
-
-
+                         
                         AddTableRow(
                             GetNameBox(zoneLocation, hasSprite),
                             GetBiome(zoneLocation.m_biome),
