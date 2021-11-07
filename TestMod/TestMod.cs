@@ -368,7 +368,7 @@ namespace TestMod
 
                     if (mod.Commands.Any())
                     {
-                        // Items title
+                        // Commands title
                         GUIManager.Instance.CreateText("Commands:",
                             viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                             GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
@@ -377,7 +377,7 @@ namespace TestMod
                         foreach (var command in mod.Commands)
                         {
                             // Command name
-                            GUIManager.Instance.CreateText($"{command}",
+                            GUIManager.Instance.CreateText($"{command.Name}: {command.Help}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                                 GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
