@@ -1,7 +1,8 @@
 ﻿# Changelog
 
 ## Version 2.3.11
-* Added ZoneManager for custom Locations and Vegetation
+* Added ZoneManager for custom Locations and Vegetation (see https://valheim-modding.github.io/Jotunn/tutorials/zones.html for tutorials)
+* Added RenderManager.Render() which renders the given GameObject in the same frame instead of waiting for the next frame. Marked EnqueueRender obsolete.
 
 ## Version 2.3.10
 * Added custom piece table category injection at runtime
