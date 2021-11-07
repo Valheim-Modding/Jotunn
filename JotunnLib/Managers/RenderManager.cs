@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -78,12 +77,12 @@ namespace Jotunn.Managers
         [Obsolete("Use Render instead")]
         public bool EnqueueRender(RenderRequest renderRequest, Action<Sprite> callback)
         {
-            if(!renderRequest.Target)
+            if (!renderRequest.Target)
             {
                 throw new ArgumentException("Target is required");
             }
 
-            if(callback == null)
+            if (callback == null)
             {
                 throw new ArgumentException("Callback is required");
             }
@@ -97,42 +96,6 @@ namespace Jotunn.Managers
             renderRequest.Callback = callback;
             callback?.Invoke(Render(renderRequest));
             return true;
-        }
-
-        /// <summary>
-        ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns>If there is no active visual Mesh attached to the target, this method returns null.</returns>
-        public Sprite Render(GameObject target)
-        {
-            return Render(new RenderRequest(target));
-        }
-
-        /// <summary>
-        ///     Render the provided <see cref="RenderRequest"/>
-        /// </summary>
-        /// <param name="renderRequest"></param>
-        /// <returns>If there is no active visual Mesh attached to the target, this method returns null.</returns>
-        public Sprite Render(RenderRequest renderRequest)
-        {
-            if(!renderRequest.Target)
-            {
-                throw new ArgumentException("Target is required");
-            }
-
-            if (!renderRequest.Target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
-            {
-                return null;
-            }
-
-            if (!Renderer)
-            {
-                SetupRendering();
-            }
-
-            RenderObject spawned = SpawnSafe(renderRequest);
-            return RenderSprite(spawned);
         }
 
         /// <summary>
@@ -154,6 +117,42 @@ namespace Jotunn.Managers
                 Width = width,
                 Height = height
             }, callback);
+        }
+
+        /// <summary>
+        ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns>If there is no active visual Mesh attached to the target, this method returns null.</returns>
+        public Sprite Render(GameObject target)
+        {
+            return Render(new RenderRequest(target));
+        }
+
+        /// <summary>
+        ///     Render the provided <see cref="RenderRequest"/>
+        /// </summary>
+        /// <param name="renderRequest"></param>
+        /// <returns>If there is no active visual Mesh attached to the target, this method returns null.</returns>
+        public Sprite Render(RenderRequest renderRequest)
+        {
+            if (!renderRequest.Target)
+            {
+                throw new ArgumentException("Target is required");
+            }
+
+            if (!renderRequest.Target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
+            {
+                return null;
+            }
+
+            if (!Renderer)
+            {
+                SetupRendering();
+            }
+
+            RenderObject spawned = SpawnSafe(renderRequest);
+            return RenderSprite(spawned);
         }
 
         private Sprite RenderSprite(RenderObject renderObject)
@@ -246,7 +245,7 @@ namespace Jotunn.Managers
 
             // spawn the prefab inactive
             GameObject spawn = Object.Instantiate(prefab, new Vector3(0, 0, 0), request.Rotation);
-            spawn.name = prefab.name; 
+            spawn.name = prefab.name;
             SetLayerRecursive(spawn.transform, Layer);
 
             prefab.SetActive(wasActiveSelf);
