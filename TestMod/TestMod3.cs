@@ -5,6 +5,7 @@
 // Project: TestMod
 
 using System.Collections.Generic;
+using System.Linq;
 using BepInEx;
 using Jotunn;
 using Jotunn.Entities;
@@ -236,7 +237,7 @@ namespace TestMod3
         {
             private readonly Dictionary<string, Color> colors = new Dictionary<string, Color>();
 
-            public override string Name => "chsq";
+            public override string Name => "map.chsq";
 
             public override string Help => "run the channel helper";
 
@@ -249,6 +250,11 @@ namespace TestMod3
 
             public override void Run(string[] args)
             {
+                if (squareoverlay == null)
+                {
+                    squareoverlay = MinimapManager.Instance.AddMapOverlay("testsquares_overlay");
+                }
+
                 if (args.Length == 1 && colors.TryGetValue(args[0], out Color color))
                 {
                     DrawSquaresOnMapPins(color, squareoverlay);
@@ -256,13 +262,15 @@ namespace TestMod3
                 }
                 squareoverlay.Enabled = !squareoverlay.Enabled; // toggle
             }
+
+            public override List<string> CommandOptionList() => colors.Keys.ToList();
         }
 
         private class CHCommands_flatsquares : ConsoleCommand
         {
             private readonly Dictionary<string, Color> colors = new Dictionary<string, Color>();
 
-            public override string Name => "chfsq";
+            public override string Name => "map.chfsq";
 
             public override string Help => "run the channel helper";
 
@@ -275,6 +283,10 @@ namespace TestMod3
 
             public override void Run(string[] args)
             {
+                if (flatsquareoverlay == null)
+                {
+                    flatsquareoverlay = MinimapManager.Instance.AddMapOverlay("testsquareflatten_overlay");
+                }
 
                 if (args.Length == 1 && colors.TryGetValue(args[0], out Color color))
                 {
@@ -284,12 +296,14 @@ namespace TestMod3
                 }
                 flatsquareoverlay.Enabled = !flatsquareoverlay.Enabled; // toggle
             }
+
+            public override List<string> CommandOptionList() => colors.Keys.ToList();
         }
 
 
         private class CHCommands_flatten : ConsoleCommand
         {
-            public override string Name => "chf";
+            public override string Name => "map.chf";
 
             public override string Help => "Change map height information";
 
@@ -298,6 +312,7 @@ namespace TestMod3
                 if (flattenoverlay == null)
                 {
                     flattenoverlay = MinimapManager.Instance.AddMapOverlay("testflatten_overlay");
+                    FlattenMap(33, flattenoverlay);
                 }
 
                 if (args.Length == 1 && int.TryParse(args[0], out int height))
@@ -312,9 +327,9 @@ namespace TestMod3
 
         private class CHCommands_alpha : ConsoleCommand
         {
-            public override string Name => "cha";
+            public override string Name => "map.cha";
 
-            public override string Help => "Change map height information";
+            public override string Help => "Change map alpha information";
 
             Color semiblue = new Color(0, 0, 255, 100);
 
@@ -333,7 +348,7 @@ namespace TestMod3
 
         private class CHCommands_toggle : ConsoleCommand
         {
-            public override string Name => "mtoggle";
+            public override string Name => "map.toggle";
 
             public override string Help => "Toggle a specified map layer";
 
@@ -347,6 +362,8 @@ namespace TestMod3
                     Console.instance.Print($"Setting overlay {ovl.Name} to {ovl.Enabled}");
                 }
             }
+
+            public override List<string> CommandOptionList() => MinimapManager.Instance.GetOverlayNames();
         }
     }
 }
