@@ -2,6 +2,7 @@
 
 ## Version 2.3.11
 * Added RenderManager.Render() which renders the given GameObject in the same frame instead of waiting for the next frame. Marked EnqueueRender obsolete.
+* Force unload mod's loaded asset bundles on Game.Shutdown to prevent the Unity engine from crashing
 
 ## Version 2.3.10
 * Added custom piece table category injection at runtime

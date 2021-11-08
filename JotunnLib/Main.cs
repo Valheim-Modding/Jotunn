@@ -78,13 +78,25 @@ namespace Jotunn
             // Enable helper on DEBUG build
             RootObject.AddComponent<DebugUtils.DebugHelper>();
 #endif
-
+            // Save mods not unloading their asset bundles
+            On.Game.Shutdown += (orig, self) =>
+            {
+                orig(self);
+                AssetBundle.UnloadAllAssetBundles(false);
+            };
+            
             Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
         }
 
         private void Start()
         {
             InitializePatches();
+        }
+
+        private void OnDestroy()
+        {
+            
+            
         }
 
         /// <summary>
