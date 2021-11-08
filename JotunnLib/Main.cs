@@ -19,7 +19,7 @@ namespace Jotunn
         /// <summary>
         ///     The current version of the Jotunn library.
         /// </summary>
-        public const string Version = "2.3.10";
+        public const string Version = "2.3.12";
 
         /// <summary>
         ///     The name of the library.
@@ -78,7 +78,13 @@ namespace Jotunn
             // Enable helper on DEBUG build
             RootObject.AddComponent<DebugUtils.DebugHelper>();
 #endif
-
+            // Save mods not unloading their asset bundles
+            On.Game.OnApplicationQuit += (orig, self) =>
+            {
+                orig(self);
+                AssetBundle.UnloadAllAssetBundles(false);
+            };
+            
             Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
         }
 
@@ -86,7 +92,7 @@ namespace Jotunn
         {
             InitializePatches();
         }
-
+        
         /// <summary>
         ///     Invoke patch initialization methods for all loaded mods.
         /// </summary>

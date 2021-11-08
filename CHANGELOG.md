@@ -1,8 +1,12 @@
-﻿# Changelog
+# Changelog
 
-## Version 2.3.11
+## Version 2.3.13
 * Added ZoneManager for custom Locations and Vegetation (see https://valheim-modding.github.io/Jotunn/tutorials/zones.html for tutorials)
+
+## Version 2.3.12
 * Added RenderManager.Render() which renders the given GameObject in the same frame instead of waiting for the next frame. Marked EnqueueRender obsolete.
+* Force unload mod's loaded asset bundles on Game.OnApplicationQuit to prevent the Unity engine from crashing
+* Depend on BepInExPack-5.4.1601 for the new Unity engine corlibs
 
 ## Version 2.3.10
 * Added custom piece table category injection at runtime
