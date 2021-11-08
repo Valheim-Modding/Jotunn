@@ -81,12 +81,13 @@ namespace Jotunn.Managers
         private Texture2D FogFilterVanilla;
         private Texture2D HeightFilterVanilla;
         private Texture2D ForestFilterVanilla;
-        private Texture2D BackgroundTexVanilla;
-        private Texture2D BackgroundTemp;
-        private Texture2D WaterTexVanilla;
-        private Texture2D MountainTexVanilla;
         private Texture2D MainTexVanilla;
 
+        private Texture2D BackgroundTexVanilla;
+        private Texture2D WaterTexVanilla;
+        private Texture2D MountainTexVanilla;
+
+        private Texture2D BackgroundTemp;
         // Default transparent tex to provide to modders to draw on.
         private Texture2D TransparentTex;
 
@@ -236,6 +237,25 @@ namespace Jotunn.Managers
             watch.Stop();
             Logger.LogInfo($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
         }
+
+        private void DrawLayer(Texture2D backupcopy, Texture2D destination, Texture2D layer, Material material, string layername)
+        {
+            if (!Overlays.Values.Any(x => x.FogDirty)) { return; }
+
+            Logger.LogInfo($"Redraw {layername}");
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+
+            Graphics.CopyTexture(backupcopy, destination); // reset first.
+            material.SetTexture("_OvlTex", destination); // setup shader
+            foreach (var overlay in Overlays.Values.Where(x => (x.FogDirty || (x.FogRedrawable && RedrawFog)) && x.Enabled))
+            {
+                DrawOverlay(overlay.FogFilter, destination, material);
+            }
+            watch.Stop();
+            Logger.LogInfo($"Draw {layername} loop took {watch.ElapsedMilliseconds}ms time");
+        }
+
 
         private void DrawOverlay(Texture2D overlay, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
         {
@@ -644,11 +664,30 @@ namespace Jotunn.Managers
             //throw new NotImplementedException();
         }
 
+        public class MapLayer
+        {
+            public enum Layer
+            {
+                CloudTex,
+                FogTex,
+                SpaceTex,
+                BackgroundTex,
+            }
+
+            public Layer maplayer;
+            public string Name { get; internal set; }
+            public int TextureSize { get; internal set; }
+
+            public bool Enabled;
+
+
+        }
+
+
         /// <summary>
         ///     Object for modders to use to access and modify their Overlay.
         ///     Modders should modify the texture directly.
         ///     
-        ///     Although fog gets updated on the vanilla texture, it is possible for the MapOverlay to get a snapshot of old Fog data, then continuously apply that outdated info.
         /// </summary>
         public class MapOverlay
         {

@@ -291,7 +291,6 @@ namespace TestMod3
                 if (args.Length == 1 && colors.TryGetValue(args[0], out Color color))
                 {
                     DrawSquaresOnMapPins(color, flatsquareoverlay);
-                    //FlattenMap(33, flatsquareoverlay);
                     return;
                 }
                 flatsquareoverlay.Enabled = !flatsquareoverlay.Enabled; // toggle
@@ -313,6 +312,7 @@ namespace TestMod3
                 {
                     flattenoverlay = MinimapManager.Instance.AddMapOverlay("testflatten_overlay");
                     FlattenMap(33, flattenoverlay);
+                    return;
                 }
 
                 if (args.Length == 1 && int.TryParse(args[0], out int height))
@@ -340,6 +340,7 @@ namespace TestMod3
                 {
                     alphaoverlay = MinimapManager.Instance.AddMapOverlay("alpha_overlay");
                     DrawQuarterQuadrant(alphaoverlay.MainTex, semiblue);
+                    return;
                 }
 
                 alphaoverlay.Enabled = !alphaoverlay.Enabled; // toggle
