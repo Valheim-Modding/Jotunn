@@ -773,6 +773,7 @@ namespace TestMod
             });
             ItemManager.Instance.AddItem(ingot);
             ItemManager.Instance.AddItemConversion(blastConversion);
+            Steelingot.Unload(false);
         }
 
         // Add some custom prefabs
