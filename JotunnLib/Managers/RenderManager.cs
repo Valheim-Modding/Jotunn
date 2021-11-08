@@ -17,7 +17,6 @@ namespace Jotunn.Managers
         public static readonly Quaternion IsometricRotation = Quaternion.Euler(23, 51, 25.8f);
 
         private static RenderManager _instance;
-
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -61,7 +60,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="target">GameObject to render</param>
         /// <param name="callback">Callback for the generated <see cref="Sprite"/></param>
-        /// <returns>If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
+        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
         [Obsolete("Use Render instead")]
         public bool EnqueueRender(GameObject target, Action<Sprite> callback)
         {
@@ -73,7 +72,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="renderRequest"></param>
         /// <param name="callback">Callback for the generated <see cref="Sprite"/></param>
-        /// <returns>If there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
+        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
         [Obsolete("Use Render instead")]
         public bool EnqueueRender(RenderRequest renderRequest, Action<Sprite> callback)
         {
@@ -123,7 +122,7 @@ namespace Jotunn.Managers
         ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
         /// </summary>
         /// <param name="target"></param>
-        /// <returns>If there is no active visual Mesh attached to the target, this method returns null.</returns>
+        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
         public Sprite Render(GameObject target)
         {
             return Render(new RenderRequest(target));
@@ -133,12 +132,17 @@ namespace Jotunn.Managers
         ///     Render the provided <see cref="RenderRequest"/>
         /// </summary>
         /// <param name="renderRequest"></param>
-        /// <returns>If there is no active visual Mesh attached to the target, this method returns null.</returns>
+        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
         public Sprite Render(RenderRequest renderRequest)
         {
             if (!renderRequest.Target)
             {
                 throw new ArgumentException("Target is required");
+            }
+
+            if (GUIManager.IsHeadless())
+            {
+                return null;
             }
 
             if (!renderRequest.Target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
