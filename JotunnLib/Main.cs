@@ -49,7 +49,7 @@ namespace Jotunn
             DontDestroyOnLoad(RootObject);
 
             // Create and initialize all managers
-            Managers = new List<IManager>()
+            Managers = new List<IManager>
             {
                 LocalizationManager.Instance,
                 CommandManager.Instance,
@@ -64,6 +64,7 @@ namespace Jotunn
                 KeyHintManager.Instance,
                 //SaveManager.Instance,  // Temporarely disabled, causes FPS issues in the current implementation
                 //ZoneManager.Instance,  // Had some problems reported, needs more tests
+                NetworkManager.Instance,
                 SynchronizationManager.Instance,
                 //MapOverlayManager.Instance,  // Not ready yet
                 RenderManager.Instance,
