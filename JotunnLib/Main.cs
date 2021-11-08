@@ -79,7 +79,7 @@ namespace Jotunn
             RootObject.AddComponent<DebugUtils.DebugHelper>();
 #endif
             // Save mods not unloading their asset bundles
-            On.Game.Shutdown += (orig, self) =>
+            On.Game.OnApplicationQuit += (orig, self) =>
             {
                 orig(self);
                 AssetBundle.UnloadAllAssetBundles(false);
@@ -92,13 +92,7 @@ namespace Jotunn
         {
             InitializePatches();
         }
-
-        private void OnDestroy()
-        {
-            
-            
-        }
-
+        
         /// <summary>
         ///     Invoke patch initialization methods for all loaded mods.
         /// </summary>
