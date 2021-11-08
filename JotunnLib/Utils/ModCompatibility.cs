@@ -152,7 +152,7 @@ namespace Jotunn.Utils
             }
         }
 
-        private static bool CompareVersionData(ModuleVersionData serverData, ModuleVersionData clientData)
+        internal static bool CompareVersionData(ModuleVersionData serverData, ModuleVersionData clientData)
         {
             if (ReferenceEquals(serverData, clientData))
             {
@@ -511,15 +511,22 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Deserialize version string into a usable format.
         /// </summary>
-        private class ModuleVersionData
+        internal class ModuleVersionData
         {
             /// <summary>
             ///     Create from module data
             /// </summary>
             /// <param name="versionData"></param>
-            public ModuleVersionData(List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> versionData)
+            internal ModuleVersionData(List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> versionData)
             {
                 ValheimVersion = new System.Version(Version.m_major, Version.m_minor, Version.m_patch);
+                Modules = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
+                Modules.AddRange(versionData);
+            }
+
+            internal ModuleVersionData(System.Version valheimVersion, List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> versionData)
+            {
+                ValheimVersion = valheimVersion;
                 Modules = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
                 Modules.AddRange(versionData);
             }
@@ -528,7 +535,7 @@ namespace Jotunn.Utils
             ///     Create from ZPackage
             /// </summary>
             /// <param name="pkg"></param>
-            public ModuleVersionData(ZPackage pkg)
+            internal ModuleVersionData(ZPackage pkg)
             {
                 try
                 {

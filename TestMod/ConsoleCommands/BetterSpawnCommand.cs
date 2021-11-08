@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Jotunn.Entities;
 using Jotunn.Managers;
 
@@ -29,6 +30,11 @@ namespace TestMod.ConsoleCommands
             {
                 UnityEngine.Object.Instantiate<GameObject>(prefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity);
             }
+        }
+
+        public override List<string> CommandOptionList()
+        {
+            return ZNetScene.instance?.GetPrefabNames();
         }
     }
 }

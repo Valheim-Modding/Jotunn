@@ -107,7 +107,8 @@ namespace Jotunn
             }
 
             if (configurationEntry.SettingType != typeof(KeyCode) &&
-                configurationEntry.SettingType != typeof(KeyboardShortcut))
+                configurationEntry.SettingType != typeof(KeyboardShortcut) &&
+                configurationEntry.SettingType != typeof(InputManager.GamepadButton))
             {
                 return false;
             }
@@ -135,7 +136,8 @@ namespace Jotunn
             }
 
             if (configurationEntry.SettingType != typeof(KeyCode) &&
-                configurationEntry.SettingType != typeof(KeyboardShortcut))
+                configurationEntry.SettingType != typeof(KeyboardShortcut) &&
+                configurationEntry.SettingType != typeof(InputManager.GamepadButton))
             {
                 return null;
             }
@@ -165,7 +167,8 @@ namespace Jotunn
             }
 
             if (configurationEntry.SettingType != typeof(KeyCode) &&
-                configurationEntry.SettingType != typeof(KeyboardShortcut))
+                configurationEntry.SettingType != typeof(KeyboardShortcut) &&
+                configurationEntry.SettingType != typeof(InputManager.GamepadButton))
             {
                 return null;
             }

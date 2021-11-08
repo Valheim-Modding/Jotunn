@@ -33,7 +33,8 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **CustomPiece** - Represent ingame building pieces.
 - **CustomPieceTable** - Represent ingame building tables. Support for custom categories included.
 - **CustomStatusEffect** - Represents ingame status effects from weapon hit effects to guardian powers.
-- **CustomItemConversion** - Represents ingame item conversions for the CookingStation, Fermenter and Smelter in one abstraction.
+- **CustomItemConversion** - Represents ingame item conversions for the CookingStation, Fermenter, Smelter and Incinerator in one abstraction.
+- **CustomLocalization** - Represents custom localizations for your mod.
 - **KitbashObject** - Represents a custom object assembled from various other prefabs' components.
 - **Mocks** - Fake any vanilla prefab and use it in your custom assets - Jötunn resolves the references to the vanilla objects at runtime.
 - **Config classes** - There are many more abstractions beside the main entities which allow for easy creation of things like key bindings, custom commands, skills and more.
@@ -43,11 +44,13 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **GUI Manager** - Allows invocation of UI prefabs on the fly via code.
 - **Input Manager** - Provides an interface for binding keys via ZInput in a consistent manner, facilitating custom keybind hints.
 - **Item Manager** - Abstracts away implementation details of configurations applied to items/recipes to provide a consistent developer experience in adding new items. tl;dr items are easy!
-- **Localization Manager** - Provides multiple methods of loading localisation data into the game, as well as exposing an interface for adding additional languages to provide localizations to unsupported languages.
+- **Kitbash Manager** - Create custom assets with individual pieces from vanilla prefabs.
+- **KeyHint Manager** - Create custom key hints for your weapons and tools, even down to the selected piece.
+- **Localization Manager** - Provides multiple methods of loading localization data into the game, as well as exposing an interface for adding additional languages to provide localizations to unsupported languages.
 - **Piece Manager** - Very similar to the Item Manager, abstracting implementation details of configurations for pieces/recipe's.
 - **Prefab Manager** - Provides a cache of prefabs registered through other managers, mostly developers will only query the cache for prefabs added via other managers.
+- **Render Manager** - Provides a custom render queue to render visual GameObjects into a Sprite - Useful to generate icons for your custom items.
 - **Skill Manager** - Facilitates additional custom skills.
-- **KitbashManager** - Create custom assets with individual pieces from vanilla prefabs.
 
 #### Utilities
 - **Asset Helpers** - Methods to facilitate referencing and loading of assets.

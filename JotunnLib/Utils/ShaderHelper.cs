@@ -16,8 +16,6 @@ namespace Jotunn.Utils
         public static List<Renderer> GetRenderers(GameObject gameObject)
         {
             List<Renderer> result = new List<Renderer>();
-            result.AddRange(gameObject.GetComponents<MeshRenderer>());
-            result.AddRange(gameObject.GetComponents<SkinnedMeshRenderer>());
             result.AddRange(gameObject.GetComponentsInChildren<MeshRenderer>(true));
             result.AddRange(gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true));
             return result;

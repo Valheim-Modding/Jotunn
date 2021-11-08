@@ -5,13 +5,11 @@
 // Project: TestMod
 
 using System.Collections.Generic;
-using System.Linq;
 using BepInEx;
 using Jotunn;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
-using On.Steamworks;
 using UnityEngine;
 
 namespace TestMod3
@@ -146,15 +144,15 @@ namespace TestMod3
             }
             ovl.HeightFilter.Apply();
         }
-        
-        private static void DrawSquaresOnMapPins(Color color, MinimapManager.MapOverlay ovl, bool extras=false)
+
+        private static void DrawSquaresOnMapPins(Color color, MinimapManager.MapOverlay ovl, bool extras = false)
         {
             foreach (var p in Minimap.instance.m_pins)
             {
                 DrawSquare(ovl.MainTex, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), color, 10);
                 if (extras)
                 {
-                    DrawSquare(ovl.ForestFilter,MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), FilterOff, 10);
+                    DrawSquare(ovl.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), FilterOff, 10);
                     DrawSquare(ovl.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), FilterOff, 10);
                     DrawSquare(ovl.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), meadowHeight, 10);
                 }
@@ -173,16 +171,16 @@ namespace TestMod3
             {
                 for (float j = start.y; j < start.y + square_size; j++)
                 {
-                    tex.SetPixel((int)i, (int)j, col);   
+                    tex.SetPixel((int)i, (int)j, col);
                 }
             }
         }
 
         private static void DrawQuarterQuadrant(Texture2D tex, Color col)
         {
-            for(int i = 0; i < tex.width/2; i++)
+            for (int i = 0; i < tex.width / 2; i++)
             {
-                for(int j = 0; j < tex.height/2; j++)
+                for (int j = 0; j < tex.height / 2; j++)
                 {
                     tex.SetPixel(i, j, col);
                 }
@@ -193,10 +191,10 @@ namespace TestMod3
         // Quadrants ordered CCW starting top right, 0 indexed.
         private static void DrawQuadrant(Texture2D tex, Color col, int quadrant)
         {
-            int istart=0, iend=0, jstart=0, jend =0;
-            if(quadrant == 0)
+            int istart = 0, iend = 0, jstart = 0, jend = 0;
+            if (quadrant == 0)
             {
-                istart = tex.width/2;
+                istart = tex.width / 2;
                 iend = tex.width;
                 jstart = tex.width / 2;
                 jend = tex.width;
@@ -211,7 +209,7 @@ namespace TestMod3
             if (quadrant == 2)
             {
                 istart = 0;
-                iend = tex.width /2 ;
+                iend = tex.width / 2;
                 jstart = 0;
                 jend = tex.width / 2;
             }
@@ -323,7 +321,7 @@ namespace TestMod3
             public override void Run(string[] args)
             {
 
-                if(alphaoverlay == null)
+                if (alphaoverlay == null)
                 {
                     alphaoverlay = MinimapManager.Instance.AddMapOverlay("alpha_overlay");
                     DrawQuarterQuadrant(alphaoverlay.MainTex, semiblue);
@@ -343,13 +341,12 @@ namespace TestMod3
             {
                 string name = args[0];
                 var ovl = MinimapManager.Instance.GetMapOverlay(name);
-                if(ovl != null)
+                if (ovl != null)
                 {
                     ovl.Enabled = !ovl.Enabled;
                     Console.instance.Print($"Setting overlay {ovl.Name} to {ovl.Enabled}");
                 }
             }
         }
-
     }
 }

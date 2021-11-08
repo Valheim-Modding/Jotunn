@@ -2,11 +2,22 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Jotunn.DebugUtils
 {
     internal class DebugHelper : MonoBehaviour
     {
+        private const string jtn = @"
+ __/\\__  __/\\___  __/\\__  ___ /\\   _/\\___   _/\\___   
+(_    _))(_     _))(__  __))/  //\ \\ (_      ))(_      )) 
+  \  \\   /  _  \\   /  \\  \:.\\_\ \\ /  :   \\ /  :   \\ 
+/\/ .:\\ /:.(_)) \\ /:.  \\  \  :.  ///:. |   ///:. |   // 
+\__  _// \  _____// \__  // (_   ___))\___|  // \___|  //  
+   \//    \//          \//    \//          \//       \//   
+                                            DEBUG MÖDE
+";
+
         private void Awake()
         {
             Main.RootObject.AddComponent<Eraser>();
@@ -16,11 +27,25 @@ namespace Jotunn.DebugUtils
             Main.RootObject.AddComponent<ZNetDiddelybug>();
             Main.RootObject.AddComponent<ZoneCounter>();
 
-            On.Terminal.Awake += (orig, self) => { orig(self); Terminal.m_cheat = true; };
-            On.Player.OnSpawned += (orig, self) => { self.m_firstSpawn = false; orig(self); };
+            On.Player.OnSpawned += (orig, self) =>
+            {
+                self.m_firstSpawn = false;
+                orig(self);
+
+                Terminal.m_cheat = true;
+                Console.instance.m_autoCompleteSecrets = true;
+                Console.instance.updateCommandList();
+                try
+                {
+                    Font fnt = Font.CreateDynamicFontFromOSFont("Consolas", 14);
+                    Console.instance.gameObject.GetComponentInChildren<Text>(true).font = fnt;
+                    Console.instance.Print(jtn);
+                }
+                catch (Exception) {}
+            };
             On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch;
         }
-        
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.F6))

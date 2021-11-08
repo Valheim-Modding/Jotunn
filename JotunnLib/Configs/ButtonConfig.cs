@@ -1,5 +1,6 @@
 ﻿using BepInEx.Configuration;
 using UnityEngine;
+using static Jotunn.Managers.InputManager;
 
 namespace Jotunn.Configs
 {
@@ -45,7 +46,7 @@ namespace Jotunn.Configs
                 _key = value;
             }
         }
-        
+
         /// <summary>
         ///     BepInEx configuration entry of a KeyCode that should be used.
         ///     Overrides the <see cref="Key"/> value of this config.
@@ -60,7 +61,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     BepInEx KeyboardShortcut this config should be bound to.
         /// </summary>
-        public KeyboardShortcut Shortcut 
+        public KeyboardShortcut Shortcut
         {
             get
             {
@@ -76,12 +77,43 @@ namespace Jotunn.Configs
                 _shortcut = value;
             }
         }
-        
+
         /// <summary>
         ///     BepInEx configuration entry of a KeyCode that should be used.
         ///     Overrides the <see cref="Shortcut"/> value of this config.
         /// </summary>
         public ConfigEntry<KeyboardShortcut> ShortcutConfig { get; set; }
+
+        /// <summary>
+        ///     Private store for the GamepadButton property
+        /// </summary>
+        private GamepadButton _gamepadButton = GamepadButton.None;
+
+        /// <summary>
+        ///     GamepadButton this config should be bound to for gamepads.
+        /// </summary>
+        public GamepadButton GamepadButton
+        {
+            get
+            {
+                if (_gamepadButton != GamepadButton.None)
+                {
+                    return _gamepadButton;
+                }
+
+                return GamepadConfig?.Value ?? GamepadButton.None;
+            }
+            set
+            {
+                _gamepadButton = value;
+            }
+        }
+
+        /// <summary>
+        ///     BepInEx configuration entry of a GamepadButton that should be used.
+        ///     Overrides the <see cref="GamepadButton"/> value of this config.
+        /// </summary>
+        public ConfigEntry<GamepadButton> GamepadConfig { get; set; }
 
         /// <summary>
         ///     Should the Axis value be inverted?
@@ -112,5 +144,17 @@ namespace Jotunn.Configs
         ///     Should this button react on key presses when a custom GUI is open and requested to block input? Defaults to <c>false</c>.
         /// </summary>
         public bool ActiveInCustomGUI { get; set; } = false;
+
+        /// <summary>
+        ///     Should this button block all other inputs using the same key or button? Defaults to <c>false</c>.<br/>
+        ///     <b>Warning:</b> If set to <c>true</c>, all other input using the same key or axis is reset when queried via ZInput.
+        ///     Make sure to gate your usage properly.
+        /// </summary>
+        public bool BlockOtherInputs { get; set; } = false;
+
+        /// <summary>
+        ///     Internal flag if this button config is backed by any BepInEx ConfigEntry
+        /// </summary>
+        internal bool IsConfigBacked => Config != null || ShortcutConfig != null || GamepadConfig != null;
     }
 }

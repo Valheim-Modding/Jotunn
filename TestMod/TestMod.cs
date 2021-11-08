@@ -47,6 +47,7 @@ namespace TestMod
         private Skills.SkillType TestSkill;
 
         private ConfigEntry<KeyCode> EvilSwordSpecialConfig;
+        private ConfigEntry<InputManager.GamepadButton> EvilSwordGamepadConfig;
         private ButtonConfig EvilSwordSpecialButton;
         private CustomStatusEffect EvilSwordEffect;
 
@@ -96,6 +97,9 @@ namespace TestMod
             
             // Create a custom item with variants
             PrefabManager.OnVanillaPrefabsAvailable += AddCustomVariants;
+
+            // Crate a custom item with rendered icons
+            PrefabManager.OnVanillaPrefabsAvailable += AddItemsWithRenderedIcons;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -159,9 +163,10 @@ namespace TestMod
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (EvilSwordSpecialButton != null && MessageHud.instance != null)
+                if (EvilSwordSpecialButton != null && MessageHud.instance != null && 
+                    Player.m_localPlayer != null && Player.m_localPlayer.m_visEquipment.m_rightItem == "EvilSword")
                 {
-                    if (ZInput.GetButtonDown(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
+                    if (ZInput.GetButton(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
@@ -288,7 +293,7 @@ namespace TestMod
                     anchorMax: new Vector2(0.5f, 0.5f),
                     position: new Vector2(-250f, -250f),
                     fontSize: 16,
-                    width: 100f,
+                    width: 160f,
                     height: 30f);
                 dropdownObject.GetComponent<Dropdown>().AddOptions(new List<string>
                 {
@@ -363,7 +368,7 @@ namespace TestMod
 
                     if (mod.Commands.Any())
                     {
-                        // Items title
+                        // Commands title
                         GUIManager.Instance.CreateText("Commands:",
                             viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                             GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
@@ -372,7 +377,7 @@ namespace TestMod
                         foreach (var command in mod.Commands)
                         {
                             // Command name
-                            GUIManager.Instance.CreateText($"{command}",
+                            GUIManager.Instance.CreateText($"{command.Name}: {command.Help}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                                 GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
@@ -542,6 +547,8 @@ namespace TestMod
             // Add a client side custom input key for the EvilSword
             EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, 
                 new ConfigDescription("Key to unleash evil with the Evil Sword"));
+            EvilSwordGamepadConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttackGamepad", InputManager.GamepadButton.ButtonSouth,
+                new ConfigDescription("Button to unleash evil with the Evil Sword"));
             
         }
 
@@ -594,7 +601,9 @@ namespace TestMod
             {
                 Name = "EvilSwordSpecialAttack",
                 Config = EvilSwordSpecialConfig,
-                HintToken = "$evilsword_beevil"
+                GamepadConfig = EvilSwordGamepadConfig,
+                HintToken = "$evilsword_beevil",
+                BlockOtherInputs = true
             };
             InputManager.Instance.AddButton(ModGUID, EvilSwordSpecialButton);
 
@@ -634,6 +643,12 @@ namespace TestMod
             {
                 { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
             });
+            
+            // Add translations for the rendered tree
+            Localization.AddTranslation("English", new Dictionary<string, string>
+            {
+                {"rendered_tree", "Rendered Tree"}, {"rendered_tree_desc", "A powerful tree, that can render its own icon. Magic!"}
+            });
         }
 
         // Register new console commands
@@ -644,6 +659,7 @@ namespace TestMod
             CommandManager.Instance.AddConsoleCommand(new ListPlayersCommand());
             CommandManager.Instance.AddConsoleCommand(new SkinColorCommand());
             CommandManager.Instance.AddConsoleCommand(new BetterSpawnCommand());
+            CommandManager.Instance.AddConsoleCommand(new CreateCategoryTabCommand());
         }
 
         // Register new skills
@@ -757,6 +773,7 @@ namespace TestMod
             });
             ItemManager.Instance.AddItem(ingot);
             ItemManager.Instance.AddItemConversion(blastConversion);
+            Steelingot.Unload(false);
         }
 
         // Add some custom prefabs
@@ -845,7 +862,7 @@ namespace TestMod
             {
                 Item = "BlueprintTestRune"
             };
-            GUIManager.Instance.AddKeyHint(KHC_base);
+            KeyHintManager.Instance.AddKeyHint(KHC_base);
 
             // Add custom KeyHints for specific pieces
             KeyHintConfig KHC_make = new KeyHintConfig
@@ -858,7 +875,7 @@ namespace TestMod
                     new ButtonConfig { Name = "Attack", HintToken = "$bprune_make" }
                 }
             };
-            GUIManager.Instance.AddKeyHint(KHC_make);
+            KeyHintManager.Instance.AddKeyHint(KHC_make);
 
             KeyHintConfig KHC_piece = new KeyHintConfig
             {
@@ -870,7 +887,7 @@ namespace TestMod
                     new ButtonConfig { Name = "Attack", HintToken = "$bprune_piece" }
                 }
             };
-            GUIManager.Instance.AddKeyHint(KHC_piece);
+            KeyHintManager.Instance.AddKeyHint(KHC_piece);
 
             // Add additional localization manually
             Localization.AddTranslation("English", new Dictionary<string, string>
@@ -1163,7 +1180,7 @@ namespace TestMod
                         new ButtonConfig { Name = "Scroll", Axis = "Mouse ScrollWheel", HintToken = "$evilsword_scroll" }
                     }
                 };
-                GUIManager.Instance.AddKeyHint(KHC);
+                KeyHintManager.Instance.AddKeyHint(KHC);
             }
             catch (Exception ex)
             {
@@ -1262,6 +1279,41 @@ namespace TestMod
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
                 PrefabManager.OnVanillaPrefabsAvailable -= AddCustomVariants;
+            }
+        }
+
+        // Create rendered icons from prefabs
+        private void AddItemsWithRenderedIcons()
+        {
+            try
+            {
+                // use the vanilla beech tree prefab to render our icon from
+                GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
+
+                // create the custom item with the rendered icon
+                CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds", new ItemConfig
+                {
+                    Name = "$rendered_tree",
+                    Description = "$rendered_tree_desc",
+                    Icons = new[]
+                    {
+                        RenderManager.Instance.Render(beech)
+                    },
+                    Requirements = new[]
+                    {
+                        new RequirementConfig { Item = "Wood", Amount = 1, Recover = true }
+                    }
+                });
+                ItemManager.Instance.AddItem(treeItem);
+            }
+            catch (Exception ex)
+            {
+                Jotunn.Logger.LogError($"Error while adding item with rendering: {ex}");
+            }
+            finally
+            {
+                // You want that to run only once, Jotunn has the item cached for the game session
+                PrefabManager.OnVanillaPrefabsAvailable -= AddItemsWithRenderedIcons;
             }
         }
 

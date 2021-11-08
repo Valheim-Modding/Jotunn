@@ -19,7 +19,7 @@ namespace Jotunn
         /// <summary>
         ///     The current version of the Jotunn library.
         /// </summary>
-        public const string Version = "2.3.7";
+        public const string Version = "2.3.12";
 
         /// <summary>
         ///     The name of the library.
@@ -61,9 +61,11 @@ namespace Jotunn
                 MockManager.Instance,
                 KitbashManager.Instance,
                 GUIManager.Instance,
+                KeyHintManager.Instance,
                 //SaveManager.Instance,  // Temporarely disabled, causes FPS issues in the current implementation
                 //ZoneManager.Instance,  // Had some problems reported, needs more tests
                 SynchronizationManager.Instance,
+                RenderManager.Instance,
                 MinimapManager.Instance
             };
             foreach (IManager manager in Managers)
@@ -76,7 +78,13 @@ namespace Jotunn
             // Enable helper on DEBUG build
             RootObject.AddComponent<DebugUtils.DebugHelper>();
 #endif
-
+            // Save mods not unloading their asset bundles
+            On.Game.OnApplicationQuit += (orig, self) =>
+            {
+                orig(self);
+                AssetBundle.UnloadAllAssetBundles(false);
+            };
+            
             Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
         }
 
@@ -84,7 +92,7 @@ namespace Jotunn
         {
             InitializePatches();
         }
-
+        
         /// <summary>
         ///     Invoke patch initialization methods for all loaded mods.
         /// </summary>

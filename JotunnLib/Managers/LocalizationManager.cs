@@ -230,14 +230,28 @@ namespace Jotunn.Managers
 
             foreach (var fileInfo in jsonFormat)
             {
-                var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
-                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.FullName, true);
+                try
+                {
+                    var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
+                    GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.FullName, true);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning($"Exception caught while loading localization file {fileInfo}: {ex}");
+                }
             }
 
             foreach (var fileInfo in unityFormat)
             {
-                var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
-                GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.FullName);
+                try
+                {
+                    var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
+                    GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.FullName);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning($"Exception caught while loading localization file {fileInfo}: {ex}");
+                }
             }
         }
 

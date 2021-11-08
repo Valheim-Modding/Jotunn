@@ -52,11 +52,11 @@ Do the same in the assembly_guiutils assembly definition, referencing assembly_u
 
 Jötunn provides you with a barebone project stub which also includes a Unity project. You can get [that project in its entirety](https://github.com/Valheim-Modding/JotunnModStub) from our github. If you don't have already setup your dev environment, see our [Step-by-Step guide](../guides/guide.md) on how to do that.
 
-Before opening the Unity project, copy the entire content of the `Scripts` folder from your ripped Valheim project at `<RippedValheimProject>\Assets` into your stub project's `<ValheimModStub>\ValheimModUnity\Assets\VanillaScripts` folder. This enables us to exchange prefabs between the two projects without losing the references to the added Components. 
+Before opening the Unity project, copy the entire content of the `Scripts` folder from your ripped Valheim project at `<RippedValheimProject>\Assets` into your stub project's `<JotunnModStub>\JotunnModUnity\Assets\VanillaScripts` folder. This enables us to exchange prefabs between the two projects without losing the references to the added Components. 
 
  **Copy the folders to the new project directly via the filesystem - don't import the scripts via Unity**.
 
-After you copied the scripts, open UnityHub, add the ValheimModUnity project and open it. For easy packaging, install the `AssetBundle Browser` package in the Unity Editor via `Window`-> `Package Manager`.
+After you copied the scripts, open UnityHub, add the JotunnModUnity project and open it. For easy packaging, install the `AssetBundle Browser` package in the Unity Editor via `Window`-> `Package Manager`.
 
 ## Working the New Asset
 
