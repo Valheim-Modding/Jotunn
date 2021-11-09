@@ -212,7 +212,7 @@ namespace Jotunn.Managers
             Renderer.clearFlags = CameraClearFlags.SolidColor;
             Renderer.transform.position = SpawnPoint;
             Renderer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-            // small FOV to simulate orthographic view. An orthographic camera is not possible because of shaders
+            
             Renderer.fieldOfView = 0.5f;
             Renderer.farClipPlane = 100000;
             Renderer.cullingMask = 1 << Layer;
@@ -254,23 +254,6 @@ namespace Jotunn.Managers
 
             prefab.SetActive(wasActiveSelf);
 
-            // calculate visual center
-            Vector3 min = new Vector3(1000f, 1000f, 1000f);
-            Vector3 max = new Vector3(-1000f, -1000f, -1000f);
-
-            foreach (Renderer meshRenderer in spawn.GetComponentsInChildren<Renderer>())
-            {
-                min = Vector3.Min(min, meshRenderer.bounds.min);
-                max = Vector3.Max(max, meshRenderer.bounds.max);
-            }
-
-            // center the prefab
-            spawn.transform.position = SpawnPoint - (min + max) / 2f;
-            Vector3 size = new Vector3(
-                Mathf.Abs(min.x) + Mathf.Abs(max.x),
-                Mathf.Abs(min.y) + Mathf.Abs(max.y),
-                Mathf.Abs(min.z) + Mathf.Abs(max.z));
-
             // needs to be destroyed first as Character depend on it
             foreach (CharacterDrop characterDrop in spawn.GetComponentsInChildren<CharacterDrop>())
             {
@@ -293,6 +276,23 @@ namespace Jotunn.Managers
 
                 Object.DestroyImmediate(component);
             }
+
+            // calculate visual center
+            Vector3 min = new Vector3(1000f, 1000f, 1000f);
+            Vector3 max = new Vector3(-1000f, -1000f, -1000f);
+
+            foreach (Renderer meshRenderer in spawn.GetComponentsInChildren<Renderer>())
+            {
+                min = Vector3.Min(min, meshRenderer.bounds.min);
+                max = Vector3.Max(max, meshRenderer.bounds.max);
+            }
+
+            // center the prefab
+            spawn.transform.position = SpawnPoint - (min + max) / 2f;
+            Vector3 size = new Vector3(
+                Mathf.Abs(min.x) + Mathf.Abs(max.x),
+                Mathf.Abs(min.y) + Mathf.Abs(max.y),
+                Mathf.Abs(min.z) + Mathf.Abs(max.z));
 
             // just in case it doesn't gets deleted properly later
             TimedDestruction timedDestruction = spawn.AddComponent<TimedDestruction>();

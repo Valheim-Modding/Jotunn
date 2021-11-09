@@ -1,5 +1,8 @@
 ﻿using System.IO;
-using BepInEx;
+using System.Text;
+using BepInEx.Configuration;
+using Jotunn.Managers;
+using UnityEngine;
 
 namespace JotunnDoc
 {
@@ -7,12 +10,14 @@ namespace JotunnDoc
     {
         public bool Generated { get; private set; }
         public string FilePath { get; protected set; }
+        internal static ConfigEntry<string> DocumentationDirConfig { get => documentationDirConfig; set => documentationDirConfig = value; }
 
         private StreamWriter writer;
+        private static ConfigEntry<string> documentationDirConfig;
 
         public Doc(string filePath)
         {
-            FilePath = Path.Combine(Paths.PluginPath, nameof(JotunnDoc), "Docs", "data", filePath);
+            FilePath = Path.Combine(documentationDirConfig.Value, "data", filePath);
 
             // Ensure we only create markdown files
             if (!FilePath.EndsWith(".md"))
@@ -34,32 +39,32 @@ namespace JotunnDoc
 
         public void AddHeader(int size, string headerText)
         {
-            string text = "";
+            StringBuilder text = new StringBuilder();
 
             for (int i = 0; i < size; i++)
             {
-                text += "#";
+                text.Append("#");
             }
 
-            text += " " + headerText;
+            text.Append(" " + headerText);
             writer.WriteLine(text);
             writer.Flush();
         }
 
         public void AddTableHeader(params string[] columns)
         {
-            string text = "";
+            StringBuilder text = new StringBuilder("|");
 
             foreach (string col in columns)
             {
-                text += col + " |";
+                text.Append(col + " |");
             }
 
-            text += "\n";
-            
+            text.Append("\n|");
+
             for (int i = 0; i < columns.Length; i++)
             {
-                text += "---|";
+                text.Append("---|");
             }
 
             writer.WriteLine(text);
@@ -68,11 +73,11 @@ namespace JotunnDoc
 
         public void AddTableRow(params string[] vals)
         {
-            string text = "";
+            StringBuilder text = new StringBuilder("|");
 
             foreach (string val in vals)
             {
-                text += val + "|";
+                text.Append(val + "|");
             }
 
             writer.WriteLine(text);
@@ -85,5 +90,38 @@ namespace JotunnDoc
             writer.Close();
             Generated = true;
         }
+
+        internal static string RangeString(float m_min, float m_max)
+        {
+            if (m_min == m_max)
+            {
+                return m_min.ToString();
+            }
+            return $"{m_min} - {m_max}";
+        }
+
+        internal static bool RequestSprite(string path, GameObject prefab, Quaternion rotation)
+        {
+            if(File.Exists(path))
+            {
+                Jotunn.Logger.LogDebug($"Image at {path} already exists, not recreating");
+                return true;
+            }
+            return RenderManager.Instance.EnqueueRender(new RenderManager.RenderRequest(prefab)
+            {
+                Rotation = rotation,
+                FieldOfView = 20f,
+                DistanceMultiplier = 1.1f
+            }, (Sprite sprite) =>
+            {
+                if (sprite)
+                {
+                    var texture = sprite.texture;
+                    var bytes = texture.EncodeToPNG();
+                    File.WriteAllBytes(path, bytes);
+                } 
+            });
+        }
+
     }
 }

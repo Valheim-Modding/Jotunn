@@ -24,6 +24,18 @@ namespace Jotunn.DebugUtils
             On.ZNet.Awake += ZNet_Awake;
             On.ZSteamSocket.Send += ZSteamSocket_Send;
             On.ZSteamSocket.Recv += ZSteamSocket_Recv;
+            On.ZNetView.Awake += ZNetView_Awake;
+        }
+
+        private void ZNetView_Awake(On.ZNetView.orig_Awake orig, ZNetView self)
+        { 
+
+            if (_isModEnabled.Value
+                && (ZNetView.m_forceDisableInit || ZDOMan.instance == null))
+            {
+                Jotunn.Logger.LogWarning($"ZNetView of {self.name} will self-destruct");
+            } 
+            orig(self);
         }
 
         private void ZNet_Awake(On.ZNet.orig_Awake orig, ZNet self)

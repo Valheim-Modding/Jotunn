@@ -9,5 +9,7 @@ This section contains lists of things in Valheim such as:
 - English localizations of those
 - Sprites
 - RPCs
+- Locations
+- Vegetation
 
 These dumps are automatically created with [JotunnDoc](https://github.com/Valheim-Modding/Jotunn/tree/dev/JotunnDoc).
