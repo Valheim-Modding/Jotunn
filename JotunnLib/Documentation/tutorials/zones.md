@@ -44,7 +44,19 @@ This is when the filters are used, everything is checked on the center of the lo
 |MinTerrainDelta<br>MaxTerrainDelta|The game will sample 10 random points in the circle defined by `ExteriorRadius` and calculate the local mininum and maximum height. The difference between these values is the TerrainDelta, which should be between the configured values.
 |DistanceFromSimilar|Check for other instances of the same location, or from the same `Group` if configured, if any are found within this range, this filter will fail<br>This is disabled by default with value 0
 
+Once a location passes all the checks it is registered to that location.
+
 If a location fails to place all `Quantity` instances, the game will print a warning in the log.
+
+When a player gets close to this zone for the first time, the location prefab is placed with these properties
+
+|Property|Effect|
+|---|---|
+|SnapToWater|If enabled, spawns the location at the water level height instead of ground height (only useful if Altitude checks < 0)
+|ClearArea|Mark the area defined by `ExteriorRadius` to not spawn _any_ Vegetation
+|SlopeRotation|If enabled, will rotate the location to face the slope. Priotized over RandomRotation
+|RandomRotation|If enabled, will rotate the location randomly. Will be ignored if SlopeRotation is enabled
+
 
 ### Vegetation
 Vegetation is placed when a Zone is first discovered. The game will go through all available Vegetation, and attempt to place each type according to its configuration.
@@ -82,30 +94,9 @@ Modifications to vanilla locations & vegetation must be repeated every time!
 
 # ZoneManager
  
-## Vegetation
+## Locations
 
-### Modifying existing vegetation
-Modify existing Vegetation configuration to increase the group size:
-```cs
-var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
-raspberryBush.m_groupSizeMin = 10;
-raspberryBush.m_groupSizeMax = 30;
-```
-![](../images/data/moreRaspberryBushes.png)
-
-### Adding vegetation
-Any prefab can be added as vegetation:
-```cs
-CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, new VegetationConfig
-{
-    Biome = Heightmap.Biome.Meadows,
-    BlockCheck = true
-});
-```
-This example defines very little filters, so this prefab will be found all over every Meadows.
-![Lulzcube vegetation](../images/data/customVegetation.png)
-
-## Locations 
+Jötunn uses the [LocationConfig](xref:Jotunn.Configs.LocationConfig) together with [CustomLocation](xref:Jotunn.Entities.CustomLocation) to define new Locations that will be injected into the world generation.
 
 ### Modifying existing locations
 Use `ZoneManager.Instance.GetZoneLocation` to get a reference to the `ZoneLocation`.
@@ -171,3 +162,29 @@ ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubeArchLocation, new 
     ClearArea = true,
 }));
 ```
+
+
+## Vegetation
+ 
+Jötunn uses the [VegetationConfig](xref:Jotunn.Configs.VegetationConfig) together with [CustomVegetation](xref:Jotunn.Entities.CustomVegetation) to define new Vegetation that will be injected into the world generation.
+
+### Modifying existing vegetation
+Modify existing Vegetation configuration to increase the group size:
+```cs
+var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
+raspberryBush.m_groupSizeMin = 10;
+raspberryBush.m_groupSizeMax = 30;
+```
+![](../images/data/moreRaspberryBushes.png)
+
+### Adding vegetation
+Any prefab can be added as vegetation:
+```cs
+CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, new VegetationConfig
+{
+    Biome = Heightmap.Biome.Meadows,
+    BlockCheck = true
+});
+```
+This example defines very little filters, so this prefab will be found all over every Meadows.
+![Lulzcube vegetation](../images/data/customVegetation.png)
