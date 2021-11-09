@@ -481,7 +481,13 @@ namespace Jotunn.Managers
         public Vector2 WorldToOverlayCoords(Vector3 input, int texSize)
         {
             Minimap.instance.WorldToMapPoint(input, out var mx, out var my);
-            return new Vector2(mx * texSize, my * texSize);
+            //Console.instance.Print($"coordinates {input} to x{mx*texSize} y{my*texSize}");
+            return new Vector2((float)Math.Round(mx * texSize), (float)Math.Round(my * texSize));
+
+            // Note: using rawImage and MapPointToLocalGuiPos actually doesn't give anywhere near to accurate results.
+            //RawImage rawImage = ((Minimap.instance.m_mode == Minimap.MapMode.Large) ? Minimap.instance.m_mapImageLarge : Minimap.instance.m_mapImageSmall);
+            //Minimap.instance.WorldToMapPoint(input, out var mx, out var my);
+            //return Minimap.instance.MapPointToLocalGuiPos(mx, my, rawImage);
         }
 
 
@@ -809,8 +815,13 @@ namespace Jotunn.Managers
                 {
                     return;
                 }
+                if (tex == _mainTex)
+                {
+                    _mainDirty = true;
+                    _mainRedrawable = true;
+                }
 
-                if(tex == _forestFilter)
+                if (tex == _forestFilter)
                 {
                     _forestDirty = true;
                     _forestRedrawable = true;
