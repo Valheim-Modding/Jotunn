@@ -12,7 +12,7 @@ namespace Jotunn.Entities
     public class CustomRPC : CustomEntity
     {
         public string Name { get; }
-
+        
         internal string ID => $"{SourceMod.GUID}!{Name}";
 
         public event Action<long, ZPackage> OnServerReceive;
@@ -30,53 +30,33 @@ namespace Jotunn.Entities
         {
             Name = name;
         }
-        
-        /// <summary>
-        ///     Initiates a RPC exchange with the server.
-        /// </summary>
-        /// <returns></returns>
-        public void Initiate() => ZNet.instance?.StartCoroutine(SendPackageRoutine(new ZPackage(new [] {INIT_PACKAGE})));
 
         /// <summary>
-        ///     Send a package to the server.
+        ///     Initiates a RPC exchange with the server by sending an empty package.
         /// </summary>
-        /// <param name="package"></param>
-        /// <returns></returns>
-        public void SendPackage(ZPackage package) => ZNet.instance?.StartCoroutine(SendPackageRoutine(package));
+        public void Initiate() =>
+            ZNet.instance?.StartCoroutine(SendPackageRoutine(
+                ZRoutedRpc.instance.GetServerPeerID(),
+                new ZPackage(new[] {INIT_PACKAGE})));
 
         /// <summary>
-        ///     Send a package to a single target.
+        ///     Send a package to a single target. Compresses and fragments the package if necessary.
         /// </summary>
         /// <param name="target"></param>
         /// <param name="package"></param>
-        /// <returns></returns>
-        public void SendPackage(long target, ZPackage package) => ZNet.instance?.StartCoroutine(SendPackageRoutine(target, package));
-        
+        public void SendPackage(long target, ZPackage package) =>
+            ZNet.instance?.StartCoroutine(SendPackageRoutine(target, package));
+
         /// <summary>
-        ///     Send a package to a list of peers.
+        ///     Send a package to a list of peers. Compresses and fragments the package if necessary.
         /// </summary>
         /// <param name="peers"></param>
         /// <param name="package"></param>
-        /// <returns></returns>
-        public void SendPackage(List<ZNetPeer> peers, ZPackage package) => ZNet.instance?.StartCoroutine(SendPackageRoutine(peers, package));
-
+        public void SendPackage(List<ZNetPeer> peers, ZPackage package) =>
+            ZNet.instance?.StartCoroutine(SendPackageRoutine(peers, package));
+        
         /// <summary>
-        ///     Coroutine to send a package to the server.
-        /// </summary>
-        /// <param name="package"></param>
-        /// <returns></returns>
-        public IEnumerator SendPackageRoutine(ZPackage package)
-        {
-            if (!ZNet.instance)
-            {
-                return Enumerable.Empty<object>().GetEnumerator();
-            }
-
-            return SendPackageRoutine(ZRoutedRpc.instance.GetServerPeerID(), package);
-        }
-
-        /// <summary>
-        ///     Coroutine to send a package to a single target.
+        ///     Coroutine to send a package to a single target. Compresses and fragments the package if necessary.
         /// </summary>
         /// <param name="target"></param>
         /// <param name="package"></param>
@@ -98,7 +78,7 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
-        ///     Coroutine to send a package to a list of peers.
+        ///     Coroutine to send a package to a list of peers. Compresses and fragments the package if necessary.
         /// </summary>
         /// <param name="peers"></param>
         /// <param name="package"></param>
@@ -138,7 +118,7 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
-        ///     Coroutine to send a package async to an actual peer. Fragments the package if necessary.
+        ///     Coroutine to send a package to an actual peer.
         /// </summary>
         /// <param name="peer"></param>
         /// <param name="package"></param>
@@ -233,7 +213,7 @@ namespace Jotunn.Entities
                 return;
             }
 
-            Logger.LogDebug("Received RPC package");
+            Logger.LogDebug($"Received package for custom RPC {ID}");
             try
             {
                 CacheExpirations.RemoveAll(kv =>

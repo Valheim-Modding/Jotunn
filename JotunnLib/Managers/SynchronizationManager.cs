@@ -537,7 +537,7 @@ namespace Jotunn.Managers
                     // Send values to server if it is a client instance
                     if (ZNet.instance.IsClientInstance())
                     {
-                        ConfigRPC.SendPackage(package);
+                        ConfigRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
 
                         // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
                         InvokeOnConfigurationSynchronized(false);
