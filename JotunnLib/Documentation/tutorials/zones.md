@@ -1,5 +1,26 @@
 ﻿# Zones
 
+## Locations
+
+Locations are bundles of objects that are placed randomly during world generation. These include the boss altars, crypts , Fulin villages and more. For a full overview, check the [Locations list](../data/zones/location-list.md)
+
+These are unpacked only when a player gets close to the position of a placed location. Once unpacked, the GameObjects are saved like regular pieces.
+
+Only GameObjects with a `ZNetView.m_persistent = true` will be saved and instantiated on load after unpacking.
+
+Each Zone can contain only 1 location. This means that the number of slots is limited. Try to keep the total number of locations added low so everything has a chance to place.
+
+## Vegetation
+
+Vegetation are singular prefabs that are scattered in a Zone. This is most of the spawned objects:
+ - Plants & trees
+ - Rocks: both normal stone & ore spawns
+ - Leviathans
+ - Ice in the Deep North
+ - Non-interactable effects like fireflies & mist
+
+There is no limit to the number of vegetation in a single zone.
+
 ## World generation in Valheim
 The world of Valheim is split up into Zones, each 64 by 64 meters.
 
@@ -59,9 +80,9 @@ This is called every time a world loads, so make sure to only add your custom lo
 
 Modifications to vanilla locations & vegetation must be repeated every time!
 
+# ZoneManager
  
-# Vegetation
-Vegetation is placed for each Zone, so quantities are per zone. All possible vegetations are attempted to be placed for each zone, there is no limit to the total amount.
+## Vegetation
 
 ### Modifying existing vegetation
 Modify existing Vegetation configuration to increase the group size:
@@ -84,14 +105,7 @@ CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, new Veg
 This example defines very little filters, so this prefab will be found all over every Meadows.
 ![Lulzcube vegetation](../images/data/customVegetation.png)
 
-## Locations
-Locations are bundles of objects that are placed randomly during world generation. These include the boss altars, crypts , Fulin villages and more. For a full overview, check the [Locations list](../data/zones/location-list.md)
-
-These are unpacked only when a player gets close to the position of a placed location. Once unpacked, the GameObjects are saved like regular pieces.
-
-Only GameObjects with a `ZNetView.m_persistent = true` will be saved and instantiated on load after unpacking.
-
-Each Zone can contain only 1 location. This means that the number of slots is limited. Try to keep the total number of locations added low so everything has a chance to place.
+## Locations 
 
 ### Modifying existing locations
 Use `ZoneManager.Instance.GetZoneLocation` to get a reference to the `ZoneLocation`.
