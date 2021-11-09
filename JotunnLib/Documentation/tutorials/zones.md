@@ -1,4 +1,5 @@
 ﻿# Zones
+The world of Valheim is split up into **Zones**, each 64 by 64 meters, controlled by the **ZoneSystem**. Each **Zone** can potentially have a single **Location** instance, and many **Vegetation** instances.
 
 ## Locations
 
