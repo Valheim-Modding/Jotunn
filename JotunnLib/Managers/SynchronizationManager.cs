@@ -180,10 +180,10 @@ namespace Jotunn.Managers
                     Logger.LogDebug($"Admin status: {(result ? "Admin" : "No Admin")}");
                     var adminPkg = new ZPackage();
                     adminPkg.Write(result);
-                    yield return ZNet.instance.StartCoroutine(AdminRPC.SendPackage(peer.m_uid, adminPkg));
+                    yield return ZNet.instance.StartCoroutine(AdminRPC.SendPackageRoutine(peer.m_uid, adminPkg));
 
                     var pkg = GenerateConfigZPackage(true, GetSyncConfigValues());
-                    yield return ZNet.instance.StartCoroutine(ConfigRPC.SendPackage(peer.m_uid, pkg));
+                    yield return ZNet.instance.StartCoroutine(ConfigRPC.SendPackageRoutine(peer.m_uid, pkg));
 
                     if (peer.m_rpc.GetSocket() is PeerInfoBlockingSocket currentSocket)
                     {
@@ -294,7 +294,7 @@ namespace Jotunn.Managers
                 Logger.LogInfo($"Sending admin status to {entry}/{clientId} ({(admin ? "is admin" : "is no admin")})");
                 var pkg = new ZPackage();
                 pkg.Write(admin);
-                ZNet.instance.StartCoroutine(AdminRPC.SendPackage(clientId.Value, pkg));
+                AdminRPC.SendPackage(clientId.Value, pkg);
             }
         }
 
@@ -537,7 +537,7 @@ namespace Jotunn.Managers
                     // Send values to server if it is a client instance
                     if (ZNet.instance.IsClientInstance())
                     {
-                        ZNet.instance.StartCoroutine(ConfigRPC.SendPackage(package));
+                        ConfigRPC.SendPackage(package);
 
                         // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
                         InvokeOnConfigurationSynchronized(false);
@@ -545,7 +545,7 @@ namespace Jotunn.Managers
                     // Send changed values to all connected clients
                     else
                     {
-                        ZNet.instance.StartCoroutine(ConfigRPC.SendPackage(ZNet.instance.m_peers, package));
+                        ConfigRPC.SendPackage(ZNet.instance.m_peers, package);
                     }
                 }
 
@@ -673,7 +673,7 @@ namespace Jotunn.Managers
                 ApplyConfigZPackage(package, out bool initial);
 
                 // Send to all other clients
-                ZNet.instance.StartCoroutine(ConfigRPC.SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package));
+                ConfigRPC.SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package);
             }
         }
 

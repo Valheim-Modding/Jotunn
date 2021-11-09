@@ -18,6 +18,7 @@ namespace Jotunn.Entities
         public event Action<long, ZPackage> OnServerReceive;
         public event Action<ZPackage> OnClientReceive;
 
+        private const byte INIT_PACKAGE = 0;
         private const byte FRAGMENTED_PACKAGE = 64;
         private const byte COMPRESSED_PACKAGE = 128;
         
@@ -31,27 +32,56 @@ namespace Jotunn.Entities
         }
         
         /// <summary>
-        ///     Coroutine to send a package to the server. Compresses the package if necessary.
+        ///     Initiates a RPC exchange with the server.
+        /// </summary>
+        /// <returns></returns>
+        public void Initiate() => ZNet.instance?.StartCoroutine(SendPackageRoutine(new ZPackage(new [] {INIT_PACKAGE})));
+
+        /// <summary>
+        ///     Send a package to the server.
         /// </summary>
         /// <param name="package"></param>
         /// <returns></returns>
-        internal IEnumerator SendPackage(ZPackage package)
+        public void SendPackage(ZPackage package) => ZNet.instance?.StartCoroutine(SendPackageRoutine(package));
+
+        /// <summary>
+        ///     Send a package to a single target.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="package"></param>
+        /// <returns></returns>
+        public void SendPackage(long target, ZPackage package) => ZNet.instance?.StartCoroutine(SendPackageRoutine(target, package));
+        
+        /// <summary>
+        ///     Send a package to a list of peers.
+        /// </summary>
+        /// <param name="peers"></param>
+        /// <param name="package"></param>
+        /// <returns></returns>
+        public void SendPackage(List<ZNetPeer> peers, ZPackage package) => ZNet.instance?.StartCoroutine(SendPackageRoutine(peers, package));
+
+        /// <summary>
+        ///     Coroutine to send a package to the server.
+        /// </summary>
+        /// <param name="package"></param>
+        /// <returns></returns>
+        public IEnumerator SendPackageRoutine(ZPackage package)
         {
             if (!ZNet.instance)
             {
                 return Enumerable.Empty<object>().GetEnumerator();
             }
 
-            return SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
+            return SendPackageRoutine(ZRoutedRpc.instance.GetServerPeerID(), package);
         }
 
         /// <summary>
-        ///     Coroutine to send a package async to a single target. Compresses the package if necessary.
+        ///     Coroutine to send a package to a single target.
         /// </summary>
         /// <param name="target"></param>
         /// <param name="package"></param>
         /// <returns></returns>
-        internal IEnumerator SendPackage(long target, ZPackage package)
+        public IEnumerator SendPackageRoutine(long target, ZPackage package)
         {
             if (!ZNet.instance)
             {
@@ -64,16 +94,16 @@ namespace Jotunn.Entities
                 peers = peers.Where(p => p.m_uid == target).ToList();
             }
 
-            return SendPackage(peers, package);
+            return SendPackageRoutine(peers, package);
         }
 
         /// <summary>
-        ///     Coroutine to send a package async to a list of Peers. Compresses the package if necessary.
+        ///     Coroutine to send a package to a list of peers.
         /// </summary>
         /// <param name="peers"></param>
         /// <param name="package"></param>
         /// <returns></returns>
-        internal IEnumerator SendPackage(List<ZNetPeer> peers, ZPackage package)
+        public IEnumerator SendPackageRoutine(List<ZNetPeer> peers, ZPackage package)
         {
             if (!ZNet.instance)
             {
