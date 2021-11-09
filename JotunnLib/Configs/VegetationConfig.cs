@@ -71,14 +71,16 @@ namespace Jotunn.Configs
         public bool InForest { get; set; }
         /// <summary>
         ///     Minimum value of the forest fractal:
-        ///         0: outside the forest
-        ///         1: inside forest
+        ///         0 - 1: inside the forest
+        ///         1: forest edge
+        ///         1 - infinity: outside the forest
         /// </summary>
         public float ForestThresholdMin { get; set; }
         /// <summary>
         ///     Maximum value of the forest fractal:
-        ///         0: outside the forest
-        ///         1: inside forest
+        ///         0 - 1: inside the forest
+        ///         1: forest edge
+        ///         1 - infinity: outside the forest
         /// </summary>
         public float ForestThresholdMax { get; set; } = 1;
         /// <summary>
