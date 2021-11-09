@@ -1,15 +1,66 @@
 ﻿# Zones
 
+## World generation in Valheim
 The world of Valheim is split up into Zones, each 64 by 64 meters.
+
+### Locations
+When a new world is generated, the game goes through the list of available locations. The list is sorted so all locations with `Prioritized = true` are handled first.
+ 
+The game will attempt to place `Quantity` instances of each location, it will attempt up to 100.000 times, or even 200.000 if it is Prioritized!
+
+Every time it selects a random Zone and checks if there are no other location instances in this zone already and if the Zone matches the BiomeArea (in the middle of a Biome, or on the edge between different biomes)
+
+If these checks succeed, it will then attempt to actually fit the location into the terrain up to 20 times (for this selected zone)
+
+This is when the filters are used, everything is checked on the center of the location:
+
+|Property|Effect|
+|---|---|
+|MinDistance<br>MaxDistance|The distance between the center of the world and this location should be between these values<br>Configuring value 0 will match any distance
+|Biome|The location must be in a biome that matches this field. You can specify multiple biomes for a single location, any of these will match.
+|MinAltitude<br>MaxAltitude|The height of the location should be between these values. 0 is the shoreline.
+|InForest<br>ForestThresholdMin<br>ForestThresholdMax|If enabled, the value of the forest fractal in the seed of this location must be between these values<br>0 is the center of the forest.<br>1 is on the edge of the forest<br>Above 1 will move the location further from the forest edge
+|MinTerrainDelta<br>MaxTerrainDelta|The game will sample 10 random points in the circle defined by `ExteriorRadius` and calculate the local mininum and maximum height. The difference between these values is the TerrainDelta, which should be between the configured values.
+|DistanceFromSimilar|Check for other instances of the same location, or from the same `Group` if configured, if any are found within this range, this filter will fail<br>This is disabled by default with value 0
+
+If a location fails to place all `Quantity` instances, the game will print a warning in the log.
+
+### Vegetation
+Vegetation is placed when a Zone is first discovered. The game will go through all available Vegetation, and attempt to place each type according to its configuration.
+
+The number of attempts is determined by:
+
+|Property|Effect|
+|---|---|
+|Max|Maximum amount of groups in the zone<br>Values between 0 - 1 are used as a percentage chance to spawn a single group in this zone
+|Min|If the value of Max is above 1, this is used as the minimum number of groups
+|GroupSizeMin<br>GroupSizeMax|Number of instances in each group. The game will attempt to place this many, but there are no guarantees any will actually place
+
+Every attempt to place an instance of a Vegetation will go through these checks:
+
+|Property|Effect|
+|---|---|
+|BlockCheck|If enabled, does a raycast down and check if there are no objects in the way on these layers<ul><li>Default</li><li>static_solid</li><li>Default_small</li><li>piece</li></ul>These objects are either part of a Location, or another Vegetation that was already placed
+|Biome|The vegetation must be in a biome that matches this field. You can specify multiple biomes for a single vegeation, any of these will match.
+|BiomeArea|Check the position within a Biome, either in the middle of a Biome, or on the edge between different biomes
+|MinAltitude<br>MaxAltitude|The height of the vegetation should be between these values. 0 is the shoreline.
+|MinOceanDepth<br>MaxOceanDepth|If these values are not equal, check that the value of the OceanDepth from the seed is between these values.<br>This is not the same as Altitude, not entirely sure how to interpret this
+|MinTilt<br>MaxTilt|Checks the slope of the terrain mesh at this point, using the normal of the mesh<br>In degrees: 0 is flat ground, 90 is a vertical wall
+|MinTerrainDelta<br>MaxTerrainDelta|Only enabled if the `TerrainDeltaRadius` is not 0<br>The game will sample 10 random points in the circle defined by `TerrainDeltaRadius` and calculate the local mininum and maximum height. The difference between these values is the TerrainDelta, which should be between the configured values.
+|InForest<br>ForestThresholdMin<br>ForestThresholdMax|If enabled, the value of the forest fractal in the seed of this vegetation must be between these values<br>0 is the center of the forest.<br>1 is on the edge of the forest<br>Above 1 will move the vegetation further from the forest edge
+
+Locations have a property `ClearArea`, enabling this will prevent _any_ vegetation from spawning in the `ExteriorRadius` of the location.
+
+
+# Timing
 
 Locations and Vegetation are loaded during world load. Use the event `ZoneManager.OnVanillaLocationsAvailable` to get a callback when the locations are available for use.
 This is called every time a world loads, so make sure to only add your custom locations & vegetations once.
-Modifications to vanilla locations & vegetation must be repeated every time.
 
-## Filters
-Locations and Vegetation have many properties that are used to filter randomly sampled positions when placing. Check the XML docs on the fields of [LocationConfig](xref:Jotunn.Configs.LocationConfig) and [VegetationConfig](xref:Jotunn.Configs.VegetationConfig).
+Modifications to vanilla locations & vegetation must be repeated every time!
 
-## Vegetation
+ 
+# Vegetation
 Vegetation is placed for each Zone, so quantities are per zone. All possible vegetations are attempted to be placed for each zone, there is no limit to the total amount.
 
 ### Modifying existing vegetation
