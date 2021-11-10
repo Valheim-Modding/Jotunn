@@ -16,7 +16,7 @@ namespace Jotunn.Entities
         internal string ID => $"{SourceMod.GUID}!{Name}";
 
         public event Action<long, ZPackage> OnServerReceive;
-        public event Action<ZPackage> OnClientReceive;
+        public event Action<long, ZPackage> OnClientReceive;
 
         private const byte INIT_PACKAGE = 0;
         private const byte FRAGMENTED_PACKAGE = 64;
@@ -280,7 +280,7 @@ namespace Jotunn.Entities
                 }
                 else
                 {
-                    InvokeOnClientReceive(package);
+                    InvokeOnClientReceive(sender, package);
                 }
             }
             catch (Exception e)
@@ -298,9 +298,9 @@ namespace Jotunn.Entities
             OnServerReceive?.SafeInvoke(sender, package);
         }
         
-        private void InvokeOnClientReceive(ZPackage package)
+        private void InvokeOnClientReceive(long sender, ZPackage package)
         {
-            OnClientReceive?.SafeInvoke(package);
+            OnClientReceive?.SafeInvoke(sender, package);
         }
     }
 }

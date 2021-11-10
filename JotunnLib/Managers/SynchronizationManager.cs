@@ -298,7 +298,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private void AdminRPC_OnClientReceive(ZPackage package)
+        private void AdminRPC_OnClientReceive(long sender, ZPackage package)
         {
             bool isAdmin = package.ReadBool();
 
@@ -648,7 +648,7 @@ namespace Jotunn.Managers
 
         private const byte INITIAL_CONFIG = 1;
 
-        private void ConfigRPC_OnClientReceive(ZPackage package)
+        private void ConfigRPC_OnClientReceive(long sender, ZPackage package)
         {
             byte packageFlags = package.ReadByte();
 
