@@ -23,14 +23,28 @@ namespace TestMod
         {
             TestRPC = NetworkManager.Instance.GetRPC("rpctest");
             TestRPC.OnServerReceive += TestRPC_OnServerReceive;
+            TestRPC.OnClientReceive += TestRPC_OnClientReceive;
 
             CommandManager.Instance.AddConsoleCommand(new SendSomethingBigCommand());
         }
 
         private void TestRPC_OnServerReceive(long sender, ZPackage package)
         {
-            Jotunn.Logger.LogMessage($"Received blob. Broadcasting to all clients.");
+            Jotunn.Logger.LogMessage($"Received blob"); 
+
+            if (TestRPC.IsSending)
+            {
+                Jotunn.Logger.LogMessage($"RPC is currently broadcasting packages, discarding");
+                return;
+            }
+
+            Jotunn.Logger.LogMessage($"Broadcasting to all clients");
             TestRPC.SendPackage(ZNet.instance.m_peers, new ZPackage(package.GetArray()));
+        }
+        
+        private void TestRPC_OnClientReceive(long sender, ZPackage package)
+        {
+            Jotunn.Logger.LogMessage($"Received blob");
         }
 
         public class SendSomethingBigCommand : ConsoleCommand
@@ -46,6 +60,12 @@ namespace TestMod
                 if (args.Length != 1 || !Sizes.Any(x => x.Equals(int.Parse(args[0]))))
                 {
                     Console.instance.Print($"Usage: rpc.send [{string.Join("|", Sizes)}]");
+                    return;
+                }
+
+                if (TestRPC.IsSending || TestRPC.IsReceiving)
+                {
+                    Console.instance.Print($"RPC is currently busy");
                     return;
                 }
 

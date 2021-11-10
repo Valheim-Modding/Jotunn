@@ -6,13 +6,18 @@ using System.IO.Compression;
 using System.Linq;
 using BepInEx;
 using UnityEngine;
+using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace Jotunn.Entities
 {
     public class CustomRPC : CustomEntity
     {
         public string Name { get; }
-        
+
+        public bool IsSending => SendCount > 0;
+        public bool IsReceiving => PackageCache.Count > 0;
+        public bool IsProcessing => ProcessingCount > 0;
+
         internal string ID => $"{SourceMod.GUID}!{Name}";
 
         public event Action<long, ZPackage> OnServerReceive;
@@ -21,11 +26,13 @@ namespace Jotunn.Entities
         private const byte INIT_PACKAGE = 0;
         private const byte FRAGMENTED_PACKAGE = 64;
         private const byte COMPRESSED_PACKAGE = 128;
-        
+
+        private short SendCount;
+        private short ProcessingCount;
         private long PackageCounter;
         private readonly Dictionary<string, SortedDictionary<int, byte[]>> PackageCache = new Dictionary<string, SortedDictionary<int, byte[]>>();
         private readonly List<KeyValuePair<long, string>> CacheExpirations = new List<KeyValuePair<long, string>>(); // avoid leaking memory
-        
+
         internal CustomRPC(BepInPlugin sourceMod, string name) : base(sourceMod)
         {
             Name = name;
@@ -37,7 +44,7 @@ namespace Jotunn.Entities
         public void Initiate() =>
             ZNet.instance?.StartCoroutine(SendPackageRoutine(
                 ZRoutedRpc.instance.GetServerPeerID(),
-                new ZPackage(new[] {INIT_PACKAGE})));
+                new ZPackage(new[] { INIT_PACKAGE })));
 
         /// <summary>
         ///     Send a package to a single target. Compresses and fragments the package if necessary.
@@ -54,7 +61,7 @@ namespace Jotunn.Entities
         /// <param name="package"></param>
         public void SendPackage(List<ZNetPeer> peers, ZPackage package) =>
             ZNet.instance?.StartCoroutine(SendPackageRoutine(peers, package));
-        
+
         /// <summary>
         ///     Coroutine to send a package to a single target. Compresses and fragments the package if necessary.
         /// </summary>
@@ -90,30 +97,41 @@ namespace Jotunn.Entities
                 yield break;
             }
 
-            const int compressMinSize = 10000;
-
-            if (package.Size() > compressMinSize)
+            try
             {
-                byte[] rawData = package.GetArray();
-                Logger.LogDebug($"Compressing package with length {rawData.Length}");
+                ++SendCount;
 
-                ZPackage compressedPackage = new ZPackage();
-                compressedPackage.Write(COMPRESSED_PACKAGE);
-                MemoryStream output = new MemoryStream();
-                using (DeflateStream deflateStream = new DeflateStream(output, System.IO.Compression.CompressionLevel.Optimal))
+                const int compressMinSize = 10000;
+
+                if (package.Size() > compressMinSize)
                 {
-                    deflateStream.Write(rawData, 0, rawData.Length);
-                }
-                compressedPackage.Write(output.ToArray());
-                package = compressedPackage;
-            }
+                    byte[] rawData = package.GetArray();
+                    Logger.LogDebug($"[{ID}] Compressing package with length {rawData.Length}");
 
-            List<IEnumerator<bool>> writers = peers.Where(peer => peer.IsReady()).Select(p => SendToPeer(p, package)).ToList();
-            writers.RemoveAll(writer => !writer.MoveNext());
-            while (writers.Count > 0)
-            {
-                yield return null;
+                    ZPackage compressedPackage = new ZPackage();
+                    compressedPackage.Write(COMPRESSED_PACKAGE);
+                    MemoryStream output = new MemoryStream();
+                    using (DeflateStream deflateStream = new DeflateStream(output, CompressionLevel.Optimal))
+                    {
+                        deflateStream.Write(rawData, 0, rawData.Length);
+                    }
+
+                    compressedPackage.Write(output.ToArray());
+                    package = compressedPackage;
+                }
+
+                List<IEnumerator<bool>> writers =
+                    peers.Where(peer => peer.IsReady()).Select(p => SendToPeer(p, package)).ToList();
                 writers.RemoveAll(writer => !writer.MoveNext());
+                while (writers.Count > 0)
+                {
+                    yield return null;
+                    writers.RemoveAll(writer => !writer.MoveNext());
+                }
+            }
+            finally
+            {
+                --SendCount;
             }
         }
 
@@ -134,7 +152,7 @@ namespace Jotunn.Entities
             const int packageSliceSize = 250000;
             const int maximumSendQueueSize = 20000;
 
-            IEnumerable<bool> waitForQueue()
+            IEnumerable<bool> WaitForQueue()
             {
                 float timeout = Time.time + 30;
                 while (peer.m_socket.GetSendQueueSize() > maximumSendQueueSize)
@@ -151,7 +169,7 @@ namespace Jotunn.Entities
                 }
             }
 
-            void SendPackage(ZPackage pkg)
+            void Send(ZPackage pkg)
             {
                 rpc.InvokeRoutedRPC(peer.m_uid, ID, pkg);
             }
@@ -163,7 +181,7 @@ namespace Jotunn.Entities
                 long packageIdentifier = ++PackageCounter;
                 for (int fragment = 0; fragment < fragments; fragment++)
                 {
-                    foreach (bool wait in waitForQueue())
+                    foreach (bool wait in WaitForQueue())
                     {
                         yield return wait;
                     }
@@ -180,8 +198,8 @@ namespace Jotunn.Entities
                     fragmentedPackage.Write(fragments);
                     fragmentedPackage.Write(data.Skip(packageSliceSize * fragment).Take(packageSliceSize).ToArray());
 
-                    Logger.LogDebug($"Sending fragmented package {packageIdentifier}:{fragment}");
-                    SendPackage(fragmentedPackage);
+                    Logger.LogDebug($"[{ID}] Sending fragmented package {packageIdentifier}:{fragment}");
+                    Send(fragmentedPackage);
 
                     if (fragment != fragments - 1)
                     {
@@ -191,16 +209,16 @@ namespace Jotunn.Entities
             }
             else
             {
-                foreach (bool wait in waitForQueue())
+                foreach (bool wait in WaitForQueue())
                 {
                     yield return wait;
                 }
 
-                Logger.LogDebug("Sending package");
-                SendPackage(package);
+                Logger.LogDebug($"[{ID}] Sending package");
+                Send(package);
             }
         }
-        
+
         /// <summary>
         ///     Receive and handle an incoming package
         /// </summary>
@@ -213,7 +231,7 @@ namespace Jotunn.Entities
                 return;
             }
 
-            Logger.LogDebug($"Received package for custom RPC {ID}");
+            Logger.LogDebug($"[{ID}] Received package");
             try
             {
                 CacheExpirations.RemoveAll(kv =>
@@ -256,40 +274,43 @@ namespace Jotunn.Entities
                     packageFlags = package.ReadByte();
                 }
 
-                //ProcessingServerUpdate = true;
-
-                if ((packageFlags & COMPRESSED_PACKAGE) != 0)
+                try
                 {
-                    byte[] data = package.ReadByteArray();
+                    ++ProcessingCount;
 
-                    MemoryStream input = new MemoryStream(data);
-                    MemoryStream output = new MemoryStream();
-                    using (DeflateStream deflateStream = new DeflateStream(input, CompressionMode.Decompress))
+                    if ((packageFlags & COMPRESSED_PACKAGE) != 0)
                     {
-                        deflateStream.CopyTo(output);
+                        byte[] data = package.ReadByteArray();
+
+                        MemoryStream input = new MemoryStream(data);
+                        MemoryStream output = new MemoryStream();
+                        using (DeflateStream deflateStream = new DeflateStream(input, CompressionMode.Decompress))
+                        {
+                            deflateStream.CopyTo(output);
+                        }
+
+                        package = new ZPackage(output.ToArray());
                     }
 
-                    package = new ZPackage(output.ToArray());
-                }
+                    package.SetPos(0);
 
-                package.SetPos(0);
-
-                if (ZNet.instance.IsServer())
-                {
-                    InvokeOnServerReceive(sender, package);
+                    if (ZNet.instance.IsServer())
+                    {
+                        InvokeOnServerReceive(sender, package);
+                    }
+                    else
+                    {
+                        InvokeOnClientReceive(sender, package);
+                    }
                 }
-                else
+                finally
                 {
-                    InvokeOnClientReceive(sender, package);
+                    --ProcessingCount;
                 }
             }
             catch (Exception e)
             {
-                Logger.LogWarning($"Error caught while applying package: {e}");
-            }
-            finally
-            {
-                //ProcessingServerUpdate = false;
+                Logger.LogWarning($"[{ID}] Error caught while applying package: {e}");
             }
         }
 
@@ -297,7 +318,7 @@ namespace Jotunn.Entities
         {
             OnServerReceive?.SafeInvoke(sender, package);
         }
-        
+
         private void InvokeOnClientReceive(long sender, ZPackage package)
         {
             OnClientReceive?.SafeInvoke(sender, package);
