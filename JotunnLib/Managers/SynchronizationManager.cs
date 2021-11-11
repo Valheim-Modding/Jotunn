@@ -298,7 +298,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private void AdminRPC_OnClientReceive(long sender, ZPackage package)
+        private IEnumerator AdminRPC_OnClientReceive(long sender, ZPackage package)
         {
             bool isAdmin = package.ReadBool();
 
@@ -316,6 +316,7 @@ namespace Jotunn.Managers
             {
                 LockConfigurationEntries();
             }
+            yield break;
         }
 
         /// <summary>
@@ -648,7 +649,7 @@ namespace Jotunn.Managers
 
         private const byte INITIAL_CONFIG = 1;
 
-        private void ConfigRPC_OnClientReceive(long sender, ZPackage package)
+        private IEnumerator ConfigRPC_OnClientReceive(long sender, ZPackage package)
         {
             byte packageFlags = package.ReadByte();
 
@@ -660,9 +661,10 @@ namespace Jotunn.Managers
             package.SetPos(0);
             ApplyConfigZPackage(package, out bool initial);
             InvokeOnConfigurationSynchronized(initial);
+            yield break;
         }
 
-        private void ConfigRPC_OnServerReceive(long sender, ZPackage package)
+        private IEnumerator ConfigRPC_OnServerReceive(long sender, ZPackage package)
         {
             // Is sender admin?
             if (ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
@@ -675,6 +677,7 @@ namespace Jotunn.Managers
                 // Send to all other clients
                 ConfigRPC.SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package);
             }
+            yield break;
         }
 
         /// <summary>

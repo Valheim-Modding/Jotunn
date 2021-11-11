@@ -12,26 +12,32 @@ namespace Jotunn.Entities
 {
     public class CustomRPC : CustomEntity
     {
+        public event Func<long, ZPackage, IEnumerator> OnServerReceive;
+        public event Func<long, ZPackage, IEnumerator> OnClientReceive;
+        //public event Action<long, ZPackage> OnServerReceive;
+        //public event Action<long, ZPackage> OnClientReceive;
+
         public string Name { get; }
+        
+        public bool Blocking { get; set; }
 
         public bool IsSending => SendCount > 0;
         public bool IsReceiving => PackageCache.Count > 0;
         public bool IsProcessing => ProcessingCount > 0;
-
+        
         internal string ID => $"{SourceMod.GUID}!{Name}";
-
-        public event Action<long, ZPackage> OnServerReceive;
-        public event Action<long, ZPackage> OnClientReceive;
-
+        
         private const byte INIT_PACKAGE = 0;
         private const byte FRAGMENTED_PACKAGE = 64;
         private const byte COMPRESSED_PACKAGE = 128;
 
         private short SendCount;
         private short ProcessingCount;
-        private long PackageCounter;
-        private readonly Dictionary<string, SortedDictionary<int, byte[]>> PackageCache = new Dictionary<string, SortedDictionary<int, byte[]>>();
-        private readonly List<KeyValuePair<long, string>> CacheExpirations = new List<KeyValuePair<long, string>>(); // avoid leaking memory
+        private long PackageCount;
+        private readonly Dictionary<string, SortedDictionary<int, byte[]>> PackageCache =
+            new Dictionary<string, SortedDictionary<int, byte[]>>();
+        private readonly List<KeyValuePair<long, string>> CacheExpirations = 
+            new List<KeyValuePair<long, string>>(); // avoid leaking memory
 
         internal CustomRPC(BepInPlugin sourceMod, string name) : base(sourceMod)
         {
@@ -94,6 +100,12 @@ namespace Jotunn.Entities
         {
             if (!ZNet.instance)
             {
+                yield break;
+            }
+
+            if (Blocking && (IsSending || IsReceiving))
+            {
+                Logger.LogWarning($"[{ID}] Blocking RPC occupied, package discarded {SendCount}|{PackageCache.Count}|{ProcessingCount}");
                 yield break;
             }
 
@@ -178,7 +190,7 @@ namespace Jotunn.Entities
             {
                 byte[] data = package.GetArray();
                 int fragments = (int)(1 + (data.LongLength - 1) / packageSliceSize);
-                long packageIdentifier = ++PackageCounter;
+                long packageIdentifier = ++PackageCount;
                 for (int fragment = 0; fragment < fragments; fragment++)
                 {
                     foreach (bool wait in WaitForQueue())
@@ -244,23 +256,29 @@ namespace Jotunn.Entities
 
                     return false;
                 });
-
+                
                 byte packageFlags = package.ReadByte();
 
                 if ((packageFlags & FRAGMENTED_PACKAGE) != 0)
                 {
                     long uniqueIdentifier = package.ReadLong();
                     string cacheKey = sender.ToString() + uniqueIdentifier;
+                    int fragment = package.ReadInt();
+                    int fragments = package.ReadInt();
+
                     if (!PackageCache.TryGetValue(cacheKey, out SortedDictionary<int, byte[]> dataFragments))
                     {
+                        if (Blocking && (IsSending || IsReceiving || IsProcessing || fragment > 0))  // fragment > 0 is not necessary if we return some Discarded RPC
+                        {
+                            Logger.LogWarning($"[{ID}] Blocking RPC occupied, package discarded {SendCount}|{PackageCache.Count}|{ProcessingCount}");
+                            return;
+                        }
+
                         dataFragments = new SortedDictionary<int, byte[]>();
                         PackageCache[cacheKey] = dataFragments;
                         CacheExpirations.Add(new KeyValuePair<long, string>(DateTimeOffset.Now.AddSeconds(60).Ticks, cacheKey));
                     }
-
-                    int fragment = package.ReadInt();
-                    int fragments = package.ReadInt();
-
+                    
                     dataFragments.Add(fragment, package.ReadByteArray());
 
                     if (dataFragments.Count < fragments)
@@ -274,39 +292,7 @@ namespace Jotunn.Entities
                     packageFlags = package.ReadByte();
                 }
 
-                try
-                {
-                    ++ProcessingCount;
-
-                    if ((packageFlags & COMPRESSED_PACKAGE) != 0)
-                    {
-                        byte[] data = package.ReadByteArray();
-
-                        MemoryStream input = new MemoryStream(data);
-                        MemoryStream output = new MemoryStream();
-                        using (DeflateStream deflateStream = new DeflateStream(input, CompressionMode.Decompress))
-                        {
-                            deflateStream.CopyTo(output);
-                        }
-
-                        package = new ZPackage(output.ToArray());
-                    }
-
-                    package.SetPos(0);
-
-                    if (ZNet.instance.IsServer())
-                    {
-                        InvokeOnServerReceive(sender, package);
-                    }
-                    else
-                    {
-                        InvokeOnClientReceive(sender, package);
-                    }
-                }
-                finally
-                {
-                    --ProcessingCount;
-                }
+                ZNet.instance.StartCoroutine(HandlePackageRoutine(sender, package, packageFlags));
             }
             catch (Exception e)
             {
@@ -314,14 +300,61 @@ namespace Jotunn.Entities
             }
         }
 
-        private void InvokeOnServerReceive(long sender, ZPackage package)
+        private IEnumerator HandlePackageRoutine(long sender, ZPackage package, byte packageFlags)
         {
-            OnServerReceive?.SafeInvoke(sender, package);
+            if (Blocking && (IsSending || IsReceiving || IsProcessing))
+            {
+                Logger.LogWarning($"[{ID}] Blocking RPC occupied, package discarded {SendCount}|{PackageCache.Count}|{ProcessingCount}");
+                yield break;
+            }
+                
+            try
+            {
+                ++ProcessingCount;
+
+                if ((packageFlags & COMPRESSED_PACKAGE) != 0)
+                {
+                    byte[] data = package.ReadByteArray();
+
+                    MemoryStream input = new MemoryStream(data);
+                    MemoryStream output = new MemoryStream();
+                    using (DeflateStream deflateStream = new DeflateStream(input, CompressionMode.Decompress))
+                    {
+                        deflateStream.CopyTo(output);
+                    }
+
+                    package = new ZPackage(output.ToArray());
+                    
+                    Logger.LogDebug($"[{ID}] Decompressed package to length {output.Length}");
+                }
+
+                package.SetPos(0);
+
+                if (ZNet.instance.IsServer())
+                {
+                    //InvokeOnServerReceive(sender, package);
+                    yield return OnServerReceive?.Invoke(sender, package);
+                }
+                else
+                {
+                    //InvokeOnClientReceive(sender, package);
+                    yield return OnClientReceive?.Invoke(sender, package);
+                }
+            }
+            finally
+            {
+                --ProcessingCount;
+            }
         }
 
-        private void InvokeOnClientReceive(long sender, ZPackage package)
-        {
-            OnClientReceive?.SafeInvoke(sender, package);
-        }
+        // private void InvokeOnServerReceive(long sender, ZPackage package)
+        // {
+        //     OnServerReceive?.SafeInvoke(sender, package);
+        // }
+        //
+        // private void InvokeOnClientReceive(long sender, ZPackage package)
+        // {
+        //     OnClientReceive?.SafeInvoke(sender, package);
+        // }
     }
 }

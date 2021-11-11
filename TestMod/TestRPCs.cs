@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 using Jotunn;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
+using UnityEngine;
 
 namespace TestMod
 {
@@ -17,53 +19,42 @@ namespace TestMod
         private const string ModName = "Jotunn RPC Tests";
         private const string ModVersion = "0.1.0";
 
-        public static CustomRPC TestRPC;
+        public static CustomRPC NonblockingRPC;
+        public static CustomRPC BlockingRPC;
 
         private void Awake()
         {
-            TestRPC = NetworkManager.Instance.GetRPC("rpctest");
-            TestRPC.OnServerReceive += TestRPC_OnServerReceive;
-            TestRPC.OnClientReceive += TestRPC_OnClientReceive;
+            CommandManager.Instance.AddConsoleCommand(new NonblockingRPCCommand());
 
-            CommandManager.Instance.AddConsoleCommand(new SendSomethingBigCommand());
-        }
+            NonblockingRPC = NetworkManager.Instance.GetRPC("nonblocking");
+            NonblockingRPC.OnServerReceive += NonblockingRPC_OnServerReceive;
+            NonblockingRPC.OnClientReceive += NonblockingRPC_OnClientReceive;
 
-        private void TestRPC_OnServerReceive(long sender, ZPackage package)
-        {
-            Jotunn.Logger.LogMessage($"Received blob"); 
-
-            if (TestRPC.IsSending)
-            {
-                Jotunn.Logger.LogMessage($"RPC is currently broadcasting packages, discarding");
-                return;
-            }
-
-            Jotunn.Logger.LogMessage($"Broadcasting to all clients");
-            TestRPC.SendPackage(ZNet.instance.m_peers, new ZPackage(package.GetArray()));
+            CommandManager.Instance.AddConsoleCommand(new BlockingRPCommand());   
+            
+            BlockingRPC = NetworkManager.Instance.GetRPC("blocking");
+            BlockingRPC.Blocking = true;
+            BlockingRPC.OnServerReceive += BlockingRPC_OnServerReceive;
+            BlockingRPC.OnClientReceive += BlockingRPC_OnClientReceive;
         }
         
-        private void TestRPC_OnClientReceive(long sender, ZPackage package)
+        public class NonblockingRPCCommand : ConsoleCommand
         {
-            Jotunn.Logger.LogMessage($"Received blob");
-        }
+            public override string Name => "rpc.nonblocking";
 
-        public class SendSomethingBigCommand : ConsoleCommand
-        {
-            public override string Name => "rpc.blob";
+            public override string Help => "Send data chunks over a non-blocking RPC";
 
-            public override string Help => "Send some big ass data chunks";
-
-            private int[] Sizes = { 1, 2, 4 };
+            private int[] Sizes = { 0, 1, 2, 4 };
 
             public override void Run(string[] args)
             {
                 if (args.Length != 1 || !Sizes.Any(x => x.Equals(int.Parse(args[0]))))
                 {
-                    Console.instance.Print($"Usage: rpc.send [{string.Join("|", Sizes)}]");
+                    Console.instance.Print($"Usage: rpc.nonblocking [{string.Join("|", Sizes)}]");
                     return;
                 }
 
-                if (TestRPC.IsSending || TestRPC.IsReceiving)
+                if (NonblockingRPC.IsSending || NonblockingRPC.IsReceiving)
                 {
                     Console.instance.Print($"RPC is currently busy");
                     return;
@@ -76,13 +67,81 @@ namespace TestMod
                 package.Write(array);
 
                 Jotunn.Logger.LogMessage($"Sending {args[0]}MB blob to server.");
-                TestRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
+                NonblockingRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
             }
 
             public override List<string> CommandOptionList()
             {
                 return Sizes.Select(x => x.ToString()).ToList();
             }
+        }
+
+        private IEnumerator NonblockingRPC_OnServerReceive(long sender, ZPackage package)
+        {
+            Jotunn.Logger.LogMessage($"Received blob"); 
+
+            if (NonblockingRPC.IsSending)
+            {
+                Jotunn.Logger.LogMessage($"RPC is currently broadcasting packages, discarding");
+                yield break;
+            }
+
+            Jotunn.Logger.LogMessage($"Broadcasting to all clients");
+            NonblockingRPC.SendPackage(ZNet.instance.m_peers, new ZPackage(package.GetArray()));
+        }
+        
+        private IEnumerator NonblockingRPC_OnClientReceive(long sender, ZPackage package)
+        {
+            Jotunn.Logger.LogMessage($"Received blob");
+            yield break;
+        }
+        
+        public class BlockingRPCommand : ConsoleCommand
+        {
+            public override string Name => "rpc.blocking";
+
+            public override string Help => "Send data chunks over a blocking RPC";
+
+            private int[] Sizes = { 0, 1, 2, 4 };
+
+            public override void Run(string[] args)
+            {
+                if (args.Length != 1 || !Sizes.Any(x => x.Equals(int.Parse(args[0]))))
+                {
+                    Console.instance.Print($"Usage: rpc.blocking [{string.Join("|", Sizes)}]");
+                    return;
+                }
+                
+                ZPackage package = new ZPackage();
+                System.Random random = new System.Random();
+                byte[] array = new byte[int.Parse(args[0]) * 1024 * 1024];
+                random.NextBytes(array);
+                package.Write(array);
+
+                Jotunn.Logger.LogMessage($"Sending {args[0]}MB blob to server.");
+                BlockingRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
+            }
+
+            public override List<string> CommandOptionList()
+            {
+                return Sizes.Select(x => x.ToString()).ToList();
+            }
+        }
+        private IEnumerator BlockingRPC_OnServerReceive(long sender, ZPackage package)
+        {
+            Jotunn.Logger.LogMessage($"Received blob, processing");
+
+            yield return new WaitForSeconds(5f);
+
+            Jotunn.Logger.LogMessage($"Broadcasting to all clients");
+            BlockingRPC.SendPackage(ZNet.instance.m_peers, new ZPackage(package.GetArray()));
+        }
+        
+        private IEnumerator BlockingRPC_OnClientReceive(long sender, ZPackage package)
+        {
+            Jotunn.Logger.LogMessage($"Received blob, processing");
+
+            yield return new WaitForSeconds(5f);
         }
     }
 }
