@@ -27,19 +27,19 @@ namespace TestMod
             CommandManager.Instance.AddConsoleCommand(new BlockingRPCCommand());
 
             BlockingRPC = NetworkManager.Instance.GetRPC(
-                "nonblocking", BlockingRPC_OnServerReceive, BlockingRPC_OnClientReceive);
+                "blocking", BlockingRPC_OnServerReceive, BlockingRPC_OnClientReceive);
 
             CommandManager.Instance.AddConsoleCommand(new NonblockingRPCommand());
 
             NonblockingRPC = NetworkManager.Instance.GetRPC(
-                "blocking", NonblockingRPC_OnServerReceive, NonblockingRPC_OnClientReceive1);
+                "nonblocking", NonblockingRPC_OnServerReceive, NonblockingRPC_OnClientReceive1);
         }
 
         public class BlockingRPCCommand : ConsoleCommand
         {
             public override string Name => "rpc.blocking";
 
-            public override string Help => "Send data chunks over a non-blocking RPC";
+            public override string Help => "Send data chunks over a blocking RPC";
 
             private int[] Sizes = { 0, 1, 2, 4 };
 
@@ -47,7 +47,7 @@ namespace TestMod
             {
                 if (args.Length != 1 || !Sizes.Any(x => x.Equals(int.Parse(args[0]))))
                 {
-                    Console.instance.Print($"Usage: rpc.nonblocking [{string.Join("|", Sizes)}]");
+                    Console.instance.Print($"Usage: rpc.blocking [{string.Join("|", Sizes)}]");
                     return;
                 }
 
@@ -83,6 +83,14 @@ namespace TestMod
                 yield break;
             }
 
+            string dot = string.Empty;
+            for (int i = 0; i < 5; ++i)
+            {
+                dot += ".";
+                Jotunn.Logger.LogMessage(dot);
+                yield return new WaitForSeconds(1f);
+            }
+
             Jotunn.Logger.LogMessage($"Broadcasting to all clients");
             BlockingRPC.SendPackage(ZNet.instance.m_peers, new ZPackage(package.GetArray()));
         }
@@ -90,14 +98,21 @@ namespace TestMod
         private IEnumerator BlockingRPC_OnClientReceive(long sender, ZPackage package)
         {
             Jotunn.Logger.LogMessage($"Received blob");
-            yield break;
+
+            string dot = string.Empty;
+            for (int i = 0; i < 10; ++i)
+            {
+                dot += ".";
+                Jotunn.Logger.LogMessage(dot);
+                yield return new WaitForSeconds(.5f);
+            }
         }
 
         public class NonblockingRPCommand : ConsoleCommand
         {
             public override string Name => "rpc.nonblocking";
 
-            public override string Help => "Send data chunks over a blocking RPC";
+            public override string Help => "Send data chunks over a non-blocking RPC";
 
             private int[] Sizes = { 0, 1, 2, 4 };
 
@@ -105,12 +120,11 @@ namespace TestMod
             {
                 if (args.Length != 1 || !Sizes.Any(x => x.Equals(int.Parse(args[0]))))
                 {
-                    Console.instance.Print($"Usage: rpc.blocking [{string.Join("|", Sizes)}]");
+                    Console.instance.Print($"Usage: rpc.nonblocking [{string.Join("|", Sizes)}]");
                     return;
                 }
 
                 ZPackage package = new ZPackage();
-                package.Write("string");
                 System.Random random = new System.Random();
                 byte[] array = new byte[int.Parse(args[0]) * 1024 * 1024];
                 random.NextBytes(array);
@@ -146,7 +160,7 @@ namespace TestMod
         {
             Jotunn.Logger.LogMessage($"Received blob, processing!");
             yield return null;
-            
+
             string dot = string.Empty;
             for (int i = 0; i < 10; ++i)
             {
