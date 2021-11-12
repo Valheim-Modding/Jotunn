@@ -149,26 +149,28 @@ namespace TestMod
         private IEnumerator BlockingRPC_OnClientReceive1(long sender, ZPackage package)
         {
             Jotunn.Logger.LogMessage($"Received blob, processing!");
+            yield return null;
 
             string ex = string.Empty;
             for (int i = 0; i < 10; ++i)
             {
                 ex += "!";
                 Jotunn.Logger.LogMessage(ex);
-                yield return new WaitForSeconds(2f);
+                yield return new WaitForSeconds(.5f);
             }
         }
 
         private IEnumerator BlockingRPC_OnClientReceive2(long sender, ZPackage package)
         {
             Jotunn.Logger.LogMessage($"Received blob, processing?");
+            yield return null;
 
             string qu = string.Empty;
             for (int i = 0; i < 10; ++i)
             {
                 qu += "?";
                 Jotunn.Logger.LogMessage(qu);
-                yield return null;
+                yield return new WaitForSeconds(.5f);
             }
         }
     }
