@@ -44,8 +44,7 @@ namespace JotunnDoc.Docs
 
                     foreach (Piece.Requirement req in piece.m_resources)
                     {
-                        resources += "<li>" + req.m_amount + " " +
-                            JotunnDoc.Localize(req?.m_resItem?.m_itemData?.m_shared?.m_name) + "</li>";
+                        resources += $"<li>{req.m_amount} {JotunnDoc.Localize(req?.m_resItem?.m_itemData?.m_shared?.m_name)}</li>";
                     }
 
                     resources += "</ul>";

@@ -66,7 +66,7 @@ namespace TestMod
         {
             // Show DateTime on Logs
             //Jotunn.Logger.ShowDate = true;
-            
+
             // Create a custom Localization and add it to the Manager
             Localization = new CustomLocalization();
             LocalizationManager.Instance.AddLocalization(Localization);
@@ -94,12 +94,15 @@ namespace TestMod
 
             // Clone an item with variants and replace them
             PrefabManager.OnVanillaPrefabsAvailable += AddVariants;
-            
+
             // Create a custom item with variants
             PrefabManager.OnVanillaPrefabsAvailable += AddCustomVariants;
 
             // Crate a custom item with rendered icons
             PrefabManager.OnVanillaPrefabsAvailable += AddItemsWithRenderedIcons;
+
+            ZoneManager.OnVanillaLocationsAvailable += ModifyVanillaLocationsAndVegetation;
+            ZoneManager.OnVanillaLocationsAvailable += AddCustomLocationsAndVegetation;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -128,6 +131,8 @@ namespace TestMod
             // Hook GetVersionString for ext version string compat test
             On.Version.GetVersionString += Version_GetVersionString;
         }
+
+
 
         // Called every frame
         private void Update()
@@ -163,7 +168,7 @@ namespace TestMod
                 }
 
                 // Use the name of the ButtonConfig to identify the button pressed
-                if (EvilSwordSpecialButton != null && MessageHud.instance != null && 
+                if (EvilSwordSpecialButton != null && MessageHud.instance != null &&
                     Player.m_localPlayer != null && Player.m_localPlayer.m_visEquipment.m_rightItem == "EvilSword")
                 {
                     if (ZInput.GetButton(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
@@ -171,7 +176,7 @@ namespace TestMod
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "$evilsword_beevilmessage");
                     }
                 }
-                
+
                 // Use the name of the ButtonConfig to identify the button pressed
                 if (ServerKeyCodeButton != null && MessageHud.instance != null)
                 {
@@ -192,8 +197,8 @@ namespace TestMod
                 if (Player.m_localPlayer != null && Input.GetKeyDown(KeyCode.J))
                 {
                     var pre = PrefabManager.Instance.GetPrefab("GoblinArcher");
-                    var go = Object.Instantiate(pre, 
-                        Player.m_localPlayer.transform.position + GameCamera.instance.transform.forward * 2f + Vector3.up, 
+                    var go = Object.Instantiate(pre,
+                        Player.m_localPlayer.transform.position + GameCamera.instance.transform.forward * 2f + Vector3.up,
                         Quaternion.Euler(GameCamera.instance.transform.forward));
                     Object.Destroy(go.GetComponent<MonsterAI>());
 
@@ -221,7 +226,7 @@ namespace TestMod
                 }
             }
         }
-        
+
         // Toggle our test panel with button
         private void TogglePanel()
         {
@@ -497,59 +502,59 @@ namespace TestMod
             // Add server config which gets pushed to all clients connecting and can only be edited by admins
             // In local/single player games the player is always considered the admin
             Config.Bind(JotunnTestModConfigSection, "Server String", "StringValue",
-                new ConfigDescription("Server side string", null, 
+                new ConfigDescription("Server side string", null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "Server Float", 750f,
-                new ConfigDescription("Server side float", 
+                new ConfigDescription("Server side float",
                     new AcceptableValueRange<float>(500f, 1000f),
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "Server Double", 20d,
-                new ConfigDescription("Server side double", 
-                    new AcceptableValueRange<double>(5d, 25d), 
+                new ConfigDescription("Server side double",
+                    new AcceptableValueRange<double>(5d, 25d),
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "Server Integer", 200,
-                new ConfigDescription("Server side integer", 
-                    new AcceptableValueRange<int>(5, 25), 
+                new ConfigDescription("Server side integer",
+                    new AcceptableValueRange<int>(5, 25),
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
             Config.Bind(JotunnTestModConfigSection, "Server Color", new Color(0f, 1f, 0f, 1f),
-                new ConfigDescription("Server side Color", null, 
+                new ConfigDescription("Server side Color", null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
             // Keys
-            ServerKeyCodeConfig = 
+            ServerKeyCodeConfig =
                 Config.Bind(JotunnTestModConfigSection, "Server KeyCode", KeyCode.Alpha0,
-                    new ConfigDescription("Server side KeyCode", null, 
+                    new ConfigDescription("Server side KeyCode", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            
+
             ServerShortcutConfig =
                 Config.Bind(JotunnTestModConfigSection, "Server KeyboardShortcut",
-                    new KeyboardShortcut(KeyCode.A, KeyCode.LeftControl), 
-                    new ConfigDescription("Testing how KeyboardShortcut behaves", null, 
+                    new KeyboardShortcut(KeyCode.A, KeyCode.LeftControl),
+                    new ConfigDescription("Testing how KeyboardShortcut behaves", null,
                         new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            
+
             // Test colored text configs
             Config.Bind(JotunnTestModConfigSection, "Server Bool", false,
-                new ConfigDescription("Server side bool", null, 
+                new ConfigDescription("Server side bool", null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true, EntryColor = Color.blue, DescriptionColor = Color.yellow }));
 
             // Test invisible configs
             Config.Bind(JotunnTestModConfigSection, "InvisibleInt", 150,
-                new ConfigDescription("Invisible int, testing browsable=false", null, 
+                new ConfigDescription("Invisible int, testing browsable=false", null,
                     new ConfigurationManagerAttributes() { Browsable = false }));
 
             // Add client config to test ModCompatibility
-            EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false, 
+            EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false,
                 new ConfigDescription("Enable to test ModCompatibility module"));
-            EnableExtVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableExtVersionMismatch), false, 
+            EnableExtVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableExtVersionMismatch), false,
                 new ConfigDescription("Enable to test external version mismatch"));
             Config.SettingChanged += Config_SettingChanged;
 
             // Add a client side custom input key for the EvilSword
-            EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B, 
+            EvilSwordSpecialConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttack", KeyCode.B,
                 new ConfigDescription("Key to unleash evil with the Evil Sword"));
             EvilSwordGamepadConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttackGamepad", InputManager.GamepadButton.ButtonSouth,
                 new ConfigDescription("Button to unleash evil with the Evil Sword"));
-            
+
         }
 
         // React on changed settings
@@ -612,9 +617,9 @@ namespace TestMod
             InputManager.Instance.AddButton(ModGUID, RaiseSkillButton);
 
             // Server config test keys
-            ServerKeyCodeButton = new ButtonConfig {Name = "ServerKeyCode", Config = ServerKeyCodeConfig};
+            ServerKeyCodeButton = new ButtonConfig { Name = "ServerKeyCode", Config = ServerKeyCodeConfig };
             InputManager.Instance.AddButton(ModGUID, ServerKeyCodeButton);
-            ServerShortcutButton = new ButtonConfig {Name = "ServerShortcut", ShortcutConfig = ServerShortcutConfig};
+            ServerShortcutButton = new ButtonConfig { Name = "ServerShortcut", ShortcutConfig = ServerShortcutConfig };
             InputManager.Instance.AddButton(ModGUID, ServerShortcutButton);
         }
 
@@ -643,7 +648,7 @@ namespace TestMod
             {
                 { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
             });
-            
+
             // Add translations for the rendered tree
             Localization.AddTranslation("English", new Dictionary<string, string>
             {
@@ -1064,7 +1069,7 @@ namespace TestMod
                 Description = "$piece_lul_description",
                 Icon = TestSprite,
                 PieceTable = "Hammer",
-                ExtendStation = "piece_workbench", // Test station extension
+                // ExtendStation = "piece_workbench", // Test station extension
                 Category = "Lulzies."  // Test custom category
             });
 
@@ -1223,7 +1228,7 @@ namespace TestMod
                 PrefabManager.OnVanillaPrefabsAvailable -= AddVariants;
             }
         }
-        
+
         private void AddCustomVariants()
         {
             try
@@ -1245,7 +1250,7 @@ namespace TestMod
                     StyleTex = styleTex
                 });
                 ItemManager.Instance.AddItem(sword);
-                
+
                 CustomItem cape = new CustomItem("item_lulzcape", "CapeLinen", new ItemConfig
                 {
                     Name = "Lulz Cape",
@@ -1257,7 +1262,7 @@ namespace TestMod
                     StyleTex = styleTex
                 });
                 ItemManager.Instance.AddItem(cape);
-                
+
                 Texture2D styleTexArmor = AssetUtils.LoadTexture("TestMod/Assets/test_varpaintarmor.png");
                 CustomItem chest = new CustomItem("item_lulzchest", "ArmorIronChest", new ItemConfig
                 {
@@ -1314,6 +1319,107 @@ namespace TestMod
             {
                 // You want that to run only once, Jotunn has the item cached for the game session
                 PrefabManager.OnVanillaPrefabsAvailable -= AddItemsWithRenderedIcons;
+            }
+        }
+
+        private void ModifyVanillaLocationsAndVegetation()
+        {
+            var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
+
+            //modify existing locations
+            var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
+            eikhtyrLocation.m_exteriorRadius = 20f; //More space around the altar
+
+            var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
+            eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
+
+            //modify existing vegetation
+            var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
+            raspberryBush.m_groupSizeMin = 10;
+            raspberryBush.m_groupSizeMax = 30;
+
+            //Not unregistering this hook, it needs to run every world load
+        }
+
+        private void AddCustomLocationsAndVegetation()
+        {
+
+            AssetBundle locationsAssetBundle = AssetUtils.LoadAssetBundleFromResources("custom_locations", typeof(TestMod).Assembly);
+            try
+            {
+                var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
+
+                //Create location from AssetBundle
+                var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true); 
+                ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubeArchLocation, new LocationConfig
+                {
+                    Biome = Heightmap.Biome.BlackForest,
+                    Quantity = 200,
+                    Priotized = true,
+                    ExteriorRadius = 2f,
+                    MinAltitude = 1f,
+                    ClearArea = true,
+                }));
+
+                //Create a clone of a vanilla location
+                CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
+                myEikthyrLocation.ZoneLocation.m_exteriorRadius = 1f; // Easy to place :D
+                myEikthyrLocation.ZoneLocation.m_quantity = 20; //MOAR
+
+                // Stack of lulzcubes to easily spot the instances
+                for (int i = 0; i < 40; i++)
+                {
+                    var lulzCube = Instantiate(lulzCubePrefab, myEikthyrLocation.ZoneLocation.m_prefab.transform);
+                    lulzCube.transform.localPosition = new Vector3(0, i + 3, 0);
+                    lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
+                }
+
+                //Use locations for larger structures
+                GameObject cubesLocation = ZoneManager.Instance.CreateLocationContainer("lulzcube_location");
+
+                // Stack of lulzcubes to easily spot the instances
+                for (int i = 0; i < 10; i++)
+                {
+                    var lulzCube = Instantiate(lulzCubePrefab, cubesLocation.transform);
+                    lulzCube.transform.localPosition = new Vector3(0, i + 3, 0);
+                    lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
+                }
+
+                ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubesLocation, new LocationConfig
+                {
+                    Biome = Heightmap.Biome.Meadows,
+                    Quantity = 100,
+                    Priotized = true,
+                    ExteriorRadius = 2f,
+                    ClearArea = true,
+                }));
+
+                //Use vegetation for singular prefabs
+                CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, new VegetationConfig
+                {
+                    Biome = Heightmap.Biome.Meadows,
+                    BlockCheck = true
+                });
+
+                ZoneManager.Instance.AddCustomVegetation(customVegetation);
+
+                //Add more seed carrots to the meadows & black forest
+                ZoneSystem.ZoneVegetation pickableSeedCarrot = ZoneManager.Instance.GetZoneVegetation("Pickable_SeedCarrot");
+                ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(pickableSeedCarrot.m_prefab, new VegetationConfig(pickableSeedCarrot)
+                {
+                    Min = 3,
+                    Max = 10,
+                    GroupSizeMin = 3,
+                    GroupSizeMax = 10,
+                    GroupRadius = 10,
+                    Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest),
+                }));
+            }
+            finally
+            {
+                //Custom locations and vegetations are added every time the game loads, we don't need to add every time
+                ZoneManager.OnVanillaLocationsAvailable -= AddCustomLocationsAndVegetation;
+                locationsAssetBundle.Unload(false);
             }
         }
 

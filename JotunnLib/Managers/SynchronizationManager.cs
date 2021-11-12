@@ -462,6 +462,7 @@ namespace Jotunn.Managers
             }
         }
 
+
         /// <summary>
         ///     Cache the synchronizable configuration values for comparison
         /// </summary>
