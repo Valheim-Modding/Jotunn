@@ -49,9 +49,12 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Get a <see cref="CustomRPC"/> for your mod.
+        ///     Get a <see cref="CustomRPC"/> for your mod
         /// </summary>
-        /// <returns>Existing or newly created <see cref="CustomRPC"/>.</returns>
+        /// <param name="name">Unique name for your RPC</param>
+        /// <param name="serverReceive">Delegate which gets called on client instances when packages are received</param>
+        /// <param name="clientReceive">Delegate which gets called on server instances when packages are received</param>
+        /// <returns>Existing or newly created <see cref="CustomRPC"/></returns>
         public CustomRPC GetRPC(string name, CoroutineHandler serverReceive, CoroutineHandler clientReceive)
         {
             return GetRPC(BepInExUtils.GetSourceModMetadata(), name, serverReceive, clientReceive);
@@ -60,6 +63,10 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Get the <see cref="CustomRPC"/> for a given mod.
         /// </summary>
+        /// <param name="sourceMod">Reference to the <see cref="BepInPlugin"/> which added this entity</param>
+        /// <param name="name">Unique name for your RPC</param>
+        /// <param name="serverReceive">Delegate which gets called on client instances when packages are received</param>
+        /// <param name="clientReceive">Delegate which gets called on server instances when packages are received</param>
         /// <returns>Existing or newly created <see cref="CustomRPC"/>.</returns>
         internal CustomRPC GetRPC(BepInPlugin sourceMod, string name, CoroutineHandler serverReceive, CoroutineHandler clientReceive)
         {
@@ -75,6 +82,9 @@ namespace Jotunn.Managers
             return ret;
         }
 
+        /// <summary>
+        ///     Register all custom RPCs as <see cref="ZRoutedRpc">ZRoutedRPCs</see>
+        /// </summary>
         private void Game_Start(On.Game.orig_Start orig, Game self)
         {
             orig(self);

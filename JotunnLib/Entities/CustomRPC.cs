@@ -11,32 +11,56 @@ using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace Jotunn.Entities
 {
+    /// <summary>
+    ///     Wrapper for Valheim's RPC calls implementing convenience delegate methods for client and server processing of packages.<br/>
+    ///     Automatically compresses and slices big packages to fit into the Steam package limit.<br/>
+    ///     All sending and processing of received packages is executed in Coroutines to ensure the game loop's execution.
+    /// </summary>
     public class CustomRPC : CustomEntity
     {
-        public string Name { get; }
-        
-        public bool IsSending => SendCount > 0;
-        public bool IsReceiving => PackageCache.Count > 0;
-        public bool IsProcessing => ProcessingCount > 0;
+        private const byte INIT_PACKAGE = 0;
+        private const byte FRAGMENTED_PACKAGE = 64;
+        private const byte COMPRESSED_PACKAGE = 128;
 
         /// <summary>
-        ///     Unique ID of this RPC to prvent name clashes between mods
+        ///     Name of the custom RPC as defined at instantiation
+        /// </summary>
+        public string Name { get; }
+        
+        /// <summary>
+        ///     True, if this RPC is currently sending data
+        /// </summary>
+        public bool IsSending => SendCount > 0;
+        /// <summary>
+        ///     True, if this RPC is currently receiving data
+        /// </summary>
+        public bool IsReceiving => PackageCache.Count > 0;
+        /// <summary>
+        ///     True, if this RPC is currently processing received data.
+        ///     This is always true while executing the registered delegates.
+        /// </summary>
+        public bool IsProcessing => ProcessingCount > 0;
+        /// <summary>
+        ///     True, if this RPC is processing received data outside the current delegate call.
+        ///     This should only be used in the registered delegate methods to determine
+        ///     if this RPC is already processing another package.
+        /// </summary>
+        public bool IsProcessingOther => ProcessingCount-1 > 0;
+
+        /// <summary>
+        ///     Unique ID of this RPC to prevent name clashes between mods
         /// </summary>
         internal string ID => $"{SourceMod.GUID}!{Name}";
         
         /// <summary>
-        ///     Delegate called when a package is received on the server via this RPC
+        ///     Delegate called when a package is received on the server
         /// </summary>
         internal NetworkManager.CoroutineHandler OnServerReceive;
 
         /// <summary>
-        ///     Delegate called when a package is received on the client via this RPC
+        ///     Delegate called when a package is received on the client
         /// </summary>
         internal NetworkManager.CoroutineHandler OnClientReceive;
-
-        private const byte INIT_PACKAGE = 0;
-        private const byte FRAGMENTED_PACKAGE = 64;
-        private const byte COMPRESSED_PACKAGE = 128;
 
         private short SendCount;
         private short ProcessingCount;
@@ -46,6 +70,13 @@ namespace Jotunn.Entities
         private readonly List<KeyValuePair<long, string>> CacheExpirations =
             new List<KeyValuePair<long, string>>(); // avoid leaking memory
 
+        /// <summary>
+        ///     Internal constructor only, CustomRPCs are instantiated via <see cref="NetworkManager"/>
+        /// </summary>
+        /// <param name="sourceMod">Reference to the <see cref="BepInPlugin"/> which created this RPC.</param>
+        /// <param name="name"></param>
+        /// <param name="serverReceive"></param>
+        /// <param name="clientReceive"></param>
         internal CustomRPC(BepInPlugin sourceMod, string name, NetworkManager.CoroutineHandler serverReceive,
             NetworkManager.CoroutineHandler clientReceive) : base(sourceMod)
         {
