@@ -115,6 +115,7 @@ namespace TestMod
                 }
                 
                 ZPackage package = new ZPackage();
+                package.Write("string");
                 System.Random random = new System.Random();
                 byte[] array = new byte[int.Parse(args[0]) * 1024 * 1024];
                 random.NextBytes(array);
@@ -151,11 +152,12 @@ namespace TestMod
             Jotunn.Logger.LogMessage($"Received blob, processing!");
             yield return null;
 
+            string val = package.ReadString();
             string ex = string.Empty;
             for (int i = 0; i < 10; ++i)
             {
                 ex += "!";
-                Jotunn.Logger.LogMessage(ex);
+                Jotunn.Logger.LogMessage($"{val}{ex}");
                 yield return new WaitForSeconds(.5f);
             }
         }
@@ -164,12 +166,13 @@ namespace TestMod
         {
             Jotunn.Logger.LogMessage($"Received blob, processing?");
             yield return null;
-
+            
+            string val = package.ReadString();
             string qu = string.Empty;
             for (int i = 0; i < 10; ++i)
             {
                 qu += "?";
-                Jotunn.Logger.LogMessage(qu);
+                Jotunn.Logger.LogMessage($"{val}{qu}");
                 yield return new WaitForSeconds(.5f);
             }
         }

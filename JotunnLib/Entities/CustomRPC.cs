@@ -365,7 +365,7 @@ namespace Jotunn.Entities
             }
 
             List<IEnumerator> funcs = handler.GetInvocationList()
-                .Select(f => f.DynamicInvoke(sender, package) as IEnumerator).ToList();
+                .Select(f => f.DynamicInvoke(sender, new ZPackage(package.GetArray())) as IEnumerator).ToList();
             while (funcs.Count > 0)
             {
                 funcs.RemoveAll(f => !f.MoveNext());
