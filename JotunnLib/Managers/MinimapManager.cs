@@ -136,31 +136,39 @@ namespace Jotunn.Managers
                 {
                     yield return null;
 
-                    if (Overlays.Values.Any(x => x.Dirty) || RedrawFog || RedrawForest || RedrawHeight || RedrawMain)
+                    if (Overlays.Values.Any(x => x.Dirty))
                     {
-                        Logger.LogInfo("Redraw dirty");
+                        Logger.LogInfo("Redrawing dirty layers");
                         var watch = new System.Diagnostics.Stopwatch();
                         watch.Start();
-                        DrawMain();
-                        DrawForestFilter();
-                        DrawFogFilter();
-                        DrawHeight();
+
+                        if (RedrawMain)
+                        {
+                            DrawMain();
+                            RedrawMain = false;
+                        }
+                        if (RedrawHeight)
+                        {
+                            DrawHeight();
+                            RedrawHeight = false;
+                        }
+                        if (RedrawForest)
+                        {
+                            DrawForestFilter();
+                            RedrawForest = false;
+                        }
+                        if (RedrawFog)
+                        {
+                            DrawFogFilter();
+                            RedrawFog = false;
+                        }
                         foreach (var overlay in Overlays.Values)
                         {
                             overlay.Dirty = false;
                         }
-                        if (Minimap.instance.m_smallRoot.activeSelf)
-                        {
-                            Minimap.instance.m_smallRoot.SetActive(false);
-                            Minimap.instance.m_smallRoot.SetActive(true);
-                        }
                         watch.Stop();
                         Logger.LogInfo($"Drawing took {watch.ElapsedMilliseconds}ms time");
 
-                        RedrawMain = false;
-                        RedrawHeight = false;
-                        RedrawForest = false;
-                        RedrawFog = false;
                     }
                 }
             }
@@ -169,14 +177,15 @@ namespace Jotunn.Managers
 
         private void DrawMain()
         {
-            if (!Overlays.Values.Any(x => x.MainDirty)) {return;}
             Logger.LogInfo("Redraw Main");
+            if (!Overlays.Values.Any(x => x.MainDirty)) {return;}
+            
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
 
             Graphics.CopyTexture(MainTexVanilla, Minimap.instance.m_mapTexture); // reset first.
             ComposeMaterial.SetTexture("_OvlTex", Minimap.instance.m_mapTexture); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => (x.MainDirty || (x.MainRedrawable && RedrawMain)) && x.Enabled))
+            foreach (var overlay in Overlays.Values.Where(x => x.MainRedrawable && x.Enabled))
             { 
                 DrawOverlay(overlay.MainTex, Minimap.instance.m_mapTexture, ComposeMaterial);
             }
@@ -194,7 +203,7 @@ namespace Jotunn.Managers
             Graphics.CopyTexture(HeightFilterVanilla, Minimap.instance.m_heightTexture); // reset first.
             ComposeHeightMaterial.SetTexture("_OvlTex", Minimap.instance.m_heightTexture); // setup shader
             
-            foreach (var overlay in Overlays.Values.Where(x => (x.HeightDirty || (x.HeightRedrawable && RedrawHeight)) && x.Enabled))
+            foreach (var overlay in Overlays.Values.Where(x => x.HeightRedrawable && x.Enabled))
             {
                 DrawOverlay(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial, RenderTextureFormat.ARGBFloat);
             }
@@ -212,7 +221,7 @@ namespace Jotunn.Managers
 
             Graphics.CopyTexture(ForestFilterVanilla, Minimap.instance.m_forestMaskTexture); // reset first.
             ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_forestMaskTexture); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => (x.ForestDirty || (x.ForestRedrawable && RedrawForest)) && x.Enabled))
+            foreach (var overlay in Overlays.Values.Where(x => x.ForestRedrawable && x.Enabled))
             {
                 DrawOverlay(overlay.ForestFilter, Minimap.instance.m_forestMaskTexture, ComposeForestMaterial);
             }
@@ -230,7 +239,7 @@ namespace Jotunn.Managers
 
             Graphics.CopyTexture(FogFilterVanilla, Minimap.instance.m_fogTexture); // reset first.
             ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_fogTexture); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => (x.FogDirty || (x.FogRedrawable && RedrawFog)) && x.Enabled))
+            foreach (var overlay in Overlays.Values.Where(x => x.FogRedrawable && x.Enabled))
             {
                 DrawOverlay(overlay.FogFilter, Minimap.instance.m_fogTexture, ComposeForestMaterial);
             }
@@ -238,7 +247,7 @@ namespace Jotunn.Managers
             Logger.LogInfo($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
         }
 
-        private void DrawLayer(Texture2D backupcopy, Texture2D destination, Texture2D layer, Material material, string layername)
+/*        private void DrawLayer(Texture2D backupcopy, Texture2D destination, Texture2D layer, Material material, string layername)
         {
             if (!Overlays.Values.Any(x => x.FogDirty)) { return; }
 
@@ -254,7 +263,7 @@ namespace Jotunn.Managers
             }
             watch.Stop();
             Logger.LogInfo($"Draw {layername} loop took {watch.ElapsedMilliseconds}ms time");
-        }
+        }*/
 
 
         private void DrawOverlay(Texture2D overlay, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
@@ -481,13 +490,7 @@ namespace Jotunn.Managers
         public Vector2 WorldToOverlayCoords(Vector3 input, int texSize)
         {
             Minimap.instance.WorldToMapPoint(input, out var mx, out var my);
-            //Console.instance.Print($"coordinates {input} to x{mx*texSize} y{my*texSize}");
             return new Vector2((float)Math.Round(mx * texSize), (float)Math.Round(my * texSize));
-
-            // Note: using rawImage and MapPointToLocalGuiPos actually doesn't give anywhere near to accurate results.
-            //RawImage rawImage = ((Minimap.instance.m_mode == Minimap.MapMode.Large) ? Minimap.instance.m_mapImageLarge : Minimap.instance.m_mapImageSmall);
-            //Minimap.instance.WorldToMapPoint(input, out var mx, out var my);
-            //return Minimap.instance.MapPointToLocalGuiPos(mx, my, rawImage);
         }
 
 
@@ -723,14 +726,12 @@ namespace Jotunn.Managers
                         _enabled = value;
                         Dirty = true;
                     }
-                    if (!value)
-                    {
-                        // when disabling overlay, redraw all other overlays.
-                        Instance.RedrawMain = Instance.RedrawMain || MainRedrawable;
-                        Instance.RedrawForest = Instance.RedrawForest || ForestRedrawable;
-                        Instance.RedrawFog = Instance.RedrawFog || FogRedrawable;
-                        Instance.RedrawHeight = Instance.RedrawHeight || HeightRedrawable;
-                    }
+                    // Redraw a layer whenever any overlay is updated for that layer.
+                    Logger.LogInfo($"toggling layer to off");
+                    Instance.RedrawMain = Instance.RedrawMain || MainRedrawable;
+                    Instance.RedrawForest = Instance.RedrawForest || ForestRedrawable;
+                    Instance.RedrawFog = Instance.RedrawFog || FogRedrawable;
+                    Instance.RedrawHeight = Instance.RedrawHeight || HeightRedrawable;
                 }
             }
             

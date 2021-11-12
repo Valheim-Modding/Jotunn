@@ -116,6 +116,8 @@ namespace TestMod3
             squarequadoverlay.ForestFilter.Apply();
             squarequadoverlay.FogFilter.Apply();
             squarequadoverlay.HeightFilter.Apply();
+
+            squarequadoverlay.Enabled = true;
         }
 
 
@@ -131,6 +133,11 @@ namespace TestMod3
             DrawQuadrant(quadtest2.ForestFilter, FilterOn, 1);
             quadtest3 = MinimapManager.Instance.AddMapOverlay("quad_overlay3");
             DrawQuadrant(quadtest3.FogFilter, FilterOn, 3);
+
+            quadtest0.Enabled = true;
+            quadtest1.Enabled = true;
+            quadtest2.Enabled = true;
+            quadtest3.Enabled = true;
         }
 
 
