@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
@@ -74,7 +75,7 @@ namespace Jotunn.Managers
 
             foreach (var rpc in RPCs)
             {
-                ZRoutedRpc.instance.Register(rpc.ID, new Action<long, ZPackage>(rpc.HandlePackage));
+                ZRoutedRpc.instance.Register(rpc.ID, new Action<long, ZPackage>(rpc.ReceivePackage));
             }
         }
     }

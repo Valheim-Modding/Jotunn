@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
@@ -30,14 +31,15 @@ namespace TestMod
             NonblockingRPC.OnServerReceive += NonblockingRPC_OnServerReceive;
             NonblockingRPC.OnClientReceive += NonblockingRPC_OnClientReceive;
 
-            CommandManager.Instance.AddConsoleCommand(new BlockingRPCommand());   
-            
+            CommandManager.Instance.AddConsoleCommand(new BlockingRPCommand());
+
             BlockingRPC = NetworkManager.Instance.GetRPC("blocking");
             BlockingRPC.Blocking = true;
             BlockingRPC.OnServerReceive += BlockingRPC_OnServerReceive;
-            BlockingRPC.OnClientReceive += BlockingRPC_OnClientReceive;
+            BlockingRPC.OnClientReceive += BlockingRPC_OnClientReceive1;
+            BlockingRPC.OnClientReceive += BlockingRPC_OnClientReceive2;
         }
-        
+
         public class NonblockingRPCCommand : ConsoleCommand
         {
             public override string Name => "rpc.nonblocking";
@@ -78,7 +80,7 @@ namespace TestMod
 
         private IEnumerator NonblockingRPC_OnServerReceive(long sender, ZPackage package)
         {
-            Jotunn.Logger.LogMessage($"Received blob"); 
+            Jotunn.Logger.LogMessage($"Received blob");
 
             if (NonblockingRPC.IsSending)
             {
@@ -89,13 +91,13 @@ namespace TestMod
             Jotunn.Logger.LogMessage($"Broadcasting to all clients");
             NonblockingRPC.SendPackage(ZNet.instance.m_peers, new ZPackage(package.GetArray()));
         }
-        
+
         private IEnumerator NonblockingRPC_OnClientReceive(long sender, ZPackage package)
         {
             Jotunn.Logger.LogMessage($"Received blob");
             yield break;
         }
-        
+
         public class BlockingRPCommand : ConsoleCommand
         {
             public override string Name => "rpc.blocking";
@@ -127,21 +129,47 @@ namespace TestMod
                 return Sizes.Select(x => x.ToString()).ToList();
             }
         }
+
         private IEnumerator BlockingRPC_OnServerReceive(long sender, ZPackage package)
         {
             Jotunn.Logger.LogMessage($"Received blob, processing");
 
-            yield return new WaitForSeconds(5f);
+            string dot = string.Empty;
+            for (int i = 0; i < 5; ++i)
+            {
+                dot += ".";
+                Jotunn.Logger.LogMessage(dot);
+                yield return new WaitForSeconds(1f);
+            }
 
             Jotunn.Logger.LogMessage($"Broadcasting to all clients");
             BlockingRPC.SendPackage(ZNet.instance.m_peers, new ZPackage(package.GetArray()));
         }
-        
-        private IEnumerator BlockingRPC_OnClientReceive(long sender, ZPackage package)
-        {
-            Jotunn.Logger.LogMessage($"Received blob, processing");
 
-            yield return new WaitForSeconds(5f);
+        private IEnumerator BlockingRPC_OnClientReceive1(long sender, ZPackage package)
+        {
+            Jotunn.Logger.LogMessage($"Received blob, processing!");
+
+            string ex = string.Empty;
+            for (int i = 0; i < 10; ++i)
+            {
+                ex += "!";
+                Jotunn.Logger.LogMessage(ex);
+                yield return new WaitForSeconds(2f);
+            }
+        }
+
+        private IEnumerator BlockingRPC_OnClientReceive2(long sender, ZPackage package)
+        {
+            Jotunn.Logger.LogMessage($"Received blob, processing?");
+
+            string qu = string.Empty;
+            for (int i = 0; i < 10; ++i)
+            {
+                qu += "?";
+                Jotunn.Logger.LogMessage(qu);
+                yield return null;
+            }
         }
     }
 }

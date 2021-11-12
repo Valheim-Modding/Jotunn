@@ -12,21 +12,33 @@ namespace Jotunn.Entities
 {
     public class CustomRPC : CustomEntity
     {
-        public event Func<long, ZPackage, IEnumerator> OnServerReceive;
-        public event Func<long, ZPackage, IEnumerator> OnClientReceive;
-        //public event Action<long, ZPackage> OnServerReceive;
-        //public event Action<long, ZPackage> OnClientReceive;
+        /// <summary>
+        ///     Delegate for receiving <see cref="ZPackage">ZPackages</see>.
+        ///     Gets called inside a <see cref="Coroutine"/>.
+        /// </summary>
+        /// <param name="sender">Sender ID of the package</param>
+        /// <param name="package">Package sent</param>
+        /// <returns></returns>
+        public delegate IEnumerator CoroutineHandler(long sender, ZPackage package);
+        /// <summary>
+        ///     Event fired when a package is received on the server via this RPC
+        /// </summary>
+        public event CoroutineHandler OnServerReceive;
+        /// <summary>
+        ///     Event fired when a package is received on the client via this RPC
+        /// </summary>
+        public event CoroutineHandler OnClientReceive;
 
         public string Name { get; }
-        
+
         public bool Blocking { get; set; }
 
         public bool IsSending => SendCount > 0;
         public bool IsReceiving => PackageCache.Count > 0;
         public bool IsProcessing => ProcessingCount > 0;
-        
+
         internal string ID => $"{SourceMod.GUID}!{Name}";
-        
+
         private const byte INIT_PACKAGE = 0;
         private const byte FRAGMENTED_PACKAGE = 64;
         private const byte COMPRESSED_PACKAGE = 128;
@@ -36,7 +48,7 @@ namespace Jotunn.Entities
         private long PackageCount;
         private readonly Dictionary<string, SortedDictionary<int, byte[]>> PackageCache =
             new Dictionary<string, SortedDictionary<int, byte[]>>();
-        private readonly List<KeyValuePair<long, string>> CacheExpirations = 
+        private readonly List<KeyValuePair<long, string>> CacheExpirations =
             new List<KeyValuePair<long, string>>(); // avoid leaking memory
 
         internal CustomRPC(BepInPlugin sourceMod, string name) : base(sourceMod)
@@ -236,7 +248,7 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="package"></param>
-        internal void HandlePackage(long sender, ZPackage package)
+        internal void ReceivePackage(long sender, ZPackage package)
         {
             if (package == null || package.Size() <= 0)
             {
@@ -256,7 +268,7 @@ namespace Jotunn.Entities
 
                     return false;
                 });
-                
+
                 byte packageFlags = package.ReadByte();
 
                 if ((packageFlags & FRAGMENTED_PACKAGE) != 0)
@@ -268,7 +280,7 @@ namespace Jotunn.Entities
 
                     if (!PackageCache.TryGetValue(cacheKey, out SortedDictionary<int, byte[]> dataFragments))
                     {
-                        if (Blocking && (IsSending || IsReceiving || IsProcessing || fragment > 0))  // fragment > 0 is not necessary if we return some Discarded RPC
+                        if (Blocking && (IsSending || IsReceiving || fragment > 0))  // fragment > 0 is not necessary if we return some Discarded RPC
                         {
                             Logger.LogWarning($"[{ID}] Blocking RPC occupied, package discarded {SendCount}|{PackageCache.Count}|{ProcessingCount}");
                             return;
@@ -278,7 +290,7 @@ namespace Jotunn.Entities
                         PackageCache[cacheKey] = dataFragments;
                         CacheExpirations.Add(new KeyValuePair<long, string>(DateTimeOffset.Now.AddSeconds(60).Ticks, cacheKey));
                     }
-                    
+
                     dataFragments.Add(fragment, package.ReadByteArray());
 
                     if (dataFragments.Count < fragments)
@@ -307,7 +319,7 @@ namespace Jotunn.Entities
                 Logger.LogWarning($"[{ID}] Blocking RPC occupied, package discarded {SendCount}|{PackageCache.Count}|{ProcessingCount}");
                 yield break;
             }
-                
+
             try
             {
                 ++ProcessingCount;
@@ -324,7 +336,7 @@ namespace Jotunn.Entities
                     }
 
                     package = new ZPackage(output.ToArray());
-                    
+
                     Logger.LogDebug($"[{ID}] Decompressed package to length {output.Length}");
                 }
 
@@ -332,13 +344,11 @@ namespace Jotunn.Entities
 
                 if (ZNet.instance.IsServer())
                 {
-                    //InvokeOnServerReceive(sender, package);
-                    yield return OnServerReceive?.Invoke(sender, package);
+                    yield return InvokeHandler(OnServerReceive, sender, package);
                 }
                 else
                 {
-                    //InvokeOnClientReceive(sender, package);
-                    yield return OnClientReceive?.Invoke(sender, package);
+                    yield return InvokeHandler(OnClientReceive, sender, package);
                 }
             }
             finally
@@ -347,14 +357,23 @@ namespace Jotunn.Entities
             }
         }
 
-        // private void InvokeOnServerReceive(long sender, ZPackage package)
-        // {
-        //     OnServerReceive?.SafeInvoke(sender, package);
-        // }
-        //
-        // private void InvokeOnClientReceive(long sender, ZPackage package)
-        // {
-        //     OnClientReceive?.SafeInvoke(sender, package);
-        // }
+        private static IEnumerator InvokeHandler(CoroutineHandler handler, long sender, ZPackage package)
+        {
+            if (handler == null)
+            {
+                yield break;
+            }
+
+            List<IEnumerator> funcs = handler.GetInvocationList()
+                .Select(f => f.DynamicInvoke(sender, package) as IEnumerator).ToList();
+            while (funcs.Count > 0)
+            {
+                funcs.RemoveAll(f => !f.MoveNext());
+                foreach (var func in funcs)
+                {
+                    yield return func.Current;
+                }
+            }
+        }
     }
 }
