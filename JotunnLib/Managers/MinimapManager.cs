@@ -727,7 +727,6 @@ namespace Jotunn.Managers
                         Dirty = true;
                     }
                     // Redraw a layer whenever any overlay is updated for that layer.
-                    Logger.LogInfo($"toggling layer to off");
                     Instance.RedrawMain = Instance.RedrawMain || MainRedrawable;
                     Instance.RedrawForest = Instance.RedrawForest || ForestRedrawable;
                     Instance.RedrawFog = Instance.RedrawFog || FogRedrawable;

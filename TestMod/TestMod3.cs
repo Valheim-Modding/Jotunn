@@ -49,9 +49,9 @@ namespace TestMod3
         {
             CommandManager.Instance.AddConsoleCommand(new CHCommands_squares());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_flatten());
-            CommandManager.Instance.AddConsoleCommand(new CHCommands_alpha());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_flatsquares());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_toggle());
+            // CommandManager.Instance.AddConsoleCommand(new CHCommands_alpha()); // Not yet implemented.
 
             MinimapManager.OnVanillaMapDataLoaded += MinimapManager_OnVanillaMapDataLoaded;
         }
@@ -265,6 +265,7 @@ namespace TestMod3
                 if (args.Length == 1 && colors.TryGetValue(args[0], out Color color))
                 {
                     DrawSquaresOnMapPins(color, squareoverlay);
+                    squareoverlay.Enabled = true;
                     return;
                 }
                 squareoverlay.Enabled = !squareoverlay.Enabled; // toggle
@@ -297,7 +298,8 @@ namespace TestMod3
 
                 if (args.Length == 1 && colors.TryGetValue(args[0], out Color color))
                 {
-                    DrawSquaresOnMapPins(color, flatsquareoverlay);
+                    DrawSquaresOnMapPins(color, flatsquareoverlay, true);
+                    flatsquareoverlay.Enabled = true;
                     return;
                 }
                 flatsquareoverlay.Enabled = !flatsquareoverlay.Enabled; // toggle
@@ -319,12 +321,14 @@ namespace TestMod3
                 {
                     flattenoverlay = MinimapManager.Instance.AddMapOverlay("testflatten_overlay");
                     FlattenMap(33, flattenoverlay);
+                    flattenoverlay.Enabled = true;
                     return;
                 }
 
                 if (args.Length == 1 && int.TryParse(args[0], out int height))
                 {
                     FlattenMap(height, flattenoverlay);
+                    flattenoverlay.Enabled = true;
                     return;
                 }
                 flattenoverlay.Enabled = !flattenoverlay.Enabled; // toggle
@@ -332,7 +336,7 @@ namespace TestMod3
         }
 
 
-        private class CHCommands_alpha : ConsoleCommand
+/*        private class CHCommands_alpha : ConsoleCommand
         {
             public override string Name => "map.cha";
 
@@ -352,7 +356,7 @@ namespace TestMod3
 
                 alphaoverlay.Enabled = !alphaoverlay.Enabled; // toggle
             }
-        }
+        }*/
 
         private class CHCommands_toggle : ConsoleCommand
         {
