@@ -61,12 +61,11 @@ namespace Jotunn.Managers
         public void Init()
         {
             // Register RPCs and the admin watchdog
-            ConfigRPC = NetworkManager.Instance.GetRPC(Main.Instance.Info.Metadata, "ConfigSync");
-            ConfigRPC.OnServerReceive += ConfigRPC_OnServerReceive;
-            ConfigRPC.OnClientReceive += ConfigRPC_OnClientReceive;
+            ConfigRPC = NetworkManager.Instance.GetRPC(
+                Main.Instance.Info.Metadata, "ConfigSync", ConfigRPC_OnServerReceive, ConfigRPC_OnClientReceive);
 
-            AdminRPC = NetworkManager.Instance.GetRPC(Main.Instance.Info.Metadata, "AdminStatus");
-            AdminRPC.OnClientReceive += AdminRPC_OnClientReceive;
+            AdminRPC = NetworkManager.Instance.GetRPC(
+                Main.Instance.Info.Metadata, "AdminStatus", null, AdminRPC_OnClientReceive);
 
             On.ZNet.Awake += ZNet_Awake;
 

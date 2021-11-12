@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using BepInEx;
+using Jotunn.Managers;
 using UnityEngine;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
@@ -12,32 +13,26 @@ namespace Jotunn.Entities
 {
     public class CustomRPC : CustomEntity
     {
-        /// <summary>
-        ///     Delegate for receiving <see cref="ZPackage">ZPackages</see>.
-        ///     Gets called inside a <see cref="Coroutine"/>.
-        /// </summary>
-        /// <param name="sender">Sender ID of the package</param>
-        /// <param name="package">Package sent</param>
-        /// <returns></returns>
-        public delegate IEnumerator CoroutineHandler(long sender, ZPackage package);
-        /// <summary>
-        ///     Event fired when a package is received on the server via this RPC
-        /// </summary>
-        public event CoroutineHandler OnServerReceive;
-        /// <summary>
-        ///     Event fired when a package is received on the client via this RPC
-        /// </summary>
-        public event CoroutineHandler OnClientReceive;
-
         public string Name { get; }
-
-        public bool Blocking { get; set; }
-
+        
         public bool IsSending => SendCount > 0;
         public bool IsReceiving => PackageCache.Count > 0;
         public bool IsProcessing => ProcessingCount > 0;
 
+        /// <summary>
+        ///     Unique ID of this RPC to prvent name clashes between mods
+        /// </summary>
         internal string ID => $"{SourceMod.GUID}!{Name}";
+        
+        /// <summary>
+        ///     Delegate called when a package is received on the server via this RPC
+        /// </summary>
+        internal NetworkManager.CoroutineHandler OnServerReceive;
+
+        /// <summary>
+        ///     Delegate called when a package is received on the client via this RPC
+        /// </summary>
+        internal NetworkManager.CoroutineHandler OnClientReceive;
 
         private const byte INIT_PACKAGE = 0;
         private const byte FRAGMENTED_PACKAGE = 64;
@@ -51,9 +46,12 @@ namespace Jotunn.Entities
         private readonly List<KeyValuePair<long, string>> CacheExpirations =
             new List<KeyValuePair<long, string>>(); // avoid leaking memory
 
-        internal CustomRPC(BepInPlugin sourceMod, string name) : base(sourceMod)
+        internal CustomRPC(BepInPlugin sourceMod, string name, NetworkManager.CoroutineHandler serverReceive,
+            NetworkManager.CoroutineHandler clientReceive) : base(sourceMod)
         {
             Name = name;
+            OnServerReceive = serverReceive;
+            OnClientReceive = clientReceive;
         }
 
         /// <summary>
@@ -114,13 +112,7 @@ namespace Jotunn.Entities
             {
                 yield break;
             }
-
-            if (Blocking && (IsSending || IsReceiving))
-            {
-                Logger.LogWarning($"[{ID}] Blocking RPC occupied, package discarded {SendCount}|{PackageCache.Count}|{ProcessingCount}");
-                yield break;
-            }
-
+            
             try
             {
                 ++SendCount;
@@ -280,12 +272,6 @@ namespace Jotunn.Entities
 
                     if (!PackageCache.TryGetValue(cacheKey, out SortedDictionary<int, byte[]> dataFragments))
                     {
-                        if (Blocking && (IsSending || IsReceiving || fragment > 0))  // fragment > 0 is not necessary if we return some Discarded RPC
-                        {
-                            Logger.LogWarning($"[{ID}] Blocking RPC occupied, package discarded {SendCount}|{PackageCache.Count}|{ProcessingCount}");
-                            return;
-                        }
-
                         dataFragments = new SortedDictionary<int, byte[]>();
                         PackageCache[cacheKey] = dataFragments;
                         CacheExpirations.Add(new KeyValuePair<long, string>(DateTimeOffset.Now.AddSeconds(60).Ticks, cacheKey));
@@ -314,12 +300,6 @@ namespace Jotunn.Entities
 
         private IEnumerator HandlePackageRoutine(long sender, ZPackage package, byte packageFlags)
         {
-            if (Blocking && (IsSending || IsReceiving || IsProcessing))
-            {
-                Logger.LogWarning($"[{ID}] Blocking RPC occupied, package discarded {SendCount}|{PackageCache.Count}|{ProcessingCount}");
-                yield break;
-            }
-
             try
             {
                 ++ProcessingCount;
@@ -344,35 +324,16 @@ namespace Jotunn.Entities
 
                 if (ZNet.instance.IsServer())
                 {
-                    yield return InvokeHandler(OnServerReceive, sender, package);
+                    yield return OnServerReceive(sender, package);
                 }
                 else
                 {
-                    yield return InvokeHandler(OnClientReceive, sender, package);
+                    yield return OnClientReceive(sender, package);
                 }
             }
             finally
             {
                 --ProcessingCount;
-            }
-        }
-
-        private static IEnumerator InvokeHandler(CoroutineHandler handler, long sender, ZPackage package)
-        {
-            if (handler == null)
-            {
-                yield break;
-            }
-
-            List<IEnumerator> funcs = handler.GetInvocationList()
-                .Select(f => f.DynamicInvoke(sender, new ZPackage(package.GetArray())) as IEnumerator).ToList();
-            while (funcs.Count > 0)
-            {
-                funcs.RemoveAll(f => !f.MoveNext());
-                foreach (var func in funcs)
-                {
-                    yield return func.Current;
-                }
             }
         }
     }

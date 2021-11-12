@@ -5,6 +5,7 @@ using System.Linq;
 using BepInEx;
 using Jotunn.Entities;
 using Jotunn.Utils;
+using UnityEngine;
 
 namespace Jotunn.Managers
 {
@@ -13,7 +14,6 @@ namespace Jotunn.Managers
     /// </summary>
     public class NetworkManager : IManager
     {
-        private static NetworkManager _instance;
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -24,7 +24,20 @@ namespace Jotunn.Managers
                 return _instance ??= new NetworkManager();
             }
         }
+        private static NetworkManager _instance;
 
+        /// <summary>
+        ///     Delegate for receiving <see cref="ZPackage">ZPackages</see>.
+        ///     Gets called inside a <see cref="Coroutine"/>.
+        /// </summary>
+        /// <param name="sender">Sender ID of the package</param>
+        /// <param name="package">Package sent</param>
+        /// <returns></returns>
+        public delegate IEnumerator CoroutineHandler(long sender, ZPackage package);
+
+        /// <summary>
+        ///     Internal list of registered RPCs
+        /// </summary>
         internal readonly List<CustomRPC> RPCs = new List<CustomRPC>();
 
         /// <summary>
@@ -39,16 +52,16 @@ namespace Jotunn.Managers
         ///     Get a <see cref="CustomRPC"/> for your mod.
         /// </summary>
         /// <returns>Existing or newly created <see cref="CustomRPC"/>.</returns>
-        public CustomRPC GetRPC(string name)
+        public CustomRPC GetRPC(string name, CoroutineHandler serverReceive, CoroutineHandler clientReceive)
         {
-            return GetRPC(BepInExUtils.GetSourceModMetadata(), name);
+            return GetRPC(BepInExUtils.GetSourceModMetadata(), name, serverReceive, clientReceive);
         }
 
         /// <summary>
         ///     Get the <see cref="CustomRPC"/> for a given mod.
         /// </summary>
         /// <returns>Existing or newly created <see cref="CustomRPC"/>.</returns>
-        internal CustomRPC GetRPC(BepInPlugin sourceMod, string name)
+        internal CustomRPC GetRPC(BepInPlugin sourceMod, string name, CoroutineHandler serverReceive, CoroutineHandler clientReceive)
         {
             var ret = RPCs.FirstOrDefault(x => x.SourceMod == sourceMod && x.Name == name);
 
@@ -57,7 +70,7 @@ namespace Jotunn.Managers
                 return ret;
             }
 
-            ret = new CustomRPC(sourceMod, name);
+            ret = new CustomRPC(sourceMod, name, serverReceive, clientReceive);
             RPCs.Add(ret);
             return ret;
         }
