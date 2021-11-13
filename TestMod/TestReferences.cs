@@ -32,23 +32,41 @@ namespace TestMod
         {
             private GameObject[] GameObjectArray =
             {
-                new GameObject("JVLmock_Wood")
+                new GameObject("JVLmock_Wood"),
+                PrefabManager.Instance.GetPrefab("Wood")
             };
 
             private List<GameObject> GameObjectList = new List<GameObject>
             {
-                new GameObject("JVLmock_Stone")
+                new GameObject("JVLmock_Stone"),
+                PrefabManager.Instance.GetPrefab("Stone")
             };
+            
+            private HashSet<StatusEffect> StatusEffectHashSet = new HashSet<StatusEffect>();
 
             private GameObject[] GameObjectArrayProperty { get; set; } =
             {
-                new GameObject("JVLmock_Wood")
+                new GameObject("JVLmock_Wood"),
+                PrefabManager.Instance.GetPrefab("Wood")
             };
 
             private List<GameObject> GameObjectListProperty { get; set; } = new List<GameObject>
             {
-                new GameObject("JVLmock_Stone")
+                new GameObject("JVLmock_Stone"),
+                PrefabManager.Instance.GetPrefab("Stone")
             };
+
+            private HashSet<StatusEffect> StatusEffectHashSetProperty { get; set; } = new HashSet<StatusEffect>();
+            
+            public FixMe()
+            {
+                var semock = ScriptableObject.CreateInstance<StatusEffect>();
+                semock.name = "JVLmock_Burning";
+                StatusEffectHashSet.Add(semock);
+                StatusEffectHashSet.Add(PrefabManager.Cache.GetPrefab<StatusEffect>("Frost"));
+                StatusEffectHashSetProperty.Add(semock);
+                StatusEffectHashSetProperty.Add(PrefabManager.Cache.GetPrefab<StatusEffect>("Frost"));
+            }
         }
     }
 }

@@ -21,9 +21,11 @@ Jötunn stores all added custom localization in its own [CustomLocalization](xre
 ### Format
 
 The format for localizations is a standard JSON collection as such:
-```cs
-{ "item_evilsword", "Sword of Darkness" },
-{ "item_evilsword_desc", "Bringing the light" }
+```json
+{
+  "item_evilsword": "Sword of Darkness",
+  "item_evilsword_desc": "Bringing the light"
+}
 ```
 
 **Note**: Other than the tokens you supply with your prefabs or Jötunn's configs, the translation keys should not be prefixed with a `$`. Jötunn will replace any `$` at the beginning of your translation keys while adding them to it's localization system.

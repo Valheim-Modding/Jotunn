@@ -11,7 +11,6 @@ namespace Jotunn.Managers
     /// </summary>
     internal class MockManager : IManager
     {
-        private static MockManager _instance;
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
@@ -23,7 +22,13 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        private static MockManager _instance;
         
+        /// <summary>
+        ///     Regex to identify multiple instances of mock objects from Unity
+        /// </summary>
+        private static readonly Regex CopyRegex = new Regex(@" \([0-9]+\)");
+
         /// <summary>
         ///     Legacy ValheimLib prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
         /// </summary>
@@ -34,7 +39,7 @@ namespace Jotunn.Managers
         ///     Prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
         /// </summary>
         public const string JVLMockPrefix = "JVLmock_";
-
+        
         /// <summary>
         ///     Internal container for mocked prefabs
         /// </summary>
@@ -105,8 +110,6 @@ namespace Jotunn.Managers
             return (T)GetRealPrefabFromMock(unityObject, typeof(T));
         }
 
-        private static readonly Regex copyRegex = new Regex(@" \([0-9]+\)");
-
 #pragma warning disable CS0618
         /// <summary>
         ///     Will try to find the real vanilla prefab from the given mock
@@ -132,11 +135,13 @@ namespace Jotunn.Managers
                         const string materialInstance = " (Instance)";
                         if (unityObjectName.EndsWith(materialInstance))
                         {
-                            unityObjectName = unityObjectName.Substring(0, unityObjectName.Length - materialInstance.Length);
+                            unityObjectName =
+                                unityObjectName.Substring(0, unityObjectName.Length - materialInstance.Length);
                         }
                     }
-                    //Allow duplicated JVLmocks (child names must be unique)
-                    Match match = copyRegex.Match(unityObjectName);
+
+                    // Allow duplicated JVLmocks (child names must be unique)
+                    Match match = CopyRegex.Match(unityObjectName);
                     if (match.Success)
                     {
                         unityObjectName = unityObjectName.Substring(0, match.Index);
