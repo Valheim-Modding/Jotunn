@@ -146,21 +146,25 @@ namespace Jotunn.Managers
                         {
                             DrawMain();
                             RedrawMain = false;
+                            yield return null;
                         }
                         if (RedrawHeight)
                         {
                             DrawHeight();
                             RedrawHeight = false;
+                            yield return null;
                         }
                         if (RedrawForest)
                         {
                             DrawForestFilter();
                             RedrawForest = false;
+                            yield return null;
                         }
                         if (RedrawFog)
                         {
                             DrawFogFilter();
                             RedrawFog = false;
+                            yield return null;
                         }
                         foreach (var overlay in Overlays.Values)
                         {
