@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using UnityEngine;
-using BepInEx;
 using System.Reflection;
 using System.Linq;
 
@@ -56,11 +55,22 @@ namespace Jotunn.Utils
         /// <returns>Texture2D loaded, or null if invalid path</returns>
         public static Sprite LoadSpriteFromFile(string spritePath)
         {
+            return LoadSpriteFromFile(spritePath, Vector2.zero);
+        }
+
+        /// <summary>
+        ///     Loads a <see cref="Sprite"/> from file at runtime.
+        /// </summary>
+        /// <param name="spritePath">Texture path relative to "plugins" BepInEx folder</param>
+        /// <param name="pivot">The pivot to use in the resulting Sprite</param>
+        /// <returns>Texture2D loaded, or null if invalid path</returns>
+        public static Sprite LoadSpriteFromFile(string spritePath, Vector2 pivot)
+        {
             var tex = LoadTexture(spritePath);
 
             if (tex != null)
             {
-                return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(), 100);
+                return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), pivot);
             }
 
             return null;

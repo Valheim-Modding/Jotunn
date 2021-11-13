@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BepInEx;
 using UnityEngine;
 using JotunnDoc.Docs;
+using System.IO;
 
 namespace JotunnDoc
 {
@@ -14,6 +15,8 @@ namespace JotunnDoc
 
         private void Awake()
         {
+            Doc.DocumentationDirConfig = Config.Bind(new BepInEx.Configuration.ConfigDefinition("Folders", "Documentation"), Path.Combine(Paths.PluginPath, nameof(JotunnDoc), "Docs"));
+
             docs = new List<Doc>()
             {
                 new InputDoc(),
@@ -26,7 +29,9 @@ namespace JotunnDoc
                 new RPCDoc(),
                 new ShaderDoc(),
                 new SpriteDoc(),
-                new StatusEffectDoc()
+                new StatusEffectDoc(),
+                new LocationDoc(),
+                new VegetationDoc()
             };
 
             Debug.Log("Initialized JotunnDoc");

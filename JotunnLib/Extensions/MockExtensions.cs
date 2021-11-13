@@ -54,9 +54,23 @@ namespace Jotunn
                 return;
             }
 
-            foreach (Transform tf in gameObject.transform)
+            var childCount = gameObject.transform.childCount;
+            for (int i = 0; i < childCount; i++)
             {
-                tf.gameObject.FixReferences(true);
+                Transform tf = gameObject.transform.GetChild(i);
+                 
+                var realPrefab = MockManager.GetRealPrefabFromMock<GameObject>(tf.gameObject);
+                if (realPrefab)
+                {
+                    var realInstance = Object.Instantiate(realPrefab, gameObject.transform);
+                    realInstance.transform.localPosition = tf.localPosition;
+                    realInstance.transform.localRotation = tf.localRotation;
+                    realInstance.transform.localScale = tf.localScale;
+                    Object.Destroy(tf.gameObject);
+                } else
+                {
+                    tf.gameObject.FixReferences(true);
+                }
             }
         }
 
@@ -105,8 +119,9 @@ namespace Jotunn
                     {
                         var isArray = fieldType.IsArray;
                         var isList = fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(List<>);
+                        var isHashSet = fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(HashSet<>);
 
-                        if (!(isArray | isList))
+                        if (!(isArray | isList | isHashSet))
                         {
                             Logger.LogWarning($"Not fixing potential mock references for field {field.Name} : {fieldType} is not supported.");
                             continue;
@@ -119,10 +134,7 @@ namespace Jotunn
                             foreach (var unityObject in currentValues)
                             {
                                 var realPrefab = MockManager.GetRealPrefabFromMock(unityObject, enumeratedType);
-                                if (realPrefab)
-                                {
-                                    list.Add(realPrefab);
-                                }
+                                list.Add(realPrefab ? realPrefab : unityObject);
                             }
 
                             if (list.Count > 0)
@@ -152,6 +164,18 @@ namespace Jotunn
 
                                     var newList = toListT.Invoke(null, new object[] { correctTypeList });
                                     field.SetValue(objectToFix, newList);
+                                }
+                                else if (isHashSet)
+                                {
+                                    var hash = typeof(HashSet<>).MakeGenericType(enumeratedType);
+                                    
+                                    // mono...
+                                    var cast = ReflectionHelper.Cache.EnumerableCast;
+                                    var castT = cast.MakeGenericMethod(enumeratedType);
+                                    var correctTypeList = castT.Invoke(null, new object[] { list });
+                                    
+                                    var newHash = Activator.CreateInstance(hash, correctTypeList);
+                                    field.SetValue(objectToFix, newHash);
                                 }
                             }
                         }
@@ -208,8 +232,9 @@ namespace Jotunn
                     {
                         var isArray = propertyType.IsArray;
                         var isList = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>);
+                        var isHashSet = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(HashSet<>);
 
-                        if (!(isArray | isList))
+                        if (!(isArray | isList | isHashSet))
                         {
                             Logger.LogWarning($"Not fixing potential mock references for property {property.Name} : {propertyType} is not supported.");
                             continue;
@@ -222,10 +247,7 @@ namespace Jotunn
                             foreach (var unityObject in currentValues)
                             {
                                 var realPrefab = MockManager.GetRealPrefabFromMock(unityObject, enumeratedType);
-                                if (realPrefab)
-                                {
-                                    list.Add(realPrefab);
-                                }
+                                list.Add(realPrefab ? realPrefab : unityObject);
                             }
 
                             if (list.Count > 0)
@@ -255,6 +277,18 @@ namespace Jotunn
 
                                     var newList = toListT.Invoke(null, new object[] { correctTypeList });
                                     property.SetValue(objectToFix, newList, null);
+                                }
+                                else if (isHashSet)
+                                {
+                                    var hash = typeof(HashSet<>).MakeGenericType(enumeratedType);
+                                    
+                                    // mono...
+                                    var cast = ReflectionHelper.Cache.EnumerableCast;
+                                    var castT = cast.MakeGenericMethod(enumeratedType);
+                                    var correctTypeList = castT.Invoke(null, new object[] { list });
+                                    
+                                    var newHash = Activator.CreateInstance(hash, correctTypeList);
+                                    property.SetValue(objectToFix, newHash, null);
                                 }
                             }
                         }

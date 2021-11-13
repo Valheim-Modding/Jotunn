@@ -37,6 +37,9 @@
 - name: Skills
   href: skills.md
   
+- name: Zones / Locations / Vegetation
+  href: zones.md
+
 - name: Console Commands
   href: console-commands.md
   

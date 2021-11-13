@@ -24,11 +24,11 @@ namespace Jotunn.Utils
         /// </summary>
         EveryoneMustHaveMod = 2,
         /// <summary>
-        ///     If mod is installed on the server, every client has to have it. VersionStrictness does not apply.
+        ///     If mod is installed on the server, every client has to have it. VersionStrictness does apply when both sides have it.
         /// </summary>
         ClientMustHaveMod = 3,
         /// <summary>
-        ///     If mod is installed on the client, the server has to have it. VersionStrictness does not apply.
+        ///     If mod is installed on the client, the server has to have it. VersionStrictness does apply when both sides have it.
         /// </summary>
         ServerMustHaveMod = 4,
         /// <summary>
@@ -43,7 +43,7 @@ namespace Jotunn.Utils
 
     /// <summary>
     ///     Enum used for telling whether or not the same mod version should be used by both the server and the clients.
-    ///     This enum is only useful if CompatibilityLevel.EveryoneMustHaveMod or OnlySyncWhenInstalled was chosen.
+    ///     This enum is only useful with certain CompatibilityLevel values.
     /// </summary>
     public enum VersionStrictness : int
     {

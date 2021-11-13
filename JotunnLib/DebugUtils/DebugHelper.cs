@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -41,9 +42,10 @@ namespace Jotunn.DebugUtils
                     Console.instance.gameObject.GetComponentInChildren<Text>(true).font = fnt;
                     Console.instance.Print(jtn);
                 }
-                catch (Exception) {}
+                catch (Exception) { }
             };
-            On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch;
+            On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch; 
+            Harmony.CreateAndPatchAll(typeof(Debug_isDebugBuild)); 
         }
 
         private void Update()
@@ -87,6 +89,19 @@ namespace Jotunn.DebugUtils
             }
 
             orig(self, rpc, needPassword);
+        }
+
+        /// <summary>
+        ///     Pretend to be a debugBuild :)
+        /// </summary>
+        [HarmonyPatch(typeof(Debug), "get_isDebugBuild")]
+        private static class Debug_isDebugBuild
+        {
+            private static bool Prefix(Debug __instance, ref bool __result)
+            {
+                __result = true;
+                return false;
+            }
         }
     }
 }

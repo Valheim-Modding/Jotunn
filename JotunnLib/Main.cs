@@ -63,7 +63,7 @@ namespace Jotunn
                 GUIManager.Instance,
                 KeyHintManager.Instance,
                 //SaveManager.Instance,  // Temporarely disabled, causes FPS issues in the current implementation
-                //ZoneManager.Instance,  // Had some problems reported, needs more tests
+                ZoneManager.Instance,
                 SynchronizationManager.Instance,
                 RenderManager.Instance,
                 MinimapManager.Instance
@@ -78,12 +78,6 @@ namespace Jotunn
             // Enable helper on DEBUG build
             RootObject.AddComponent<DebugUtils.DebugHelper>();
 #endif
-            // Save mods not unloading their asset bundles
-            On.Game.OnApplicationQuit += (orig, self) =>
-            {
-                orig(self);
-                AssetBundle.UnloadAllAssetBundles(false);
-            };
             
             Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
         }
@@ -91,6 +85,12 @@ namespace Jotunn
         private void Start()
         {
             InitializePatches();
+        }
+
+        private void OnApplicationQuit()
+        {
+            // Unload still loaded asset bundles to keep unity from crashing
+            AssetBundle.UnloadAllAssetBundles(false);
         }
         
         /// <summary>

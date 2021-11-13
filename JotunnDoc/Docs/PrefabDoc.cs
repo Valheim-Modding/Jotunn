@@ -44,7 +44,10 @@ namespace JotunnDoc.Docs
 
                 components += "</ul>";
 
-                AddTableRow(obj.name, components);
+                AddTableRow(
+                    obj.name,
+                    components
+                );
             }
 
             Save();
