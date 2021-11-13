@@ -146,25 +146,25 @@ namespace Jotunn.Managers
                         {
                             DrawMain();
                             RedrawMain = false;
-                            yield return null;
+                            //yield return null;
                         }
                         if (RedrawHeight)
                         {
                             DrawHeight();
                             RedrawHeight = false;
-                            yield return null;
+                            //yield return null;
                         }
                         if (RedrawForest)
                         {
                             DrawForestFilter();
                             RedrawForest = false;
-                            yield return null;
+                            //yield return null;
                         }
                         if (RedrawFog)
                         {
                             DrawFogFilter();
                             RedrawFog = false;
-                            yield return null;
+                            //yield return null;
                         }
                         foreach (var overlay in Overlays.Values)
                         {
@@ -189,7 +189,7 @@ namespace Jotunn.Managers
 
             Graphics.CopyTexture(MainTexVanilla, Minimap.instance.m_mapTexture); // reset first.
             ComposeMaterial.SetTexture("_OvlTex", Minimap.instance.m_mapTexture); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => x.MainRedrawable && x.Enabled))
+            foreach (var overlay in Overlays.Values.Where(x => x.MainEnabled && x.Enabled))
             { 
                 DrawOverlay(overlay.MainTex, Minimap.instance.m_mapTexture, ComposeMaterial);
             }
@@ -207,7 +207,7 @@ namespace Jotunn.Managers
             Graphics.CopyTexture(HeightFilterVanilla, Minimap.instance.m_heightTexture); // reset first.
             ComposeHeightMaterial.SetTexture("_OvlTex", Minimap.instance.m_heightTexture); // setup shader
             
-            foreach (var overlay in Overlays.Values.Where(x => x.HeightRedrawable && x.Enabled))
+            foreach (var overlay in Overlays.Values.Where(x => x.HeightEnabled && x.Enabled))
             {
                 DrawOverlay(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial, RenderTextureFormat.ARGBFloat);
             }
@@ -225,7 +225,7 @@ namespace Jotunn.Managers
 
             Graphics.CopyTexture(ForestFilterVanilla, Minimap.instance.m_forestMaskTexture); // reset first.
             ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_forestMaskTexture); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => x.ForestRedrawable && x.Enabled))
+            foreach (var overlay in Overlays.Values.Where(x => x.ForestEnabled && x.Enabled))
             {
                 DrawOverlay(overlay.ForestFilter, Minimap.instance.m_forestMaskTexture, ComposeForestMaterial);
             }
@@ -243,32 +243,13 @@ namespace Jotunn.Managers
 
             Graphics.CopyTexture(FogFilterVanilla, Minimap.instance.m_fogTexture); // reset first.
             ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_fogTexture); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => x.FogRedrawable && x.Enabled))
+            foreach (var overlay in Overlays.Values.Where(x => x.FogEnabled && x.Enabled))
             {
                 DrawOverlay(overlay.FogFilter, Minimap.instance.m_fogTexture, ComposeForestMaterial);
             }
             watch.Stop();
             Logger.LogInfo($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
         }
-
-/*        private void DrawLayer(Texture2D backupcopy, Texture2D destination, Texture2D layer, Material material, string layername)
-        {
-            if (!Overlays.Values.Any(x => x.FogDirty)) { return; }
-
-            Logger.LogInfo($"Redraw {layername}");
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-
-            Graphics.CopyTexture(backupcopy, destination); // reset first.
-            material.SetTexture("_OvlTex", destination); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => (x.FogDirty || (x.FogRedrawable && RedrawFog)) && x.Enabled))
-            {
-                DrawOverlay(overlay.FogFilter, destination, material);
-            }
-            watch.Stop();
-            Logger.LogInfo($"Draw {layername} loop took {watch.ElapsedMilliseconds}ms time");
-        }*/
-
 
         private void DrawOverlay(Texture2D overlay, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
         {
@@ -731,10 +712,10 @@ namespace Jotunn.Managers
                         Dirty = true;
                     }
                     // Redraw a layer whenever any overlay is updated for that layer.
-                    Instance.RedrawMain = Instance.RedrawMain || MainRedrawable;
-                    Instance.RedrawForest = Instance.RedrawForest || ForestRedrawable;
-                    Instance.RedrawFog = Instance.RedrawFog || FogRedrawable;
-                    Instance.RedrawHeight = Instance.RedrawHeight || HeightRedrawable;
+                    Instance.RedrawMain = Instance.RedrawMain || MainEnabled;
+                    Instance.RedrawForest = Instance.RedrawForest || ForestEnabled;
+                    Instance.RedrawFog = Instance.RedrawFog || FogEnabled;
+                    Instance.RedrawHeight = Instance.RedrawHeight || HeightEnabled;
                 }
             }
             
@@ -775,17 +756,17 @@ namespace Jotunn.Managers
 
             internal bool MainDirty => _mainTex != null && _mainDirty;
 
-            internal bool ForestRedrawable => _forestRedrawable;
-            internal bool FogRedrawable => _fogRedrawable;
-            internal bool HeightRedrawable => _heightRedrawable;
-            internal bool MainRedrawable => _mainRedrawable;
+            internal bool ForestEnabled => _forestEnabled;
+            internal bool FogEnabled => _fogEnabled;
+            internal bool HeightEnabled => _heightEnabled;
+            internal bool MainEnabled => _mainEnabled;
 
             private bool _enabled;
 
-            private bool _forestRedrawable = false;
-            private bool _fogRedrawable = false;
-            private bool _heightRedrawable = false;
-            private bool _mainRedrawable = false;
+            private bool _forestEnabled;
+            private bool _fogEnabled;
+            private bool _heightEnabled;
+            private bool _mainEnabled;
 
             private bool _forestDirty;
             private bool _fogDirty;
@@ -822,23 +803,23 @@ namespace Jotunn.Managers
                 if (tex == _mainTex)
                 {
                     _mainDirty = true;
-                    _mainRedrawable = true;
+                    _mainEnabled = true;
                 }
 
                 if (tex == _forestFilter)
                 {
                     _forestDirty = true;
-                    _forestRedrawable = true;
+                    _forestEnabled = true;
                 }
                 if(tex == _fogFilter)
                 {
                     _fogDirty = true;
-                    _fogRedrawable = true;
+                    _fogEnabled = true;
                 }
                 if(tex == _heightFilter)
                 {
                     _heightDirty = true;
-                    _heightRedrawable = true;
+                    _heightEnabled = true;
                 }
             }
         }
