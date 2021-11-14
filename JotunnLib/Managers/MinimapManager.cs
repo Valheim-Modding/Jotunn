@@ -62,14 +62,7 @@ namespace Jotunn.Managers
         private GameObject ScrollView;
         private Dictionary<string, MapOverlay> Overlays = new Dictionary<string, MapOverlay>();
         private int OverlayID;
-
-        // When a boolean is true, we redraw all active overlays that have a specific texture active.
-        private bool RedrawMain = false;
-        private bool RedrawForest = false;
-        private bool RedrawHeight = false;
-        private bool RedrawFog = false;
-        private bool RedrawBackground = false;
-
+        
         /*
                 // vanilla backups of textures
                 private Texture2D SpaceTexVanilla;
@@ -118,12 +111,13 @@ namespace Jotunn.Managers
 
             // Load shaders and setup materials
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
-            var ComposeShader = bundle.LoadAsset<Shader>("MinimapCompose");
-            var ComposeHeightShader = bundle.LoadAsset<Shader>("MinimapComposeHeight");
-            var ComposeForestShader = bundle.LoadAsset<Shader>("MinimapComposeForest");
-            ComposeMaterial = new Material(ComposeShader);
-            ComposeHeightMaterial = new Material(ComposeHeightShader);
-            ComposeForestMaterial = new Material(ComposeForestShader);
+            var composeShader = bundle.LoadAsset<Shader>("MinimapCompose");
+            var composeHeightShader = bundle.LoadAsset<Shader>("MinimapComposeHeight");
+            var composeForestShader = bundle.LoadAsset<Shader>("MinimapComposeForest");
+            ComposeMaterial = new Material(composeShader);
+            ComposeHeightMaterial = new Material(composeHeightShader);
+            ComposeForestMaterial = new Material(composeForestShader);
+            bundle.Unload(false);
 
             Harmony.CreateAndPatchAll(typeof(Texture2D_Apply));
         }
@@ -139,116 +133,107 @@ namespace Jotunn.Managers
                     if (Overlays.Values.Any(x => x.Dirty))
                     {
                         Logger.LogInfo("Redrawing dirty layers");
-                        var watch = new System.Diagnostics.Stopwatch();
-                        watch.Start();
-
-                        if (RedrawMain)
-                        {
-                            DrawMain();
-                            RedrawMain = false;
-                            //yield return null;
-                        }
-                        if (RedrawHeight)
-                        {
-                            DrawHeight();
-                            RedrawHeight = false;
-                            //yield return null;
-                        }
-                        if (RedrawForest)
-                        {
-                            DrawForestFilter();
-                            RedrawForest = false;
-                            //yield return null;
-                        }
-                        if (RedrawFog)
-                        {
-                            DrawFogFilter();
-                            RedrawFog = false;
-                            //yield return null;
-                        }
+                        yield return DrawMain();
+                        yield return DrawHeight();
+                        yield return DrawForestFilter(); 
+                        yield return DrawFogFilter();
                         foreach (var overlay in Overlays.Values)
                         {
                             overlay.Dirty = false;
                         }
-                        watch.Stop();
-                        Logger.LogInfo($"Drawing took {watch.ElapsedMilliseconds}ms time");
-
                     }
                 }
             }
             Minimap.instance.StartCoroutine(watchdog());
         }
 
-        private void DrawMain()
+        private IEnumerator DrawMain()
         {
-            Logger.LogInfo("Redraw Main");
-            if (!Overlays.Values.Any(x => x.MainDirty)) {return;}
+            if (Overlays.Values.Any(x => x.MainDirty))
+            {
+                Logger.LogInfo("Redraw Main");
+                var watch = new System.Diagnostics.Stopwatch();
+                watch.Start();
+
+                Graphics.CopyTexture(MainTexVanilla, Minimap.instance.m_mapTexture); // reset first.
+                ComposeMaterial.SetTexture("_OvlTex", Minimap.instance.m_mapTexture); // setup shader
+                foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.MainEnabled))
+                { 
+                    DrawOverlay(overlay.MainTex, Minimap.instance.m_mapTexture, ComposeMaterial);
+                }
+
+                watch.Stop();
+                Logger.LogInfo($"DrawMain loop took {watch.ElapsedMilliseconds}ms time");
+            }
             
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-
-            Graphics.CopyTexture(MainTexVanilla, Minimap.instance.m_mapTexture); // reset first.
-            ComposeMaterial.SetTexture("_OvlTex", Minimap.instance.m_mapTexture); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => x.MainEnabled && x.Enabled))
-            { 
-                DrawOverlay(overlay.MainTex, Minimap.instance.m_mapTexture, ComposeMaterial);
-            }
-            watch.Stop();
-            Logger.LogInfo($"DrawMain loop took {watch.ElapsedMilliseconds}ms time");
+            yield return null;
         }
 
-        private void DrawHeight()
+        private IEnumerator DrawHeight()
         {
-            if (!Overlays.Values.Any(x => x.HeightDirty)) {return;}
-
-            Logger.LogInfo("Redraw Height");
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-            Graphics.CopyTexture(HeightFilterVanilla, Minimap.instance.m_heightTexture); // reset first.
-            ComposeHeightMaterial.SetTexture("_OvlTex", Minimap.instance.m_heightTexture); // setup shader
-            
-            foreach (var overlay in Overlays.Values.Where(x => x.HeightEnabled && x.Enabled))
+            if (Overlays.Values.Any(x => x.HeightDirty))
             {
-                DrawOverlay(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial, RenderTextureFormat.ARGBFloat);
+                Logger.LogInfo("Redraw Height");
+                var watch = new System.Diagnostics.Stopwatch();
+                watch.Start();
+                
+                Graphics.CopyTexture(HeightFilterVanilla, Minimap.instance.m_heightTexture); // reset first.
+                ComposeHeightMaterial.SetTexture("_OvlTex", Minimap.instance.m_heightTexture); // setup shader
+                foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.HeightEnabled))
+                {
+                    DrawOverlay(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial,
+                        RenderTextureFormat.ARGBFloat);
+                }
+
+                watch.Stop();
+                Logger.LogInfo($"DrawHeight loop took {watch.ElapsedMilliseconds}ms time");
             }
-            watch.Stop();
-            Logger.LogInfo($"DrawHeight loop took {watch.ElapsedMilliseconds}ms time");
+
+            yield return null;
         }
 
-        private void DrawForestFilter()
+        private IEnumerator DrawForestFilter()
         {
-            if (!Overlays.Values.Any(x => x.ForestDirty)) {return;}
-
-            Logger.LogInfo("Redraw Forest");
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-
-            Graphics.CopyTexture(ForestFilterVanilla, Minimap.instance.m_forestMaskTexture); // reset first.
-            ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_forestMaskTexture); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => x.ForestEnabled && x.Enabled))
+            if (Overlays.Values.Any(x => x.ForestDirty))
             {
-                DrawOverlay(overlay.ForestFilter, Minimap.instance.m_forestMaskTexture, ComposeForestMaterial);
+                Logger.LogInfo("Redraw Forest");
+                var watch = new System.Diagnostics.Stopwatch();
+                watch.Start();
+
+                Graphics.CopyTexture(ForestFilterVanilla, Minimap.instance.m_forestMaskTexture); // reset first.
+                ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_forestMaskTexture); // setup shader
+                foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.ForestEnabled))
+                {
+                    DrawOverlay(overlay.ForestFilter, Minimap.instance.m_forestMaskTexture, ComposeForestMaterial);
+                }
+
+                watch.Stop();
+                Logger.LogInfo($"DrawForest loop took {watch.ElapsedMilliseconds}ms time");
             }
-            watch.Stop();
-            Logger.LogInfo($"DrawForest loop took {watch.ElapsedMilliseconds}ms time");
+
+            yield return null;
         }
 
-        private void DrawFogFilter()
+        private IEnumerator DrawFogFilter()
         {
-            if (!Overlays.Values.Any(x => x.FogDirty)) {return;}
-
-            Logger.LogInfo("Redraw Fog");
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-
-            Graphics.CopyTexture(FogFilterVanilla, Minimap.instance.m_fogTexture); // reset first.
-            ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_fogTexture); // setup shader
-            foreach (var overlay in Overlays.Values.Where(x => x.FogEnabled && x.Enabled))
+            if (Overlays.Values.Any(x => x.FogDirty))
             {
-                DrawOverlay(overlay.FogFilter, Minimap.instance.m_fogTexture, ComposeForestMaterial);
+                Logger.LogInfo("Redraw Fog");
+                var watch = new System.Diagnostics.Stopwatch();
+                watch.Start();
+
+                Graphics.CopyTexture(FogFilterVanilla, Minimap.instance.m_fogTexture); // reset first.
+                ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_fogTexture); // setup shader
+                foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.FogEnabled))
+                {
+                    DrawOverlay(overlay.FogFilter, Minimap.instance.m_fogTexture, ComposeForestMaterial);
+                }
+
+                watch.Stop();
+                Logger.LogInfo($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
             }
-            watch.Stop();
-            Logger.LogInfo($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
+
+            yield return null;
         }
 
         private void DrawOverlay(Texture2D overlay, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
@@ -298,9 +283,7 @@ namespace Jotunn.Managers
             // Release the temporary RenderTexture
             RenderTexture.ReleaseTemporary(tmp);
         }
-
-
-
+        
         private void InitializeTextures()
         {
             var watch = new System.Diagnostics.Stopwatch();
@@ -332,6 +315,7 @@ namespace Jotunn.Managers
             watch.Stop();
             Logger.LogInfo($"Init took {watch.ElapsedMilliseconds}ms time");
         }
+
         private void SetupTextures()
         {
             var watch = new System.Diagnostics.Stopwatch();
@@ -345,14 +329,10 @@ namespace Jotunn.Managers
             Graphics.CopyTexture(Minimap.instance.m_mapTexture, MainTexVanilla);
 
             // copy unreadable textures.
-            BackupTexture(BackgroundTexVanilla, "_BackgroundTex");
-            BackupTexture(WaterTexVanilla, "_WaterTex");
-            BackupTexture(MountainTexVanilla, "_MountainTex");
-
-            Logger.LogInfo($"background width: {BackgroundTexVanilla.width}, height {BackgroundTexVanilla.height} FILTERMmode: {BackgroundTexVanilla.filterMode}, format: {BackgroundTexVanilla.format}, graphicsformat {BackgroundTexVanilla.graphicsFormat}");
-            Minimap.instance.m_mapImageLarge.material.SetTexture("_BackgroundTex", BackgroundTemp);
-            //Minimap.instance.m_mapImageLarge.material.SetTexture("_BackgroundTex", BackgroundTexVanilla);
-
+            // BackupTexture(BackgroundTexVanilla, "_BackgroundTex");
+            // BackupTexture(WaterTexVanilla, "_WaterTex");
+            // BackupTexture(MountainTexVanilla, "_MountainTex");
+            
             // TODO: Load this texture from file, should be faster.
             Color c = new Color(0, 0, 0, 0);
             for (int i = 0; i < DefaultOverlaySize; i++)
@@ -694,6 +674,17 @@ namespace Jotunn.Managers
             ///     Initial texture size to calculate the relative drawing position
             /// </summary>
             public int TextureSize { get; internal set; }
+            
+            /// <summary>
+            ///     Texture components holding the overlay texture data
+            /// </summary>
+            public Texture2D ForestFilter => _forestFilter ??= Create(Instance.ForestFilterVanilla);
+
+            public Texture2D FogFilter => _fogFilter ??= Create(Instance.FogFilterVanilla);
+
+            public Texture2D HeightFilter => _heightFilter ??= Create(Instance.HeightFilterVanilla);
+
+            public Texture2D MainTex =>  _mainTex ??= Create(Instance.MainTexVanilla);
 
             /// <summary>
             ///     Set true to render this overlay, false to hide
@@ -711,24 +702,13 @@ namespace Jotunn.Managers
                         _enabled = value;
                         Dirty = true;
                     }
-                    // Redraw a layer whenever any overlay is updated for that layer.
-                    Instance.RedrawMain = Instance.RedrawMain || MainEnabled;
-                    Instance.RedrawForest = Instance.RedrawForest || ForestEnabled;
-                    Instance.RedrawFog = Instance.RedrawFog || FogEnabled;
-                    Instance.RedrawHeight = Instance.RedrawHeight || HeightEnabled;
                 }
             }
             
-            /// <summary>
-            ///     Texture components holding the overlay texture data
-            /// </summary>
-            public Texture2D ForestFilter => _forestFilter ??= Create(Instance.ForestFilterVanilla);
-
-            public Texture2D FogFilter => _fogFilter ??= Create(Instance.FogFilterVanilla);
-
-            public Texture2D HeightFilter => _heightFilter ??= Create(Instance.HeightFilterVanilla);
-
-            public Texture2D MainTex =>  _mainTex ??= Create(Instance.MainTexVanilla);
+            internal bool ForestEnabled => _forestFilter != null;
+            internal bool FogEnabled => _fogFilter != null;
+            internal bool HeightEnabled => _heightFilter != null;
+            internal bool MainEnabled => _mainTex != null;
 
             /// <summary>
             ///     Flag to determine if this overlay had changes since its last draw
@@ -756,18 +736,8 @@ namespace Jotunn.Managers
 
             internal bool MainDirty => _mainTex != null && _mainDirty;
 
-            internal bool ForestEnabled => _forestEnabled;
-            internal bool FogEnabled => _fogEnabled;
-            internal bool HeightEnabled => _heightEnabled;
-            internal bool MainEnabled => _mainEnabled;
-
             private bool _enabled;
-
-            private bool _forestEnabled;
-            private bool _fogEnabled;
-            private bool _heightEnabled;
-            private bool _mainEnabled;
-
+            
             private bool _forestDirty;
             private bool _fogDirty;
             private bool _heightDirty;
@@ -803,23 +773,18 @@ namespace Jotunn.Managers
                 if (tex == _mainTex)
                 {
                     _mainDirty = true;
-                    _mainEnabled = true;
                 }
-
                 if (tex == _forestFilter)
                 {
                     _forestDirty = true;
-                    _forestEnabled = true;
                 }
                 if(tex == _fogFilter)
                 {
                     _fogDirty = true;
-                    _fogEnabled = true;
                 }
                 if(tex == _heightFilter)
                 {
                     _heightDirty = true;
-                    _heightEnabled = true;
                 }
             }
         }
