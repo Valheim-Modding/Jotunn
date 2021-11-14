@@ -30,8 +30,8 @@ namespace TestMod3
          */
 
         private static MinimapManager.MapOverlay squarequadoverlay;
-        private static MinimapManager.MapOverlay squareoverlay;
-        private static MinimapManager.MapOverlay flatsquareoverlay;
+        private static MinimapManager.MapOverlay pinsoverlay;
+        private static MinimapManager.MapOverlay pinsflatoverlay;
         private static MinimapManager.MapOverlay alphaoverlay;
         private static MinimapManager.MapOverlay flattenoverlay;
         private static MinimapManager.MapOverlay quadtest0;
@@ -47,9 +47,9 @@ namespace TestMod3
 
         public void Awake()
         {
-            CommandManager.Instance.AddConsoleCommand(new CHCommands_squares());
+            CommandManager.Instance.AddConsoleCommand(new CHCommands_pins());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_flatten());
-            CommandManager.Instance.AddConsoleCommand(new CHCommands_flatsquares());
+            CommandManager.Instance.AddConsoleCommand(new CHCommands_pinsflat());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_toggle());
             // CommandManager.Instance.AddConsoleCommand(new CHCommands_alpha()); // Not yet implemented.
 
@@ -61,12 +61,12 @@ namespace TestMod3
 
 
             // test drawing flat squares with no fog and no forest
-            //flatsquareoverlay = MinimapManager.Instance.AddMapOverlay("testsquareflatten_overlay");
-            //DrawSquaresOnMapPins(Color.blue, flatsquareoverlay, extras: true);
+            //pinsflatoverlay = MinimapManager.Instance.AddMapOverlay("testsquareflatten_overlay");
+            //DrawSquaresOnMapPins(Color.blue, pinsflatoverlay, extras: true);
 
             // test just drawing squares
-            //squareoverlay = MinimapManager.Instance.AddMapOverlay("testsquares_overlay");
-            //DrawSquaresOnMapPins(Color.red, squareoverlay);
+            //pinsoverlay = MinimapManager.Instance.AddMapOverlay("testsquares_overlay");
+            //DrawSquaresOnMapPins(Color.red, pinsoverlay);
 
             // test transparency
             //alphaoverlay = MinimapManager.Instance.AddMapOverlay("alpha_overlay");
@@ -133,11 +133,6 @@ namespace TestMod3
             DrawQuadrant(quadtest2.ForestFilter, FilterOn, 1);
             quadtest3 = MinimapManager.Instance.AddMapOverlay("quad_overlay3");
             DrawQuadrant(quadtest3.FogFilter, FilterOn, 3);
-
-            quadtest0.Enabled = true;
-            quadtest1.Enabled = true;
-            quadtest2.Enabled = true;
-            quadtest3.Enabled = true;
         }
 
 
@@ -167,9 +162,12 @@ namespace TestMod3
             }
 
             ovl.MainTex.Apply();
-            ovl.FogFilter.Apply();
-            ovl.ForestFilter.Apply();
-            ovl.HeightFilter.Apply();
+            if (extras)
+            {
+                ovl.FogFilter.Apply();
+                ovl.ForestFilter.Apply();
+                ovl.HeightFilter.Apply();
+            }
         }
 
         private static void DrawSquare(Texture2D tex, Vector2 start, Color col, int square_size)
@@ -240,15 +238,15 @@ namespace TestMod3
         }
 
 
-        private class CHCommands_squares : ConsoleCommand
+        private class CHCommands_pins : ConsoleCommand
         {
             private readonly Dictionary<string, Color> colors = new Dictionary<string, Color>();
 
-            public override string Name => "map.chsq";
+            public override string Name => "map.pins";
 
-            public override string Help => "run the channel helper";
+            public override string Help => "Draw squares on map pins";
 
-            public CHCommands_squares()
+            public CHCommands_pins()
             {
                 colors.Add("red", Color.red);
                 colors.Add("green", Color.green);
@@ -257,32 +255,38 @@ namespace TestMod3
 
             public override void Run(string[] args)
             {
-                if (squareoverlay == null)
+                if (pinsoverlay == null)
                 {
-                    squareoverlay = MinimapManager.Instance.AddMapOverlay("testsquares_overlay");
+                    pinsoverlay = MinimapManager.Instance.AddMapOverlay("pinsoverlay");
+                    DrawSquaresOnMapPins(Color.green, pinsoverlay);
+                    Console.instance.Print($"Created {pinsoverlay.Name}");
+                    return;
                 }
 
                 if (args.Length == 1 && colors.TryGetValue(args[0], out Color color))
                 {
-                    DrawSquaresOnMapPins(color, squareoverlay);
-                    squareoverlay.Enabled = true;
+                    DrawSquaresOnMapPins(color, pinsoverlay);
+                    pinsoverlay.Enabled = true;
+                    Console.instance.Print($"Setting overlay {pinsoverlay.Name} to {args[0]}");
                     return;
                 }
-                squareoverlay.Enabled = !squareoverlay.Enabled; // toggle
+
+                pinsoverlay.Enabled = !pinsoverlay.Enabled; // toggle
+                Console.instance.Print($"Overlay {pinsoverlay.Name} {(pinsoverlay.Enabled ? "enabled" : "disabled")}");
             }
 
             public override List<string> CommandOptionList() => colors.Keys.ToList();
         }
 
-        private class CHCommands_flatsquares : ConsoleCommand
+        private class CHCommands_pinsflat : ConsoleCommand
         {
             private readonly Dictionary<string, Color> colors = new Dictionary<string, Color>();
 
-            public override string Name => "map.chfsq";
+            public override string Name => "map.pinsflat";
 
-            public override string Help => "run the channel helper";
+            public override string Help => "Draw squares on map pins and disables other layers";
 
-            public CHCommands_flatsquares()
+            public CHCommands_pinsflat()
             {
                 colors.Add("red", Color.red);
                 colors.Add("green", Color.green);
@@ -291,18 +295,24 @@ namespace TestMod3
 
             public override void Run(string[] args)
             {
-                if (flatsquareoverlay == null)
+                if (pinsflatoverlay == null)
                 {
-                    flatsquareoverlay = MinimapManager.Instance.AddMapOverlay("testsquareflatten_overlay");
+                    pinsflatoverlay = MinimapManager.Instance.AddMapOverlay("pinsflatoverlay");
+                    DrawSquaresOnMapPins(Color.blue, pinsflatoverlay, true);
+                    Console.instance.Print($"Created {pinsflatoverlay.Name}");
+                    return;
                 }
 
                 if (args.Length == 1 && colors.TryGetValue(args[0], out Color color))
                 {
-                    DrawSquaresOnMapPins(color, flatsquareoverlay, true);
-                    flatsquareoverlay.Enabled = true;
+                    DrawSquaresOnMapPins(color, pinsflatoverlay, true);
+                    pinsflatoverlay.Enabled = true;
+                    Console.instance.Print($"Setting overlay {pinsflatoverlay.Name} to {args[0]}");
                     return;
                 }
-                flatsquareoverlay.Enabled = !flatsquareoverlay.Enabled; // toggle
+
+                pinsflatoverlay.Enabled = !pinsflatoverlay.Enabled; // toggle
+                Console.instance.Print($"Overlay {pinsflatoverlay.Name} {(pinsflatoverlay.Enabled ? "enabled" : "disabled")}");
             }
 
             public override List<string> CommandOptionList() => colors.Keys.ToList();
@@ -311,7 +321,7 @@ namespace TestMod3
 
         private class CHCommands_flatten : ConsoleCommand
         {
-            public override string Name => "map.chf";
+            public override string Name => "map.flatten";
 
             public override string Help => "Change map height information";
 
@@ -321,17 +331,20 @@ namespace TestMod3
                 {
                     flattenoverlay = MinimapManager.Instance.AddMapOverlay("testflatten_overlay");
                     FlattenMap(33, flattenoverlay);
-                    flattenoverlay.Enabled = true;
+                    Console.instance.Print($"Created {flattenoverlay.Name}");
                     return;
                 }
 
-                if (args.Length == 1 && int.TryParse(args[0], out int height))
+                if (args.Length == 1 && int.TryParse(args[0], out var height))
                 {
                     FlattenMap(height, flattenoverlay);
                     flattenoverlay.Enabled = true;
+                    Console.instance.Print($"Setting overlay {flattenoverlay.Name} to {height}");
                     return;
                 }
+
                 flattenoverlay.Enabled = !flattenoverlay.Enabled; // toggle
+                Console.instance.Print($"Overlay {flattenoverlay.Name} {(flattenoverlay.Enabled ? "enabled" : "disabled")}");
             }
         }
 
@@ -366,12 +379,18 @@ namespace TestMod3
 
             public override void Run(string[] args)
             {
+                if (args.Length != 1)
+                {
+                    Console.instance.Print($"usage: {Name} [overlay_name]");
+                    return;
+                }
+
                 string name = args[0];
                 var ovl = MinimapManager.Instance.GetMapOverlay(name);
                 if (ovl != null)
                 {
                     ovl.Enabled = !ovl.Enabled;
-                    Console.instance.Print($"Setting overlay {ovl.Name} to {ovl.Enabled}");
+                    Console.instance.Print($"Overlay {ovl.Name} {(ovl.Enabled ? "enabled" : "disabled")}");
                 }
             }
 
