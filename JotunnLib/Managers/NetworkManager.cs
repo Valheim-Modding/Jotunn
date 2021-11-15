@@ -55,9 +55,9 @@ namespace Jotunn.Managers
         /// <param name="serverReceive">Delegate which gets called on client instances when packages are received</param>
         /// <param name="clientReceive">Delegate which gets called on server instances when packages are received</param>
         /// <returns>Existing or newly created <see cref="CustomRPC"/></returns>
-        public CustomRPC GetRPC(string name, CoroutineHandler serverReceive, CoroutineHandler clientReceive)
+        public CustomRPC AddRPC(string name, CoroutineHandler serverReceive, CoroutineHandler clientReceive)
         {
-            return GetRPC(BepInExUtils.GetSourceModMetadata(), name, serverReceive, clientReceive);
+            return AddRPC(BepInExUtils.GetSourceModMetadata(), name, serverReceive, clientReceive);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Jotunn.Managers
         /// <param name="serverReceive">Delegate which gets called on client instances when packages are received</param>
         /// <param name="clientReceive">Delegate which gets called on server instances when packages are received</param>
         /// <returns>Existing or newly created <see cref="CustomRPC"/>.</returns>
-        internal CustomRPC GetRPC(BepInPlugin sourceMod, string name, CoroutineHandler serverReceive, CoroutineHandler clientReceive)
+        internal CustomRPC AddRPC(BepInPlugin sourceMod, string name, CoroutineHandler serverReceive, CoroutineHandler clientReceive)
         {
             var ret = RPCs.FirstOrDefault(x => x.SourceMod == sourceMod && x.Name == name);
 

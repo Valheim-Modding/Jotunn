@@ -26,12 +26,12 @@ namespace TestMod
         {
             CommandManager.Instance.AddConsoleCommand(new BlockingRPCCommand());
 
-            BlockingRPC = NetworkManager.Instance.GetRPC(
+            BlockingRPC = NetworkManager.Instance.AddRPC(
                 "blocking", BlockingRPC_OnServerReceive, BlockingRPC_OnClientReceive);
 
             CommandManager.Instance.AddConsoleCommand(new NonblockingRPCommand());
 
-            NonblockingRPC = NetworkManager.Instance.GetRPC(
+            NonblockingRPC = NetworkManager.Instance.AddRPC(
                 "nonblocking", NonblockingRPC_OnServerReceive, NonblockingRPC_OnClientReceive1);
         }
 
