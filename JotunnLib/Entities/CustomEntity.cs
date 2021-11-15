@@ -9,7 +9,7 @@ namespace Jotunn.Entities
     public abstract class CustomEntity
     {
         /// <summary>
-        ///     Reference to the <see cref="BepInPlugin"/> which added this prefab.
+        ///     Reference to the <see cref="BepInPlugin"/> which added this entity.
         /// </summary>
         public BepInPlugin SourceMod { get; }
 

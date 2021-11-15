@@ -1,9 +1,10 @@
 ﻿# Changelog
 
-## Version 2.3.13
+## Version 2.4.0
 * Added ZoneManager for custom Locations and Vegetation (see https://valheim-modding.github.io/Jotunn/tutorials/zones.html for tutorials)
-* Fixed mock resolution in HashSets
+* Added NetworkManager for custom RPCs with a simpler interface, automatic package compression/slicing and Coroutines (see https://valheim-modding.github.io/Jotunn/tutorials/rpcs.html for tutorials)
 * Added support for mocked objects in Enumerables mixed with non-mocked objects
+* Fixed mock resolution in HashSets
 
 ## Version 2.3.12
 * Added RenderManager.Render() which renders the given GameObject in the same frame instead of waiting for the next frame. Marked EnqueueRender obsolete.

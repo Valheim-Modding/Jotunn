@@ -70,7 +70,7 @@ namespace TestMod
             // Create a custom Localization and add it to the Manager
             Localization = new CustomLocalization();
             LocalizationManager.Instance.AddLocalization(Localization);
-
+            
             // Create stuff
             CreateConfigValues();
             LoadAssets();

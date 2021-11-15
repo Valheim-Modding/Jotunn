@@ -10,9 +10,9 @@ This section covers the main interfaces we provide with the library, enabling de
 
 Each section will have examples showing how this is done. All of the examples shown are published in the [Example Mod](https://github.com/Valheim-Modding/JotunnModExample), available in our [GitHub repo](https://github.com/Valheim-Modding).
 
-## Quick guide
+## Sections
 
-### Assets
+### Creating Assets
 
 * [Asset Creation](asset-creation.md): Create new Assets with Unity and prepare them to be imported into Valheim using Jötunn.
 * [Asset Loading](asset-loading.md): Load Assets into your plugin using Jötunn.
@@ -20,23 +20,25 @@ Each section will have examples showing how this is done. All of the examples sh
 * [Kitbashing](kitbash.md): Use individual parts of vanilla prefabs to assemble your custom assets.
 * [Reordering Bones](bonereorder.md): Reoder and preserve bone order so player attached objects preserve their position.
 
-### Game Objects
+### Adding Content
 
-* [Custom Items](items.md): Create equipment and resources.
-* [Custom Pieces](pieces.md): Create building pieces and use custom categories.
-* [Custom Recipes](recipes.md): Create building pieces.
-* [Custom Item Conversions](item-conversions.md): Add custom item conversions like the cooking of meat or the smelting of ores.
-* [Custom Item Variants](item-variants.md): Create multiple variants of the same items.
-* [Custom Status Effects](status-effects.md): Add custom Status Effects.
-* [Custom Skills](skills.md): Add custom trainable Skills.
-* [Custom Console Commands](console-commands.md): Add custom commands to the Console that can execute your methods.
-* [Localizations](localization.md): Create language tokens that are replaced at runtime by their specified localization.
+* [Items](items.md): Create equipment and resources.
+* [Item Conversions](item-conversions.md): Add custom item conversions like the cooking of meat or the smelting of ores.
+* [Item Variants](item-variants.md): Create multiple variants of the same items.
+* [Pieces and Piece Tables](pieces.md): Create building pieces and use custom categories.
+* [Recipes](recipes.md): Add requirements for items and building pieces.
+* [Status Effects](status-effects.md): Add custom Status Effects.
+* [Skills](skills.md): Add custom trainable Skills.
+* [Zones / Locations / Vegetation](zones.md): Add to or change Valheim's world generation using your custom assets.
+* [Console Commands](console-commands.md): Add custom commands to the Console that can execute your methods.
 * [Inputs](inputs.md): Register custom inputs and add key hints to your custom items.
 * [UI Elements](gui.md): Add custom windows and UI elements.
+* [Localizations](localization.md): Create language tokens that are replaced at runtime by their specified localization.
 
 ### Utilities
 
+* [Config and Synchronization](config.md): Ensures the synchronization of plugin config files between server and client as well as admin states on dedicated servers.
 * [Network Compatibility](networkcompatibility.md): Make sure that clients are running compatible versions of the plugin and it's assets.
-* [Config Sync](config.md): Ensures the synchronization of plugin config files between server and client.
+* [RPCs](rpcs.md): Add Client/Server process communications and transfer data with automatic slicing and compression.
 * [Rendering Queue](renderqueue.md): Create rendered Sprites from GameObjects with visual components at runtime.
 * [JSON](https://github.com/mhallin/SimpleJSON.NET): JVL integrates the MIT licensed SimpleJSON, accessible via its namespace.
