@@ -1,12 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
-using Mono.Cecil;
-using MonoMod;
-using MonoMod.RuntimeDetour.HookGen;
 using Microsoft.Build.Framework;
+using Mono.Cecil;
 
 namespace JotunnBuildTask
 {
@@ -119,7 +116,7 @@ namespace JotunnBuildTask
                             {
                                 return false;
                             }
-                            
+
                             // Try to generate MMHook
                             if (!MMHookGenerator.GenerateMMHook(assembly, mmhookFolder, hash, ValheimPath, Log))
                             {
