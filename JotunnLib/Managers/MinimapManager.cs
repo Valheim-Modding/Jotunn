@@ -84,6 +84,7 @@ namespace Jotunn.Managers
         private Texture2D BackgroundTemp;
         // Default transparent tex to provide to modders to draw on.
         private Texture2D TransparentTex;
+        //private Texture ClearTex;
 
         // Materials that have shaders used to blit overlays onto the minimap.
         private Material ComposeMainMaterial;
@@ -116,6 +117,10 @@ namespace Jotunn.Managers
 
             // Load shaders and setup materials
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
+
+            // Load texture with all pixels (RGBA) set to 0f.
+            TransparentTex = bundle.LoadAsset<Texture2D>("2048x2048_clear");
+            Logger.LogInfo($"Transparent tex loaded with pixel values: {TransparentTex.GetPixel(0,0).r} {TransparentTex.GetPixel(0, 0).g} {TransparentTex.GetPixel(0, 0).b} {TransparentTex.GetPixel(0, 0).a}");
 
             // Create materials and shaders to compute overlays onto the vanilla textures
             var composeMainShader = bundle.LoadAsset<Shader>("MinimapComposeMain");
@@ -297,8 +302,8 @@ namespace Jotunn.Managers
             BackgroundTemp = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             BackgroundTemp.wrapMode = TextureWrapMode.Clamp;
 
-            TransparentTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            TransparentTex.wrapMode = TextureWrapMode.Clamp;
+            //TransparentTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+            //TransparentTex.wrapMode = TextureWrapMode.Clamp;
 
             watch.Stop();
             Logger.LogInfo($"Init took {watch.ElapsedMilliseconds}ms time");
@@ -330,7 +335,7 @@ namespace Jotunn.Managers
             //Minimap.instance.m_mapImageLarge.material.SetTexture("_FogLayerTex", FogTexVanilla);
             //Logger.LogInfo($"foglayertex width {FogTexVanilla.width} height {FogTexVanilla.height}");
 
-            Color c = new Color(0, 0, 0, 0);
+/*            Color c = new Color(0, 0, 0, 0);
 
             // TODO: Load this texture from file, should be faster.
             for (int i = 0; i < DefaultOverlaySize; i++)
@@ -341,7 +346,7 @@ namespace Jotunn.Managers
                 }
             }
             TransparentTex.Apply();
-
+*/
             watch.Stop();
             Logger.LogInfo($"Setup took {watch.ElapsedMilliseconds}ms time");
         }
