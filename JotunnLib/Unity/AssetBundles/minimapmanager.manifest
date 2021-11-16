@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1865109139
+CRC: 1099414999
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 0dc9855428c672625ab366b7f958f7e8
+    Hash: 9c674faf984a1a095806bcf4cdc36a2d
   TypeTreeHash:
     serializedVersion: 2
     Hash: 742b6dde2dfa8ec5256f61949e2612fd
@@ -47,7 +47,7 @@ SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Resources/MinimapComposeFog.shader
 - Assets/Resources/MinimapComposeForest.shader
-- Assets/Resources/MinimapCompose.shader
+- Assets/Resources/MinimapComposeMain.shader
 - Assets/Resources/MinimapComposeHeight.shader
 - Assets/Prefabs/MinimapOverlayPanel.prefab
 Dependencies: []

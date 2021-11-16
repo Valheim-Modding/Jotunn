@@ -87,7 +87,7 @@ namespace Jotunn.Managers
         private Texture2D TransparentTex;
 
         // Materials that have shaders used to blit overlays onto the minimap.
-        private Material ComposeMaterial;
+        private Material ComposeMainMaterial;
         private Material ComposeHeightMaterial;
         private Material ComposeForestMaterial;
         private Material ComposeFogMaterial;
@@ -118,11 +118,12 @@ namespace Jotunn.Managers
             // Load shaders and setup materials
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
 
-            var composeShader = bundle.LoadAsset<Shader>("MinimapCompose");
+            // Create materials and shaders to compute overlays onto the vanilla textures
+            var composeMainShader = bundle.LoadAsset<Shader>("MinimapComposeMain");
             var composeHeightShader = bundle.LoadAsset<Shader>("MinimapComposeHeight");
             var composeForestShader = bundle.LoadAsset<Shader>("MinimapComposeForest");
             var composeFogShader = bundle.LoadAsset<Shader>("MinimapComposeFog");
-            ComposeMaterial = new Material(composeShader);
+            ComposeMainMaterial = new Material(composeMainShader);
             ComposeHeightMaterial = new Material(composeHeightShader);
             ComposeForestMaterial = new Material(composeForestShader);
             ComposeFogMaterial = new Material(composeFogShader);
@@ -168,11 +169,11 @@ namespace Jotunn.Managers
                 var watch = new System.Diagnostics.Stopwatch();
                 watch.Start();
 
-                Graphics.CopyTexture(MainTexVanilla, Minimap.instance.m_mapTexture); // reset first.
-                ComposeMaterial.SetTexture("_OvlTex", Minimap.instance.m_mapTexture); // setup shader
+                Graphics.CopyTexture(MainTexVanilla, Minimap.instance.m_mapTexture); // Reset vanilla texture to backup
+                // ComposeMaterial.SetTexture("_VanillaTex", Minimap.instance.m_mapTexture);
                 foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.MainEnabled))
                 {
-                    DrawOverlay(overlay.MainTex, Minimap.instance.m_mapTexture, ComposeMaterial);
+                    DrawOverlay(overlay.MainTex, Minimap.instance.m_mapTexture, ComposeMainMaterial);
                 }
 
                 watch.Stop();
@@ -190,8 +191,8 @@ namespace Jotunn.Managers
                 var watch = new System.Diagnostics.Stopwatch();
                 watch.Start();
 
-                Graphics.CopyTexture(HeightFilterVanilla, Minimap.instance.m_heightTexture); // reset first.
-                ComposeHeightMaterial.SetTexture("_OvlTex", Minimap.instance.m_heightTexture); // setup shader
+                Graphics.CopyTexture(HeightFilterVanilla, Minimap.instance.m_heightTexture); // Reset vanilla texture to backup
+                //ComposeHeightMaterial.SetTexture("_OvlTex", Minimap.instance.m_heightTexture); // setup shader
                 foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.HeightEnabled))
                 {
                     DrawOverlay(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial,
@@ -213,8 +214,8 @@ namespace Jotunn.Managers
                 var watch = new System.Diagnostics.Stopwatch();
                 watch.Start();
 
-                Graphics.CopyTexture(ForestFilterVanilla, Minimap.instance.m_forestMaskTexture); // reset first.
-                ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_forestMaskTexture); // setup shader
+                Graphics.CopyTexture(ForestFilterVanilla, Minimap.instance.m_forestMaskTexture); // Reset vanilla texture to backup
+                // ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_forestMaskTexture); // setup shader
                 foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.ForestEnabled))
                 {
                     DrawOverlay(overlay.ForestFilter, Minimap.instance.m_forestMaskTexture, ComposeForestMaterial);
@@ -235,8 +236,8 @@ namespace Jotunn.Managers
                 var watch = new System.Diagnostics.Stopwatch();
                 watch.Start();
 
-                Graphics.CopyTexture(FogFilterVanilla, Minimap.instance.m_fogTexture); // reset first.
-                ComposeFogMaterial.SetTexture("_OvlTex", Minimap.instance.m_fogTexture); // setup shader
+                Graphics.CopyTexture(FogFilterVanilla, Minimap.instance.m_fogTexture); // Reset vanilla texture to backup
+                // ComposeFogMaterial.SetTexture("_OvlTex", Minimap.instance.m_fogTexture); // setup shader
                 foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.FogEnabled))
                 {
                     DrawOverlay(overlay.FogFilter, Minimap.instance.m_fogTexture, ComposeFogMaterial);
@@ -342,6 +343,12 @@ namespace Jotunn.Managers
             Graphics.CopyTexture(Minimap.instance.m_heightTexture, HeightFilterVanilla);
             Graphics.CopyTexture(Minimap.instance.m_fogTexture, FogFilterVanilla);
             Graphics.CopyTexture(Minimap.instance.m_mapTexture, MainTexVanilla);
+
+            // Set the vanilla minimap textures in the shaders
+            ComposeMainMaterial.SetTexture("_VanillaTex", Minimap.instance.m_mapTexture);
+            ComposeHeightMaterial.SetTexture("_VanillaTex", Minimap.instance.m_heightTexture);
+            ComposeForestMaterial.SetTexture("_VanillaTex", Minimap.instance.m_forestMaskTexture);
+            ComposeFogMaterial.SetTexture("_VanillaTex", Minimap.instance.m_fogTexture);
 
             // copy unreadable textures.
             // BackupTexture(BackgroundTexVanilla, "_BackgroundTex");

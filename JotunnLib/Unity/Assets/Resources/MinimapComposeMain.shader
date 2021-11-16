@@ -3,7 +3,7 @@
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
-        _OvlTex("Texture", 2D) = "white" {}
+        _VanillaTex("Texture", 2D) = "white" {}
     }
         SubShader
         {
@@ -31,7 +31,7 @@
                     float4 vertex : SV_POSITION;
                 };
 
-                sampler2D _MainTex, _BrushTex, _OvlTex;
+                sampler2D _MainTex, _BrushTex, _VanillaTex;
                 float4 _MainTex_ST;
                 fixed4 _Color, _Coordinates;
 
@@ -46,7 +46,7 @@
                 fixed4 frag(v2f i) : SV_Target
                 {
                     fixed4 col = tex2D(_MainTex, i.uv);
-                    fixed4 col2 = tex2D(_OvlTex, i.uv);
+                    fixed4 col2 = tex2D(_VanillaTex, i.uv);
 
                     col2.rgba = lerp(col2.rgba, col.rgba, col.a);
                     return col2;

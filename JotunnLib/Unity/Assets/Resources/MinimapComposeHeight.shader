@@ -3,7 +3,7 @@
     Properties
     {
         _MainTex("Texture", 2D) = "blue" {}
-        _OvlTex("Texture", 2D) = "green" {}
+        _VanillaTex("Texture", 2D) = "green" {}
     }
         SubShader
         {
@@ -31,7 +31,7 @@
                     float4 vertex : SV_POSITION;
                 };
 
-                sampler2D _MainTex, _OvlTex;
+                sampler2D _MainTex, _VanillaTex;
                 float4 _MainTex_ST;
 
                 v2f vert(appdata v)
@@ -45,7 +45,7 @@
                 float4 frag(v2f i) : SV_Target
                 {
                     float4 col = tex2D(_MainTex, i.uv);
-                    float4 col2 = tex2D(_OvlTex, i.uv);
+                    float4 col2 = tex2D(_VanillaTex, i.uv);
 
                     if(col.r != 0){
                         col2.r = col.r;
