@@ -1,19 +1,52 @@
 ManifestFileVersion: 0
-CRC: 2388695675
+CRC: 1361514460
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c5dbd671f220f07aeca2bc1ebcf39a7f
+    Hash: c92370b39167f598aab095e7c654a5cd
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 55d48f4ad9c3b13330b9eb5ee5686477
+    Hash: 8f2e8b64993b562766176d5e5451b70d
 HashAppended: 0
 ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
 - Class: 48
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 24fab2dacfbc05348a64aa98107b05e4, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 224
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Resources/MinimapComposeForest.shader
 - Assets/Resources/MinimapCompose.shader
 - Assets/Resources/MinimapComposeHeight.shader
+- Assets/Prefabs/MinimapOverlayPanel.prefab
 Dependencies: []

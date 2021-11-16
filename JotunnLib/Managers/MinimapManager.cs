@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using Jotunn.Entities;
+using Jotunn.GUI;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
 {
@@ -89,6 +92,9 @@ namespace Jotunn.Managers
         private Material ComposeHeightMaterial;
         private Material ComposeForestMaterial;
 
+        // Current component for the MinimapOverlayPanel
+        private MinimapOverlayPanel OverlayPanel;
+
         /// <summary>
         ///     Creates the Overlays and registers hooks.
         /// </summary>
@@ -111,12 +117,17 @@ namespace Jotunn.Managers
 
             // Load shaders and setup materials
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
+
             var composeShader = bundle.LoadAsset<Shader>("MinimapCompose");
             var composeHeightShader = bundle.LoadAsset<Shader>("MinimapComposeHeight");
             var composeForestShader = bundle.LoadAsset<Shader>("MinimapComposeForest");
             ComposeMaterial = new Material(composeShader);
             ComposeHeightMaterial = new Material(composeHeightShader);
             ComposeForestMaterial = new Material(composeForestShader);
+
+            var overlaypanel = bundle.LoadAsset<GameObject>("MinimapOverlayPanel");
+            PrefabManager.Instance.AddPrefab(new CustomPrefab(overlaypanel, false));
+
             bundle.Unload(false);
 
             Harmony.CreateAndPatchAll(typeof(Texture2D_Apply));
@@ -407,7 +418,7 @@ namespace Jotunn.Managers
             ret.Enabled = true;
             ret.TextureSize = DefaultOverlaySize;
             Overlays.Add(name, ret);
-            //AddOverlayToGUI(ret);
+            AddOverlayToGUI(ret);
             return ret;
         }
 
@@ -481,6 +492,7 @@ namespace Jotunn.Managers
             InitializeTextures();
             orig(self);
             StartWatchdog();
+            MapGUICreate();
             InvokeOnVanillaMapAvailable();
         }
 
@@ -499,7 +511,6 @@ namespace Jotunn.Managers
         {
             orig(self);
             SetupTextures();
-            //MapGUICreate(); // Add GUI portion to overlay
             InvokeOnVanillaMapDataLoaded();
             FogFilterVanilla.Apply(); // maybe not needed.
         }
@@ -562,74 +573,21 @@ namespace Jotunn.Managers
 
         private void MapGUICreate()
         {
-            Jotunn.Logger.LogInfo("Creating wood panels and shizz");
-            int pWidth = 300;
-            int pHeight = 400;
-
-            var wp = GUIManager.Instance.CreateWoodpanel(
-                Minimap.instance.m_largeRoot.transform,
-                anchorMin: new Vector2(1f, 1f),
-                anchorMax: new Vector2(1f, 1f),
-                new Vector2(-pWidth / 2, -pHeight / 2),
-                pWidth,
-                pHeight
-            );
-
-            GUIManager.Instance.CreateText(
-                "Hide/Show Overlay Layers",
-                wp.transform,
-                anchorMin: new Vector2(0.5f, 1f),
-                anchorMax: new Vector2(0.5f, 1f),
-                new Vector2(20, -50),
-                GUIManager.Instance.AveriaSerifBold,
-                fontSize: 16,
-                GUIManager.Instance.ValheimOrange,
-                outline: true,
-                Color.black,
-                width: pWidth,
-                height: 50,
-                false
-            );
-
-            ScrollView = GUIManager.Instance.CreateScrollView(
-               wp.transform,
-               true,
-               true,
-               10,
-               5,
-               GUIManager.Instance.ValheimScrollbarHandleColorBlock,
-               Color.black,
-               pWidth - 50,
-               pHeight - 100
-           );
-
-            List<string> testnames = new List<string>();
-            for (int i = 0; i < 20; i++)
-            {
-                testnames.Add("test" + i);
-            }
+            var basePanel = PrefabManager.Instance.GetPrefab("MinimapOverlayPanel");
+            var panel = Object.Instantiate(basePanel, Minimap.instance.m_mapLarge.transform, false);
+            OverlayPanel = panel.GetComponent<MinimapOverlayPanel>();
+            GUIManager.Instance.ApplyButtonStyle(OverlayPanel.GetComponent<MinimapOverlayPanel>().Button);
+            GUIManager.Instance.ApplyToogleStyle(OverlayPanel.GetComponent<MinimapOverlayPanel>().BaseToggle);
+            GUIManager.Instance.ApplyTextStyle(OverlayPanel.GetComponent<MinimapOverlayPanel>().BaseModText);
         }
 
         private void AddOverlayToGUI(MapOverlay ovl)
         {
-            int pWidth = 300;
-            int pHeight = 400;
-            Logger.LogInfo($"Adding overlay to GUI with name {ovl.Name}");
-
-            RectTransform viewport = ScrollView.transform.Find("Scroll View/Viewport/Content") as RectTransform;
-            var t = GUIManager.Instance.CreateToggle(viewport, 20, 20);
-            var tt = t.GetComponent<Text>();
-            if (tt != null) { tt.name = "test"; }
-
-            var ttt = t.GetComponentInChildren<Text>();
-            ttt.text = "atestty";
-            //tt.onValueChanged.AddListener(ToggleListener);
-
-            /*            GUIManager.Instance.CreateText(ovl.Name,
-                            viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(40f, 0f),
-                            GUIManager.Instance.AveriaSerifBold, fontSize: 16, GUIManager.Instance.ValheimOrange,
-                            true, Color.black, 650f, 40f, false);*/
-            //GUIManager.Instance.CreateDropDown;
+            var toggle = OverlayPanel?.AddOverlayToggle(ovl.SourceMod.Name, ovl.Name);
+            toggle?.onValueChanged.AddListener(active =>
+            {
+                ovl.Enabled = active;
+            });
         }
 
         private void ToggleListener(bool arg0)
@@ -663,7 +621,7 @@ namespace Jotunn.Managers
         ///     Modders should modify the texture directly.
         ///     
         /// </summary>
-        public class MapOverlay
+        public class MapOverlay : CustomEntity
         {
             /// <summary>
             ///     Unique name per overlay
