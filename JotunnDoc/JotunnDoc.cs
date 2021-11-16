@@ -21,6 +21,8 @@ namespace JotunnDoc
             {
                 new InputDoc(),
                 new ItemDoc(),
+                new LanguageDoc(),
+                new LocationDoc(),
                 new MaterialDoc(),
                 new PrefabDoc(),
                 new PieceTableDoc(),
@@ -30,7 +32,6 @@ namespace JotunnDoc
                 new ShaderDoc(),
                 new SpriteDoc(),
                 new StatusEffectDoc(),
-                new LocationDoc(),
                 new VegetationDoc()
             };
 

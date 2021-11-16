@@ -36,6 +36,8 @@ Localizations can be provide through loading side by side with your plugin. The 
 An example of a path which will be read for localization at run time may be: `BepInEx/plugins/JotunnModExample/Assets/Translations/English/backpack.json`. 
 All .json files within such a directory will be iterated through and localizations added for each of those languages.
 
+You can find a list of language names [here](../data/localization/language-list.md).
+
 ### Hardcoding localizations
 
 Localizations may also be hardcoded into your plugin. This is done by creating your own [CustomLocalization](xref:Jotunn.Entities.CustomLocalization) instance and invoking the [AddLocalization](xref:Jotunn.Entities.CustomLocalization.AddTranslation(System.String@,System.Collections.Generic.Dictionary{System.String,System.String})) method. Don't forget to add that CustomLocalization to the [LocalizationManager](xref:Jotunn.Managers.LocalizationManager). This can be done right after instantiation, all added content gets also added to the game.

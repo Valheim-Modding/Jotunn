@@ -24,3 +24,7 @@
 - name: Locations / Vegetation
   href: zones/toc.yml
   topicHref: zones/overview.md
+
+- name: Localization
+  href: localization/toc.yml
+  topicHref: localization/overview.md

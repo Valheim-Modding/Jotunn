@@ -11,5 +11,6 @@ This section contains lists of things in Valheim such as:
 - RPCs
 - Locations
 - Vegetation
+- Supported languages and their translations
 
 These dumps are automatically created with [JotunnDoc](https://github.com/Valheim-Modding/Jotunn/tree/dev/JotunnDoc).
