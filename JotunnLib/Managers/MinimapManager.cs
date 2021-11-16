@@ -8,7 +8,6 @@ using Jotunn.GUI;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
