@@ -61,7 +61,6 @@ namespace Jotunn.Managers
         private const int DefaultOverlaySize = 2048;
         private const string OverlayNamePrefix = "custom_map_overlay_";
 
-        private GameObject ScrollView;
         private Dictionary<string, MapOverlay> Overlays = new Dictionary<string, MapOverlay>();
         private int OverlayID;
 
@@ -170,7 +169,6 @@ namespace Jotunn.Managers
                 watch.Start();
 
                 Graphics.CopyTexture(MainTexVanilla, Minimap.instance.m_mapTexture); // Reset vanilla texture to backup
-                // ComposeMaterial.SetTexture("_VanillaTex", Minimap.instance.m_mapTexture);
                 foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.MainEnabled))
                 {
                     DrawOverlay(overlay.MainTex, Minimap.instance.m_mapTexture, ComposeMainMaterial);
@@ -192,7 +190,6 @@ namespace Jotunn.Managers
                 watch.Start();
 
                 Graphics.CopyTexture(HeightFilterVanilla, Minimap.instance.m_heightTexture); // Reset vanilla texture to backup
-                //ComposeHeightMaterial.SetTexture("_OvlTex", Minimap.instance.m_heightTexture); // setup shader
                 foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.HeightEnabled))
                 {
                     DrawOverlay(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial,
@@ -215,7 +212,6 @@ namespace Jotunn.Managers
                 watch.Start();
 
                 Graphics.CopyTexture(ForestFilterVanilla, Minimap.instance.m_forestMaskTexture); // Reset vanilla texture to backup
-                // ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_forestMaskTexture); // setup shader
                 foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.ForestEnabled))
                 {
                     DrawOverlay(overlay.ForestFilter, Minimap.instance.m_forestMaskTexture, ComposeForestMaterial);
@@ -237,7 +233,6 @@ namespace Jotunn.Managers
                 watch.Start();
 
                 Graphics.CopyTexture(FogFilterVanilla, Minimap.instance.m_fogTexture); // Reset vanilla texture to backup
-                // ComposeFogMaterial.SetTexture("_OvlTex", Minimap.instance.m_fogTexture); // setup shader
                 foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.FogEnabled))
                 {
                     DrawOverlay(overlay.FogFilter, Minimap.instance.m_fogTexture, ComposeFogMaterial);
@@ -254,7 +249,7 @@ namespace Jotunn.Managers
         {
             RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, format, RenderTextureReadWrite.Default);
 
-            // Blit sets the source as _Maintex on the shader.
+            // Blit sets the overlay texture as _Maintex on the shader then computes the frag function of the shader, setting the result to tmp.
             Graphics.Blit(overlay, tmp, mat);
 
             // Backup the currently set RenderTexture
@@ -264,30 +259,7 @@ namespace Jotunn.Managers
             RenderTexture.active = tmp;
 
             // Copy the pixels from the RenderTexture to the new Texture
-            dest.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
-            dest.Apply();
-
-            // Reset the active RenderTexture
-            RenderTexture.active = previous;
-
-            // Release the temporary RenderTexture
-            RenderTexture.ReleaseTemporary(tmp);
-        }
-
-        private void DrawOverlayB(Texture2D overlay, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
-        {
-            RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
-
-            // Blit sets the source as _Maintex on the shader.
-            Graphics.Blit(overlay, tmp, mat);
-
-            // Backup the currently set RenderTexture
-            RenderTexture previous = RenderTexture.active;
-
-            // Set the current RenderTexture to the temporary one we created
-            RenderTexture.active = tmp;
-
-            // Copy the pixels from the RenderTexture to the new Texture
+            // This applies the pixels to the Vanilla texture.
             dest.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
             dest.Apply();
 
@@ -319,8 +291,8 @@ namespace Jotunn.Managers
             // WaterTexVanilla.wrapMode = TextureWrapMode.Clamp;
             // MountainTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             // MountainTexVanilla.wrapMode = TextureWrapMode.Clamp;
-            //FogTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            //FogTexVanilla.wrapMode = TextureWrapMode.Clamp;
+            // FogTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+            // FogTexVanilla.wrapMode = TextureWrapMode.Clamp;
 
             BackgroundTemp = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             BackgroundTemp.wrapMode = TextureWrapMode.Clamp;
@@ -359,22 +331,6 @@ namespace Jotunn.Managers
             //Logger.LogInfo($"foglayertex width {FogTexVanilla.width} height {FogTexVanilla.height}");
 
             Color c = new Color(0, 0, 0, 0);
-            //Color c2 = new Color(1, 0, 0, 0);
-/*            for (int i = 0; i < DefaultOverlaySize/2; i++)
-            {
-                for(int j = 0; j < DefaultOverlaySize/2; j++)
-                {
-                    FogTexVanilla.SetPixel(i, j, c);
-                }
-            }
-            for (int i = DefaultOverlaySize / 2; i < DefaultOverlaySize; i++)
-            {
-                for (int j = DefaultOverlaySize / 2; j < DefaultOverlaySize; j++)
-                {
-                    FogTexVanilla.SetPixel(i, j, c2);
-                }
-            }*/
-
 
             // TODO: Load this texture from file, should be faster.
             for (int i = 0; i < DefaultOverlaySize; i++)
@@ -620,13 +576,6 @@ namespace Jotunn.Managers
                 ovl.Enabled = active;
             });
         }
-
-        private void ToggleListener(bool arg0)
-        {
-            Logger.LogInfo($"button turned {arg0}");
-            //throw new NotImplementedException();
-        }
-
 
         /// <summary>
         ///     Object for modders to use to access and modify their Overlay.
