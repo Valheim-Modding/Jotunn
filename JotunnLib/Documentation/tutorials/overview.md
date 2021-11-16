@@ -33,6 +33,7 @@ Each section will have examples showing how this is done. All of the examples sh
 * [Console Commands](console-commands.md): Add custom commands to the Console that can execute your methods.
 * [Inputs](inputs.md): Register custom inputs and add key hints to your custom items.
 * [UI Elements](gui.md): Add custom windows and UI elements.
+* [Map Overlays](map.md): Add custom overlays to the game's Map/Minimap
 * [Localizations](localization.md): Create language tokens that are replaced at runtime by their specified localization.
 
 ### Utilities
