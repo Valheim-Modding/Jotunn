@@ -90,6 +90,7 @@ namespace Jotunn.Managers
         private Material ComposeMaterial;
         private Material ComposeHeightMaterial;
         private Material ComposeForestMaterial;
+        private Material ComposeFogMaterial;
 
         // Current component for the MinimapOverlayPanel
         private MinimapOverlayPanel OverlayPanel;
@@ -120,9 +121,11 @@ namespace Jotunn.Managers
             var composeShader = bundle.LoadAsset<Shader>("MinimapCompose");
             var composeHeightShader = bundle.LoadAsset<Shader>("MinimapComposeHeight");
             var composeForestShader = bundle.LoadAsset<Shader>("MinimapComposeForest");
+            var composeFogShader = bundle.LoadAsset<Shader>("MinimapComposeFog");
             ComposeMaterial = new Material(composeShader);
             ComposeHeightMaterial = new Material(composeHeightShader);
             ComposeForestMaterial = new Material(composeForestShader);
+            ComposeFogMaterial = new Material(composeFogShader);
 
             var overlaypanel = bundle.LoadAsset<GameObject>("MinimapOverlayPanel");
             PrefabManager.Instance.AddPrefab(new CustomPrefab(overlaypanel, false));
@@ -233,10 +236,10 @@ namespace Jotunn.Managers
                 watch.Start();
 
                 Graphics.CopyTexture(FogFilterVanilla, Minimap.instance.m_fogTexture); // reset first.
-                ComposeForestMaterial.SetTexture("_OvlTex", Minimap.instance.m_fogTexture); // setup shader
+                ComposeFogMaterial.SetTexture("_OvlTex", Minimap.instance.m_fogTexture); // setup shader
                 foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.FogEnabled))
                 {
-                    DrawOverlay(overlay.FogFilter, Minimap.instance.m_fogTexture, ComposeForestMaterial);
+                    DrawOverlay(overlay.FogFilter, Minimap.instance.m_fogTexture, ComposeFogMaterial);
                 }
 
                 watch.Stop();
@@ -315,6 +318,8 @@ namespace Jotunn.Managers
             // WaterTexVanilla.wrapMode = TextureWrapMode.Clamp;
             // MountainTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             // MountainTexVanilla.wrapMode = TextureWrapMode.Clamp;
+            //FogTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+            //FogTexVanilla.wrapMode = TextureWrapMode.Clamp;
 
             BackgroundTemp = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             BackgroundTemp.wrapMode = TextureWrapMode.Clamp;
@@ -342,9 +347,29 @@ namespace Jotunn.Managers
             // BackupTexture(BackgroundTexVanilla, "_BackgroundTex");
             // BackupTexture(WaterTexVanilla, "_WaterTex");
             // BackupTexture(MountainTexVanilla, "_MountainTex");
+            //BackupTexture(FogTexVanilla, "_FogLayerTex");
+            //Minimap.instance.m_mapImageLarge.material.SetTexture("_FogLayerTex", FogTexVanilla);
+            //Logger.LogInfo($"foglayertex width {FogTexVanilla.width} height {FogTexVanilla.height}");
+
+            Color c = new Color(0, 0, 0, 0);
+            //Color c2 = new Color(1, 0, 0, 0);
+/*            for (int i = 0; i < DefaultOverlaySize/2; i++)
+            {
+                for(int j = 0; j < DefaultOverlaySize/2; j++)
+                {
+                    FogTexVanilla.SetPixel(i, j, c);
+                }
+            }
+            for (int i = DefaultOverlaySize / 2; i < DefaultOverlaySize; i++)
+            {
+                for (int j = DefaultOverlaySize / 2; j < DefaultOverlaySize; j++)
+                {
+                    FogTexVanilla.SetPixel(i, j, c2);
+                }
+            }*/
+
 
             // TODO: Load this texture from file, should be faster.
-            Color c = new Color(0, 0, 0, 0);
             for (int i = 0; i < DefaultOverlaySize; i++)
             {
                 for (int j = 0; j < DefaultOverlaySize; j++)
@@ -534,7 +559,7 @@ namespace Jotunn.Managers
         {
             if (!self.m_explored[y * self.m_textureSize + x])
             {
-                FogFilterVanilla.SetPixel(x, y, new Color(0, 0, 0));
+                FogFilterVanilla.SetPixel(x, y, FilterOff);
             }
             return orig(self, x, y);
         }
@@ -557,7 +582,7 @@ namespace Jotunn.Managers
         {
             if (!self.m_explored[y * self.m_textureSize + x])
             {
-                FogFilterVanilla.SetPixel(x, y, new Color(0, 0, 0));
+                FogFilterVanilla.SetPixel(x, y, FilterOff);
             }
 
             return orig(self, x, y);
@@ -593,25 +618,6 @@ namespace Jotunn.Managers
         {
             Logger.LogInfo($"button turned {arg0}");
             //throw new NotImplementedException();
-        }
-
-        public class MapLayer
-        {
-            public enum Layer
-            {
-                CloudTex,
-                FogTex,
-                SpaceTex,
-                BackgroundTex,
-            }
-
-            public Layer maplayer;
-            public string Name { get; internal set; }
-            public int TextureSize { get; internal set; }
-
-            public bool Enabled;
-
-
         }
 
 
