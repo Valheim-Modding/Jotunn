@@ -111,7 +111,7 @@ namespace TestMod3
             ZoneOverlay.ForestFilter.SetPixels(filterPixels);
             ZoneOverlay.HeightFilter.SetPixels(heightPixels);
             ZoneOverlay.MainTex.Apply();
-            ZoneOverlay.FogFilter.Apply();
+            //ZoneOverlay.FogFilter.Apply();
             ZoneOverlay.ForestFilter.Apply();
             ZoneOverlay.HeightFilter.Apply();
         }
@@ -119,7 +119,7 @@ namespace TestMod3
         // Draw one square in the center of each quadrant.
         private void SquareTest()
         {
-            squarequadoverlay = MinimapManager.Instance.AddMapOverlay("squarequad_overlay");
+            squarequadoverlay = MinimapManager.Instance.AddMapOverlay("QuadCenterOverlay");
             int size = 50;
             Vector3 pos = new Vector3(5000, 0, 5000);
             DrawSquare(squarequadoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), Color.blue, size);
@@ -157,14 +157,14 @@ namespace TestMod3
         // test the 4 main textures, Main, Height, Forest, Fog, in 4 different quadrants.
         private void DrawQuadTests()
         {
-            quadtest0 = MinimapManager.Instance.AddMapOverlay("quad_overlay0");
+            quadtest0 = MinimapManager.Instance.AddMapOverlay("QuadColorOverlay");
             DrawQuadrant(quadtest0.MainTex, Color.red, 0);
-            quadtest1 = MinimapManager.Instance.AddMapOverlay("quad_overlay1");
+            quadtest1 = MinimapManager.Instance.AddMapOverlay("QuadHeightOverlay");
             DrawQuadrant(quadtest1.HeightFilter, MeadowHeight, 1);
-            quadtest2 = MinimapManager.Instance.AddMapOverlay("quad_overlay2");
+            quadtest2 = MinimapManager.Instance.AddMapOverlay("QuadForestOverlay");
             DrawQuadrant(quadtest2.ForestFilter, FilterOff, 2);
             DrawQuadrant(quadtest2.ForestFilter, FilterOn, 1);
-            quadtest3 = MinimapManager.Instance.AddMapOverlay("quad_overlay3");
+            quadtest3 = MinimapManager.Instance.AddMapOverlay("QuadFogOverlay");
             DrawQuadrant(quadtest3.FogFilter, FilterOn, 3);
         }
 
