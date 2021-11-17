@@ -198,7 +198,7 @@ namespace Jotunn.Managers
                 foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.HeightEnabled))
                 {
                     DrawOverlay(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial,
-                        RenderTextureFormat.ARGBFloat);
+                        RenderTextureFormat.RFloat);
                 }
 
                 watch.Stop();
