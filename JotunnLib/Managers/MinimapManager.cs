@@ -195,12 +195,12 @@ namespace Jotunn.Managers
                         var watch = new System.Diagnostics.Stopwatch();
                         watch.Start();
 
-                        Graphics.CopyTexture(HeightFilterVanilla, Minimap.instance.m_heightTexture); // Reset vanilla texture to backup
-                        foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.HeightEnabled))
-                        {
-                            DrawOverlay(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial,
-                                RenderTextureFormat.ARGBFloat);
-                        }
+                Graphics.CopyTexture(HeightFilterVanilla, Minimap.instance.m_heightTexture); // Reset vanilla texture to backup
+                foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.HeightEnabled))
+                {
+                    DrawOverlay(overlay.HeightFilter, Minimap.instance.m_heightTexture, ComposeHeightMaterial,
+                        RenderTextureFormat.RFloat);
+                }
 
                         watch.Stop();
                         Logger.LogInfo($"DrawHeight loop took {watch.ElapsedMilliseconds}ms time");

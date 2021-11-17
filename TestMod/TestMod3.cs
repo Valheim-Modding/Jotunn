@@ -5,6 +5,7 @@
 // Project: TestMod
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using BepInEx;
 using Jotunn;
@@ -38,19 +39,19 @@ namespace TestMod3
         private static MinimapManager.MapOverlay quadtest1;
         private static MinimapManager.MapOverlay quadtest2;
         private static MinimapManager.MapOverlay quadtest3;
-        private static MinimapManager.MapOverlay backgroundtest;
 
-        private Color semiblue = new Color(0, 0, 255, 50);
-        private static Color meadowHeight = new Color(32, 0, 0, 255);
+        private static MinimapManager.MapOverlay ZoneOverlay;
+        
+        private static Color MeadowHeight = new Color(32, 0, 0, 255);
         private static Color FilterOn = new Color(1f, 0f, 0f, 255f);
         private static Color FilterOff = new Color(0f, 0f, 0f, 255f);
 
         public void Awake()
         {
+            CommandManager.Instance.AddConsoleCommand(new CHCommands_zones());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_pins());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_flatten());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_pinsflat());
-            CommandManager.Instance.AddConsoleCommand(new CHCommands_toggle());
             // CommandManager.Instance.AddConsoleCommand(new CHCommands_alpha()); // Not yet implemented.
 
             MinimapManager.OnVanillaMapDataLoaded += MinimapManager_OnVanillaMapDataLoaded;
@@ -74,43 +75,75 @@ namespace TestMod3
 
             DrawQuadTests();
             SquareTest();
+            CreateZoneOverlay(Color.white, 0.0f);
         }
 
-        // test flattening the entire map
-        private void FlattenTest()
+        // Zone overlay
+        internal static void CreateZoneOverlay(Color color, float height)
         {
-            flattenoverlay = MinimapManager.Instance.AddMapOverlay("testflatten_overlay");
-            FlattenMap(32, flattenoverlay);
+            if (ZoneOverlay == null)
+            {
+                ZoneOverlay = MinimapManager.Instance.AddMapOverlay(nameof(ZoneOverlay));
+            }
+            int mapSize = ZoneOverlay.TextureSize * ZoneOverlay.TextureSize;
+            int zoneSize = 64;
+            Color filterOff = new Color(0f, 0f, 0f, 1f);
+            Color heightFilter = new Color(height, 0f, 0f, 1f);
+            Color[] mainPixels = new Color[mapSize];
+            Color[] filterPixels = new Color[mapSize];
+            Color[] heightPixels = new Color[mapSize];
+            int index = 0;
+            for (int x = 0; x < ZoneOverlay.TextureSize; ++x)
+            {
+                for (int y = 0; y < ZoneOverlay.TextureSize; ++y)
+                {
+                    if (x % zoneSize == 0 || y % zoneSize == 0)
+                    {
+                        mainPixels[index] = color;
+                        filterPixels[index] = filterOff;
+                        heightPixels[index] = heightFilter;
+                    }
+                    ++index;
+                }
+            }
+            ZoneOverlay.MainTex.SetPixels(mainPixels);
+            //ZoneOverlay.FogFilter.SetPixels(filterPixels);
+            ZoneOverlay.ForestFilter.SetPixels(filterPixels);
+            ZoneOverlay.HeightFilter.SetPixels(heightPixels);
+            ZoneOverlay.MainTex.Apply();
+            //ZoneOverlay.FogFilter.Apply();
+            ZoneOverlay.ForestFilter.Apply();
+            ZoneOverlay.HeightFilter.Apply();
         }
 
         // Draw one square in the center of each quadrant.
         private void SquareTest()
         {
-            squarequadoverlay = MinimapManager.Instance.AddMapOverlay("squarequad_overlay");
+            squarequadoverlay = MinimapManager.Instance.AddMapOverlay("QuadCenterOverlay");
             int size = 50;
             Vector3 pos = new Vector3(5000, 0, 5000);
             DrawSquare(squarequadoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), Color.blue, size);
             DrawSquare(squarequadoverlay.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
             DrawSquare(squarequadoverlay.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
-            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), meadowHeight, size);
+            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), MeadowHeight, size);
 
             pos.x = -5000;
             DrawSquare(squarequadoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), Color.blue, size);
             DrawSquare(squarequadoverlay.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
             DrawSquare(squarequadoverlay.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
-            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), meadowHeight, size);
+            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), MeadowHeight, size);
 
             pos.z = -5000;
             DrawSquare(squarequadoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), Color.blue, size);
             DrawSquare(squarequadoverlay.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
             DrawSquare(squarequadoverlay.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
-            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), meadowHeight, size);
+            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), MeadowHeight, size);
 
             pos.x = 5000;
             DrawSquare(squarequadoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), Color.blue, size);
             DrawSquare(squarequadoverlay.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
             DrawSquare(squarequadoverlay.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), FilterOff, size);
-            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), meadowHeight, size);
+            DrawSquare(squarequadoverlay.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), MeadowHeight, size);
 
             squarequadoverlay.MainTex.Apply();
             squarequadoverlay.ForestFilter.Apply();
@@ -124,14 +157,14 @@ namespace TestMod3
         // test the 4 main textures, Main, Height, Forest, Fog, in 4 different quadrants.
         private void DrawQuadTests()
         {
-            quadtest0 = MinimapManager.Instance.AddMapOverlay("quad_overlay0");
+            quadtest0 = MinimapManager.Instance.AddMapOverlay("QuadColorOverlay");
             DrawQuadrant(quadtest0.MainTex, Color.red, 0);
-            quadtest1 = MinimapManager.Instance.AddMapOverlay("quad_overlay1");
-            DrawQuadrant(quadtest1.HeightFilter, meadowHeight, 1);
-            quadtest2 = MinimapManager.Instance.AddMapOverlay("quad_overlay2");
+            quadtest1 = MinimapManager.Instance.AddMapOverlay("QuadHeightOverlay");
+            DrawQuadrant(quadtest1.HeightFilter, MeadowHeight, 1);
+            quadtest2 = MinimapManager.Instance.AddMapOverlay("QuadForestOverlay");
             DrawQuadrant(quadtest2.ForestFilter, FilterOff, 2);
             DrawQuadrant(quadtest2.ForestFilter, FilterOn, 1);
-            quadtest3 = MinimapManager.Instance.AddMapOverlay("quad_overlay3");
+            quadtest3 = MinimapManager.Instance.AddMapOverlay("QuadFogOverlay");
             DrawQuadrant(quadtest3.FogFilter, FilterOn, 3);
         }
 
@@ -157,7 +190,7 @@ namespace TestMod3
                 {
                     DrawSquare(ovl.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), FilterOff, 10);
                     DrawSquare(ovl.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), FilterOff, 10);
-                    DrawSquare(ovl.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), meadowHeight, 10);
+                    DrawSquare(ovl.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), MeadowHeight, 10);
                 }
             }
 
@@ -237,6 +270,43 @@ namespace TestMod3
             tex.Apply();
         }
 
+        private class CHCommands_zones : ConsoleCommand
+        {
+            private readonly Dictionary<string, Color> colors = new Dictionary<string, Color>();
+
+            public override string Name => "map.zones";
+
+            public override string Help => "Draw squares on map pins";
+
+            public CHCommands_zones()
+            {
+                colors.Add("red", Color.red);
+                colors.Add("green", Color.green);
+                colors.Add("blue", Color.blue);
+                colors.Add("white", Color.white);
+            }
+
+            public override void Run(string[] args)
+            {
+                Color color = Color.white;
+                if (args.Length > 0 && !colors.TryGetValue(args[0], out color))
+                {
+                    Console.instance.Print($"Color {args[0]} not recognized");
+                    return;
+                }
+
+                float height = 0f;
+                if (args.Length > 1 && !float.TryParse(args[1], NumberStyles.Any, CultureInfo.InvariantCulture, out height))
+                {
+                    Console.instance.Print($"Height {args[1]} not recognized");
+                    return;
+                }
+
+                CreateZoneOverlay(color, height);
+            }
+
+            public override List<string> CommandOptionList() => colors.Keys.ToList();
+        }
 
         private class CHCommands_pins : ConsoleCommand
         {
@@ -349,52 +419,26 @@ namespace TestMod3
         }
 
 
-/*        private class CHCommands_alpha : ConsoleCommand
-        {
-            public override string Name => "map.cha";
-
-            public override string Help => "Change map alpha information";
-
-            Color semiblue = new Color(0, 0, 255, 100);
-
-            public override void Run(string[] args)
-            {
-
-                if (alphaoverlay == null)
+        /*        private class CHCommands_alpha : ConsoleCommand
                 {
-                    alphaoverlay = MinimapManager.Instance.AddMapOverlay("alpha_overlay");
-                    DrawQuarterQuadrant(alphaoverlay.MainTex, semiblue);
-                    return;
-                }
+                    public override string Name => "map.cha";
 
-                alphaoverlay.Enabled = !alphaoverlay.Enabled; // toggle
-            }
-        }*/
+                    public override string Help => "Change map alpha information";
 
-        private class CHCommands_toggle : ConsoleCommand
-        {
-            public override string Name => "map.toggle";
+                    Color semiblue = new Color(0, 0, 255, 100);
 
-            public override string Help => "Toggle a specified map layer";
+                    public override void Run(string[] args)
+                    {
 
-            public override void Run(string[] args)
-            {
-                if (args.Length != 1)
-                {
-                    Console.instance.Print($"usage: {Name} [overlay_name]");
-                    return;
-                }
+                        if (alphaoverlay == null)
+                        {
+                            alphaoverlay = MinimapManager.Instance.AddMapOverlay("alpha_overlay");
+                            DrawQuarterQuadrant(alphaoverlay.MainTex, semiblue);
+                            return;
+                        }
 
-                string name = args[0];
-                var ovl = MinimapManager.Instance.GetMapOverlay(name);
-                if (ovl != null)
-                {
-                    ovl.Enabled = !ovl.Enabled;
-                    Console.instance.Print($"Overlay {ovl.Name} {(ovl.Enabled ? "enabled" : "disabled")}");
-                }
-            }
-
-            public override List<string> CommandOptionList() => MinimapManager.Instance.GetOverlayNames();
-        }
+                        alphaoverlay.Enabled = !alphaoverlay.Enabled; // toggle
+                    }
+                }*/
     }
 }
