@@ -5,6 +5,7 @@
 * Added NetworkManager for custom RPCs with a simpler interface, automatic package compression/slicing and Coroutines (see https://valheim-modding.github.io/Jotunn/tutorials/rpcs.html for tutorials)
 * Added support for mocked objects in Enumerables mixed with non-mocked objects
 * Fixed mock resolution in HashSets
+* Added language tokens and translations to the docs (https://valheim-modding.github.io/Jotunn/data/localization/overview.html)
 
 ## Version 2.3.12
 * Added RenderManager.Render() which renders the given GameObject in the same frame instead of waiting for the next frame. Marked EnqueueRender obsolete.
