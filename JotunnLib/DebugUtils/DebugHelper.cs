@@ -26,7 +26,6 @@ namespace Jotunn.DebugUtils
             Main.RootObject.AddComponent<HoverInfo>();
             Main.RootObject.AddComponent<UEInputBlocker>();
             Main.RootObject.AddComponent<ZNetDiddelybug>();
-            Main.RootObject.AddComponent<ZoneCounter>();
 
             On.Player.OnSpawned += (orig, self) =>
             {
