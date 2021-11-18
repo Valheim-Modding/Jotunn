@@ -1,4 +1,5 @@
-﻿# Zones
+﻿# Zones / Locations / Vegetation
+
 The world of Valheim is split up into *Zones*, each 64 by 64 meters, controlled by the *ZoneSystem*. Each *Zone* can potentially have a single *Location* instance, and many *Vegetation* instances.
 
 ## Locations
@@ -22,10 +23,12 @@ Vegetation are singular prefabs that are scattered in a Zone. This is most of th
 
 There is no limit to the number of vegetation in a single zone.
 
-## World generation in Valheim
-The world of Valheim is split up into Zones, each 64 by 64 meters.
+## World generation
+
+Valheim's worlds are procedurally generated exactly once using a provided seed. During the first world load the game traverses all Zones and tries to set one Location per Zone.
 
 ### Locations
+
 When a new world is generated, the game goes through the list of available locations. The list is sorted so all locations with `Prioritized = true` are handled first.
  
 The game will attempt to place `Quantity` instances of each location, it will attempt up to 100.000 times, or even 200.000 if it is Prioritized!
@@ -58,8 +61,8 @@ When a player gets close to this zone for the first time, the location prefab is
 |SlopeRotation|If enabled, will rotate the location to face the slope. Priotized over RandomRotation
 |RandomRotation|If enabled, will rotate the location randomly. Will be ignored if SlopeRotation is enabled
 
-
 ### Vegetation
+
 Vegetation is placed when a Zone is first discovered. The game will go through all available Vegetation, and attempt to place each type according to its configuration.
 
 The number of attempts is determined by:
@@ -85,21 +88,23 @@ Every attempt to place an instance of a Vegetation will go through these checks:
 
 Locations have a property `ClearArea`, enabling this will prevent _any_ vegetation from spawning in the `ExteriorRadius` of the location.
 
+# ZoneManager
 
-# Timing
+Jötunn provides a [ZoneManager](xref:Jotunn.Managers.ZoneManager) singleton for mods to interact with the ZoneSystem of Valheim.
 
-Locations and Vegetation are loaded during world load. Use the event `ZoneManager.OnVanillaLocationsAvailable` to get a callback when the locations are available for use.
+## Timing
+
+Locations and Vegetation are loaded during world load. Use the event [ZoneManager.OnVanillaLocationsAvailable](xref:Jotunn.Managers.ZoneManager.OnVanillaLocationsAvailable) to get a callback when the locations are available for use.
 This is called every time a world loads, so make sure to only add your custom locations & vegetations once.
 
 Modifications to vanilla locations & vegetation must be repeated every time!
 
-# ZoneManager
- 
 ## Locations
 
 Jötunn uses the [LocationConfig](xref:Jotunn.Configs.LocationConfig) together with [CustomLocation](xref:Jotunn.Entities.CustomLocation) to define new Locations that will be injected into the world generation.
 
 ### Modifying existing locations
+
 Use `ZoneManager.Instance.GetZoneLocation` to get a reference to the `ZoneLocation`.
 
 You can add prefabs to the `m_locationPrefab` to add them wherever this location is placed:
@@ -114,6 +119,7 @@ eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
 ![Modified Eikthyr Location](../images/data/modifyEikthyrLocation.png)
 
 ### Creating copies of existing locations
+
 Use `ZoneManager.Instance.CreateClonedLocation` to clone a location. The cloned location is automatically added.
 ```cs
 CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
@@ -122,6 +128,7 @@ myEikthyrLocation.ZoneLocation.m_quantity = 20; //MOAR
 ```
 
 ### Creating empty Location containers
+
 To create new locations in code, use the `ZoneManager.Instance.CreateLocationContainer`. This will create a GameObject that is attached to a disabled internal container GameObject.
 This means you can instantiate prefabs without enabling them immediately. It only creates the container, it still needs to be registered with `ZoneManager.Instance.AddCustomLocation`
 
@@ -147,10 +154,12 @@ ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubesLocation, new Loc
 ```
 
 ### Creating locations from AssetBundles
+
 You can also create your locations in Unity, it should have a Location component.
 
 You can use `JVLmock_<prefab_name>` GameObjects to reference vanilla prefabs in your location by adding an optional `true` to the CreateLocationContainer constructor.
 You can have multiple instances of the same `JVLmock_<prefab> (<number>)`, these will all be replaced by the `prefab`.
+
 ```cs
 var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true);
 ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubeArchLocation, new LocationConfig
@@ -166,20 +175,25 @@ ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubeArchLocation, new 
 
 
 ## Vegetation
- 
+
 Jötunn uses the [VegetationConfig](xref:Jotunn.Configs.VegetationConfig) together with [CustomVegetation](xref:Jotunn.Entities.CustomVegetation) to define new Vegetation that will be injected into the world generation.
 
 ### Modifying existing vegetation
+
 Modify existing Vegetation configuration to increase the group size:
+
 ```cs
 var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
 raspberryBush.m_groupSizeMin = 10;
 raspberryBush.m_groupSizeMax = 30;
 ```
+
 ![](../images/data/moreRaspberryBushes.png)
 
 ### Adding vegetation
+
 Any prefab can be added as vegetation:
+
 ```cs
 CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, new VegetationConfig
 {
@@ -187,5 +201,7 @@ CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, new Veg
     BlockCheck = true
 });
 ```
+
 This example defines very little filters, so this prefab will be found all over every Meadows.
+
 ![Lulzcube vegetation](../images/data/customVegetation.png)
