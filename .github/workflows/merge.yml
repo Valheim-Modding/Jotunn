@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - dev
+    paths-ignore:
+      - 'JotunnLib/Documentation/**'
+      
 jobs:
   build_merge:
     runs-on: ubuntu-latest
