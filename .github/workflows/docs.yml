@@ -1,7 +1,10 @@
+name: Create Documentation Pages
+
 on:
   push:
     branches:
       - prod
+      - build-docs
 
 jobs:
   build_docs:

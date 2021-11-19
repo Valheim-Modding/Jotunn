@@ -5,21 +5,30 @@ namespace Jotunn.DebugUtils
 {
     internal class TwoColumnPanel
     {
-        private GameObject _panel = null;
-        private GameObject _leftColumn = null;
-        private GameObject _rightColumn = null;
+        private GameObject _panel;
+        private GameObject _leftColumn;
+        private GameObject _rightColumn;
 
-        private readonly Font _font = null;
+        private readonly Font _font;
+        private readonly Color32 _color;
 
         public TwoColumnPanel(Transform parent, Font font)
         {
-            CreatePanel(parent);
             _font = font;
+            _color = Color.clear;
+            CreatePanel(parent);
+        }
+
+        public TwoColumnPanel(Transform parent, Font font, Color32 color)
+        {
+            _font = font;
+            _color = color;
+            CreatePanel(parent);
         }
 
         public void DestroyPanel()
         {
-            GameObject.Destroy(_panel);
+            Object.Destroy(_panel);
         }
 
         public void SetActive(bool active)
@@ -43,7 +52,7 @@ namespace Jotunn.DebugUtils
             return this;
         }
         
-        void CreatePanel(Transform parent)
+        private void CreatePanel(Transform parent)
         {
             _panel = new GameObject("TwoColumnPanel", typeof(RectTransform));
             _panel.transform.SetParent(parent, worldPositionStays: false);
@@ -55,11 +64,15 @@ namespace Jotunn.DebugUtils
             transform.anchoredPosition = Vector2.zero;
 
             HorizontalLayoutGroup panelLayout = _panel.AddComponent<HorizontalLayoutGroup>();
+            panelLayout.padding = new RectOffset(left: 5, right: 5, top: 5, bottom: 5);
             panelLayout.spacing = 8f;
 
             ContentSizeFitter panelFitter = _panel.AddComponent<ContentSizeFitter>();
             panelFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            panelFitter.verticalFit = ContentSizeFitter.FitMode.MinSize;
+            panelFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            Image panelImage = _panel.AddComponent<Image>();
+            panelImage.color = _color;
 
             _leftColumn = new GameObject("LeftColumn", typeof(RectTransform));
             _leftColumn.transform.SetParent(_panel.transform, worldPositionStays: false);
@@ -90,6 +103,13 @@ namespace Jotunn.DebugUtils
             ContentSizeFitter rightFitter = _rightColumn.AddComponent<ContentSizeFitter>();
             rightFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             rightFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        public TwoColumnPanel AddPanelRow(string leftText, out Text rightText)
+        {
+            AddPanelRow(out var tmpText, out rightText);
+            tmpText.text = leftText;
+            return this;
         }
 
         public TwoColumnPanel AddPanelRow(out Text leftText, out Text rightText)

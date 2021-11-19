@@ -367,6 +367,7 @@
   <ItemGroup>
     <Compile Include="Doc.cs" />
     <Compile Include="Docs\VegetationDoc.cs" />
+    <Compile Include="Docs\LanguageDoc.cs" />
     <Compile Include="Docs\LocationDoc.cs" />
     <Compile Include="Docs\MaterialDoc.cs" />
     <Compile Include="Docs\ShaderDoc.cs" />
