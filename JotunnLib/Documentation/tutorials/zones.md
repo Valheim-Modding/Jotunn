@@ -25,7 +25,7 @@ There is no limit to the number of vegetation in a single zone.
 
 ## World generation
 
-Valheim's worlds are procedurally generated exactly once using a provided seed. During the first world load the game traverses all Zones and tries to set one Location per Zone.
+Valheim's worlds are procedurally generated exactly once using a provided seed.
 
 ### Locations
 
