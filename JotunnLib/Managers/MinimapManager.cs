@@ -875,10 +875,18 @@ namespace Jotunn.Managers
 
         public class SimpleMapOverlay: MapOverlay
         {
+            private Color HeightColour;
+            private int Height;
+            public SimpleMapOverlay(): this(0){}
+            public SimpleMapOverlay(int defaultHeight) {
+                Height = defaultHeight;
+                HeightColour = new Color(Height, 0, 0, 1);
+            }
+
             public void SetPixel(int x, int y, Color c)
             {
                 MainTex.SetPixel(x, y, c);
-                HeightFilter.SetPixel(x, y, meadowHeight);
+                HeightFilter.SetPixel(x, y, HeightColour);
                 ForestFilter.SetPixel(x, y, FilterOff);
             }
 
@@ -891,7 +899,7 @@ namespace Jotunn.Managers
                 {
                     if (c[i].a != 0)
                     {
-                        heightColours[i] = meadowHeight;
+                        heightColours[i] = HeightColour;
                         forestColours[i] = FilterOff;
                     }
                 }
