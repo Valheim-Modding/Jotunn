@@ -40,8 +40,10 @@ namespace TestMod3
         private static MinimapManager.MapOverlay quadtest2;
         private static MinimapManager.MapOverlay quadtest3;
 
+        //private static MinimapManager.MapOverlay ZoneOverlay;
+        private static MinimapManager.SimpleMapOverlay SimpleZoneOverlay;
         private static MinimapManager.MapOverlay ZoneOverlay;
-        
+
         private static Color MeadowHeight = new Color(32, 0, 0, 255);
         private static Color FilterOn = new Color(1f, 0f, 0f, 255f);
         private static Color FilterOff = new Color(0f, 0f, 0f, 255f);
@@ -75,8 +77,34 @@ namespace TestMod3
 
             DrawQuadTests();
             SquareTest();
-            CreateZoneOverlay(Color.white, 0.0f);
+            //CreateZoneOverlay(Color.white, 0.0f);
+            CreateSimpleZoneOverlay(Color.white, 0.0f);
         }
+
+        internal static void CreateSimpleZoneOverlay(Color color, float height)
+        {
+            if (SimpleZoneOverlay == null)
+            {
+                SimpleZoneOverlay = MinimapManager.Instance.AddSimpleMapOverlay(nameof(SimpleZoneOverlay));
+            }
+            int mapSize = SimpleZoneOverlay.TextureSize * SimpleZoneOverlay.TextureSize;
+            int zoneSize = 64;
+            Color[] mainPixels = new Color[mapSize];
+            int index = 0;
+            for (int x = 0; x < SimpleZoneOverlay.TextureSize; ++x)
+            {
+                for (int y = 0; y < SimpleZoneOverlay.TextureSize; ++y, ++index)
+                {
+                    if (x % zoneSize == 0 || y % zoneSize == 0)
+                    {
+                        mainPixels[index] = color;
+                    }
+                }
+            }
+            SimpleZoneOverlay.SetPixels(mainPixels);
+            SimpleZoneOverlay.Apply();
+        }
+
 
         // Zone overlay
         internal static void CreateZoneOverlay(Color color, float height)
@@ -107,11 +135,9 @@ namespace TestMod3
                 }
             }
             ZoneOverlay.MainTex.SetPixels(mainPixels);
-            //ZoneOverlay.FogFilter.SetPixels(filterPixels);
             ZoneOverlay.ForestFilter.SetPixels(filterPixels);
             ZoneOverlay.HeightFilter.SetPixels(heightPixels);
             ZoneOverlay.MainTex.Apply();
-            //ZoneOverlay.FogFilter.Apply();
             ZoneOverlay.ForestFilter.Apply();
             ZoneOverlay.HeightFilter.Apply();
         }

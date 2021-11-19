@@ -124,6 +124,7 @@ namespace Jotunn.Managers
 
             // Create materials and shaders to compute overlays onto the vanilla textures
             var composeMainShader = bundle.LoadAsset<Shader>("MinimapComposeMain");
+            //var composeMainShader = bundle.LoadAsset<Shader>("MinimapComposeMainR");
             var composeHeightShader = bundle.LoadAsset<Shader>("MinimapComposeHeight");
             var composeForestShader = bundle.LoadAsset<Shader>("MinimapComposeForest");
             var composeFogShader = bundle.LoadAsset<Shader>("MinimapComposeFog");
@@ -440,7 +441,7 @@ namespace Jotunn.Managers
             }
             Minimap.instance.StartCoroutine(watchdog());
         }
-/*
+
         private void ReadFromRenderTexture(Texture2D intermediate, RenderTexture tmp)
         {
             RenderTexture previous = RenderTexture.active;
@@ -461,13 +462,16 @@ namespace Jotunn.Managers
         }
 
 
-        private IEnumerator DrawMain(Texture2D intermediate)
+/*        private IEnumerator DrawMain(Texture2D intermediate)
         {
             Logger.LogInfo("Redraw Main");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
-            Graphics.CopyTexture(MainTexVanilla, intermediate); // Reset intermediate texture to backup
+            //Graphics.CopyTexture(MainTexVanilla, intermediate); // Reset intermediate texture to backup
             RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default);
+            Graphics.CopyTexture(MainTexVanilla, tmp); // Reset intermediate texture to backup
+            ComposeMainMaterial.SetTexture("_RenderPaintTexture", tmp);
+            Graphics.Blit(MainTexVanilla, tmp);
 
             foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.MainEnabled))
             {
@@ -478,9 +482,9 @@ namespace Jotunn.Managers
             watch.Stop(); Logger.LogInfo($"DrawMain loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
-        }
+        }*/
 
-        private IEnumerator DrawHeightFilter(Texture2D intermediate)
+    /*    private IEnumerator DrawHeightFilter(Texture2D intermediate)
         {
             Logger.LogInfo("Redraw Height");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
@@ -679,6 +683,29 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Create a new simple mapoverlay with a custom overlay name
+        /// </summary>
+        /// <param name="name">Custom name for the SimpleMapOverlay</param>
+        /// <returns>Reference to SimpleMapOverlay for modder to edit</returns>
+        public SimpleMapOverlay AddSimpleMapOverlay(string name)
+        {
+            if (Overlays.ContainsKey(name))
+            {
+                Logger.LogDebug($"Returning existing overlay with name {name}");
+                return (SimpleMapOverlay)Overlays[name];
+            }
+
+            SimpleMapOverlay ret = new SimpleMapOverlay();
+            ret.Name = name;
+            ret.Enabled = true;
+            ret.TextureSize = DefaultOverlaySize;
+            Overlays.Add(name, ret);
+            AddOverlayToGUI(ret);
+            return ret;
+        }
+
+
+        /// <summary>
         ///     Causes MapManager to stop updating the MapOverlay object and removes this Manager's reference to that overlay.
         ///     A mod could still hold references and keep the object alive.
         /// </summary>
@@ -846,6 +873,44 @@ namespace Jotunn.Managers
             });
         }
 
+        public class SimpleMapOverlay: MapOverlay
+        {
+            public void SetPixel(int x, int y, Color c)
+            {
+                MainTex.SetPixel(x, y, c);
+                HeightFilter.SetPixel(x, y, meadowHeight);
+                ForestFilter.SetPixel(x, y, FilterOff);
+            }
+
+            public void SetPixels(Color[] c)
+            {
+                MainTex.SetPixels(c);
+                Color[] heightColours = new Color[DefaultOverlaySize*DefaultOverlaySize];
+                Color[] forestColours = new Color[DefaultOverlaySize * DefaultOverlaySize];
+                for (int i = 0; i < DefaultOverlaySize*DefaultOverlaySize; i++)
+                {
+                    if (c[i].a != 0)
+                    {
+                        heightColours[i] = meadowHeight;
+                        forestColours[i] = FilterOff;
+                    }
+                }
+                HeightFilter.SetPixels(heightColours);
+                ForestFilter.SetPixels(forestColours);
+                Apply();
+            }
+
+            public void Apply()
+            {
+                MainTex.Apply();
+                HeightFilter.Apply();
+                ForestFilter.Apply();
+                _mainDirty = true;
+                _heightDirty = true;
+                _forestDirty = true;
+            }
+        }
+
         /// <summary>
         ///     Object for modders to use to access and modify their Overlay.
         ///     Modders should modify the texture directly.
@@ -932,10 +997,10 @@ namespace Jotunn.Managers
 
             private bool _enabled;
 
-            private bool _mainDirty;
-            private bool _heightDirty;
-            private bool _forestDirty;
-            private bool _fogDirty;
+            internal bool _mainDirty;
+            internal bool _heightDirty;
+            internal bool _forestDirty;
+            internal bool _fogDirty;
 
             private Texture2D _mainTex;
             private Texture2D _heightFilter;
@@ -945,7 +1010,7 @@ namespace Jotunn.Managers
             /// <summary>
             ///     Helper function to create and copy overlay texture instances
             /// </summary>
-            private Texture2D Create(Texture2D van)
+            protected Texture2D Create(Texture2D van)
             {
                 var t = new Texture2D(van.width, van.height, van.format, mipChain: false);
                 t.wrapMode = TextureWrapMode.Clamp;

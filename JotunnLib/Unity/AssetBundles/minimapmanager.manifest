@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 147393919
+CRC: 2966756724
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 3e6f30ebc32b709ab7cc72273922fcf9
+    Hash: c1db2ac1e4205423e09cc45a53627650
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 742b6dde2dfa8ec5256f61949e2612fd
+    Hash: 26660b72274436405ac7a3f134213ee0
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -17,6 +17,8 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
 - Class: 114
@@ -31,8 +33,6 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 24fab2dacfbc05348a64aa98107b05e4, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -51,4 +51,5 @@ Assets:
 - Assets/Resources/MinimapComposeMain.shader
 - Assets/Resources/MinimapComposeHeight.shader
 - Assets/Prefabs/MinimapOverlayPanel.prefab
+- Assets/Resources/MinimapComposeMainR.shader
 Dependencies: []
