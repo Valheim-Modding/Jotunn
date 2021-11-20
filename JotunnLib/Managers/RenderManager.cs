@@ -17,6 +17,7 @@ namespace Jotunn.Managers
         public static readonly Quaternion IsometricRotation = Quaternion.Euler(23, 51, 25.8f);
 
         private static RenderManager _instance;
+
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -212,7 +213,7 @@ namespace Jotunn.Managers
             Renderer.clearFlags = CameraClearFlags.SolidColor;
             Renderer.transform.position = SpawnPoint;
             Renderer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-            
+
             Renderer.fieldOfView = 0.5f;
             Renderer.farClipPlane = 100000;
             Renderer.cullingMask = 1 << Layer;
@@ -243,39 +244,10 @@ namespace Jotunn.Managers
         private static RenderObject SpawnSafe(RenderRequest request)
         {
             GameObject prefab = request.Target;
-            // remember activeSelf to not mess with prefab data
-            bool wasActiveSelf = prefab.activeSelf;
-            prefab.SetActive(false);
-
-            // spawn the prefab inactive
-            GameObject spawn = Object.Instantiate(prefab, new Vector3(0, 0, 0), request.Rotation);
+            GameObject spawn = CloneRecursive(prefab, null);
+            spawn.transform.position = Vector3.zero;
+            spawn.transform.rotation = request.Rotation;
             spawn.name = prefab.name;
-            SetLayerRecursive(spawn.transform, Layer);
-
-            prefab.SetActive(wasActiveSelf);
-
-            // needs to be destroyed first as Character depend on it
-            foreach (CharacterDrop characterDrop in spawn.GetComponentsInChildren<CharacterDrop>())
-            {
-                Object.DestroyImmediate(characterDrop);
-            }
-
-            // needs to be destroyed first as Rigidbody depend on it
-            foreach (Joint joint in spawn.GetComponentsInChildren<Joint>())
-            {
-                Object.DestroyImmediate(joint);
-            }
-
-            // destroy all other components except visuals
-            foreach (Component component in spawn.GetComponentsInChildren<Component>(true))
-            {
-                if (component is Transform || IsVisualComponent(component))
-                {
-                    continue;
-                }
-
-                Object.DestroyImmediate(component);
-            }
 
             // calculate visual center
             Vector3 min = new Vector3(1000f, 1000f, 1000f);
@@ -304,14 +276,46 @@ namespace Jotunn.Managers
             };
         }
 
-        private static void SetLayerRecursive(Transform transform, int layer)
+        private static GameObject CloneRecursive(GameObject target, Transform parent)
         {
-            for (int i = 0; i < transform.childCount; i++)
+            if (!target.activeSelf)
             {
-                SetLayerRecursive(transform.GetChild(i), layer);
+                return null;
             }
 
-            transform.gameObject.layer = layer;
+            GameObject clone = new GameObject();
+            clone.gameObject.layer = Layer;
+            clone.name = target.name;
+            clone.transform.SetParent(parent);
+            clone.transform.localPosition = target.transform.localPosition;
+            clone.transform.localRotation = target.transform.localRotation;
+            clone.transform.localScale = target.transform.localScale;
+
+            for (int i = 0; i < target.transform.childCount; i++)
+            {
+                CloneRecursive(target.transform.GetChild(i).gameObject, clone.transform);
+            }
+
+            foreach (MeshFilter meshFilter in target.GetComponents<MeshFilter>())
+            {
+                clone.AddComponentCopy(meshFilter);
+            }
+
+            foreach (Renderer renderer in target.GetComponents<Renderer>())
+            {
+                // skinnedMeshRenderer cannot be rendered properly without reference bones
+                if (renderer is SkinnedMeshRenderer skinnedMeshRenderer)
+                {
+                    clone.AddComponent<MeshRenderer>().materials = skinnedMeshRenderer.materials;
+                    clone.AddComponent<MeshFilter>().sharedMesh = skinnedMeshRenderer.sharedMesh;
+                }
+                else
+                {
+                    clone.AddComponentCopy(renderer);
+                }
+            }
+
+            return clone;
         }
 
         private class RenderObject
@@ -343,18 +347,22 @@ namespace Jotunn.Managers
             ///     Pixel width of the generated <see cref="Sprite"/>
             /// </summary>
             public int Width { get; set; } = 128;
+
             /// <summary>
             ///     Pixel height of the generated <see cref="Sprite"/>
             /// </summary>
             public int Height { get; set; } = 128;
+
             /// <summary>
             ///     Rotation of the prefab to capture
             /// </summary>
             public Quaternion Rotation { get; set; } = Quaternion.identity;
+
             /// <summary>
             ///     Field of view of the camera used to create the <see cref="Sprite"/>. Default is small to simulate orthographic view. An orthographic camera is not possible because of shaders
             /// </summary>
             public float FieldOfView { get; set; } = 0.5f;
+
             /// <summary>
             ///     Distance multiplier, should not be required with the default <see cref="FieldOfView"/>
             /// </summary>

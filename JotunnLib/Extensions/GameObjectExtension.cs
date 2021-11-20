@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Reflection;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Jotunn
@@ -24,7 +25,7 @@ namespace Jotunn
         /// <typeparam name="T">Any type that inherits MonoBehaviour</typeparam>
         /// <param name="this">this</param>
         /// <returns>Returns null when MonoBehaviours.op_equality returns false.</returns>
-        public static T OrNull<T>(this T @this) where T : UnityEngine.Object
+        public static T OrNull<T>(this T @this) where T : Object
         {
             return (T)(@this ? @this : null);
         }
@@ -39,6 +40,34 @@ namespace Jotunn
         public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
         {
             return gameObject.GetComponent<T>() ?? gameObject.AddComponent<T>();
+        }
+
+        /// <summary>
+        ///     Adds a new copy of the provided component to a gameObject
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="duplicate"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static Component AddComponentCopy<T>(this GameObject gameObject, T duplicate) where T : Component
+        {
+            Component target = gameObject.AddComponent(duplicate.GetType());
+            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
+            foreach (PropertyInfo propertyInfo in duplicate.GetType().GetProperties(flags))
+            {
+                if (propertyInfo.CanWrite)
+                {
+                    propertyInfo.SetValue(target, propertyInfo.GetValue(duplicate, null), null);
+                }
+            }
+
+            foreach (FieldInfo fieldInfo in duplicate.GetType().GetFields(flags))
+            {
+                fieldInfo.SetValue(target, fieldInfo.GetValue(duplicate));
+            }
+
+            return target;
         }
     }
 
