@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -244,7 +245,16 @@ namespace Jotunn.Managers
         private static RenderObject SpawnSafe(RenderRequest request)
         {
             GameObject prefab = request.Target;
-            GameObject spawn = CloneRecursive(prefab, null);
+
+            // map prefab GameObjects to the instantiated GameObjects
+            Dictionary<GameObject, GameObject> realToClone = new Dictionary<GameObject, GameObject>();
+            GameObject spawn = SpawnOnlyTransformsClone(prefab, null, realToClone);
+
+            foreach (var pair in realToClone)
+            {
+                CopyVisualComponents(pair.Key, pair.Value, realToClone);
+            }
+
             spawn.transform.position = Vector3.zero;
             spawn.transform.rotation = request.Rotation;
             spawn.name = prefab.name;
@@ -276,46 +286,56 @@ namespace Jotunn.Managers
             };
         }
 
-        private static GameObject CloneRecursive(GameObject target, Transform parent)
+        private static GameObject SpawnOnlyTransformsClone(GameObject prefab, Transform parent, Dictionary<GameObject, GameObject> realToClone)
         {
-            if (!target.activeSelf)
-            {
-                return null;
-            }
-
             GameObject clone = new GameObject();
             clone.gameObject.layer = Layer;
-            clone.name = target.name;
+            clone.gameObject.SetActive(prefab.activeSelf);
+            clone.name = prefab.name;
             clone.transform.SetParent(parent);
-            clone.transform.localPosition = target.transform.localPosition;
-            clone.transform.localRotation = target.transform.localRotation;
-            clone.transform.localScale = target.transform.localScale;
+            clone.transform.localPosition = prefab.transform.localPosition;
+            clone.transform.localRotation = prefab.transform.localRotation;
+            clone.transform.localScale = prefab.transform.localScale;
 
-            for (int i = 0; i < target.transform.childCount; i++)
-            {
-                CloneRecursive(target.transform.GetChild(i).gameObject, clone.transform);
-            }
+            realToClone.Add(prefab, clone);
 
-            foreach (MeshFilter meshFilter in target.GetComponents<MeshFilter>())
+            for (int i = 0; i < prefab.transform.childCount; i++)
             {
-                clone.AddComponentCopy(meshFilter);
-            }
-
-            foreach (Renderer renderer in target.GetComponents<Renderer>())
-            {
-                // skinnedMeshRenderer cannot be rendered properly without reference bones
-                if (renderer is SkinnedMeshRenderer skinnedMeshRenderer)
-                {
-                    clone.AddComponent<MeshRenderer>().materials = skinnedMeshRenderer.materials;
-                    clone.AddComponent<MeshFilter>().sharedMesh = skinnedMeshRenderer.sharedMesh;
-                }
-                else
-                {
-                    clone.AddComponentCopy(renderer);
-                }
+                SpawnOnlyTransformsClone(prefab.transform.GetChild(i).gameObject, clone.transform, realToClone);
             }
 
             return clone;
+        }
+
+        private static void CopyVisualComponents(GameObject prefab, GameObject clone, Dictionary<GameObject, GameObject> resolver)
+        {
+            foreach (MeshFilter meshFilter in prefab.GetComponents<MeshFilter>())
+            {
+                clone.gameObject.AddComponentCopy(meshFilter);
+            }
+
+            foreach (Renderer renderer in prefab.GetComponents<Renderer>())
+            {
+                Renderer clonedRenderer = (Renderer)clone.gameObject.AddComponentCopy(renderer);
+
+                if (!(renderer is SkinnedMeshRenderer skinnedMeshRenderer))
+                {
+                    continue;
+                }
+
+                SkinnedMeshRenderer clonedSkinnedMeshRenderer = (SkinnedMeshRenderer)clonedRenderer;
+
+                if (skinnedMeshRenderer.rootBone != null)
+                {
+                    Transform[] bones = skinnedMeshRenderer.bones.Select(transform => resolver[transform.gameObject].transform).ToArray();
+                    clonedSkinnedMeshRenderer.bones = bones;
+                    clonedSkinnedMeshRenderer.updateWhenOffscreen = true;
+                }
+                else
+                {
+                    clonedSkinnedMeshRenderer.rootBone = null;
+                }
+            }
         }
 
         private class RenderObject
