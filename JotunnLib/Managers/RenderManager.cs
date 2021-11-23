@@ -123,7 +123,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
         /// </summary>
-        /// <param name="target"></param>
+        /// <param name="target">Can be a prefab or any existing GameObject in the world</param>
         /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
         public Sprite Render(GameObject target)
         {
@@ -131,7 +131,18 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Render the provided <see cref="RenderRequest"/>
+        ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
+        /// </summary>
+        /// <param name="target">Can be a prefab or any existing GameObject in the world</param>
+        /// <param name="rotation">Rotation while rendering of the GameObject. See <code>RenderManager.IsometricRotation</code> for example/></param>
+        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
+        public Sprite Render(GameObject target, Quaternion rotation)
+        {
+            return Render(new RenderRequest(target) { Rotation = rotation });
+        }
+
+        /// <summary>
+        ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
         /// </summary>
         /// <param name="renderRequest"></param>
         /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
