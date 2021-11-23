@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.4.1
+* Fixed compatibility of RenderManager by not destroying Components any more (RRR for example)
+
 ## Version 2.4.0
 * Added ZoneManager for custom Locations and Vegetation (see https://valheim-modding.github.io/Jotunn/tutorials/zones.html for tutorials) (thx MarcoPogo)
 * Added NetworkManager for custom RPCs with a simpler interface, automatic package compression/slicing and Coroutines (see https://valheim-modding.github.io/Jotunn/tutorials/rpcs.html for tutorials)
