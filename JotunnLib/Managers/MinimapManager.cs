@@ -143,11 +143,9 @@ namespace Jotunn.Managers
 
             Harmony.CreateAndPatchAll(typeof(Texture2D_Apply));
         }
-
-        private static float xoffset;
-        private static float yoffset;
-        private static float widthoffset;
-        private static float heightoffset;
+        
+        public static float widthoffset = 8.5f;
+        public static float heightoffset = 8.5f;
 
         private void StartWatchdog()
         {
@@ -182,32 +180,23 @@ namespace Jotunn.Managers
                 {
                     orig(self, point);
                     self.WorldToMapPoint(point, out var mx, out var my);
-
+                    
+                    if (Input.GetKeyDown(KeyCode.Keypad6)) widthoffset += 0.5f;
+                    if (Input.GetKeyDown(KeyCode.Keypad4)) widthoffset -= 0.5f;
+                    if (Input.GetKeyDown(KeyCode.Keypad8)) heightoffset += 0.5f;
+                    if (Input.GetKeyDown(KeyCode.Keypad2)) heightoffset -= 0.5f;
+                    
                     Rect largeRect = self.m_mapImageLarge.uvRect;
-                    largeRect.width += self.m_largeZoom / 200f * 35f;
-                    largeRect.height += self.m_largeZoom / 200f * 35f;
-
-                    if (Input.GetKeyDown(KeyCode.Keypad8)) heightoffset += 0.001f;
-                    if (Input.GetKeyDown(KeyCode.Keypad2)) heightoffset -= 0.001f;
-                    if (Input.GetKeyDown(KeyCode.Keypad6)) widthoffset += 0.001f;
-                    if (Input.GetKeyDown(KeyCode.Keypad4)) widthoffset -= 0.001f;
-                    largeRect.width += widthoffset;
-                    largeRect.height += heightoffset;
-
+                    largeRect.width += self.m_largeZoom / widthoffset;
+                    largeRect.height += self.m_largeZoom / heightoffset;
+                    
                     largeRect.center = new Vector2(mx, my);
 
                     custLarge.GetComponent<RawImage>().uvRect = largeRect;
                     
                     Rect smallRect = self.m_mapImageSmall.uvRect;
-                    smallRect.width += self.m_smallZoom / 200f * 35f;
-                    smallRect.height += self.m_smallZoom / 200f * 35f;
-
-                    if (Input.GetKeyDown(KeyCode.Keypad8)) heightoffset += 0.001f;
-                    if (Input.GetKeyDown(KeyCode.Keypad2)) heightoffset -= 0.001f;
-                    if (Input.GetKeyDown(KeyCode.Keypad6)) widthoffset += 0.001f;
-                    if (Input.GetKeyDown(KeyCode.Keypad4)) widthoffset -= 0.001f;
-                    smallRect.width += widthoffset;
-                    smallRect.height += heightoffset;
+                    smallRect.width += self.m_smallZoom / 2f;
+                    smallRect.height += self.m_smallZoom / 2f;
                     
                     smallRect.center = new Vector2(mx, my);
 
