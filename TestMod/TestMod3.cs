@@ -75,7 +75,7 @@ namespace TestMod3
             //alphaoverlay = MinimapManager.Instance.AddMapOverlay("alpha_overlay");
             //DrawQuarterQuadrant(alphaoverlay.MainTex, semiblue);
 
-            //DrawQuadTests();
+            DrawQuadTests();
             //SquareTest();
             CreateZoneOverlay(Color.white, 0.0f);
             //CreateSimpleZoneOverlay(Color.white);

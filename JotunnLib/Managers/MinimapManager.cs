@@ -61,11 +61,7 @@ namespace Jotunn.Managers
         
         // Keep backups of all vanilla textures in order to revert overlays.
         private Texture2D OverlayTexBase;
-        private Texture2D MainTexVanilla;
-        private Texture2D HeightFilterVanilla;
-        private Texture2D ForestFilterVanilla;
-        private Texture2D FogFilterVanilla;
-        
+
         // Transparent base texture
         private Texture2D TransparentTex;
 
@@ -87,15 +83,7 @@ namespace Jotunn.Managers
             // Provide hooks for modders for when Minimap is available.
             On.Minimap.Start += Minimap_Start;
             On.Minimap.LoadMapData += Minimap_LoadMapData;
-
-            // Setup methods to properly explore fog, and keep vanilla copy of fog properly updated.
-            On.Minimap.Explore_int_int += Minimap_Explore;
-            On.Minimap.Explore_Vector3_float += Minimap_Explore_2;
-            On.Minimap.ExploreOthers += Minimap_ExploreOthers;
-            On.Minimap.ExploreAll += Minimap_ExploreAll;
-            On.Minimap.AddSharedMapData += Minimap_AddSharedMapData;
-            On.Minimap.Reset += Minimap_Reset;
-
+            
             // Properly clear the Overlays when exiting a world
             SceneManager.activeSceneChanged += (current, next) => Instance.Overlays.Clear();
 
@@ -186,22 +174,26 @@ namespace Jotunn.Managers
                     }
                     if (mainDirty)
                     {
-                        Graphics.CopyTexture(MainTexIntermediate, Minimap.instance.m_mapTexture);
+                        Minimap.instance.m_mapLargeShader.SetTexture("_MainTex", MainTexIntermediate);
+                        Minimap.instance.m_mapSmallShader.SetTexture("_MainTex", MainTexIntermediate);
                         mainDirty = false;
                     }
                     if (heightDirty)
                     {
-                        Graphics.CopyTexture(HeightFilterIntermediate, Minimap.instance.m_heightTexture);
+                        Minimap.instance.m_mapLargeShader.SetTexture("_HeightTex", HeightFilterIntermediate);
+                        Minimap.instance.m_mapSmallShader.SetTexture("_HeightTex", HeightFilterIntermediate);
                         heightDirty = false;
                     }
                     if (forestDirty)
                     {
-                        Graphics.CopyTexture(ForestFilterIntermediate, Minimap.instance.m_forestMaskTexture);
+                        Minimap.instance.m_mapLargeShader.SetTexture("_MaskTex", ForestFilterIntermediate);
+                        Minimap.instance.m_mapSmallShader.SetTexture("_MaskTex", ForestFilterIntermediate);
                         forestDirty = false;
                     }
                     if (fogDirty)
                     {
-                        Graphics.CopyTexture(FogFilterIntermediate, Minimap.instance.m_fogTexture);
+                        Minimap.instance.m_mapLargeShader.SetTexture("_FogTex", FogFilterIntermediate);
+                        Minimap.instance.m_mapSmallShader.SetTexture("_FogTex", FogFilterIntermediate);
                         fogDirty = false;
                     }
                     foreach (var overlay in Overlays.Values)
@@ -233,7 +225,7 @@ namespace Jotunn.Managers
             Logger.LogInfo("Redraw Main");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
-            Graphics.CopyTexture(MainTexVanilla, intermediate); // Reset vanilla texture to backup
+            Graphics.CopyTexture(Minimap.instance.m_mapTexture, intermediate); // Reset vanilla texture to backup
             foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.MainEnabled))
             {
                 DrawOverlay(overlay.MainTex, intermediate, ComposeMainMaterial);
@@ -248,7 +240,7 @@ namespace Jotunn.Managers
             Logger.LogInfo("Redraw Height");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
-            Graphics.CopyTexture(HeightFilterVanilla, intermediate); // Reset vanilla texture to backup
+            Graphics.CopyTexture(Minimap.instance.m_heightTexture, intermediate); // Reset vanilla texture to backup
             foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.HeightEnabled))
             {
                 DrawOverlay(overlay.HeightFilter, intermediate, ComposeHeightMaterial,
@@ -264,7 +256,7 @@ namespace Jotunn.Managers
             Logger.LogInfo("Redraw Forest");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
-            Graphics.CopyTexture(ForestFilterVanilla, intermediate); // Reset vanilla texture to backup
+            Graphics.CopyTexture(Minimap.instance.m_forestMaskTexture, intermediate); // Reset vanilla texture to backup
             foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.ForestEnabled))
             {
                 DrawOverlay(overlay.ForestFilter, intermediate, ComposeForestMaterial);
@@ -279,7 +271,7 @@ namespace Jotunn.Managers
             Logger.LogInfo("Redraw Fog");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
-            Graphics.CopyTexture(FogFilterVanilla, intermediate); // Reset vanilla texture to backup
+            Graphics.CopyTexture(Minimap.instance.m_fogTexture, intermediate); // Reset vanilla texture to backup
             foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.FogEnabled))
             {
                 DrawOverlay(overlay.FogFilter, intermediate, ComposeFogMaterial);
@@ -322,14 +314,6 @@ namespace Jotunn.Managers
             
             OverlayTexBase = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             OverlayTexBase.wrapMode = TextureWrapMode.Clamp;
-            MainTexVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            MainTexVanilla.wrapMode = TextureWrapMode.Clamp;
-            HeightFilterVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RFloat, mipChain: false);
-            HeightFilterVanilla.wrapMode = TextureWrapMode.Clamp;
-            ForestFilterVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            ForestFilterVanilla.wrapMode = TextureWrapMode.Clamp;
-            FogFilterVanilla = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            FogFilterVanilla.wrapMode = TextureWrapMode.Clamp;
 
             watch.Stop();
             Logger.LogInfo($"Init took {watch.ElapsedMilliseconds}ms time");
@@ -343,10 +327,6 @@ namespace Jotunn.Managers
 
             // copy instance textures
             Graphics.CopyTexture(TransparentTex, OverlayTexBase);
-            Graphics.CopyTexture(Minimap.instance.m_forestMaskTexture, ForestFilterVanilla);
-            Graphics.CopyTexture(Minimap.instance.m_heightTexture, HeightFilterVanilla);
-            Graphics.CopyTexture(Minimap.instance.m_fogTexture, FogFilterVanilla);
-            Graphics.CopyTexture(Minimap.instance.m_mapTexture, MainTexVanilla);
 
             // create custom overlay GOs
             var custLarge = new GameObject("CustomLayerLarge", typeof(RectTransform), typeof(RawImage));
@@ -355,12 +335,14 @@ namespace Jotunn.Managers
             custLarge.transform.SetParent(Minimap.instance.m_mapImageLarge.transform, false);
             custLarge.GetComponent<RawImage>().texture = OverlayTexBase;
             custLarge.GetComponent<RawImage>().material = null;
+            custLarge.GetComponent<RawImage>().raycastTarget = false;
             var custSmall = new GameObject("CustomLayerSmall", typeof(RectTransform), typeof(RawImage));
             custSmall.GetComponent<RectTransform>().anchorMin = Vector2.zero;
             custSmall.GetComponent<RectTransform>().anchorMax = Vector2.one;
             custSmall.transform.SetParent(Minimap.instance.m_mapImageSmall.transform, false);
             custSmall.GetComponent<RawImage>().texture = OverlayTexBase;
             custSmall.GetComponent<RawImage>().material = null;
+            custSmall.GetComponent<RawImage>().raycastTarget = false;
             
             On.Minimap.CenterMap += (orig, self, point) =>
             {
@@ -505,7 +487,6 @@ namespace Jotunn.Managers
             orig(self);
             SetupTextures();
             InvokeOnVanillaMapDataLoaded();
-            FogFilterVanilla.Apply(); // maybe not needed.
         }
 
         /// <summary>
@@ -515,55 +496,7 @@ namespace Jotunn.Managers
         {
             OnVanillaMapDataLoaded?.SafeInvoke();
         }
-
-
-        private bool Minimap_AddSharedMapData(On.Minimap.orig_AddSharedMapData orig, Minimap self, byte[] dataArray)
-        {
-            bool t = orig(self, dataArray);
-            FogFilterVanilla.Apply(); // maybe not needed.
-            return t;
-        }
-
-        private bool Minimap_Explore(On.Minimap.orig_Explore_int_int orig, Minimap self, int x, int y)
-        {
-            if (!self.m_explored[y * self.m_textureSize + x])
-            {
-                FogFilterVanilla.SetPixel(x, y, FilterOff);
-            }
-            return orig(self, x, y);
-        }
-
-        private void Minimap_Explore_2(On.Minimap.orig_Explore_Vector3_float orig, Minimap self, Vector3 v, float f)
-        {
-            orig(self, v, f);
-            FogFilterVanilla.Apply();
-            return;
-        }
-
-        private void Minimap_ExploreAll(On.Minimap.orig_ExploreAll orig, Minimap self)
-        {
-            orig(self);
-            FogFilterVanilla.Apply();
-            return;
-        }
-
-        private bool Minimap_ExploreOthers(On.Minimap.orig_ExploreOthers orig, Minimap self, int x, int y)
-        {
-            if (!self.m_explored[y * self.m_textureSize + x])
-            {
-                FogFilterVanilla.SetPixel(x, y, FilterOff);
-            }
-
-            return orig(self, x, y);
-        }
-
-        private void Minimap_Reset(On.Minimap.orig_Reset orig, Minimap self)
-        {
-            orig(self);
-            FogFilterVanilla.SetPixels(self.m_fogTexture.GetPixels());
-            FogFilterVanilla.Apply();
-        }
-
+        
         private void MapGUICreate()
         {
             var basePanel = PrefabManager.Instance.GetPrefab("MinimapOverlayPanel");
@@ -608,22 +541,22 @@ namespace Jotunn.Managers
             /// <summary>
             ///     Texture to draw main texture information to
             /// </summary>
-            public Texture2D MainTex => _mainTex ??= Create(Instance.MainTexVanilla);
+            public Texture2D MainTex => _mainTex ??= Create(Minimap.instance.m_mapTexture);
 
             /// <summary>
             ///     Texture to draw height filter information to
             /// </summary>
-            public Texture2D HeightFilter => _heightFilter ??= Create(Instance.HeightFilterVanilla);
+            public Texture2D HeightFilter => _heightFilter ??= Create(Minimap.instance.m_heightTexture);
 
             /// <summary>
             ///     Texture to draw forest filter information to
             /// </summary>
-            public Texture2D ForestFilter => _forestFilter ??= Create(Instance.ForestFilterVanilla);
+            public Texture2D ForestFilter => _forestFilter ??= Create(Minimap.instance.m_forestMaskTexture);
 
             /// <summary>
             ///     Texture to draw fog filter information to
             /// </summary>
-            public Texture2D FogFilter => _fogFilter ??= Create(Instance.FogFilterVanilla);
+            public Texture2D FogFilter => _fogFilter ??= Create(Minimap.instance.m_fogTexture);
 
             /// <summary>
             ///     Set true to render this overlay, false to hide
