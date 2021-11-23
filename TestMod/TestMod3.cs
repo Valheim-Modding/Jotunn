@@ -41,7 +41,7 @@ namespace TestMod3
         private static MinimapManager.MapOverlay quadtest3;
 
         //private static MinimapManager.MapOverlay ZoneOverlay;
-        private static MinimapManager.SimpleMapOverlay SimpleZoneOverlay;
+        private static MinimapManager.MapOverlay SimpleZoneOverlay;
         private static MinimapManager.MapOverlay ZoneOverlay;
 
         private static Color MeadowHeight = new Color(32, 0, 0, 255);
@@ -77,16 +77,16 @@ namespace TestMod3
 
             //DrawQuadTests();
             //SquareTest();
-            //CreateZoneOverlay(Color.white, 0.0f);
-            CreateSimpleZoneOverlay(Color.white, 0.0f);
-            DrawSquaresOnMapPins(Color.blue, SimpleZoneOverlay);
+            CreateZoneOverlay(Color.white, 0.0f);
+            //CreateSimpleZoneOverlay(Color.white);
+            //DrawSquaresOnMapPins(Color.blue, SimpleZoneOverlay);
         }
 
-        internal static void CreateSimpleZoneOverlay(Color color, float height)
+        internal static void CreateSimpleZoneOverlay(Color color)
         {
             if (SimpleZoneOverlay == null)
             {
-                SimpleZoneOverlay = MinimapManager.Instance.AddSimpleMapOverlay(nameof(SimpleZoneOverlay));
+                SimpleZoneOverlay = MinimapManager.Instance.AddMapOverlay(nameof(SimpleZoneOverlay));
             }
             int mapSize = SimpleZoneOverlay.TextureSize * SimpleZoneOverlay.TextureSize;
             int zoneSize = 64;
@@ -102,11 +102,10 @@ namespace TestMod3
                     }
                 }
             }
-            SimpleZoneOverlay.SetPixels(mainPixels);
-            SimpleZoneOverlay.Apply();
+            SimpleZoneOverlay.OverlayTex.SetPixels(mainPixels);
+            SimpleZoneOverlay.OverlayTex.Apply();
         }
-
-
+        
         // Zone overlay
         internal static void CreateZoneOverlay(Color color, float height)
         {
