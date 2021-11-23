@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -17,6 +18,7 @@ namespace Jotunn.Managers
         public static readonly Quaternion IsometricRotation = Quaternion.Euler(23, 51, 25.8f);
 
         private static RenderManager _instance;
+
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -121,7 +123,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
         /// </summary>
-        /// <param name="target"></param>
+        /// <param name="target">Can be a prefab or any existing GameObject in the world</param>
         /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
         public Sprite Render(GameObject target)
         {
@@ -129,7 +131,18 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Render the provided <see cref="RenderRequest"/>
+        ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
+        /// </summary>
+        /// <param name="target">Can be a prefab or any existing GameObject in the world</param>
+        /// <param name="rotation">Rotation while rendering of the GameObject. See <code>RenderManager.IsometricRotation</code> for example/></param>
+        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
+        public Sprite Render(GameObject target, Quaternion rotation)
+        {
+            return Render(new RenderRequest(target) { Rotation = rotation });
+        }
+
+        /// <summary>
+        ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
         /// </summary>
         /// <param name="renderRequest"></param>
         /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
@@ -212,7 +225,7 @@ namespace Jotunn.Managers
             Renderer.clearFlags = CameraClearFlags.SolidColor;
             Renderer.transform.position = SpawnPoint;
             Renderer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-            
+
             Renderer.fieldOfView = 0.5f;
             Renderer.farClipPlane = 100000;
             Renderer.cullingMask = 1 << Layer;
@@ -243,39 +256,19 @@ namespace Jotunn.Managers
         private static RenderObject SpawnSafe(RenderRequest request)
         {
             GameObject prefab = request.Target;
-            // remember activeSelf to not mess with prefab data
-            bool wasActiveSelf = prefab.activeSelf;
-            prefab.SetActive(false);
 
-            // spawn the prefab inactive
-            GameObject spawn = Object.Instantiate(prefab, new Vector3(0, 0, 0), request.Rotation);
+            // map prefab GameObjects to the instantiated GameObjects
+            Dictionary<GameObject, GameObject> realToClone = new Dictionary<GameObject, GameObject>();
+            GameObject spawn = SpawnOnlyTransformsClone(prefab, null, realToClone);
+
+            foreach (var pair in realToClone)
+            {
+                CopyVisualComponents(pair.Key, pair.Value, realToClone);
+            }
+
+            spawn.transform.position = Vector3.zero;
+            spawn.transform.rotation = request.Rotation;
             spawn.name = prefab.name;
-            SetLayerRecursive(spawn.transform, Layer);
-
-            prefab.SetActive(wasActiveSelf);
-
-            // needs to be destroyed first as Character depend on it
-            foreach (CharacterDrop characterDrop in spawn.GetComponentsInChildren<CharacterDrop>())
-            {
-                Object.DestroyImmediate(characterDrop);
-            }
-
-            // needs to be destroyed first as Rigidbody depend on it
-            foreach (Joint joint in spawn.GetComponentsInChildren<Joint>())
-            {
-                Object.DestroyImmediate(joint);
-            }
-
-            // destroy all other components except visuals
-            foreach (Component component in spawn.GetComponentsInChildren<Component>(true))
-            {
-                if (component is Transform || IsVisualComponent(component))
-                {
-                    continue;
-                }
-
-                Object.DestroyImmediate(component);
-            }
 
             // calculate visual center
             Vector3 min = new Vector3(1000f, 1000f, 1000f);
@@ -304,14 +297,56 @@ namespace Jotunn.Managers
             };
         }
 
-        private static void SetLayerRecursive(Transform transform, int layer)
+        private static GameObject SpawnOnlyTransformsClone(GameObject prefab, Transform parent, Dictionary<GameObject, GameObject> realToClone)
         {
-            for (int i = 0; i < transform.childCount; i++)
+            GameObject clone = new GameObject();
+            clone.gameObject.layer = Layer;
+            clone.gameObject.SetActive(prefab.activeSelf);
+            clone.name = prefab.name;
+            clone.transform.SetParent(parent);
+            clone.transform.localPosition = prefab.transform.localPosition;
+            clone.transform.localRotation = prefab.transform.localRotation;
+            clone.transform.localScale = prefab.transform.localScale;
+
+            realToClone.Add(prefab, clone);
+
+            for (int i = 0; i < prefab.transform.childCount; i++)
             {
-                SetLayerRecursive(transform.GetChild(i), layer);
+                SpawnOnlyTransformsClone(prefab.transform.GetChild(i).gameObject, clone.transform, realToClone);
             }
 
-            transform.gameObject.layer = layer;
+            return clone;
+        }
+
+        private static void CopyVisualComponents(GameObject prefab, GameObject clone, Dictionary<GameObject, GameObject> resolver)
+        {
+            foreach (MeshFilter meshFilter in prefab.GetComponents<MeshFilter>())
+            {
+                clone.gameObject.AddComponentCopy(meshFilter);
+            }
+
+            foreach (Renderer renderer in prefab.GetComponents<Renderer>())
+            {
+                Renderer clonedRenderer = (Renderer)clone.gameObject.AddComponentCopy(renderer);
+
+                if (!(renderer is SkinnedMeshRenderer skinnedMeshRenderer))
+                {
+                    continue;
+                }
+
+                SkinnedMeshRenderer clonedSkinnedMeshRenderer = (SkinnedMeshRenderer)clonedRenderer;
+
+                if (skinnedMeshRenderer.rootBone != null)
+                {
+                    Transform[] bones = skinnedMeshRenderer.bones.Select(transform => resolver[transform.gameObject].transform).ToArray();
+                    clonedSkinnedMeshRenderer.bones = bones;
+                    clonedSkinnedMeshRenderer.updateWhenOffscreen = true;
+                }
+                else
+                {
+                    clonedSkinnedMeshRenderer.rootBone = null;
+                }
+            }
         }
 
         private class RenderObject
@@ -343,18 +378,22 @@ namespace Jotunn.Managers
             ///     Pixel width of the generated <see cref="Sprite"/>
             /// </summary>
             public int Width { get; set; } = 128;
+
             /// <summary>
             ///     Pixel height of the generated <see cref="Sprite"/>
             /// </summary>
             public int Height { get; set; } = 128;
+
             /// <summary>
             ///     Rotation of the prefab to capture
             /// </summary>
             public Quaternion Rotation { get; set; } = Quaternion.identity;
+
             /// <summary>
             ///     Field of view of the camera used to create the <see cref="Sprite"/>. Default is small to simulate orthographic view. An orthographic camera is not possible because of shaders
             /// </summary>
             public float FieldOfView { get; set; } = 0.5f;
+
             /// <summary>
             ///     Distance multiplier, should not be required with the default <see cref="FieldOfView"/>
             /// </summary>
