@@ -121,7 +121,7 @@ namespace Jotunn
                         var isList = fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(List<>);
                         var isHashSet = fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(HashSet<>);
 
-                        if (!(isArray | isList | isHashSet))
+                        if (!(isArray || isList || isHashSet))
                         {
                             Logger.LogWarning($"Not fixing potential mock references for field {field.Name} : {fieldType} is not supported.");
                             continue;
@@ -190,9 +190,13 @@ namespace Jotunn
                         }
 
                         var currentValues = (IEnumerable<object>)field.GetValue(objectToFix);
+                        if (currentValues == null)
+                        {
+                            continue;
+                        }
                         foreach (var value in currentValues)
                         {
-                            value.FixReferences(depth);
+                            value?.FixReferences(depth);
                         }
                     }
                     else if (fieldType.IsClass)
@@ -234,7 +238,7 @@ namespace Jotunn
                         var isList = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>);
                         var isHashSet = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(HashSet<>);
 
-                        if (!(isArray | isList | isHashSet))
+                        if (!(isArray || isList || isHashSet))
                         {
                             Logger.LogWarning($"Not fixing potential mock references for property {property.Name} : {propertyType} is not supported.");
                             continue;
@@ -303,9 +307,13 @@ namespace Jotunn
                         }
 
                         var currentValues = (IEnumerable<object>)property.GetValue(objectToFix, null);
+                        if (currentValues == null)
+                        {
+                            continue;
+                        }
                         foreach (var value in currentValues)
                         {
-                            value.FixReferences(depth);
+                            value?.FixReferences(depth);
                         }
                     }
                     else if (propertyType.IsClass)

@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.4.2
+* Fixed NRE while resolving mock references for null enumerables
+
 ## Version 2.4.1
 * Fixed compatibility of RenderManager by not destroying Components any more (RRR for example)
 
