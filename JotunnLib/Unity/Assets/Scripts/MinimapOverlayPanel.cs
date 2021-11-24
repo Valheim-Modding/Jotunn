@@ -6,19 +6,35 @@ namespace Jotunn.GUI
 {
     public class MinimapOverlayPanel : MonoBehaviour
     {
+        /// <summary>
+        ///     
+        /// </summary>
         public GameObject OverlayGroup;
+        /// <summary>
+        /// 
+        /// </summary>
         public Button Button;
+        /// <summary>
+        /// 
+        /// </summary>
         public GameObject BaseMod;
+        /// <summary>
+        /// 
+        /// </summary>
         public Text BaseModText;
+        /// <summary>
+        /// 
+        /// </summary>
         public Toggle BaseToggle;
 
         private readonly Dictionary<string, GameObject> Mods = new Dictionary<string, GameObject>();
-
-        public void ToggleOverlayGroup()
-        {
-            OverlayGroup.SetActive(!OverlayGroup.activeSelf);
-        }
-
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="modName"></param>
+        /// <param name="overlayName"></param>
+        /// <returns></returns>
         public Toggle AddOverlayToggle(string modName, string overlayName)
         {
             if (!Mods.TryGetValue(modName, out var mod))
