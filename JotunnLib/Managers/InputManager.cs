@@ -193,6 +193,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private InputManager() {}
 
         /// <summary>
         ///     Initialize the manager

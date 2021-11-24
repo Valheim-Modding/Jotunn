@@ -28,6 +28,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private PieceManager() {}
 
         /// <summary>
         ///     Event that gets fired after all pieces were added to their respective PieceTables.

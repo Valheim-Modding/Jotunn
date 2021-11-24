@@ -25,6 +25,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private KitbashManager() {}
 
         /// <summary>
         ///     Internal list of objects to which Kitbashing should be applied.

@@ -26,6 +26,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private KeyHintManager() {}
 
         /// <summary>
         ///     Internal Dictionary holding the references to the custom key hints added to the manager

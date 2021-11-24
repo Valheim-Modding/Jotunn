@@ -28,6 +28,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private ItemManager() {}
 
         /// <summary>
         ///     Event that gets fired after the vanilla items are in memory and available for cloning.

@@ -25,6 +25,11 @@ namespace Jotunn.Managers
         private static MockManager _instance;
         
         /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private MockManager() {}
+
+        /// <summary>
         ///     Regex to identify multiple instances of mock objects from Unity
         /// </summary>
         private static readonly Regex CopyRegex = new Regex(@" \([0-9]+\)");

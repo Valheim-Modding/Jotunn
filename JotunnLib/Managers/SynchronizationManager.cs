@@ -48,6 +48,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private SynchronizationManager() {}
 
         /// <summary>
         ///     Clientside indicator if the current player has admin status on 

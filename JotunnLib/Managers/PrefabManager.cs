@@ -29,6 +29,11 @@ namespace Jotunn.Managers
         }
         
         /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private PrefabManager() {}
+
+        /// <summary>
         ///     Event that gets fired after the vanilla prefabs are in memory and available for cloning.
         ///     Your code will execute every time before a new <see cref="ObjectDB"/> is copied (on every menu start).
         ///     If you want to execute just once you will need to unregister from the event after execution.

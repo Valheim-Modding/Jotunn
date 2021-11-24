@@ -19,6 +19,11 @@ namespace Jotunn.Managers
                 return _instrance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private SaveManager() {}
 
         internal readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
 

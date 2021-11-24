@@ -24,6 +24,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private CommandManager() {}
 
         /// <summary>
         ///     Internal Action delegate to add custom entities into vanilla command's option list

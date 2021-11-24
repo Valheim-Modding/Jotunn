@@ -126,7 +126,6 @@ namespace Jotunn.Managers
                     {
                         continue;
                     }
-                    
                     if (Overlays.Values.Any(x => x.OverlayDirty))
                     {
                         yield return DrawOverlay(OverlayTexIntermediate);
