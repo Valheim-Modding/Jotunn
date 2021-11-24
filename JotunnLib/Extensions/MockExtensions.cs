@@ -32,7 +32,7 @@ namespace Jotunn
         {
             gameObject.FixReferences(false);
         }
-        
+
         /// <summary>
         ///     Resolves all references for mocks in this GameObject recursively.
         ///     Can additionally traverse the transforms hierarchy to fix child GameObjects recursively.
@@ -58,7 +58,7 @@ namespace Jotunn
             for (int i = 0; i < childCount; i++)
             {
                 Transform tf = gameObject.transform.GetChild(i);
-                 
+
                 var realPrefab = MockManager.GetRealPrefabFromMock<GameObject>(tf.gameObject);
                 if (realPrefab)
                 {
@@ -67,7 +67,8 @@ namespace Jotunn
                     realInstance.transform.localRotation = tf.localRotation;
                     realInstance.transform.localScale = tf.localScale;
                     Object.Destroy(tf.gameObject);
-                } else
+                }
+                else
                 {
                     tf.gameObject.FixReferences(true);
                 }
@@ -168,12 +169,12 @@ namespace Jotunn
                                 else if (isHashSet)
                                 {
                                     var hash = typeof(HashSet<>).MakeGenericType(enumeratedType);
-                                    
+
                                     // mono...
                                     var cast = ReflectionHelper.Cache.EnumerableCast;
                                     var castT = cast.MakeGenericMethod(enumeratedType);
                                     var correctTypeList = castT.Invoke(null, new object[] { list });
-                                    
+
                                     var newHash = Activator.CreateInstance(hash, correctTypeList);
                                     field.SetValue(objectToFix, newHash);
                                 }
@@ -285,12 +286,12 @@ namespace Jotunn
                                 else if (isHashSet)
                                 {
                                     var hash = typeof(HashSet<>).MakeGenericType(enumeratedType);
-                                    
+
                                     // mono...
                                     var cast = ReflectionHelper.Cache.EnumerableCast;
                                     var castT = cast.MakeGenericMethod(enumeratedType);
                                     var correctTypeList = castT.Invoke(null, new object[] { list });
-                                    
+
                                     var newHash = Activator.CreateInstance(hash, correctTypeList);
                                     property.SetValue(objectToFix, newHash, null);
                                 }

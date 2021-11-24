@@ -34,6 +34,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private RenderManager() {}
 
         /// <summary>
         ///     Unused Layer in Unity

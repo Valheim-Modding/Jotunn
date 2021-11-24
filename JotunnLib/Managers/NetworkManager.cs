@@ -25,6 +25,11 @@ namespace Jotunn.Managers
             }
         }
         private static NetworkManager _instance;
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private NetworkManager() {}
 
         /// <summary>
         ///     Delegate for receiving <see cref="ZPackage">ZPackages</see>.

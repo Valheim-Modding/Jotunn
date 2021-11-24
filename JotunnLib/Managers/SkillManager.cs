@@ -25,6 +25,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private SkillManager() {}
 
         /// <summary>
         ///     Initialize the manager

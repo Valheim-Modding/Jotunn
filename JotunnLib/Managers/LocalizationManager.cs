@@ -56,6 +56,11 @@ namespace Jotunn.Managers
         /// </summary>
         public static LocalizationManager Instance => _instance ??= new LocalizationManager();
         private static LocalizationManager _instance;
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private LocalizationManager() {}
 
         /// <summary> 
         ///     Localizations for internal use.

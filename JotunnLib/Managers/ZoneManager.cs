@@ -29,7 +29,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
-
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private ZoneManager() {}
 
         /// <summary>
         ///     Event that gets fired after the vanilla locations are in memory and available for cloning or editing.

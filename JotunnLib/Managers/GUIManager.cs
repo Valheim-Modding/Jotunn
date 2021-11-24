@@ -35,6 +35,11 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private GUIManager() {}
+
+        /// <summary>
         ///     Event that gets fired every time the Unity scene changed and a new PixelFix
         ///     object was created. Subscribe to this event to create your custom GUI objects
         ///     and add them as a child to the <see cref="PixelFix"/>.
