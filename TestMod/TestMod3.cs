@@ -78,8 +78,8 @@ namespace TestMod3
             DrawQuadTests();
             //SquareTest();
             CreateZoneOverlay(Color.white, 0.0f);
-            //CreateSimpleZoneOverlay(Color.white);
-            //DrawSquaresOnMapPins(Color.blue, SimpleZoneOverlay);
+            CreateSimpleZoneOverlay(Color.white);
+            DrawSquaresOnMapPins(Color.blue, SimpleZoneOverlay);
         }
 
         internal static void CreateSimpleZoneOverlay(Color color)
