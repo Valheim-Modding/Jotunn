@@ -32,6 +32,14 @@ namespace Jotunn.GUI
         /// <summary>
         /// 
         /// </summary>
+        public void ToggleOverlayGroup()
+        {
+            OverlayGroup.SetActive(!OverlayGroup.activeSelf);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="modName"></param>
         /// <param name="overlayName"></param>
         /// <returns></returns>

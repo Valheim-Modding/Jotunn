@@ -194,7 +194,7 @@ namespace Jotunn.Managers
             foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.HeightEnabled))
             {
                 DrawLayer(overlay.HeightFilter, intermediate, ComposeHeightMaterial,
-                    RenderTextureFormat.ARGBFloat);
+                    RenderTextureFormat.RFloat);
             }
             watch.Stop(); Logger.LogInfo($"DrawHeight loop took {watch.ElapsedMilliseconds}ms time");
 
