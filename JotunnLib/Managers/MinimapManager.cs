@@ -106,6 +106,13 @@ namespace Jotunn.Managers
 
             // Load texture with all pixels (RGBA) set to 0f.
             TransparentTex = bundle.LoadAsset<Texture2D>("2048x2048_clear");
+            
+            // Create intermediate textures to draw on
+            OverlayTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+            MainTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+            HeightFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RFloat, mipChain: false);
+            ForestFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+            FogFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
 
             // Create materials and shaders to compute overlays onto the vanilla textures
             var composeMainShader = bundle.LoadAsset<Shader>("MinimapComposeMain");
@@ -116,7 +123,11 @@ namespace Jotunn.Managers
             ComposeHeightMaterial = new Material(composeHeightShader);
             ComposeForestMaterial = new Material(composeForestShader);
             ComposeFogMaterial = new Material(composeFogShader);
-
+            ComposeMainMaterial.SetTexture("_VanillaTex", MainTex);
+            ComposeHeightMaterial.SetTexture("_VanillaTex", HeightFilter);
+            ComposeForestMaterial.SetTexture("_VanillaTex", ForestFilter);
+            ComposeFogMaterial.SetTexture("_VanillaTex", FogFilter);
+            
             var overlaypanel = bundle.LoadAsset<GameObject>("MinimapOverlayPanel");
             PrefabManager.Instance.AddPrefab(new CustomPrefab(overlaypanel, false));
 
@@ -223,7 +234,6 @@ namespace Jotunn.Managers
         /// </summary>
         private void Minimap_Start(On.Minimap.orig_Start orig, Minimap self)
         {
-            InitializeTextures();
             orig(self);
             StartWatchdog();
             InvokeOnVanillaMapAvailable();
@@ -256,27 +266,6 @@ namespace Jotunn.Managers
             OnVanillaMapDataLoaded?.SafeInvoke();
         }
         
-        private void InitializeTextures()
-        {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-            Logger.LogInfo("Initializing MinimapOverlay Textures");
-
-            OverlayTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            MainTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            HeightFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RFloat, mipChain: false);
-            ForestFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            FogFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-
-            ComposeMainMaterial.SetTexture("_VanillaTex", MainTex);
-            ComposeHeightMaterial.SetTexture("_VanillaTex", HeightFilter);
-            ComposeForestMaterial.SetTexture("_VanillaTex", ForestFilter);
-            ComposeFogMaterial.SetTexture("_VanillaTex", FogFilter);
-
-            watch.Stop();
-            Logger.LogInfo($"Init took {watch.ElapsedMilliseconds}ms time");
-        }
-
         private void StartWatchdog()
         {
             IEnumerator watchdog()
@@ -393,18 +382,18 @@ namespace Jotunn.Managers
             yield return null;
         }
 
-        private void DrawLayer(Texture2D overlay, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
+        private void DrawLayer(Texture2D layer, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
         {
             RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, format, RenderTextureReadWrite.Default);
 
             // Blit sets the overlay texture as _Maintex on the shader then computes the frag function of the shader, setting the result to tmp.
             if (mat != null)
             {
-                Graphics.Blit(overlay, tmp, mat);
+                Graphics.Blit(layer, tmp, mat);
             }
             else
             {
-                Graphics.Blit(overlay, tmp);
+                Graphics.Blit(layer, tmp);
             }
 
             // Backup the currently set RenderTexture
@@ -512,11 +501,6 @@ namespace Jotunn.Managers
         private void Minimap_OnDestroy(On.Minimap.orig_OnDestroy orig, Minimap self)
         {
             orig(self);
-            Object.DestroyImmediate(OverlayTex);
-            Object.DestroyImmediate(MainTex);
-            Object.DestroyImmediate(HeightFilter);
-            Object.DestroyImmediate(ForestFilter);
-            Object.DestroyImmediate(FogFilter);
             foreach (var overlay in Overlays.Values)
             {
                 overlay.Destroy();
