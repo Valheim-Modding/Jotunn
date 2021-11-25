@@ -7,7 +7,6 @@ using Jotunn.Entities;
 using Jotunn.GUI;
 using Jotunn.Utils;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -31,6 +30,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
+        
+        /// <summary>
+        ///     Hide .ctor
+        /// </summary>
+        private MinimapManager() {}
 
         /// <summary>
         ///     Event that gets fired once the Map for a World has started and Mods can begin to draw.
@@ -41,7 +45,7 @@ namespace Jotunn.Managers
         ///     Event that gets fired once data for a specific Map for a world has been loaded. Eg, Pins are available after this has fired.
         /// </summary>
         public static event Action OnVanillaMapDataLoaded;
-        
+
         /// <summary>
         ///     Colour which sets a filter on. Used for ForestFilter and FogFilter.
         ///     A full alpha value enables this pixel, and then the red value is written to the result texture.
@@ -58,10 +62,10 @@ namespace Jotunn.Managers
 
         private Dictionary<string, MapOverlay> Overlays = new Dictionary<string, MapOverlay>();
         private int OverlayID;
-        
+
         // Transparent base texture
         private Texture2D TransparentTex;
-        
+
         // Intermediate textures for the manager to draw on
         private Texture2D OverlayTex;
         private Texture2D MainTex;
@@ -77,7 +81,7 @@ namespace Jotunn.Managers
 
         // Current component for the MinimapOverlayPanel
         private MinimapOverlayPanel OverlayPanel;
-        
+
         // Overlay GameObjects
         private GameObject OverlayLarge;
         private GameObject OverlaySmall;
@@ -92,7 +96,7 @@ namespace Jotunn.Managers
             On.Minimap.LoadMapData += Minimap_LoadMapData;
             On.Minimap.CenterMap += Minimap_CenterMap;
             On.Minimap.OnDestroy += Minimap_OnDestroy;
-            
+
             // Setup methods to properly explore fog, and keep vanilla copy of fog properly updated.
             On.Minimap.Explore_int_int += Minimap_Explore_Point;
             On.Minimap.Explore_Vector3_float += Minimap_Explore_Radius;
@@ -100,13 +104,13 @@ namespace Jotunn.Managers
             On.Minimap.ExploreAll += Minimap_ExploreAll;
             On.Minimap.AddSharedMapData += Minimap_AddSharedMapData;
             On.Minimap.Reset += Minimap_Reset;
-            
+
             // Load shaders and setup materials
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
 
             // Load texture with all pixels (RGBA) set to 0f.
             TransparentTex = bundle.LoadAsset<Texture2D>("2048x2048_clear");
-            
+
             // Create intermediate textures to draw on
             OverlayTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
             MainTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
@@ -127,7 +131,7 @@ namespace Jotunn.Managers
             ComposeHeightMaterial.SetTexture("_VanillaTex", HeightFilter);
             ComposeForestMaterial.SetTexture("_VanillaTex", ForestFilter);
             ComposeFogMaterial.SetTexture("_VanillaTex", FogFilter);
-            
+
             var overlaypanel = bundle.LoadAsset<GameObject>("MinimapOverlayPanel");
             PrefabManager.Instance.AddPrefab(new CustomPrefab(overlaypanel, false));
 
@@ -166,7 +170,7 @@ namespace Jotunn.Managers
             AddOverlayToGUI(ret);
             return ret;
         }
-        
+
         /// <summary>
         ///     Causes MapManager to stop updating the MapOverlay object and removes this Manager's reference to that overlay.
         ///     A mod could still hold references and keep the object alive.
@@ -265,7 +269,7 @@ namespace Jotunn.Managers
         {
             OnVanillaMapDataLoaded?.SafeInvoke();
         }
-        
+
         private void StartWatchdog()
         {
             IEnumerator watchdog()
@@ -305,7 +309,7 @@ namespace Jotunn.Managers
             }
             Minimap.instance.StartCoroutine(watchdog());
         }
-        
+
         private IEnumerator DrawOverlay(Texture2D intermediate)
         {
             Logger.LogInfo("Redraw Overlay");
@@ -335,7 +339,7 @@ namespace Jotunn.Managers
 
             yield return null;
         }
-        
+
         private IEnumerator DrawHeight(Texture2D intermediate)
         {
             Logger.LogInfo("Redraw Height");
@@ -413,13 +417,13 @@ namespace Jotunn.Managers
             // Release the temporary RenderTexture
             RenderTexture.ReleaseTemporary(tmp);
         }
-        
+
         private void SetupTextures()
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
             Logger.LogInfo("Setting up MinimapOverlay Textures");
-            
+
             // Copy vanilla textures
             Graphics.CopyTexture(TransparentTex, OverlayTex);
             Graphics.CopyTexture(Minimap.instance.m_mapTexture, MainTex);
@@ -456,11 +460,11 @@ namespace Jotunn.Managers
             imageSmall.texture = OverlayTex;
             imageSmall.material = null;
             imageSmall.raycastTarget = false;
-            
+
             watch.Stop();
             Logger.LogInfo($"Setup took {watch.ElapsedMilliseconds}ms time");
         }
-        
+
         private void SetupGUI()
         {
             var basePanel = PrefabManager.Instance.GetPrefab("MinimapOverlayPanel");
@@ -490,14 +494,14 @@ namespace Jotunn.Managers
             largeRect.height += self.m_largeZoom / 8.5f;
             largeRect.center = new Vector2(mx, my);
             OverlayLarge.GetComponent<RawImage>().uvRect = largeRect;
-                
+
             Rect smallRect = self.m_mapImageSmall.uvRect;
             smallRect.width += self.m_smallZoom / 2f;
             smallRect.height += self.m_smallZoom / 2f;
             smallRect.center = new Vector2(mx, my);
             OverlaySmall.GetComponent<RawImage>().uvRect = smallRect;
         }
-        
+
         private void Minimap_OnDestroy(On.Minimap.orig_OnDestroy orig, Minimap self)
         {
             orig(self);
@@ -569,7 +573,7 @@ namespace Jotunn.Managers
             ///     Initial texture size to calculate the relative drawing position
             /// </summary>
             public int TextureSize { get; internal set; }
-            
+
             /// <summary>
             ///     Texture to draw overlay texture information to
             /// </summary>
