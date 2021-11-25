@@ -327,7 +327,7 @@ namespace Jotunn.Managers
             {
                 DrawLayer(overlay.OverlayTex, intermediate, null);
             }
-            watch.Stop(); Logger.LogInfo($"DrawMain loop took {watch.ElapsedMilliseconds}ms time");
+            watch.Stop(); Logger.LogInfo($"DrawOverlay loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
         }
@@ -511,6 +511,12 @@ namespace Jotunn.Managers
         
         private void Minimap_OnDestroy(On.Minimap.orig_OnDestroy orig, Minimap self)
         {
+            orig(self);
+            Object.DestroyImmediate(OverlayTex);
+            Object.DestroyImmediate(MainTex);
+            Object.DestroyImmediate(HeightFilter);
+            Object.DestroyImmediate(ForestFilter);
+            Object.DestroyImmediate(FogFilter);
             foreach (var overlay in Overlays.Values)
             {
                 overlay.Destroy();
@@ -521,7 +527,7 @@ namespace Jotunn.Managers
         private bool Minimap_AddSharedMapData(On.Minimap.orig_AddSharedMapData orig, Minimap self, byte[] dataArray)
         {
             bool t = orig(self, dataArray);
-            FogFilter.Apply(); // maybe not needed.
+            FogFilter.Apply();
             return t;
         }
 
@@ -717,23 +723,23 @@ namespace Jotunn.Managers
             {
                 if (_overlayTex != null)
                 {
-                    Object.Destroy(_overlayTex);
+                    Object.DestroyImmediate(_overlayTex);
                 }
                 if (_mainTex != null)
                 {
-                    Object.Destroy(_mainTex);
+                    Object.DestroyImmediate(_mainTex);
                 }
                 if (_heightFilter != null)
                 {
-                    Object.Destroy(_heightFilter);
+                    Object.DestroyImmediate(_heightFilter);
                 }
                 if (_forestFilter != null)
                 {
-                    Object.Destroy(_forestFilter);
+                    Object.DestroyImmediate(_forestFilter);
                 }
                 if (_fogFilter != null)
                 {
-                    Object.Destroy(_fogFilter);
+                    Object.DestroyImmediate(_fogFilter);
                 }
             }
         }
