@@ -395,6 +395,13 @@
     </Reference>
   </ItemGroup>
   
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <StartAction>Program</StartAction>
+    <StartProgram>$(VALHEIM_INSTALL)\valheim.exe</StartProgram>
+    <StartArguments>-console</StartArguments>
+    <StartWorkingDirectory>$(VALHEIM_INSTALL)</StartWorkingDirectory>
+  </PropertyGroup>
+
   <Import Project="BuildProps\version.props" Condition="Exists('BuildProps\version.props')" />
   <Target Name="EnsureEnvironmentPropsImport" BeforeTargets="PrepareForBuild">
       <PropertyGroup>
