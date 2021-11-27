@@ -376,7 +376,12 @@ namespace TestMod3
 
                 if (args.Length == 1 && colors.TryGetValue(args[0], out Color color))
                 {
-                    DrawSquaresOnMapPins(color, pinsflatoverlay, true);
+                    
+                    foreach (var p in Minimap.instance.m_pins)
+                    {
+                        DrawSquare(pinsflatoverlay.OverlayTex, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, SimpleZoneOverlay.TextureSize), color, 40);
+                    }
+                    pinsflatoverlay.OverlayTex.Apply();
                     pinsflatoverlay.Enabled = true;
                     Console.instance.Print($"Setting overlay {pinsflatoverlay.Name} to {args[0]}");
                 }

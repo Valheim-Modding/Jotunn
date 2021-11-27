@@ -30,11 +30,11 @@ namespace Jotunn.Managers
                 return _instance;
             }
         }
-        
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private MinimapManager() {}
+        private MinimapManager() { }
 
         /// <summary>
         ///     Event that gets fired once the Map for a World has started and Mods can begin to draw.
@@ -57,7 +57,7 @@ namespace Jotunn.Managers
         /// </summary>
         public static Color FilterOff = new Color(0f, 0f, 0f, 255f);
 
-        private const int DefaultOverlaySize = 2048;
+        private const int TextureSize = 2048;
         private const string OverlayNamePrefix = "custom_map_overlay_";
 
         private Dictionary<string, MapOverlay> Overlays = new Dictionary<string, MapOverlay>();
@@ -65,6 +65,7 @@ namespace Jotunn.Managers
 
         // Transparent base texture
         private Texture2D TransparentTex;
+        private Sprite CircleMask;
 
         // Intermediate textures for the manager to draw on
         private Texture2D OverlayTex;
@@ -110,13 +111,14 @@ namespace Jotunn.Managers
 
             // Load texture with all pixels (RGBA) set to 0f.
             TransparentTex = bundle.LoadAsset<Texture2D>("2048x2048_clear");
+            CircleMask = bundle.LoadAsset<Sprite>("CircleMask");
 
             // Create intermediate textures to draw on
-            OverlayTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            MainTex = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            HeightFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RFloat, mipChain: false);
-            ForestFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
-            FogFilter = new Texture2D(DefaultOverlaySize, DefaultOverlaySize, TextureFormat.RGBA32, mipChain: false);
+            OverlayTex = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
+            MainTex = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
+            HeightFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RFloat, mipChain: false);
+            ForestFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
+            FogFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
 
             // Create materials and shaders to compute overlays onto the vanilla textures
             var composeMainShader = bundle.LoadAsset<Shader>("MinimapComposeMain");
@@ -165,7 +167,7 @@ namespace Jotunn.Managers
             MapOverlay ret = new MapOverlay();
             ret.Name = name;
             ret.Enabled = true;
-            ret.TextureSize = DefaultOverlaySize;
+            ret.TextureSize = TextureSize;
             Overlays.Add(name, ret);
             AddOverlayToGUI(ret);
             return ret;
@@ -388,7 +390,7 @@ namespace Jotunn.Managers
 
         private void DrawLayer(Texture2D layer, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
         {
-            RenderTexture tmp = RenderTexture.GetTemporary(DefaultOverlaySize, DefaultOverlaySize, 0, format, RenderTextureReadWrite.Default);
+            RenderTexture tmp = RenderTexture.GetTemporary(TextureSize, TextureSize, 0, format, RenderTextureReadWrite.Default);
 
             // Blit sets the overlay texture as _Maintex on the shader then computes the frag function of the shader, setting the result to tmp.
             if (mat != null)
@@ -444,13 +446,43 @@ namespace Jotunn.Managers
             // Create custom overlay GOs
             OverlayLarge = new GameObject("CustomLayerLarge");
             var rectLarge = OverlayLarge.AddComponent<RectTransform>();
+            rectLarge.SetParent(Minimap.instance.m_mapImageLarge.transform, false);
             rectLarge.anchorMin = Vector2.zero;
             rectLarge.anchorMax = Vector2.one;
-            rectLarge.SetParent(Minimap.instance.m_mapImageLarge.transform, false);
-            var imageLarge = OverlayLarge.AddComponent<RawImage>();
+            rectLarge.offsetMin = Vector2.zero;
+            rectLarge.offsetMax = Vector2.zero;
+            var maskImage = OverlayLarge.AddComponent<Image>();
+            maskImage.sprite = CircleMask;
+            maskImage.preserveAspect = true;
+            maskImage.raycastTarget = false;
+            var mask = OverlayLarge.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
+            var rawLarge = new GameObject("RawImageLarge");
+            var rawRectLarge = rawLarge.AddComponent<RectTransform>();
+            rawRectLarge.SetParent(rectLarge, false);
+            rawRectLarge.anchorMin = Vector2.zero;
+            rawRectLarge.anchorMax = Vector2.one;
+            var imageLarge = rawLarge.AddComponent<RawImage>();
             imageLarge.texture = OverlayTex;
             imageLarge.material = null;
             imageLarge.raycastTarget = false;
+            imageLarge.maskable = true;
+            Rect imageLargeRect = imageLarge.uvRect;
+            imageLargeRect.width = rectLarge.rect.width / rectLarge.rect.height;
+            imageLargeRect.height = 1;
+            imageLargeRect.center = new Vector2(0.5f, 0.5f);
+            imageLarge.uvRect = imageLargeRect;
+
+            // OverlayLarge = new GameObject("CustomLayerLarge");
+            // var rectLarge = OverlayLarge.AddComponent<RectTransform>();
+            // rectLarge.anchorMin = Vector2.zero;
+            // rectLarge.anchorMax = Vector2.one;
+            // rectLarge.SetParent(Minimap.instance.m_mapImageLarge.transform, false);
+            // var imageLarge = OverlayLarge.AddComponent<RawImage>();
+            // imageLarge.texture = OverlayTex;
+            // imageLarge.material = null;
+            // imageLarge.raycastTarget = false;
+
             OverlaySmall = new GameObject("CustomLayerSmall");
             var rectSmall = OverlaySmall.AddComponent<RectTransform>();
             rectSmall.anchorMin = Vector2.zero;
@@ -470,9 +502,9 @@ namespace Jotunn.Managers
             var basePanel = PrefabManager.Instance.GetPrefab("MinimapOverlayPanel");
             var panel = Object.Instantiate(basePanel, Minimap.instance.m_mapLarge.transform, false);
             OverlayPanel = panel.GetComponent<MinimapOverlayPanel>();
-            GUIManager.Instance.ApplyButtonStyle(OverlayPanel.GetComponent<MinimapOverlayPanel>().Button);
-            GUIManager.Instance.ApplyToogleStyle(OverlayPanel.GetComponent<MinimapOverlayPanel>().BaseToggle);
-            GUIManager.Instance.ApplyTextStyle(OverlayPanel.GetComponent<MinimapOverlayPanel>().BaseModText);
+            GUIManager.Instance.ApplyButtonStyle(OverlayPanel.Button);
+            GUIManager.Instance.ApplyToogleStyle(OverlayPanel.BaseToggle);
+            GUIManager.Instance.ApplyTextStyle(OverlayPanel.BaseModText);
         }
 
         private void AddOverlayToGUI(MapOverlay ovl)
@@ -487,14 +519,35 @@ namespace Jotunn.Managers
         private void Minimap_CenterMap(On.Minimap.orig_CenterMap orig, Minimap self, Vector3 centerpoint)
         {
             orig(self, centerpoint);
+
             self.WorldToMapPoint(centerpoint, out var mx, out var my);
+            RectTransform rectTransform = OverlayLarge.transform as RectTransform;
+            float aspect = rectTransform.rect.width / rectTransform.rect.height;
 
-            Rect largeRect = self.m_mapImageLarge.uvRect;
-            largeRect.width += self.m_largeZoom / 8.5f;
-            largeRect.height += self.m_largeZoom / 8.5f;
-            largeRect.center = new Vector2(mx, my);
-            OverlayLarge.GetComponent<RawImage>().uvRect = largeRect;
+            // Rect largeRect = self.m_mapImageLarge.uvRect;
+            // largeRect.width = aspect;
+            // largeRect.height = 1;
+            // largeRect.center = new Vector2(0.5f, 0.5f);
+            // Rect largeRect = self.m_mapImageLarge.uvRect;
+            // largeRect.width += self.m_largeZoom / 8.5f;
+            // largeRect.height += self.m_largeZoom / 8.5f;
+            // largeRect.center = new Vector2(mx, my);
+            // OverlayLarge.GetComponentInChildren<RawImage>().uvRect = largeRect;
+            
+            float localZoom = 1 / self.m_largeZoom;
 
+            OverlayLarge.transform.localScale = new Vector2(localZoom,localZoom);
+            
+            self.WorldToPixel(centerpoint, out var ix, out var iy);
+            var offset = new Vector2();
+            offset.x = TextureSize / 2f - ix;
+            offset.x *= rectTransform.rect.width / TextureSize / aspect;
+            offset.x *= localZoom;
+            offset.y = TextureSize / 2f - iy;
+            offset.y *= rectTransform.rect.height / TextureSize;
+            offset.y *= localZoom;
+            rectTransform.anchoredPosition = offset;
+            
             Rect smallRect = self.m_mapImageSmall.uvRect;
             smallRect.width += self.m_smallZoom / 2f;
             smallRect.height += self.m_smallZoom / 2f;
