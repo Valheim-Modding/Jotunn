@@ -414,9 +414,9 @@ namespace TestMod3
                 var pixels = Ree.texture.GetPixels();
                 var pos = MinimapManager.Instance.WorldToOverlayCoords(Player.m_localPlayer.transform.position,
                     reeoverlay.TextureSize);
-                reeoverlay.MainTex.SetPixels((int)pos.x, (int)pos.y, Ree.texture.width, Ree.texture.height, pixels);
+                reeoverlay.OverlayTex.SetPixels((int)pos.x, (int)pos.y, Ree.texture.width, Ree.texture.height, pixels);
                 
-                reeoverlay.MainTex.Apply();
+                reeoverlay.OverlayTex.Apply();
                 reeoverlay.Enabled = true;
                 Console.instance.Print($"Setting :reee: at {Player.m_localPlayer.transform.position}");
             }
