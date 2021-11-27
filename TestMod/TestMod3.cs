@@ -13,6 +13,7 @@ using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace TestMod3
 {
@@ -39,6 +40,7 @@ namespace TestMod3
         private static MinimapManager.MapOverlay quadtest1;
         private static MinimapManager.MapOverlay quadtest2;
         private static MinimapManager.MapOverlay quadtest3;
+        private static MinimapManager.MapOverlay reeoverlay;
         
         private static MinimapManager.MapOverlay SimpleZoneOverlay;
         private static MinimapManager.MapOverlay ZoneOverlay;
@@ -53,6 +55,7 @@ namespace TestMod3
             CommandManager.Instance.AddConsoleCommand(new CHCommands_pins());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_flatten());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_pinsflat());
+            CommandManager.Instance.AddConsoleCommand(new CHCommands_ree());
             // CommandManager.Instance.AddConsoleCommand(new CHCommands_alpha()); // Not yet implemented.
             
             MinimapManager.OnVanillaMapDataLoaded += MinimapManager_OnVanillaMapDataLoaded;
@@ -388,6 +391,35 @@ namespace TestMod3
             }
 
             public override List<string> CommandOptionList() => colors.Keys.ToList();
+        }
+        
+        private class CHCommands_ree : ConsoleCommand
+        {
+            public override string Name => "map.ree";
+
+            public override string Help => "Draw ree on the map";
+
+            private Sprite Ree => AssetUtils.LoadSpriteFromFile("TestMod/Assets/reee.png");
+            
+            public override void Run(string[] args)
+            {
+                if (args.Length != 0)
+                {
+                    Console.instance.Print($"Usage: {Name}");
+                    return;
+                }
+                
+                reeoverlay = MinimapManager.Instance.AddMapOverlay("reeoverlay");
+                
+                var pixels = Ree.texture.GetPixels();
+                var pos = MinimapManager.Instance.WorldToOverlayCoords(Player.m_localPlayer.transform.position,
+                    reeoverlay.TextureSize);
+                reeoverlay.MainTex.SetPixels((int)pos.x, (int)pos.y, Ree.texture.width, Ree.texture.height, pixels);
+                
+                reeoverlay.MainTex.Apply();
+                reeoverlay.Enabled = true;
+                Console.instance.Print($"Setting :reee: at {Player.m_localPlayer.transform.position}");
+            }
         }
 
 
