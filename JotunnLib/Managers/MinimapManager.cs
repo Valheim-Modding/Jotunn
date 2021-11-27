@@ -462,6 +462,8 @@ namespace Jotunn.Managers
             rawRectLarge.SetParent(rectLarge, false);
             rawRectLarge.anchorMin = Vector2.zero;
             rawRectLarge.anchorMax = Vector2.one;
+            rawRectLarge.offsetMin = Vector2.zero;
+            rawRectLarge.offsetMax = Vector2.zero;
             var imageLarge = rawLarge.AddComponent<RawImage>();
             imageLarge.texture = OverlayTex;
             imageLarge.material = null;
@@ -472,17 +474,7 @@ namespace Jotunn.Managers
             imageLargeRect.height = 1;
             imageLargeRect.center = new Vector2(0.5f, 0.5f);
             imageLarge.uvRect = imageLargeRect;
-
-            // OverlayLarge = new GameObject("CustomLayerLarge");
-            // var rectLarge = OverlayLarge.AddComponent<RectTransform>();
-            // rectLarge.anchorMin = Vector2.zero;
-            // rectLarge.anchorMax = Vector2.one;
-            // rectLarge.SetParent(Minimap.instance.m_mapImageLarge.transform, false);
-            // var imageLarge = OverlayLarge.AddComponent<RawImage>();
-            // imageLarge.texture = OverlayTex;
-            // imageLarge.material = null;
-            // imageLarge.raycastTarget = false;
-
+            
             OverlaySmall = new GameObject("CustomLayerSmall");
             var rectSmall = OverlaySmall.AddComponent<RectTransform>();
             rectSmall.anchorMin = Vector2.zero;
@@ -524,16 +516,6 @@ namespace Jotunn.Managers
             RectTransform rectTransform = OverlayLarge.transform as RectTransform;
             float aspect = rectTransform.rect.width / rectTransform.rect.height;
 
-            // Rect largeRect = self.m_mapImageLarge.uvRect;
-            // largeRect.width = aspect;
-            // largeRect.height = 1;
-            // largeRect.center = new Vector2(0.5f, 0.5f);
-            // Rect largeRect = self.m_mapImageLarge.uvRect;
-            // largeRect.width += self.m_largeZoom / 8.5f;
-            // largeRect.height += self.m_largeZoom / 8.5f;
-            // largeRect.center = new Vector2(mx, my);
-            // OverlayLarge.GetComponentInChildren<RawImage>().uvRect = largeRect;
-            
             float localZoom = 1 / self.m_largeZoom;
 
             OverlayLarge.transform.localScale = new Vector2(localZoom,localZoom);
