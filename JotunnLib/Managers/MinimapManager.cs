@@ -517,6 +517,7 @@ namespace Jotunn.Managers
         {
             orig(self, centerpoint);
 
+
             self.WorldToMapPoint(centerpoint, out var mx, out var my);
             RectTransform rectTransform = OverlayLarge.transform as RectTransform;
             float aspect = rectTransform.rect.width / rectTransform.rect.height;
@@ -524,8 +525,13 @@ namespace Jotunn.Managers
             float localZoom = 1 / self.m_largeZoom;
 
             OverlayLarge.transform.localScale = new Vector2(localZoom,localZoom);
-            
-            self.WorldToPixel(centerpoint, out var ix, out var iy);
+
+            // WorldToPixel code without the Int conversions.
+            int num = self.m_textureSize / 2;
+            float ix = (centerpoint.x / self.m_pixelSize + (float)num);
+            float iy = (centerpoint.z / self.m_pixelSize + (float)num);
+
+
             var offset = new Vector2();
             offset.x = TextureSize / 2f - ix;
             offset.x *= rectTransform.rect.width / TextureSize / aspect;
