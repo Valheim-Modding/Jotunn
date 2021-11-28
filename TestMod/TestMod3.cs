@@ -31,19 +31,19 @@ namespace TestMod3
                 - Proper documentation for methods + a bit of clean up
          */
 
-        private static MinimapManager.MapOverlay squarequadoverlay;
-        private static MinimapManager.MapOverlay pinsoverlay;
+        private static MinimapManager.MapDrawing squarequadoverlay;
+        private static MinimapManager.MapDrawing pinsoverlay;
         private static MinimapManager.MapOverlay pinsflatoverlay;
-        private static MinimapManager.MapOverlay alphaoverlay;
-        private static MinimapManager.MapOverlay flattenoverlay;
-        private static MinimapManager.MapOverlay quadtest0;
-        private static MinimapManager.MapOverlay quadtest1;
-        private static MinimapManager.MapOverlay quadtest2;
-        private static MinimapManager.MapOverlay quadtest3;
+        private static MinimapManager.MapDrawing alphaoverlay;
+        private static MinimapManager.MapDrawing flattenoverlay;
+        private static MinimapManager.MapDrawing quadtest0;
+        private static MinimapManager.MapDrawing quadtest1;
+        private static MinimapManager.MapDrawing quadtest2;
+        private static MinimapManager.MapDrawing quadtest3;
         private static MinimapManager.MapOverlay reeoverlay;
         
         private static MinimapManager.MapOverlay SimpleZoneOverlay;
-        private static MinimapManager.MapOverlay ZoneOverlay;
+        private static MinimapManager.MapDrawing ZoneOverlay;
 
         private static Color MeadowHeight = new Color(32, 0, 0, 255);
         private static Color FilterOn = new Color(1f, 0f, 0f, 255f);
@@ -63,7 +63,7 @@ namespace TestMod3
         
         private void MinimapManager_OnVanillaMapDataLoaded()
         {
-            //DrawQuadTests();
+            DrawQuadTests();
             //SquareTest();
             CreateSimpleZoneOverlay(Color.white);
         }
@@ -93,7 +93,7 @@ namespace TestMod3
         // Zone overlay
         internal static void CreateZoneOverlay(Color color, float height)
         {
-            ZoneOverlay = MinimapManager.Instance.AddMapOverlay(nameof(ZoneOverlay));
+            ZoneOverlay = MinimapManager.Instance.AddMapDrawing(nameof(ZoneOverlay));
 
             int mapSize = ZoneOverlay.TextureSize * ZoneOverlay.TextureSize;
             int zoneSize = 64;
@@ -127,7 +127,7 @@ namespace TestMod3
         // Draw one square in the center of each quadrant.
         private void SquareTest()
         {
-            squarequadoverlay = MinimapManager.Instance.AddMapOverlay("QuadCenterOverlay");
+            squarequadoverlay = MinimapManager.Instance.AddMapDrawing("QuadCenterOverlay");
             int size = 50;
             Vector3 pos = new Vector3(5000, 0, 5000);
             DrawSquare(squarequadoverlay.MainTex, MinimapManager.Instance.WorldToOverlayCoords(pos, squarequadoverlay.TextureSize), Color.blue, size);
@@ -165,19 +165,19 @@ namespace TestMod3
         // test the 4 main textures, Main, Height, Forest, Fog, in 4 different quadrants.
         private void DrawQuadTests()
         {
-            quadtest0 = MinimapManager.Instance.AddMapOverlay("QuadColorOverlay");
+            quadtest0 = MinimapManager.Instance.AddMapDrawing("QuadColorOverlay");
             DrawQuadrant(quadtest0.MainTex, Color.red, 0);
-            quadtest1 = MinimapManager.Instance.AddMapOverlay("QuadHeightOverlay");
+            quadtest1 = MinimapManager.Instance.AddMapDrawing("QuadHeightOverlay");
             DrawQuadrant(quadtest1.HeightFilter, MeadowHeight, 1);
-            quadtest2 = MinimapManager.Instance.AddMapOverlay("QuadForestOverlay");
+            quadtest2 = MinimapManager.Instance.AddMapDrawing("QuadForestOverlay");
             DrawQuadrant(quadtest2.ForestFilter, FilterOff, 2);
             DrawQuadrant(quadtest2.ForestFilter, FilterOn, 1);
-            quadtest3 = MinimapManager.Instance.AddMapOverlay("QuadFogOverlay");
+            quadtest3 = MinimapManager.Instance.AddMapDrawing("QuadFogOverlay");
             DrawQuadrant(quadtest3.FogFilter, FilterOn, 3);
         }
 
 
-        private static void FlattenMap(int height, MinimapManager.MapOverlay ovl)
+        private static void FlattenMap(int height, MinimapManager.MapDrawing ovl)
         {
             for (int i = 0; i < ovl.TextureSize; i++)
             {
@@ -189,7 +189,7 @@ namespace TestMod3
             ovl.HeightFilter.Apply();
         }
 
-        private static void DrawSquaresOnMapPins(Color color, MinimapManager.MapOverlay ovl, bool extras = false)
+        private static void DrawSquaresOnMapPins(Color color, MinimapManager.MapDrawing ovl, bool extras = false)
         {
             foreach (var p in Minimap.instance.m_pins)
             {
@@ -339,7 +339,7 @@ namespace TestMod3
                     return;
                 }
 
-                pinsoverlay = MinimapManager.Instance.AddMapOverlay("pinsoverlay");
+                pinsoverlay = MinimapManager.Instance.AddMapDrawing("pinsoverlay");
 
                 if (args.Length == 1 && colors.TryGetValue(args[0], out Color color))
                 {
@@ -384,6 +384,7 @@ namespace TestMod3
                     {
                         DrawSquare(pinsflatoverlay.OverlayTex, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, SimpleZoneOverlay.TextureSize), color, 40);
                     }
+                    
                     pinsflatoverlay.OverlayTex.Apply();
                     pinsflatoverlay.Enabled = true;
                     Console.instance.Print($"Setting overlay {pinsflatoverlay.Name} to {args[0]}");
@@ -437,7 +438,7 @@ namespace TestMod3
                     return;
                 }
 
-                flattenoverlay = MinimapManager.Instance.AddMapOverlay("testflatten_overlay");
+                flattenoverlay = MinimapManager.Instance.AddMapDrawing("testflatten_overlay");
                 
                 if (args.Length == 1 && int.TryParse(args[0], out var height))
                 {
