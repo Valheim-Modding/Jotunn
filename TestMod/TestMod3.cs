@@ -4,6 +4,7 @@
 // File:    TestMod3.cs
 // Project: TestMod
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -41,6 +42,7 @@ namespace TestMod3
         private static MinimapManager.MapOverlay quadtest2;
         private static MinimapManager.MapOverlay quadtest3;
         private static MinimapManager.MapOverlay reeoverlay;
+        private static MinimapManager.MapOverlay reemainoverlay;
         
         private static MinimapManager.MapOverlay SimpleZoneOverlay;
         private static MinimapManager.MapOverlay ZoneOverlay;
@@ -56,6 +58,7 @@ namespace TestMod3
             CommandManager.Instance.AddConsoleCommand(new CHCommands_flatten());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_pinsflat());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_ree());
+            CommandManager.Instance.AddConsoleCommand(new CHCommands_reemain());
             // CommandManager.Instance.AddConsoleCommand(new CHCommands_alpha()); // Not yet implemented.
             
             MinimapManager.OnVanillaMapDataLoaded += MinimapManager_OnVanillaMapDataLoaded;
@@ -421,7 +424,42 @@ namespace TestMod3
                 Console.instance.Print($"Setting :reee: at {Player.m_localPlayer.transform.position}");
             }
         }
+        
+        private class CHCommands_reemain : ConsoleCommand
+        {
+            public override string Name => "map.reemain";
 
+            public override string Help => "Draw ree on the map";
+
+            private Sprite Ree => AssetUtils.LoadSpriteFromFile("TestMod/Assets/reee.png");
+            
+            public override void Run(string[] args)
+            {
+                if (args.Length != 0)
+                {
+                    Console.instance.Print($"Usage: {Name}");
+                    return;
+                }
+                
+                reemainoverlay = MinimapManager.Instance.AddMapOverlay("reemainoverlay");
+                
+                var pixels = Ree.texture.GetPixels();
+                var filterpixels = new Color[pixels.Length].Populate(MinimapManager.FilterOff);
+                var pos = MinimapManager.Instance.WorldToOverlayCoords(Player.m_localPlayer.transform.position,
+                    reemainoverlay.TextureSize);
+                
+                reemainoverlay.MainTex.SetPixels((int)pos.x, (int)pos.y, Ree.texture.width, Ree.texture.height, pixels);
+                reemainoverlay.ForestFilter.SetPixels((int)pos.x, (int)pos.y, Ree.texture.width, Ree.texture.height, filterpixels);
+                reemainoverlay.FogFilter.SetPixels((int)pos.x, (int)pos.y, Ree.texture.width, Ree.texture.height, filterpixels);
+
+                reemainoverlay.MainTex.Apply();
+                reemainoverlay.ForestFilter.Apply();
+                reemainoverlay.FogFilter.Apply();
+                
+                reemainoverlay.Enabled = true;
+                Console.instance.Print($"Setting :reee: at {Player.m_localPlayer.transform.position}");
+            }
+        }
 
         private class CHCommands_flatten : ConsoleCommand
         {
