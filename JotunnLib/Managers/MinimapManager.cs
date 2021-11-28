@@ -75,6 +75,7 @@ namespace Jotunn.Managers
         private Texture2D FogFilter;
 
         // Materials that have shaders used to blit overlays onto the minimap.
+        private Material ComposeOverlayMaterial;
         private Material ComposeMainMaterial;
         private Material ComposeHeightMaterial;
         private Material ComposeForestMaterial;
@@ -121,14 +122,18 @@ namespace Jotunn.Managers
             FogFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
 
             // Create materials and shaders to compute overlays onto the vanilla textures
+            var composeOverlayShader = bundle.LoadAsset<Shader>("MinimapComposeOverlay");
             var composeMainShader = bundle.LoadAsset<Shader>("MinimapComposeMain");
             var composeHeightShader = bundle.LoadAsset<Shader>("MinimapComposeHeight");
             var composeForestShader = bundle.LoadAsset<Shader>("MinimapComposeForest");
             var composeFogShader = bundle.LoadAsset<Shader>("MinimapComposeFog");
+
+            ComposeOverlayMaterial = new Material(composeOverlayShader);
             ComposeMainMaterial = new Material(composeMainShader);
             ComposeHeightMaterial = new Material(composeHeightShader);
             ComposeForestMaterial = new Material(composeForestShader);
             ComposeFogMaterial = new Material(composeFogShader);
+            ComposeOverlayMaterial.SetTexture("_VanillaTex", OverlayTex);
             ComposeMainMaterial.SetTexture("_VanillaTex", MainTex);
             ComposeHeightMaterial.SetTexture("_VanillaTex", HeightFilter);
             ComposeForestMaterial.SetTexture("_VanillaTex", ForestFilter);
@@ -320,7 +325,7 @@ namespace Jotunn.Managers
             Graphics.CopyTexture(TransparentTex, intermediate); // Reset intermediate texture
             foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.OverlayEnabled))
             {
-                DrawLayer(overlay.OverlayTex, intermediate, null);
+                DrawLayer(overlay.OverlayTex, intermediate, ComposeOverlayMaterial);
             }
             watch.Stop(); Logger.LogInfo($"DrawOverlay loop took {watch.ElapsedMilliseconds}ms time");
 
