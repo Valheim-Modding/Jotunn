@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1338906813
+CRC: 3760899760
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5963bf04af327e844e453fa5f638874d
+    Hash: 2a548504f1ac613afbedfd42f8684e45
   TypeTreeHash:
     serializedVersion: 2
     Hash: 26660b72274436405ac7a3f134213ee0
@@ -46,6 +46,7 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Textures/CircleMask.png
+- Assets/Resources/MinimapComposeOverlay.shader
 - Assets/Resources/MinimapComposeFog.shader
 - Assets/Textures/2048x2048_clear.png
 - Assets/Resources/MinimapComposeForest.shader
