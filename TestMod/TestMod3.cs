@@ -42,7 +42,7 @@ namespace TestMod3
         private static MinimapManager.MapDrawing quadtest2;
         private static MinimapManager.MapDrawing quadtest3;
         private static MinimapManager.MapOverlay reeoverlay;
-        private static MinimapManager.MapOverlay reemainoverlay;
+        private static MinimapManager.MapDrawing reemainoverlay;
         
         private static MinimapManager.MapOverlay SimpleZoneOverlay;
         private static MinimapManager.MapDrawing ZoneOverlay;
@@ -442,7 +442,7 @@ namespace TestMod3
                     return;
                 }
                 
-                reemainoverlay = MinimapManager.Instance.AddMapOverlay("reemainoverlay");
+                reemainoverlay = MinimapManager.Instance.AddMapDrawing("reemainoverlay");
                 
                 var pixels = Ree.texture.GetPixels();
                 var filterpixels = new Color[pixels.Length].Populate(MinimapManager.FilterOff);
