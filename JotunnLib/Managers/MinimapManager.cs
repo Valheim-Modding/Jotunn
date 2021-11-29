@@ -61,6 +61,7 @@ namespace Jotunn.Managers
         private const string OverlayNamePrefix = "custom_map_overlay_";
 
         private Dictionary<string, MapOverlay> Overlays = new Dictionary<string, MapOverlay>();
+        private Dictionary<string, MapDrawing> Drawings = new Dictionary<string, MapDrawing>();
         private int OverlayID;
 
         // Transparent base texture
@@ -145,6 +146,37 @@ namespace Jotunn.Managers
             bundle.Unload(false);
 
             Harmony.CreateAndPatchAll(typeof(Texture2D_Apply));
+        }
+
+        /// <summary>
+        ///     Create a new MapDrawing with a default overlay name
+        /// </summary>
+        /// <returns>Reference to MapDrawing for modder to edit</returns>
+        public MapDrawing AddMapDrawing()
+        {
+            return AddMapDrawing(OverlayNamePrefix + OverlayID++);
+        }
+
+        /// <summary>
+        ///     Create a new MapDrawing with a custom overlay name
+        /// </summary>
+        /// <param name="name">Custom name for the MapDrawing</param>
+        /// <returns>Reference to MapDrawing for modder to edit</returns>
+        public MapDrawing AddMapDrawing(string name)
+        {
+            if (Drawings.ContainsKey(name))
+            {
+                Logger.LogDebug($"Returning existing overlay with name {name}");
+                return Drawings[name];
+            }
+
+            MapDrawing ret = new MapDrawing();
+            ret.Name = name;
+            ret.Enabled = true;
+            ret.TextureSize = TextureSize;
+            Drawings.Add(name, ret);
+            AddOverlayToGUI(ret);
+            return ret;
         }
 
         /// <summary>
@@ -284,7 +316,7 @@ namespace Jotunn.Managers
                 while (true)
                 {
                     yield return null;
-                    if (!Overlays.Values.Any(x => x.Dirty))
+                    if (!Overlays.Values.Any(x => x.Dirty) && !Drawings.Values.Any(x => x.Dirty))
                     {
                         continue;
                     }
@@ -292,23 +324,27 @@ namespace Jotunn.Managers
                     {
                         yield return DrawOverlay(OverlayTex);
                     }
-                    if (Overlays.Values.Any(x => x.MainDirty))
+                    if (Drawings.Values.Any(x => x.MainDirty))
                     {
                         yield return DrawMain(MainTex);
                     }
-                    if (Overlays.Values.Any(x => x.HeightDirty))
+                    if (Drawings.Values.Any(x => x.HeightDirty))
                     {
                         yield return DrawHeight(HeightFilter);
                     }
-                    if (Overlays.Values.Any(x => x.ForestDirty))
+                    if (Drawings.Values.Any(x => x.ForestDirty))
                     {
                         yield return DrawForestFilter(ForestFilter);
                     }
-                    if (Overlays.Values.Any(x => x.FogDirty))
+                    if (Drawings.Values.Any(x => x.FogDirty))
                     {
                         yield return DrawFogFilter(FogFilter);
                     }
                     foreach (var overlay in Overlays.Values)
+                    {
+                        overlay.Dirty = false;
+                    }
+                    foreach (var overlay in Drawings.Values)
                     {
                         overlay.Dirty = false;
                     }
@@ -323,7 +359,7 @@ namespace Jotunn.Managers
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
             Graphics.CopyTexture(TransparentTex, intermediate); // Reset intermediate texture
-            foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.OverlayEnabled))
+            foreach (var overlay in Overlays.Values.Where(x => x.Enabled))
             {
                 DrawLayer(overlay.OverlayTex, intermediate, ComposeOverlayMaterial);
             }
@@ -338,7 +374,7 @@ namespace Jotunn.Managers
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_mapTexture, intermediate); // Reset vanilla texture to backup
-            foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.MainEnabled))
+            foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.MainEnabled))
             {
                 DrawLayer(overlay.MainTex, intermediate, ComposeMainMaterial);
             }
@@ -353,7 +389,7 @@ namespace Jotunn.Managers
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_heightTexture, intermediate); // Reset vanilla texture to backup
-            foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.HeightEnabled))
+            foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.HeightEnabled))
             {
                 DrawLayer(overlay.HeightFilter, intermediate, ComposeHeightMaterial,
                     RenderTextureFormat.RFloat);
@@ -369,7 +405,7 @@ namespace Jotunn.Managers
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_forestMaskTexture, intermediate); // Reset vanilla texture to backup
-            foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.ForestEnabled))
+            foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.ForestEnabled))
             {
                 DrawLayer(overlay.ForestFilter, intermediate, ComposeForestMaterial);
             }
@@ -384,7 +420,7 @@ namespace Jotunn.Managers
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_fogTexture, intermediate); // Reset vanilla texture to backup
-            foreach (var overlay in Overlays.Values.Where(x => x.Enabled && x.FogEnabled))
+            foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.FogEnabled))
             {
                 DrawLayer(overlay.FogFilter, intermediate, ComposeFogMaterial);
             }
@@ -504,7 +540,25 @@ namespace Jotunn.Managers
             GUIManager.Instance.ApplyTextStyle(OverlayPanel.BaseModText);
         }
 
+        private void AddOverlayToGUI(MapOverlayBase ovl)
+        {
+            var toggle = OverlayPanel?.AddOverlayToggle(ovl.SourceMod.Name, ovl.Name);
+            toggle?.onValueChanged.AddListener(active =>
+            {
+                ovl.Enabled = active;
+            });
+        }
+
         private void AddOverlayToGUI(MapOverlay ovl)
+        {
+            var toggle = OverlayPanel?.AddOverlayToggle(ovl.SourceMod.Name, ovl.Name);
+            toggle?.onValueChanged.AddListener(active =>
+            {
+                ovl.Enabled = active;
+            });
+        }
+
+        private void AddOverlayToGUI(MapDrawing ovl)
         {
             var toggle = OverlayPanel?.AddOverlayToggle(ovl.SourceMod.Name, ovl.Name);
             toggle?.onValueChanged.AddListener(active =>
@@ -517,6 +571,7 @@ namespace Jotunn.Managers
         {
             orig(self, centerpoint);
 
+
             self.WorldToMapPoint(centerpoint, out var mx, out var my);
             RectTransform rectTransform = OverlayLarge.transform as RectTransform;
             float aspect = rectTransform.rect.width / rectTransform.rect.height;
@@ -524,8 +579,13 @@ namespace Jotunn.Managers
             float localZoom = 1 / self.m_largeZoom;
 
             OverlayLarge.transform.localScale = new Vector2(localZoom,localZoom);
-            
-            self.WorldToPixel(centerpoint, out var ix, out var iy);
+
+            // WorldToPixel code without the Int conversions.
+            int num = self.m_textureSize / 2;
+            float ix = (centerpoint.x / self.m_pixelSize + (float)num);
+            float iy = (centerpoint.z / self.m_pixelSize + (float)num);
+
+
             var offset = new Vector2();
             offset.x = TextureSize / 2f - ix;
             offset.x *= rectTransform.rect.width / TextureSize / aspect;
@@ -597,28 +657,80 @@ namespace Jotunn.Managers
             FogFilter.Apply();
         }
 
+
         /// <summary>
         ///     Object for modders to use to access and modify their Overlay.
         ///     Modders should modify the texture directly.
         ///     
         /// </summary>
-        public class MapOverlay : CustomEntity
+        public class MapOverlay: MapOverlayBase
         {
-            /// <summary>
-            ///     Unique name per overlay
-            /// </summary>
-            public string Name { get; internal set; }
-
-            /// <summary>
-            ///     Initial texture size to calculate the relative drawing position
-            /// </summary>
-            public int TextureSize { get; internal set; }
-
             /// <summary>
             ///     Texture to draw overlay texture information to
             /// </summary>
             public Texture2D OverlayTex => _overlayTex ??= Create(Instance.TransparentTex);
+            internal bool OverlayDirty => _overlayTex != null && _overlayDirty;
+            internal bool _overlayDirty;
+            private Texture2D _overlayTex;
 
+            /// <summary>
+            ///     Set true to render this overlay, false to hide
+            /// </summary>
+            public new bool Enabled
+            {
+                get
+                {
+                    return _enabled;
+                }
+                set
+                {
+                    if (_enabled != value)
+                    {
+                        _enabled = value;
+                        Dirty = true;
+                    }
+                }
+            }
+
+            /// <summary>
+            ///     Flag to determine if this overlay had changes since its last draw
+            /// </summary>
+            internal new bool Dirty
+            {
+                get
+                {
+                    return OverlayDirty;
+                }
+                set
+                {
+                    _overlayDirty = value;
+                }
+            }
+
+            /// <summary>
+            ///     Function called on Texture2D.Apply to check if one of our member textures was changed
+            /// </summary>
+            /// <param name="tex"></param>
+            internal override void SetTextureDirty(Texture2D tex)
+            {
+                if (tex.name != Name)
+                {
+                    return;
+                }
+                if (tex == _overlayTex)
+                {
+                    _overlayDirty = true;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Object for modders to use to access and modify their Overlay.
+        ///     Modders should modify the texture directly.
+        ///     
+        /// </summary>
+        public class MapDrawing : MapOverlayBase
+        {
             /// <summary>
             ///     Texture to draw main texture information to
             /// </summary>
@@ -639,10 +751,50 @@ namespace Jotunn.Managers
             /// </summary>
             public Texture2D FogFilter => _fogFilter ??= Create(Minimap.instance.m_fogTexture);
 
+
+
+            internal bool MainEnabled => _mainTex != null;
+            internal bool HeightEnabled => _heightFilter != null;
+            internal bool ForestEnabled => _forestFilter != null;
+            internal bool FogEnabled => _fogFilter != null;
+
+            /// <summary>
+            ///     Flag to determine if this overlay had changes since its last draw
+            /// </summary>
+            internal new bool Dirty
+            {
+                get
+                {
+                    return MainDirty || HeightDirty || ForestDirty || FogDirty;
+                }
+                set
+                {
+                    _mainDirty = value;
+                    _heightDirty = value;
+                    _forestDirty = value;
+                    _fogDirty = value;
+                }
+            }
+            
+            internal bool MainDirty => _mainTex != null && _mainDirty;
+            internal bool HeightDirty => _heightFilter != null && _heightDirty;
+            internal bool ForestDirty => _forestFilter != null && _forestDirty;
+            internal bool FogDirty => _fogFilter != null && _fogDirty;
+
+            internal bool _mainDirty;
+            internal bool _heightDirty;
+            internal bool _forestDirty;
+            internal bool _fogDirty;
+
+            private Texture2D _mainTex;
+            private Texture2D _heightFilter;
+            private Texture2D _forestFilter;
+            private Texture2D _fogFilter;
+
             /// <summary>
             ///     Set true to render this overlay, false to hide
             /// </summary>
-            public bool Enabled
+            public new bool Enabled
             {
                 get
                 {
@@ -658,76 +810,15 @@ namespace Jotunn.Managers
                 }
             }
 
-            internal bool OverlayEnabled => _overlayTex != null;
-            internal bool MainEnabled => _mainTex != null;
-            internal bool HeightEnabled => _heightFilter != null;
-            internal bool ForestEnabled => _forestFilter != null;
-            internal bool FogEnabled => _fogFilter != null;
-
-            /// <summary>
-            ///     Flag to determine if this overlay had changes since its last draw
-            /// </summary>
-            internal bool Dirty
-            {
-                get
-                {
-                    return OverlayDirty || MainDirty || HeightDirty || ForestDirty || FogDirty;
-                }
-                set
-                {
-                    _overlayDirty = value;
-                    _mainDirty = value;
-                    _heightDirty = value;
-                    _forestDirty = value;
-                    _fogDirty = value;
-                }
-            }
-
-            internal bool OverlayDirty => _overlayTex != null && _overlayDirty;
-            internal bool MainDirty => _mainTex != null && _mainDirty;
-            internal bool HeightDirty => _heightFilter != null && _heightDirty;
-            internal bool ForestDirty => _forestFilter != null && _forestDirty;
-            internal bool FogDirty => _fogFilter != null && _fogDirty;
-
-            private bool _enabled;
-
-            internal bool _overlayDirty;
-            internal bool _mainDirty;
-            internal bool _heightDirty;
-            internal bool _forestDirty;
-            internal bool _fogDirty;
-
-            private Texture2D _overlayTex;
-            private Texture2D _mainTex;
-            private Texture2D _heightFilter;
-            private Texture2D _forestFilter;
-            private Texture2D _fogFilter;
-
-            /// <summary>
-            ///     Helper function to create and copy overlay texture instances
-            /// </summary>
-            internal Texture2D Create(Texture2D van)
-            {
-                var t = new Texture2D(van.width, van.height, van.format, mipChain: false);
-                t.wrapMode = TextureWrapMode.Clamp;
-                t.name = Name;
-                Graphics.CopyTexture(Instance.TransparentTex, t);
-                return t;
-            }
-
             /// <summary>
             ///     Function called on Texture2D.Apply to check if one of our member textures was changed
             /// </summary>
             /// <param name="tex"></param>
-            internal void SetTextureDirty(Texture2D tex)
+            internal override void SetTextureDirty(Texture2D tex)
             {
                 if (tex.name != Name)
                 {
                     return;
-                }
-                if (tex == _overlayTex)
-                {
-                    _overlayDirty = true;
                 }
                 if (tex == _mainTex)
                 {
@@ -747,12 +838,8 @@ namespace Jotunn.Managers
                 }
             }
 
-            internal void Destroy()
+            internal override void Destroy()
             {
-                if (_overlayTex != null)
-                {
-                    Object.DestroyImmediate(_overlayTex);
-                }
                 if (_mainTex != null)
                 {
                     Object.DestroyImmediate(_mainTex);
@@ -773,14 +860,73 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Set an overlay texture dirty on Apply
+        ///     Overlay Base to inherit from
+        ///     
         /// </summary>
-        [HarmonyPatch(typeof(Texture2D), "Apply", typeof(Boolean), typeof(Boolean))]
+        public class MapOverlayBase : CustomEntity
+        {
+            /// <summary>
+            ///     Unique name per overlay
+            /// </summary>
+            public string Name { get; internal set; }
+
+            /// <summary>
+            ///     Initial texture size to calculate the relative drawing position
+            /// </summary>
+            public int TextureSize { get; internal set; }
+
+            /// <summary>
+            ///     Set true to render this overlay, false to hide
+            /// </summary>
+            public bool Enabled
+            {
+                get
+                {
+                    return _enabled;
+                }
+                set
+                {
+                    if (_enabled != value)
+                    {
+                        _enabled = value;
+                        Dirty = true;
+                    }
+                }
+            }
+            internal bool Dirty;
+            internal bool _enabled;
+
+            /// <summary>
+            ///     Helper function to create and copy overlay texture instances
+            /// </summary>
+            internal Texture2D Create(Texture2D van)
+            {
+                var t = new Texture2D(van.width, van.height, van.format, mipChain: false);
+                t.wrapMode = TextureWrapMode.Clamp;
+                t.name = Name;
+                Graphics.CopyTexture(Instance.TransparentTex, t);
+                return t;
+            }
+
+            internal virtual void SetTextureDirty(Texture2D tex){ }
+
+            internal virtual void Destroy(){}
+        }
+
+
+            /// <summary>
+            ///     Set an overlay texture dirty on Apply
+            /// </summary>
+            [HarmonyPatch(typeof(Texture2D), "Apply", typeof(Boolean), typeof(Boolean))]
         private static class Texture2D_Apply
         {
             private static void Postfix(Texture2D __instance)
             {
                 foreach (var overlay in Instance.Overlays.Values)
+                {
+                    overlay.SetTextureDirty(__instance);
+                }
+                foreach (var overlay in Instance.Drawings.Values)
                 {
                     overlay.SetTextureDirty(__instance);
                 }
