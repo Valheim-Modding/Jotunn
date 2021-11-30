@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jotunn.Entities;
 using Jotunn.Utils;
 using UnityEngine;
 
@@ -37,7 +38,7 @@ namespace JotunnDoc.Docs
             Dictionary<string, Material> mats = new Dictionary<string, Material>();
             Dictionary<string, List<string>> matPrefabs = new Dictionary<string, List<string>>();
 
-            foreach (GameObject prefab in allPrefabs.OrderBy(x => x.name))
+            foreach (GameObject prefab in allPrefabs.Where(x => !CustomPrefab.IsCustomPrefab(x.name)).OrderBy(x => x.name))
             {
                 foreach (Material mat in ShaderHelper.GetAllRendererMaterials(prefab))
                 {
