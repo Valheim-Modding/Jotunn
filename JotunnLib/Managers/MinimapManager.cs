@@ -167,7 +167,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Returna a count of the number of drawings.
+        ///     Return whether the Drawings functionality is active.
         /// </summary>
         /// <returns></returns>
         public bool DrawingsActive()
@@ -205,10 +205,12 @@ namespace Jotunn.Managers
                 SetupDrawingTextures();
             }
 
-            MapDrawing ret = new MapDrawing();
-            ret.Name = name;
-            ret.Enabled = true;
-            ret.TextureSize = TextureSize;
+            MapDrawing ret = new MapDrawing
+            {
+                Name = name,
+                Enabled = true,
+                TextureSize = TextureSize
+            };
             Drawings.Add(name, ret);
             AddOverlayToGUI(ret);
             return ret;
@@ -236,13 +238,26 @@ namespace Jotunn.Managers
                 return Overlays[name];
             }
 
-            MapOverlay ret = new MapOverlay();
-            ret.Name = name;
-            ret.Enabled = true;
-            ret.TextureSize = TextureSize;
+            MapOverlay ret = new MapOverlay
+            {
+                Name = name,
+                Enabled = true,
+                TextureSize = TextureSize
+            };
             Overlays.Add(name, ret);
             AddOverlayToGUI(ret);
             return ret;
+        }
+
+        /// <summary>
+        ///     Causes MapManager to stop updating the MapDrawing object and removes this Manager's reference to that drawing.
+        ///     A mod could still hold references and keep the object alive.
+        /// </summary>
+        /// <param name="name">The name of the MapDrawing to be removed</param>
+        /// <returns>True if removal was successful. False if there was an error removing the object from the internal dict.</returns>
+        public bool RemoveMapDrawing(string name)
+        {
+            return Drawings.Remove(name);
         }
 
         /// <summary>
@@ -257,6 +272,16 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Returns a reference to a currently registered MapDrawing
+        /// </summary>
+        /// <param name="name">The name of the MapDrawing to retrieve</param>
+        /// <returns>The MapDrawing if it exists.</returns>
+        public MapDrawing GetMapDrawing(string name)
+        {
+            return Drawings[name];
+        }
+
+        /// <summary>
         ///     Returns a reference to a currently registered MapOverlay
         /// </summary>
         /// <param name="name">The name of the MapOverlay to retrieve</param>
@@ -264,6 +289,20 @@ namespace Jotunn.Managers
         public MapOverlay GetMapOverlay(string name)
         {
             return Overlays[name];
+        }
+
+        /// <summary>
+        ///     Return a list of all current MapDrawing names
+        /// </summary>
+        /// <returns>List of names</returns>
+        public List<string> GetDrawingNames()
+        {
+            List<string> res = new List<string>();
+            foreach (var ovl in Drawings)
+            {
+                res.Add(ovl.Value.Name);
+            }
+            return res;
         }
 
         /// <summary>
@@ -359,8 +398,13 @@ namespace Jotunn.Managers
                     {
                         yield return DrawOverlay(OverlayTex);
                     }
+                    foreach (var overlay in Overlays.Values)
+                    {
+                        overlay.Dirty = false;
+                    }
 
-                    if(Drawings.Count() == 0)
+                    // Do not try to update drawings if there are none.
+                    if (Drawings.Count() == 0)
                     {
                         continue;
                     }
@@ -381,10 +425,7 @@ namespace Jotunn.Managers
                     {
                         yield return DrawFogFilter(FogFilter);
                     }
-                    foreach (var overlay in Overlays.Values)
-                    {
-                        overlay.Dirty = false;
-                    }
+
                     foreach (var overlay in Drawings.Values)
                     {
                         overlay.Dirty = false;
@@ -589,15 +630,6 @@ namespace Jotunn.Managers
             GUIManager.Instance.ApplyButtonStyle(OverlayPanel.Button);
             GUIManager.Instance.ApplyToogleStyle(OverlayPanel.BaseToggle);
             GUIManager.Instance.ApplyTextStyle(OverlayPanel.BaseModText);
-        }
-
-        private void AddOverlayToGUI(MapOverlayBase ovl)
-        {
-            var toggle = OverlayPanel?.AddOverlayToggle(ovl.SourceMod.Name, ovl.Name);
-            toggle?.onValueChanged.AddListener(active =>
-            {
-                ovl.Enabled = active;
-            });
         }
 
         private void AddOverlayToGUI(MapOverlay ovl)
@@ -971,9 +1003,11 @@ namespace Jotunn.Managers
             /// </summary>
             internal Texture2D Create(Texture2D van)
             {
-                var t = new Texture2D(van.width, van.height, van.format, mipChain: false);
-                t.wrapMode = TextureWrapMode.Clamp;
-                t.name = Name;
+                var t = new Texture2D(van.width, van.height, van.format, mipChain: false)
+                {
+                    wrapMode = TextureWrapMode.Clamp,
+                    name = Name
+                };
                 Graphics.CopyTexture(Instance.TransparentTex, t);
                 return t;
             }
