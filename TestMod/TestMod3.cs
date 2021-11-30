@@ -66,7 +66,7 @@ namespace TestMod3
         
         private void MinimapManager_OnVanillaMapDataLoaded()
         {
-            DrawQuadTests();
+            //DrawQuadTests();
             //SquareTest();
             CreateSimpleZoneOverlay(Color.white);
         }
