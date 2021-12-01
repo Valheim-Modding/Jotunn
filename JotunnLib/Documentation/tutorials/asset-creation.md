@@ -7,7 +7,7 @@ New Assets can be created with Unity and imported into Valheim using Jötunn. In
 Creation Tools
 * [Visual Studio](https://visualstudio.microsoft.com/de/downloads/) - editor for our plugin code
 * [Unity 2019.4.31](https://unity3d.com/unity/whats-new/2019.4.31) - Game engine that Valheim runs in
-* [uTinyRipper](https://sourceforge.net/projects/utinyripper/files/latest/download) - tool to rip assets and scripts from the release version of the game
+* [AssetRipper](https://github.com/ds5678/AssetRipper/releases) - tool to rip assets and scripts from the release version of the game
 
 Game Mods (install these into your game as our mod has dependencies on them)
 * [Jötunn, the Valheim Library](https://valheim.thunderstore.io/package/ValheimModding/Jotunn/) - Mod with convenience methods we will use
@@ -32,7 +32,7 @@ We will want to have two instances of the Unity Editor running, working in two d
 
 ### Ripped Game Project
 
-Create a ripped copy of the original game project by using [uTinyRipper](https://sourceforge.net/projects/utinyripper/files/latest/download). You can find [step-by-step instructions](https://github.com/Valheim-Modding/Wiki/wiki/Valheim-Unity-Project-Guide) on the Valheim-Modding Wiki. Make sure that you execute the ILSpy part and generate the disassembled scripts. After ripping and cleaning the project you can open this as a reference on the vanilla prefabs or to copy parts of the assets you want to use to your mod stub project.
+Create a ripped copy of the original game project by using [AssetRipper](https://github.com/ds5678/AssetRipper/releases). You can find [step-by-step instructions](https://github.com/Valheim-Modding/Wiki/wiki/Valheim-Unity-Project-Guide) on the Valheim-Modding Wiki. After ripping and cleaning the project you can open this as a reference on the vanilla prefabs or to copy parts of the assets you want to use to your mod stub project.
 
 We also need to inform Unity that the exported scripts are actually the assembly files. To do this you will need to create an assembly definition in each of your scripts folder. You do this by right clicking in the empty space at the bottom of Unity, Then select Create \> Assembly Definition.
 
