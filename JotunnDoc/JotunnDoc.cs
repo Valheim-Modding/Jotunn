@@ -19,14 +19,15 @@ namespace JotunnDoc
 
             docs = new List<Doc>()
             {
+                new CharacterDoc(),
                 new InputDoc(),
                 new ItemDoc(),
                 new LanguageDoc(),
                 new LocationDoc(),
                 new MaterialDoc(),
-                new PrefabDoc(),
-                new PieceTableDoc(),
                 new PieceDoc(),
+                new PieceTableDoc(),
+                new PrefabDoc(),
                 new RecipeDoc(),
                 new RPCDoc(),
                 new ShaderDoc(),
