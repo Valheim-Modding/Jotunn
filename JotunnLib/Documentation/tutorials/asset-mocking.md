@@ -2,43 +2,56 @@
 
 What are mock references? What do they do? What do they solve?
 
-Mock's are placeholder objects which you create inside of asset bundles, and prepend the specific `JVLmock_` prefix to the name of an already existing prefab. When we load our assets at runtime, any references to mock objects will be recursively resolved until a depth of 3. When resolving references, we iterate through scene objects attempting to match our objects name with an existing one in the scene, and then duplicate the asset such that we may use it for our own purposes, without needing to copy copyrighted content within our own custom assets! Neat right?! And better yet, we don't even need to code anything ourselves to do this, just make sure that you set the fixRef bool on any `Custom*` entities to true and the mock reference will automatically be resolved at runtime.
+Mock's are placeholder objects which you create inside of asset bundles, and prepend the specific `JVLmock_` prefix to the name of an already existing prefab. When we load our assets at runtime, any references to mock objects will be recursively resolved until a depth of 3. When resolving references, we iterate through scene objects attempting to match our objects name with an existing one in the scene, and then duplicate the asset such that we may use it for our own purposes, without needing to copy copyrighted content within our own custom assets! Neat right?! And better yet, we don't even need to code anything ourselves to do this, just make sure that you set the `fixReference` bool on any `Custom*` entities to true and the mock reference will automatically be resolved at runtime.
 
-## Faked objects
-We'll start by creating a folder that will hold all our mocks, let's call it `Mock`, we now want to drag and drop the existing asset from the ripped game project to our custom item project. Let's do that for the Harpooned Status Effect, you should end up with the Harpooned `ScriptableObject` asset like this :
- 
-![Copied Asset](https://i.imgur.com/sS7rsTP.png)
+## Mocked Assets
 
-Now we want to fix the script references like so
+For this example we took the Cheat Sword of Valheim and added it to the game again as a new item just using mocked components. You can check out the result in our [example mod's](https://github.com/Valheim-Modding/JotunnModExample) Unity project. The example mod uses its own Unity project for mod assets. Please read the [asset creation guide](asset-creation.md) on how to setup such a mod project yourself.
 
-![Fix the Script Ref](https://i.imgur.com/IFUpPuN.png)
+We'll start by creating a folder that will hold all our new asset, let's call it `CheatSword`. We now want to drag and drop the existing asset from the ripped game project to our custom item project. The original asset is called `SwordCheat`. Open the ripped project, search for that prefab and drop onto the newly created folder in your working project. Rename the prefab to something different than the vanilla prefab, we used `Cheaty` as the name.
 
-Be sure to **fix the script references for all items that you've brought into the new project** including ItemDrop, etc.
+Open the prefab by double-clicking it. If you followed our [asset creation guide](asset-creation.md), all references to the vanilla scripts should already be there. If this is not the case, your prefab now looks something like this:
 
-We also want to prefix the asset name with `JVLmock_` so we now we end up with an asset called `JVLmock_Harpooned`
+![Missing script refs](../images/data/cheaty_missingrefs.png)
 
-One last thing, we need to tell JVL to fix the references for us, for that, when creating the instance of our `CustomItem` in code, we want to have the FixReference parameter set to true, like so : 
+You will have to fix those script references first. Be sure to **always fix the script references for all items that you've brought into the new project** including ItemDrop, etc. Doing this manually unfortunately clears out all values set by the vanilla prefab on those components. To avoid this, you can use the Unity package [NG Script recovery](https://assetstore.unity.com/packages/tools/utilities/ng-missing-script-recovery-102272). Install it and let NG fix the references. We won't go into details of that process, so please read up on NG usage on their website.
+
+After fixing the script references for the cheat sword (if needed), you will still have stuff missing. This is where the mocks come into play. For Jötunn to resolve the vanilla assets for you at runtime, we need to create corresponding assets inside our project, reference them inside our prefabs and tell Jötunn to fix those references for us. Let's look at the vanilla icon reference in the ItemDrop component for example:
+
+![script refs fixed](../images/data/cheaty_refsfixed.png)
+
+Identify all missing assets on all GameObjects of your prefab gone "Missing" like this. In case of the Cheat Sword, those were `Icons`, `Materials`, a `Mesh` and some `fx Prefabs`. Create folders for all of those types and create empty objects using the same type as the previous referenced asset. It is important that you name those objects exactly like the vanilla objects you want to reference and prefix those with `JVLmock_`. This is how that looks for our sword:
+
+![mocked icon](../images/data/cheaty_mockicon.png) ![mocked materials](../images/data/cheaty_mockmaterial.png)
+
+![mocked mesh](../images/data/cheaty_mockmesh.png) ![mocked prefabs](../images/data/cheaty_mockprefab.png)
+
+Now assign all mocked objects in the components of your custom prefab instead of the vanilla objects. This is how our missing icon reference should look like now:
+
+![mocks assigned](../images/data/cheaty_mocksassigned.png)
+
+That's it. Jötunn will automatically reference the vanilla objects for you at runtime. Please make sure you set `fixReference: true` when you create your custom entities:
 
 ```cs
-CustomItem = new CustomItem(AssetHelper.LeadPrefab, fixReference : true);
+private void AddMockedItems()
+{
+    // Load completely mocked "Shit Sword" (Cheat Sword copy)
+    var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword", typeof(JotunnModExample).Assembly);
+    var cheaty = cheatybundle.LoadAsset<GameObject>("Cheaty");
+    ItemManager.Instance.AddItem(new CustomItem(cheaty, fixReference: true));
+    cheatybundle.Unload(false);
+}
 ```
 
-Good, we now have our mock and we can use it for reference in our ItemDrop component ! That was easy.
+> [!NOTE]
+> You don't need to copy vanilla prefabs in order to use mocked references. You can facilitate the system using you own prefabs, too.
 
-`Attack Projectile`, the `SharedData` can also reference an attack projectile, and we happen to want one here, but this time we want it a bit modified, I only want the `trail`, without the `fangspear` in its GameObject hierarchy, we could hack it up directly from the Unity Project, but I found it easier to do from code, so let's do that here :
+If you have been following the Unity Asset Creation guide, you can return back to where you [left off](asset-creation.md#assetbundle).
 
-[The relevant piece of code](https://github.com/xiaoxiao921/Lead/blob/master/Lead/Util/AssetHelper.cs#L28)
+## Mocking GameObjects from within a Prefab
 
-We use the [OnItemsRegistered](xref:Jotunn.Managers.ItemManager.OnItemsRegistered) event subscription provided by JVL. OnItemsRegistered is fired once after the `ObjectDB` is has loaded all its native AND custom assets. That's perfect for us ! We want to do this just once : clone the prefab, so that we don't modify the original, remove the GameObject in the hierarchy that we don't want, and then we do the `m_attackProjectile assignment`.
+As well as mocking assets to use for referencing, it is also possible to reference complete GameObjects from within an asset. The Recursive Reference Resolver will dig through children of an asset, querying for any prefabs with the `JVLmock_` prefix, it will strip the prefix and then try to resolve the name to an existing asset.
 
-If you have been following the Unity Asset Creation guide, you can return back to where you left off [here](asset-creation.md#assetbundle).
+This is also by no means limited to vanilla assets. In our example project we create [custom locations and vegetation](zones.md). For this we mocked our own custom piece `piece_lul` as well as the vanilla prefab `crystal_wall_1x1` like this:
 
-## Referencing native assets from within an asset
-
-**Note**: This example requires [assets](asset-loading.md) to be loaded, as well as [localizations](localization.md).
-
-As well as mocking assets to use for referencing, it is also possible to reference native assets from within an asset. The Recursive Reference Resolver will dig through children of an asset, querying for any prefabs with the `JVLmock_` prefix, it will strip the prefix and then try to resolve the name to an existing asset.
-
-Bellow you can see that we have a custom item, and we want to reference the native particle effect that exists in valheim. To do so, we create a new material, set the name to `JVLmock_item_particle`, and then reference this new material in the asset. There is no need to configure the material itself, only the particle system renderer.
-
-![Asset Mock Reference](../images/data/assetMockReference.png)
+![mocking gameobjects](../images/data/mock_gameobjects.png)
