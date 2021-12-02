@@ -28,7 +28,17 @@ namespace Jotunn.GUI
         /// <summary>
         ///     Name of the menu entry
         /// </summary>
-        private const string MenuName = "$jotunn_modsettings";
+        private const string MenuToken = "$jotunn_modsettings";
+        
+        /// <summary>
+        ///     Name of the menu entry
+        /// </summary>
+        private const string CancelToken = "$jotunn_modsettings_cancel";
+        
+        /// <summary>
+        ///     Name of the menu entry
+        /// </summary>
+        private const string OKToken = "$jotunn_modsettings_ok";
 
         /// <summary>
         ///     Cached transform of the vanilla menu list
@@ -56,8 +66,55 @@ namespace Jotunn.GUI
         [PatchInit(0)]
         public static void HookOnSettings()
         {
+            PrefabManager.OnVanillaPrefabsAvailable += PrefabManager_OnVanillaPrefabsAvailable;
             On.FejdStartup.SetupGui += FejdStartup_SetupGui;
             On.Menu.Start += Menu_Start;
+        }
+
+        private static void PrefabManager_OnVanillaPrefabsAvailable()
+        {
+            AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("modsettings", typeof(Main).Assembly);
+            SettingsPrefab = bundle.LoadAsset<GameObject>("ModSettings");
+            PrefabManager.Instance.AddPrefab(SettingsPrefab, Main.Instance.Info.Metadata);
+            bundle.Unload(false);
+
+            var settings = SettingsPrefab.GetComponent<ModSettings>();
+            settings.Header.text = LocalizationManager.Instance.TryTranslate(MenuToken);
+            GUIManager.Instance.ApplyTextStyle(settings.Header, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 32);
+            settings.Panel.sprite = GUIManager.Instance.GetSprite("woodpanel_settings");
+            settings.Panel.type = Image.Type.Sliced;
+            settings.Panel.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
+            settings.Panel.color = Color.white;
+            GUIManager.Instance.ApplyScrollRectStyle(settings.ScrollRect);
+            settings.ScrollRect.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
+            settings.CancelButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(CancelToken);
+            GUIManager.Instance.ApplyButtonStyle(settings.CancelButton);
+            settings.OKButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(OKToken);
+            GUIManager.Instance.ApplyButtonStyle(settings.OKButton);
+
+            var plugin = settings.PluginPrefab.GetComponent<ModSettingPlugin>();
+            GUIManager.Instance.ApplyButtonStyle(plugin.Button);
+            plugin.Button.colors = new ColorBlock
+            {
+                normalColor = new Color(0.824f, 0.824f, 0.824f, 0.5f),
+                highlightedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
+                pressedColor = new Color(0.537f, 0.556f, 0.556f, 0.8f),
+                selectedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
+                disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
+                colorMultiplier = 1f,
+                fadeDuration = 0.1f
+            };
+            plugin.Button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_bkg_128_transparent");
+            plugin.Text.fontSize = 20;
+
+            var section = settings.SectionPrefab.GetComponent<Text>();
+            section.font = GUIManager.Instance.AveriaSerifBold;
+            
+            var config = settings.ConfigPrefab.GetComponent<ModSettingConfig>();
+            config.Header.font = GUIManager.Instance.AveriaSerifBold;
+            config.Description.font = GUIManager.Instance.AveriaSerifBold;
+
+            PrefabManager.OnVanillaPrefabsAvailable -= PrefabManager_OnVanillaPrefabsAvailable;
         }
 
         /// <summary>
@@ -66,13 +123,15 @@ namespace Jotunn.GUI
         private static void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
             // Fallback english translation
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(MenuName, "Mod Settings");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(MenuToken, "Mod Settings");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(CancelToken, "Cancel");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(OKToken, "OK");
 
             orig(self);
 
             try
             {
-                Instantiate(self.m_mainMenu.transform.Find("MenuList"), self.m_settingsPrefab);
+                Instantiate(self.m_mainMenu.transform.Find("MenuList"), SettingsPrefab);
             }
             catch (Exception ex)
             {
@@ -91,7 +150,7 @@ namespace Jotunn.GUI
             try
             {
                 SynchronizationManager.Instance.CacheConfigurationValues();
-                Instantiate(self.m_menuDialog, self.m_settingsPrefab);
+                Instantiate(self.m_menuDialog, SettingsPrefab);
             }
             catch (Exception ex)
             {
@@ -115,7 +174,7 @@ namespace Jotunn.GUI
             }
 
             MenuList = menuList;
-            SettingsPrefab = settingsPrefab;
+            //SettingsPrefab = settingsPrefab;
 
             bool settingsFound = false;
             for (int i = 0; i < menuList.childCount; i++)
@@ -123,7 +182,7 @@ namespace Jotunn.GUI
                 if (menuList.GetChild(i).name == "Settings")
                 {
                     Transform modSettings = Object.Instantiate(menuList.GetChild(i), menuList);
-                    modSettings.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuName);
+                    modSettings.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuToken);
                     Button modSettingsButton = modSettings.GetComponent<Button>();
                     for (int j = 0; j < modSettingsButton.onClick.GetPersistentEventCount(); ++j)
                     {
@@ -173,10 +232,27 @@ namespace Jotunn.GUI
 
             // Create settings window
             SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
-            SettingsRoot.SetActive(false);
+
+            var settings = SettingsRoot.GetComponent<ModSettings>();
+
+            settings.CancelButton.onClick.AddListener(() =>
+            {
+                try { ColorPicker.Cancel(); } catch (Exception) { }
+                Object.Destroy(SettingsRoot);
+            });
+
+            settings.OKButton.onClick.AddListener(() =>
+            {
+                try { ColorPicker.Done(); } catch (Exception) { }
+                SaveConfiguration();
+                Object.Destroy(SettingsRoot);
+
+            });
+            
+            /*SettingsRoot.SetActive(false);
             SettingsRoot.name = "ModSettings";
             SettingsRoot.transform.GetComponentInChildren<Text>().gameObject.SetWidth(500f);
-            SettingsRoot.transform.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuName);
+            SettingsRoot.transform.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuToken);
             if (Menu.instance != null)
             {
                 Menu.instance.m_settingsInstance = SettingsRoot;
@@ -236,36 +312,95 @@ namespace Jotunn.GUI
                 try { ColorPicker.Cancel(); } catch (Exception) { }
                 Object.Destroy(SettingsRoot);
             });
+            */
 
             SettingsRoot.AddComponent<EscBehaviour>();
             
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
-                yield return CreatePlugin(mod, viewport);
+                if (GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible() && x.Value.IsWritable())
+                    .GroupBy(x => x.Key.Section).Any())
+                {
+                    settings.AddPlugin(mod.Key, $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}");
+                    Configs.Add(mod.Key, null);
+                }
             }
             
+            /*
             // Scroll back to top
             scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
 
             // Show the window and fake that we are finished loading (whole thing needs a rework...)
             SettingsRoot.SetActive(true);
+            */
 
             // Iterate over all plugins again, creating the actual config values
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
                 if (Configs.ContainsKey(mod.Key))
                 {
-                    yield return CreateContent(mod, Configs[mod.Key]);
+                    foreach (var kv in GetConfigurationEntries(mod.Value)
+                        .Where(x => x.Value.IsVisible() && x.Value.IsWritable())
+                        .GroupBy(x => x.Key.Section))
+                    {
+                        settings.AddSection(mod.Key, $"Section {kv.Key}");
+
+                        foreach (var entry in kv.OrderBy(x =>
+                        {
+                            if (x.Value.Description.Tags.FirstOrDefault(y => y is ConfigurationManagerAttributes) is
+                                ConfigurationManagerAttributes cma)
+                            {
+                                return cma.Order ?? int.MaxValue;
+                            }
+
+                            return int.MaxValue;
+                        }).ThenBy(x => x.Key.Key))
+                        {
+                            var entryAttributes =
+                                entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as
+                                    ConfigurationManagerAttributes ?? new ConfigurationManagerAttributes();
+
+                            var description = entry.Value.Description.Description;
+
+                            if (entry.Value.Description.AcceptableValues != null)
+                            {
+                                description += Environment.NewLine + "(" +
+                                               entry.Value.Description.AcceptableValues.ToDescriptionString()
+                                                   .TrimStart('#')
+                                                   .Trim() + ")";
+                            }
+
+                            if (entryAttributes.IsAdminOnly)
+                            {
+                                description += $"{Environment.NewLine}(Server side setting)";
+                            }
+
+                            settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
+                        }
+                    }
                 }
             }
+
+            yield return null;
         }
         
         private class EscBehaviour : MonoBehaviour
         {
+            private void Update()
+            {
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    try { ColorPicker.Cancel(); } catch (Exception) { }
+                    Destroy(SettingsRoot);
+                }
+            }
+
             private void OnDestroy()
             {
                 try { ColorPicker.Cancel(); } catch (Exception) { }
+                Destroy(SettingsRoot);
             }
         }
 
