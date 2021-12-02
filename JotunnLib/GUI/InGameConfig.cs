@@ -242,7 +242,7 @@ namespace Jotunn.GUI
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
-                yield return CreatePlugin(mod, viewport);
+                CreatePlugin(mod, viewport);
             }
             
             // Scroll back to top
@@ -269,7 +269,7 @@ namespace Jotunn.GUI
             }
         }
 
-        private static IEnumerator CreatePlugin(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform pluginViewport)
+        private static void CreatePlugin(KeyValuePair<string, BaseUnityPlugin> mod, RectTransform pluginViewport)
         {
             // Create a header if there are any relevant configuration entries
             if (GetConfigurationEntries(mod.Value).Where(x => x.Value.IsVisible() && x.Value.IsWritable()).GroupBy(x => x.Key.Section).Any())
@@ -343,8 +343,6 @@ namespace Jotunn.GUI
                 });
 
                 Configs.Add(mod.Key, contentViewport);
-
-                yield return null;
             }
         }
 
