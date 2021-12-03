@@ -10,16 +10,9 @@ namespace Jotunn.Managers
         internal const string PlayerPrefix = "player_";
         internal const string EntrySeparator = ".";
 
-        private static SaveManager _instrance;
-        internal static SaveManager Instance
-        {
-            get
-            {
-                if (_instrance == null) _instrance = new SaveManager();
-                return _instrance;
-            }
-        }
-        
+        private static SaveManager _instance;
+        internal static SaveManager Instance => _instance ??= new SaveManager();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>

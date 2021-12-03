@@ -17,10 +17,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static ZoneManager Instance
-        {
-            get => _instance ??= new ZoneManager();
-        }
+        public static ZoneManager Instance => _instance ??= new ZoneManager();
 
         /// <summary>
         ///     Hide .ctor

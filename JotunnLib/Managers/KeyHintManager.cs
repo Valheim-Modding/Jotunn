@@ -18,15 +18,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Singleton instance
         /// </summary>
-        public static KeyHintManager Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new KeyHintManager();
-                return _instance;
-            }
-        }
-        
+        public static KeyHintManager Instance => _instance ??= new KeyHintManager();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>

@@ -18,23 +18,11 @@ namespace Jotunn.Managers
         public static readonly Quaternion IsometricRotation = Quaternion.Euler(23, 51, 25.8f);
 
         private static RenderManager _instance;
-
         /// <summary>
         ///     Singleton instance
         /// </summary>
-        public static RenderManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new RenderManager();
-                }
+        public static RenderManager Instance => _instance ??= new RenderManager();
 
-                return _instance;
-            }
-        }
-        
         /// <summary>
         ///     Hide .ctor
         /// </summary>

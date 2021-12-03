@@ -11,18 +11,11 @@ namespace Jotunn.Managers
     /// </summary>
     internal class MockManager : IManager
     {
+        private static MockManager _instance;
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static MockManager Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new MockManager();
-                return _instance;
-            }
-        }
-        private static MockManager _instance;
+        public static MockManager Instance => _instance ??= new MockManager();
         
         /// <summary>
         ///     Hide .ctor

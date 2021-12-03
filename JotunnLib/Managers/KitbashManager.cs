@@ -17,15 +17,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static KitbashManager Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new KitbashManager();
-                return _instance;
-            }
-        }
-        
+        public static KitbashManager Instance => _instance ??= new KitbashManager();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>
