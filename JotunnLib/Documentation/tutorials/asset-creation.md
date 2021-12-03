@@ -28,7 +28,7 @@ Valheim uses Unity Version **2019.4.31**
 
 If you don't have Unity already installed, download [UnityHub](https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe) from their website or install it with the Visual Studio Installer via `Individual Components` -> `Visual Studio Tools for Unity`. You will need an Unity account to register your PC and get a free licence. [Create the account](https://id.unity.com/account/new), login with it in UnityHub and get your licence via `Settings` -> `Licence Management`.
 
-We will want to have two instances of the Unity Editor running, working in two different projects. This helps us separate the original, coyprighted content from the game and our own assets.
+We will want to have two instances of the Unity Editor running, working in two different projects. This helps us separate the original, coyprighted content from the game and our own assets as well as making new rips of updated Valheim versions much easier to handle, since you won't overwrite your custom assets or have to move them to the new rip.
 
 ### Ripped Game Project
 
@@ -52,7 +52,7 @@ Do the same in the assembly_guiutils assembly definition, referencing assembly_u
 
 Jötunn provides you with a barebone project stub which also includes a Unity project. You can get [that project in its entirety](https://github.com/Valheim-Modding/JotunnModStub) from our github. If you don't have already setup your dev environment, see our [Step-by-Step guide](../guides/guide.md) on how to do that.
 
-Before opening the Unity project, copy the entire content of the `Scripts` folder from your ripped Valheim project at `<RippedValheimProject>\Assets` into your stub project's `<JotunnModStub>\JotunnModUnity\Assets\VanillaScripts` folder. This enables us to exchange prefabs between the two projects without losing the references to the added Components. 
+Before opening the Unity project, copy the entire content of the `Scripts` folder from your ripped Valheim project at `<RippedValheimProject>\Assets\Scripts` into your stub project's `<JotunnModStub>\JotunnModUnity\Assets\VanillaScripts` folder (create that if necessary). This enables us to exchange prefabs between the two projects without losing the references to the added Components. 
 
  **Copy the folders to the new project directly via the filesystem - don't import the scripts via Unity**.
 
@@ -76,14 +76,20 @@ In this use case you only need to edit some line items on the prefab that we are
 
 Port the item into the new stubbed unity project, with ALL linked assets (mesh, texture, sound, material, etc). You can do this by creating a .unitypackage export from the ripped project and importing that again in the stub project. Do so by right-clicking the Prefab and selecting `Export Package`. Dont include the scripts in the package since we copied these before. If you want to copy single assets you can also drag and drop them from one unity editor instance to the other. The stub project will be the project from which we make the Asset Bundle to package with our plugin.
 
-Before we actually create our bundle, though, you might be wondering - what should I do with the copied vanilla assets. I'd have to be worried about copyright infringement, bad.
+Open the prefab by double-clicking it. If you followed the project stub steps correctly, all references to the vanilla scripts should still be there. If this is not the case, your prefab now looks something like this:
 
-The solution is easy though, thanks to [JVL](https://github.com/Valheim-Modding/Jotunn), we introduce a [Mock object system](asset-mocking.md). Click the link to learn more about resolving native asset references at runtime.
+![Missing script refs](../images/data/cheaty_missingrefs.png)
+
+You will have to fix those script references first. Be sure to **always fix the script references for all items that you've brought into the new project** including ItemDrop, etc. Doing this manually unfortunately clears out all values set by the vanilla prefab on those components. To avoid this, you can use the Unity package [NG Script recovery](https://assetstore.unity.com/packages/tools/utilities/ng-missing-script-recovery-102272). Install it and let NG fix the references. We won't go into details of that process, so please read up on NG usage on their website.
+
+Before we actually create our bundle, though, you might be wondering - what should I do with copied vanilla assets if I still want to use them on my prefab? I'd have to be worried about copyright infringement, bad.
+
+The solution is easy though, as we introduce a [Mock object system](asset-mocking.md) in Jötunn. Click the link to learn more about resolving native asset references at runtime.
 
 
 ## AssetBundle
 
-Now we want to make our AssetBundle so that we later inject it with our BepInEx plugin dll
+Now we want to make our AssetBundle so that we later inject it with our BepInEx plugin dll.
 
 Let's create an Asset Label for the AssetBundle that we'll call steel:
 

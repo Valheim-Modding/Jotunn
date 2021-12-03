@@ -2,6 +2,8 @@
 
 ## Version 2.4.2
 * Fixed NRE while resolving mock references for null enumerables
+* Updated the asset creation guide to reflect Valheim's recent updates (https://valheim-modding.github.io/Jotunn/tutorials/asset-creation.html)
+* Reworked the Asset Mocking tutorial completely (https://valheim-modding.github.io/Jotunn/tutorials/asset-mocking.html)
 
 ## Version 2.4.1
 * Fixed compatibility of RenderManager by not destroying Components any more (RRR for example)
