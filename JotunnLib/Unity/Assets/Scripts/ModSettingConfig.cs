@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Jotunn.GUI
@@ -9,5 +7,13 @@ namespace Jotunn.GUI
     {
         public Text Header;
         public Text Description;
+        
+        public Button Button;
+        public InputField InputField;
+        public Toggle Toggle;
+        public Dropdown Dropdown;
+        public Slider Slider;
+        public InputField ColorInput;
+        public Button ColorButton;
     }
 }

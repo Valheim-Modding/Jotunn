@@ -71,6 +71,9 @@ namespace Jotunn.GUI
             On.Menu.Start += Menu_Start;
         }
 
+        /// <summary>
+        ///     Load the mod settings prefab and apply Valheim style to it
+        /// </summary>
         private static void PrefabManager_OnVanillaPrefabsAvailable()
         {
             AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("modsettings", typeof(Main).Assembly);
@@ -79,12 +82,26 @@ namespace Jotunn.GUI
             bundle.Unload(false);
 
             var settings = SettingsPrefab.GetComponent<ModSettings>();
-            settings.Header.text = LocalizationManager.Instance.TryTranslate(MenuToken);
-            GUIManager.Instance.ApplyTextStyle(settings.Header, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 32);
             settings.Panel.sprite = GUIManager.Instance.GetSprite("woodpanel_settings");
             settings.Panel.type = Image.Type.Sliced;
             settings.Panel.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
             settings.Panel.color = Color.white;
+            settings.Header.text = LocalizationManager.Instance.TryTranslate(MenuToken);
+            GUIManager.Instance.ApplyTextStyle(settings.Header, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 32);
+            GUIManager.Instance.ApplyButtonStyle(settings.CurrentPlugin);
+            settings.CurrentPlugin.colors = new ColorBlock
+            {
+                normalColor = new Color(0.824f, 0.824f, 0.824f, 0.5f),
+                highlightedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
+                pressedColor = new Color(0.537f, 0.556f, 0.556f, 0.8f),
+                selectedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
+                disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
+                colorMultiplier = 1f,
+                fadeDuration = 0.1f
+            };
+            settings.CurrentPlugin.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_bkg_128_transparent");
+            settings.CurrentPlugin.GetComponent<Image>().color = Color.white;
+            settings.CurrentPlugin.GetComponentInChildren<Text>(true).fontSize = 20;
             GUIManager.Instance.ApplyScrollRectStyle(settings.ScrollRect);
             settings.ScrollRect.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
             settings.CancelButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(CancelToken);
@@ -113,6 +130,17 @@ namespace Jotunn.GUI
             var config = settings.ConfigPrefab.GetComponent<ModSettingConfig>();
             config.Header.font = GUIManager.Instance.AveriaSerifBold;
             config.Description.font = GUIManager.Instance.AveriaSerifBold;
+            GUIManager.Instance.ApplyButtonStyle(config.Button, 14);
+            config.Button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("text_field");
+            config.Button.GetComponentInChildren<Text>(true).color = Color.white;
+            GUIManager.Instance.ApplyInputFieldStyle(config.InputField, 14);
+            GUIManager.Instance.ApplyToogleStyle(config.Toggle);
+            GUIManager.Instance.ApplyDropdownStyle(config.Dropdown, 14);
+            config.Dropdown.ClearOptions();
+            GUIManager.Instance.ApplySliderStyle(config.Slider, new Vector2(15f, -10f));
+            GUIManager.Instance.ApplyInputFieldStyle(config.ColorInput, 14);
+            GUIManager.Instance.ApplyButtonStyle(config.ColorButton);
+            config.ColorButton.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("UISprite");
 
             PrefabManager.OnVanillaPrefabsAvailable -= PrefabManager_OnVanillaPrefabsAvailable;
         }
@@ -357,11 +385,25 @@ namespace Jotunn.GUI
                             return int.MaxValue;
                         }).ThenBy(x => x.Key.Key))
                         {
+                            // Skip actual GamepadConfigs, those are combined with ButtonConfig entries
+                            if (entry.Value.SettingType == typeof(InputManager.GamepadButton))
+                            {
+                                continue;
+                            }
+
+                            // Get Attributes or instantiate default
                             var entryAttributes =
                                 entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as
                                     ConfigurationManagerAttributes ?? new ConfigurationManagerAttributes();
 
+                            // Build description
                             var description = entry.Value.Description.Description;
+                            
+                            var buttonName = entry.Value.GetBoundButtonName();
+                            if (!string.IsNullOrEmpty(buttonName))
+                            {
+                                description += $"{Environment.NewLine}This key is bound to button '{buttonName.Split('!')[0]}'.";
+                            }
 
                             if (entry.Value.Description.AcceptableValues != null)
                             {
@@ -376,8 +418,60 @@ namespace Jotunn.GUI
                                 description += $"{Environment.NewLine}(Server side setting)";
                             }
 
-                            settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            // Add new Config GO and add config bound component by type
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
                                 description, entryAttributes.DescriptionColor);
+                            
+                            if (entry.Value.SettingType == typeof(bool))
+                            {
+                                var conf = go.AddComponent<ConfigBoundBoolean>();
+                                conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            }
+                            else if (entry.Value.SettingType == typeof(int))
+                            {
+                                var conf = go.AddComponent<ConfigBoundInt>();
+                                conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            }
+                            else if (entry.Value.SettingType == typeof(float))
+                            {
+                                var conf = go.AddComponent<ConfigBoundFloat>();
+                                conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            }
+                            else if (entry.Value.SettingType == typeof(double))
+                            {
+                                var conf = go.AddComponent<ConfigBoundDouble>();
+                                conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            }
+                            else if (entry.Value.SettingType == typeof(string))
+                            {
+                                var conf = go.AddComponent<ConfigBoundString>();
+                                conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            }
+                            else if (entry.Value.SettingType == typeof(KeyCode) &&
+                                     ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
+                            {
+                                var conf = go.AddComponent<ConfigBoundKeyCode>();
+                                conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+
+                                if (entry.Value.GetButtonConfig().GamepadConfig != null)
+                                {
+                                    var conf2 = go.AddComponent<ConfigBoundGamepadButton>();
+                                    conf2.SetData(mod.Value.Info.Metadata.GUID,
+                                        entry.Value.GetButtonConfig().GamepadConfig.Definition.Section,
+                                        entry.Value.GetButtonConfig().GamepadConfig.Definition.Key);
+                                }
+                            }
+                            else if (entry.Value.SettingType == typeof(KeyboardShortcut) &&
+                                     ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
+                            {
+                                var conf = go.AddComponent<ConfigBoundKeyboardShortcut>();
+                                conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            }
+                            else if (entry.Value.SettingType == typeof(Color))
+                            {
+                                var conf = go.AddComponent<ConfigBoundColor>();
+                                conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            }
                         }
                     }
                 }
@@ -1085,6 +1179,8 @@ namespace Jotunn.GUI
         /// <typeparam name="T"></typeparam>
         internal abstract class ConfigBound<T> : MonoBehaviour
         {
+            public ModSettingConfig Config { get; set; }
+
             public string ModGUID { get; set; }
             public string Section { get; set; }
             public string Key { get; set; }
@@ -1113,6 +1209,8 @@ namespace Jotunn.GUI
 
             public void SetData(string modGuid, string section, string key)
             {
+                Config = gameObject.GetComponent<ModSettingConfig>();
+
                 ModGUID = modGuid;
                 Section = section;
                 Key = key;
@@ -1145,7 +1243,7 @@ namespace Jotunn.GUI
                     Default = (T)Entry.DefaultValue;
                 }
             }
-            
+
             public abstract void Register();
 
             public abstract void SetEnabled(bool enabled);
@@ -1174,31 +1272,29 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundBoolean : ConfigBound<bool>
         {
-            private Toggle Toggle;
-
             public override void Register()
             {
-                Toggle = gameObject.transform.Find("Toggle").GetComponent<Toggle>();
+                Config.Toggle.gameObject.SetActive(true);
             }
             
             public override bool GetValue()
             {
-                return Toggle.isOn;
+                return Config.Toggle.isOn;
             }
 
             public override void SetValue(bool value)
             {
-                Toggle.isOn = value;
+                Config.Toggle.isOn = value;
             }
 
             public override void SetEnabled(bool enabled)
             {
-                Toggle.enabled = enabled;
+                Config.Toggle.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                Toggle.enabled = !readOnly;
+                Config.Toggle.enabled = !readOnly;
             }
         }
 
@@ -1207,40 +1303,36 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundInt : ConfigBound<int>
         {
-            private InputField Input;
-
             public override void Register()
             {
-                Input = gameObject.transform.Find("Input").GetComponent<InputField>();
-                Input.characterValidation = InputField.CharacterValidation.Integer;
+                Config.InputField.gameObject.SetActive(true);
+                Config.InputField.characterValidation = InputField.CharacterValidation.Integer;
 
                 if (Entry.Description.AcceptableValues is AcceptableValueRange<int> acceptableValueRange)
                 {
-                    var slider = Input.transform.Find("Slider").GetComponent<Slider>();
-                    slider.gameObject.SetActive(true);
-                    slider.minValue = acceptableValueRange.MinValue;
-                    slider.maxValue = acceptableValueRange.MaxValue;
-                    slider.onValueChanged.AddListener(value => 
-                        Input.SetTextWithoutNotify(((int)value)
+                    Config.Slider.gameObject.SetActive(true);
+                    Config.Slider.minValue = acceptableValueRange.MinValue;
+                    Config.Slider.maxValue = acceptableValueRange.MaxValue;
+                    Config.Slider.onValueChanged.AddListener(value => 
+                        Config.InputField.SetTextWithoutNotify(((int)value)
                             .ToString(CultureInfo.CurrentCulture)));
-                    Input.onValueChanged.AddListener(text =>
+                    Config.InputField.onValueChanged.AddListener(text =>
                     {
                         if (int.TryParse(text, out var value))
                         {
-                            slider.SetValueWithoutNotify(value);
+                            Config.Slider.SetValueWithoutNotify(value);
                         }
                     });
                 }
-                Input.onValueChanged.AddListener(x =>
+                Config.InputField.onValueChanged.AddListener(x =>
                 {
-                    Input.textComponent.color = IsValid() ? Color.white : Color.red;
+                    Config.InputField.textComponent.color = IsValid() ? Color.white : Color.red;
                 });
             }
             
             public override int GetValue()
             {
-                int temp;
-                if (!int.TryParse(Input.text, out temp))
+                if (!int.TryParse(Config.InputField.text, out var temp))
                 {
                     temp = Default;
                 }
@@ -1250,18 +1342,18 @@ namespace Jotunn.GUI
 
             public override void SetValue(int value)
             {
-                Input.text = value.ToString();
+                Config.InputField.text = value.ToString();
             }
 
             public override void SetEnabled(bool enabled)
             {
-                Input.enabled = enabled;
+                Config.InputField.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                Input.readOnly = readOnly;
-                Input.textComponent.color = readOnly ? Color.grey : Color.white;
+                Config.InputField.readOnly = readOnly;
+                Config.InputField.textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -1270,42 +1362,38 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundFloat : ConfigBound<float>
         {
-            private InputField Input;
-
             public override void Register()
             {
-                Input = gameObject.transform.Find("Input").GetComponent<InputField>();
-                Input.characterValidation = InputField.CharacterValidation.Decimal;
+                Config.InputField.gameObject.SetActive(true);
+                Config.InputField.characterValidation = InputField.CharacterValidation.Decimal;
 
                 if (Entry.Description.AcceptableValues is AcceptableValueRange<float> acceptableValueRange)
                 {
-                    var slider = gameObject.GetComponentInChildren<Slider>(true);
-                    slider.gameObject.SetActive(true);
-                    slider.minValue = acceptableValueRange.MinValue;
-                    slider.maxValue = acceptableValueRange.MaxValue;
-                    var step = Mathf.Clamp(slider.minValue / slider.maxValue, 0.1f, 1f);
-                    slider.onValueChanged.AddListener(value => 
-                        Input.SetTextWithoutNotify((Mathf.Round(value/step)*step)
+                    Config.Slider.gameObject.SetActive(true);
+                    Config.Slider.minValue = acceptableValueRange.MinValue;
+                    Config.Slider.maxValue = acceptableValueRange.MaxValue;
+                    var step = Mathf.Clamp(Config.Slider.minValue / Config.Slider.maxValue, 0.1f, 1f);
+                    Config.Slider.onValueChanged.AddListener(value => 
+                        Config.InputField.SetTextWithoutNotify((Mathf.Round(value/step)*step)
                             .ToString("F3", CultureInfo.CurrentCulture)));
-                    Input.onValueChanged.AddListener(text =>
+                    Config.InputField.onValueChanged.AddListener(text =>
                     {
                         if (float.TryParse(text, out var value))
                         {
-                            slider.SetValueWithoutNotify(value);
+                            Config.Slider.SetValueWithoutNotify(value);
                         }
                     });
                 }
-                Input.onValueChanged.AddListener(x =>
+                Config.InputField.onValueChanged.AddListener(x =>
                 {
-                    Input.textComponent.color = IsValid() ? Color.white : Color.red;
+                    Config.InputField.textComponent.color = IsValid() ? Color.white : Color.red;
                 });
             }
 
             public override float GetValue()
             {
-                float temp;
-
-                if (!float.TryParse(Input.text, NumberStyles.Number, CultureInfo.CurrentCulture.NumberFormat, out temp))
+                if (!float.TryParse(Config.InputField.text, NumberStyles.Number,
+                    CultureInfo.CurrentCulture.NumberFormat, out var temp))
                 {
                     temp = Default;
                 }
@@ -1315,18 +1403,18 @@ namespace Jotunn.GUI
 
             public override void SetValue(float value)
             {
-                Input.text = value.ToString("F3");
+                Config.InputField.text = value.ToString("F3");
             }
 
             public override void SetEnabled(bool enabled)
             {
-                Input.enabled = enabled;
+                Config.InputField.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                Input.readOnly = readOnly;
-                Input.textComponent.color = readOnly ? Color.grey : Color.white;
+                Config.InputField.readOnly = readOnly;
+                Config.InputField.textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -1335,42 +1423,38 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundDouble : ConfigBound<double>
         {
-            private InputField Input;
-
             public override void Register()
             {
-                Input = gameObject.transform.Find("Input").GetComponent<InputField>();
-                Input.characterValidation = InputField.CharacterValidation.Decimal;
+                Config.InputField.gameObject.SetActive(true);
+                Config.InputField.characterValidation = InputField.CharacterValidation.Decimal;
 
                 if (Entry.Description.AcceptableValues is AcceptableValueRange<double> acceptableValueRange)
                 {
-                    var slider = GetComponentInChildren<Slider>(true);
-                    slider.gameObject.SetActive(true);
-                    slider.minValue = (float) acceptableValueRange.MinValue;
-                    slider.maxValue = (float) acceptableValueRange.MaxValue;
-                    var step = Mathf.Clamp(slider.minValue / slider.maxValue, 0.1f, 1f);
-                    slider.onValueChanged.AddListener(value => 
-                        Input.SetTextWithoutNotify((Mathf.Round(value / step) * step)
+                    Config.Slider.gameObject.SetActive(true);
+                    Config.Slider.minValue = (float) acceptableValueRange.MinValue;
+                    Config.Slider.maxValue = (float) acceptableValueRange.MaxValue;
+                    var step = Mathf.Clamp(Config.Slider.minValue / Config.Slider.maxValue, 0.1f, 1f);
+                    Config.Slider.onValueChanged.AddListener(value => 
+                        Config.InputField.SetTextWithoutNotify((Mathf.Round(value / step) * step)
                             .ToString("F3", CultureInfo.CurrentCulture)));
-                    Input.onValueChanged.AddListener(text =>
+                    Config.InputField.onValueChanged.AddListener(text =>
                     {
                         if (double.TryParse(text, out var value))
                         {
-                            slider.SetValueWithoutNotify((float)value);
+                            Config.Slider.SetValueWithoutNotify((float)value);
                         }
                     });
                 }
-                Input.onValueChanged.AddListener(x =>
+                Config.InputField.onValueChanged.AddListener(x =>
                 {
-                    Input.textComponent.color = IsValid() ? Color.white : Color.red;
+                    Config.InputField.textComponent.color = IsValid() ? Color.white : Color.red;
                 });
             }
 
             public override double GetValue()
             {
-                double temp;
-
-                if (!double.TryParse(Input.text, NumberStyles.Number, CultureInfo.CurrentCulture.NumberFormat, out temp))
+                if (!double.TryParse(Config.InputField.text, NumberStyles.Number,
+                    CultureInfo.CurrentCulture.NumberFormat, out var temp))
                 {
                     temp = Default;
                 }
@@ -1380,18 +1464,52 @@ namespace Jotunn.GUI
 
             public override void SetValue(double value)
             {
-                Input.text = value.ToString("F3");
+                Config.InputField.text = value.ToString("F3");
             }
 
             public override void SetEnabled(bool enabled)
             {
-                Input.enabled = enabled;
+                Config.InputField.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                Input.readOnly = readOnly;
-                Input.textComponent.color = readOnly ? Color.grey : Color.white;
+                Config.InputField.readOnly = readOnly;
+                Config.InputField.textComponent.color = readOnly ? Color.grey : Color.white;
+            }
+        }
+        
+        /// <summary>
+        ///     String binding
+        /// </summary>
+        internal class ConfigBoundString : ConfigBound<string>
+        {
+            public override void Register()
+            {
+                Config.InputField.gameObject.SetActive(true);
+                Config.InputField.characterValidation = InputField.CharacterValidation.None;
+                Config.InputField.contentType = InputField.ContentType.Standard;
+            }
+            
+            public override string GetValue()
+            {
+                return Config.InputField.text;
+            }
+
+            public override void SetValue(string value)
+            {
+                Config.InputField.text = value;
+            }
+
+            public override void SetEnabled(bool enabled)
+            {
+                Config.InputField.enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                Config.InputField.readOnly = readOnly;
+                Config.InputField.textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
 
@@ -1401,12 +1519,11 @@ namespace Jotunn.GUI
         internal class ConfigBoundKeyCode : ConfigBound<KeyCode>
         {
             private Text Text;
-            private Button Button;
 
             public override void Register()
             {
-                Text = gameObject.transform.Find("Button/Text").GetComponent<Text>();
-                Button = gameObject.transform.Find("Button").GetComponent<Button>();
+                Config.Button.gameObject.SetActive(true);
+                Text = Config.Button.transform.Find("Text").GetComponent<Text>();
             }
 
             public override KeyCode GetValue()
@@ -1428,7 +1545,7 @@ namespace Jotunn.GUI
             public void Start()
             {
                 var buttonName = Entry.GetBoundButtonName();
-                Button.onClick.AddListener(() =>
+                Config.Button.onClick.AddListener(() =>
                 {
                     Settings.instance.OpenBindDialog(buttonName);
                     On.ZInput.EndBindKey += ZInput_EndBindKey;
@@ -1453,12 +1570,12 @@ namespace Jotunn.GUI
             
             public override void SetEnabled(bool enabled)
             {
-                Button.enabled = enabled;
+                Config.Button.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                Button.enabled &= readOnly;
+                Config.Button.enabled &= readOnly;
                 Text.color = readOnly ? Color.grey : Color.white;
             }
         }
@@ -1471,12 +1588,11 @@ namespace Jotunn.GUI
             private static readonly IEnumerable<KeyCode> KeysToCheck = KeyboardShortcut.AllKeyCodes.Except(new[] { KeyCode.Mouse0, KeyCode.None }).ToArray();
             
             private Text Text;
-            private Button Button;
 
             public override void Register()
             {
-                Text = gameObject.transform.Find("Button/Text").GetComponent<Text>();
-                Button = gameObject.transform.Find("Button").GetComponent<Button>();
+                Config.Button.gameObject.SetActive(true);
+                Text = Config.Button.transform.Find("Text").GetComponent<Text>();
             }
 
             public override KeyboardShortcut GetValue()
@@ -1492,7 +1608,7 @@ namespace Jotunn.GUI
             public void Start()
             {
                 var buttonName = Entry.GetBoundButtonName();
-                Button.onClick.AddListener(() =>
+                Config.Button.onClick.AddListener(() =>
                 {
                     Settings.instance.OpenBindDialog(buttonName);
                     On.ZInput.EndBindKey += ZInput_EndBindKey;
@@ -1517,12 +1633,12 @@ namespace Jotunn.GUI
 
             public override void SetEnabled(bool enabled)
             {
-                Button.enabled = enabled;
+                Config.Button.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                Button.enabled &= readOnly;
+                Config.Button.enabled &= readOnly;
                 Text.color = readOnly ? Color.grey : Color.white;
             }
         }
@@ -1532,17 +1648,15 @@ namespace Jotunn.GUI
         /// </summary>
         internal class ConfigBoundGamepadButton : ConfigBound<InputManager.GamepadButton>
         {
-            private Dropdown Dropdown;
-            
             public override void Register()
             {
-                Dropdown = gameObject.GetComponentInChildren<Dropdown>();
-                Dropdown.AddOptions(Enum.GetNames(typeof(InputManager.GamepadButton)).ToList());
+                Config.Dropdown.gameObject.SetActive(true);
+                Config.Dropdown.AddOptions(Enum.GetNames(typeof(InputManager.GamepadButton)).ToList());
             }
             
             public override InputManager.GamepadButton GetValue()
             {
-                if (Enum.TryParse<InputManager.GamepadButton>(Dropdown.options[Dropdown.value].text, out var ret))
+                if (Enum.TryParse<InputManager.GamepadButton>(Config.Dropdown.options[Config.Dropdown.value].text, out var ret))
                 {
                     return ret;
                 }
@@ -1552,17 +1666,18 @@ namespace Jotunn.GUI
 
             public override void SetValue(InputManager.GamepadButton value)
             {
-                Dropdown.value = Dropdown.options.IndexOf(Dropdown.options.FirstOrDefault(x =>
-                    x.text.Equals(Enum.GetName(typeof(InputManager.GamepadButton), value))));
-                Dropdown.RefreshShownValue();
+                Config.Dropdown.value = Config.Dropdown.options
+                    .IndexOf(Config.Dropdown.options.FirstOrDefault(x =>
+                        x.text.Equals(Enum.GetName(typeof(InputManager.GamepadButton), value))));
+                Config.Dropdown.RefreshShownValue();
             }
             
             public void Start()
             {
                 var buttonName = $"Joy!{Entry.GetBoundButtonName()}";
-                Dropdown.onValueChanged.AddListener(index =>
+                Config.Dropdown.onValueChanged.AddListener(index =>
                 {
-                    if (Enum.TryParse<InputManager.GamepadButton>(Dropdown.options[index].text, out var btn) &&
+                    if (Enum.TryParse<InputManager.GamepadButton>(Config.Dropdown.options[index].text, out var btn) &&
                         ZInput.instance.m_buttons.TryGetValue(buttonName, out var def))
                     {
                         KeyCode keyCode = InputManager.GetGamepadKeyCode(btn);
@@ -1586,74 +1701,32 @@ namespace Jotunn.GUI
             
             public override void SetEnabled(bool enabled)
             {
-                Dropdown.enabled = enabled;
+                Config.Dropdown.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                Dropdown.enabled = !readOnly;
-                Dropdown.itemText.color = readOnly ? Color.grey : Color.white;
-            }
-        }
-
-        /// <summary>
-        ///     String binding
-        /// </summary>
-        internal class ConfigBoundString : ConfigBound<string>
-        {
-            private InputField Input;
-            
-            public override void Register()
-            {
-                Input = gameObject.transform.Find("Input").GetComponent<InputField>();
-                Input.characterValidation = InputField.CharacterValidation.None;
-                Input.contentType = InputField.ContentType.Standard;
-            }
-            
-            public override string GetValue()
-            {
-                return Input.text;
-            }
-
-            public override void SetValue(string value)
-            {
-                Input.text = value;
-            }
-
-            public override void SetEnabled(bool enabled)
-            {
-                Input.enabled = enabled;
-            }
-
-            public override void SetReadOnly(bool readOnly)
-            {
-                Input.readOnly = readOnly;
-                Input.textComponent.color = readOnly ? Color.grey : Color.white;
+                Config.Dropdown.enabled = !readOnly;
+                Config.Dropdown.itemText.color = readOnly ? Color.grey : Color.white;
             }
         }
 
         internal class ConfigBoundColor : ConfigBound<Color>
-        {
-            private InputField Input;
-            private Button Button;
-            private Image Image;
-
+        { 
             public override void Register()
             {
-                Input = gameObject.transform.Find("Layout/Input").GetComponent<InputField>();
-                Input.onEndEdit.AddListener(SetButtonColor);
-                Input.characterValidation = InputField.CharacterValidation.None;
-                Input.contentType = InputField.ContentType.Alphanumeric;
+                Config.ColorInput.transform.parent.gameObject.SetActive(true);
 
-                Button = gameObject.transform.Find("Layout/Button").GetComponent<Button>();
-                Button.onClick.AddListener(ShowColorPicker);
-
-                Image = gameObject.transform.Find("Layout/Button").GetComponent<Image>();
+                Config.ColorInput.onEndEdit.AddListener(SetButtonColor);
+                Config.ColorInput.characterValidation = InputField.CharacterValidation.None;
+                Config.ColorInput.contentType = InputField.ContentType.Alphanumeric;
+                
+                Config.ColorButton.onClick.AddListener(ShowColorPicker);
             }
             
             public override Color GetValue()
             {
-                var col = Input.text;
+                var col = Config.ColorInput.text;
                 try
                 {
                     return ColorFromString(col);
@@ -1668,31 +1741,31 @@ namespace Jotunn.GUI
 
             public override void SetValue(Color value)
             {
-                Input.text = StringFromColor(value);
-                Image.color = value;
+                Config.ColorInput.text = StringFromColor(value);
+                Config.ColorButton.targetGraphic.color = value;
             }
 
             public override void SetEnabled(bool enabled)
             {
-                Input.enabled = enabled;
-                Button.enabled = enabled;
+                Config.ColorInput.enabled = enabled;
+                Config.ColorButton.enabled = enabled;
                 if (enabled)
                 {
-                    Input.onEndEdit.AddListener(SetButtonColor);
-                    Button.onClick.AddListener(ShowColorPicker);
+                    Config.ColorInput.onEndEdit.AddListener(SetButtonColor);
+                    Config.ColorButton.onClick.AddListener(ShowColorPicker);
                 }
                 else
                 {
-                    Input.onEndEdit.RemoveAllListeners();
-                    Button.onClick.RemoveAllListeners();
+                    Config.ColorInput.onEndEdit.RemoveAllListeners();
+                    Config.ColorButton.onClick.RemoveAllListeners();
                 }
             }
 
             public override void SetReadOnly(bool readOnly)
             {
-                Input.readOnly = readOnly;
-                Input.textComponent.color = readOnly ? Color.grey : Color.white;
-                Button.enabled = !readOnly;
+                Config.ColorInput.readOnly = readOnly;
+                Config.ColorInput.textComponent.color = readOnly ? Color.grey : Color.white;
+                Config.ColorButton.enabled = !readOnly;
             }
 
             private void SetButtonColor(string value)
@@ -1701,7 +1774,7 @@ namespace Jotunn.GUI
                 {
                     return;
                 }
-                Image.color = ColorFromString(value);
+                Config.ColorButton.targetGraphic.color = ColorFromString(value);
             }
 
             private void ShowColorPicker()
@@ -1712,7 +1785,7 @@ namespace Jotunn.GUI
                 }
                 GUIManager.Instance.CreateColorPicker(
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                    GetValue(), Key, SetValue, (c) => Image.color = c, true);
+                    GetValue(), Key, SetValue, (c) => Config.ColorButton.targetGraphic.color = c, true);
             }
 
             private string StringFromColor(Color col)
