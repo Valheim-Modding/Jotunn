@@ -1474,6 +1474,7 @@ namespace Jotunn.Managers
         ///     Apply Valheim style to a <see cref="Slider"/> component.
         /// </summary>
         /// <param name="slider"></param>
+        /// <param name="handleSize"></param>
         public void ApplySliderStyle(Slider slider, Vector2 handleSize)
         {
             slider.handleRect.sizeDelta = handleSize;

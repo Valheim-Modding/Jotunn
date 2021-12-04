@@ -31,14 +31,19 @@ namespace Jotunn.GUI
         private const string MenuToken = "$jotunn_modsettings";
         
         /// <summary>
-        ///     Name of the menu entry
+        ///     Text of the Cancel button
         /// </summary>
         private const string CancelToken = "$jotunn_modsettings_cancel";
         
         /// <summary>
-        ///     Name of the menu entry
+        ///     Text of the OK button
         /// </summary>
         private const string OKToken = "$jotunn_modsettings_ok";
+        
+        /// <summary>
+        ///     Text of the kezbind dialogue
+        /// </summary>
+        private const string KeybindToken = "$jotunn_keybind";
 
         /// <summary>
         ///     Cached transform of the vanilla menu list
@@ -88,40 +93,46 @@ namespace Jotunn.GUI
             settings.Panel.color = Color.white;
             settings.Header.text = LocalizationManager.Instance.TryTranslate(MenuToken);
             GUIManager.Instance.ApplyTextStyle(settings.Header, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 32);
-            GUIManager.Instance.ApplyButtonStyle(settings.CurrentPlugin);
-            settings.CurrentPlugin.colors = new ColorBlock
+            GUIManager.Instance.ApplyButtonStyle(settings.CurrentPluginButton);
+            settings.CurrentPluginButton.colors = new ColorBlock
             {
-                normalColor = new Color(0.824f, 0.824f, 0.824f, 0.5f),
-                highlightedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
-                pressedColor = new Color(0.537f, 0.556f, 0.556f, 0.8f),
-                selectedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
-                disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
+                normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+                highlightedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+                pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
+                selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+                disabledColor = new Color(0.566f, 0.566f, 0.566f, 1f),
                 colorMultiplier = 1f,
                 fadeDuration = 0.1f
             };
-            settings.CurrentPlugin.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_bkg_128_transparent");
-            settings.CurrentPlugin.GetComponent<Image>().color = Color.white;
-            settings.CurrentPlugin.GetComponentInChildren<Text>(true).fontSize = 20;
+            settings.CurrentPluginButton.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_bkg_128");
+            settings.CurrentPluginButton.GetComponentInChildren<Text>(true).fontSize = 20;
             GUIManager.Instance.ApplyScrollRectStyle(settings.ScrollRect);
             settings.ScrollRect.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
             settings.CancelButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(CancelToken);
             GUIManager.Instance.ApplyButtonStyle(settings.CancelButton);
             settings.OKButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(OKToken);
             GUIManager.Instance.ApplyButtonStyle(settings.OKButton);
+            var keybindPanel = settings.BindDialogue.GetComponentInChildren<Image>(true);
+            keybindPanel.sprite = GUIManager.Instance.GetSprite("woodpanel_password");
+            keybindPanel.type = Image.Type.Sliced;
+            keybindPanel.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
+            var keybindText = settings.BindDialogue.GetComponentInChildren<Text>(true);
+            GUIManager.Instance.ApplyTextStyle(keybindText, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 20);
+            keybindText.text = LocalizationManager.Instance.TryTranslate(KeybindToken);
 
             var plugin = settings.PluginPrefab.GetComponent<ModSettingPlugin>();
             GUIManager.Instance.ApplyButtonStyle(plugin.Button);
             plugin.Button.colors = new ColorBlock
             {
-                normalColor = new Color(0.824f, 0.824f, 0.824f, 0.5f),
-                highlightedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
-                pressedColor = new Color(0.537f, 0.556f, 0.556f, 0.8f),
-                selectedColor = new Color(0.824f, 0.824f, 0.824f, 0.8f),
-                disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
+                normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+                highlightedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+                pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
+                selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
+                disabledColor = new Color(0.566f, 0.566f, 0.566f, 1f),
                 colorMultiplier = 1f,
                 fadeDuration = 0.1f
             };
-            plugin.Button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_bkg_128_transparent");
+            plugin.Button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_bkg_128");
             plugin.Text.fontSize = 20;
 
             var section = settings.SectionPrefab.GetComponent<Text>();
@@ -154,6 +165,7 @@ namespace Jotunn.GUI
             LocalizationManager.Instance.JotunnLocalization.AddTranslation(MenuToken, "Mod Settings");
             LocalizationManager.Instance.JotunnLocalization.AddTranslation(CancelToken, "Cancel");
             LocalizationManager.Instance.JotunnLocalization.AddTranslation(OKToken, "OK");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(KeybindToken, "Press a key");
 
             orig(self);
 
@@ -1547,7 +1559,7 @@ namespace Jotunn.GUI
                 var buttonName = Entry.GetBoundButtonName();
                 Config.Button.onClick.AddListener(() =>
                 {
-                    Settings.instance.OpenBindDialog(buttonName);
+                    SettingsRoot.GetComponent<ModSettings>().OpenBindDialogue(buttonName);
                     On.ZInput.EndBindKey += ZInput_EndBindKey;
                 });
             }
@@ -1610,7 +1622,7 @@ namespace Jotunn.GUI
                 var buttonName = Entry.GetBoundButtonName();
                 Config.Button.onClick.AddListener(() =>
                 {
-                    Settings.instance.OpenBindDialog(buttonName);
+                    SettingsRoot.GetComponent<ModSettings>().OpenBindDialogue(buttonName);
                     On.ZInput.EndBindKey += ZInput_EndBindKey;
                 });
             }

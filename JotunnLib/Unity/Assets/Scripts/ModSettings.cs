@@ -13,69 +13,79 @@ namespace Jotunn.GUI
 
         public Image Panel;
         public Text Header;
-        public Button CurrentPlugin;
         public ScrollRect ScrollRect;
+        public Button CurrentPluginButton;
         public Button CancelButton;
         public Button OKButton;
+        
+        public GameObject BindDialogue;
 
         private readonly Dictionary<string, ModSettingPlugin> Plugins = new Dictionary<string, ModSettingPlugin>();
 
         public ModSettingPlugin AddPlugin(string name, string text)
         {
-            if (!Plugins.TryGetValue(name, out var plugin))
+            if (Plugins.TryGetValue(name, out var plugin))
             {
-                var go = Instantiate(PluginPrefab, ScrollRect.content);
-                go.name = name;
-                go.SetActive(true);
-                plugin = go.GetComponent<ModSettingPlugin>();
-                plugin.Text.text = text;
-                Plugins.Add(name, plugin);
+                return plugin;
             }
+
+            var go = Instantiate(PluginPrefab, ScrollRect.content);
+            go.name = name;
+            go.SetActive(true);
+            plugin = go.GetComponent<ModSettingPlugin>();
+            plugin.Text.text = text;
+            Plugins.Add(name, plugin);
 
             return plugin;
         }
 
         public void AddSection(string name, string text)
         {
-            if (Plugins.TryGetValue(name, out var plugin))
+            if (!Plugins.TryGetValue(name, out var plugin))
             {
-                var go = Instantiate(SectionPrefab, plugin.Content.transform);
-                go.SetActive(true);
-                go.GetComponent<Text>().text = text;
+                return;
             }
+
+            var go = Instantiate(SectionPrefab, plugin.Content.transform);
+            go.SetActive(true);
+            go.GetComponent<Text>().text = text;
         }
 
         public GameObject AddConfig(string name, string entry, Color entryColor, string description, Color descriptionColor)
         {
-            if (Plugins.TryGetValue(name, out var plugin))
+            if (!Plugins.TryGetValue(name, out var plugin))
             {
-                var go = Instantiate(ConfigPrefab, plugin.Content.transform);
-                go.SetActive(true);
-                var config = go.GetComponent<ModSettingConfig>();
-                config.Header.text = entry;
-                config.Header.color = entryColor;
-                config.Description.text = description;
-                config.Description.color = descriptionColor;
-
-                return go;
+                return null;
             }
 
-            return null;
+            var go = Instantiate(ConfigPrefab, plugin.Content.transform);
+            go.SetActive(true);
+            var config = go.GetComponent<ModSettingConfig>();
+            config.Header.text = entry;
+            config.Header.color = entryColor;
+            config.Description.text = description;
+            config.Description.color = descriptionColor;
+
+            return go;
         }
 
         public void OnScrollRectChanged(Vector2 position)
         {
-            var overlaps = Plugins.Values.Select(x => WorldRect(x.Button.GetComponent<RectTransform>()))
-                .Any(x => (int)x.yMax + (int)x.height/2 == (int)WorldRect(CurrentPlugin.GetComponent<RectTransform>()).yMax);
+            var overlaps = Plugins.Values.Select(x => x.Button.GetComponent<RectTransform>())
+                .Any(x => Overlaps(x, CurrentPluginButton.GetComponent<RectTransform>()));
             
-            CurrentPlugin.gameObject.SetActive(!overlaps);
-         
-            var currentPlugin = Plugins.Values.Select(x => x.Button.GetComponent<RectTransform>())
-                .LastOrDefault(x => (int)WorldRect(x).y > (int)CurrentPlugin.GetComponent<RectTransform>().position.y);
+            CurrentPluginButton.gameObject.SetActive(!overlaps);
+
+            var currentPlugin = Plugins.Values.Select(x => x.Button)
+                .LastOrDefault(x =>
+                    WorldRect(x.GetComponent<RectTransform>()).y >
+                    WorldRect(CurrentPluginButton.GetComponent<RectTransform>()).y);
 
             if (currentPlugin)
             {
-                CurrentPlugin.GetComponentInChildren<Text>().text = currentPlugin.GetComponentInChildren<Text>().text;
+                CurrentPluginButton.GetComponentInChildren<Text>().text = currentPlugin.GetComponentInChildren<Text>().text;
+                CurrentPluginButton.onClick.RemoveAllListeners();
+                CurrentPluginButton.onClick.AddListener(() => currentPlugin.GetComponentInParent<ModSettingPlugin>().Toggle());
             }
         }
 
@@ -86,19 +96,29 @@ namespace Jotunn.GUI
             float rectTransformHeight = sizeDelta.y * rectTransform.lossyScale.y;
 
             Vector3 position = rectTransform.position;
-            return new Rect(position.x + rectTransformWidth / 2f, position.y + rectTransformHeight / 2f, rectTransformWidth, rectTransformHeight);
+            return new Rect(position.x - rectTransformWidth / 2f, position.y - rectTransformHeight / 2f, rectTransformWidth, rectTransformHeight);
+        }
+
+        private bool Overlaps(RectTransform a, RectTransform b)
+        {
+            var recta = WorldRect(a);
+            var rectb = WorldRect(b);
+
+            return (int)recta.y == (int)rectb.y || (recta.y + recta.height > rectb.y && recta.y < rectb.y);
         }
         
-        // Start is called before the first frame update
-        void Start()
+        public void OpenBindDialogue(string keyName)
         {
-
+            ZInput.instance.StartBindKey(keyName);
+            BindDialogue.SetActive(true);
         }
 
-        // Update is called once per frame
-        void Update()
+        private void Update()
         {
-
+            if (BindDialogue.activeSelf && ZInput.instance.EndBindKey())
+            {
+                BindDialogue.SetActive(false);
+            }
         }
     }
 }
