@@ -1248,7 +1248,7 @@ namespace Jotunn.Managers
             go.GetComponent<Button>().colors = ValheimButtonColorBlock;
 
             // Text
-            var txt = go.GetComponentInChildren<Text>();
+            var txt = go.GetComponentInChildren<Text>(true);
 
             if (!txt)
             {
@@ -1467,7 +1467,16 @@ namespace Jotunn.Managers
         /// <param name="slider"></param>
         public void ApplySliderStyle(Slider slider)
         {
-            slider.handleRect.sizeDelta = new Vector2(40, 10);
+            ApplySliderStyle(slider, new Vector2(40, 10));
+        }
+        
+        /// <summary>
+        ///     Apply Valheim style to a <see cref="Slider"/> component.
+        /// </summary>
+        /// <param name="slider"></param>
+        public void ApplySliderStyle(Slider slider, Vector2 handleSize)
+        {
+            slider.handleRect.sizeDelta = handleSize;
 
             if (slider.fillRect && slider.fillRect.TryGetComponent<Image>(out var image))
             {
