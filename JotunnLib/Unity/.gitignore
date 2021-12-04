@@ -75,3 +75,6 @@ crashlytics-build.properties
 
 # Default AssetBundle stuff
 /[Aa]ssetBundles/AssetBundles*
+
+# Plugins
+/[Aa]ssets/Plugins*
