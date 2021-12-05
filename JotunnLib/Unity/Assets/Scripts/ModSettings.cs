@@ -20,13 +20,14 @@ namespace Jotunn.GUI
         
         public GameObject BindDialogue;
 
-        private readonly Dictionary<string, ModSettingPlugin> Plugins = new Dictionary<string, ModSettingPlugin>();
+        public readonly Dictionary<string, ModSettingPlugin> Plugins = new Dictionary<string, ModSettingPlugin>();
+        public readonly Dictionary<string, ModSettingConfig> Configs = new Dictionary<string, ModSettingConfig>();
 
-        public ModSettingPlugin AddPlugin(string name, string text)
+        public GameObject AddPlugin(string name, string text)
         {
             if (Plugins.TryGetValue(name, out var plugin))
             {
-                return plugin;
+                return plugin.gameObject;
             }
 
             var go = Instantiate(PluginPrefab, ScrollRect.content);
@@ -36,7 +37,7 @@ namespace Jotunn.GUI
             plugin.Text.text = text;
             Plugins.Add(name, plugin);
 
-            return plugin;
+            return go;
         }
 
         public void AddSection(string name, string text)
@@ -58,13 +59,19 @@ namespace Jotunn.GUI
                 return null;
             }
 
+            if (Configs.TryGetValue(entry, out var config))
+            {
+                return config.gameObject;
+            }
+
             var go = Instantiate(ConfigPrefab, plugin.Content.transform);
             go.SetActive(true);
-            var config = go.GetComponent<ModSettingConfig>();
+            config = go.GetComponent<ModSettingConfig>();
             config.Header.text = entry;
             config.Header.color = entryColor;
             config.Description.text = description;
             config.Description.color = descriptionColor;
+            Configs.Add(entry, config);
 
             return go;
         }
