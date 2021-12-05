@@ -83,48 +83,41 @@ namespace Jotunn.GUI
             settings.Panel.type = Image.Type.Sliced;
             settings.Panel.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
             settings.Panel.color = Color.white;
-            settings.Header.text = LocalizationManager.Instance.TryTranslate(MenuToken);
+            
             GUIManager.Instance.ApplyTextStyle(settings.Header, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 32);
+            settings.Header.text = LocalizationManager.Instance.TryTranslate(MenuToken);
+            
             GUIManager.Instance.ApplyButtonStyle(settings.CurrentPluginButton);
-            settings.CurrentPluginButton.colors = new ColorBlock
-            {
-                normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                highlightedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
-                selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                disabledColor = new Color(0.566f, 0.566f, 0.566f, 1f),
-                colorMultiplier = 1f,
-                fadeDuration = 0.1f
-            };
-            settings.CurrentPluginButton.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_bkg_128");
+            var currentPluginButtonImage = settings.CurrentPluginButton.GetComponent<Image>();
+            currentPluginButtonImage.sprite = GUIManager.Instance.GetSprite("crafting_panel_bkg");
+            currentPluginButtonImage.type = Image.Type.Sliced;
+            //currentPluginButtonImage.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
             settings.CurrentPluginButton.GetComponentInChildren<Text>(true).fontSize = 20;
+
             GUIManager.Instance.ApplyScrollRectStyle(settings.ScrollRect);
             settings.ScrollRect.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
-            settings.CancelButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(CancelToken);
+
             GUIManager.Instance.ApplyButtonStyle(settings.CancelButton);
-            settings.OKButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(OKToken);
+            settings.CancelButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(CancelToken);
+
             GUIManager.Instance.ApplyButtonStyle(settings.OKButton);
+            settings.OKButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(OKToken);
+
             var keybindPanel = settings.BindDialogue.GetComponentInChildren<Image>(true);
             keybindPanel.sprite = GUIManager.Instance.GetSprite("woodpanel_password");
             keybindPanel.type = Image.Type.Sliced;
             keybindPanel.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
+
             var keybindText = settings.BindDialogue.GetComponentInChildren<Text>(true);
             GUIManager.Instance.ApplyTextStyle(keybindText, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 20);
             keybindText.text = LocalizationManager.Instance.TryTranslate(KeybindToken);
 
             var plugin = settings.PluginPrefab.GetComponent<ModSettingPlugin>();
             GUIManager.Instance.ApplyButtonStyle(plugin.Button);
-            plugin.Button.colors = new ColorBlock
-            {
-                normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                highlightedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
-                selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                disabledColor = new Color(0.566f, 0.566f, 0.566f, 1f),
-                colorMultiplier = 1f,
-                fadeDuration = 0.1f
-            };
-            plugin.Button.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_bkg_128");
+            var pluginButtonImage = plugin.Button.GetComponent<Image>();
+            pluginButtonImage.sprite = GUIManager.Instance.GetSprite("crafting_panel_bkg");
+            pluginButtonImage.type = Image.Type.Sliced;
+            //pluginButtonImage.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
             plugin.Text.fontSize = 20;
 
             var section = settings.SectionPrefab.GetComponent<Text>();
