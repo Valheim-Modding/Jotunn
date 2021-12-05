@@ -106,6 +106,7 @@ namespace Jotunn.GUI
             var keybindPanel = settings.BindDialogue.GetComponentInChildren<Image>(true);
             keybindPanel.sprite = GUIManager.Instance.GetSprite("woodpanel_password");
             keybindPanel.type = Image.Type.Sliced;
+            keybindPanel.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
 
             var keybindText = settings.BindDialogue.GetComponentInChildren<Text>(true);
             GUIManager.Instance.ApplyTextStyle(keybindText, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 20);
