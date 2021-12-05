@@ -15,16 +15,19 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Unity\Assets\Plugins\**" />
     <Compile Remove="Unity\Library\**" />
     <Compile Remove="Unity\Logs\**" />
     <Compile Remove="Unity\Packages\**" />
     <Compile Remove="Unity\Temp\**" />
     <Compile Remove="Unity\Build\**" />
+    <EmbeddedResource Remove="Unity\Assets\Plugins\**" />
     <EmbeddedResource Remove="Unity\Library\**" />
     <EmbeddedResource Remove="Unity\Logs\**" />
     <EmbeddedResource Remove="Unity\Packages\**" />
     <EmbeddedResource Remove="Unity\Temp\**" />
     <EmbeddedResource Remove="Unity\Build\**" />
+    <None Remove="Unity\Assets\Plugins\**" />
     <None Remove="Unity\Library\**" />
     <None Remove="Unity\Logs\**" />
     <None Remove="Unity\Packages\**" />
@@ -37,6 +40,8 @@
   <ItemGroup>
     <None Remove="Unity\AssetBundles\colorpicker" />
     <None Remove="Unity\AssetBundles\jotunn" />
+    <None Remove="Unity\AssetBundles\modsettings" />
+    <None Remove="Unity\Assets\Plugins.meta" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="HarmonyX" Version="2.5.5" />
@@ -463,5 +468,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Unity\AssetBundles\colorpicker" />
     <EmbeddedResource Include="Unity\AssetBundles\jotunn" />
+    <EmbeddedResource Include="Unity\AssetBundles\modsettings" />
   </ItemGroup>
 </Project>
