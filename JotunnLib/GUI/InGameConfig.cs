@@ -11,7 +11,6 @@ using System.Globalization;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.Logging;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -45,7 +44,7 @@ namespace Jotunn.GUI
         ///     Text of the keybind dialogue
         /// </summary>
         private const string KeybindToken = "$jotunn_keybind";
-        
+
         /// <summary>
         ///     Cached prefab of the vanilla Settings window
         /// </summary>
@@ -76,7 +75,7 @@ namespace Jotunn.GUI
             SettingsPrefab = bundle.LoadAsset<GameObject>("ModSettings");
             PrefabManager.Instance.AddPrefab(SettingsPrefab, Main.Instance.Info.Metadata);
             bundle.Unload(false);
-            
+
             SettingsPrefab.AddComponent<CloseBehaviour>();
 
             var settings = SettingsPrefab.GetComponent<ModSettings>();
@@ -112,7 +111,7 @@ namespace Jotunn.GUI
             var keybindText = settings.BindDialogue.GetComponentInChildren<Text>(true);
             GUIManager.Instance.ApplyTextStyle(keybindText, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 20);
             keybindText.text = LocalizationManager.Instance.TryTranslate(KeybindToken);
-            
+
             var plugin = settings.PluginPrefab.GetComponent<ModSettingPlugin>();
             GUIManager.Instance.ApplyButtonStyle(plugin.Button);
             plugin.Button.colors = new ColorBlock
@@ -145,10 +144,10 @@ namespace Jotunn.GUI
             GUIManager.Instance.ApplyInputFieldStyle(config.ColorInput, 14);
             GUIManager.Instance.ApplyButtonStyle(config.ColorButton);
             config.ColorButton.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("UISprite");
-            
+
             PrefabManager.OnVanillaPrefabsAvailable -= PrefabManager_OnVanillaPrefabsAvailable;
         }
-        
+
         private class CloseBehaviour : MonoBehaviour
         {
             private void Awake()
@@ -234,7 +233,7 @@ namespace Jotunn.GUI
             {
                 return;
             }
-            
+
             var settingsFound = false;
             var mainMenuButtons = new List<Button>();
             for (int i = 0; i < menuList.childCount; i++)
@@ -282,7 +281,7 @@ namespace Jotunn.GUI
                     {
                         right.localPosition = new Vector2(right.localPosition.x + 10f, right.localPosition.y);
                     }
-                    
+
                     settingsFound = true;
                 }
                 else if (settingsFound)
@@ -312,9 +311,9 @@ namespace Jotunn.GUI
             {
                 Menu.instance.m_settingsInstance = SettingsRoot;
             }
-            
+
             var settings = SettingsRoot.GetComponent<ModSettings>();
-            
+
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
@@ -322,7 +321,7 @@ namespace Jotunn.GUI
                 {
                     continue;
                 }
-                
+
                 yield return null;
 
                 settings.AddPlugin(mod.Key, $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}");
