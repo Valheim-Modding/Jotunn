@@ -148,6 +148,10 @@ namespace Jotunn.GUI
             PrefabManager.OnVanillaPrefabsAvailable -= PrefabManager_OnVanillaPrefabsAvailable;
         }
 
+        /// <summary>
+        ///     Adding a MonoBehaviour to close the mod settings here.
+        ///     The Unity project does not know about BepInEx...
+        /// </summary>
         private class CloseBehaviour : MonoBehaviour
         {
             private void Awake()
@@ -179,7 +183,7 @@ namespace Jotunn.GUI
         }
 
         /// <summary>
-        ///     After SetupGui
+        ///     Add default localization and instantiate the mod settings button in Fejd.
         /// </summary>
         private static void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
@@ -203,7 +207,8 @@ namespace Jotunn.GUI
         }
 
         /// <summary>
-        ///     After first menu start
+        ///     Cache current configuration values for possible sync and instantiate
+        ///     the mod settings button on first in-game menu start.
         /// </summary>
         private static void Menu_Start(On.Menu.orig_Start orig, Menu self)
         {
@@ -261,7 +266,6 @@ namespace Jotunn.GUI
                         try
                         {
                             modSettingsButton.StartCoroutine(CreateWindow(menuList));
-                            //CreateWindow();
                         }
                         catch (Exception ex)
                         {
@@ -529,305 +533,7 @@ namespace Jotunn.GUI
             // Sync changed config
             SynchronizationManager.Instance.SynchronizeChangedConfig();
         }
-
-        /// <summary>
-        ///     Create a text input field (used for string, int, float)
-        /// </summary>
-        /// <param name="parent">parent transform</param>
-        /// <param name="labelname">Label text</param>
-        /// <param name="labelColor">Color of the label</param>
-        /// <param name="description">Description text</param>
-        /// <param name="descriptionColor">Color of the description text</param>
-        /// <param name="width">Width</param>
-        /// <returns></returns>
-        private static GameObject CreateTextInputField(Transform parent, string labelname, Color labelColor, string description, Color descriptionColor, float width)
-        {
-            // Create the outer gameobject first
-            var result = new GameObject("TextField", typeof(RectTransform), typeof(LayoutElement));
-            result.SetWidth(width);
-            result.transform.SetParent(parent, false);
-
-            // create the label text
-            var label = GUIManager.Instance.CreateText(labelname, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 16, labelColor, true, Color.black, width - 150f, 0, false);
-            label.SetUpperLeft().SetToTextHeight();
-
-            // create the description text
-            var desc = GUIManager.Instance.CreateText(description, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 12, descriptionColor, true, Color.black, width - 150f, 0, false).SetUpperLeft();
-            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(label.GetTextHeight() + 3f));
-            desc.SetToTextHeight();
-
-            // calculate combined height
-            result.SetHeight(label.GetTextHeight() + 3f + desc.GetTextHeight() + 15f);
-
-            // Add the input field element
-            var field = new GameObject("Input", typeof(RectTransform), typeof(Image), typeof(InputField)).SetUpperRight().SetSize(140f, label.GetTextHeight() + 6f);
-            field.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("text_field");
-            field.GetComponent<Image>().type = Image.Type.Sliced;
-            field.transform.SetParent(result.transform, false);
-
-            var inputField = field.GetComponent<InputField>();
-
-            var text = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleLeft().SetHeight(label.GetTextHeight() + 6f)
-                .SetWidth(130f);
-            inputField.textComponent = text.GetComponent<Text>();
-            text.transform.SetParent(field.transform, false);
-            text.GetComponent<RectTransform>().anchoredPosition = new Vector2(5, 0);
-            text.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
-            text.GetComponent<Text>().font = GUIManager.Instance.AveriaSerifBold;
-
-            // create the placeholder element
-            var placeholder = new GameObject("Placeholder", typeof(RectTransform), typeof(Text)).SetMiddleLeft().SetHeight(label.GetTextHeight() + 6f)
-                .SetWidth(130f);
-            inputField.placeholder = placeholder.GetComponent<Text>();
-            placeholder.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
-            placeholder.GetComponent<Text>().text = "";
-            placeholder.GetComponent<Text>().font = GUIManager.Instance.AveriaSerifBold;
-            placeholder.GetComponent<Text>().fontStyle = FontStyle.Italic;
-            placeholder.GetComponent<Text>().color = Color.gray;
-            placeholder.transform.SetParent(field.transform, false);
-            placeholder.GetComponent<RectTransform>().anchoredPosition = new Vector2(5, 0);
-
-            // create the slider
-            var slider = DefaultControls.CreateSlider(GUIManager.Instance.ValheimControlResources);
-            slider.transform.SetParent(field.transform, false);
-            ((RectTransform)slider.transform).anchoredPosition = new Vector2(0, -25);
-            ((RectTransform)slider.transform).sizeDelta = new Vector2(140, 30);
-            GUIManager.Instance.ApplySliderStyle(slider.GetComponent<Slider>());
-            slider.SetActive(false);
-
-            // set the preferred height on the layout element
-            result.GetComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
-            return result;
-        }
-
-        /// <summary>
-        ///     Create a text input field and a ColorPicker button (used for Color)
-        /// </summary>
-        /// <param name="parent">parent transform</param>
-        /// <param name="labelname">Label text</param>
-        /// <param name="labelColor">Color of the label</param>
-        /// <param name="description">Description text</param>
-        /// <param name="descriptionColor">Color of the description text</param>
-        /// <param name="width">Width</param>
-        /// <returns></returns>
-        private static GameObject CreateColorInputField(Transform parent, string labelname, Color labelColor, string description, Color descriptionColor, float width)
-        {
-            // Create the outer gameobject first
-            var result = new GameObject("TextField", typeof(RectTransform), typeof(LayoutElement));
-            result.SetWidth(width);
-            result.transform.SetParent(parent, false);
-
-            // create the label text
-            var label = GUIManager.Instance.CreateText(labelname, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 16, labelColor, true, Color.black, width - 150f, 0, false);
-            label.SetUpperLeft().SetToTextHeight();
-
-            // create the description text
-            var desc = GUIManager.Instance.CreateText(description, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 12, descriptionColor, true, Color.black, width - 150f, 0, false).SetUpperLeft();
-            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(label.GetTextHeight() + 3f));
-            desc.SetToTextHeight();
-
-            // calculate combined height
-            result.SetHeight(label.GetTextHeight() + 3f + desc.GetTextHeight() + 15f);
-
-            // Add a layout component
-            var layout = new GameObject("Layout", typeof(RectTransform), typeof(LayoutElement)).SetUpperRight().SetSize(140f, label.GetTextHeight() + 6f);
-            layout.transform.SetParent(result.transform, false);
-
-            // Add the input field element
-            var field = new GameObject("Input", typeof(RectTransform), typeof(Image), typeof(InputField)).SetUpperLeft().SetSize(100f, label.GetTextHeight() + 6f);
-            field.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("text_field");
-            field.GetComponent<Image>().type = Image.Type.Sliced;
-            field.transform.SetParent(layout.transform, false);
-
-            var inputField = field.GetComponent<InputField>();
-
-            var text = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Outline)).SetMiddleLeft().SetHeight(label.GetTextHeight() + 6f)
-                .SetWidth(130f);
-            inputField.textComponent = text.GetComponent<Text>();
-            text.transform.SetParent(field.transform, false);
-            text.GetComponent<RectTransform>().anchoredPosition = new Vector2(5, 0);
-            text.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
-            text.GetComponent<Text>().font = GUIManager.Instance.AveriaSerifBold;
-
-            // create the placeholder element
-            var placeholder = new GameObject("Placeholder", typeof(RectTransform), typeof(Text)).SetMiddleLeft().SetHeight(label.GetTextHeight() + 6f)
-                .SetWidth(130f);
-            inputField.placeholder = placeholder.GetComponent<Text>();
-            placeholder.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
-            placeholder.GetComponent<Text>().text = "";
-            placeholder.GetComponent<Text>().font = GUIManager.Instance.AveriaSerifBold;
-            placeholder.GetComponent<Text>().fontStyle = FontStyle.Italic;
-            placeholder.GetComponent<Text>().color = Color.gray;
-            placeholder.transform.SetParent(field.transform, false);
-            placeholder.GetComponent<RectTransform>().anchoredPosition = new Vector2(5, 0);
-
-            // Add the ColorPicker button
-            var button = new GameObject("Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(ButtonSfx))
-                .SetUpperRight().SetSize(30f, label.GetTextHeight() + 6f);
-            button.transform.SetParent(layout.transform, false);
-
-            // Image
-            var image = button.GetComponent<Image>();
-            var sprite = GUIManager.Instance.GetSprite("UISprite");
-            image.sprite = sprite;
-            image.type = Image.Type.Sliced;
-            image.pixelsPerUnitMultiplier = 2f;
-            button.GetComponent<Button>().image = image;
-
-            // SFX
-            var sfx = button.GetComponent<ButtonSfx>();
-            sfx.m_sfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_button");
-            sfx.m_selectSfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_select");
-
-            // Colors
-            var tinter = new ColorBlock()
-            {
-                disabledColor = new Color(0.566f, 0.566f, 0.566f, 0.502f),
-                fadeDuration = 0.1f,
-                normalColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                highlightedColor = new Color(1.3f, 1.3f, 1.3f, 1f),
-                pressedColor = new Color(0.537f, 0.556f, 0.556f, 1f),
-                selectedColor = new Color(0.824f, 0.824f, 0.824f, 1f),
-                colorMultiplier = 1f
-            };
-            button.GetComponent<Button>().colors = tinter;
-
-            // set the preferred height on the layout element
-            result.GetComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
-            return result;
-        }
-
-        /// <summary>
-        ///     Create a toggle element
-        /// </summary>
-        /// <param name="parent">parent transform</param>
-        /// <param name="labelname">label text</param>
-        /// <param name="labelColor">Color of the label</param>
-        /// <param name="description">Description text</param>
-        /// <param name="descriptionColor">Color of the description text</param>
-        /// <param name="width">width</param>
-        /// <returns></returns>
-        private static GameObject CreateToggleElement(Transform parent, string labelname, Color labelColor, string description, Color descriptionColor, float width)
-        {
-            // Create the outer gameobject first
-            var result = new GameObject("Toggler", typeof(RectTransform));
-            result.transform.SetParent(parent, false);
-            result.SetWidth(width);
-
-            // and now the toggle itself
-            GUIManager.Instance.CreateToggle(result.transform, 20f, 20f).SetUpperRight();
-
-            // create the label text element
-            var label = GUIManager.Instance.CreateText(labelname, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 16, labelColor, true, Color.black, width - 45f, 0, true).SetUpperLeft().SetToTextHeight();
-            label.SetWidth(width - 45f);
-            label.SetToTextHeight();
-            label.transform.SetParent(result.transform, false);
-
-            // create the description text element (easy mode, just copy the label element and change some properties)
-            var desc = Object.Instantiate(result.transform.Find("Text").gameObject, result.transform);
-            desc.name = "Description";
-            desc.GetComponent<Text>().color = descriptionColor;
-            desc.GetComponent<Text>().fontSize = 12;
-            desc.GetComponent<Text>().text = description;
-            desc.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(result.transform.Find("Text").gameObject.GetTextHeight() + 3f));
-            desc.SetToTextHeight();
-
-            result.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                -desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
-
-            // and add a layout element
-            var layoutElement = result.AddComponent<LayoutElement>();
-            layoutElement.preferredHeight =
-                Math.Max(38f, -desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight) + 15f;
-            result.SetHeight(layoutElement.preferredHeight);
-
-            return result;
-        }
-
-        /// <summary>
-        ///     Create a keybinding element
-        /// </summary>
-        /// <param name="parent">parent transform</param>
-        /// <param name="labelname">label text</param>
-        /// <param name="description">description text</param>
-        /// ´<param name="buttonName">buttonName</param>
-        /// <param name="width">width</param>
-        /// <returns></returns>
-        private static GameObject CreateKeybindElement(Transform parent, string labelname, string description, string buttonName, float width)
-        {
-            // Create label and keybind button
-            var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 4f);
-
-            // Create description text
-            var idx = 0;
-            var lastPosition = new Vector2(0, -result.GetComponent<RectTransform>().rect.height - 3f);
-            GameObject desc = null;
-            foreach (var part in description.Split(Environment.NewLine[0]))
-            {
-                var p2 = part.Trim();
-                desc = GUIManager.Instance.CreateText(p2, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
-                    GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black, width - 150f, 0, false);
-                desc.name = $"Description{idx}";
-                desc.SetUpperLeft().SetToTextHeight();
-
-                desc.GetComponent<RectTransform>().anchoredPosition = lastPosition;
-                lastPosition = new Vector2(0, lastPosition.y - desc.GetTextHeight() - 3);
-
-                idx++;
-            }
-
-            // set height and add the layout element
-            result.SetHeight(-desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
-            result.AddComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
-
-            return result;
-        }
-
-        /// <summary>
-        ///     Create a KeyboardShortcut binding element
-        /// </summary>
-        /// <param name="parent">parent transform</param>
-        /// <param name="labelname">label text</param>
-        /// <param name="description">description text</param>
-        /// ´<param name="buttonName">buttonName</param>
-        /// <param name="width">width</param>
-        /// <returns></returns>
-        private static GameObject CreateShortcutbindElement(Transform parent, string labelname, string description, string buttonName, float width)
-        {
-            // Create label and keybind button
-            var result = GUIManager.Instance.CreateKeyBindField(labelname, parent, width, 24f);
-
-            // Create description text
-            var idx = 0;
-            var lastPosition = new Vector2(0, -result.GetComponent<RectTransform>().rect.height - 3f);
-            GameObject desc = null;
-            foreach (var part in description.Split(Environment.NewLine[0]))
-            {
-                var p2 = part.Trim();
-                desc = GUIManager.Instance.CreateText(p2, result.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 0),
-                    GUIManager.Instance.AveriaSerifBold, 12, Color.white, true, Color.black, width - 150f, 0, false);
-                desc.name = $"Description{idx}";
-                desc.SetUpperLeft().SetToTextHeight();
-
-                desc.GetComponent<RectTransform>().anchoredPosition = lastPosition;
-                lastPosition = new Vector2(0, lastPosition.y - desc.GetTextHeight() - 3);
-
-                idx++;
-            }
-
-            // set height and add the layout element
-            result.SetHeight(-desc.GetComponent<RectTransform>().anchoredPosition.y + desc.GetComponent<Text>().preferredHeight + 15f);
-            result.AddComponent<LayoutElement>().preferredHeight = result.GetComponent<RectTransform>().rect.height;
-
-            return result;
-        }
-
-
+        
         // Helper classes 
 
         /// <summary>
