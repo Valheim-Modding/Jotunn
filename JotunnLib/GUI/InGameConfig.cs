@@ -209,7 +209,6 @@ namespace Jotunn.GUI
             }
 
             MenuList = menuList;
-            //SettingsPrefab = settingsPrefab;
 
             bool settingsFound = false;
             for (int i = 0; i < menuList.childCount; i++)
@@ -264,6 +263,7 @@ namespace Jotunn.GUI
         {
             // Create settings window
             SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
+            SettingsRoot.SetActive(false);
 
             var settings = SettingsRoot.GetComponent<ModSettings>();
 
@@ -282,6 +282,8 @@ namespace Jotunn.GUI
             });
 
             SettingsRoot.AddComponent<EscBehaviour>();
+            
+            yield return null;
 
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
@@ -400,16 +402,12 @@ namespace Jotunn.GUI
                     }
                 }
             }
-
-            /*
+            
             // Scroll back to top
-            scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
+            // scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
 
-            // Show the window and fake that we are finished loading (whole thing needs a rework...)
+            // Show the window and fake that we are finished loading
             SettingsRoot.SetActive(true);
-            */
-
-            yield return null;
         }
 
         private class EscBehaviour : MonoBehaviour
@@ -418,12 +416,17 @@ namespace Jotunn.GUI
             {
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    try { ColorPicker.Cancel(); } catch (Exception) { }
-                    Destroy(SettingsRoot);
+                    
+                    Exit();
                 }
             }
 
             private void OnDestroy()
+            {
+                Exit();
+            }
+
+            private void Exit()
             {
                 try { ColorPicker.Cancel(); } catch (Exception) { }
                 Destroy(SettingsRoot);
