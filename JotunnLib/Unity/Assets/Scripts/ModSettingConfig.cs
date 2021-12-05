@@ -7,7 +7,7 @@ namespace Jotunn.GUI
     {
         public Text Header;
         public Text Description;
-        
+
         public Button Button;
         public InputField InputField;
         public Toggle Toggle;

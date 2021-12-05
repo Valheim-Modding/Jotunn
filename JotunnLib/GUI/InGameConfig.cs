@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -80,6 +81,8 @@ namespace Jotunn.GUI
             SettingsPrefab = bundle.LoadAsset<GameObject>("ModSettings");
             PrefabManager.Instance.AddPrefab(SettingsPrefab, Main.Instance.Info.Metadata);
             bundle.Unload(false);
+            
+            SettingsPrefab.AddComponent<CloseBehaviour>();
 
             var settings = SettingsPrefab.GetComponent<ModSettings>();
             settings.Panel.sprite = GUIManager.Instance.GetSprite("woodpanel_settings");
@@ -114,7 +117,7 @@ namespace Jotunn.GUI
             var keybindText = settings.BindDialogue.GetComponentInChildren<Text>(true);
             GUIManager.Instance.ApplyTextStyle(keybindText, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 20);
             keybindText.text = LocalizationManager.Instance.TryTranslate(KeybindToken);
-
+            
             var plugin = settings.PluginPrefab.GetComponent<ModSettingPlugin>();
             GUIManager.Instance.ApplyButtonStyle(plugin.Button);
             plugin.Button.colors = new ColorBlock
@@ -147,8 +150,38 @@ namespace Jotunn.GUI
             GUIManager.Instance.ApplyInputFieldStyle(config.ColorInput, 14);
             GUIManager.Instance.ApplyButtonStyle(config.ColorButton);
             config.ColorButton.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("UISprite");
-
+            
             PrefabManager.OnVanillaPrefabsAvailable -= PrefabManager_OnVanillaPrefabsAvailable;
+        }
+        
+        private class CloseBehaviour : MonoBehaviour
+        {
+            private void Awake()
+            {
+                var settings = GetComponent<ModSettings>();
+
+                settings.CancelButton.onClick.AddListener(() =>
+                {
+                    try { ColorPicker.Cancel(); } catch (Exception) { }
+                    Destroy(gameObject);
+                });
+
+                settings.OKButton.onClick.AddListener(() =>
+                {
+                    try { ColorPicker.Done(); } catch (Exception) { }
+                    SaveConfiguration();
+                    Destroy(gameObject);
+
+                });
+            }
+
+            private void Update()
+            {
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    GetComponent<ModSettings>().CancelButton.onClick.Invoke();
+                }
+            }
         }
 
         /// <summary>
@@ -228,6 +261,7 @@ namespace Jotunn.GUI
                         try
                         {
                             modSettingsButton.StartCoroutine(CreateWindow());
+                            //CreateWindow();
                         }
                         catch (Exception ex)
                         {
@@ -265,26 +299,13 @@ namespace Jotunn.GUI
             SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
             SettingsRoot.SetActive(false);
 
-            var settings = SettingsRoot.GetComponent<ModSettings>();
-
-            settings.CancelButton.onClick.AddListener(() =>
+            if (Menu.instance)
             {
-                try { ColorPicker.Cancel(); } catch (Exception) { }
-                Object.Destroy(SettingsRoot);
-            });
-
-            settings.OKButton.onClick.AddListener(() =>
-            {
-                try { ColorPicker.Done(); } catch (Exception) { }
-                SaveConfiguration();
-                Object.Destroy(SettingsRoot);
-
-            });
-
-            SettingsRoot.AddComponent<EscBehaviour>();
+                Menu.instance.m_settingsInstance = SettingsRoot;
+            }
             
-            yield return null;
-
+            var settings = SettingsRoot.GetComponent<ModSettings>();
+            
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
@@ -292,6 +313,8 @@ namespace Jotunn.GUI
                 {
                     continue;
                 }
+                
+                yield return null;
 
                 settings.AddPlugin(mod.Key, $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}");
 
@@ -402,35 +425,12 @@ namespace Jotunn.GUI
                     }
                 }
             }
-            
+
             // Scroll back to top
             // scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
 
             // Show the window and fake that we are finished loading
             SettingsRoot.SetActive(true);
-        }
-
-        private class EscBehaviour : MonoBehaviour
-        {
-            private void Update()
-            {
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    
-                    Exit();
-                }
-            }
-
-            private void OnDestroy()
-            {
-                Exit();
-            }
-
-            private void Exit()
-            {
-                try { ColorPicker.Cancel(); } catch (Exception) { }
-                Destroy(SettingsRoot);
-            }
         }
 
         /// <summary>

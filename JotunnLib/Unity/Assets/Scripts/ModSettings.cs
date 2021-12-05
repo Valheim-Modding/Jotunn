@@ -17,7 +17,7 @@ namespace Jotunn.GUI
         public Button CurrentPluginButton;
         public Button CancelButton;
         public Button OKButton;
-        
+
         public GameObject BindDialogue;
 
         public readonly Dictionary<string, ModSettingPlugin> Plugins = new Dictionary<string, ModSettingPlugin>();
@@ -58,7 +58,7 @@ namespace Jotunn.GUI
             {
                 return null;
             }
-            
+
             var go = Instantiate(ConfigPrefab, plugin.Content.transform);
             go.SetActive(true);
             var config = go.GetComponent<ModSettingConfig>();
@@ -75,7 +75,7 @@ namespace Jotunn.GUI
         {
             var overlaps = Plugins.Values.Select(x => x.Button.GetComponent<RectTransform>())
                 .Any(x => Overlaps(x, CurrentPluginButton.GetComponent<RectTransform>()));
-            
+
             CurrentPluginButton.gameObject.SetActive(!overlaps);
 
             var currentPlugin = Plugins.Values.Select(x => x.Button)
@@ -108,7 +108,7 @@ namespace Jotunn.GUI
 
             return (int)recta.y == (int)rectb.y || (recta.y + recta.height > rectb.y && recta.y < rectb.y);
         }
-        
+
         public void OpenBindDialogue(string keyName)
         {
             ZInput.instance.StartBindKey(keyName);
@@ -122,7 +122,7 @@ namespace Jotunn.GUI
                 BindDialogue.SetActive(false);
             }
         }
-        
+
         public void CreateTestConfig()
         {
             string modName = $"Test{Plugins.Count}";
