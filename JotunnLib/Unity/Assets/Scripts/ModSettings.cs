@@ -86,8 +86,9 @@ namespace Jotunn.GUI
             if (currentPlugin)
             {
                 CurrentPluginButton.GetComponentInChildren<Text>().text = currentPlugin.GetComponentInChildren<Text>().text;
-                CurrentPluginButton.onClick.RemoveAllListeners();
-                CurrentPluginButton.onClick.AddListener(() => currentPlugin.GetComponentInParent<ModSettingPlugin>().Toggle());
+                CurrentPluginButton.onClick = currentPlugin.onClick;
+                // CurrentPluginButton.onClick.RemoveAllListeners();
+                // CurrentPluginButton.onClick.AddListener(() => currentPlugin.GetComponentInParent<ModSettingPlugin>().Toggle());
             }
         }
 
