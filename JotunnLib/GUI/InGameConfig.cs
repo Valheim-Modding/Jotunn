@@ -384,52 +384,51 @@ namespace Jotunn.GUI
                         if (entry.Value.SettingType == typeof(bool))
                         {
                             var conf = go.AddComponent<ConfigBoundBoolean>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(int))
                         {
                             var conf = go.AddComponent<ConfigBoundInt>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(float))
                         {
                             var conf = go.AddComponent<ConfigBoundFloat>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(double))
                         {
                             var conf = go.AddComponent<ConfigBoundDouble>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(string))
                         {
                             var conf = go.AddComponent<ConfigBoundString>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(KeyCode) &&
                                  ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
                         {
                             var conf = go.AddComponent<ConfigBoundKeyCode>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
 
                             if (entry.Value.GetButtonConfig().GamepadConfig != null)
                             {
                                 var conf2 = go.AddComponent<ConfigBoundGamepadButton>();
                                 conf2.SetData(mod.Value.Info.Metadata.GUID,
-                                    entry.Value.GetButtonConfig().GamepadConfig.Definition.Section,
-                                    entry.Value.GetButtonConfig().GamepadConfig.Definition.Key);
+                                    entry.Value.GetButtonConfig().GamepadConfig);
                             }
                         }
                         else if (entry.Value.SettingType == typeof(KeyboardShortcut) &&
                                  ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
                         {
                             var conf = go.AddComponent<ConfigBoundKeyboardShortcut>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(Color))
                         {
                             var conf = go.AddComponent<ConfigBoundColor>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Key.Section, entry.Key.Key);
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                     }
                 }
@@ -841,8 +840,6 @@ namespace Jotunn.GUI
             public ModSettingConfig Config { get; set; }
 
             public string ModGUID { get; set; }
-            public string Section { get; set; }
-            public string Key { get; set; }
 
             public ConfigEntry<T> Entry { get; set; }
 
@@ -866,17 +863,12 @@ namespace Jotunn.GUI
                 Entry.Value = Value;
             }
 
-            public void SetData(string modGuid, string section, string key)
+            public void SetData(string modGuid, ConfigEntryBase entry)
             {
                 Config = gameObject.GetComponent<ModSettingConfig>();
 
                 ModGUID = modGuid;
-                Section = section;
-                Key = key;
-
-                var pluginConfig = BepInExUtils.GetDependentPlugins(true)
-                    .First(x => x.Key == ModGUID).Value.Config;
-                Entry = pluginConfig[Section, Key] as ConfigEntry<T>;
+                Entry = entry as ConfigEntry<T>;
 
                 Register();
 
@@ -1442,9 +1434,11 @@ namespace Jotunn.GUI
                 {
                     ColorPicker.Cancel();
                 }
+
                 GUIManager.Instance.CreateColorPicker(
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                    GetValue(), Key, SetValue, (c) => Config.ColorButton.targetGraphic.color = c, true);
+                    GetValue(), Entry.Definition.Key, SetValue, (c) => Config.ColorButton.targetGraphic.color = c,
+                    true);
             }
 
             private string StringFromColor(Color col)
