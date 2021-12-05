@@ -21,7 +21,7 @@ namespace Jotunn.GUI
         public GameObject BindDialogue;
 
         public readonly Dictionary<string, ModSettingPlugin> Plugins = new Dictionary<string, ModSettingPlugin>();
-        public readonly Dictionary<string, ModSettingConfig> Configs = new Dictionary<string, ModSettingConfig>();
+        public readonly List<ModSettingConfig> Configs = new List<ModSettingConfig>();
 
         public GameObject AddPlugin(string name, string text)
         {
@@ -58,20 +58,15 @@ namespace Jotunn.GUI
             {
                 return null;
             }
-
-            if (Configs.TryGetValue(entry, out var config))
-            {
-                return config.gameObject;
-            }
-
+            
             var go = Instantiate(ConfigPrefab, plugin.Content.transform);
             go.SetActive(true);
-            config = go.GetComponent<ModSettingConfig>();
+            var config = go.GetComponent<ModSettingConfig>();
             config.Header.text = entry;
             config.Header.color = entryColor;
             config.Description.text = description;
             config.Description.color = descriptionColor;
-            Configs.Add(entry, config);
+            Configs.Add(config);
 
             return go;
         }
@@ -126,6 +121,25 @@ namespace Jotunn.GUI
             {
                 BindDialogue.SetActive(false);
             }
+        }
+        
+        public void CreateTestConfig()
+        {
+            string modName = $"Test{Plugins.Count}";
+            ModSettingConfig config;
+            AddPlugin(modName, $"Test Mod {Plugins.Count}");
+            AddSection(modName, "First section");
+            config = AddConfig(modName, "Bool Test", Color.black, "Testing booleans", Color.black)
+                .GetComponent<ModSettingConfig>();
+            config.Toggle.gameObject.SetActive(true);
+            config = AddConfig(modName, "String Test", Color.black, "Testing strings", Color.black)
+                .GetComponent<ModSettingConfig>();
+            config.InputField.gameObject.SetActive(true);
+            AddSection(modName, "Second section");
+            config = AddConfig(modName, "KeyCode Test", Color.black, "Testing KeyCodes", Color.black)
+                .GetComponent<ModSettingConfig>();
+            config.InputField.gameObject.SetActive(true);
+            config.Dropdown.gameObject.SetActive(true);
         }
     }
 }

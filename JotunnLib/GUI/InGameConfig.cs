@@ -297,7 +297,7 @@ namespace Jotunn.GUI
                     .Where(x => x.Value.IsVisible() && x.Value.IsWritable())
                     .GroupBy(x => x.Key.Section))
                 {
-                    settings.AddSection(mod.Key, $"Section {kv.Key}");
+                    settings.AddSection(mod.Key, kv.Key);
 
                     foreach (var entry in kv.OrderBy(x =>
                     {
@@ -452,7 +452,7 @@ namespace Jotunn.GUI
             var settings = SettingsRoot.GetComponent<ModSettings>();
 
             // Iterate over all configs
-            foreach (var config in settings.Configs.Values)
+            foreach (var config in settings.Configs)
             {
                 var childBoolean = config.GetComponent<ConfigBoundBoolean>();
                 if (childBoolean != null)
