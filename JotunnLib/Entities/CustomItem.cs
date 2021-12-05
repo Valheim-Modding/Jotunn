@@ -63,7 +63,11 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             itemConfig.Apply(ItemPrefab);
             FixConfig = true;
-            Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
+            var recipe = itemConfig.GetRecipe();
+            if (recipe != null)
+            {
+                Recipe = new CustomRecipe(recipe, true, true);
+            }
         }
 
         /// <summary>
@@ -93,7 +97,11 @@ namespace Jotunn.Entities
             ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
             itemConfig.Apply(ItemPrefab);
             FixConfig = true;
-            Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
+            var recipe = itemConfig.GetRecipe();
+            if (recipe != null)
+            {
+                Recipe = new CustomRecipe(recipe, true, true);
+            }
         }
 
         /// <summary>
@@ -126,7 +134,11 @@ namespace Jotunn.Entities
                 ItemDrop = itemPrefab.GetComponent<ItemDrop>();
                 itemConfig.Apply(itemPrefab);
                 FixConfig = true;
-                Recipe = new CustomRecipe(itemConfig.GetRecipe(), true, true);
+                var recipe = itemConfig.GetRecipe();
+                if (recipe != null)
+                {
+                    Recipe = new CustomRecipe(recipe, true, true);
+                }
             }
         }
 
