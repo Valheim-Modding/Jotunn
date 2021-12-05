@@ -82,16 +82,16 @@ namespace Jotunn.GUI
             settings.Panel.sprite = GUIManager.Instance.GetSprite("woodpanel_settings");
             settings.Panel.type = Image.Type.Sliced;
             settings.Panel.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
-            settings.Panel.color = Color.white;
-            
+
             GUIManager.Instance.ApplyTextStyle(settings.Header, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 32);
             settings.Header.text = LocalizationManager.Instance.TryTranslate(MenuToken);
-            
+
             GUIManager.Instance.ApplyButtonStyle(settings.CurrentPluginButton);
             var currentPluginButtonImage = settings.CurrentPluginButton.GetComponent<Image>();
             currentPluginButtonImage.sprite = GUIManager.Instance.GetSprite("crafting_panel_bkg");
             currentPluginButtonImage.type = Image.Type.Sliced;
-            //currentPluginButtonImage.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
+            currentPluginButtonImage.material = new Material(PrefabManager.Cache.GetPrefab<Material>("litpanel"));
+            currentPluginButtonImage.material.SetFloat("_Brightness", 1f);
             settings.CurrentPluginButton.GetComponentInChildren<Text>(true).fontSize = 20;
 
             GUIManager.Instance.ApplyScrollRectStyle(settings.ScrollRect);
@@ -106,7 +106,6 @@ namespace Jotunn.GUI
             var keybindPanel = settings.BindDialogue.GetComponentInChildren<Image>(true);
             keybindPanel.sprite = GUIManager.Instance.GetSprite("woodpanel_password");
             keybindPanel.type = Image.Type.Sliced;
-            keybindPanel.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
 
             var keybindText = settings.BindDialogue.GetComponentInChildren<Text>(true);
             GUIManager.Instance.ApplyTextStyle(keybindText, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 20);
@@ -117,7 +116,8 @@ namespace Jotunn.GUI
             var pluginButtonImage = plugin.Button.GetComponent<Image>();
             pluginButtonImage.sprite = GUIManager.Instance.GetSprite("crafting_panel_bkg");
             pluginButtonImage.type = Image.Type.Sliced;
-            //pluginButtonImage.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
+            pluginButtonImage.material = new Material(PrefabManager.Cache.GetPrefab<Material>("litpanel"));
+            pluginButtonImage.material.SetFloat("_Brightness", 1f);
             plugin.Text.fontSize = 20;
 
             var section = settings.SectionPrefab.GetComponent<Text>();
@@ -526,7 +526,7 @@ namespace Jotunn.GUI
             // Sync changed config
             SynchronizationManager.Instance.SynchronizeChangedConfig();
         }
-        
+
         // Helper classes 
 
         /// <summary>
