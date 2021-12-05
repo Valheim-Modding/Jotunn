@@ -194,7 +194,7 @@ namespace Jotunn.GUI
 
             try
             {
-                Instantiate(self.m_menuList.transform);
+                Instantiate(self.m_mainMenu.transform.Find("MenuList"));
             }
             catch (Exception ex)
             {
