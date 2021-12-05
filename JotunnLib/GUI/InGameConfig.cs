@@ -45,12 +45,7 @@ namespace Jotunn.GUI
         ///     Text of the keybind dialogue
         /// </summary>
         private const string KeybindToken = "$jotunn_keybind";
-
-        /// <summary>
-        ///     Cached transform of the vanilla menu list
-        /// </summary>
-        private static Transform MenuList;
-
+        
         /// <summary>
         ///     Cached prefab of the vanilla Settings window
         /// </summary>
@@ -199,7 +194,7 @@ namespace Jotunn.GUI
 
             try
             {
-                Instantiate(self.m_mainMenu.transform.Find("MenuList"), SettingsPrefab);
+                Instantiate(self.m_menuList.transform);
             }
             catch (Exception ex)
             {
@@ -218,7 +213,7 @@ namespace Jotunn.GUI
             try
             {
                 SynchronizationManager.Instance.CacheConfigurationValues();
-                Instantiate(self.m_menuDialog, SettingsPrefab);
+                Instantiate(self.m_menuDialog);
             }
             catch (Exception ex)
             {
@@ -231,8 +226,7 @@ namespace Jotunn.GUI
         ///     Create our own menu list entry when mod config is available
         /// </summary>
         /// <param name="menuList"></param>
-        /// <param name="settingsPrefab"></param>
-        private static void Instantiate(Transform menuList, GameObject settingsPrefab)
+        private static void Instantiate(Transform menuList)
         {
             var anyConfig = BepInExUtils.GetDependentPlugins(true).Any(x => GetConfigurationEntries(x.Value).Any());
 
@@ -240,15 +234,22 @@ namespace Jotunn.GUI
             {
                 return;
             }
-
-            MenuList = menuList;
-
-            bool settingsFound = false;
+            
+            var settingsFound = false;
+            var mainMenuButtons = new List<Button>();
             for (int i = 0; i < menuList.childCount; i++)
             {
+                if (menuList.GetChild(i).gameObject.activeInHierarchy &&
+                    menuList.GetChild(i).name != "ModSettings" &&
+                    menuList.GetChild(i).TryGetComponent<Button>(out var menuButton))
+                {
+                    mainMenuButtons.Add(menuButton);
+                }
+
                 if (menuList.GetChild(i).name == "Settings")
                 {
                     Transform modSettings = Object.Instantiate(menuList.GetChild(i), menuList);
+                    modSettings.name = "ModSettings";
                     modSettings.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(MenuToken);
                     Button modSettingsButton = modSettings.GetComponent<Button>();
                     for (int j = 0; j < modSettingsButton.onClick.GetPersistentEventCount(); ++j)
@@ -260,7 +261,7 @@ namespace Jotunn.GUI
                     {
                         try
                         {
-                            modSettingsButton.StartCoroutine(CreateWindow());
+                            modSettingsButton.StartCoroutine(CreateWindow(menuList));
                             //CreateWindow();
                         }
                         catch (Exception ex)
@@ -269,6 +270,8 @@ namespace Jotunn.GUI
                             Logger.LogWarning($"Exception caught while creating the Mod Settings window: {ex}");
                         }
                     });
+                    mainMenuButtons.Add(modSettingsButton);
+
                     Transform left = modSettings.Find("LeftKnot");
                     if (left != null)
                     {
@@ -279,6 +282,7 @@ namespace Jotunn.GUI
                     {
                         right.localPosition = new Vector2(right.localPosition.x + 10f, right.localPosition.y);
                     }
+                    
                     settingsFound = true;
                 }
                 else if (settingsFound)
@@ -288,15 +292,20 @@ namespace Jotunn.GUI
                         rectTransform.anchoredPosition.y - 40);
                 }
             }
+
+            if (FejdStartup.instance != null)
+            {
+                FejdStartup.instance.m_menuButtons = mainMenuButtons.ToArray();
+            }
         }
 
         /// <summary>
         ///     Create custom configuration window
         /// </summary>
-        private static IEnumerator CreateWindow()
+        private static IEnumerator CreateWindow(Transform menuList)
         {
             // Create settings window
-            SettingsRoot = Object.Instantiate(SettingsPrefab, MenuList.parent);
+            SettingsRoot = Object.Instantiate(SettingsPrefab, menuList.parent);
             SettingsRoot.SetActive(false);
 
             if (Menu.instance)
