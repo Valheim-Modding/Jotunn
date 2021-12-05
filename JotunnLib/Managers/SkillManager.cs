@@ -17,15 +17,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Global singleton instance of the manager.
         /// </summary>
-        public static SkillManager Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new SkillManager();
-                return _instance;
-            }
-        }
-        
+        public static SkillManager Instance => _instance ??= new SkillManager();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>

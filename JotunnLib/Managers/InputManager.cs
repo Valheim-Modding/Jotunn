@@ -185,15 +185,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Singleton instance
         /// </summary>
-        public static InputManager Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new InputManager();
-                return _instance;
-            }
-        }
-        
+        public static InputManager Instance => _instance ??= new InputManager();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>

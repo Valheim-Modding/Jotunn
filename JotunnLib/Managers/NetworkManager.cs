@@ -14,18 +14,12 @@ namespace Jotunn.Managers
     /// </summary>
     public class NetworkManager : IManager
     {
+        private static NetworkManager _instance;
         /// <summary>
         ///     Singleton instance
         /// </summary>
-        public static NetworkManager Instance
-        {
-            get
-            {
-                return _instance ??= new NetworkManager();
-            }
-        }
-        private static NetworkManager _instance;
-        
+        public static NetworkManager Instance => _instance ??= new NetworkManager();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>

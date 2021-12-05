@@ -4,6 +4,8 @@
 * Reworked the mod settings menu completely using Unity, it should be much faster now and also removed some oddities from using a vanilla Settings clone before
 * Added some RectTransform extensions for world positioning and overlapping
 * Fixed NRE while resolving mock references for null enumerables
+* Updated the asset creation guide to reflect Valheim's recent updates (https://valheim-modding.github.io/Jotunn/tutorials/asset-creation.html)
+* Reworked the Asset Mocking tutorial completely (https://valheim-modding.github.io/Jotunn/tutorials/asset-mocking.html)
 
 ## Version 2.4.1
 * Fixed compatibility of RenderManager by not destroying Components any more (RRR for example)

@@ -25,14 +25,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Singleton instance
         /// </summary>
-        public static GUIManager Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new GUIManager();
-                return _instance;
-            }
-        }
+        public static GUIManager Instance => _instance ??= new GUIManager();
 
         /// <summary>
         ///     Hide .ctor

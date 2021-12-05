@@ -19,15 +19,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static PrefabManager Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new PrefabManager();
-                return _instance;
-            }
-        }
-        
+        public static PrefabManager Instance => _instance ??= new PrefabManager();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>

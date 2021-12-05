@@ -429,6 +429,7 @@
     <NeutralLanguage>en</NeutralLanguage>
     <AssemblyName>Jotunn</AssemblyName>
     <RootNamespace>Jotunn</RootNamespace>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
