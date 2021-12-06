@@ -132,4 +132,7 @@ After Jötunn has added all custom Localization to Valheim's own Localization di
 Some content added by Jötunn can be translated. The fallback english translation is provided by Jötunn itself. But you can add translations for other languages using this tokens:
 
 * jotunn_modsettings: Menu entry to access the [mod settings](config.md) dialogue.
+* jotunn_modsettings_cancel: "Cancel" button label on the [mod settings](config.md) dialogue.
+* jotunn_modsettings_ok: "OK" button label on the [mod settings](config.md) dialogue.
+* jotunn_keybind: Label for the key binding panel of the [mod settings](config.md) dialogue.
 * jotunn_cat_\<category\>: [Custom category](pieces.md#adding-custom-piece-table-categories-to-vanilla-tables) localization, replace \<category\> with the lower case name of your added category (e.g. jotunn_cat_mycat).
