@@ -18,7 +18,8 @@ namespace Jotunn.GUI
         public Button CancelButton;
         public Button OKButton;
 
-        public GameObject BindDialogue;
+        public GameObject BindDialog;
+        public KeyBindCheck CurrentKeyBindCheck;
 
         public readonly Dictionary<string, ModSettingPlugin> Plugins = new Dictionary<string, ModSettingPlugin>();
         public readonly List<ModSettingConfig> Configs = new List<ModSettingConfig>();
@@ -87,8 +88,6 @@ namespace Jotunn.GUI
             {
                 CurrentPluginButton.GetComponentInChildren<Text>().text = currentPlugin.GetComponentInChildren<Text>().text;
                 CurrentPluginButton.onClick = currentPlugin.onClick;
-                // CurrentPluginButton.onClick.RemoveAllListeners();
-                // CurrentPluginButton.onClick.AddListener(() => currentPlugin.GetComponentInParent<ModSettingPlugin>().Toggle());
             }
         }
 
@@ -109,18 +108,21 @@ namespace Jotunn.GUI
 
             return (int)recta.y == (int)rectb.y || (recta.y + recta.height > rectb.y && recta.y < rectb.y);
         }
+        
+        public delegate bool KeyBindCheck();
 
-        public void OpenBindDialogue(string keyName)
+        public void OpenBindDialog(string keyName, KeyBindCheck keyBindCheck)
         {
             ZInput.instance.StartBindKey(keyName);
-            BindDialogue.SetActive(true);
+            CurrentKeyBindCheck = keyBindCheck;
+            BindDialog.SetActive(true);
         }
-
+        
         private void Update()
         {
-            if (BindDialogue.activeSelf && ZInput.instance.EndBindKey())
+            if (BindDialog.activeSelf && CurrentKeyBindCheck.Invoke())
             {
-                BindDialogue.SetActive(false);
+                BindDialog.SetActive(false);
             }
         }
 

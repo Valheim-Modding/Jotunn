@@ -4003,7 +4003,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6581290783100052960}
   m_Layer: 5
-  m_Name: BindDialogue
+  m_Name: BindDialog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5499,7 +5499,7 @@ MonoBehaviour:
   CurrentPluginButton: {fileID: 6259938077158177517}
   CancelButton: {fileID: 1631283510778472628}
   OKButton: {fileID: 1096837659965622789}
-  BindDialogue: {fileID: 7273607270308778133}
+  BindDialog: {fileID: 7273607270308778133}
 --- !u!225 &1312038477835846833
 CanvasGroup:
   m_ObjectHideFlags: 0

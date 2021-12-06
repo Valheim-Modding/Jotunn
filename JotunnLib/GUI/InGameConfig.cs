@@ -103,12 +103,12 @@ namespace Jotunn.GUI
             GUIManager.Instance.ApplyButtonStyle(settings.OKButton);
             settings.OKButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(OKToken);
 
-            var keybindPanel = settings.BindDialogue.GetComponentInChildren<Image>(true);
+            var keybindPanel = settings.BindDialog.GetComponentInChildren<Image>(true);
             keybindPanel.sprite = GUIManager.Instance.GetSprite("woodpanel_password");
             keybindPanel.type = Image.Type.Sliced;
             keybindPanel.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
 
-            var keybindText = settings.BindDialogue.GetComponentInChildren<Text>(true);
+            var keybindText = settings.BindDialog.GetComponentInChildren<Text>(true);
             GUIManager.Instance.ApplyTextStyle(keybindText, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 20);
             keybindText.text = LocalizationManager.Instance.TryTranslate(KeybindToken);
 
@@ -403,8 +403,7 @@ namespace Jotunn.GUI
                             var conf = go.AddComponent<ConfigBoundString>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
-                        else if (entry.Value.SettingType == typeof(KeyCode) &&
-                                 ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
+                        else if (entry.Value.SettingType == typeof(KeyCode))
                         {
                             var conf = go.AddComponent<ConfigBoundKeyCode>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
@@ -416,8 +415,7 @@ namespace Jotunn.GUI
                                     entry.Value.GetButtonConfig().GamepadConfig);
                             }
                         }
-                        else if (entry.Value.SettingType == typeof(KeyboardShortcut) &&
-                                 ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
+                        else if (entry.Value.SettingType == typeof(KeyboardShortcut))
                         {
                             var conf = go.AddComponent<ConfigBoundKeyboardShortcut>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
@@ -426,6 +424,10 @@ namespace Jotunn.GUI
                         {
                             var conf = go.AddComponent<ConfigBoundColor>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                        }
+                        else
+                        {
+
                         }
                     }
                 }
@@ -897,20 +899,21 @@ namespace Jotunn.GUI
                 var buttonName = Entry.GetBoundButtonName();
                 Config.Button.onClick.AddListener(() =>
                 {
-                    SettingsRoot.GetComponent<ModSettings>().OpenBindDialogue(buttonName);
-                    On.ZInput.EndBindKey += ZInput_EndBindKey;
+                    SettingsRoot.GetComponent<ModSettings>().OpenBindDialog(buttonName, KeyBindCheck);
                 });
             }
 
-            private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
+            private bool KeyBindCheck()
             {
                 foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
                 {
                     if (Input.GetKeyDown(key))
                     {
                         SetValue(key);
-                        ZInput.m_binding.m_key = key;
-                        On.ZInput.EndBindKey -= ZInput_EndBindKey;
+                        if (ZInput.m_binding != null)
+                        {
+                            ZInput.m_binding.m_key = key;
+                        }
                         return true;
                     }
                 }
@@ -960,20 +963,21 @@ namespace Jotunn.GUI
                 var buttonName = Entry.GetBoundButtonName();
                 Config.Button.onClick.AddListener(() =>
                 {
-                    SettingsRoot.GetComponent<ModSettings>().OpenBindDialogue(buttonName);
-                    On.ZInput.EndBindKey += ZInput_EndBindKey;
+                    SettingsRoot.GetComponent<ModSettings>().OpenBindDialog(buttonName, KeyBindCheck);
                 });
             }
 
-            private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
+            private bool KeyBindCheck()
             {
                 foreach (var key in KeysToCheck)
                 {
                     if (Input.GetKeyUp(key))
                     {
                         SetValue(new KeyboardShortcut(key, KeysToCheck.Where(Input.GetKey).ToArray()));
-                        ZInput.m_binding.m_key = key;
-                        On.ZInput.EndBindKey -= ZInput_EndBindKey;
+                        if (ZInput.m_binding != null)
+                        {
+                            ZInput.m_binding.m_key = key;
+                        }
                         return true;
                     }
                 }

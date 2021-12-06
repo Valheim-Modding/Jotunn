@@ -50,9 +50,6 @@ private void CreateConfigValues()
 
 To actually register your custom inputs to the game, instantiate all [ButtonConfig's](xref:Jotunn.Configs.ButtonConfig) and add them to Jötunn's [InputManager](xref:Jotunn.Managers.InputManager). Note that the configuration backed button uses the reference to the ConfigEntry member instead of directly assigning a KeyCode value.
 
-> [!NOTE]
-> For configurable buttons it is mandatory to add a ButtonConfig to the InputManager in order to be able to use the key binding feature in the mod settings.
-
 ```cs
 // Add custom key bindings
 private void AddInputs()

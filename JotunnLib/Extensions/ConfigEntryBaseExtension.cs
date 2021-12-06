@@ -92,36 +92,7 @@ namespace Jotunn
                 cma.LocalValue = value; 
             }
         }
-
-        /// <summary>
-        ///     Check, if button is bound to a configuration entry
-        /// </summary>
-        /// <param name="configurationEntry"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        internal static bool IsButtonBound(this ConfigEntryBase configurationEntry)
-        {
-            if (configurationEntry == null)
-            {
-                throw new ArgumentNullException(nameof(configurationEntry));
-            }
-
-            if (configurationEntry.SettingType != typeof(KeyCode) &&
-                configurationEntry.SettingType != typeof(KeyboardShortcut) &&
-                configurationEntry.SettingType != typeof(InputManager.GamepadButton))
-            {
-                return false;
-            }
-
-            InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig);
-            if (buttonConfig != null)
-            {
-                return !string.IsNullOrEmpty(buttonConfig.Name);
-            }
-
-            return false;
-        }
-
+        
         /// <summary>
         ///     Get bound button's name
         /// </summary>
@@ -142,14 +113,11 @@ namespace Jotunn
                 return null;
             }
 
-            InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig);
-            if (buttonConfig != null)
-            {
-                //return buttonConfig.Name.Split('!')[0];
-                return buttonConfig.Name;
-            }
+            return InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig)
+                ? buttonConfig.Name
+                : null;
 
-            return configurationEntry.Definition.Key;
+            //return configurationEntry.Definition.Key;
         }
 
 
