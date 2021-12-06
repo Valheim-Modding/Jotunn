@@ -471,81 +471,29 @@ namespace Jotunn.GUI
             var settings = SettingsRoot.GetComponent<ModSettings>();
 
             // Iterate over all configs
-            foreach (var config in settings.Configs)
+            foreach (var comp in settings.Configs.SelectMany(config => config.GetComponents<MonoBehaviour>()
+                         .Where(x => x.GetType().HasImplementedRawGeneric(typeof(ConfigBound<>)))))
             {
-                var childBoolean = config.GetComponent<ConfigBoundBoolean>();
-                if (childBoolean != null)
-                {
-                    childBoolean.WriteBack();
-                    continue;
-                }
-
-                var childInt = config.GetComponent<ConfigBoundInt>();
-                if (childInt != null)
-                {
-                    childInt.WriteBack();
-                    continue;
-                }
-
-                var childFloat = config.GetComponent<ConfigBoundFloat>();
-                if (childFloat != null)
-                {
-                    childFloat.WriteBack();
-                    continue;
-                }
-
-                var childDouble = config.GetComponent<ConfigBoundDouble>();
-                if (childDouble != null)
-                {
-                    childDouble.WriteBack();
-                    continue;
-                }
-
-                var childKeyCode = config.GetComponent<ConfigBoundKeyCode>();
-                if (childKeyCode != null)
-                {
-                    childKeyCode.WriteBack();
-                    var childGamepadButton = config.GetComponentInChildren<ConfigBoundGamepadButton>();
-                    if (childGamepadButton != null)
-                    {
-                        childGamepadButton.WriteBack();
-                    }
-                    continue;
-                }
-
-                var childShortcut = config.GetComponent<ConfigBoundKeyboardShortcut>();
-                if (childShortcut != null)
-                {
-                    childShortcut.WriteBack();
-                    continue;
-                }
-
-                var childString = config.GetComponent<ConfigBoundString>();
-                if (childString != null)
-                {
-                    childString.WriteBack();
-                    continue;
-                }
-
-                var childColor = config.GetComponent<ConfigBoundColor>();
-                if (childColor != null)
-                {
-                    childColor.WriteBack();
-                    continue;
-                }
+                ((IConfigBound) comp).WriteBack();
             }
 
             // Sync changed config
             SynchronizationManager.Instance.SynchronizeChangedConfig();
         }
-
-        // Helper classes 
+        
+        /// <summary>
+        ///     Interface for the generic config bind class used in <see cref="SaveConfiguration"/>
+        /// </summary>
+        internal interface IConfigBound
+        {
+            public void WriteBack();
+        }
 
         /// <summary>
         ///     Generic abstract version of the config binding class
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        internal abstract class ConfigBound<T> : MonoBehaviour
+        internal abstract class ConfigBound<T> : MonoBehaviour, IConfigBound
         {
             public ModSettingConfig Config { get; set; }
 
@@ -1193,7 +1141,7 @@ namespace Jotunn.GUI
             {
                 if (!(float.TryParse(Config.Vector2InputX.text, NumberStyles.Number,
                         CultureInfo.CurrentCulture.NumberFormat, out var tempX) && 
-                      float.TryParse(Config.Vector2InputX.text, NumberStyles.Number,
+                      float.TryParse(Config.Vector2InputY.text, NumberStyles.Number,
                         CultureInfo.CurrentCulture.NumberFormat, out var tempY)))
                 {
                     return Default;
