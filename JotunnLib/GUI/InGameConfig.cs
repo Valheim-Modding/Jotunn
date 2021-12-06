@@ -163,12 +163,14 @@ namespace Jotunn.GUI
                 settings.CancelButton.onClick.AddListener(() =>
                 {
                     try { ColorPicker.Cancel(); } catch (Exception) { }
+                    ZInput.instance.Load();
                     Destroy(gameObject);
                 });
 
                 settings.OKButton.onClick.AddListener(() =>
                 {
                     try { ColorPicker.Done(); } catch (Exception) { }
+                    ZInput.instance.Save();
                     SaveConfiguration();
                     Destroy(gameObject);
 
