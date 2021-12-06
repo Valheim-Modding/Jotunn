@@ -471,16 +471,17 @@ namespace Jotunn.GUI
             var settings = SettingsRoot.GetComponent<ModSettings>();
 
             // Iterate over all configs
-            foreach (var comp in settings.Configs.SelectMany(config => config.GetComponents<MonoBehaviour>()
+            foreach (var comp in settings.Configs
+                         .SelectMany(config => config.GetComponents<MonoBehaviour>()
                          .Where(x => x.GetType().HasImplementedRawGeneric(typeof(ConfigBound<>)))))
             {
-                ((IConfigBound) comp).WriteBack();
+                ((IConfigBound)comp).WriteBack();
             }
 
             // Sync changed config
             SynchronizationManager.Instance.SynchronizeChangedConfig();
         }
-        
+
         /// <summary>
         ///     Interface for the generic config bind class used in <see cref="SaveConfiguration"/>
         /// </summary>
@@ -1126,7 +1127,7 @@ namespace Jotunn.GUI
                 throw new ArgumentException($"'{str}' is no valid color value");
             }
         }
-    
+
         /// <summary>
         ///     Vector2 binding
         /// </summary>
@@ -1140,7 +1141,7 @@ namespace Jotunn.GUI
             public override Vector2 GetValue()
             {
                 if (!(float.TryParse(Config.Vector2InputX.text, NumberStyles.Number,
-                        CultureInfo.CurrentCulture.NumberFormat, out var tempX) && 
+                        CultureInfo.CurrentCulture.NumberFormat, out var tempX) &&
                       float.TryParse(Config.Vector2InputY.text, NumberStyles.Number,
                         CultureInfo.CurrentCulture.NumberFormat, out var tempY)))
                 {
