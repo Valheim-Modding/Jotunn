@@ -51,7 +51,7 @@ namespace Jotunn.DebugUtils
                     "Position of the DebugInfo panel, starting at the lower left corner.");
 
             Position.SettingChanged +=
-                (sender, eventArgs) => Panel.SetPosition(Position.Value);
+                (sender, eventArgs) => Panel?.SetPosition(Position.Value);
             
             On.Hud.Awake += Hud_Awake;
         }
