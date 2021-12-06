@@ -2,6 +2,8 @@
 
 ## Version 2.4.2
 * Reworked the mod settings menu completely using Unity, it should be much faster now and also removed some oddities from using a vanilla Settings clone before
+* Added support for Vector2 and generic enums in mod settings
+* Removed necessity for key binds backed by a config to also have a button registered in ZInput to show up in the mod settings
 * Added some RectTransform extensions for world positioning and overlapping
 * Fixed NRE while resolving mock references for null enumerables
 * Fixed the naming of location containers in ZoneManager
