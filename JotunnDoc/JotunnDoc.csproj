@@ -380,6 +380,7 @@
     <Compile Include="Docs\RecipeDoc.cs" />
     <Compile Include="Docs\ItemDoc.cs" />
     <Compile Include="Docs\PrefabDoc.cs" />
+    <Compile Include="Docs\CharacterDoc.cs" />
     <Compile Include="JotunnDoc.cs" />
     <Compile Include="Patches\ZRoutedRpcPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

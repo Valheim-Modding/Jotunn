@@ -20,15 +20,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static ItemManager Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new ItemManager();
-                return _instance;
-            }
-        }
-        
+        public static ItemManager Instance => _instance ??= new ItemManager();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>

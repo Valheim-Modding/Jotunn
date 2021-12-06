@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using Jotunn.Managers;
@@ -31,7 +32,7 @@ namespace JotunnDoc.Docs
 
             foreach (var pair in pieceTables)
             {
-                foreach (GameObject obj in pair.Value.m_pieces)
+                foreach (GameObject obj in pair.Value.m_pieces.Where(x => PieceManager.Instance.GetPiece(x.name) == null))
                 {
                     Piece piece = obj.GetComponent<Piece>();
 

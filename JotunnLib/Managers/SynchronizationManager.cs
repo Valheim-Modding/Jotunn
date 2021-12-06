@@ -40,15 +40,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Singleton instance
         /// </summary>
-        public static SynchronizationManager Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new SynchronizationManager();
-                return _instance;
-            }
-        }
-        
+        public static SynchronizationManager Instance => _instance ??= new SynchronizationManager();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq; 
+using System.Linq;
 using Jotunn.Entities;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -17,23 +17,12 @@ namespace Jotunn.Managers
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static ZoneManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ZoneManager();
-                }
+        public static ZoneManager Instance => _instance ??= new ZoneManager();
 
-                return _instance;
-            }
-        }
-        
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private ZoneManager() {}
+        private ZoneManager() { }
 
         /// <summary>
         ///     Event that gets fired after the vanilla locations are in memory and available for cloning or editing.
@@ -63,45 +52,6 @@ namespace Jotunn.Managers
             On.ZoneSystem.SetupLocations += ZoneSystem_SetupLocations;
         }
 
-        private void ZoneSystem_SetupLocations(On.ZoneSystem.orig_SetupLocations orig, ZoneSystem self)
-        {
-
-            orig(self);
-
-            OnVanillaLocationsAvailable.SafeInvoke();
-
-
-            Logger.LogInfo("Injecting custom locations");
-            foreach (CustomLocation customLocation in Locations.Values)
-            {
-                Logger.LogInfo($"Adding custom location {customLocation.Prefab.name} in {string.Join(", ", GetMatchingBiomes(customLocation.ZoneLocation.m_biome))}");
-
-                var zoneLocation = customLocation.ZoneLocation;
-                self.m_locations.Add(zoneLocation);
-
-                zoneLocation.m_prefab = customLocation.Prefab;
-                zoneLocation.m_hash = zoneLocation.m_prefab.name.GetStableHashCode();
-                Location location = customLocation.Location;
-                zoneLocation.m_location = location;
-                if (Application.isPlaying)
-                {
-                    ZoneSystem.PrepareNetViews(zoneLocation.m_prefab, zoneLocation.m_netViews);
-                    ZoneSystem.PrepareRandomSpawns(zoneLocation.m_prefab, zoneLocation.m_randomSpawns);
-                    if (!self.m_locationsByHash.ContainsKey(zoneLocation.m_hash))
-                    {
-                        self.m_locationsByHash.Add(zoneLocation.m_hash, zoneLocation);
-                    }
-                }
-            }
-
-            Logger.LogInfo("Injecting custom vegetation");
-            foreach (CustomVegetation customVegetation in Vegetations.Values)
-            {
-                Logger.LogInfo($"Adding custom vegetation {customVegetation.Prefab.name} in {string.Join(", ", GetMatchingBiomes(customVegetation.Vegetation.m_biome))}");
-                self.m_vegetation.Add(customVegetation.Vegetation);
-            }
-        }
-
         /// <summary>
         ///     Return a <see cref="Heightmap.Biome"/> that matches any of the provided Biomes
         /// </summary>
@@ -115,7 +65,7 @@ namespace Jotunn.Managers
                 result |= biome;
             }
             return result;
-        } 
+        }
 
         /// <summary>
         ///     Returns a list of all <see cref="Heightmap.Biome"/> that match <paramref name="biome"/>
@@ -124,7 +74,7 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public static List<Heightmap.Biome> GetMatchingBiomes(Heightmap.Biome biome)
         {
-            List<Heightmap.Biome> biomes = new List<Heightmap.Biome>(); 
+            List<Heightmap.Biome> biomes = new List<Heightmap.Biome>();
             foreach (Heightmap.Biome area in Enum.GetValues(typeof(Heightmap.Biome)))
             {
                 if (area == Heightmap.Biome.BiomesMax || (biome & area) == 0)
@@ -136,8 +86,33 @@ namespace Jotunn.Managers
             }
             return biomes;
         }
-
 #pragma warning restore S3265 // Non-flags enums should not be used in bitwise operations
+
+        /// <summary>
+        ///     Register a CustomLocation to be added to the ZoneSystem
+        /// </summary>
+        /// <param name="customLocation"></param>
+        /// <returns></returns>
+        public bool AddCustomLocation(CustomLocation customLocation)
+        {
+            if (Locations.TryGetValue(customLocation.Name, out CustomLocation existingLocation))
+            {
+                Logger.LogWarning($"Location {customLocation.Name} already exists");
+                return false;
+            }
+
+            customLocation.Prefab.transform.SetParent(LocationContainer.transform);
+            foreach (var zNetView in customLocation.ZoneLocation.m_netViews)
+            {
+                if (!PrefabManager.Instance.Prefabs.ContainsKey(zNetView.gameObject.name.GetStableHashCode()))
+                {
+                    PrefabManager.Instance.AddPrefab(zNetView.gameObject);
+                }
+            }
+
+            Locations.Add(customLocation.Name, customLocation);
+            return true;
+        }
 
         /// <summary>
         ///     Get a ZoneLocation by its name.<br /><br />
@@ -191,10 +166,10 @@ namespace Jotunn.Managers
             {
                 locationContainer.FixReferences(true);
             }
-            
+
             return locationContainer;
         }
-          
+
         /// <summary>
         ///     Create a CustomLocation that is a deep copy of the original.
         ///     Changes will not affect the original. The CustomLocation is already registered to be added.
@@ -210,32 +185,6 @@ namespace Jotunn.Managers
             var clonedLocation = new CustomLocation(copiedPrefab, new Configs.LocationConfig(baseZoneLocation));
             AddCustomLocation(clonedLocation);
             return clonedLocation;
-        }
-
-        /// <summary>
-        ///     Register a CustomLocation to be added to the ZoneSystem
-        /// </summary>
-        /// <param name="customLocation"></param>
-        /// <returns></returns>
-        public bool AddCustomLocation(CustomLocation customLocation)
-        {
-            if (Locations.TryGetValue(customLocation.Name, out CustomLocation existingLocation))
-            {
-                Logger.LogWarning($"Location {customLocation.Name} already exists");
-                return false;
-            }
-
-            customLocation.Prefab.transform.SetParent(LocationContainer.transform); 
-            foreach(var zNetView in customLocation.ZoneLocation.m_netViews)
-            { 
-                if (!PrefabManager.Instance.Prefabs.ContainsKey(zNetView.gameObject.name.GetStableHashCode()))
-                {
-                    PrefabManager.Instance.AddPrefab(zNetView.gameObject);
-                }
-            }
-
-            Locations.Add(customLocation.Name, customLocation);
-            return true;
         }
 
         /// <summary>
@@ -272,6 +221,89 @@ namespace Jotunn.Managers
             return ZoneSystem.instance.m_vegetation
                 .DefaultIfEmpty(null)
                 .FirstOrDefault(zv => zv.m_prefab && zv.m_prefab.name == name);
+        }
+
+        private void ZoneSystem_SetupLocations(On.ZoneSystem.orig_SetupLocations orig, ZoneSystem self)
+        {
+            orig(self);
+
+            InvokeOnVanillaLocationsAvailable();
+
+            if (Locations.Count > 0)
+            {
+                List<string> toDelete = new List<string>();
+
+                Logger.LogInfo($"Injecting {Locations.Count} custom locations");
+                foreach (CustomLocation customLocation in Locations.Values)
+                {
+                    try
+                    {
+                        Logger.LogDebug(
+                            $"Adding custom location {customLocation.Prefab.name} in {string.Join(", ", GetMatchingBiomes(customLocation.ZoneLocation.m_biome))}");
+
+                        var zoneLocation = customLocation.ZoneLocation;
+                        self.m_locations.Add(zoneLocation);
+
+                        zoneLocation.m_prefab = customLocation.Prefab;
+                        zoneLocation.m_hash = zoneLocation.m_prefab.name.GetStableHashCode();
+                        Location location = customLocation.Location;
+                        zoneLocation.m_location = location;
+                        if (Application.isPlaying)
+                        {
+                            ZoneSystem.PrepareNetViews(zoneLocation.m_prefab, zoneLocation.m_netViews);
+                            ZoneSystem.PrepareRandomSpawns(zoneLocation.m_prefab, zoneLocation.m_randomSpawns);
+                            if (!self.m_locationsByHash.ContainsKey(zoneLocation.m_hash))
+                            {
+                                self.m_locationsByHash.Add(zoneLocation.m_hash, zoneLocation);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning($"Exception caught while adding location: {ex}");
+                        toDelete.Add(customLocation.Name);
+                    }
+                }
+
+                foreach (var name in toDelete)
+                {
+                    Locations.Remove(name);
+                }
+            }
+
+            if (Vegetations.Count > 0)
+            {
+                List<string> toDelete = new List<string>();
+
+                Logger.LogInfo($"Injecting {Vegetations.Count} custom vegetation");
+                foreach (CustomVegetation customVegetation in Vegetations.Values)
+                {
+                    try
+                    {
+                        Logger.LogDebug(
+                            $"Adding custom vegetation {customVegetation.Prefab.name} in {string.Join(", ", GetMatchingBiomes(customVegetation.Vegetation.m_biome))}");
+                        self.m_vegetation.Add(customVegetation.Vegetation);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning($"Exception caught while adding vegetation: {ex}");
+                        toDelete.Add(customVegetation.Name);
+                    }
+                }
+
+                foreach (var name in toDelete)
+                {
+                    Vegetations.Remove(name);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Safely invoke OnVanillaLocationsAvailable
+        /// </summary>
+        private static void InvokeOnVanillaLocationsAvailable()
+        {
+            OnVanillaLocationsAvailable?.SafeInvoke();
         }
     }
 }

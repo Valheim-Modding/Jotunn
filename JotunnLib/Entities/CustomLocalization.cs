@@ -70,13 +70,13 @@ namespace Jotunn.Entities
         /// <summary> Checks if a translation exists for given language and token. </summary>
         /// <param name="language"> Language being checked. </param>
         /// <param name="token"> Token being checked. </param>
-        /// <returns> The translation. </returns>
+        /// <returns> True if the token was found. </returns>
         public bool Contains(in string language, in string token)
         {
             var cleanedToken = token.TrimStart(LocalizationManager.TokenFirstChar);
             if (Map.TryGetValue(language, out var translations))
             {
-                return translations.ContainsValue(cleanedToken);
+                return translations.ContainsKey(cleanedToken);
             }
             return false;
         }
