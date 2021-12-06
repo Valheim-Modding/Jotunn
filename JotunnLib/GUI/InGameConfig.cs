@@ -15,7 +15,6 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -1194,7 +1193,7 @@ namespace Jotunn.GUI
                 Config.Vector2InputY.textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
-    
+
         /// <summary>
         ///     GamepadButton binding
         /// </summary>
@@ -1218,7 +1217,7 @@ namespace Jotunn.GUI
                         x.text.Equals(Enum.GetName(Entry.SettingType, value))));
                 Config.Dropdown.RefreshShownValue();
             }
-            
+
             public override void SetEnabled(bool enabled)
             {
                 Config.Dropdown.enabled = enabled;

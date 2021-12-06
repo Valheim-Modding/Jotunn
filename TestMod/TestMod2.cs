@@ -25,7 +25,7 @@ namespace TestMod
         private const string ModVersion = "0.1.0";
         private const string JotunnTestModConfigSection = "JotunnTest2";
         private const string OrderConfigSection = "Order Test";
-        
+
         private enum TestEnum
         {
             One, Two, Three
@@ -53,11 +53,11 @@ namespace TestMod
             Config.Bind(OrderConfigSection, "Order 1", string.Empty,
                 new ConfigDescription("Should be first", null,
                     new ConfigurationManagerAttributes() { Order = 1 }));
-            
+
             Config.Bind(OrderConfigSection, "Order 2", string.Empty,
                 new ConfigDescription("Should be second", null,
                     new ConfigurationManagerAttributes() { Order = 2 }));
-            
+
             Config.Bind(OrderConfigSection, "Order 3", string.Empty,
                 new ConfigDescription("Should be last", null,
                     new ConfigurationManagerAttributes() { Order = 3 }));

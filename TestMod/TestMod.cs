@@ -70,7 +70,7 @@ namespace TestMod
             // Create a custom Localization and add it to the Manager
             Localization = new CustomLocalization();
             LocalizationManager.Instance.AddLocalization(Localization);
-            
+
             // Create stuff
             CreateConfigValues();
             LoadAssets();
@@ -1349,7 +1349,7 @@ namespace TestMod
                 var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
 
                 //Create location from AssetBundle
-                var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true); 
+                var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true);
                 ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubeArchLocation, new LocationConfig
                 {
                     Biome = Heightmap.Biome.BlackForest,
