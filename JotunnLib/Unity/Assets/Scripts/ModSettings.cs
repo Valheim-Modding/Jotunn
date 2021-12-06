@@ -113,7 +113,7 @@ namespace Jotunn.GUI
 
         public void OpenBindDialog(string keyName, KeyBindCheck keyBindCheck)
         {
-            ZInput.instance.StartBindKey(keyName);
+            ZInput.instance.StartBindKey(keyName ?? string.Empty);
             CurrentKeyBindCheck = keyBindCheck;
             BindDialog.SetActive(true);
         }
