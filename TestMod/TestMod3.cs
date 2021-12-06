@@ -59,8 +59,10 @@ namespace TestMod3
             CommandManager.Instance.AddConsoleCommand(new CHCommands_pinsflat());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_ree());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_reemain());
+            CommandManager.Instance.AddConsoleCommand(new CHCommands_rogueMod());
+            CommandManager.Instance.AddConsoleCommand(new CHCommands_rogueMod2());
             // CommandManager.Instance.AddConsoleCommand(new CHCommands_alpha()); // Not yet implemented.
-            
+
             MinimapManager.OnVanillaMapDataLoaded += MinimapManager_OnVanillaMapDataLoaded;
         }
         
@@ -484,6 +486,36 @@ namespace TestMod3
                     flattenoverlay.Enabled = true;
                     Console.instance.Print($"Setting overlay {flattenoverlay.Name} to {height}");
                 }
+            }
+        }
+
+
+        private class CHCommands_rogueMod : ConsoleCommand
+        {
+            public override string Name => "map.rogue";
+
+            public override string Help => "Emulate a rogue mod that directly edits vanilla textures";
+
+            public override void Run(string[] args)
+            {
+                DrawSquare(Minimap.instance.m_mapTexture, Vector2.zero, Color.red, 50);
+                Minimap.instance.m_mapTexture.Apply();
+                Jotunn.Logger.LogInfo("yes it is called");
+            }
+        }
+
+
+        private class CHCommands_rogueMod2 : ConsoleCommand
+        {
+            public override string Name => "map.rogue2";
+
+            public override string Help => "Emulate a rogue mod that directly edits vanilla textures";
+
+            public override void Run(string[] args)
+            {
+                DrawSquare(MinimapManager.Instance.MainTex, Vector2.zero, Color.red, 50);
+                Minimap.instance.m_mapTexture.Apply();
+                Jotunn.Logger.LogInfo("yes it is called");
             }
         }
 

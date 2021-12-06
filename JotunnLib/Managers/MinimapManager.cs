@@ -77,7 +77,7 @@ namespace Jotunn.Managers
 
         // Intermediate textures for the manager to draw on
         private Texture2D OverlayTex;
-        private Texture2D MainTex;
+        public Texture2D MainTex;
         private Texture2D HeightFilter;
         private Texture2D ForestFilter;
         private Texture2D FogFilter;
@@ -382,6 +382,11 @@ namespace Jotunn.Managers
         {
             OnVanillaMapDataLoaded?.SafeInvoke();
         }
+
+
+
+
+
 
         private void StartWatchdog()
         {
@@ -918,23 +923,24 @@ namespace Jotunn.Managers
             /// <param name="tex"></param>
             internal override void SetTextureDirty(Texture2D tex)
             {
-                if (tex.name != Name)
+                if(tex == Minimap.instance.m_mapTexture)
                 {
-                    return;
+                    Console.instance.Print("yes it is a map texutre");
                 }
-                if (tex == _mainTex)
+
+                if (tex == _mainTex || tex == Minimap.instance.m_mapTexture)
                 {
                     _mainDirty = true;
                 }
-                if (tex == _heightFilter)
+                if (tex == _heightFilter || tex == Minimap.instance.m_heightTexture)
                 {
                     _heightDirty = true;
                 }
-                if (tex == _forestFilter)
+                if (tex == _forestFilter || tex == Minimap.instance.m_forestMaskTexture)
                 {
                     _forestDirty = true;
                 }
-                if (tex == _fogFilter)
+                if (tex == _fogFilter || tex == Minimap.instance.m_fogTexture)
                 {
                     _fogDirty = true;
                 }
@@ -1026,6 +1032,7 @@ namespace Jotunn.Managers
         {
             private static void Postfix(Texture2D __instance)
             {
+
                 foreach (var overlay in Instance.Overlays.Values)
                 {
                     overlay.SetTextureDirty(__instance);
