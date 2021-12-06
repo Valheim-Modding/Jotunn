@@ -162,6 +162,7 @@ namespace Jotunn.Managers
         public GameObject CreateLocationContainer(GameObject gameObject, bool fixLocationReferences = false)
         {
             var locationContainer = Object.Instantiate(gameObject, LocationContainer.transform);
+            locationContainer.name = gameObject.name;
             if (fixLocationReferences)
             {
                 locationContainer.FixReferences(true);
