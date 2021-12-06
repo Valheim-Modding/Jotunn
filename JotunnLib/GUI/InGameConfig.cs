@@ -15,6 +15,7 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -383,36 +384,45 @@ namespace Jotunn.GUI
                         }
 
                         // Add new Config GO and add config bound component by type
-                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                            description, entryAttributes.DescriptionColor);
-
                         if (entry.Value.SettingType == typeof(bool))
                         {
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
                             var conf = go.AddComponent<ConfigBoundBoolean>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(int))
                         {
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
                             var conf = go.AddComponent<ConfigBoundInt>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(float))
                         {
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
                             var conf = go.AddComponent<ConfigBoundFloat>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(double))
                         {
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
                             var conf = go.AddComponent<ConfigBoundDouble>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(string))
                         {
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
                             var conf = go.AddComponent<ConfigBoundString>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(KeyCode))
                         {
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
                             var conf = go.AddComponent<ConfigBoundKeyCode>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
 
@@ -425,17 +435,30 @@ namespace Jotunn.GUI
                         }
                         else if (entry.Value.SettingType == typeof(KeyboardShortcut))
                         {
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
                             var conf = go.AddComponent<ConfigBoundKeyboardShortcut>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(Color))
                         {
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
                             var conf = go.AddComponent<ConfigBoundColor>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                         else if (entry.Value.SettingType == typeof(Vector2))
                         {
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
                             var conf = go.AddComponent<ConfigBoundVector2>();
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                        }
+                        else if (entry.Value.SettingType.IsEnum)
+                        {
+                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                                description, entryAttributes.DescriptionColor);
+                            var conf = go.AddComponent<ConfigBoundEnum>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                     }
@@ -500,7 +523,7 @@ namespace Jotunn.GUI
 
             public string ModGUID { get; set; }
 
-            public ConfigEntry<T> Entry { get; set; }
+            public ConfigEntryBase Entry { get; set; }
 
             public AcceptableValueBase Clamp { get; set; }
 
@@ -519,7 +542,7 @@ namespace Jotunn.GUI
 
             public void WriteBack()
             {
-                Entry.Value = Value;
+                Entry.BoxedValue = Value;
             }
 
             public void SetData(string modGuid, ConfigEntryBase entry)
@@ -527,7 +550,7 @@ namespace Jotunn.GUI
                 Config = gameObject.GetComponent<ModSettingConfig>();
 
                 ModGUID = modGuid;
-                Entry = entry as ConfigEntry<T>;
+                Entry = entry;
 
                 Register();
 
@@ -1169,6 +1192,42 @@ namespace Jotunn.GUI
                 Config.Vector2InputX.textComponent.color = readOnly ? Color.grey : Color.white;
                 Config.Vector2InputY.readOnly = readOnly;
                 Config.Vector2InputY.textComponent.color = readOnly ? Color.grey : Color.white;
+            }
+        }
+    
+        /// <summary>
+        ///     GamepadButton binding
+        /// </summary>
+        internal class ConfigBoundEnum : ConfigBound<Enum>
+        {
+            public override void Register()
+            {
+                Config.Dropdown.gameObject.SetActive(true);
+                Config.Dropdown.AddOptions(Enum.GetNames(Entry.SettingType).ToList());
+            }
+
+            public override Enum GetValue()
+            {
+                return (Enum)Enum.Parse(Entry.SettingType, Config.Dropdown.options[Config.Dropdown.value].text);
+            }
+
+            public override void SetValue(Enum value)
+            {
+                Config.Dropdown.value = Config.Dropdown.options
+                    .IndexOf(Config.Dropdown.options.FirstOrDefault(x =>
+                        x.text.Equals(Enum.GetName(Entry.SettingType, value))));
+                Config.Dropdown.RefreshShownValue();
+            }
+            
+            public override void SetEnabled(bool enabled)
+            {
+                Config.Dropdown.enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                Config.Dropdown.enabled = !readOnly;
+                Config.Dropdown.itemText.color = readOnly ? Color.grey : Color.white;
             }
         }
     }

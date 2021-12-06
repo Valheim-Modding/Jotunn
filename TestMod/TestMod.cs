@@ -554,7 +554,6 @@ namespace TestMod
                 new ConfigDescription("Key to unleash evil with the Evil Sword"));
             EvilSwordGamepadConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttackGamepad", InputManager.GamepadButton.ButtonSouth,
                 new ConfigDescription("Button to unleash evil with the Evil Sword"));
-
         }
 
         // React on changed settings

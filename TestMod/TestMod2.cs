@@ -25,6 +25,18 @@ namespace TestMod
         private const string ModVersion = "0.1.0";
         private const string JotunnTestModConfigSection = "JotunnTest2";
         private const string OrderConfigSection = "Order Test";
+        
+        private enum TestEnum
+        {
+            One, Two, Three
+        }
+        private ConfigEntry<TestEnum> TestEnumConfig;
+
+        private enum AnotherTestEnum
+        {
+            LUL, WAT, WUT
+        }
+        private ConfigEntry<AnotherTestEnum> AnotherTestEnumConfig;
 
         public void Awake()
         {
@@ -53,6 +65,10 @@ namespace TestMod
             Config.Bind(OrderConfigSection, "Order undefined aaa", string.Empty, "Should be ordered by name at the end");
 
             Config.Bind(OrderConfigSection, "Order undefined zzz", string.Empty, "Should be ordered by name at the end");
+
+            // Test enums
+            TestEnumConfig = Config.Bind(JotunnTestModConfigSection, "Enum test", TestEnum.One, "Testing enum shizzle");
+            AnotherTestEnumConfig = Config.Bind(JotunnTestModConfigSection, "Enum test, again?", AnotherTestEnum.LUL, "Testing enum lulzies");
 
             PrefabManager.OnVanillaPrefabsAvailable += CreateStuff;
         }
