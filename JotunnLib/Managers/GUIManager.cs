@@ -1223,10 +1223,13 @@ namespace Jotunn.Managers
 
             // Image
             Image image = go.GetOrAddComponent<Image>();
-            image.sprite = GetSprite("button");
-            image.type = Image.Type.Sliced;
-            image.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-            button.image = image;
+            if (image)
+            {
+                image.sprite = GetSprite("button");
+                image.type = Image.Type.Sliced;
+                image.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+                button.image = image;
+            }
 
             // SFX
             if (!go.TryGetComponent<ButtonSfx>(out var sfx))

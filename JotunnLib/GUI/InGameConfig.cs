@@ -137,7 +137,15 @@ namespace Jotunn.GUI
             GUIManager.Instance.ApplySliderStyle(config.Slider, new Vector2(15f, -10f));
             GUIManager.Instance.ApplyInputFieldStyle(config.ColorInput, 14);
             GUIManager.Instance.ApplyButtonStyle(config.ColorButton);
-            config.ColorButton.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("UISprite");
+            var vector2 = config.Vector2InputX.transform.parent.gameObject;
+            foreach (var txt in vector2.GetComponentsInChildren<Text>(true))
+            {
+                GUIManager.Instance.ApplyTextStyle(txt, 14);
+            }
+            foreach (var inp in vector2.GetComponentsInChildren<InputField>(true))
+            {
+                GUIManager.Instance.ApplyInputFieldStyle(inp, 14);
+            }
 
             PrefabManager.OnVanillaPrefabsAvailable -= PrefabManager_OnVanillaPrefabsAvailable;
         }
@@ -425,9 +433,10 @@ namespace Jotunn.GUI
                             var conf = go.AddComponent<ConfigBoundColor>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
-                        else
+                        else if (entry.Value.SettingType == typeof(Vector2))
                         {
-
+                            var conf = go.AddComponent<ConfigBoundVector2>();
+                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                         }
                     }
                 }
@@ -1167,6 +1176,50 @@ namespace Jotunn.GUI
                 }
 
                 throw new ArgumentException($"'{str}' is no valid color value");
+            }
+        }
+    
+        /// <summary>
+        ///     Vector2 binding
+        /// </summary>
+        internal class ConfigBoundVector2 : ConfigBound<Vector2>
+        {
+            public override void Register()
+            {
+                Config.Vector2InputX.transform.parent.gameObject.SetActive(true);
+            }
+
+            public override Vector2 GetValue()
+            {
+                if (!(float.TryParse(Config.Vector2InputX.text, NumberStyles.Number,
+                        CultureInfo.CurrentCulture.NumberFormat, out var tempX) && 
+                      float.TryParse(Config.Vector2InputX.text, NumberStyles.Number,
+                        CultureInfo.CurrentCulture.NumberFormat, out var tempY)))
+                {
+                    return Default;
+                }
+
+                return new Vector2(tempX, tempY);
+            }
+
+            public override void SetValue(Vector2 value)
+            {
+                Config.Vector2InputX.text = value.x.ToString("F1");
+                Config.Vector2InputY.text = value.y.ToString("F1");
+            }
+
+            public override void SetEnabled(bool enabled)
+            {
+                Config.Vector2InputX.enabled = enabled;
+                Config.Vector2InputY.enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                Config.Vector2InputX.readOnly = readOnly;
+                Config.Vector2InputX.textComponent.color = readOnly ? Color.grey : Color.white;
+                Config.Vector2InputY.readOnly = readOnly;
+                Config.Vector2InputY.textComponent.color = readOnly ? Color.grey : Color.white;
             }
         }
     }
