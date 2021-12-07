@@ -180,6 +180,12 @@ namespace Jotunn.Configs
                 return null;
             }
 
+            // If there are no requirements, don't create a recipe.
+            if (Requirements.Length == 0)
+            {
+                return null;
+            }
+
             var recipe = ScriptableObject.CreateInstance<Recipe>();
 
             recipe.name = "Recipe_" + Item;
