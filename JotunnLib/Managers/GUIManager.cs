@@ -1227,7 +1227,7 @@ namespace Jotunn.Managers
             GameObject go = button.gameObject;
 
             // Image
-            Image image = go.GetOrAddComponent<Image>();
+            Image image = go.GetComponent<Image>();
             if (image)
             {
                 image.sprite = GetSprite("button");
