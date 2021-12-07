@@ -46,12 +46,12 @@ namespace Jotunn.GUI
         private const string KeybindToken = "$jotunn_keybind";
 
         /// <summary>
-        ///     Cached prefab of the vanilla Settings window
+        ///     Mod settings Prefab
         /// </summary>
         private static GameObject SettingsPrefab;
 
         /// <summary>
-        ///     Our own Settings window
+        ///     Current mod settings instance
         /// </summary>
         private static GameObject SettingsRoot;
 
@@ -61,16 +61,21 @@ namespace Jotunn.GUI
         [PatchInit(0)]
         public static void HookOnSettings()
         {
-            PrefabManager.OnVanillaPrefabsAvailable += PrefabManager_OnVanillaPrefabsAvailable;
+            GUIManager.OnCustomGUIAvailable += LoadModSettingsPrefab;
             On.FejdStartup.SetupGui += FejdStartup_SetupGui;
             On.Menu.Start += Menu_Start;
         }
-
+        
         /// <summary>
         ///     Load the mod settings prefab and apply Valheim style to it
         /// </summary>
-        private static void PrefabManager_OnVanillaPrefabsAvailable()
+        private static void LoadModSettingsPrefab()
         {
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(MenuToken, "Mod Settings");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(CancelToken, "Cancel");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(OKToken, "OK");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(KeybindToken, "Press a key");
+
             AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("modsettings", typeof(Main).Assembly);
             SettingsPrefab = bundle.LoadAsset<GameObject>("ModSettings");
             PrefabManager.Instance.AddPrefab(SettingsPrefab, Main.Instance.Info.Metadata);
@@ -146,10 +151,10 @@ namespace Jotunn.GUI
             {
                 GUIManager.Instance.ApplyInputFieldStyle(inp, 14);
             }
-
-            PrefabManager.OnVanillaPrefabsAvailable -= PrefabManager_OnVanillaPrefabsAvailable;
+            
+            GUIManager.OnCustomGUIAvailable -= LoadModSettingsPrefab;
         }
-
+        
         /// <summary>
         ///     Adding a MonoBehaviour to close the mod settings here.
         ///     The Unity project does not know about BepInEx...
@@ -191,12 +196,6 @@ namespace Jotunn.GUI
         /// </summary>
         private static void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
-            // Fallback english translation
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(MenuToken, "Mod Settings");
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(CancelToken, "Cancel");
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(OKToken, "OK");
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(KeybindToken, "Press a key");
-
             orig(self);
 
             try
@@ -206,7 +205,7 @@ namespace Jotunn.GUI
             catch (Exception ex)
             {
                 SettingsRoot = null;
-                Logger.LogWarning($"Exception caught while creating the Mod Settings entry: {ex}");
+                Logger.LogWarning($"Exception caught while creating the Mod Settings: {ex}");
             }
         }
 
@@ -226,7 +225,7 @@ namespace Jotunn.GUI
             catch (Exception ex)
             {
                 SettingsRoot = null;
-                Logger.LogWarning($"Exception caught while creating the Mod Settings entry: {ex}");
+                Logger.LogWarning($"Exception caught while creating the Mod Settings: {ex}");
             }
         }
 
@@ -269,12 +268,13 @@ namespace Jotunn.GUI
                     {
                         try
                         {
-                            modSettingsButton.StartCoroutine(CreateWindow(menuList));
+                            RefreshConfiguration();
+                            SettingsRoot.SetActive(true);
                         }
                         catch (Exception ex)
                         {
                             SettingsRoot = null;
-                            Logger.LogWarning($"Exception caught while creating the Mod Settings window: {ex}");
+                            Logger.LogWarning($"Exception caught while showing the Mod Settings window: {ex}");
                         }
                     });
                     mainMenuButtons.Add(modSettingsButton);
@@ -304,6 +304,8 @@ namespace Jotunn.GUI
             {
                 FejdStartup.instance.m_menuButtons = mainMenuButtons.ToArray();
             }
+            
+            Main.Instance.StartCoroutine(CreateWindow(menuList));
         }
 
         /// <summary>
@@ -470,7 +472,7 @@ namespace Jotunn.GUI
             // scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
 
             // Show the window and fake that we are finished loading
-            SettingsRoot.SetActive(true);
+            // SettingsRoot.SetActive(true);
         }
 
         /// <summary>
@@ -486,9 +488,25 @@ namespace Jotunn.GUI
                 yield return enumerator.Current;
             }
         }
+        
+        /// <summary>
+        ///     Refresh the displayed values
+        /// </summary>
+        private static void RefreshConfiguration()
+        {
+            var settings = SettingsRoot.GetComponent<ModSettings>();
+
+            // Iterate over all configs
+            foreach (var comp in settings.Configs
+                         .SelectMany(config => config.GetComponents<MonoBehaviour>()
+                             .Where(x => x.GetType().HasImplementedRawGeneric(typeof(ConfigBound<>)))))
+            {
+                ((IConfigBound)comp).Read();
+            }
+        }
 
         /// <summary>
-        ///     Save our settings
+        ///     Write all displayed values back to the config files
         /// </summary>
         private static void SaveConfiguration()
         {
@@ -497,9 +515,9 @@ namespace Jotunn.GUI
             // Iterate over all configs
             foreach (var comp in settings.Configs
                          .SelectMany(config => config.GetComponents<MonoBehaviour>()
-                         .Where(x => x.GetType().HasImplementedRawGeneric(typeof(ConfigBound<>)))))
+                            .Where(x => x.GetType().HasImplementedRawGeneric(typeof(ConfigBound<>)))))
             {
-                ((IConfigBound)comp).WriteBack();
+                ((IConfigBound)comp).Write();
             }
 
             // Sync changed config
@@ -511,7 +529,9 @@ namespace Jotunn.GUI
         /// </summary>
         internal interface IConfigBound
         {
-            public void WriteBack();
+            public void Read();
+
+            public void Write();
         }
 
         /// <summary>
@@ -541,7 +561,12 @@ namespace Jotunn.GUI
             public abstract T GetValue();
             public abstract void SetValue(T value);
 
-            public void WriteBack()
+            public void Read()
+            {
+                Value = (T)Entry.BoxedValue;
+            }
+
+            public void Write()
             {
                 Entry.BoxedValue = Value;
             }
