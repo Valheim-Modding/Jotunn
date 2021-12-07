@@ -37,7 +37,7 @@ namespace TestMod
             LUL, WAT, WUT
         }
         private ConfigEntry<AnotherTestEnum> AnotherTestEnumConfig;
-
+        
         public void Awake()
         {
             // Add a client side custom input key for the EvilSword
