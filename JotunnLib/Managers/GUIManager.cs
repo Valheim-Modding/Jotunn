@@ -271,7 +271,8 @@ namespace Jotunn.Managers
             if (!IsHeadless())
             {
                 SceneManager.sceneLoaded += InitialLoad;
-                SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+                On.FejdStartup.SetupGui += FejdStartup_SetupGui;
+                On.Game.Start += Game_Start;
             }
         }
 
@@ -390,41 +391,43 @@ namespace Jotunn.Managers
                 }
             }
         }
-
-        private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
+        
+        private void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
-            if (scene.name == "start")
+            orig(self);
+
+            GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "GuiRoot");
+            Transform gui = root?.transform.Find("GUI");
+            if (!gui)
             {
-                GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "GuiRoot");
-                Transform gui = root?.transform.Find("GUI");
-                if (!gui)
-                {
-                    Logger.LogWarning("GuiRoot GUI not found, not creating custom GUI");
-                    return;
-                }
-                CreateCustomGUI(gui);
-
-                ResetInputBlock();
-
-                GUIInStart = true;
+                Logger.LogWarning("GuiRoot GUI not found, not creating custom GUI");
+                return;
             }
-            if (scene.name == "main")
-            {
-                GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
-                Transform gui = root?.transform.Find("GUI");
-                if (!gui)
-                {
-                    Logger.LogWarning("_GameMain GUI not found, not creating custom GUI");
-                    return;
-                }
-                CreateCustomGUI(gui);
+            CreateCustomGUI(gui);
 
-                ResetInputBlock();
+            ResetInputBlock();
 
-                GUIInStart = false;
-            }
+            GUIInStart = true;
         }
+        
+        private void Game_Start(On.Game.orig_Start orig, Game self)
+        {
+            orig(self);
 
+            GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
+            Transform gui = root?.transform.Find("GUI");
+            if (!gui)
+            {
+                Logger.LogWarning("_GameMain GUI not found, not creating custom GUI");
+                return;
+            }
+            CreateCustomGUI(gui);
+
+            ResetInputBlock();
+
+            GUIInStart = false;
+        }
+        
         /// <summary>
         ///     Create GameObjects for mods to append their custom GUI to
         /// </summary>

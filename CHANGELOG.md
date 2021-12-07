@@ -5,6 +5,7 @@
 * Added support for Vector2 and generic enums in mod settings
 * Removed necessity for key binds backed by a config to also have a button registered in ZInput to show up in the mod settings
 * Added some RectTransform extensions for world positioning and overlapping
+* Changed the timing of GUIManager.OnCustomGUIAvailable to execute *after* custom Localization has been loaded to ensure GUI content is properly localized
 * Fixed NRE while resolving mock references for null enumerables
 * Fixed the naming of location containers in ZoneManager
 * ItemConfigs without requirements don't create a Recipe for that item
