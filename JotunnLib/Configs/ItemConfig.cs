@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Jotunn.Entities;
 using Jotunn.Utils;
@@ -72,7 +73,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
-        public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
+        public RequirementConfig[] Requirements { get; set; } = Array.Empty<RequirementConfig>();
 
         /// <summary>
         ///     Apply this config's values to a GameObject's ItemDrop.
@@ -181,7 +182,7 @@ namespace Jotunn.Configs
             }
 
             // If there are no requirements, don't create a recipe.
-            if (Requirements.Length == 0)
+            if (Requirements == null || Requirements.Length == 0)
             {
                 return null;
             }
