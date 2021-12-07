@@ -268,12 +268,14 @@ namespace Jotunn.Managers
             Headless = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
 
             // Dont init on a headless server
-            if (!IsHeadless())
+            if (IsHeadless())
             {
-                SceneManager.sceneLoaded += InitialLoad;
-                On.FejdStartup.SetupGui += FejdStartup_SetupGui;
-                On.Game.Start += Game_Start;
+                return;
             }
+
+            SceneManager.sceneLoaded += InitialLoad;
+            On.FejdStartup.SetupGui += FejdStartup_SetupGui;
+            On.Game.Start += Game_Start;
         }
 
         /// <summary>

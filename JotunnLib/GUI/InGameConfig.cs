@@ -56,17 +56,26 @@ namespace Jotunn.GUI
         private static GameObject SettingsRoot;
 
         /// <summary>
-        ///     Hook into settings setup
+        ///     Load and init hooks on client instances
         /// </summary>
         [PatchInit(0)]
-        public static void HookOnSettings()
+        public static void Init()
         {
+            // Dont init on a headless server
+            if (GUIManager.IsHeadless())
+            {
+                return;
+            }
+
             LoadDefaultLocalization();
             GUIManager.OnCustomGUIAvailable += LoadModSettingsPrefab;
             On.FejdStartup.SetupGui += FejdStartup_SetupGui;
             On.Menu.Start += Menu_Start;
         }
 
+        /// <summary>
+        ///     Register Jötunn's default localization
+        /// </summary>
         private static void LoadDefaultLocalization()
         {
             LocalizationManager.Instance.JotunnLocalization.AddTranslation(MenuToken, "Mod Settings");
