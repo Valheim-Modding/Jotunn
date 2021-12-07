@@ -61,9 +61,18 @@ namespace Jotunn.GUI
         [PatchInit(0)]
         public static void HookOnSettings()
         {
+            LoadDefaultLocalization();
             GUIManager.OnCustomGUIAvailable += LoadModSettingsPrefab;
             On.FejdStartup.SetupGui += FejdStartup_SetupGui;
             On.Menu.Start += Menu_Start;
+        }
+
+        private static void LoadDefaultLocalization()
+        {
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(MenuToken, "Mod Settings");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(CancelToken, "Cancel");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(OKToken, "OK");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(KeybindToken, "Press a key");
         }
         
         /// <summary>
@@ -71,11 +80,6 @@ namespace Jotunn.GUI
         /// </summary>
         private static void LoadModSettingsPrefab()
         {
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(MenuToken, "Mod Settings");
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(CancelToken, "Cancel");
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(OKToken, "OK");
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(KeybindToken, "Press a key");
-
             AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("modsettings", typeof(Main).Assembly);
             SettingsPrefab = bundle.LoadAsset<GameObject>("ModSettings");
             PrefabManager.Instance.AddPrefab(SettingsPrefab, Main.Instance.Info.Metadata);
@@ -169,7 +173,7 @@ namespace Jotunn.GUI
                 {
                     try { ColorPicker.Cancel(); } catch (Exception) { }
                     ZInput.instance.Load();
-                    Destroy(gameObject);
+                    Hide();
                 });
 
                 settings.OKButton.onClick.AddListener(() =>
@@ -177,8 +181,7 @@ namespace Jotunn.GUI
                     try { ColorPicker.Done(); } catch (Exception) { }
                     ZInput.instance.Save();
                     SaveConfiguration();
-                    Destroy(gameObject);
-
+                    Hide();
                 });
             }
 
@@ -188,6 +191,20 @@ namespace Jotunn.GUI
                 {
                     GetComponent<ModSettings>().CancelButton.onClick.Invoke();
                 }
+            }
+
+            private void Hide()
+            {
+                var settings = GetComponent<ModSettings>();
+
+                foreach (var plugin in settings.Plugins.Values)
+                {
+                    plugin.Content.gameObject.SetActive(false);
+                }
+
+                settings.ScrollRect.normalizedPosition = new Vector2(0f, 1f);
+
+                gameObject.SetActive(false);
             }
         }
 
