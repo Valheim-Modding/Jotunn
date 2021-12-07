@@ -427,7 +427,7 @@ namespace Jotunn.GUI
                             var conf = go.AddComponent<ConfigBoundKeyCode>();
                             conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
 
-                            if (entry.Value.GetButtonConfig().GamepadConfig != null)
+                            if (entry.Value.GetButtonConfig()?.GamepadConfig != null)
                             {
                                 var conf2 = go.AddComponent<ConfigBoundGamepadButton>();
                                 conf2.SetData(mod.Value.Info.Metadata.GUID,
