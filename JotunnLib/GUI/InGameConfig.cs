@@ -115,10 +115,10 @@ namespace Jotunn.GUI
             GUIManager.Instance.ApplyScrollRectStyle(settings.ScrollRect);
             settings.ScrollRect.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
 
-            GUIManager.Instance.ApplyButtonStyle(settings.CancelButton);
+            GUIManager.Instance.ApplyButtonStyle(settings.CancelButton, 20);
             settings.CancelButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(CancelToken);
 
-            GUIManager.Instance.ApplyButtonStyle(settings.OKButton);
+            GUIManager.Instance.ApplyButtonStyle(settings.OKButton, 20);
             settings.OKButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(OKToken);
 
             var keybindPanel = settings.BindDialog.GetComponentInChildren<Image>(true);
