@@ -405,11 +405,9 @@ namespace Jotunn.Managers
                 Logger.LogWarning("GuiRoot GUI not found, not creating custom GUI");
                 return;
             }
-            CreateCustomGUI(gui);
-
-            ResetInputBlock();
-
             GUIInStart = true;
+            CreateCustomGUI(gui);
+            ResetInputBlock();
         }
         
         private void Game_Start(On.Game.orig_Start orig, Game self)
@@ -423,11 +421,9 @@ namespace Jotunn.Managers
                 Logger.LogWarning("_GameMain GUI not found, not creating custom GUI");
                 return;
             }
-            CreateCustomGUI(gui);
-
-            ResetInputBlock();
-
             GUIInStart = false;
+            CreateCustomGUI(gui);
+            ResetInputBlock();
         }
         
         /// <summary>
@@ -566,6 +562,9 @@ namespace Jotunn.Managers
                 tf.anchorMin = anchorMin;
                 tf.anchorMax = anchorMax;
             }
+            
+            CustomGUIFront.transform.Find("ColorPicker").SetAsLastSibling();
+
             ColorPicker.Create(original, message, onColorChanged, onColorSelected, useAlpha);
         }
 
@@ -590,14 +589,7 @@ namespace Jotunn.Managers
                 Logger.LogError("GUIManager CustomGUIFront is null");
                 return;
             }
-
-            GameObject color = PrefabManager.Instance.GetPrefab("ColorPicker");
-
-            if (color == null)
-            {
-                Logger.LogError("ColorPicker is null");
-            }
-
+            
             GameObject gradient = PrefabManager.Instance.GetPrefab("GradientPicker");
 
             if (gradient == null)
@@ -605,11 +597,11 @@ namespace Jotunn.Managers
                 Logger.LogError("GradientPicker is null");
             }
 
-            if (CustomGUIFront.transform.Find("ColorPicker") == null)
+            GameObject color = PrefabManager.Instance.GetPrefab("ColorPicker");
+
+            if (color == null)
             {
-                GameObject newcolor = Object.Instantiate(color, CustomGUIFront.transform, false);
-                newcolor.name = "ColorPicker";
-                newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+                Logger.LogError("ColorPicker is null");
             }
 
             if (CustomGUIFront.transform.Find("GradientPicker") == null)
@@ -622,6 +614,18 @@ namespace Jotunn.Managers
                 tf.anchorMin = anchorMin;
                 tf.anchorMax = anchorMax;
             }
+
+            CustomGUIFront.transform.Find("GradientPicker").SetAsLastSibling();
+
+            if (CustomGUIFront.transform.Find("ColorPicker") == null)
+            {
+                GameObject newcolor = Object.Instantiate(color, CustomGUIFront.transform, false);
+                newcolor.name = "ColorPicker";
+                newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+            }
+
+            CustomGUIFront.transform.Find("ColorPicker").SetAsLastSibling();
+
             GradientPicker.Create(original, message, onGradientChanged, onGradientSelected);
         }
 
