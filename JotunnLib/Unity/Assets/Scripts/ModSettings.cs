@@ -108,7 +108,7 @@ namespace Jotunn.GUI
 
             return (int)recta.y == (int)rectb.y || (recta.y + recta.height > rectb.y && recta.y < rectb.y);
         }
-        
+
         public delegate bool KeyBindCheck();
 
         public void OpenBindDialog(string keyName, KeyBindCheck keyBindCheck)
@@ -117,7 +117,7 @@ namespace Jotunn.GUI
             CurrentKeyBindCheck = keyBindCheck;
             BindDialog.SetActive(true);
         }
-        
+
         private void Update()
         {
             if (BindDialog.activeSelf && CurrentKeyBindCheck.Invoke())

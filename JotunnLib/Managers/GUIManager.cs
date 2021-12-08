@@ -30,7 +30,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private GUIManager() {}
+        private GUIManager() { }
 
         /// <summary>
         ///     Event that gets fired every time the Unity scene changed and a new PixelFix
@@ -176,7 +176,7 @@ namespace Jotunn.Managers
         ///     Counter to track multiple block requests.
         /// </summary>
         private static int InputBlockRequests;
-        
+
         /// <summary>
         ///     Block all input except GUI
         /// </summary>
@@ -393,7 +393,7 @@ namespace Jotunn.Managers
                 }
             }
         }
-        
+
         private void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
             orig(self);
@@ -409,7 +409,7 @@ namespace Jotunn.Managers
             CreateCustomGUI(gui);
             ResetInputBlock();
         }
-        
+
         private void Game_Start(On.Game.orig_Start orig, Game self)
         {
             orig(self);
@@ -425,7 +425,7 @@ namespace Jotunn.Managers
             CreateCustomGUI(gui);
             ResetInputBlock();
         }
-        
+
         /// <summary>
         ///     Create GameObjects for mods to append their custom GUI to
         /// </summary>
@@ -562,7 +562,7 @@ namespace Jotunn.Managers
                 tf.anchorMin = anchorMin;
                 tf.anchorMax = anchorMax;
             }
-            
+
             CustomGUIFront.transform.Find("ColorPicker").SetAsLastSibling();
 
             ColorPicker.Create(original, message, onColorChanged, onColorSelected, useAlpha);
@@ -589,7 +589,7 @@ namespace Jotunn.Managers
                 Logger.LogError("GUIManager CustomGUIFront is null");
                 return;
             }
-            
+
             GameObject gradient = PrefabManager.Instance.GetPrefab("GradientPicker");
 
             if (gradient == null)
@@ -1474,7 +1474,7 @@ namespace Jotunn.Managers
         {
             ApplySliderStyle(slider, new Vector2(40, 10));
         }
-        
+
         /// <summary>
         ///     Apply Valheim style to a <see cref="Slider"/> component.
         /// </summary>

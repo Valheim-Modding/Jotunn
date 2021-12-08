@@ -83,7 +83,7 @@ namespace Jotunn.GUI
             LocalizationManager.Instance.JotunnLocalization.AddTranslation(OKToken, "OK");
             LocalizationManager.Instance.JotunnLocalization.AddTranslation(KeybindToken, "Press a key");
         }
-        
+
         /// <summary>
         ///     Load the mod settings prefab and apply Valheim style to it
         /// </summary>
@@ -164,10 +164,10 @@ namespace Jotunn.GUI
             {
                 GUIManager.Instance.ApplyInputFieldStyle(inp, 14);
             }
-            
+
             GUIManager.OnCustomGUIAvailable -= LoadModSettingsPrefab;
         }
-        
+
         /// <summary>
         ///     Adding a MonoBehaviour to close the mod settings here.
         ///     The Unity project does not know about BepInEx...
@@ -268,6 +268,8 @@ namespace Jotunn.GUI
                 return;
             }
 
+            Logger.LogDebug("Instantiating Mod Settings");
+
             var settingsFound = false;
             var mainMenuButtons = new List<Button>();
             for (int i = 0; i < menuList.childCount; i++)
@@ -330,7 +332,7 @@ namespace Jotunn.GUI
             {
                 FejdStartup.instance.m_menuButtons = mainMenuButtons.ToArray();
             }
-            
+
             Main.Instance.StartCoroutine(CreateWindow(menuList));
         }
 
@@ -493,12 +495,6 @@ namespace Jotunn.GUI
                     }
                 }
             }
-
-            // Scroll back to top
-            // scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
-
-            // Show the window and fake that we are finished loading
-            // SettingsRoot.SetActive(true);
         }
 
         /// <summary>
@@ -514,7 +510,7 @@ namespace Jotunn.GUI
                 yield return enumerator.Current;
             }
         }
-        
+
         /// <summary>
         ///     Refresh the displayed values
         /// </summary>
