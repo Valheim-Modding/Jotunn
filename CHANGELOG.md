@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.4.3
+* Fixed admin config display for non-admin users
+
 ## Version 2.4.2
 * Reworked the mod settings menu completely using Unity, it should be much faster now and also removed some oddities from using a vanilla Settings clone before
 * Added support for Vector2 and generic enums in mod settings
