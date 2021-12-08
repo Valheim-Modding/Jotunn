@@ -210,9 +210,8 @@ namespace Jotunn.GUI
                 {
                     plugin.Content.gameObject.SetActive(false);
                 }
-
+                settings.CurrentPluginButton.gameObject.SetActive(false);
                 settings.ScrollRect.normalizedPosition = new Vector2(0f, 1f);
-
                 gameObject.SetActive(false);
             }
         }
