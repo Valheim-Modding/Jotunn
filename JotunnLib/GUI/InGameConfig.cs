@@ -296,8 +296,7 @@ namespace Jotunn.GUI
                     {
                         try
                         {
-                            RefreshConfiguration();
-                            SettingsRoot.SetActive(true);
+                            ShowWindow();
                         }
                         catch (Exception ex)
                         {
@@ -345,17 +344,12 @@ namespace Jotunn.GUI
             SettingsRoot = Object.Instantiate(SettingsPrefab, menuList.parent);
             SettingsRoot.SetActive(false);
 
-            if (Menu.instance)
-            {
-                Menu.instance.m_settingsInstance = SettingsRoot;
-            }
-
             var settings = SettingsRoot.GetComponent<ModSettings>();
 
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
-                if (!GetConfigurationEntries(mod.Value).Any(x => x.Value.IsVisible() && x.Value.IsWritable()))
+                if (!GetConfigurationEntries(mod.Value).Any(x => x.Value.IsVisible()))
                 {
                     continue;
                 }
@@ -363,9 +357,9 @@ namespace Jotunn.GUI
                 yield return null;
 
                 settings.AddPlugin(mod.Key, $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}");
-
+                
                 foreach (var kv in GetConfigurationEntries(mod.Value)
-                    .Where(x => x.Value.IsVisible() && x.Value.IsWritable())
+                    .Where(x => x.Value.IsVisible())
                     .GroupBy(x => x.Key.Section))
                 {
                     settings.AddSection(mod.Key, kv.Key);
@@ -496,6 +490,18 @@ namespace Jotunn.GUI
                 }
             }
         }
+        
+        /// <summary>
+        ///     Get all config entries of a module by GUID
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        private static IEnumerable<KeyValuePair<ConfigDefinition, ConfigEntryBase>> GetConfigurationEntries(string guid)
+        {
+            return GetConfigurationEntries(
+                BepInExUtils.GetDependentPlugins(true)
+                    .FirstOrDefault(x => x.Key == guid).Value);
+        }
 
         /// <summary>
         ///     Get all config entries of a module
@@ -510,21 +516,44 @@ namespace Jotunn.GUI
                 yield return enumerator.Current;
             }
         }
-
+        
         /// <summary>
         ///     Refresh the displayed values
         /// </summary>
-        private static void RefreshConfiguration()
+        private static void ShowWindow()
         {
             var settings = SettingsRoot.GetComponent<ModSettings>();
+            
+            if (Menu.instance)
+            {
+                Menu.instance.m_settingsInstance = SettingsRoot;
+            }
 
-            // Iterate over all configs
+            foreach (var plugin in settings.Plugins)
+            {
+                plugin.Value.gameObject.SetActive(
+                    GetConfigurationEntries(plugin.Key)
+                        .Any(x => x.Value.IsVisible() && x.Value.IsWritable()));
+            }
+            
+            foreach (var section in settings.Sections)
+            {
+                section.gameObject.SetActive(
+                    GetConfigurationEntries(section.GUID)
+                        .Any(x => x.Key.Section == section.name && x.Value.IsVisible() && x.Value.IsWritable()));
+            }
+
             foreach (var comp in settings.Configs
                          .SelectMany(config => config.GetComponents<MonoBehaviour>()
                              .Where(x => x.GetType().HasImplementedRawGeneric(typeof(ConfigBound<>)))))
             {
-                ((IConfigBound)comp).Read();
+                var config = (IConfigBound)comp;
+                config.Read();
+                comp.gameObject.SetActive(config.Entry.IsWritable());
             }
+            
+            // Actually show the window
+            SettingsRoot.SetActive(true);
         }
 
         /// <summary>
@@ -546,11 +575,18 @@ namespace Jotunn.GUI
             SynchronizationManager.Instance.SynchronizeChangedConfig();
         }
 
+        internal class BoundMod : MonoBehaviour
+        {
+            public BaseUnityPlugin Mod { get; set; }
+        }
+
         /// <summary>
         ///     Interface for the generic config bind class used in <see cref="SaveConfiguration"/>
         /// </summary>
         internal interface IConfigBound
         {
+            public ConfigEntryBase Entry { get; set; }
+
             public void Read();
 
             public void Write();
