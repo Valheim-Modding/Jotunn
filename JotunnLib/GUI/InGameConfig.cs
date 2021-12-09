@@ -225,7 +225,9 @@ namespace Jotunn.GUI
 
             try
             {
-                Instantiate(self.m_mainMenu.transform.Find("MenuList"));
+                var menuList = self.m_mainMenu.transform.Find("MenuList");
+                Instantiate(menuList);
+                self.StartCoroutine(CreateWindow(menuList));
             }
             catch (Exception ex)
             {
@@ -246,6 +248,7 @@ namespace Jotunn.GUI
             {
                 SynchronizationManager.Instance.CacheConfigurationValues();
                 Instantiate(self.m_menuDialog);
+                self.StartCoroutine(CreateWindow(self.m_menuDialog));
             }
             catch (Exception ex)
             {
@@ -330,8 +333,6 @@ namespace Jotunn.GUI
             {
                 FejdStartup.instance.m_menuButtons = mainMenuButtons.ToArray();
             }
-
-            Main.Instance.StartCoroutine(CreateWindow(menuList));
         }
 
         /// <summary>
