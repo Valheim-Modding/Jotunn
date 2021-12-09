@@ -182,7 +182,7 @@ namespace Jotunn.GUI
                 {
                     try { ColorPicker.Cancel(); } catch (Exception) { }
                     ZInput.instance.Load();
-                    Hide();
+                    HideWindow();
                 });
 
                 settings.OKButton.onClick.AddListener(() =>
@@ -190,7 +190,7 @@ namespace Jotunn.GUI
                     try { ColorPicker.Done(); } catch (Exception) { }
                     ZInput.instance.Save();
                     SaveConfiguration();
-                    Hide();
+                    HideWindow();
                 });
             }
 
@@ -200,19 +200,6 @@ namespace Jotunn.GUI
                 {
                     GetComponent<ModSettings>().CancelButton.onClick.Invoke();
                 }
-            }
-
-            private void Hide()
-            {
-                var settings = GetComponent<ModSettings>();
-
-                foreach (var plugin in settings.Plugins.Values)
-                {
-                    plugin.Content.gameObject.SetActive(false);
-                }
-                settings.CurrentPluginButton.gameObject.SetActive(false);
-                settings.ScrollRect.normalizedPosition = new Vector2(0f, 1f);
-                gameObject.SetActive(false);
             }
         }
 
@@ -555,6 +542,23 @@ namespace Jotunn.GUI
             // Actually show the window
             SettingsRoot.SetActive(true);
         }
+        private static void HideWindow()
+        {
+            var settings = SettingsRoot.GetComponent<ModSettings>();
+            
+            if (Menu.instance)
+            {
+                Menu.instance.m_settingsInstance = null;
+            }
+
+            foreach (var plugin in settings.Plugins.Values)
+            {
+                plugin.Content.gameObject.SetActive(false);
+            }
+            settings.CurrentPluginButton.gameObject.SetActive(false);
+            settings.ScrollRect.normalizedPosition = new Vector2(0f, 1f);
+            SettingsRoot.SetActive(false);
+        }
 
         /// <summary>
         ///     Write all displayed values back to the config files
@@ -574,12 +578,7 @@ namespace Jotunn.GUI
             // Sync changed config
             SynchronizationManager.Instance.SynchronizeChangedConfig();
         }
-
-        internal class BoundMod : MonoBehaviour
-        {
-            public BaseUnityPlugin Mod { get; set; }
-        }
-
+        
         /// <summary>
         ///     Interface for the generic config bind class used in <see cref="SaveConfiguration"/>
         /// </summary>
