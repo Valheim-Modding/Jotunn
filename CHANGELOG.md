@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.4.4
+* Fixed in-game menu not reacting on Esc after closing mod settings
+
 ## Version 2.4.3
 * Fixed admin config display for non-admin users
 
