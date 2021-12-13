@@ -213,7 +213,7 @@ namespace Jotunn.GUI
             try
             {
                 var menuList = self.m_mainMenu.transform.Find("MenuList");
-                Instantiate(menuList);
+                CreateMenu(menuList);
                 self.StartCoroutine(CreateWindow(menuList));
             }
             catch (Exception ex)
@@ -234,7 +234,7 @@ namespace Jotunn.GUI
             try
             {
                 SynchronizationManager.Instance.CacheConfigurationValues();
-                Instantiate(self.m_menuDialog);
+                CreateMenu(self.m_menuDialog);
                 self.StartCoroutine(CreateWindow(self.m_menuDialog));
             }
             catch (Exception ex)
@@ -248,7 +248,7 @@ namespace Jotunn.GUI
         ///     Create our own menu list entry when mod config is available
         /// </summary>
         /// <param name="menuList"></param>
-        private static void Instantiate(Transform menuList)
+        private static void CreateMenu(Transform menuList)
         {
             var anyConfig = BepInExUtils.GetDependentPlugins(true).Any(x => GetConfigurationEntries(x.Value).Any());
 
@@ -341,143 +341,158 @@ namespace Jotunn.GUI
                     continue;
                 }
 
-                yield return null;
-
-                settings.AddPlugin(mod.Key, $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}");
-                
-                foreach (var kv in GetConfigurationEntries(mod.Value)
-                    .Where(x => x.Value.IsVisible())
-                    .GroupBy(x => x.Key.Section))
+                try
                 {
-                    settings.AddSection(mod.Key, kv.Key);
+                    CreatePlugin(settings, mod);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning($"Exception caught while creating mod settings for {mod.Key}: {ex}");
+                }
 
-                    foreach (var entry in kv.OrderBy(x =>
+                yield return null;
+            }
+        }
+
+        /// <summary>
+        ///     Create settings for a plugin
+        /// </summary>
+        private static void CreatePlugin(ModSettings settings, KeyValuePair<string, BaseUnityPlugin> mod)
+        {
+            settings.AddPlugin(mod.Key, $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}");
+
+            foreach (var kv in GetConfigurationEntries(mod.Value)
+                         .Where(x => x.Value.IsVisible())
+                         .GroupBy(x => x.Key.Section))
+            {
+                settings.AddSection(mod.Key, kv.Key);
+
+                foreach (var entry in kv.OrderBy(x =>
+                {
+                    if (x.Value.Description.Tags.FirstOrDefault(y => y is ConfigurationManagerAttributes) is
+                        ConfigurationManagerAttributes cma)
                     {
-                        if (x.Value.Description.Tags.FirstOrDefault(y => y is ConfigurationManagerAttributes) is
-                            ConfigurationManagerAttributes cma)
-                        {
-                            return cma.Order ?? int.MaxValue;
-                        }
+                        return cma.Order ?? int.MaxValue;
+                    }
 
-                        return int.MaxValue;
-                    }).ThenBy(x => x.Key.Key))
+                    return int.MaxValue;
+                }).ThenBy(x => x.Key.Key))
+                {
+                    // Skip actual GamepadConfigs, those are combined with ButtonConfig entries
+                    if (entry.Value.SettingType == typeof(InputManager.GamepadButton))
                     {
-                        // Skip actual GamepadConfigs, those are combined with ButtonConfig entries
-                        if (entry.Value.SettingType == typeof(InputManager.GamepadButton))
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        // Get Attributes or instantiate default
-                        var entryAttributes =
-                            entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as
-                                ConfigurationManagerAttributes ?? new ConfigurationManagerAttributes();
+                    // Get Attributes or instantiate default
+                    var entryAttributes =
+                        entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as
+                            ConfigurationManagerAttributes ?? new ConfigurationManagerAttributes();
 
-                        // Build description
-                        var description = entry.Value.Description.Description;
+                    // Build description
+                    var description = entry.Value.Description.Description;
 
-                        var buttonName = entry.Value.GetBoundButtonName();
-                        if (!string.IsNullOrEmpty(buttonName))
-                        {
-                            description += $"{Environment.NewLine}This key is bound to button '{buttonName.Split('!')[0]}'.";
-                        }
+                    var buttonName = entry.Value.GetBoundButtonName();
+                    if (!string.IsNullOrEmpty(buttonName))
+                    {
+                        description += $"{Environment.NewLine}This key is bound to button '{buttonName.Split('!')[0]}'.";
+                    }
 
-                        if (entry.Value.Description.AcceptableValues != null)
-                        {
-                            description += Environment.NewLine + "(" +
-                                           entry.Value.Description.AcceptableValues.ToDescriptionString()
-                                               .TrimStart('#')
-                                               .Trim() + ")";
-                        }
+                    if (entry.Value.Description.AcceptableValues != null)
+                    {
+                        description += Environment.NewLine + "(" +
+                                       entry.Value.Description.AcceptableValues.ToDescriptionString()
+                                           .TrimStart('#')
+                                           .Trim() + ")";
+                    }
 
-                        if (entryAttributes.IsAdminOnly)
-                        {
-                            description += $"{Environment.NewLine}(Server side setting)";
-                        }
+                    if (entryAttributes.IsAdminOnly)
+                    {
+                        description += $"{Environment.NewLine}(Server side setting)";
+                    }
 
-                        // Add new Config GO and add config bound component by type
-                        if (entry.Value.SettingType == typeof(bool))
-                        {
-                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                                description, entryAttributes.DescriptionColor);
-                            var conf = go.AddComponent<ConfigBoundBoolean>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(int))
-                        {
-                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                                description, entryAttributes.DescriptionColor);
-                            var conf = go.AddComponent<ConfigBoundInt>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(float))
-                        {
-                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                                description, entryAttributes.DescriptionColor);
-                            var conf = go.AddComponent<ConfigBoundFloat>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(double))
-                        {
-                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                                description, entryAttributes.DescriptionColor);
-                            var conf = go.AddComponent<ConfigBoundDouble>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(string))
-                        {
-                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                                description, entryAttributes.DescriptionColor);
-                            var conf = go.AddComponent<ConfigBoundString>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(KeyCode))
-                        {
-                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                                description, entryAttributes.DescriptionColor);
-                            var conf = go.AddComponent<ConfigBoundKeyCode>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    // Add new Config GO and add config bound component by type
+                    if (entry.Value.SettingType == typeof(bool))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundBoolean>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(int))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundInt>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(float))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundFloat>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(double))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundDouble>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(string))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundString>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(KeyCode))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundKeyCode>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
 
-                            if (entry.Value.GetButtonConfig()?.GamepadConfig != null)
-                            {
-                                var conf2 = go.AddComponent<ConfigBoundGamepadButton>();
-                                conf2.SetData(mod.Value.Info.Metadata.GUID,
-                                    entry.Value.GetButtonConfig().GamepadConfig);
-                            }
-                        }
-                        else if (entry.Value.SettingType == typeof(KeyboardShortcut))
+                        if (entry.Value.GetButtonConfig()?.GamepadConfig != null)
                         {
-                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                                description, entryAttributes.DescriptionColor);
-                            var conf = go.AddComponent<ConfigBoundKeyboardShortcut>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                            var conf2 = go.AddComponent<ConfigBoundGamepadButton>();
+                            conf2.SetData(mod.Value.Info.Metadata.GUID,
+                                entry.Value.GetButtonConfig().GamepadConfig);
                         }
-                        else if (entry.Value.SettingType == typeof(Color))
-                        {
-                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                                description, entryAttributes.DescriptionColor);
-                            var conf = go.AddComponent<ConfigBoundColor>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(Vector2))
-                        {
-                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                                description, entryAttributes.DescriptionColor);
-                            var conf = go.AddComponent<ConfigBoundVector2>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType.IsEnum)
-                        {
-                            var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
-                                description, entryAttributes.DescriptionColor);
-                            var conf = go.AddComponent<ConfigBoundEnum>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
+                    }
+                    else if (entry.Value.SettingType == typeof(KeyboardShortcut))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundKeyboardShortcut>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(Color))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundColor>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(Vector2))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundVector2>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType.IsEnum)
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundEnum>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                     }
                 }
             }
         }
-        
+
         /// <summary>
         ///     Get all config entries of a module by GUID
         /// </summary>
