@@ -57,6 +57,11 @@ namespace Jotunn.Managers
         /// </summary>
         public static Color FilterOff = new Color(0f, 0f, 0f, 255f);
 
+        /// <summary>
+        ///     Height "Colour" used for the base height of "Meadows"
+        /// </summary>
+        public static Color MeadowHeight = new Color(32, 0, 0, 255);
+
         private const int TextureSize = 2048;
         private const string OverlayNamePrefix = "custom_map_overlay_";
 
