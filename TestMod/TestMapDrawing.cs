@@ -14,7 +14,7 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
 
-namespace TestMod3
+namespace TestMod
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     [BepInDependency(Main.ModGuid)]
@@ -24,6 +24,7 @@ namespace TestMod3
         private const string ModGUID = "com.jotunn.testmapdrawing";
         private const string ModName = "Jotunn Test Map Overlays and Draws";
         private const string ModVersion = "0.1.0";
+
         /*
             There is still a fairly long list of features needed to be complete before this Manager is released. Eg:
                 - Proper documentation for methods + a bit of clean up
@@ -41,11 +42,6 @@ namespace TestMod3
         private static MinimapManager.MapDrawing QuadTest3;
         private static MinimapManager.MapOverlay ReeOverlay;
         private static MinimapManager.MapDrawing ReeDrawing;
-
-
-        // private static Color MeadowHeight = new Color(32, 0, 0, 255);
-        // private static Color FilterOn = new Color(1f, 0f, 0f, 255f);
-        // private static Color FilterOff = new Color(0f, 0f, 0f, 255f);
 
         public void Awake()
         {
@@ -67,6 +63,9 @@ namespace TestMod3
             // Initial overlay / drawings go here
         }
 
+        /// <summary>
+        ///     Zone Overlay
+        /// </summary>
         internal static void CreateSimpleZoneOverlay(Color color)
         {
             ZoneOverlay = MinimapManager.Instance.AddMapOverlay(nameof(ZoneOverlay));
@@ -89,7 +88,11 @@ namespace TestMod3
             ZoneOverlay.OverlayTex.Apply();
         }
 
-        // Zone overlay
+        /// <summary>
+        ///     Zone drawing
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="height"></param>
         internal static void CreateZoneOverlay(Color color, float height)
         {
             Zones = MinimapManager.Instance.AddMapDrawing(nameof(Zones));
@@ -123,6 +126,11 @@ namespace TestMod3
             Zones.HeightFilter.Apply();
         }
 
+        /// <summary>
+        ///     Set height information
+        /// </summary>
+        /// <param name="height"></param>
+        /// <param name="ovl"></param>
         private static void FlattenMap(int height, MinimapManager.MapDrawing ovl)
         {
             for (int i = 0; i < ovl.TextureSize; i++)
@@ -135,7 +143,9 @@ namespace TestMod3
             ovl.HeightFilter.Apply();
         }
 
-        // Draw one square in the center of each quadrant.
+        /// <summary>
+        ///     Draw one square in the center of each quadrant.
+        /// </summary>
         private static void DrawSquares()
         {
             Squares = MinimapManager.Instance.AddMapDrawing("SquaresOverlay");
@@ -172,6 +182,12 @@ namespace TestMod3
             Squares.Enabled = true;
         }
 
+        /// <summary>
+        ///     Draw a square starting at every map pin
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="ovl"></param>
+        /// <param name="extras"></param>
         private static void DrawSquaresOnMapPins(Color color, MinimapManager.MapDrawing ovl, bool extras = false)
         {
             foreach (var p in Minimap.instance.m_pins)
@@ -194,6 +210,13 @@ namespace TestMod3
             }
         }
 
+        /// <summary>
+        ///     Draw single square
+        /// </summary>
+        /// <param name="tex"></param>
+        /// <param name="start"></param>
+        /// <param name="col"></param>
+        /// <param name="square_size"></param>
         private static void DrawSquare(Texture2D tex, Vector2 start, Color col, int square_size)
         {
             Jotunn.Logger.LogInfo($"Starting drawsquare at {start}");
@@ -206,7 +229,9 @@ namespace TestMod3
             }
         }
 
-        // test the 4 main textures, Main, Height, Forest, Fog, in 4 different quadrants.
+        /// <summary>
+        ///     Test the 4 main textures, Main, Height, Forest, Fog, in 4 different quadrants.
+        /// </summary>
         private static void DrawQuadrants()
         {
             QuadTest0 = MinimapManager.Instance.AddMapDrawing("QuadColorOverlay");
@@ -220,7 +245,12 @@ namespace TestMod3
             DrawQuadrant(QuadTest3.FogFilter, MinimapManager.FilterOn, 3);
         }
 
-        // Quadrants ordered CCW starting top right, 0 indexed.
+        /// <summary>
+        ///     Quadrants ordered CCW starting top right, 0 indexed.
+        /// </summary>
+        /// <param name="tex"></param>
+        /// <param name="col"></param>
+        /// <param name="quadrant"></param>
         private static void DrawQuadrant(Texture2D tex, Color col, int quadrant)
         {
             int istart = 0, iend = 0, jstart = 0, jend = 0;
