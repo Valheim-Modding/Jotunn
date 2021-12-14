@@ -30,7 +30,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private GUIManager() {}
+        private GUIManager() { }
 
         /// <summary>
         ///     Event that gets fired every time the Unity scene changed and a new PixelFix
@@ -176,7 +176,7 @@ namespace Jotunn.Managers
         ///     Counter to track multiple block requests.
         /// </summary>
         private static int InputBlockRequests;
-        
+
         /// <summary>
         ///     Block all input except GUI
         /// </summary>
@@ -268,11 +268,14 @@ namespace Jotunn.Managers
             Headless = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
 
             // Dont init on a headless server
-            if (!IsHeadless())
+            if (IsHeadless())
             {
-                SceneManager.sceneLoaded += InitialLoad;
-                SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+                return;
             }
+
+            SceneManager.sceneLoaded += InitialLoad;
+            On.FejdStartup.SetupGui += FejdStartup_SetupGui;
+            On.Game.Start += Game_Start;
         }
 
         /// <summary>
@@ -391,38 +394,36 @@ namespace Jotunn.Managers
             }
         }
 
-        private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
+        private void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
-            if (scene.name == "start")
+            orig(self);
+
+            GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "GuiRoot");
+            Transform gui = root?.transform.Find("GUI");
+            if (!gui)
             {
-                GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "GuiRoot");
-                Transform gui = root?.transform.Find("GUI");
-                if (!gui)
-                {
-                    Logger.LogWarning("GuiRoot GUI not found, not creating custom GUI");
-                    return;
-                }
-                CreateCustomGUI(gui);
-
-                ResetInputBlock();
-
-                GUIInStart = true;
+                Logger.LogWarning("GuiRoot GUI not found, not creating custom GUI");
+                return;
             }
-            if (scene.name == "main")
+            GUIInStart = true;
+            CreateCustomGUI(gui);
+            ResetInputBlock();
+        }
+
+        private void Game_Start(On.Game.orig_Start orig, Game self)
+        {
+            orig(self);
+
+            GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
+            Transform gui = root?.transform.Find("GUI");
+            if (!gui)
             {
-                GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
-                Transform gui = root?.transform.Find("GUI");
-                if (!gui)
-                {
-                    Logger.LogWarning("_GameMain GUI not found, not creating custom GUI");
-                    return;
-                }
-                CreateCustomGUI(gui);
-
-                ResetInputBlock();
-
-                GUIInStart = false;
+                Logger.LogWarning("_GameMain GUI not found, not creating custom GUI");
+                return;
             }
+            GUIInStart = false;
+            CreateCustomGUI(gui);
+            ResetInputBlock();
         }
 
         /// <summary>
@@ -561,6 +562,9 @@ namespace Jotunn.Managers
                 tf.anchorMin = anchorMin;
                 tf.anchorMax = anchorMax;
             }
+
+            CustomGUIFront.transform.Find("ColorPicker").SetAsLastSibling();
+
             ColorPicker.Create(original, message, onColorChanged, onColorSelected, useAlpha);
         }
 
@@ -586,13 +590,6 @@ namespace Jotunn.Managers
                 return;
             }
 
-            GameObject color = PrefabManager.Instance.GetPrefab("ColorPicker");
-
-            if (color == null)
-            {
-                Logger.LogError("ColorPicker is null");
-            }
-
             GameObject gradient = PrefabManager.Instance.GetPrefab("GradientPicker");
 
             if (gradient == null)
@@ -600,11 +597,11 @@ namespace Jotunn.Managers
                 Logger.LogError("GradientPicker is null");
             }
 
-            if (CustomGUIFront.transform.Find("ColorPicker") == null)
+            GameObject color = PrefabManager.Instance.GetPrefab("ColorPicker");
+
+            if (color == null)
             {
-                GameObject newcolor = Object.Instantiate(color, CustomGUIFront.transform, false);
-                newcolor.name = "ColorPicker";
-                newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+                Logger.LogError("ColorPicker is null");
             }
 
             if (CustomGUIFront.transform.Find("GradientPicker") == null)
@@ -617,6 +614,18 @@ namespace Jotunn.Managers
                 tf.anchorMin = anchorMin;
                 tf.anchorMax = anchorMax;
             }
+
+            CustomGUIFront.transform.Find("GradientPicker").SetAsLastSibling();
+
+            if (CustomGUIFront.transform.Find("ColorPicker") == null)
+            {
+                GameObject newcolor = Object.Instantiate(color, CustomGUIFront.transform, false);
+                newcolor.name = "ColorPicker";
+                newcolor.GetComponent<Image>().pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+            }
+
+            CustomGUIFront.transform.Find("ColorPicker").SetAsLastSibling();
+
             GradientPicker.Create(original, message, onGradientChanged, onGradientSelected);
         }
 
@@ -1222,11 +1231,14 @@ namespace Jotunn.Managers
             GameObject go = button.gameObject;
 
             // Image
-            Image image = go.GetOrAddComponent<Image>();
-            image.sprite = GetSprite("button");
-            image.type = Image.Type.Sliced;
-            image.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
-            button.image = image;
+            Image image = go.GetComponent<Image>();
+            if (image)
+            {
+                image.sprite = GetSprite("button");
+                image.type = Image.Type.Sliced;
+                image.pixelsPerUnitMultiplier = GUIInStart ? 2f : 1f;
+                button.image = image;
+            }
 
             // SFX
             if (!go.TryGetComponent<ButtonSfx>(out var sfx))
@@ -1462,7 +1474,7 @@ namespace Jotunn.Managers
         {
             ApplySliderStyle(slider, new Vector2(40, 10));
         }
-        
+
         /// <summary>
         ///     Apply Valheim style to a <see cref="Slider"/> component.
         /// </summary>

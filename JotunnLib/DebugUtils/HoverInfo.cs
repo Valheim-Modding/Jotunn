@@ -55,7 +55,7 @@ namespace Jotunn.DebugUtils
                     "Position of the HoverPiece properties panel.");
 
             _hoverPiecePanelPosition.SettingChanged +=
-                (sender, eventArgs) => _hoverPiecePanel.SetPosition(_hoverPiecePanelPosition.Value);
+                (sender, eventArgs) => _hoverPiecePanel?.SetPosition(_hoverPiecePanelPosition.Value);
 
             _placementGhostPanelPosition =
                 Main.Instance.Config.Bind(
@@ -65,7 +65,7 @@ namespace Jotunn.DebugUtils
                     "Position of the PlacementGhost properties panel.");
 
             _placementGhostPanelPosition.SettingChanged +=
-                (sender, eventArgs) => _placementGhostPanel.SetPosition(_placementGhostPanelPosition.Value);
+                (sender, eventArgs) => _placementGhostPanel?.SetPosition(_placementGhostPanelPosition.Value);
 
             On.Hud.Awake += HudAwakePostfix;
             On.Hud.UpdateCrosshair += HudUpdateCrosshairPostfix;

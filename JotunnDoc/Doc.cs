@@ -102,25 +102,29 @@ namespace JotunnDoc
 
         internal static bool RequestSprite(string path, GameObject prefab, Quaternion rotation)
         {
-            if(File.Exists(path))
+            if (File.Exists(path))
             {
                 Jotunn.Logger.LogDebug($"Image at {path} already exists, not recreating");
                 return true;
             }
-            return RenderManager.Instance.EnqueueRender(new RenderManager.RenderRequest(prefab)
+
+            var sprite = RenderManager.Instance.Render(new RenderManager.RenderRequest(prefab)
             {
                 Rotation = rotation,
                 FieldOfView = 20f,
                 DistanceMultiplier = 1.1f
-            }, (Sprite sprite) =>
-            {
-                if (sprite)
-                {
-                    var texture = sprite.texture;
-                    var bytes = texture.EncodeToPNG();
-                    File.WriteAllBytes(path, bytes);
-                } 
             });
+
+            if (!sprite)
+            {
+                return false;
+            }
+
+            var texture = sprite.texture;
+            var bytes = texture.EncodeToPNG();
+            File.WriteAllBytes(path, bytes);
+
+            return true;
         }
 
     }

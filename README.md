@@ -103,3 +103,5 @@ These people have been integral to pushing JVL out of the door, and without them
 *Tekla#1012*: [github](https://github.com/T3kla/ValMods/wiki)
 
 *Margmas#9562*: [github](https://github.com/MSchmoecker), [thunderstore](https://valheim.thunderstore.io/package/MSchmoecker/), [nexus](https://www.nexusmods.com/users/111418768)
+
+*JoeyParrish#8644*: [github](https://github.com/joeyparrish), [thunderstore](https://valheim.thunderstore.io/package/joeyparrish/), [nexus](https://www.nexusmods.com/users/128211453)

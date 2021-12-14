@@ -70,7 +70,7 @@ namespace TestMod
             // Create a custom Localization and add it to the Manager
             Localization = new CustomLocalization();
             LocalizationManager.Instance.AddLocalization(Localization);
-            
+
             // Create stuff
             CreateConfigValues();
             LoadAssets();
@@ -554,7 +554,6 @@ namespace TestMod
                 new ConfigDescription("Key to unleash evil with the Evil Sword"));
             EvilSwordGamepadConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttackGamepad", InputManager.GamepadButton.ButtonSouth,
                 new ConfigDescription("Button to unleash evil with the Evil Sword"));
-
         }
 
         // React on changed settings
@@ -665,6 +664,7 @@ namespace TestMod
             CommandManager.Instance.AddConsoleCommand(new SkinColorCommand());
             CommandManager.Instance.AddConsoleCommand(new BetterSpawnCommand());
             CommandManager.Instance.AddConsoleCommand(new CreateCategoryTabCommand());
+            CommandManager.Instance.AddConsoleCommand(new ResetCartographyCommand());
         }
 
         // Register new skills
@@ -1350,7 +1350,7 @@ namespace TestMod
                 var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
 
                 //Create location from AssetBundle
-                var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true); 
+                var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true);
                 ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubeArchLocation, new LocationConfig
                 {
                     Biome = Heightmap.Biome.BlackForest,

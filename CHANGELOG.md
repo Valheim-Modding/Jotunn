@@ -1,9 +1,21 @@
 ﻿# Changelog
 
+## Version 2.4.4
+* Fixed in-game menu not reacting on Esc after closing mod settings
+* Fixed a NRE condition on the mod settings
+
+## Version 2.4.3
+* Fixed admin config display for non-admin users
+
 ## Version 2.4.2
 * Reworked the mod settings menu completely using Unity, it should be much faster now and also removed some oddities from using a vanilla Settings clone before
+* Added support for Vector2 and generic enums in mod settings
+* Removed necessity for key binds backed by a config to also have a button registered in ZInput to show up in the mod settings
 * Added some RectTransform extensions for world positioning and overlapping
+* Changed the timing of GUIManager.OnCustomGUIAvailable to execute *after* custom Localization has been loaded to ensure GUI content is properly localized
 * Fixed NRE while resolving mock references for null enumerables
+* Fixed the naming of location containers in ZoneManager
+* ItemConfigs without requirements don't create a Recipe for that item
 * Updated the asset creation guide to reflect Valheim's recent updates (https://valheim-modding.github.io/Jotunn/tutorials/asset-creation.html)
 * Reworked the Asset Mocking tutorial completely (https://valheim-modding.github.io/Jotunn/tutorials/asset-mocking.html)
 

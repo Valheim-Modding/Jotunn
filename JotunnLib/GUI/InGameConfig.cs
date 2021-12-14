@@ -46,30 +46,48 @@ namespace Jotunn.GUI
         private const string KeybindToken = "$jotunn_keybind";
 
         /// <summary>
-        ///     Cached prefab of the vanilla Settings window
+        ///     Mod settings Prefab
         /// </summary>
         private static GameObject SettingsPrefab;
 
         /// <summary>
-        ///     Our own Settings window
+        ///     Current mod settings instance
         /// </summary>
         private static GameObject SettingsRoot;
 
         /// <summary>
-        ///     Hook into settings setup
+        ///     Load and init hooks on client instances
         /// </summary>
         [PatchInit(0)]
-        public static void HookOnSettings()
+        public static void Init()
         {
-            PrefabManager.OnVanillaPrefabsAvailable += PrefabManager_OnVanillaPrefabsAvailable;
+            // Dont init on a headless server
+            if (GUIManager.IsHeadless())
+            {
+                return;
+            }
+
+            LoadDefaultLocalization();
+            GUIManager.OnCustomGUIAvailable += LoadModSettingsPrefab;
             On.FejdStartup.SetupGui += FejdStartup_SetupGui;
             On.Menu.Start += Menu_Start;
         }
 
         /// <summary>
+        ///     Register Jötunn's default localization
+        /// </summary>
+        private static void LoadDefaultLocalization()
+        {
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(MenuToken, "Mod Settings");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(CancelToken, "Cancel");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(OKToken, "OK");
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(KeybindToken, "Press a key");
+        }
+
+        /// <summary>
         ///     Load the mod settings prefab and apply Valheim style to it
         /// </summary>
-        private static void PrefabManager_OnVanillaPrefabsAvailable()
+        private static void LoadModSettingsPrefab()
         {
             AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("modsettings", typeof(Main).Assembly);
             SettingsPrefab = bundle.LoadAsset<GameObject>("ModSettings");
@@ -97,18 +115,18 @@ namespace Jotunn.GUI
             GUIManager.Instance.ApplyScrollRectStyle(settings.ScrollRect);
             settings.ScrollRect.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("panel_interior_bkg_128");
 
-            GUIManager.Instance.ApplyButtonStyle(settings.CancelButton);
+            GUIManager.Instance.ApplyButtonStyle(settings.CancelButton, 20);
             settings.CancelButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(CancelToken);
 
-            GUIManager.Instance.ApplyButtonStyle(settings.OKButton);
+            GUIManager.Instance.ApplyButtonStyle(settings.OKButton, 20);
             settings.OKButton.GetComponentInChildren<Text>().text = LocalizationManager.Instance.TryTranslate(OKToken);
 
-            var keybindPanel = settings.BindDialogue.GetComponentInChildren<Image>(true);
+            var keybindPanel = settings.BindDialog.GetComponentInChildren<Image>(true);
             keybindPanel.sprite = GUIManager.Instance.GetSprite("woodpanel_password");
             keybindPanel.type = Image.Type.Sliced;
             keybindPanel.material = PrefabManager.Cache.GetPrefab<Material>("litpanel");
 
-            var keybindText = settings.BindDialogue.GetComponentInChildren<Text>(true);
+            var keybindText = settings.BindDialog.GetComponentInChildren<Text>(true);
             GUIManager.Instance.ApplyTextStyle(keybindText, GUIManager.Instance.AveriaSerifBold, GUIManager.Instance.ValheimOrange, 20);
             keybindText.text = LocalizationManager.Instance.TryTranslate(KeybindToken);
 
@@ -137,9 +155,17 @@ namespace Jotunn.GUI
             GUIManager.Instance.ApplySliderStyle(config.Slider, new Vector2(15f, -10f));
             GUIManager.Instance.ApplyInputFieldStyle(config.ColorInput, 14);
             GUIManager.Instance.ApplyButtonStyle(config.ColorButton);
-            config.ColorButton.GetComponent<Image>().sprite = GUIManager.Instance.GetSprite("UISprite");
+            var vector2 = config.Vector2InputX.transform.parent.gameObject;
+            foreach (var txt in vector2.GetComponentsInChildren<Text>(true))
+            {
+                GUIManager.Instance.ApplyTextStyle(txt, 14);
+            }
+            foreach (var inp in vector2.GetComponentsInChildren<InputField>(true))
+            {
+                GUIManager.Instance.ApplyInputFieldStyle(inp, 14);
+            }
 
-            PrefabManager.OnVanillaPrefabsAvailable -= PrefabManager_OnVanillaPrefabsAvailable;
+            GUIManager.OnCustomGUIAvailable -= LoadModSettingsPrefab;
         }
 
         /// <summary>
@@ -155,15 +181,16 @@ namespace Jotunn.GUI
                 settings.CancelButton.onClick.AddListener(() =>
                 {
                     try { ColorPicker.Cancel(); } catch (Exception) { }
-                    Destroy(gameObject);
+                    ZInput.instance.Load();
+                    HideWindow();
                 });
 
                 settings.OKButton.onClick.AddListener(() =>
                 {
                     try { ColorPicker.Done(); } catch (Exception) { }
+                    ZInput.instance.Save();
                     SaveConfiguration();
-                    Destroy(gameObject);
-
+                    HideWindow();
                 });
             }
 
@@ -181,22 +208,18 @@ namespace Jotunn.GUI
         /// </summary>
         private static void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
         {
-            // Fallback english translation
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(MenuToken, "Mod Settings");
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(CancelToken, "Cancel");
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(OKToken, "OK");
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(KeybindToken, "Press a key");
-
             orig(self);
 
             try
             {
-                Instantiate(self.m_mainMenu.transform.Find("MenuList"));
+                var menuList = self.m_mainMenu.transform.Find("MenuList");
+                CreateMenu(menuList);
+                self.StartCoroutine(CreateWindow(menuList));
             }
             catch (Exception ex)
             {
                 SettingsRoot = null;
-                Logger.LogWarning($"Exception caught while creating the Mod Settings entry: {ex}");
+                Logger.LogWarning($"Exception caught while creating the Mod Settings: {ex}");
             }
         }
 
@@ -211,12 +234,13 @@ namespace Jotunn.GUI
             try
             {
                 SynchronizationManager.Instance.CacheConfigurationValues();
-                Instantiate(self.m_menuDialog);
+                CreateMenu(self.m_menuDialog);
+                self.StartCoroutine(CreateWindow(self.m_menuDialog));
             }
             catch (Exception ex)
             {
                 SettingsRoot = null;
-                Logger.LogWarning($"Exception caught while creating the Mod Settings entry: {ex}");
+                Logger.LogWarning($"Exception caught while creating the Mod Settings: {ex}");
             }
         }
 
@@ -224,7 +248,7 @@ namespace Jotunn.GUI
         ///     Create our own menu list entry when mod config is available
         /// </summary>
         /// <param name="menuList"></param>
-        private static void Instantiate(Transform menuList)
+        private static void CreateMenu(Transform menuList)
         {
             var anyConfig = BepInExUtils.GetDependentPlugins(true).Any(x => GetConfigurationEntries(x.Value).Any());
 
@@ -232,6 +256,8 @@ namespace Jotunn.GUI
             {
                 return;
             }
+
+            Logger.LogDebug("Instantiating Mod Settings");
 
             var settingsFound = false;
             var mainMenuButtons = new List<Button>();
@@ -259,12 +285,12 @@ namespace Jotunn.GUI
                     {
                         try
                         {
-                            modSettingsButton.StartCoroutine(CreateWindow(menuList));
+                            ShowWindow();
                         }
                         catch (Exception ex)
                         {
                             SettingsRoot = null;
-                            Logger.LogWarning($"Exception caught while creating the Mod Settings window: {ex}");
+                            Logger.LogWarning($"Exception caught while showing the Mod Settings window: {ex}");
                         }
                     });
                     mainMenuButtons.Add(modSettingsButton);
@@ -305,137 +331,178 @@ namespace Jotunn.GUI
             SettingsRoot = Object.Instantiate(SettingsPrefab, menuList.parent);
             SettingsRoot.SetActive(false);
 
-            if (Menu.instance)
-            {
-                Menu.instance.m_settingsInstance = SettingsRoot;
-            }
-
             var settings = SettingsRoot.GetComponent<ModSettings>();
 
             // Iterate over all dependent plugins (including Jotunn itself)
             foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
             {
-                if (!GetConfigurationEntries(mod.Value).Any(x => x.Value.IsVisible() && x.Value.IsWritable()))
+                if (!GetConfigurationEntries(mod.Value).Any(x => x.Value.IsVisible()))
                 {
                     continue;
                 }
 
-                yield return null;
-
-                settings.AddPlugin(mod.Key, $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}");
-
-                foreach (var kv in GetConfigurationEntries(mod.Value)
-                    .Where(x => x.Value.IsVisible() && x.Value.IsWritable())
-                    .GroupBy(x => x.Key.Section))
+                try
                 {
-                    settings.AddSection(mod.Key, kv.Key);
+                    CreatePlugin(settings, mod);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning($"Exception caught while creating mod settings for {mod.Key}: {ex}");
+                }
 
-                    foreach (var entry in kv.OrderBy(x =>
+                yield return null;
+            }
+        }
+
+        /// <summary>
+        ///     Create settings for a plugin
+        /// </summary>
+        private static void CreatePlugin(ModSettings settings, KeyValuePair<string, BaseUnityPlugin> mod)
+        {
+            settings.AddPlugin(mod.Key, $"{mod.Value.Info.Metadata.Name} {mod.Value.Info.Metadata.Version}");
+
+            foreach (var kv in GetConfigurationEntries(mod.Value)
+                         .Where(x => x.Value.IsVisible())
+                         .GroupBy(x => x.Key.Section))
+            {
+                settings.AddSection(mod.Key, kv.Key);
+
+                foreach (var entry in kv.OrderBy(x =>
+                {
+                    if (x.Value.Description.Tags.FirstOrDefault(y => y is ConfigurationManagerAttributes) is
+                        ConfigurationManagerAttributes cma)
                     {
-                        if (x.Value.Description.Tags.FirstOrDefault(y => y is ConfigurationManagerAttributes) is
-                            ConfigurationManagerAttributes cma)
-                        {
-                            return cma.Order ?? int.MaxValue;
-                        }
+                        return cma.Order ?? int.MaxValue;
+                    }
 
-                        return int.MaxValue;
-                    }).ThenBy(x => x.Key.Key))
+                    return int.MaxValue;
+                }).ThenBy(x => x.Key.Key))
+                {
+                    // Skip actual GamepadConfigs, those are combined with ButtonConfig entries
+                    if (entry.Value.SettingType == typeof(InputManager.GamepadButton))
                     {
-                        // Skip actual GamepadConfigs, those are combined with ButtonConfig entries
-                        if (entry.Value.SettingType == typeof(InputManager.GamepadButton))
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        // Get Attributes or instantiate default
-                        var entryAttributes =
-                            entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as
-                                ConfigurationManagerAttributes ?? new ConfigurationManagerAttributes();
+                    // Get Attributes or instantiate default
+                    var entryAttributes =
+                        entry.Value.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as
+                            ConfigurationManagerAttributes ?? new ConfigurationManagerAttributes();
 
-                        // Build description
-                        var description = entry.Value.Description.Description;
+                    // Build description
+                    var description = entry.Value.Description.Description;
 
-                        var buttonName = entry.Value.GetBoundButtonName();
-                        if (!string.IsNullOrEmpty(buttonName))
-                        {
-                            description += $"{Environment.NewLine}This key is bound to button '{buttonName.Split('!')[0]}'.";
-                        }
+                    var buttonName = entry.Value.GetBoundButtonName();
+                    if (!string.IsNullOrEmpty(buttonName))
+                    {
+                        description += $"{Environment.NewLine}This key is bound to button '{buttonName.Split('!')[0]}'.";
+                    }
 
-                        if (entry.Value.Description.AcceptableValues != null)
-                        {
-                            description += Environment.NewLine + "(" +
-                                           entry.Value.Description.AcceptableValues.ToDescriptionString()
-                                               .TrimStart('#')
-                                               .Trim() + ")";
-                        }
+                    if (entry.Value.Description.AcceptableValues != null)
+                    {
+                        description += Environment.NewLine + "(" +
+                                       entry.Value.Description.AcceptableValues.ToDescriptionString()
+                                           .TrimStart('#')
+                                           .Trim() + ")";
+                    }
 
-                        if (entryAttributes.IsAdminOnly)
-                        {
-                            description += $"{Environment.NewLine}(Server side setting)";
-                        }
+                    if (entryAttributes.IsAdminOnly)
+                    {
+                        description += $"{Environment.NewLine}(Server side setting)";
+                    }
 
-                        // Add new Config GO and add config bound component by type
+                    // Add new Config GO and add config bound component by type
+                    if (entry.Value.SettingType == typeof(bool))
+                    {
                         var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
                             description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundBoolean>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(int))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundInt>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(float))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundFloat>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(double))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundDouble>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(string))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundString>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(KeyCode))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundKeyCode>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
 
-                        if (entry.Value.SettingType == typeof(bool))
+                        if (entry.Value.GetButtonConfig()?.GamepadConfig != null)
                         {
-                            var conf = go.AddComponent<ConfigBoundBoolean>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                            var conf2 = go.AddComponent<ConfigBoundGamepadButton>();
+                            conf2.SetData(mod.Value.Info.Metadata.GUID,
+                                entry.Value.GetButtonConfig().GamepadConfig);
                         }
-                        else if (entry.Value.SettingType == typeof(int))
-                        {
-                            var conf = go.AddComponent<ConfigBoundInt>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(float))
-                        {
-                            var conf = go.AddComponent<ConfigBoundFloat>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(double))
-                        {
-                            var conf = go.AddComponent<ConfigBoundDouble>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(string))
-                        {
-                            var conf = go.AddComponent<ConfigBoundString>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(KeyCode) &&
-                                 ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
-                        {
-                            var conf = go.AddComponent<ConfigBoundKeyCode>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-
-                            if (entry.Value.GetButtonConfig().GamepadConfig != null)
-                            {
-                                var conf2 = go.AddComponent<ConfigBoundGamepadButton>();
-                                conf2.SetData(mod.Value.Info.Metadata.GUID,
-                                    entry.Value.GetButtonConfig().GamepadConfig);
-                            }
-                        }
-                        else if (entry.Value.SettingType == typeof(KeyboardShortcut) &&
-                                 ZInput.instance.m_buttons.ContainsKey(entry.Value.GetBoundButtonName()))
-                        {
-                            var conf = go.AddComponent<ConfigBoundKeyboardShortcut>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
-                        else if (entry.Value.SettingType == typeof(Color))
-                        {
-                            var conf = go.AddComponent<ConfigBoundColor>();
-                            conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
-                        }
+                    }
+                    else if (entry.Value.SettingType == typeof(KeyboardShortcut))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundKeyboardShortcut>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(Color))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundColor>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType == typeof(Vector2))
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundVector2>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
+                    }
+                    else if (entry.Value.SettingType.IsEnum)
+                    {
+                        var go = settings.AddConfig(mod.Key, $"{entry.Key.Key}:", entryAttributes.EntryColor,
+                            description, entryAttributes.DescriptionColor);
+                        var conf = go.AddComponent<ConfigBoundEnum>();
+                        conf.SetData(mod.Value.Info.Metadata.GUID, entry.Value);
                     }
                 }
             }
+        }
 
-            // Scroll back to top
-            // scrollView.GetComponentInChildren<ScrollRect>().normalizedPosition = new Vector2(0, 1);
-
-            // Show the window and fake that we are finished loading
-            SettingsRoot.SetActive(true);
+        /// <summary>
+        ///     Get all config entries of a module by GUID
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        private static IEnumerable<KeyValuePair<ConfigDefinition, ConfigEntryBase>> GetConfigurationEntries(string guid)
+        {
+            return GetConfigurationEntries(
+                BepInExUtils.GetDependentPlugins(true)
+                    .FirstOrDefault(x => x.Key == guid).Value);
         }
 
         /// <summary>
@@ -451,96 +518,105 @@ namespace Jotunn.GUI
                 yield return enumerator.Current;
             }
         }
+        
+        /// <summary>
+        ///     Refresh the displayed values
+        /// </summary>
+        private static void ShowWindow()
+        {
+            var settings = SettingsRoot.GetComponent<ModSettings>();
+            
+            if (Menu.instance)
+            {
+                Menu.instance.m_settingsInstance = SettingsRoot;
+            }
+
+            foreach (var plugin in settings.Plugins)
+            {
+                plugin.Value.gameObject.SetActive(
+                    GetConfigurationEntries(plugin.Key)
+                        .Any(x => x.Value.IsVisible() && x.Value.IsWritable()));
+            }
+            
+            foreach (var section in settings.Sections)
+            {
+                section.gameObject.SetActive(
+                    GetConfigurationEntries(section.GUID)
+                        .Any(x => x.Key.Section == section.name && x.Value.IsVisible() && x.Value.IsWritable()));
+            }
+
+            foreach (var comp in settings.Configs
+                         .SelectMany(config => config.GetComponents<MonoBehaviour>()
+                             .Where(x => x.GetType().HasImplementedRawGeneric(typeof(ConfigBound<>)))))
+            {
+                var config = (IConfigBound)comp;
+                config.Read();
+                comp.gameObject.SetActive(config.Entry.IsWritable());
+            }
+            
+            // Actually show the window
+            SettingsRoot.SetActive(true);
+        }
+        private static void HideWindow()
+        {
+            var settings = SettingsRoot.GetComponent<ModSettings>();
+            
+            if (Menu.instance)
+            {
+                Menu.instance.m_settingsInstance = null;
+            }
+
+            foreach (var plugin in settings.Plugins.Values)
+            {
+                plugin.Content.gameObject.SetActive(false);
+            }
+            settings.CurrentPluginButton.gameObject.SetActive(false);
+            settings.ScrollRect.normalizedPosition = new Vector2(0f, 1f);
+            SettingsRoot.SetActive(false);
+        }
 
         /// <summary>
-        ///     Save our settings
+        ///     Write all displayed values back to the config files
         /// </summary>
         private static void SaveConfiguration()
         {
             var settings = SettingsRoot.GetComponent<ModSettings>();
 
             // Iterate over all configs
-            foreach (var config in settings.Configs)
+            foreach (var comp in settings.Configs
+                         .SelectMany(config => config.GetComponents<MonoBehaviour>()
+                            .Where(x => x.GetType().HasImplementedRawGeneric(typeof(ConfigBound<>)))))
             {
-                var childBoolean = config.GetComponent<ConfigBoundBoolean>();
-                if (childBoolean != null)
-                {
-                    childBoolean.WriteBack();
-                    continue;
-                }
-
-                var childInt = config.GetComponent<ConfigBoundInt>();
-                if (childInt != null)
-                {
-                    childInt.WriteBack();
-                    continue;
-                }
-
-                var childFloat = config.GetComponent<ConfigBoundFloat>();
-                if (childFloat != null)
-                {
-                    childFloat.WriteBack();
-                    continue;
-                }
-
-                var childDouble = config.GetComponent<ConfigBoundDouble>();
-                if (childDouble != null)
-                {
-                    childDouble.WriteBack();
-                    continue;
-                }
-
-                var childKeyCode = config.GetComponent<ConfigBoundKeyCode>();
-                if (childKeyCode != null)
-                {
-                    childKeyCode.WriteBack();
-                    var childGamepadButton = config.GetComponentInChildren<ConfigBoundGamepadButton>();
-                    if (childGamepadButton != null)
-                    {
-                        childGamepadButton.WriteBack();
-                    }
-                    continue;
-                }
-
-                var childShortcut = config.GetComponent<ConfigBoundKeyboardShortcut>();
-                if (childShortcut != null)
-                {
-                    childShortcut.WriteBack();
-                    continue;
-                }
-
-                var childString = config.GetComponent<ConfigBoundString>();
-                if (childString != null)
-                {
-                    childString.WriteBack();
-                    continue;
-                }
-
-                var childColor = config.GetComponent<ConfigBoundColor>();
-                if (childColor != null)
-                {
-                    childColor.WriteBack();
-                    continue;
-                }
+                ((IConfigBound)comp).Write();
             }
 
             // Sync changed config
             SynchronizationManager.Instance.SynchronizeChangedConfig();
         }
+        
+        /// <summary>
+        ///     Interface for the generic config bind class used in <see cref="SaveConfiguration"/>
+        /// </summary>
+        internal interface IConfigBound
+        {
+            public ConfigEntryBase Entry { get; set; }
 
-        // Helper classes 
+            public void Read();
+
+            public void Write();
+        }
 
         /// <summary>
         ///     Generic abstract version of the config binding class
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        internal abstract class ConfigBound<T> : MonoBehaviour
+        internal abstract class ConfigBound<T> : MonoBehaviour, IConfigBound
         {
             public ModSettingConfig Config { get; set; }
 
             public string ModGUID { get; set; }
 
-            public ConfigEntry<T> Entry { get; set; }
+            public ConfigEntryBase Entry { get; set; }
 
             public AcceptableValueBase Clamp { get; set; }
 
@@ -557,9 +633,14 @@ namespace Jotunn.GUI
             public abstract T GetValue();
             public abstract void SetValue(T value);
 
-            public void WriteBack()
+            public void Read()
             {
-                Entry.Value = Value;
+                Value = (T)Entry.BoxedValue;
+            }
+
+            public void Write()
+            {
+                Entry.BoxedValue = Value;
             }
 
             public void SetData(string modGuid, ConfigEntryBase entry)
@@ -567,7 +648,7 @@ namespace Jotunn.GUI
                 Config = gameObject.GetComponent<ModSettingConfig>();
 
                 ModGUID = modGuid;
-                Entry = entry as ConfigEntry<T>;
+                Entry = entry;
 
                 Register();
 
@@ -897,20 +978,21 @@ namespace Jotunn.GUI
                 var buttonName = Entry.GetBoundButtonName();
                 Config.Button.onClick.AddListener(() =>
                 {
-                    SettingsRoot.GetComponent<ModSettings>().OpenBindDialogue(buttonName);
-                    On.ZInput.EndBindKey += ZInput_EndBindKey;
+                    SettingsRoot.GetComponent<ModSettings>().OpenBindDialog(buttonName, KeyBindCheck);
                 });
             }
 
-            private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
+            private bool KeyBindCheck()
             {
                 foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
                 {
                     if (Input.GetKeyDown(key))
                     {
                         SetValue(key);
-                        ZInput.m_binding.m_key = key;
-                        On.ZInput.EndBindKey -= ZInput_EndBindKey;
+                        if (ZInput.m_binding != null)
+                        {
+                            ZInput.m_binding.m_key = key;
+                        }
                         return true;
                     }
                 }
@@ -960,20 +1042,21 @@ namespace Jotunn.GUI
                 var buttonName = Entry.GetBoundButtonName();
                 Config.Button.onClick.AddListener(() =>
                 {
-                    SettingsRoot.GetComponent<ModSettings>().OpenBindDialogue(buttonName);
-                    On.ZInput.EndBindKey += ZInput_EndBindKey;
+                    SettingsRoot.GetComponent<ModSettings>().OpenBindDialog(buttonName, KeyBindCheck);
                 });
             }
 
-            private bool ZInput_EndBindKey(On.ZInput.orig_EndBindKey orig, ZInput self)
+            private bool KeyBindCheck()
             {
                 foreach (var key in KeysToCheck)
                 {
                     if (Input.GetKeyUp(key))
                     {
                         SetValue(new KeyboardShortcut(key, KeysToCheck.Where(Input.GetKey).ToArray()));
-                        ZInput.m_binding.m_key = key;
-                        On.ZInput.EndBindKey -= ZInput_EndBindKey;
+                        if (ZInput.m_binding != null)
+                        {
+                            ZInput.m_binding.m_key = key;
+                        }
                         return true;
                     }
                 }
@@ -1163,6 +1246,86 @@ namespace Jotunn.GUI
                 }
 
                 throw new ArgumentException($"'{str}' is no valid color value");
+            }
+        }
+
+        /// <summary>
+        ///     Vector2 binding
+        /// </summary>
+        internal class ConfigBoundVector2 : ConfigBound<Vector2>
+        {
+            public override void Register()
+            {
+                Config.Vector2InputX.transform.parent.gameObject.SetActive(true);
+            }
+
+            public override Vector2 GetValue()
+            {
+                if (!(float.TryParse(Config.Vector2InputX.text, NumberStyles.Number,
+                        CultureInfo.CurrentCulture.NumberFormat, out var tempX) &&
+                      float.TryParse(Config.Vector2InputY.text, NumberStyles.Number,
+                        CultureInfo.CurrentCulture.NumberFormat, out var tempY)))
+                {
+                    return Default;
+                }
+
+                return new Vector2(tempX, tempY);
+            }
+
+            public override void SetValue(Vector2 value)
+            {
+                Config.Vector2InputX.text = value.x.ToString("F1");
+                Config.Vector2InputY.text = value.y.ToString("F1");
+            }
+
+            public override void SetEnabled(bool enabled)
+            {
+                Config.Vector2InputX.enabled = enabled;
+                Config.Vector2InputY.enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                Config.Vector2InputX.readOnly = readOnly;
+                Config.Vector2InputX.textComponent.color = readOnly ? Color.grey : Color.white;
+                Config.Vector2InputY.readOnly = readOnly;
+                Config.Vector2InputY.textComponent.color = readOnly ? Color.grey : Color.white;
+            }
+        }
+
+        /// <summary>
+        ///     GamepadButton binding
+        /// </summary>
+        internal class ConfigBoundEnum : ConfigBound<Enum>
+        {
+            public override void Register()
+            {
+                Config.Dropdown.gameObject.SetActive(true);
+                Config.Dropdown.AddOptions(Enum.GetNames(Entry.SettingType).ToList());
+            }
+
+            public override Enum GetValue()
+            {
+                return (Enum)Enum.Parse(Entry.SettingType, Config.Dropdown.options[Config.Dropdown.value].text);
+            }
+
+            public override void SetValue(Enum value)
+            {
+                Config.Dropdown.value = Config.Dropdown.options
+                    .IndexOf(Config.Dropdown.options.FirstOrDefault(x =>
+                        x.text.Equals(Enum.GetName(Entry.SettingType, value))));
+                Config.Dropdown.RefreshShownValue();
+            }
+
+            public override void SetEnabled(bool enabled)
+            {
+                Config.Dropdown.enabled = enabled;
+            }
+
+            public override void SetReadOnly(bool readOnly)
+            {
+                Config.Dropdown.enabled = !readOnly;
+                Config.Dropdown.itemText.color = readOnly ? Color.grey : Color.white;
             }
         }
     }

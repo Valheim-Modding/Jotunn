@@ -445,6 +445,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorChanger.cs" />
+    <Compile Include="ConsoleCommands\ResetCartographyCommand.cs" />
     <Compile Include="ConsoleCommands\CreateCategoryTabCommand.cs" />
     <Compile Include="ConsoleCommands\ListPlayersCommand.cs" />
     <Compile Include="ConsoleCommands\SkinColorCommand.cs" />

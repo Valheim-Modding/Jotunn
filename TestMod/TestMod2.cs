@@ -26,6 +26,18 @@ namespace TestMod
         private const string JotunnTestModConfigSection = "JotunnTest2";
         private const string OrderConfigSection = "Order Test";
 
+        private enum TestEnum
+        {
+            One, Two, Three
+        }
+        private ConfigEntry<TestEnum> TestEnumConfig;
+
+        private enum AnotherTestEnum
+        {
+            LUL, WAT, WUT
+        }
+        private ConfigEntry<AnotherTestEnum> AnotherTestEnumConfig;
+        
         public void Awake()
         {
             // Add a client side custom input key for the EvilSword
@@ -41,11 +53,11 @@ namespace TestMod
             Config.Bind(OrderConfigSection, "Order 1", string.Empty,
                 new ConfigDescription("Should be first", null,
                     new ConfigurationManagerAttributes() { Order = 1 }));
-            
+
             Config.Bind(OrderConfigSection, "Order 2", string.Empty,
                 new ConfigDescription("Should be second", null,
                     new ConfigurationManagerAttributes() { Order = 2 }));
-            
+
             Config.Bind(OrderConfigSection, "Order 3", string.Empty,
                 new ConfigDescription("Should be last", null,
                     new ConfigurationManagerAttributes() { Order = 3 }));
@@ -53,6 +65,10 @@ namespace TestMod
             Config.Bind(OrderConfigSection, "Order undefined aaa", string.Empty, "Should be ordered by name at the end");
 
             Config.Bind(OrderConfigSection, "Order undefined zzz", string.Empty, "Should be ordered by name at the end");
+
+            // Test enums
+            TestEnumConfig = Config.Bind(JotunnTestModConfigSection, "Enum test", TestEnum.One, "Testing enum shizzle");
+            AnotherTestEnumConfig = Config.Bind(JotunnTestModConfigSection, "Enum test, again?", AnotherTestEnum.LUL, "Testing enum lulzies");
 
             PrefabManager.OnVanillaPrefabsAvailable += CreateStuff;
         }

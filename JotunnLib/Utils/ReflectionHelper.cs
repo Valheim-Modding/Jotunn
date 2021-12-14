@@ -27,6 +27,40 @@ namespace Jotunn.Utils
             return type.IsSubclassOf(@base) || type == @base;
         }
 
+
+        /// <summary>
+        ///     Determine whether the specified type <paramref name= "type"/> is a subtype of the specified generic type or implements the specified generic interface.
+        /// </summary>
+        /// <param name="type">the type to be tested.</param>
+        /// <param name="generic">generic interface type, passing in typeof (IXxx&lt;&gt;)</param>
+        /// <returns>returns true if it is a subtype of the generic interface, or false.</returns>
+        public static bool HasImplementedRawGeneric(this Type type, Type generic)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (generic == null) throw new ArgumentNullException(nameof(generic));
+
+            // Test interface.
+            var isTheRawGenericType = type.GetInterfaces().Any(IsTheRawGenericType);
+            if (isTheRawGenericType) return true;
+
+            // Test type.
+            while (type != null && type != typeof(object))
+            {
+                isTheRawGenericType = IsTheRawGenericType(type);
+                if (isTheRawGenericType) return true;
+                type = type.BaseType;
+            }
+
+            // No matching interface or type was found.
+            return false;
+
+            // Testing whether a type is the specified original interface.
+            bool IsTheRawGenericType(Type test)
+                => generic == (test.IsGenericType ? test.GetGenericTypeDefinition() : test);
+        }
+
+
+
         /// <summary>
         ///     Determines if this type inherits from <see cref="IEnumerable"/>
         /// </summary>
@@ -137,7 +171,7 @@ namespace Jotunn.Utils
 
             return (T)var.GetValue(instance);
         }
-        
+
         /// <summary>
         ///     Get the value of a private static field of any class
         /// </summary>
@@ -157,7 +191,7 @@ namespace Jotunn.Utils
 
             return (T)var.GetValue(null);
         }
-        
+
         /// <summary>
         ///     Set a value of a private field of any class instance
         /// </summary>
@@ -198,7 +232,7 @@ namespace Jotunn.Utils
                     return _enumerableToArray;
                 }
             }
-            
+
             private static MethodInfo _enumerableToList;
             /// <summary>
             ///     <see cref="MethodInfo"/> of <see cref="Enumerable.ToList{TSource}"/>

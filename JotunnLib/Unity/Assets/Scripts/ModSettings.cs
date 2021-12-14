@@ -18,43 +18,47 @@ namespace Jotunn.GUI
         public Button CancelButton;
         public Button OKButton;
 
-        public GameObject BindDialogue;
+        public GameObject BindDialog;
+        public KeyBindCheck CurrentKeyBindCheck;
 
         public readonly Dictionary<string, ModSettingPlugin> Plugins = new Dictionary<string, ModSettingPlugin>();
+        public readonly List<ModSettingSection> Sections = new List<ModSettingSection>();
         public readonly List<ModSettingConfig> Configs = new List<ModSettingConfig>();
 
-        public GameObject AddPlugin(string name, string text)
+        public void AddPlugin(string pluginName, string text)
         {
-            if (Plugins.TryGetValue(name, out var plugin))
+            if (Plugins.ContainsKey(pluginName))
             {
-                return plugin.gameObject;
+                return;
             }
 
             var go = Instantiate(PluginPrefab, ScrollRect.content);
-            go.name = name;
+            go.name = pluginName;
             go.SetActive(true);
-            plugin = go.GetComponent<ModSettingPlugin>();
+            var plugin = go.GetComponent<ModSettingPlugin>();
             plugin.Text.text = text;
-            Plugins.Add(name, plugin);
-
-            return go;
+            Plugins.Add(pluginName, plugin);
         }
 
-        public void AddSection(string name, string text)
+        public void AddSection(string pluginName, string sectionName)
         {
-            if (!Plugins.TryGetValue(name, out var plugin))
+            if (!Plugins.TryGetValue(pluginName, out var plugin))
             {
                 return;
             }
 
             var go = Instantiate(SectionPrefab, plugin.Content.transform);
+            go.name = sectionName;
             go.SetActive(true);
-            go.GetComponent<Text>().text = text;
+            var section = go.GetComponent<ModSettingSection>();
+            section.GUID = pluginName;
+            section.Text.text = sectionName;
+            Sections.Add(section);
         }
 
-        public GameObject AddConfig(string name, string entry, Color entryColor, string description, Color descriptionColor)
+        public GameObject AddConfig(string pluginName, string entryName, Color entryColor, string description, Color descriptionColor)
         {
-            if (!Plugins.TryGetValue(name, out var plugin))
+            if (!Plugins.TryGetValue(pluginName, out var plugin))
             {
                 return null;
             }
@@ -62,7 +66,7 @@ namespace Jotunn.GUI
             var go = Instantiate(ConfigPrefab, plugin.Content.transform);
             go.SetActive(true);
             var config = go.GetComponent<ModSettingConfig>();
-            config.Header.text = entry;
+            config.Header.text = entryName;
             config.Header.color = entryColor;
             config.Description.text = description;
             config.Description.color = descriptionColor;
@@ -87,8 +91,6 @@ namespace Jotunn.GUI
             {
                 CurrentPluginButton.GetComponentInChildren<Text>().text = currentPlugin.GetComponentInChildren<Text>().text;
                 CurrentPluginButton.onClick = currentPlugin.onClick;
-                // CurrentPluginButton.onClick.RemoveAllListeners();
-                // CurrentPluginButton.onClick.AddListener(() => currentPlugin.GetComponentInParent<ModSettingPlugin>().Toggle());
             }
         }
 
@@ -110,17 +112,20 @@ namespace Jotunn.GUI
             return (int)recta.y == (int)rectb.y || (recta.y + recta.height > rectb.y && recta.y < rectb.y);
         }
 
-        public void OpenBindDialogue(string keyName)
+        public delegate bool KeyBindCheck();
+
+        public void OpenBindDialog(string keyName, KeyBindCheck keyBindCheck)
         {
-            ZInput.instance.StartBindKey(keyName);
-            BindDialogue.SetActive(true);
+            ZInput.instance.StartBindKey(keyName ?? string.Empty);
+            CurrentKeyBindCheck = keyBindCheck;
+            BindDialog.SetActive(true);
         }
 
         private void Update()
         {
-            if (BindDialogue.activeSelf && ZInput.instance.EndBindKey())
+            if (BindDialog.activeSelf && CurrentKeyBindCheck.Invoke())
             {
-                BindDialogue.SetActive(false);
+                BindDialog.SetActive(false);
             }
         }
 

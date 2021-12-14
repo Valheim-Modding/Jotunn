@@ -15,5 +15,7 @@ namespace Jotunn.GUI
         public Slider Slider;
         public InputField ColorInput;
         public Button ColorButton;
+        public InputField Vector2InputX;
+        public InputField Vector2InputY;
     }
 }
