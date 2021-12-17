@@ -66,8 +66,8 @@ namespace Jotunn
                 ZoneManager.Instance,
                 NetworkManager.Instance,
                 SynchronizationManager.Instance,
-                //MapOverlayManager.Instance,  // Not ready yet
                 RenderManager.Instance,
+                MinimapManager.Instance
             };
             foreach (IManager manager in Managers)
             {

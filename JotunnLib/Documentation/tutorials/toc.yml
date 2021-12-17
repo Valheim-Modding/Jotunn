@@ -53,6 +53,9 @@
     - name: GUI
       href: gui.md
 
+    - name: Map Overlays
+      href: map.md
+
     - name: Localization
       href: localization.md
 

@@ -42,6 +42,7 @@
     <None Remove="Unity\AssetBundles\jotunn" />
     <None Remove="Unity\AssetBundles\modsettings" />
     <None Remove="Unity\Assets\Plugins.meta" />
+    <None Remove="Unity\AssetBundles\minimapmanager" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="HarmonyX" Version="2.5.5" />
@@ -469,5 +470,6 @@
     <EmbeddedResource Include="Unity\AssetBundles\colorpicker" />
     <EmbeddedResource Include="Unity\AssetBundles\jotunn" />
     <EmbeddedResource Include="Unity\AssetBundles\modsettings" />
+    <EmbeddedResource Include="Unity\AssetBundles\minimapmanager" />
   </ItemGroup>
 </Project>
