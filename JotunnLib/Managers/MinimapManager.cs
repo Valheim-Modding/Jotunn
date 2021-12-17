@@ -106,6 +106,12 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
+            // Dont init on a headless server
+            if (GUIManager.IsHeadless())
+            {
+                return;
+            }
+
             // Setup hooks
             On.Minimap.Start += Minimap_Start;
             On.Minimap.LoadMapData += Minimap_LoadMapData;
