@@ -22,14 +22,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
-        public static MinimapManager Instance
-        {
-            get
-            {
-                if (_instance == null) { _instance = new MinimapManager(); }
-                return _instance;
-            }
-        }
+        public static MinimapManager Instance => _instance ??= new MinimapManager();
 
         /// <summary>
         ///     Hide .ctor
@@ -60,7 +53,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Height "Colour" used for the base height of "Meadows"
         /// </summary>
-        public static Color MeadowHeight = new Color(32, 0, 0, 255);
+        public static Color MeadowHeight = new Color(32f, 0f, 0f, 255f);
 
         private const int TextureSize = 2048;
         private const string OverlayNamePrefix = "custom_map_overlay_";
@@ -68,11 +61,14 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Container to hold all live Overlays.
         /// </summary>
-        private Dictionary<string, MapOverlay> Overlays = new Dictionary<string, MapOverlay>();
+        private readonly Dictionary<string, MapOverlay> Overlays = new Dictionary<string, MapOverlay>();
+        
         /// <summary>
         ///     Container to hold all live Drawings.
         /// </summary>
-        private Dictionary<string, MapDrawing> Drawings = new Dictionary<string, MapDrawing>();
+        private readonly Dictionary<string, MapDrawing> Drawings = new Dictionary<string, MapDrawing>();
+
+        // Global ID counter
         private int OverlayID;
 
         // Transparent base texture
@@ -721,7 +717,7 @@ namespace Jotunn.Managers
         private bool Minimap_AddSharedMapData(On.Minimap.orig_AddSharedMapData orig, Minimap self, byte[] dataArray)
         {
             bool t = orig(self, dataArray);
-            if (MinimapManager.Instance.DrawingsActive())
+            if (Instance.DrawingsActive())
             {
                 FogFilter.Apply();
             }
@@ -730,7 +726,7 @@ namespace Jotunn.Managers
 
         private bool Minimap_Explore_Point(On.Minimap.orig_Explore_int_int orig, Minimap self, int x, int y)
         {
-            if (MinimapManager.Instance.DrawingsActive())
+            if (Instance.DrawingsActive())
             {
                 if (!self.m_explored[y * self.m_textureSize + x])
                 {
@@ -743,7 +739,7 @@ namespace Jotunn.Managers
         private void Minimap_Explore_Radius(On.Minimap.orig_Explore_Vector3_float orig, Minimap self, Vector3 v, float f)
         {
             orig(self, v, f);
-            if (MinimapManager.Instance.DrawingsActive())
+            if (Instance.DrawingsActive())
             {
                 FogFilter.Apply();
             }
@@ -752,7 +748,7 @@ namespace Jotunn.Managers
         private void Minimap_ExploreAll(On.Minimap.orig_ExploreAll orig, Minimap self)
         {
             orig(self);
-            if (MinimapManager.Instance.DrawingsActive())
+            if (Instance.DrawingsActive())
             {
                 FogFilter.Apply();
             }
@@ -774,7 +770,7 @@ namespace Jotunn.Managers
         private void Minimap_Reset(On.Minimap.orig_Reset orig, Minimap self)
         {
             orig(self);
-            if (MinimapManager.Instance.DrawingsActive())
+            if (Instance.DrawingsActive())
             {
                 FogFilter.SetPixels(self.m_fogTexture.GetPixels());
                 FogFilter.Apply();
@@ -794,6 +790,11 @@ namespace Jotunn.Managers
             ///     Texture to draw overlay texture information to
             /// </summary>
             public Texture2D OverlayTex => _overlayTex ??= Create(Instance.TransparentTex);
+            
+            /// <summary>
+            ///     Hide .ctor
+            /// </summary>
+            internal MapOverlay() { }
 
             /// <summary>
             ///     Set true to render this overlay, false to hide
@@ -885,6 +886,11 @@ namespace Jotunn.Managers
             ///     Texture to draw fog filter information to
             /// </summary>
             public Texture2D FogFilter => _fogFilter ??= Create(Minimap.instance.m_fogTexture);
+            
+            /// <summary>
+            ///     Hide .ctor
+            /// </summary>
+            internal MapDrawing() { }
 
             /// <summary>
             ///     Set true to render this overlay, false to hide
@@ -1009,6 +1015,11 @@ namespace Jotunn.Managers
             ///     Initial texture size to calculate the relative drawing position
             /// </summary>
             public int TextureSize { get; internal set; }
+            
+            /// <summary>
+            ///     Hide .ctor
+            /// </summary>
+            internal MapOverlayBase() { }
 
             /// <summary>
             ///     Helper function to create and copy overlay texture instances

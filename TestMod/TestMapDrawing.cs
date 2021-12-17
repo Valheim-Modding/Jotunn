@@ -29,7 +29,7 @@ namespace TestMod
             There is still a fairly long list of features needed to be complete before this Manager is released. Eg:
                 - Proper documentation for methods + a bit of clean up
          */
-        
+
         public void Awake()
         {
             CommandManager.Instance.AddConsoleCommand(new CHCommands_zones());

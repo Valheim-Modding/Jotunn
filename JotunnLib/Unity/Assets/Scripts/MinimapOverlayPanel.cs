@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace Jotunn.GUI
 {
+    /// <summary>
+    ///     Panel for displaying and toggling custom map overlays
+    /// </summary>
     public class MinimapOverlayPanel : MonoBehaviour
     {
         /// <summary>
@@ -30,15 +33,7 @@ namespace Jotunn.GUI
         private readonly Dictionary<string, GameObject> Mods = new Dictionary<string, GameObject>();
         
         /// <summary>
-        /// 
-        /// </summary>
-        public void ToggleOverlayGroup()
-        {
-            OverlayGroup.SetActive(!OverlayGroup.activeSelf);
-        }
-
-        /// <summary>
-        /// 
+        ///     Add a new toggle for a map overlay
         /// </summary>
         /// <param name="modName"></param>
         /// <param name="overlayName"></param>
