@@ -378,7 +378,7 @@ namespace Jotunn.Managers
 
         private IEnumerator DrawOverlay(Texture2D intermediate)
         {
-            Logger.LogInfo("Redraw Overlay");
+            Logger.LogDebug("Redraw Overlay");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
             Graphics.CopyTexture(TransparentTex, intermediate); // Reset intermediate texture
@@ -386,14 +386,15 @@ namespace Jotunn.Managers
             {
                 DrawLayer(overlay.OverlayTex, intermediate, ComposeOverlayMaterial);
             }
-            watch.Stop(); Logger.LogInfo($"DrawOverlay loop took {watch.ElapsedMilliseconds}ms time");
+            watch.Stop();
+            Logger.LogDebug($"DrawOverlay loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
         }
 
         private IEnumerator DrawMain(Texture2D intermediate)
         {
-            Logger.LogInfo("Redraw Main");
+            Logger.LogDebug("Redraw Main");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_mapTexture, intermediate); // Reset vanilla texture to backup
@@ -401,14 +402,15 @@ namespace Jotunn.Managers
             {
                 DrawLayer(overlay.MainTex, intermediate, ComposeMainMaterial);
             }
-            watch.Stop(); Logger.LogInfo($"DrawMain loop took {watch.ElapsedMilliseconds}ms time");
+            watch.Stop();
+            Logger.LogDebug($"DrawMain loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
         }
 
         private IEnumerator DrawHeight(Texture2D intermediate)
         {
-            Logger.LogInfo("Redraw Height");
+            Logger.LogDebug("Redraw Height");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_heightTexture, intermediate); // Reset vanilla texture to backup
@@ -417,14 +419,15 @@ namespace Jotunn.Managers
                 DrawLayer(overlay.HeightFilter, intermediate, ComposeHeightMaterial,
                     RenderTextureFormat.RFloat);
             }
-            watch.Stop(); Logger.LogInfo($"DrawHeight loop took {watch.ElapsedMilliseconds}ms time");
+            watch.Stop();
+            Logger.LogDebug($"DrawHeight loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
         }
 
         private IEnumerator DrawForestFilter(Texture2D intermediate)
         {
-            Logger.LogInfo("Redraw Forest");
+            Logger.LogDebug("Redraw Forest");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_forestMaskTexture, intermediate); // Reset vanilla texture to backup
@@ -432,14 +435,15 @@ namespace Jotunn.Managers
             {
                 DrawLayer(overlay.ForestFilter, intermediate, ComposeForestMaterial);
             }
-            watch.Stop(); Logger.LogInfo($"DrawForest loop took {watch.ElapsedMilliseconds}ms time");
+            watch.Stop();
+            Logger.LogDebug($"DrawForest loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
         }
 
         private IEnumerator DrawFogFilter(Texture2D intermediate)
         {
-            Logger.LogInfo("Redraw Fog");
+            Logger.LogDebug("Redraw Fog");
             var watch = new System.Diagnostics.Stopwatch(); watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_fogTexture, intermediate); // Reset vanilla texture to backup
@@ -447,7 +451,8 @@ namespace Jotunn.Managers
             {
                 DrawLayer(overlay.FogFilter, intermediate, ComposeFogMaterial);
             }
-            watch.Stop(); Logger.LogInfo($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
+            watch.Stop();
+            Logger.LogDebug($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
         }
@@ -502,7 +507,7 @@ namespace Jotunn.Managers
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            Logger.LogInfo("Setting up MapDrawings");
+            Logger.LogDebug("Setting up MapDrawings");
 
             MainTex = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
             HeightFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RFloat, mipChain: false);
@@ -544,14 +549,14 @@ namespace Jotunn.Managers
             Minimap.instance.m_mapSmallShader.SetTexture("_FogTex", FogFilter);
             
             watch.Stop();
-            Logger.LogInfo($"Setup took {watch.ElapsedMilliseconds}ms time");
+            Logger.LogDebug($"Setup took {watch.ElapsedMilliseconds}ms time");
         }
 
         private void SetupOverlays()
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            Logger.LogInfo("Setting up MapOverlays");
+            Logger.LogDebug("Setting up MapOverlays");
 
             // Create intermediate textures to draw on
             OverlayTex = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
@@ -619,7 +624,7 @@ namespace Jotunn.Managers
             On.Minimap.CenterMap += Minimap_CenterMap;
             
             watch.Stop();
-            Logger.LogInfo($"Setup took {watch.ElapsedMilliseconds}ms time");
+            Logger.LogDebug($"Setup took {watch.ElapsedMilliseconds}ms time");
         }
 
         private void SetupGUI()
