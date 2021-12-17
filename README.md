@@ -47,10 +47,12 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **Kitbash Manager** - Create custom assets with individual pieces from vanilla prefabs.
 - **KeyHint Manager** - Create custom key hints for your weapons and tools, even down to the selected piece.
 - **Localization Manager** - Provides multiple methods of loading localization data into the game, as well as exposing an interface for adding additional languages to provide localizations to unsupported languages.
+- **Minimap Manager** - Alter map data or create overlays for the map.
 - **Piece Manager** - Very similar to the Item Manager, abstracting implementation details of configurations for pieces/recipe's.
 - **Prefab Manager** - Provides a cache of prefabs registered through other managers, mostly developers will only query the cache for prefabs added via other managers.
 - **Render Manager** - Provides a custom render queue to render visual GameObjects into a Sprite - Useful to generate icons for your custom items.
 - **Skill Manager** - Facilitates additional custom skills.
+- **Zone Manager** - Create custom locations and vegetation to add in the world generation.
 
 #### Utilities
 - **Asset Helpers** - Methods to facilitate referencing and loading of assets.
@@ -105,3 +107,5 @@ These people have been integral to pushing JVL out of the door, and without them
 *Margmas#9562*: [github](https://github.com/MSchmoecker), [thunderstore](https://valheim.thunderstore.io/package/MSchmoecker/), [nexus](https://www.nexusmods.com/users/111418768)
 
 *JoeyParrish#8644*: [github](https://github.com/joeyparrish), [thunderstore](https://valheim.thunderstore.io/package/joeyparrish/), [nexus](https://www.nexusmods.com/users/128211453)
+
+*Nosirrom#2626*: [github](https://github.com/donchad)
