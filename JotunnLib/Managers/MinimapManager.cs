@@ -134,20 +134,20 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Create a new mapoverlay with a default overlay name
+        ///     Create a new MapOverlay with a default overlay name
         /// </summary>
         /// <returns>Reference to MapOverlay for modder to edit</returns>
-        public MapOverlay AddMapOverlay()
+        public MapOverlay GetMapOverlay()
         {
-            return AddMapOverlay(OverlayNamePrefix + OverlayID++);
+            return GetMapOverlay(OverlayNamePrefix + OverlayID++);
         }
 
         /// <summary>
-        ///     Create a new mapoverlay with a custom overlay name
+        ///     Create a new MapOverlay with a custom overlay name
         /// </summary>
         /// <param name="name">Custom name for the MapOverlay</param>
         /// <returns>Reference to MapOverlay for modder to edit</returns>
-        public MapOverlay AddMapOverlay(string name)
+        public MapOverlay GetMapOverlay(string name)
         {
             if (Overlays.ContainsKey(name))
             {
@@ -176,9 +176,9 @@ namespace Jotunn.Managers
         ///     Create a new MapDrawing with a default overlay name
         /// </summary>
         /// <returns>Reference to MapDrawing for modder to edit</returns>
-        public MapDrawing AddMapDrawing()
+        public MapDrawing GetMapDrawing()
         {
-            return AddMapDrawing(OverlayNamePrefix + OverlayID++);
+            return GetMapDrawing(OverlayNamePrefix + OverlayID++);
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="name">Custom name for the MapDrawing</param>
         /// <returns>Reference to MapDrawing for modder to edit</returns>
-        public MapDrawing AddMapDrawing(string name)
+        public MapDrawing GetMapDrawing(string name)
         {
             if (Drawings.ContainsKey(name))
             {
@@ -231,26 +231,6 @@ namespace Jotunn.Managers
         public bool RemoveMapDrawing(string name)
         {
             return Drawings.Remove(name);
-        }
-        
-        /// <summary>
-        ///     Returns a reference to a currently registered MapOverlay
-        /// </summary>
-        /// <param name="name">The name of the MapOverlay to retrieve</param>
-        /// <returns>The MapOverlay if it exists.</returns>
-        public MapOverlay GetMapOverlay(string name)
-        {
-            return Overlays[name];
-        }
-
-        /// <summary>
-        ///     Returns a reference to a currently registered MapDrawing
-        /// </summary>
-        /// <param name="name">The name of the MapDrawing to retrieve</param>
-        /// <returns>The MapDrawing if it exists.</returns>
-        public MapDrawing GetMapDrawing(string name)
-        {
-            return Drawings[name];
         }
         
         /// <summary>
