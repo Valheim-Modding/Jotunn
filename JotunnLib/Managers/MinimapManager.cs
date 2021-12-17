@@ -110,7 +110,8 @@ namespace Jotunn.Managers
             On.Minimap.Start += Minimap_Start;
             On.Minimap.LoadMapData += Minimap_LoadMapData;
             On.Minimap.OnDestroy += Minimap_OnDestroy;
-
+            On.Minimap.CenterMap += Minimap_CenterMap;
+            
             // Setup methods to properly explore fog, and keep vanilla copy of fog properly updated.
             On.Minimap.Explore_int_int += Minimap_Explore_Point;
             On.Minimap.Explore_Vector3_float += Minimap_Explore_Radius;
@@ -620,9 +621,6 @@ namespace Jotunn.Managers
             imageSmall.material = null;
             imageSmall.raycastTarget = false;
 
-            // Hook CenterMap to move the overlays
-            On.Minimap.CenterMap += Minimap_CenterMap;
-            
             watch.Stop();
             Logger.LogDebug($"Setup took {watch.ElapsedMilliseconds}ms time");
         }
@@ -661,7 +659,12 @@ namespace Jotunn.Managers
         private void Minimap_CenterMap(On.Minimap.orig_CenterMap orig, Minimap self, Vector3 centerpoint)
         {
             orig(self, centerpoint);
-            
+
+            if (!OverlayLarge)
+            {
+                return;
+            }
+
             self.WorldToMapPoint(centerpoint, out var mx, out var my);
             RectTransform rectTransform = OverlayLarge.transform as RectTransform;
             float aspect = rectTransform.rect.width / rectTransform.rect.height;
