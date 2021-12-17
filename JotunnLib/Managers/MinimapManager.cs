@@ -125,8 +125,12 @@ namespace Jotunn.Managers
 
             TransparentTex = bundle.LoadAsset<Texture2D>("2048x2048_clear");
             
-            var overlaypanel = bundle.LoadAsset<GameObject>("MinimapOverlayPanel");
-            PrefabManager.Instance.AddPrefab(new CustomPrefab(overlaypanel, false));
+            var panelGameObject = bundle.LoadAsset<GameObject>("MinimapOverlayPanel");
+            var panelComponent = panelGameObject.GetComponent<MinimapOverlayPanel>();
+            GUIManager.Instance.ApplyButtonStyle(panelComponent.Button);
+            GUIManager.Instance.ApplyToogleStyle(panelComponent.BaseToggle);
+            GUIManager.Instance.ApplyTextStyle(panelComponent.BaseModText);
+            PrefabManager.Instance.AddPrefab(new CustomPrefab(panelGameObject, false));
 
             bundle.Unload(false);
 
@@ -631,9 +635,6 @@ namespace Jotunn.Managers
             var panel = Object.Instantiate(basePanel, Minimap.instance.m_mapLarge.transform, false);
             panel.SetActive(false);
             OverlayPanel = panel.GetComponent<MinimapOverlayPanel>();
-            GUIManager.Instance.ApplyButtonStyle(OverlayPanel.Button);
-            GUIManager.Instance.ApplyToogleStyle(OverlayPanel.BaseToggle);
-            GUIManager.Instance.ApplyTextStyle(OverlayPanel.BaseModText);
         }
 
         private void AddOverlayToGUI(MapOverlay ovl)
