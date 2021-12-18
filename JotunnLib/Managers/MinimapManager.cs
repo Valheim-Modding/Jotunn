@@ -327,10 +327,6 @@ namespace Jotunn.Managers
                     {
                         yield return DrawOverlay();
                     }
-                    foreach (var overlay in Overlays.Values)
-                    {
-                        overlay.Dirty = false;
-                    }
                     
                     // Map textures
                     if (Drawings.Values.Any(x => x.MainDirty))
@@ -345,15 +341,32 @@ namespace Jotunn.Managers
                     {
                         yield return DrawForestFilter();
                     }
-                    foreach (var overlay in Drawings.Values)
-                    {
-                        overlay.Dirty = false;
-                    }
                 }
             }
             Minimap.instance.StartCoroutine(watchdog());
         }
         
+        private IEnumerator DrawFogFilter()
+        {
+            Logger.LogDebug("Redraw Fog");
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+
+            foreach (var overlay in Drawings.Values)
+            {
+                if (overlay.Enabled && overlay.FogEnabled)
+                {
+                    DrawLayer(overlay.FogFilter, FogFilter, ComposeFogMaterial);
+                }
+                overlay.FogDirty = false;
+            }
+            
+            watch.Stop();
+            Logger.LogDebug($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
+
+            yield return null;
+        }
+
         private IEnumerator DrawOverlay()
         {
             Logger.LogDebug("Redraw Overlay");
@@ -361,9 +374,13 @@ namespace Jotunn.Managers
             watch.Start();
             
             Graphics.CopyTexture(TransparentTex, OverlayTex);
-            foreach (var overlay in Overlays.Values.Where(x => x.Enabled))
+            foreach (var overlay in Overlays.Values)
             {
-                DrawLayer(overlay.OverlayTex, OverlayTex, ComposeOverlayMaterial);
+                if (overlay.Enabled)
+                {
+                    DrawLayer(overlay.OverlayTex, OverlayTex, ComposeOverlayMaterial);
+                }
+                overlay.Dirty = false;
             }
 
             watch.Stop();
@@ -379,9 +396,13 @@ namespace Jotunn.Managers
             watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_mapTexture, MainTex);
-            foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.MainEnabled))
+            foreach (var overlay in Drawings.Values)
             {
-                DrawLayer(overlay.MainTex, MainTex, ComposeMainMaterial);
+                if (overlay.Enabled && overlay.MainEnabled)
+                {
+                    DrawLayer(overlay.MainTex, MainTex, ComposeMainMaterial);
+                }
+                overlay.MainDirty = false;
             }
 
             watch.Stop();
@@ -397,10 +418,14 @@ namespace Jotunn.Managers
             watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_heightTexture, HeightFilter);
-            foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.HeightEnabled))
+            foreach (var overlay in Drawings.Values)
             {
-                DrawLayer(overlay.HeightFilter, HeightFilter, ComposeHeightMaterial,
-                    RenderTextureFormat.RFloat);
+                if (overlay.Enabled && overlay.HeightEnabled)
+                {
+                    DrawLayer(overlay.HeightFilter, HeightFilter, ComposeHeightMaterial,
+                        RenderTextureFormat.RFloat);
+                }
+                overlay.HeightDirty = false;
             }
 
             watch.Stop();
@@ -416,9 +441,13 @@ namespace Jotunn.Managers
             watch.Start();
 
             Graphics.CopyTexture(Minimap.instance.m_forestMaskTexture, ForestFilter);
-            foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.ForestEnabled))
+            foreach (var overlay in Drawings.Values)
             {
-                DrawLayer(overlay.ForestFilter, ForestFilter, ComposeForestMaterial);
+                if (overlay.Enabled && overlay.ForestEnabled)
+                {
+                    DrawLayer(overlay.ForestFilter, ForestFilter, ComposeForestMaterial);
+                }
+                overlay.ForestDirty = false;
             }
 
             watch.Stop();
@@ -427,23 +456,6 @@ namespace Jotunn.Managers
             yield return null;
         }
         
-        private IEnumerator DrawFogFilter()
-        {
-            Logger.LogDebug("Redraw Fog");
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-
-            foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.FogEnabled))
-            {
-                DrawLayer(overlay.FogFilter, FogFilter, ComposeFogMaterial);
-            }
-            
-            watch.Stop();
-            Logger.LogDebug($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
-
-            yield return null;
-        }
-
         private void DrawLayer(Texture2D layer, Texture2D dest, Material mat, RenderTextureFormat format = RenderTextureFormat.Default)
         {
             RenderTexture tmp = RenderTexture.GetTemporary(TextureSize, TextureSize, 0, format, RenderTextureReadWrite.Default);
