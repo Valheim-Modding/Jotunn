@@ -109,14 +109,6 @@ namespace Jotunn.Managers
             On.Minimap.LoadMapData += Minimap_LoadMapData;
             On.Minimap.OnDestroy += Minimap_OnDestroy;
             On.Minimap.CenterMap += Minimap_CenterMap;
-            
-            // Setup methods to properly explore fog, and keep vanilla copy of fog properly updated.
-            // On.Minimap.Explore_int_int += Minimap_Explore;
-            // On.Minimap.Explore_Vector3_float += Minimap_Explore_Radius;
-            // On.Minimap.ExploreOthers += Minimap_ExploreOthers;
-            // On.Minimap.ExploreAll += Minimap_ExploreAll;
-            // On.Minimap.AddSharedMapData += Minimap_AddSharedMapData;
-            // On.Minimap.Reset += Minimap_Reset;
 
             // Load texture with all pixels (RGBA) set to 0f and our overlay panel.
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
@@ -129,7 +121,7 @@ namespace Jotunn.Managers
             bundle.Unload(false);
 
             // Create a harmony patch to watch Texture2D.Apply calls
-            Harmony.CreateAndPatchAll(typeof(TextureController));
+            Harmony.CreateAndPatchAll(typeof(MinimapManager));
         }
         
         /// <summary>
@@ -319,37 +311,41 @@ namespace Jotunn.Managers
                         continue;
                     }
 
-                    if (Overlays.Values.Any(x => !x.IgnoreFog) || Drawings.Values.Any(x => x.FogEnabled))
+                    // Fog 
+                    if (Overlays.Values.Any(x => !x.IgnoreFog && x.Enabled) ||
+                        Drawings.Values.Any(x => x.FogEnabled && x.Enabled))
                     {
                         Graphics.CopyTexture(Minimap.instance.m_fogTexture, FogFilter);
                     }
+                    if (Drawings.Values.Any(x => x.FogDirty))
+                    {
+                        yield return DrawFogFilter();
+                    }
+
+                    // Overlays
+                    if (Overlays.Values.Any(x => x.OverlayDirty))
+                    {
+                        yield return DrawOverlay();
+                    }
+                    foreach (var overlay in Overlays.Values)
+                    {
+                        overlay.Dirty = false;
+                    }
                     
+                    // Map textures
                     if (Drawings.Values.Any(x => x.MainDirty))
                     {
                         yield return DrawMain();
                     }
                     if (Drawings.Values.Any(x => x.HeightDirty))
                     {
-                        yield return DrawHeight();
+                        yield return DrawHeightFilter();
                     }
                     if (Drawings.Values.Any(x => x.ForestDirty))
                     {
                         yield return DrawForestFilter();
                     }
-                    if (Drawings.Values.Any(x => x.FogDirty))
-                    {
-                        yield return DrawFogFilter();
-                    }
                     foreach (var overlay in Drawings.Values)
-                    {
-                        overlay.Dirty = false;
-                    }
-
-                    if (Overlays.Values.Any(x => x.OverlayDirty))
-                    {
-                        yield return DrawOverlay();
-                    }
-                    foreach (var overlay in Overlays.Values)
                     {
                         overlay.Dirty = false;
                     }
@@ -394,7 +390,7 @@ namespace Jotunn.Managers
             yield return null;
         }
 
-        private IEnumerator DrawHeight()
+        private IEnumerator DrawHeightFilter()
         {
             Logger.LogDebug("Redraw Height");
             var watch = new System.Diagnostics.Stopwatch();
@@ -704,68 +700,38 @@ namespace Jotunn.Managers
             }
             Instance.Drawings.Clear();
         }
-
-        private bool Minimap_AddSharedMapData(On.Minimap.orig_AddSharedMapData orig, Minimap self, byte[] dataArray)
-        {
-            var ret = orig(self, dataArray);
-            if (ret)
-            {
-                FogFilter?.Apply();
-            }
-            return ret;
-        }
         
-        private void Minimap_Explore_Radius(On.Minimap.orig_Explore_Vector3_float orig, Minimap self, Vector3 v, float f)
+        [HarmonyPatch(typeof(Texture2D), "Apply", typeof(bool), typeof(bool))]
+        [HarmonyPostfix]
+        private static void Texture2D_Apply(Texture2D __instance)
         {
-            orig(self, v, f);
-            FogFilter?.Apply();
-        }
-
-        private bool Minimap_Explore(On.Minimap.orig_Explore_int_int orig, Minimap self, int x, int y)
-        {
-            // if (!self.m_explored[y * self.m_textureSize + x])
-            // {
-            //     FogFilter?.SetPixel(x, y, FilterOff);
-            // }
-            // return orig(self, x, y);
-            
-            var ret = orig(self, x, y);
-            if (ret)
+            if (__instance == Minimap.instance?.m_fogTexture &&
+                !Instance.Drawings.Values.Any(x => x.FogEnabled) &&
+                Instance.Overlays.Values.Any(x => !x.IgnoreFog))
             {
-                FogFilter?.SetPixel(x, y, FilterOff);
+                Instance.SetFogDirty();
             }
-            return ret;
-        }
-        
-        private bool Minimap_ExploreOthers(On.Minimap.orig_ExploreOthers orig, Minimap self, int x, int y)
-        {
-            // if (!self.m_explored[y * self.m_textureSize + x])
-            // {
-            //     FogFilter?.SetPixel(x, y, FilterOff);
-            // }
-            // return orig(self, x, y);
-
-            var ret = orig(self, x, y);
-            if (ret)
+            foreach (var overlay in Instance.Overlays.Values)
             {
-                FogFilter?.SetPixel(x, y, FilterOff);
+                overlay.SetTextureDirty(__instance);
             }
-            return ret;
+            foreach (var drawing in Instance.Drawings.Values)
+            {
+                drawing.SetTextureDirty(__instance);
+            }
         }
 
-        private void Minimap_ExploreAll(On.Minimap.orig_ExploreAll orig, Minimap self)
+        private void SetFogDirty()
         {
-            orig(self);
-            FogFilter?.Apply();
+            foreach (var overlay in Overlays.Values.Where(x => !x.IgnoreFog))
+            {
+                overlay._overlayDirty = true;
+            }
+            foreach (var drawing in Drawings.Values.Where(x => x.FogEnabled))
+            {
+                drawing._fogDirty = true;
+            }
         }
-
-        private void Minimap_Reset(On.Minimap.orig_Reset orig, Minimap self)
-        {
-            orig(self);
-            FogFilter?.SetPixels(self.m_fogTexture.GetPixels());
-            FogFilter?.Apply();
-        }
-
 
         /// <summary>
         ///     Object for modders to use to access and modify their Overlay.
@@ -833,7 +799,7 @@ namespace Jotunn.Managers
 
                     if (value && !IgnoreFog)
                     {
-                        TextureController.SetFogDirty();
+                        Instance.SetFogDirty();
                     }
                 }
             }
@@ -850,7 +816,7 @@ namespace Jotunn.Managers
             /// </summary>
             internal MapOverlay()
             {
-                TextureController.SetFogDirty();
+                Instance.SetFogDirty();
             }
 
             /// <summary>
@@ -946,7 +912,7 @@ namespace Jotunn.Managers
                     
                     if (value && FogEnabled)
                     {
-                        TextureController.SetFogDirty();
+                        Instance.SetFogDirty();
                     }
                 }
             }
@@ -973,7 +939,7 @@ namespace Jotunn.Managers
             /// </summary>
             internal MapDrawing()
             {
-                TextureController.SetFogDirty();
+                Instance.SetFogDirty();
             }
 
             /// <summary>
@@ -1066,35 +1032,6 @@ namespace Jotunn.Managers
         /// </summary>
         internal static class TextureController
         {
-            [HarmonyPatch(typeof(Texture2D), "Apply", typeof(bool), typeof(bool))]
-            [HarmonyPostfix]
-            public static void Texture2D_Apply(Texture2D __instance)
-            {
-                if (__instance == Minimap.instance?.m_fogTexture)
-                {
-                    SetFogDirty();
-                }
-                foreach (var overlay in Instance.Overlays.Values)
-                {
-                    overlay.SetTextureDirty(__instance);
-                }
-                foreach (var drawing in Instance.Drawings.Values)
-                {
-                    drawing.SetTextureDirty(__instance);
-                }
-            }
-
-            public static void SetFogDirty()
-            {
-                foreach (var overlay in Instance.Overlays.Values.Where(x => !x.IgnoreFog))
-                {
-                    overlay._overlayDirty = true;
-                }
-                foreach (var drawing in Instance.Drawings.Values.Where(x => x.FogEnabled))
-                {
-                    drawing._fogDirty = true;
-                }
-            }
         }
     }
 }
