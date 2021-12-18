@@ -323,7 +323,7 @@ namespace Jotunn.Managers
                     }
 
                     // Overlays
-                    if (Overlays.Values.Any(x => x.OverlayDirty))
+                    if (Overlays.Values.Any(x => x.Dirty))
                     {
                         yield return DrawOverlay();
                     }
@@ -706,7 +706,7 @@ namespace Jotunn.Managers
         private static void Texture2D_Apply(Texture2D __instance)
         {
             if (__instance == Minimap.instance?.m_fogTexture &&
-                !Instance.Drawings.Values.Any(x => x.FogEnabled) &&
+                !Instance.Drawings.Values.Any(x => x.FogEnabled && x.Enabled) &&
                 Instance.Overlays.Values.Any(x => !x.IgnoreFog))
             {
                 Instance.SetFogDirty();
@@ -725,18 +725,17 @@ namespace Jotunn.Managers
         {
             foreach (var overlay in Overlays.Values.Where(x => !x.IgnoreFog))
             {
-                overlay._overlayDirty = true;
+                overlay.Dirty = true;
             }
             foreach (var drawing in Drawings.Values.Where(x => x.FogEnabled))
             {
-                drawing._fogDirty = true;
+                drawing.FogDirty = true;
             }
         }
 
         /// <summary>
         ///     Object for modders to use to access and modify their Overlay.
         ///     Modders should modify the texture directly.
-        ///     
         /// </summary>
         public class MapOverlay : MapOverlayBase
         {
@@ -744,26 +743,6 @@ namespace Jotunn.Managers
             ///     Texture to draw overlay texture information to
             /// </summary>
             public Texture2D OverlayTex => _overlayTex ??= Create(Instance.TransparentTex);
-            
-            /// <summary>
-            ///     Set true to render this overlay on unexplored areas,
-            ///     false to hide it beneath the fog
-            /// </summary>
-            public bool IgnoreFog
-            {
-                get
-                {
-                    return _ignoreFog;
-                }
-                set
-                {
-                    if (_ignoreFog != value)
-                    {
-                        _ignoreFog = value;
-                        Dirty = true;
-                    }
-                }
-            }
 
             /// <summary>
             ///     Set true to render this overlay, false to hide
@@ -780,10 +759,15 @@ namespace Jotunn.Managers
                     {
                         _enabled = value;
                         Dirty = true;
+
+                        if (!IgnoreFog)
+                        {
+                            Instance.SetFogDirty();
+                        }
                     }
                 }
             }
-
+            
             /// <summary>
             ///     Flag to determine if this overlay had changes since its last draw
             /// </summary>
@@ -791,33 +775,28 @@ namespace Jotunn.Managers
             {
                 get
                 {
-                    return OverlayDirty;
+                    return _overlayTex != null && _overlayDirty;
                 }
                 set
                 {
                     _overlayDirty = value;
-
-                    if (value && !IgnoreFog)
-                    {
-                        Instance.SetFogDirty();
-                    }
                 }
             }
+            
+            /// <summary>
+            ///     Flag to determine if this overlay should be hidden in unexplored areas
+            /// </summary>
+            internal bool IgnoreFog;
 
-            internal bool OverlayDirty => _overlayTex != null && _overlayDirty;
-
+            // Backing fields
             private Texture2D _overlayTex;
-            private bool _ignoreFog;
             private bool _enabled;
-            internal bool _overlayDirty;
-
+            private bool _overlayDirty;
+            
             /// <summary>
             ///     Hide .ctor
             /// </summary>
-            internal MapOverlay()
-            {
-                Instance.SetFogDirty();
-            }
+            internal MapOverlay() {}
 
             /// <summary>
             ///     Function called on Texture2D.Apply to check if one of our member textures was changed
@@ -832,8 +811,17 @@ namespace Jotunn.Managers
                 if (tex == _overlayTex)
                 {
                     _overlayDirty = true;
+
+                    if (!IgnoreFog)
+                    {
+                        Instance.SetFogDirty();
+                    }
                 }
             }
+
+            /// <summary>
+            ///     Destroys the overlay texture
+            /// </summary>
             internal void Destroy()
             {
                 if (_overlayTex != null)
@@ -885,6 +873,11 @@ namespace Jotunn.Managers
                     {
                         _enabled = value;
                         Dirty = true;
+
+                        if (FogEnabled)
+                        {
+                            Instance.SetFogDirty();
+                        }
                     }
                 }
             }
@@ -909,18 +902,54 @@ namespace Jotunn.Managers
                     _heightDirty = value;
                     _forestDirty = value;
                     _fogDirty = value;
-                    
-                    if (value && FogEnabled)
-                    {
-                        Instance.SetFogDirty();
-                    }
                 }
             }
 
-            internal bool MainDirty => _mainTex != null && _mainDirty;
-            internal bool HeightDirty => _heightFilter != null && _heightDirty;
-            internal bool ForestDirty => _forestFilter != null && _forestDirty;
-            internal bool FogDirty => _fogFilter != null && _fogDirty;
+            internal bool MainDirty
+            {
+                get
+                {
+                    return _mainTex != null && _mainDirty;
+                }
+                set
+                {
+                    _mainDirty = value;
+                }
+            }
+
+            internal bool HeightDirty
+            {
+                get
+                {
+                    return _heightFilter != null && _heightDirty;
+                }
+                set
+                {
+                    _heightDirty = value;
+                }
+            }
+            internal bool ForestDirty 
+            {
+                get
+                {
+                    return _forestFilter != null && _forestDirty;
+                }
+                set
+                {
+                    _forestDirty = value;
+                }
+            }
+            internal bool FogDirty
+            {
+                get
+                {
+                    return _fogFilter != null && _fogDirty;
+                }
+                set
+                {
+                    _fogDirty = value;
+                }
+            }
 
             private Texture2D _mainTex;
             private Texture2D _heightFilter;
@@ -929,18 +958,15 @@ namespace Jotunn.Managers
 
             private bool _enabled;
 
-            internal bool _mainDirty;
-            internal bool _heightDirty;
-            internal bool _forestDirty;
-            internal bool _fogDirty;
-
+            private bool _mainDirty;
+            private bool _heightDirty;
+            private bool _forestDirty;
+            private bool _fogDirty;
+            
             /// <summary>
             ///     Hide .ctor
             /// </summary>
-            internal MapDrawing()
-            {
-                Instance.SetFogDirty();
-            }
+            internal MapDrawing() { }
 
             /// <summary>
             ///     Function called on Texture2D.Apply to check if one of our member textures was changed
@@ -967,9 +993,17 @@ namespace Jotunn.Managers
                 if (tex == _fogFilter)
                 {
                     _fogDirty = true;
+
+                    if (FogEnabled)
+                    {
+                        Instance.SetFogDirty();
+                    }
                 }
             }
 
+            /// <summary>
+            ///     Destroys all textures
+            /// </summary>
             internal void Destroy()
             {
                 if (_mainTex != null)
@@ -1025,13 +1059,6 @@ namespace Jotunn.Managers
                 Graphics.CopyTexture(Instance.TransparentTex, t);
                 return t;
             }
-        }
-
-        /// <summary>
-        ///     Texture management
-        /// </summary>
-        internal static class TextureController
-        {
         }
     }
 }
