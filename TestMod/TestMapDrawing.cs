@@ -508,7 +508,7 @@ namespace TestMod
                     return;
                 }
 
-                var reeOverlay = MinimapManager.Instance.GetMapOverlay("ReeeOverlay");
+                var reeOverlay = MinimapManager.Instance.GetMapOverlay("ReeeOverlay", true);
 
                 var pixels = Ree.texture.GetPixels();
                 var pos = MinimapManager.Instance.WorldToOverlayCoords(Player.m_localPlayer.transform.position,

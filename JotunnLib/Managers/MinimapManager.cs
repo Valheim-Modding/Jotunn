@@ -123,13 +123,14 @@ namespace Jotunn.Managers
             // Create a harmony patch to watch Texture2D.Apply calls
             Harmony.CreateAndPatchAll(typeof(MinimapManager));
         }
-        
+
         /// <summary>
         ///     Create a new MapOverlay with a custom overlay name
         /// </summary>
         /// <param name="name">Custom name for the MapOverlay</param>
+        /// <param name="ignoreFog">When set to true, that layer will be drawn regardless of exploration status, defaults to false</param>
         /// <returns>Reference to MapOverlay for modder to edit</returns>
-        public MapOverlay GetMapOverlay(string name)
+        public MapOverlay GetMapOverlay(string name, bool ignoreFog = false)
         {
             if (Overlays.ContainsKey(name))
             {
@@ -147,7 +148,8 @@ namespace Jotunn.Managers
             {
                 Name = name,
                 Enabled = true,
-                TextureSize = TextureSize
+                TextureSize = TextureSize,
+                IgnoreFog = ignoreFog
             };
             Overlays.Add(name, ret);
             AddOverlayToGUI(ret);
@@ -374,10 +376,11 @@ namespace Jotunn.Managers
             watch.Start();
             
             Graphics.CopyTexture(TransparentTex, OverlayTex);
-            foreach (var overlay in Overlays.Values)
+            foreach (var overlay in Overlays.Values.OrderBy(x => x.IgnoreFog ? 1 : -1))
             {
                 if (overlay.Enabled)
                 {
+                    ComposeOverlayMaterial.SetTexture("_FogTex", overlay.IgnoreFog ? TransparentTex : FogFilter);
                     DrawLayer(overlay.OverlayTex, OverlayTex, ComposeOverlayMaterial);
                 }
                 overlay.Dirty = false;
