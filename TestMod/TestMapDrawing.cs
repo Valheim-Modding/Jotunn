@@ -223,11 +223,15 @@ namespace TestMod
         {
             var quadTest0 = MinimapManager.Instance.GetMapDrawing("QuadColorOverlay");
             DrawQuadrant(quadTest0.MainTex, Color.red, 0);
+            DrawQuadrant(quadTest0.FogFilter, MinimapManager.FilterOff, 0);
             var quadTest1 = MinimapManager.Instance.GetMapDrawing("QuadHeightOverlay");
             DrawQuadrant(quadTest1.HeightFilter, MinimapManager.MeadowHeight, 1);
+            DrawQuadrant(quadTest1.FogFilter, MinimapManager.FilterOff, 1);
             var quadTest2 = MinimapManager.Instance.GetMapDrawing("QuadForestOverlay");
             DrawQuadrant(quadTest2.ForestFilter, MinimapManager.FilterOff, 2);
+            DrawQuadrant(quadTest2.FogFilter, MinimapManager.FilterOff, 2);
             DrawQuadrant(quadTest2.ForestFilter, MinimapManager.FilterOn, 1);
+            DrawQuadrant(quadTest2.FogFilter, MinimapManager.FilterOff, 1);
             var quadTest3 = MinimapManager.Instance.GetMapDrawing("QuadFogOverlay");
             DrawQuadrant(quadTest3.FogFilter, MinimapManager.FilterOn, 3);
         }

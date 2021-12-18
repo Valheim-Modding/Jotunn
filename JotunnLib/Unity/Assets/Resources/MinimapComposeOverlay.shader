@@ -4,6 +4,7 @@
     {
         _MainTex("Texture", 2D) = "white" {}
         _VanillaTex("Texture", 2D) = "white" {}
+        _FogTex("Texture", 2D) = "white" {}
     }
         SubShader
         {
@@ -31,7 +32,7 @@
                     float4 vertex : SV_POSITION;
                 };
 
-                sampler2D _MainTex, _BrushTex, _VanillaTex;
+                sampler2D _MainTex, _BrushTex, _VanillaTex, _FogTex;
                 float4 _MainTex_ST;
                 fixed4 _Color, _Coordinates;
 
@@ -47,8 +48,12 @@
                 {
                     fixed4 col = tex2D(_MainTex, i.uv);
                     fixed4 col2 = tex2D(_VanillaTex, i.uv);
-
-                    col2.rgba = lerp(col2.rgba, col.rgba, col.a);
+                    fixed4 col3 = tex2D(_FogTex, i.uv);
+                    if(col3.r == 1){
+                        col2.a = 0;
+                    } else {
+                        col2.rgba = lerp(col2.rgba, col.rgba, col.a);
+                    }
                     return col2;
                 }
                 ENDCG

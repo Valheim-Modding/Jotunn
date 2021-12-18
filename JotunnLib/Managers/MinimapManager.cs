@@ -56,7 +56,6 @@ namespace Jotunn.Managers
         public static Color MeadowHeight = new Color(32f, 0f, 0f, 255f);
 
         private const int TextureSize = 2048;
-        private const string OverlayNamePrefix = "custom_map_overlay_";
 
         /// <summary>
         ///     Container to hold all live Overlays.
@@ -67,10 +66,7 @@ namespace Jotunn.Managers
         ///     Container to hold all live Drawings.
         /// </summary>
         private readonly Dictionary<string, MapDrawing> Drawings = new Dictionary<string, MapDrawing>();
-
-        // Global ID counter
-        private int OverlayID;
-
+        
         // Transparent base texture
         private Texture2D TransparentTex;
         // Mask for the Overlay
@@ -82,7 +78,7 @@ namespace Jotunn.Managers
         private Texture2D HeightFilter;
         private Texture2D ForestFilter;
         private Texture2D FogFilter;
-
+        
         // Materials that have shaders used to blit overlays onto the minimap.
         private Material ComposeOverlayMaterial;
         private Material ComposeMainMaterial;
@@ -115,12 +111,12 @@ namespace Jotunn.Managers
             On.Minimap.CenterMap += Minimap_CenterMap;
             
             // Setup methods to properly explore fog, and keep vanilla copy of fog properly updated.
-            On.Minimap.Explore_int_int += Minimap_Explore_Point;
-            On.Minimap.Explore_Vector3_float += Minimap_Explore_Radius;
-            On.Minimap.ExploreOthers += Minimap_ExploreOthers;
-            On.Minimap.ExploreAll += Minimap_ExploreAll;
-            On.Minimap.AddSharedMapData += Minimap_AddSharedMapData;
-            On.Minimap.Reset += Minimap_Reset;
+            // On.Minimap.Explore_int_int += Minimap_Explore;
+            // On.Minimap.Explore_Vector3_float += Minimap_Explore_Radius;
+            // On.Minimap.ExploreOthers += Minimap_ExploreOthers;
+            // On.Minimap.ExploreAll += Minimap_ExploreAll;
+            // On.Minimap.AddSharedMapData += Minimap_AddSharedMapData;
+            // On.Minimap.Reset += Minimap_Reset;
 
             // Load texture with all pixels (RGBA) set to 0f and our overlay panel.
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
@@ -133,18 +129,9 @@ namespace Jotunn.Managers
             bundle.Unload(false);
 
             // Create a harmony patch to watch Texture2D.Apply calls
-            Harmony.CreateAndPatchAll(typeof(Texture2D_Apply));
+            Harmony.CreateAndPatchAll(typeof(TextureController));
         }
-
-        /// <summary>
-        ///     Create a new MapOverlay with a default overlay name
-        /// </summary>
-        /// <returns>Reference to MapOverlay for modder to edit</returns>
-        public MapOverlay GetMapOverlay()
-        {
-            return GetMapOverlay(OverlayNamePrefix + OverlayID++);
-        }
-
+        
         /// <summary>
         ///     Create a new MapOverlay with a custom overlay name
         /// </summary>
@@ -175,15 +162,6 @@ namespace Jotunn.Managers
             return ret;
         }
         
-        /// <summary>
-        ///     Create a new MapDrawing with a default overlay name
-        /// </summary>
-        /// <returns>Reference to MapDrawing for modder to edit</returns>
-        public MapDrawing GetMapDrawing()
-        {
-            return GetMapDrawing(OverlayNamePrefix + OverlayID++);
-        }
-
         /// <summary>
         ///     Create a new MapDrawing with a custom overlay name
         /// </summary>
@@ -331,46 +309,47 @@ namespace Jotunn.Managers
         {
             IEnumerator watchdog()
             {
+                var wait = new WaitForEndOfFrame();
                 while (true)
                 {
-                    yield return null;
+                    yield return wait;
+                    
                     if (!Overlays.Values.Any(x => x.Dirty) && !Drawings.Values.Any(x => x.Dirty))
                     {
                         continue;
                     }
-                    if (Overlays.Values.Any(x => x.OverlayDirty))
+
+                    if (Overlays.Values.Any(x => !x.IgnoreFog) || Drawings.Values.Any(x => x.FogEnabled))
                     {
-                        yield return DrawOverlay(OverlayTex);
+                        Graphics.CopyTexture(Minimap.instance.m_fogTexture, FogFilter);
                     }
-                    foreach (var overlay in Overlays.Values)
+                    
+                    if (Drawings.Values.Any(x => x.MainDirty))
+                    {
+                        yield return DrawMain();
+                    }
+                    if (Drawings.Values.Any(x => x.HeightDirty))
+                    {
+                        yield return DrawHeight();
+                    }
+                    if (Drawings.Values.Any(x => x.ForestDirty))
+                    {
+                        yield return DrawForestFilter();
+                    }
+                    if (Drawings.Values.Any(x => x.FogDirty))
+                    {
+                        yield return DrawFogFilter();
+                    }
+                    foreach (var overlay in Drawings.Values)
                     {
                         overlay.Dirty = false;
                     }
 
-                    // Do not try to update drawings if there are none.
-                    if (Drawings.Count == 0)
+                    if (Overlays.Values.Any(x => x.OverlayDirty))
                     {
-                        continue;
+                        yield return DrawOverlay();
                     }
-
-                    if (Drawings.Values.Any(x => x.MainDirty))
-                    {
-                        yield return DrawMain(MainTex);
-                    }
-                    if (Drawings.Values.Any(x => x.HeightDirty))
-                    {
-                        yield return DrawHeight(HeightFilter);
-                    }
-                    if (Drawings.Values.Any(x => x.ForestDirty))
-                    {
-                        yield return DrawForestFilter(ForestFilter);
-                    }
-                    if (Drawings.Values.Any(x => x.FogDirty))
-                    {
-                        yield return DrawFogFilter(FogFilter);
-                    }
-
-                    foreach (var overlay in Drawings.Values)
+                    foreach (var overlay in Overlays.Values)
                     {
                         overlay.Dirty = false;
                     }
@@ -378,82 +357,91 @@ namespace Jotunn.Managers
             }
             Minimap.instance.StartCoroutine(watchdog());
         }
-
-        private IEnumerator DrawOverlay(Texture2D intermediate)
+        
+        private IEnumerator DrawOverlay()
         {
             Logger.LogDebug("Redraw Overlay");
-            var watch = new System.Diagnostics.Stopwatch(); watch.Start();
-
-            Graphics.CopyTexture(TransparentTex, intermediate); // Reset intermediate texture
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            
+            Graphics.CopyTexture(TransparentTex, OverlayTex);
             foreach (var overlay in Overlays.Values.Where(x => x.Enabled))
             {
-                DrawLayer(overlay.OverlayTex, intermediate, ComposeOverlayMaterial);
+                DrawLayer(overlay.OverlayTex, OverlayTex, ComposeOverlayMaterial);
             }
+
             watch.Stop();
             Logger.LogDebug($"DrawOverlay loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
         }
 
-        private IEnumerator DrawMain(Texture2D intermediate)
+        private IEnumerator DrawMain()
         {
             Logger.LogDebug("Redraw Main");
-            var watch = new System.Diagnostics.Stopwatch(); watch.Start();
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
 
-            Graphics.CopyTexture(Minimap.instance.m_mapTexture, intermediate); // Reset vanilla texture to backup
+            Graphics.CopyTexture(Minimap.instance.m_mapTexture, MainTex);
             foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.MainEnabled))
             {
-                DrawLayer(overlay.MainTex, intermediate, ComposeMainMaterial);
+                DrawLayer(overlay.MainTex, MainTex, ComposeMainMaterial);
             }
+
             watch.Stop();
             Logger.LogDebug($"DrawMain loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
         }
 
-        private IEnumerator DrawHeight(Texture2D intermediate)
+        private IEnumerator DrawHeight()
         {
             Logger.LogDebug("Redraw Height");
-            var watch = new System.Diagnostics.Stopwatch(); watch.Start();
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
 
-            Graphics.CopyTexture(Minimap.instance.m_heightTexture, intermediate); // Reset vanilla texture to backup
+            Graphics.CopyTexture(Minimap.instance.m_heightTexture, HeightFilter);
             foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.HeightEnabled))
             {
-                DrawLayer(overlay.HeightFilter, intermediate, ComposeHeightMaterial,
+                DrawLayer(overlay.HeightFilter, HeightFilter, ComposeHeightMaterial,
                     RenderTextureFormat.RFloat);
             }
+
             watch.Stop();
             Logger.LogDebug($"DrawHeight loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
         }
 
-        private IEnumerator DrawForestFilter(Texture2D intermediate)
+        private IEnumerator DrawForestFilter()
         {
             Logger.LogDebug("Redraw Forest");
-            var watch = new System.Diagnostics.Stopwatch(); watch.Start();
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
 
-            Graphics.CopyTexture(Minimap.instance.m_forestMaskTexture, intermediate); // Reset vanilla texture to backup
+            Graphics.CopyTexture(Minimap.instance.m_forestMaskTexture, ForestFilter);
             foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.ForestEnabled))
             {
-                DrawLayer(overlay.ForestFilter, intermediate, ComposeForestMaterial);
+                DrawLayer(overlay.ForestFilter, ForestFilter, ComposeForestMaterial);
             }
+
             watch.Stop();
             Logger.LogDebug($"DrawForest loop took {watch.ElapsedMilliseconds}ms time");
 
             yield return null;
         }
-
-        private IEnumerator DrawFogFilter(Texture2D intermediate)
+        
+        private IEnumerator DrawFogFilter()
         {
             Logger.LogDebug("Redraw Fog");
-            var watch = new System.Diagnostics.Stopwatch(); watch.Start();
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
 
-            Graphics.CopyTexture(Minimap.instance.m_fogTexture, intermediate); // Reset vanilla texture to backup
             foreach (var overlay in Drawings.Values.Where(x => x.Enabled && x.FogEnabled))
             {
-                DrawLayer(overlay.FogFilter, intermediate, ComposeFogMaterial);
+                DrawLayer(overlay.FogFilter, FogFilter, ComposeFogMaterial);
             }
+            
             watch.Stop();
             Logger.LogDebug($"DrawFog loop took {watch.ElapsedMilliseconds}ms time");
 
@@ -515,7 +503,7 @@ namespace Jotunn.Managers
             MainTex = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
             HeightFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RFloat, mipChain: false);
             ForestFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
-            FogFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
+            FogFilter ??= new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
 
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
 
@@ -563,6 +551,7 @@ namespace Jotunn.Managers
 
             // Create intermediate textures to draw on
             OverlayTex = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
+            FogFilter ??= new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
 
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
 
@@ -573,11 +562,13 @@ namespace Jotunn.Managers
             var composeOverlayShader = bundle.LoadAsset<Shader>("MinimapComposeOverlay");
             ComposeOverlayMaterial = new Material(composeOverlayShader);
             ComposeOverlayMaterial.SetTexture("_VanillaTex", OverlayTex);
+            ComposeOverlayMaterial.SetTexture("_FogTex", FogFilter);
 
             bundle.Unload(false);
 
             // Copy vanilla textures
             Graphics.CopyTexture(TransparentTex, OverlayTex);
+            Graphics.CopyTexture(Minimap.instance.m_fogTexture, FogFilter);
 
             // Create custom overlay GOs
             OverlayLarge = new GameObject("CustomLayerLarge");
@@ -716,66 +707,63 @@ namespace Jotunn.Managers
 
         private bool Minimap_AddSharedMapData(On.Minimap.orig_AddSharedMapData orig, Minimap self, byte[] dataArray)
         {
-            bool t = orig(self, dataArray);
-            if (Instance.DrawingsActive())
+            var ret = orig(self, dataArray);
+            if (ret)
             {
-                FogFilter.Apply();
+                FogFilter?.Apply();
             }
-            return t;
+            return ret;
         }
-
-        private bool Minimap_Explore_Point(On.Minimap.orig_Explore_int_int orig, Minimap self, int x, int y)
-        {
-            if (Instance.DrawingsActive())
-            {
-                if (!self.m_explored[y * self.m_textureSize + x])
-                {
-                    FogFilter.SetPixel(x, y, FilterOff);
-                }
-            }
-            return orig(self, x, y);
-        }
-
+        
         private void Minimap_Explore_Radius(On.Minimap.orig_Explore_Vector3_float orig, Minimap self, Vector3 v, float f)
         {
             orig(self, v, f);
-            if (Instance.DrawingsActive())
+            FogFilter?.Apply();
+        }
+
+        private bool Minimap_Explore(On.Minimap.orig_Explore_int_int orig, Minimap self, int x, int y)
+        {
+            // if (!self.m_explored[y * self.m_textureSize + x])
+            // {
+            //     FogFilter?.SetPixel(x, y, FilterOff);
+            // }
+            // return orig(self, x, y);
+            
+            var ret = orig(self, x, y);
+            if (ret)
             {
-                FogFilter.Apply();
+                FogFilter?.SetPixel(x, y, FilterOff);
             }
+            return ret;
+        }
+        
+        private bool Minimap_ExploreOthers(On.Minimap.orig_ExploreOthers orig, Minimap self, int x, int y)
+        {
+            // if (!self.m_explored[y * self.m_textureSize + x])
+            // {
+            //     FogFilter?.SetPixel(x, y, FilterOff);
+            // }
+            // return orig(self, x, y);
+
+            var ret = orig(self, x, y);
+            if (ret)
+            {
+                FogFilter?.SetPixel(x, y, FilterOff);
+            }
+            return ret;
         }
 
         private void Minimap_ExploreAll(On.Minimap.orig_ExploreAll orig, Minimap self)
         {
             orig(self);
-            if (Instance.DrawingsActive())
-            {
-                FogFilter.Apply();
-            }
-        }
-
-        private bool Minimap_ExploreOthers(On.Minimap.orig_ExploreOthers orig, Minimap self, int x, int y)
-        {
-            if (MinimapManager.Instance.DrawingsActive())
-            {
-                if (!self.m_explored[y * self.m_textureSize + x])
-                {
-                    FogFilter.SetPixel(x, y, FilterOff);
-                }
-            }
-
-            return orig(self, x, y);
+            FogFilter?.Apply();
         }
 
         private void Minimap_Reset(On.Minimap.orig_Reset orig, Minimap self)
         {
             orig(self);
-            if (Instance.DrawingsActive())
-            {
-                FogFilter.SetPixels(self.m_fogTexture.GetPixels());
-                FogFilter.Apply();
-            }
-
+            FogFilter?.SetPixels(self.m_fogTexture.GetPixels());
+            FogFilter?.Apply();
         }
 
 
@@ -792,9 +780,24 @@ namespace Jotunn.Managers
             public Texture2D OverlayTex => _overlayTex ??= Create(Instance.TransparentTex);
             
             /// <summary>
-            ///     Hide .ctor
+            ///     Set true to render this overlay on unexplored areas,
+            ///     false to hide it beneath the fog
             /// </summary>
-            internal MapOverlay() { }
+            public bool IgnoreFog
+            {
+                get
+                {
+                    return _ignoreFog;
+                }
+                set
+                {
+                    if (_ignoreFog != value)
+                    {
+                        _ignoreFog = value;
+                        Dirty = true;
+                    }
+                }
+            }
 
             /// <summary>
             ///     Set true to render this overlay, false to hide
@@ -827,14 +830,28 @@ namespace Jotunn.Managers
                 set
                 {
                     _overlayDirty = value;
+
+                    if (value && !IgnoreFog)
+                    {
+                        TextureController.SetFogDirty();
+                    }
                 }
             }
 
             internal bool OverlayDirty => _overlayTex != null && _overlayDirty;
 
             private Texture2D _overlayTex;
+            private bool _ignoreFog;
             private bool _enabled;
             internal bool _overlayDirty;
+
+            /// <summary>
+            ///     Hide .ctor
+            /// </summary>
+            internal MapOverlay()
+            {
+                TextureController.SetFogDirty();
+            }
 
             /// <summary>
             ///     Function called on Texture2D.Apply to check if one of our member textures was changed
@@ -888,11 +905,6 @@ namespace Jotunn.Managers
             public Texture2D FogFilter => _fogFilter ??= Create(Minimap.instance.m_fogTexture);
             
             /// <summary>
-            ///     Hide .ctor
-            /// </summary>
-            internal MapDrawing() { }
-
-            /// <summary>
             ///     Set true to render this overlay, false to hide
             /// </summary>
             public bool Enabled
@@ -931,6 +943,11 @@ namespace Jotunn.Managers
                     _heightDirty = value;
                     _forestDirty = value;
                     _fogDirty = value;
+                    
+                    if (value && FogEnabled)
+                    {
+                        TextureController.SetFogDirty();
+                    }
                 }
             }
 
@@ -950,6 +967,14 @@ namespace Jotunn.Managers
             internal bool _heightDirty;
             internal bool _forestDirty;
             internal bool _fogDirty;
+
+            /// <summary>
+            ///     Hide .ctor
+            /// </summary>
+            internal MapDrawing()
+            {
+                TextureController.SetFogDirty();
+            }
 
             /// <summary>
             ///     Function called on Texture2D.Apply to check if one of our member textures was changed
@@ -1037,20 +1062,37 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Set an overlay texture dirty on Apply
+        ///     Texture management
         /// </summary>
-        [HarmonyPatch(typeof(Texture2D), "Apply", typeof(bool), typeof(bool))]
-        private static class Texture2D_Apply
+        internal static class TextureController
         {
-            private static void Postfix(Texture2D __instance)
+            [HarmonyPatch(typeof(Texture2D), "Apply", typeof(bool), typeof(bool))]
+            [HarmonyPostfix]
+            public static void Texture2D_Apply(Texture2D __instance)
             {
+                if (__instance == Minimap.instance?.m_fogTexture)
+                {
+                    SetFogDirty();
+                }
                 foreach (var overlay in Instance.Overlays.Values)
                 {
                     overlay.SetTextureDirty(__instance);
                 }
-                foreach (var overlay in Instance.Drawings.Values)
+                foreach (var drawing in Instance.Drawings.Values)
                 {
-                    overlay.SetTextureDirty(__instance);
+                    drawing.SetTextureDirty(__instance);
+                }
+            }
+
+            public static void SetFogDirty()
+            {
+                foreach (var overlay in Instance.Overlays.Values.Where(x => !x.IgnoreFog))
+                {
+                    overlay._overlayDirty = true;
+                }
+                foreach (var drawing in Instance.Drawings.Values.Where(x => x.FogEnabled))
+                {
+                    drawing._fogDirty = true;
                 }
             }
         }

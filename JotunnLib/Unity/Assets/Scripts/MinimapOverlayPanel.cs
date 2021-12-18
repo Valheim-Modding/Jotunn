@@ -33,6 +33,14 @@ namespace Jotunn.GUI
         private readonly Dictionary<string, GameObject> Mods = new Dictionary<string, GameObject>();
         
         /// <summary>
+        ///     Toggle the overlay list
+        /// </summary>
+        public void ToggleOverlayGroup()
+        {
+            OverlayGroup.SetActive(!OverlayGroup.activeSelf);
+        }
+
+        /// <summary>
         ///     Add a new toggle for a map overlay
         /// </summary>
         /// <param name="modName"></param>
