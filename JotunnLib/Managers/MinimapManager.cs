@@ -312,8 +312,8 @@ namespace Jotunn.Managers
                     }
 
                     // Fog 
-                    if (Overlays.Values.Any(x => !x.IgnoreFog && x.Enabled) ||
-                        Drawings.Values.Any(x => x.FogEnabled && x.Enabled))
+                    if (Overlays.Values.Any(x => !x.IgnoreFog && x.Dirty) ||
+                        Drawings.Values.Any(x => x.FogEnabled && x.FogDirty))
                     {
                         Graphics.CopyTexture(Minimap.instance.m_fogTexture, FogFilter);
                     }
