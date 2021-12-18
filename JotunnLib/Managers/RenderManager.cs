@@ -135,7 +135,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
+        ///     Create a <see cref="Sprite"/> from a <see cref="RenderRequest"/>/>
         /// </summary>
         /// <param name="renderRequest"></param>
         /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
