@@ -188,7 +188,6 @@ namespace Jotunn.Managers
         
         /// <summary>
         ///     Causes MapManager to stop updating the MapOverlay object and removes this Manager's reference to that overlay.
-        ///     A mod could still hold references and keep the object alive.
         /// </summary>
         /// <param name="name">The name of the MapOverlay to be removed</param>
         /// <returns>True if removal was successful. False if there was an error removing the object from the internal dict.</returns>
@@ -199,7 +198,6 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Causes MapManager to stop updating the MapDrawing object and removes this Manager's reference to that drawing.
-        ///     A mod could still hold references and keep the object alive.
         /// </summary>
         /// <param name="name">The name of the MapDrawing to be removed</param>
         /// <returns>True if removal was successful. False if there was an error removing the object from the internal dict.</returns>
@@ -264,11 +262,12 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Start our watchdog on <see cref="Minimap.Start"/>
+        ///     Setup GUI on <see cref="Minimap.Start"/>.
         /// </summary>
         private void Minimap_Start(On.Minimap.orig_Start orig, Minimap self)
         {
             orig(self);
+            SetupGUI();
             StartWatchdog();
             InvokeOnVanillaMapAvailable();
         }
@@ -287,7 +286,6 @@ namespace Jotunn.Managers
         private void Minimap_LoadMapData(On.Minimap.orig_LoadMapData orig, Minimap self)
         {
             orig(self);
-            SetupGUI();
             InvokeOnVanillaMapDataLoaded();
         }
 
@@ -376,7 +374,7 @@ namespace Jotunn.Managers
             watch.Start();
             
             Graphics.CopyTexture(TransparentTex, OverlayTex);
-            foreach (var overlay in Overlays.Values.OrderBy(x => x.IgnoreFog ? 1 : -1))
+            foreach (var overlay in Overlays.Values.OrderBy(x => x.IgnoreFog ? 1 : 0))
             {
                 if (overlay.Enabled)
                 {
