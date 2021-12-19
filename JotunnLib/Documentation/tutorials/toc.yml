@@ -29,11 +29,11 @@
     - name: Item Variants
       href: item-variants.md
   
-    - name: Pieces and PieceTables
-      href: pieces.md
-
     - name: Recipes
       href: recipes.md
+
+    - name: Pieces and PieceTables
+      href: pieces.md
 
     - name: Status Effects
       href: status-effects.md

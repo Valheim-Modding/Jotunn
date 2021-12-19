@@ -25,15 +25,15 @@ Each section will have examples showing how this is done. All of the examples sh
 * [Items](items.md): Create equipment and resources.
 * [Item Conversions](item-conversions.md): Add custom item conversions like the cooking of meat or the smelting of ores.
 * [Item Variants](item-variants.md): Create multiple variants of the same items.
+* [Recipes](recipes.md): Add requirements for items and tie them to crafting stations.
 * [Pieces and Piece Tables](pieces.md): Create building pieces and use custom categories.
-* [Recipes](recipes.md): Add requirements for items and building pieces.
 * [Status Effects](status-effects.md): Add custom Status Effects.
 * [Skills](skills.md): Add custom trainable Skills.
 * [Zones / Locations / Vegetation](zones.md): Add to or change Valheim's world generation using your custom assets.
 * [Console Commands](console-commands.md): Add custom commands to the Console that can execute your methods.
 * [Inputs](inputs.md): Register custom inputs and add key hints to your custom items.
 * [UI Elements](gui.md): Add custom windows and UI elements.
-* [Map Overlays](map.md): Add custom overlays to the game's Map/Minimap
+* [Map Overlays & Drawings](map.md): Add custom overlays to the game's Map/Minimap or draw directly on the Map's different layers.
 * [Localizations](localization.md): Create language tokens that are replaced at runtime by their specified localization.
 
 ### Utilities
