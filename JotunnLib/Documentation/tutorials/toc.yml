@@ -23,10 +23,10 @@
     - name: Items
       href: items.md
   
-    - name: Item conversions
+    - name: Item Conversions
       href: item-conversions.md
   
-    - name: Item variants
+    - name: Item Variants
       href: item-variants.md
   
     - name: Pieces and PieceTables
@@ -35,7 +35,7 @@
     - name: Recipes
       href: recipes.md
 
-    - name: Status effects
+    - name: Status Effects
       href: status-effects.md
 
     - name: Skills
@@ -53,7 +53,7 @@
     - name: GUI
       href: gui.md
 
-    - name: Map Overlays
+    - name: Map Overlays & Drawings
       href: map.md
 
     - name: Localization

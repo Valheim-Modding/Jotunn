@@ -1,117 +1,98 @@
-﻿# Map Overlays
+﻿# Map Overlays & Drawings
 
-You can create your own [MapOverlay](xref:Jotunn.Managers.MinimapManager.MapOverlay) classes using the [MinimapManager](xref:Jotunn.Managers.MinimapManager).
-
+Valheim's _Minimap_ is used to display the current world map including many layers like exploration status (fog), height and biome information and more. When talking about the Minimap we refer both to the small "preview" on the right upper corner and the full map view shown when pressing "M" in-game. Jötunn provides an API for creating either overlays on top of the map or drawing on specific layers. You can create your own [MapOverlay](xref:Jotunn.Managers.MinimapManager.MapOverlay) or [MapDrawing](xref:Jotunn.Managers.MinimapManager.MapDrawing) classes using the [MinimapManager](xref:Jotunn.Managers.MinimapManager).
 
 ## Creating Overlays
 
-The simplest way to create an overlay is to use the MapOverlay class.
-
-This class provides a Texture2D which you can write to directly. This Texture2D is then rendered directly on top of the Vanilla Minimap.
-
+The simplest way to add custom content to the map is to use the [MapOverlay](xref:Jotunn.Managers.MinimapManager.MapOverlay) class. This class provides a Texture2D which you can write to directly. This Texture2D is then rendered directly on top of the Vanilla Minimap. By default the overlays respect the exploration status of the map (the "fog") so your content is not shown on areas the player has not yet explored. You can optionally decide to ignore the exploration status of the map so your custom overlay is always visible.
 
 ### Example
 
-In this example we will implement an overlay which shows the world's zones laid overtop of the map.
+In this example we will implement an overlay which shows the world's zones laid overtop of the map. We subscribe to the [OnVanillaMapAvailable](xref:Jotunn.Managers.MinimapManager.OnVanillaMapAvailable) event and draw the zone borders onto the overlay's texture.
 
 **Note**: The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
 
-
-We start by creating a new overlay with a name `"zone overlay"`.
-```
-SimpleZoneOverlay = MinimapManager.Instance.AddMapOverlay("zone overlay");
-```
-Next we prepare to populate a `Color[]` array. The results of this array will be set to our overlay.
-```
-int mapSize = SimpleZoneOverlay.TextureSize * SimpleZoneOverlay.TextureSize;
-int zoneSize = 64;
-Color[] mainPixels = new Color[mapSize];
-int index = 0;
-```
-We iterate over the dimensions of the overlay and set a pixel in our mainPixels array wherever a zone boundary is.
-```
-for (int x = 0; x < SimpleZoneOverlay.TextureSize; ++x)
+```cs
+private void Awake()
 {
-    for (int y = 0; y < SimpleZoneOverlay.TextureSize; ++y, ++index)
+    // Add map overlays to the minimap on world load
+    MinimapManager.OnVanillaMapAvailable += CreateMapOverlay;
+}
+
+// Map overlay showing the zone boundaries
+private void CreateMapOverlay()
+{
+    // Get or create a map overlay instance by name
+    var zoneOverlay = MinimapManager.Instance.GetMapOverlay("ZoneOverlay");
+
+    // Create a Color array with space for every pixel of the map
+    int mapSize = zoneOverlay.TextureSize * zoneOverlay.TextureSize;
+    Color[] mainPixels = new Color[mapSize];
+            
+    // Iterate over the dimensions of the overlay and set a color for
+    // every pixel in our mainPixels array wherever a zone boundary is
+    Color color = Color.white;
+    int zoneSize = 64;
+    int index = 0;
+    for (int x = 0; x < zoneOverlay.TextureSize; ++x)
     {
-        if (x % zoneSize == 0 || y % zoneSize == 0)
+        for (int y = 0; y < zoneOverlay.TextureSize; ++y, ++index)
         {
-            mainPixels[index] = color;
+            if (x % zoneSize == 0 || y % zoneSize == 0)
+            {
+                mainPixels[index] = color;
+            }
         }
     }
+
+    // Set the pixel array on the overlay texture
+    // This is much faster than setting every pixel individually
+    zoneOverlay.OverlayTex.SetPixels(mainPixels);
+
+    // Apply the changes to the overlay
+    // This also triggers the MinimapManager to display this overlay
+    zoneOverlay.OverlayTex.Apply();
 }
 ```
-We set the pixels of the overlay to the colours set in our array.
-```
-SimpleZoneOverlay.OverlayTex.SetPixels(mainPixels);
-```
 
-Apple the changes to the overlay. This also triggers the MinimapManager to display this overlay.
-```
-SimpleZoneOverlay.OverlayTex.Apply();
-```
+> [!WARNING]
+> Since the map is different after every world load, you should not save your own reference to the MapOverlay or MapDrawing classes but always get it from the manager using GetMapOverlay or GetMapDrawing. Jötunn automatically creates and destroys the overlays on every game load and logout.
 
+## Creating Drawings
 
-# Map Drawings
+Valheim's actual map consists of many individual layers. Jötunn exposes some of them for mods to draw on via [MapDrawings](xref:Jotunn.Managers.MinimapManager.MapDrawing).  
+But first we give some details about the vanilla map structure.
 
-You can create your own [MapDrawing](xref:Jotunn.Managers.MinimapManager.MapDrawing) classes using the [MinimapManager](xref:Jotunn.Managers.MinimapManager).
+### Map Layers
 
-## Map Layer Details
+The Minimap is composed using multiple layers/filters and in a specific order. The MapDrawing object has several local Texture2D members corresponding to the first four of the following layers. In addition to the layers used by the MapDrawing object, there are more layers that interact with the Minimap which we do not use. These are displayed here as a reference.
 
-The MapDrawing object has a local Texture2D which corresponds to the following vanilla Minimap texture layers:
-
-1. _MainTex:
-
+1. _MainTex  
     Texture displayed on normal terrain, eg, the colour of meadows.
-2. _MaskTex
-    
+2. _MaskTex  
     Mask used to determine whether to display forests or not. 1 for forest, 0 for no forest.
-3. _HeightTex
-    
+3. _HeightTex  
     Mask that determines height of different features. eg, Oceans, and mountains. Determines where MountainTex and WaterTex is displayed.
-4. _FogTex
-
+4. _FogTex  
     Mask that determines where fog is displayed. Most values mean there is fog. 
-
-
-
-
-
-## In-Depth Map Layer Details
-
-
-In addition to the layers used by the MapDrawing object, there are more layers that interact with the Minimap which we do not use.
-These are displayed here as a reference.
-
-
-5. _BackgroundTex
-
+5. _BackgroundTex  
     Colour of background texture. Displayed underneath map? Effects _MainTex. Gives an additional textured texture to the land.
-6. _FogLayerTex
-
+6. _FogLayerTex  
     Controls the colour of the Fog overlay. Also controls some sort of shading underneath water. Affected by world light. Lighter in center, darker in outside.
-7. _MountainTex
-
+7. _MountainTex  
     The texture displayed on mountains. Works with the _heightTex mask.
-8. _ForestTex
-
+8. _ForestTex  
     Controls the colour of forest areas. Is masked by _MaskTex.
-9. _ForestColor
-
+9. _ForestColor  
     Could not determine.
-10. _WaterTex
-
+10. _WaterTex  
     Controls shallow water and shorelines. Does not control deep ocean.
-11. _SpaceTex
-
+11. _SpaceTex  
     Controls the spacey texture outside the large globe.
-12. _CloudTex
-
+12. _CloudTex  
     Controls the clouds that fly overtop everything else.
 
-### Layer Draw Order
-
-The Minimap is composed using multiple filters and in a specific order. The following are some details we have figured out:
+The following are some details we have figured out about the order of the vanilla map layers for reference:
 
 Fog (6) on top, then clouds (12), then forest (8) (but is composited with _HeightTex (3) data).
 Then _MainTex (1) is displayed alongside _WaterTex (10) and _MountainTex (7) and _FoglayerTex (6).
@@ -121,75 +102,80 @@ _SpaceTex controls the space-themed texture background that's seen outside of th
 
 _MaskTex (2), _HeightTex (3), and _FogTex (4) are just used as filters/masks.
 
-
-## Drawing to Layers
-
-The following colours use full alpha values to correspond to activating a pixel in a layer. (An active pixel in the MapDraw texture is one that will overwrite the vanilla value).
-Once a pixel is active it can then be used to enable or disable a filter, in the event of forests or fog, or be used to set height or mainTex to a specific value.
-
 ### Drawing to the Main Layer
 
-Choose whichever RGB colours you want, and set the alpha value to maximum.
-
+Set a Color value on the [MainTex](xref:Jotunn.Managers.MinimapManager.MapDrawing.MainTex) of the MapDrawing instance to override the vanilla map at that pixels position. Choose whichever RGB colors you want, and set the alpha value to maximum.
 
 ### Drawing to the Height Layer
 
-Set the R value to correspond to the world height that you want.
-Less than 0-30 means ocean height. 31 and up corresponds to variously shaded land heights until it reaches the mountain layer.
+Set the Red value of a Color on the [HeightFilter](xref:Jotunn.Managers.MinimapManager.MapDrawing.HeightFilter) to correspond to the world height that you want.  
+Less than 0-30 means ocean height. 31 and up corresponds to variously shaded land heights until it reaches the mountain layer.  
+The MinimapManager provides a shortcut for the ["meadow height"](xref:Jotunn.Managers.MinimapManager.MeadowHeight).
 
+### Drawing to the Fog and Forest Layers
 
-## MapDraw Example
+Set the "Red" value of a Color on the [FogFilter](xref:Jotunn.Managers.MinimapManager.MapDrawing.FogFilter) or the [ForestFilter](xref:Jotunn.Managers.MinimapManager.MapDrawing.ForestFilter) of the MapDrawing instance to toggle either of the layers on the pixels position on or off.  
+A "Red" value of 0 disables the filter on the position, everything unequal 0 enables it.  
+The MinimapManager provides a shortcut for turning the filter [on](xref:Jotunn.Managers.MinimapManager.FilterOn) or [off](xref:Jotunn.Managers.MinimapManager.FilterOff).
 
-In this example we will draw a square originating on each Map Pin. This involves setting the terrain height for the square to a flat value, removing forest, removing fog, and changing the main text colour.
+### Example
 
+In this example we will draw a square originating on each Map Pin. This time we subscribe to the manager's [OnVanillaMapDataLoaded](xref:Jotunn.Managers.MinimapManager.OnVanillaMapDataLoaded) event to make sure all pins have already been loaded by the game. The actual drawing involves setting the terrain height for the square to a flat value, removing forest, removing fog, and changing the main texture color.
 
-We use this helper function to set pixels.
-```
-private static void DrawSquare(Texture2D tex, Vector2 start, Color col, int square_size)
+**Note**: The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
+
+```cs
+private void Awake()
 {
-    for (float i = start.x; i < start.x + square_size; i++)
-    {
-        for (float j = start.y; j < start.y + square_size; j++)
-        {
-            tex.SetPixel((int)i, (int)j, col);
-        }
-    }
+    // Add map overlays to the minimap after map data has been loaded
+    MinimapManager.OnVanillaMapDataLoaded += CreateMapDrawing;
 }
-```
-We define our colours and use MeadowHeight that corresponds to an in-game height of 32.
 
-```
-private static Color MeadowHeight = new Color(32, 0, 0, 255);
-private static Color FilterOn = new Color(1f, 0f, 0f, 255f);
-private static Color FilterOff = new Color(0f, 0f, 0f, 255f);
-```
-
-
-We can then iterate over all map pins and call our helper function to draw our squares. Make sure to call Apply() to complete the updates.
-```
-private static void DrawSquaresOnMapPins(Color color, MinimapManager.MapDrawing ovl, bool extras = false)
+// Draw a square starting at every map pin
+private void CreateMapDrawing()
 {
+    // Get or create a map drawing instance by name
+    var pinOverlay = MinimapManager.Instance.GetMapDrawing("PinOverlay");
+
+    // Create Color arrays which can be set as a block on the texture
+    // Note: "Populate" is an extension method provided by Jötunn
+    // filling the new array with the provided value
+    int squareSize = 10;
+    Color[] colorPixels = new Color[squareSize*squareSize].Populate(Color.blue);
+    Color[] filterPixels = new Color[squareSize*squareSize].Populate(MinimapManager.FilterOff);
+    Color[] heightPixels = new Color[squareSize*squareSize].Populate(MinimapManager.MeadowHeight);
+
+    // Loop every loaded pin
     foreach (var p in Minimap.instance.m_pins)
     {
-        DrawSquare(ovl.MainTex, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), color, 10);
-        DrawSquare(ovl.ForestFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), FilterOff, 10);
-        DrawSquare(ovl.FogFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), FilterOff, 10);
-        DrawSquare(ovl.HeightFilter, MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, ovl.TextureSize), MeadowHeight, 10);
+        // Translate the world position of the pin to the overlay position
+        var pos = MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, pinOverlay.TextureSize);
+                
+        // Set a block of pixels on the MainTex to make the map use our color instead of the vanilla one
+        pinOverlay.MainTex.SetPixels((int)pos.x, (int)pos.y, squareSize, squareSize, colorPixels);
+                
+        // Set a block of pixels on the ForestFilter and FogFilter, removing forest and fog from the map
+        pinOverlay.ForestFilter.SetPixels((int)pos.x, (int)pos.y, squareSize, squareSize, filterPixels);
+        pinOverlay.FogFilter.SetPixels((int)pos.x, (int)pos.y, squareSize, squareSize, filterPixels);
+
+        // Set a block of pixels on the HeightFilter so our square will always be drawn at meadow height
+        pinOverlay.HeightFilter.SetPixels((int)pos.x, (int)pos.y, squareSize, squareSize, heightPixels);
     }
-    ovl.MainTex.Apply();
-    ovl.FogFilter.Apply();
-    ovl.ForestFilter.Apply();
-    ovl.HeightFilter.Apply();
+            
+    // Apply the changes to all textures
+    // This also triggers the MinimapManager to display this drawing
+    pinOverlay.MainTex.Apply();
+    pinOverlay.FogFilter.Apply();
+    pinOverlay.ForestFilter.Apply();
+    pinOverlay.HeightFilter.Apply();
 }
 ```
 
-
-
-
-
-
-
-
+> [!WARNING]
+> Using a MapDrawing which alters the fog layer (i.e. has written data to the FogFilter texture) will stop the game from updating the exploration data on the map as long as the overlay is enabled. Mods using the fog layer should be aware of this fact. You can destroy the FogFilter texture on the ModDrawing instance using Unity's Object.Destroy() to reenable the game's exploration while your overlay is still enabled. Disabling the overlay completely via GUI has the same effect.
 
 ## Toggle Overlays via GUI
 
+Jötunn adds a button to the large map view and adds a toggle for every MapOverlay or MapDrawing created by a mod. There you can enable or disable every layer individually:
+
+![overlay toggles](../images/data/minimap_toggles.png)
