@@ -22,14 +22,9 @@ namespace TestMod
     internal class TestMapDrawing : BaseUnityPlugin
     {
         private const string ModGUID = "com.jotunn.testmapdrawing";
-        private const string ModName = "Jotunn Test Map Overlays and Draws";
+        private const string ModName = "Jotunn Test Map Overlays";
         private const string ModVersion = "0.1.0";
-
-        /*
-            There is still a fairly long list of features needed to be complete before this Manager is released. Eg:
-                - Proper documentation for methods + a bit of clean up
-         */
-
+        
         public void Awake()
         {
             CommandManager.Instance.AddConsoleCommand(new CHCommands_zones());
@@ -51,15 +46,19 @@ namespace TestMod
         }
 
         /// <summary>
-        ///     Zone Overlay
+        ///     Map overlay showing the zone boundaries
         /// </summary>
-        internal static void CreateSimpleZoneOverlay(Color color)
+        internal static void CreateZoneOverlay(Color color)
         {
+            // Get or create a map overlay instance by name
             var zoneOverlay = MinimapManager.Instance.GetMapOverlay("ZoneOverlay");
 
+            // Create a Color array with space for every pixel of the map
             int mapSize = zoneOverlay.TextureSize * zoneOverlay.TextureSize;
-            int zoneSize = 64;
             Color[] mainPixels = new Color[mapSize];
+            
+            // Iterate and set a color for every pixel you want to draw
+            int zoneSize = 64;
             int index = 0;
             for (int x = 0; x < zoneOverlay.TextureSize; ++x)
             {
@@ -71,7 +70,13 @@ namespace TestMod
                     }
                 }
             }
+
+            // Set the pixel array on the overlay texture
+            // This is much faster than setting every pixel individually
             zoneOverlay.OverlayTex.SetPixels(mainPixels);
+
+            // Apply the changes on the overlay texture
+            // Only applied changes will actually be drawn on the map
             zoneOverlay.OverlayTex.Apply();
         }
 
@@ -80,7 +85,7 @@ namespace TestMod
         /// </summary>
         /// <param name="color"></param>
         /// <param name="height"></param>
-        internal static void CreateZoneOverlay(Color color, float height)
+        internal static void CreateZoneDrawing(Color color, float height)
         {
             var zones = MinimapManager.Instance.GetMapDrawing("ZoneDrawing");
 
@@ -309,7 +314,7 @@ namespace TestMod
                     return;
                 }
 
-                CreateSimpleZoneOverlay(color);
+                CreateZoneOverlay(color);
             }
 
             public override List<string> CommandOptionList() => Colors.Keys.ToList();
@@ -347,7 +352,7 @@ namespace TestMod
                     return;
                 }
 
-                CreateZoneOverlay(color, height);
+                CreateZoneDrawing(color, height);
             }
 
             public override List<string> CommandOptionList() => Colors.Keys.ToList();
