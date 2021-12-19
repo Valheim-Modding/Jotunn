@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Jotunn.Managers;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -31,7 +30,7 @@ namespace Jotunn.Utils
             On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
             On.ZNet.SendPeerInfo += ZNet_SendPeerInfo;
             On.ZNet.OnNewConnection += ZNet_OnNewConnection;
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+            On.FejdStartup.ShowConnectError += FejdStartup_ShowConnectError;
         }
 
         /// <summary>
@@ -69,12 +68,14 @@ namespace Jotunn.Utils
         }
 
         // Show mod compatibility error message when needed
-        private static void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
+        private static void FejdStartup_ShowConnectError(On.FejdStartup.orig_ShowConnectError orig, FejdStartup self)
         {
-            // Show message box if there is a message to show
-            if (LastServerVersion != null && scene.name == "start" && ZNet.m_connectionStatus == ZNet.ConnectionStatus.ErrorVersion)
+            orig(self);
+
+            if (LastServerVersion != null && ZNet.m_connectionStatus == ZNet.ConnectionStatus.ErrorVersion)
             {
                 ShowModCompatibilityErrorMessage();
+                self.m_connectionFailedPanel.SetActive(false);
             }
         }
 
@@ -196,7 +197,7 @@ namespace Jotunn.Utils
 
 #pragma warning disable CS0618 // Type or member is obsolete
                 if (clientModule == null &&
-                    (serverModule.Item3 == CompatibilityLevel.OnlySyncWhenInstalled || 
+                    (serverModule.Item3 == CompatibilityLevel.OnlySyncWhenInstalled ||
                      serverModule.Item3 == CompatibilityLevel.VersionCheckOnly ||
                      serverModule.Item3 == CompatibilityLevel.ServerMustHaveMod))
                 {
@@ -348,22 +349,22 @@ namespace Jotunn.Utils
                 // Then all version checks
                 var clientModule = clientData.Modules.FirstOrDefault(x => x.Item1 == serverModule.Item1);
 
-                #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 if (clientModule == null && (serverModule.Item3 == CompatibilityLevel.NotEnforced || serverModule.Item3 == CompatibilityLevel.NoNeedForSync))
                 {
                     continue;
                 }
-                #pragma warning restore CS0618 // Type or member is obsolete
-                
-                #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
+
+#pragma warning disable CS0618 // Type or member is obsolete
                 if (clientModule == null &&
-                    (serverModule.Item3 == CompatibilityLevel.OnlySyncWhenInstalled || 
+                    (serverModule.Item3 == CompatibilityLevel.OnlySyncWhenInstalled ||
                      serverModule.Item3 == CompatibilityLevel.VersionCheckOnly ||
                      serverModule.Item3 == CompatibilityLevel.ServerMustHaveMod))
                 {
                     continue;
                 }
-                #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 // Major
                 if (serverModule.Item4 >= VersionStrictness.Major || clientModule.Item4 >= VersionStrictness.Major)

@@ -1442,15 +1442,7 @@ namespace TestMod
 
         private string Version_GetVersionString(On.Version.orig_GetVersionString orig)
         {
-            if (EnableExtVersionMismatch.Value)
-            {
-                return "Non.Business.You";
-            }
-            else
-            {
-                return orig();
-            }
-
+            return EnableExtVersionMismatch.Value ? "Non.Business.You" : orig();
         }
     }
 }
