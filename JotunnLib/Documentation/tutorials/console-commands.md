@@ -1,38 +1,56 @@
-﻿# Adding custom console commands
-Custom console commands can be created by creating a class that inherits from [ConsoleCommand](xref:Jotunn.Entities.ConsoleCommand). The command can then be added by calling [AddConsoleCommand](xref:Jotunn.Managers.CommandManager.AddConsoleCommand(Jotunn.Entities.ConsoleCommand)). The command should be added when your mod is loaded, in `Awake`.  
+﻿# Adding Custom Console Commands
+Custom console commands can be created by creating a class that inherits from [ConsoleCommand](xref:Jotunn.Entities.ConsoleCommand). The command can then be added by calling [AddConsoleCommand](xref:Jotunn.Managers.CommandManager.AddConsoleCommand(Jotunn.Entities.ConsoleCommand)) on the [CommandManager](xref:Jotunn.Managers.CommandManager). The command should be added when your mod is loaded, in `Awake`.
 
-This will add your custom console command into the game, and your command will be shown when the user types `help` into their console.
-
-_Note: Console command names **must** be unique._
+> [!NOTE]
+> Console command names **must** be unique.
 
 ## Example
-From the [TestMod](https://github.com/Valheim-Modding/Jotunn/blob/main/TestMod/ConsoleCommands/PrintItemsCommand.cs), creating a custom console command which will print all added item names.  
 
-The custom console command
+In this example we will create a new spawn command to spawn prefabs into the world. By overriding the `CommandOptionList` method of the base class, we enable tab auto-completion for this command using the prefab name list of the `ZNetScene`.
+
+**Note**: The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
+
+The custom console command:
 ```cs
-public class PrintItemsCommand : ConsoleCommand
+public class BetterSpawnCommand : ConsoleCommand
 {
-    public override string Name => "print_items";
+    public override string Name => "better_spawn";
 
-    public override string Help => "Prints all existing items";
+    public override string Help => "like spawn but BETTER";
 
     public override void Run(string[] args)
     {
-        Console.instance.Print("All items:");
-        foreach (GameObject obj in ObjectDB.instance.m_items)
+        if (args.Length == 0)
         {
-            ItemDrop item = obj.GetComponent<ItemDrop>();
-            Console.instance.Print(item.m_itemData.m_shared.m_name);
+            return;
         }
+
+        GameObject prefab = PrefabManager.Instance.GetPrefab(args[0]);
+        if (!prefab)
+        {
+            Console.instance.Print("that doesn't exist: " + args[0]);
+            return;
+        }
+
+        int cnt = args.Length < 2 ? 1 : int.Parse(args[1]);
+        for (int i = 0; i < cnt; i++)
+        {
+            UnityEngine.Object.Instantiate<GameObject>(prefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity);
+        }
+    }
+
+    public override List<string> CommandOptionList()
+    {
+        return ZNetScene.instance?.GetPrefabNames();
     }
 }
 ```
 
-Finally, adding the console command
+Adding the console command:
 
 ```cs
 private void Awake()
 {
-    CommandManager.Instance.AddConsoleCommand(new PrintItemsCommand());
+    CommandManager.Instance.AddConsoleCommand(new BetterSpawnCommand());
 }
 ```
