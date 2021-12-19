@@ -494,9 +494,9 @@ namespace TestMod
 
         private class CHCommands_ree : ConsoleCommand
         {
-            public override string Name => "map.ree";
+            public override string Name => "map.reee";
 
-            public override string Help => "Draw ree on the map";
+            public override string Help => "reee on the map";
 
             private Sprite Ree => AssetUtils.LoadSpriteFromFile("TestMod/Assets/reee.png");
 
@@ -523,9 +523,9 @@ namespace TestMod
 
         private class CHCommands_reemain : ConsoleCommand
         {
-            public override string Name => "map.reemain";
+            public override string Name => "map.reeemain";
 
-            public override string Help => "Draw ree on the map";
+            public override string Help => "reee on the map texture";
 
             private Sprite Ree => AssetUtils.LoadSpriteFromFile("TestMod/Assets/reee.png");
 
