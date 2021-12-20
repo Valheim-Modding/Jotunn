@@ -13,6 +13,9 @@
     [System.String]$ValheimPath,
     
     [Parameter(Mandatory)]
+    [System.String]$DeployPath,
+    
+    [Parameter(Mandatory)]
     [System.String]$ProjectPath
 )
 
@@ -44,13 +47,6 @@ if (Test-Path -Path "$pdb") {
 if ($Target.Equals("Debug")) {
     Write-Host "Updating local installation in $ValheimPath"
     
-    $plug = New-Item -Type Directory -Path "$ValheimPath\BepInEx\plugins\$name" -Force
-    Write-Host "Copy $TargetAssembly to $plug"
-    Copy-Item -Path "$TargetPath\$name.dll" -Destination "$plug" -Force
-    Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$plug" -Force
-    Copy-Item -Path "$TargetPath\$name.xml" -Destination "$plug" -Force -ErrorAction SilentlyContinue
-    Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$plug" -Force
-    
     $mono = "$ValheimPath\MonoBleedingEdge\EmbedRuntime";
     Write-Host "Copy mono-2.0-bdwgc.dll to $mono"
     if (!(Test-Path -Path "$mono\mono-2.0-bdwgc.dll.orig")) {
@@ -58,13 +54,21 @@ if ($Target.Equals("Debug")) {
     }
     Copy-Item -Path "$(Get-Location)\libraries\Debug\mono-2.0-bdwgc.dll" -Destination "$mono" -Force
     
+    Write-Host "Deploying mod build to $DeployPath"
+    $plug = New-Item -Type Directory -Path "$DeployPath\$name" -Force
+    Write-Host "Copy $TargetAssembly to $plug"
+    Copy-Item -Path "$TargetPath\$name.dll" -Destination "$plug" -Force
+    Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$plug" -Force
+    Copy-Item -Path "$TargetPath\$name.xml" -Destination "$plug" -Force -ErrorAction SilentlyContinue
+    Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$plug" -Force
+    
     $dedi = "$ValheimPath\..\Valheim dedicated server"
     if (Test-Path -Path "$dedi") {
       if (Get-Process -Name 'valheim_server' -ErrorAction Ignore) {
         Write-Host "Dedicated server is running, plugin will not be updated"
       }
       else {
-        $dediplug = New-Item -Type Directory -Path "$dedi\BepInEx\plugins\$name" -Force
+        $dediplug = New-Item -Type Directory -Path "$dedi\$name" -Force
         Write-Host "Copy $TargetAssembly to $dediplug"
         Copy-Item -Path "$TargetPath\$name.dll" -Destination "$dediplug" -Force
         Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$dediplug" -Force
