@@ -13,10 +13,9 @@
     [System.String]$ValheimPath,
     
     [Parameter(Mandatory)]
-    [System.String]$DeployPath,
+    [System.String]$ProjectPath,
     
-    [Parameter(Mandatory)]
-    [System.String]$ProjectPath
+    [System.String]$DeployPath
 )
 
 # Make sure Get-Location is the script path
@@ -45,16 +44,16 @@ if (Test-Path -Path "$pdb") {
 
 # Debug copies the dll to Valheim
 if ($Target.Equals("Debug")) {
-    Write-Host "Updating local installation in $ValheimPath"
-    
-    $mono = "$ValheimPath\MonoBleedingEdge\EmbedRuntime";
+    $mono = "$ValheimPath\MonoBleedingEdge\EmbedRuntime"
     Write-Host "Copy mono-2.0-bdwgc.dll to $mono"
     if (!(Test-Path -Path "$mono\mono-2.0-bdwgc.dll.orig")) {
         Copy-Item -Path "$mono\mono-2.0-bdwgc.dll" -Destination "$mono\mono-2.0-bdwgc.dll.orig" -Force
     }
     Copy-Item -Path "$(Get-Location)\libraries\Debug\mono-2.0-bdwgc.dll" -Destination "$mono" -Force
     
-    Write-Host "Deploying mod build to $DeployPath"
+    if ($DeployPath.Equals("")){
+      $DeployPath = "$ValheimPath\BepInEx\plugins"
+    }
     $plug = New-Item -Type Directory -Path "$DeployPath\$name" -Force
     Write-Host "Copy $TargetAssembly to $plug"
     Copy-Item -Path "$TargetPath\$name.dll" -Destination "$plug" -Force
