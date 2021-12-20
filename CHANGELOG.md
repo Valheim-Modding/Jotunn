@@ -3,6 +3,7 @@
 ## Version 2.4.5
 * Added MinimapManager, enabling mods to draw on the map or create overlays for it (see https://valheim-modding.github.io/Jotunn/tutorials/map.html for tutorials)
 * Fixed NRE on mod compat window
+* ModStub can have a different deploy path than the Valheim directory (deploying to a r2modman profile for example)
 
 ## Version 2.4.4
 * Fixed in-game menu not reacting on Esc after closing mod settings
