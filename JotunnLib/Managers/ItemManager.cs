@@ -378,10 +378,7 @@ namespace Jotunn.Managers
         ///     No mock references are fixed.
         /// </summary>
         /// <param name="prefab"><see cref="GameObject"/> with an <see cref="ItemDrop"/> component to add to the <see cref="ObjectDB"/></param>
-        public void RegisterItemInObjectDB(GameObject prefab)
-        {
-            RegisterItemInObjectDB(ObjectDB.instance, prefab);
-        }
+        public void RegisterItemInObjectDB(GameObject prefab) => RegisterItemInObjectDB(ObjectDB.instance, prefab);
 
         /// <summary>
         ///     Internal method for adding a prefab to a specific ObjectDB.

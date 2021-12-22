@@ -77,11 +77,11 @@ namespace Jotunn
 
         // Thanks for not using the Resources folder IronGate
         // There is probably some oddities in there
-        private static void FixReferences(this object objectToFix, int depth = 0)
+        private static void FixReferences(this object objectToFix, int depth)
         {
             // This is totally arbitrary.
             // I had to add a depth because of call stack exploding otherwise
-            if (depth == 3)
+            if (depth == 2)
                 return;
 
             depth++;

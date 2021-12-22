@@ -112,12 +112,7 @@ namespace Jotunn.Configs
             // Assign an extension station for this piece
             if (!string.IsNullOrEmpty(ExtendStation))
             {
-                var stationExt = prefab.GetComponent<StationExtension>();
-                if (stationExt == null)
-                {
-                    stationExt = prefab.AddComponent<StationExtension>();
-                }
-                
+                var stationExt = prefab.GetOrAddComponent<StationExtension>();
                 stationExt.m_craftingStation = Mock<CraftingStation>.Create(ExtendStation);
             }
 
