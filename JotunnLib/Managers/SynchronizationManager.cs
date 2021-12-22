@@ -45,7 +45,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private SynchronizationManager() {}
+        private SynchronizationManager() { }
 
         /// <summary>
         ///     Clientside indicator if the current player has admin status on 
@@ -410,8 +410,14 @@ namespace Jotunn.Managers
             }
 
             // Harmony patch BepInEx to ensure locked values are not overwritten
-            Harmony.CreateAndPatchAll(typeof(ConfigEntryBase_SetSerializedValue));
-            Harmony.CreateAndPatchAll(typeof(ConfigEntryBase_GetSerializedValue));
+            Main.Harmony.Patch(
+                AccessTools.DeclaredMethod(typeof(ConfigEntryBase), nameof(ConfigEntryBase.GetSerializedValue)),
+                new HarmonyMethod(AccessTools.DeclaredMethod(typeof(SynchronizationManager),
+                    nameof(ConfigEntryBase_GetSerializedValue))));
+            Main.Harmony.Patch(
+                AccessTools.DeclaredMethod(typeof(ConfigEntryBase), nameof(ConfigEntryBase.SetSerializedValue)),
+                new HarmonyMethod(AccessTools.DeclaredMethod(typeof(SynchronizationManager),
+                    nameof(ConfigEntryBase_SetSerializedValue))));
 
             orig(self);
         }
@@ -429,35 +435,27 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Return the cached local value of a bep config thats locked
         /// </summary>
-        [HarmonyPatch(typeof(ConfigEntryBase), "GetSerializedValue")]
-        private static class ConfigEntryBase_GetSerializedValue
+        private static bool ConfigEntryBase_GetSerializedValue(ConfigEntryBase __instance, ref string __result)
         {
-            private static bool Prefix(ConfigEntryBase __instance, ref string __result)
+            if (!__instance.IsSyncable() || GUIManager.IsHeadless() || __instance.GetLocalValue() == null)
             {
-                if (!__instance.IsSyncable() || GUIManager.IsHeadless() || __instance.GetLocalValue() == null)
-                {
-                    return true;
-                }
-
-                __result = TomlTypeConverter.ConvertToString(__instance.GetLocalValue(), __instance.SettingType);
-                return false;
+                return true;
             }
+
+            __result = TomlTypeConverter.ConvertToString(__instance.GetLocalValue(), __instance.SettingType);
+            return false;
         }
 
         /// <summary>
         ///     Prevent overwriting bep config value when the setting is locked on config file reload
         /// </summary>
-        [HarmonyPatch(typeof(ConfigEntryBase), "SetSerializedValue")]
-        private static class ConfigEntryBase_SetSerializedValue
+        private static bool ConfigEntryBase_SetSerializedValue(ConfigEntryBase __instance, string value)
         {
-            private static bool Prefix(ConfigEntryBase __instance, string value)
+            if (GUIManager.IsHeadless() || __instance.GetLocalValue() == null)
             {
-                if (GUIManager.IsHeadless() || __instance.GetLocalValue() == null)
-                {
-                    return true;
-                }
-                return false;
+                return true;
             }
+            return false;
         }
 
 

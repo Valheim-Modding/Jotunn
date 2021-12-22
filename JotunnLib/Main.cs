@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
+using HarmonyLib;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -32,6 +33,7 @@ namespace Jotunn
         public const string ModGuid = "com.jotunn.jotunn";
 
         internal static Main Instance;
+        internal static Harmony Harmony;
         internal static GameObject RootObject;
 
         private List<IManager> Managers;
@@ -40,6 +42,9 @@ namespace Jotunn
         {
             // Set instance
             Instance = this;
+            
+            // Harmony patches
+            Harmony = new Harmony(ModGuid);
 
             // Initialize Logger
             Jotunn.Logger.Init();
@@ -79,13 +84,18 @@ namespace Jotunn
             // Enable helper on DEBUG build
             RootObject.AddComponent<DebugUtils.DebugHelper>();
 #endif
-            
+
             Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
         }
 
         private void Start()
         {
             InitializePatches();
+        }
+
+        private void OnDestroy()
+        {
+            Harmony?.UnpatchSelf();
         }
 
         private void OnApplicationQuit()

@@ -121,7 +121,9 @@ namespace Jotunn.Managers
             bundle.Unload(false);
 
             // Create a harmony patch to watch Texture2D.Apply calls
-            Harmony.CreateAndPatchAll(typeof(MinimapManager));
+            Main.Harmony.Patch(
+                AccessTools.DeclaredMethod(typeof(Texture2D), nameof(Texture2D.Apply), new[] {typeof(bool), typeof(bool)}),
+                new HarmonyMethod(AccessTools.DeclaredMethod(typeof(MinimapManager), nameof(Texture2D_Apply))));
         }
 
         /// <summary>
