@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Jotunn.Utils;
 using Jotunn.Configs;
@@ -30,9 +31,8 @@ namespace Jotunn.Managers
         public void Init()
         {
             On.Skills.Awake += RegisterCustomSkills;
-            On.SkillsDialog.Setup += SkillsDialog_Setup;
             On.Skills.IsSkillValid += Skills_IsSkillValid;
-            IL.Skills.RaiseSkill += Skills_RaiseSkill;
+            On.Skills.GetSkill += Skills_GetSkill;
             On.Skills.CheatRaiseSkill += Skills_CheatRaiseSkill;
             On.Skills.CheatResetSkill += Skills_CheatResetSkill;
         }
@@ -74,7 +74,7 @@ namespace Jotunn.Managers
             float increaseStep = 1f,
             Sprite icon = null)
         {
-            return AddSkill(new SkillConfig()
+            return AddSkill(new SkillConfig
             {
                 Identifier = identifer,
                 Name = name,
@@ -117,22 +117,9 @@ namespace Jotunn.Managers
             {
                 return Skills[skillType].ToSkillDef();
             }
-
-            if (Player.m_localPlayer != null)
-            {
-                if (Player.m_localPlayer.GetSkills() != null)
-                {
-                    foreach (Skills.SkillDef skill in Player.m_localPlayer.GetSkills().m_skills)
-                    {
-                        if (skill.m_skill == skillType)
-                        {
-                            return skill;
-                        }
-                    }
-                }
-            }
-
-            return null;
+            
+            return Player.m_localPlayer?.GetSkills()?.m_skills?
+                .FirstOrDefault(skill => skill.m_skill == skillType);
         }
 
         /// <summary>
@@ -158,80 +145,41 @@ namespace Jotunn.Managers
             {
                 Logger.LogInfo($"Registering {Skills.Count} custom skills");
 
-                foreach (var pair in Skills)
+                foreach (var skill in Skills.Values)
                 {
-                    self.m_skills.Add(pair.Value.ToSkillDef());
-                    Logger.LogDebug($"Registered skill {pair.Value.Name} | ID: {pair.Value.Identifier}");
+                    var localizedName = skill.Name.StartsWith("$") ? Localization.instance.Localize(skill.Name) : skill.Name;
+                    Localization.instance.AddWord($"skill_{skill.UID}", localizedName);
+                    self.m_skills.Add(skill.ToSkillDef());
+                    Logger.LogDebug($"Registered skill {skill.Name} | ID: {skill.Identifier}");
                 }
             }
         }
-
-        private void SkillsDialog_Setup(On.SkillsDialog.orig_Setup orig, SkillsDialog self, Player player)
+        
+        private bool Skills_IsSkillValid(On.Skills.orig_IsSkillValid orig, Skills self, Skills.SkillType skillType)
         {
-            orig(self, player);
+            var ret = orig(self, skillType);
 
-            // Update skill names to allow for negative m_skill IDs
-            List<Skills.Skill> skillList = player.GetSkills().GetSkillList();
-
-            for (int i = 0; i < skillList.Count; i++)
-            {
-                var skill = skillList[i];
-                var elem = self.m_elements[i];
-
-                // Ignore vanilla skills
-                if (!Skills.ContainsKey(skill.m_info.m_skill))
-                {
-                    continue;
-                }
-
-                var skillConfig = Skills[skill.m_info.m_skill];
-                var name = skillConfig.Name.StartsWith("$") ? Localization.instance.Localize(skillConfig.Name) : skillConfig.Name;
-                Logger.LogDebug($"Translated skill text: {skillConfig.Name} -> {name}");
-                global::Utils.FindChild(elem.transform, "name").GetComponent<Text>().text = name;
-            }
-        }
-
-        private bool Skills_IsSkillValid(On.Skills.orig_IsSkillValid orig, Skills self, Skills.SkillType type)
-        {
-            var ret = orig(self, type);
-
-            if (!ret && Skills.ContainsKey(type))
+            if (!ret && Skills.ContainsKey((Skills.SkillType)Math.Abs((int)skillType)))
             {
                 ret = true;
             }
 
             return ret;
         }
-
-        private void Skills_RaiseSkill(MonoMod.Cil.ILContext il)
+        
+        private Skills.Skill Skills_GetSkill(On.Skills.orig_GetSkill orig, Skills self, Skills.SkillType skillType)
         {
-            ILCursor c = new ILCursor(il);
-            
-            if (c.TryGotoNext(MoveType.After,
-                zz => zz.MatchLdstr("$msg_skillup $skill_")))
+            // Fix the mess of whoever decided to have negative skill IDs and implement several workarounds...
+            var abs = (Skills.SkillType)Math.Abs((int)skillType);
+
+            if ((int)skillType < 0 && Skills.ContainsKey(abs))
             {
-                c.EmitDelegate<Func<string, string>>(_ => "$msg_skillup ");
+                return orig(self, abs);
             }
 
-            if (c.TryGotoNext(MoveType.After,
-                zz => zz.MatchConstrained(out _),
-                zz => zz.MatchCallOrCallvirt<System.Object>("ToString"),
-                zz => zz.MatchCallOrCallvirt<System.String>("ToLower")))
-            {
-                c.EmitDelegate<Func<string, string>>(skillID =>
-                {
-                    var asd = Enum.TryParse<global::Skills.SkillType>(skillID, out var result);
-
-                    if (asd && Skills.ContainsKey(result))
-                    {
-                        Logger.LogDebug($"Fixing Enum.ToString on {skillID}, match found: {Skills[result].Name}");
-                        return Skills[result].Name;
-                    }
-                    return $"$skill_{skillID}";
-                });
-            }
+            return orig(self, skillType);
         }
-
+        
         private void Skills_CheatRaiseSkill(On.Skills.orig_CheatRaiseSkill orig, Skills self, string name, float value)
         {
             foreach (var config in Skills.Values)
@@ -239,12 +187,13 @@ namespace Jotunn.Managers
                 if (config.IsFromName(name))
                 {
                     Skills.Skill skill = self.GetSkill(config.UID);
-                    var localizedName = config.Name.StartsWith("$") ? Localization.instance.Translate(config.Name) : config.Name;
+                    var localizedName = config.Name.StartsWith("$") ? Localization.instance.Localize(config.Name) : config.Name;
 
                     skill.m_level += value;
                     skill.m_level = Mathf.Clamp(skill.m_level, 0f, 100f);
-                    self.m_player.Message(MessageHud.MessageType.TopLeft, "Skill increased " + localizedName + ": " + (int)skill.m_level, 0, skill.m_info.m_icon);
-                    Console.instance.Print("Skill " + config.Name + " = " + skill.m_level);
+                    self.m_player.Message(MessageHud.MessageType.TopLeft,
+                        $"Skill increased {localizedName}: {(int)skill.m_level}", 0, skill.m_info.m_icon);
+                    Console.instance.Print($"Skill {config.Name} = {skill.m_level}");
                     Logger.LogDebug($"Raised skill {config.Name} to {skill.m_level}");
 
                     return;
