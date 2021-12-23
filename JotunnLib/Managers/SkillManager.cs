@@ -191,8 +191,8 @@ namespace Jotunn.Managers
                     skill.m_level = Mathf.Clamp(skill.m_level, 0f, 100f);
                     self.m_player.Message(MessageHud.MessageType.TopLeft,
                         $"Skill increased {localizedName}: {(int)skill.m_level}", 0, skill.m_info.m_icon);
-                    Console.instance.Print($"Skill {config.Name} = {skill.m_level}");
-                    Logger.LogDebug($"Raised skill {config.Name} to {skill.m_level}");
+                    Console.instance.Print($"Skill {localizedName} = {skill.m_level}");
+                    Logger.LogDebug($"Raised skill {localizedName} to {skill.m_level}");
 
                     return;
                 }
