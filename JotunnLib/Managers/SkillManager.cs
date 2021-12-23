@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using Jotunn.Utils;
 using Jotunn.Configs;
-using MonoMod.Cil;
-using UnityEngine.UI;
+using Jotunn.Utils;
+using UnityEngine;
 
 namespace Jotunn.Managers
 {
@@ -23,7 +21,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private SkillManager() {}
+        private SkillManager() { }
 
         /// <summary>
         ///     Initialize the manager
@@ -48,12 +46,12 @@ namespace Jotunn.Managers
         {
             if (string.IsNullOrEmpty(skillConfig?.Identifier))
             {
-                Logger.LogError($"Failed to register skill with invalid identifier: {skillConfig.Identifier}");
+                Logger.LogError($"Failed to register skill with invalid identifier: {skillConfig?.Identifier}");
                 return global::Skills.SkillType.None;
             }
 
             Skills.Add(skillConfig.UID, skillConfig);
-            
+
             return skillConfig.UID;
         }
 
@@ -117,7 +115,7 @@ namespace Jotunn.Managers
             {
                 return Skills[skillType].ToSkillDef();
             }
-            
+
             return Player.m_localPlayer?.GetSkills()?.m_skills?
                 .FirstOrDefault(skill => skill.m_skill == skillType);
         }
@@ -134,7 +132,7 @@ namespace Jotunn.Managers
                 return null;
             }
 
-            return GetSkill((Skills.SkillType)identifier.GetStableHashCode());
+            return GetSkill((Skills.SkillType)Math.Abs(identifier.GetStableHashCode()));
         }
 
         private void RegisterCustomSkills(On.Skills.orig_Awake orig, Skills self)
@@ -154,7 +152,7 @@ namespace Jotunn.Managers
                 }
             }
         }
-        
+
         private bool Skills_IsSkillValid(On.Skills.orig_IsSkillValid orig, Skills self, Skills.SkillType skillType)
         {
             var ret = orig(self, skillType);
@@ -166,7 +164,7 @@ namespace Jotunn.Managers
 
             return ret;
         }
-        
+
         private Skills.Skill Skills_GetSkill(On.Skills.orig_GetSkill orig, Skills self, Skills.SkillType skillType)
         {
             // Fix the mess of whoever decided to have negative skill IDs and implement several workarounds...
@@ -179,7 +177,7 @@ namespace Jotunn.Managers
 
             return orig(self, skillType);
         }
-        
+
         private void Skills_CheatRaiseSkill(On.Skills.orig_CheatRaiseSkill orig, Skills self, string name, float value)
         {
             foreach (var config in Skills.Values)
