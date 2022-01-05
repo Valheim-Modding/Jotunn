@@ -203,6 +203,7 @@ namespace Jotunn.Managers
             Vegetations.Add(customVegetation.Name, customVegetation);
             return true;
         }
+
         /// <summary>
         ///     Get a ZoneVegetation by its name.<br /><br />
         ///     Search hierarchy:

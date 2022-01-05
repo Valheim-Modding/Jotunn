@@ -50,18 +50,8 @@ namespace Jotunn.Entities
             ZoneLocation = locationConfig.GetZoneLocation();
             ZoneLocation.m_prefab = exteriorPrefab;
             ZoneLocation.m_prefabName = exteriorPrefab.name;
-
-            List<ZNetView> netViews = new List<ZNetView>();
-            var transform = exteriorPrefab.transform;
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                if (transform.GetChild(i).TryGetComponent(out ZNetView zNetView))
-                {
-                    netViews.Add(zNetView);
-                }
-            }
-
-            ZoneLocation.m_netViews = netViews;
+            
+            ZoneLocation.m_netViews.AddRange(exteriorPrefab.GetComponentsInChildren<ZNetView>(true));
 
             if (exteriorPrefab.TryGetComponent<Location>(out var location))
             {
