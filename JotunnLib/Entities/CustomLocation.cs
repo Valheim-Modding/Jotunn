@@ -15,19 +15,19 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The exterior prefab for this custom location.
         /// </summary>
-        public GameObject Prefab { get; private set; }
+        public GameObject Prefab { get; }
         /// <summary>
         ///     Associated <see cref="ZoneSystem.ZoneLocation"/> component
         /// </summary>
-        public ZoneSystem.ZoneLocation ZoneLocation { get; private set; }
+        public ZoneSystem.ZoneLocation ZoneLocation { get; }
         /// <summary>
         ///     Associated <see cref="Location"/> component
         /// </summary>
-        public Location Location { get; private set; }
+        public Location Location { get; }
         /// <summary>
         ///     Name of this custom location
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
         ///     Custom location from a prefab with a <see cref="LocationConfig"/> attached.<br />
@@ -50,7 +50,8 @@ namespace Jotunn.Entities
             ZoneLocation = locationConfig.GetZoneLocation();
             ZoneLocation.m_prefab = exteriorPrefab;
             ZoneLocation.m_prefabName = exteriorPrefab.name;
-            
+            ZoneLocation.m_netViews.AddRange(exteriorPrefab.GetComponentsInChildren<ZNetView>(true));
+
             if (exteriorPrefab.TryGetComponent<Location>(out var location))
             {
                 Location = location;
