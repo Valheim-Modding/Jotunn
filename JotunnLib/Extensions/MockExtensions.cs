@@ -66,7 +66,7 @@ namespace Jotunn
                     realInstance.transform.localPosition = tf.localPosition;
                     realInstance.transform.localRotation = tf.localRotation;
                     realInstance.transform.localScale = tf.localScale;
-                    Object.Destroy(tf.gameObject);
+                    Object.DestroyImmediate(tf.gameObject);
                 }
                 else
                 {

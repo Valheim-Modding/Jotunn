@@ -24,7 +24,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private PrefabManager() {}
+        private PrefabManager() { }
 
         /// <summary>
         ///     Event that gets fired after the vanilla prefabs are in memory and available for cloning.
@@ -58,7 +58,7 @@ namespace Jotunn.Managers
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
-            
+
             On.ZNetScene.Awake += RegisterAllToZNetScene;
             SceneManager.sceneUnloaded += (current) => Cache.ClearCache();
 
@@ -360,7 +360,7 @@ namespace Jotunn.Managers
                 }
             }
         }
-        
+
         /// <summary>
         ///     Safely invoke the <see cref="OnVanillaPrefabsAvailable"/> event
         /// </summary>
@@ -371,7 +371,7 @@ namespace Jotunn.Managers
 
             orig(self, other);
         }
-        
+
         private void InvokeOnPrefabsRegistered(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);
@@ -433,11 +433,8 @@ namespace Jotunn.Managers
                 {
                     return map;
                 }
-                else
-                {
-                    InitCache(type);
-                    return GetPrefabs(type);
-                }
+                InitCache(type);
+                return GetPrefabs(type);
             }
 
             private static void InitCache(Type type, Dictionary<string, Object> map = null)

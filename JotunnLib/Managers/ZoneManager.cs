@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jotunn.Configs;
 using Jotunn.Entities;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -50,6 +51,16 @@ namespace Jotunn.Managers
             LocationContainer.SetActive(false);
 
             On.ZoneSystem.SetupLocations += ZoneSystem_SetupLocations;
+            On.ZoneSystem.SpawnLocation += ZoneSystem_SpawnLocation;
+        }
+
+        private GameObject ZoneSystem_SpawnLocation(On.ZoneSystem.orig_SpawnLocation orig, ZoneSystem self, ZoneLocation location, int seed, Vector3 pos, Quaternion rot, ZoneSystem.SpawnMode mode, List<GameObject> spawnedGhostObjects)
+        {
+            if (Locations.ContainsKey(location.m_prefabName))
+            {
+                Logger.LogMessage($"spawned {location.m_prefabName}, mode: {mode}");
+            }
+            return orig(self, location, seed, pos, rot, mode, spawnedGhostObjects);
         }
 
         /// <summary>
@@ -87,29 +98,66 @@ namespace Jotunn.Managers
             return biomes;
         }
 #pragma warning restore S3265 // Non-flags enums should not be used in bitwise operations
+        
+        /// <summary>
+        ///     Create an empty GameObject that is disabled, so any Components in instantiated GameObjects will not start their lifecycle.
+        /// </summary>
+        /// <param name="name">Name of the location</param>
+        /// <returns></returns>
+        public GameObject CreateLocationContainer(string name)
+        {
+            GameObject container = new GameObject
+            {
+                name = name
+            };
+            container.transform.SetParent(LocationContainer.transform);
+            return container;
+        }
+        
+        /// <summary>
+        ///     Copy your GameObject to a disabled container, so any Components in instantiated GameObjects will not start their lifecycle     
+        /// </summary>
+        /// <param name="gameObject">Location prefab</param>
+        public GameObject CreateLocationContainer(GameObject gameObject)
+        {
+            var container = Object.Instantiate(gameObject, LocationContainer.transform);
+            container.name = gameObject.name;
+            return container;
+        }
+
+        /// <summary>
+        ///     Create a copy that is disabled, so any Components in instantiated GameObjects will not start their lifecycle     
+        /// </summary>
+        /// <param name="gameObject">Prefab to copy</param>
+        /// <param name="fixLocationReferences">Replace JVLmock GameObjects with a copy of their real prefab</param>
+        /// <returns></returns>
+        [Obsolete("Use CreateLocationContainer(GameObject) instead and define if references should be fixed in CustomLocation")]
+        public GameObject CreateLocationContainer(GameObject gameObject, bool fixLocationReferences = false)
+        {
+            var locationContainer = Object.Instantiate(gameObject, LocationContainer.transform);
+            locationContainer.name = gameObject.name;
+            if (fixLocationReferences)
+            {
+                locationContainer.FixReferences(true);
+            }
+
+            return locationContainer;
+        }
 
         /// <summary>
         ///     Register a CustomLocation to be added to the ZoneSystem
         /// </summary>
         /// <param name="customLocation"></param>
-        /// <returns></returns>
+        /// <returns>true if the custom location could be added to the manager</returns>
         public bool AddCustomLocation(CustomLocation customLocation)
         {
-            if (Locations.TryGetValue(customLocation.Name, out CustomLocation existingLocation))
+            if (Locations.ContainsKey(customLocation.Name))
             {
                 Logger.LogWarning($"Location {customLocation.Name} already exists");
                 return false;
             }
 
             customLocation.Prefab.transform.SetParent(LocationContainer.transform);
-            foreach (var zNetView in customLocation.ZoneLocation.m_netViews)
-            {
-                if (!PrefabManager.Instance.Prefabs.ContainsKey(zNetView.gameObject.name.GetStableHashCode()))
-                {
-                    PrefabManager.Instance.AddPrefab(zNetView.gameObject);
-                }
-            }
-
             Locations.Add(customLocation.Name, customLocation);
             return true;
         }
@@ -139,51 +187,18 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Create an empty GameObject that is disabled, so any Components in instantiated GameObjects will not start their lifecycle.
-        /// </summary>
-        /// <param name="name">Name of the location</param>
-        /// <returns></returns>
-        public GameObject CreateLocationContainer(string name)
-        {
-            GameObject container = new GameObject()
-            {
-                name = name
-            };
-            container.transform.SetParent(LocationContainer.transform);
-            return container;
-        }
-
-        /// <summary>
-        ///     Create a copy that is disabled, so any Components in instantiated GameObjects will not start their lifecycle     
-        /// </summary>
-        /// <param name="gameObject">Prefab to copy</param>
-        /// <param name="fixLocationReferences">Replace JVLmock GameObjects with a copy of their real prefab</param>
-        /// <returns></returns>
-        public GameObject CreateLocationContainer(GameObject gameObject, bool fixLocationReferences = false)
-        {
-            var locationContainer = Object.Instantiate(gameObject, LocationContainer.transform);
-            locationContainer.name = gameObject.name;
-            if (fixLocationReferences)
-            {
-                locationContainer.FixReferences(true);
-            }
-
-            return locationContainer;
-        }
-
-        /// <summary>
-        ///     Create a CustomLocation that is a deep copy of the original.
-        ///     Changes will not affect the original. The CustomLocation is already registered to be added.
+        ///     Create a CustomLocation that is a deep copy of the original.<br />
+        ///     Changes will not affect the original. The CustomLocation is already registered in the manager.
         /// </summary>
         /// <param name="name">name of the custom location</param>
         /// <param name="baseName">name of the existing location to copy</param>
-        /// <returns></returns>
+        /// <returns>A CustomLocation object with the cloned location prefab</returns>
         public CustomLocation CreateClonedLocation(string name, string baseName)
         {
             var baseZoneLocation = GetZoneLocation(baseName);
             var copiedPrefab = Object.Instantiate(baseZoneLocation.m_prefab, Vector3.zero, Quaternion.identity, LocationContainer.transform);
             copiedPrefab.name = name;
-            var clonedLocation = new CustomLocation(copiedPrefab, new Configs.LocationConfig(baseZoneLocation));
+            var clonedLocation = new CustomLocation(copiedPrefab, false, new LocationConfig(baseZoneLocation));
             AddCustomLocation(clonedLocation);
             return clonedLocation;
         }
@@ -242,22 +257,48 @@ namespace Jotunn.Managers
                     {
                         Logger.LogDebug(
                             $"Adding custom location {customLocation.Prefab.name} in {string.Join(", ", GetMatchingBiomes(customLocation.ZoneLocation.m_biome))}");
+                        
+                        // Fix references if needed
+                        if (customLocation.FixReference)
+                        {
+                            customLocation.Prefab.FixReferences(true);
+                            customLocation.FixReference = false;
+                        }
 
                         var zoneLocation = customLocation.ZoneLocation;
                         self.m_locations.Add(zoneLocation);
+                        
+                        ZoneSystem.PrepareNetViews(zoneLocation.m_prefab, zoneLocation.m_netViews);
 
-                        zoneLocation.m_prefab = customLocation.Prefab;
-                        zoneLocation.m_hash = zoneLocation.m_prefab.name.GetStableHashCode();
-                        Location location = customLocation.Location;
-                        zoneLocation.m_location = location;
-                        if (Application.isPlaying)
+                        foreach (var znet in zoneLocation.m_netViews)
                         {
-                            ZoneSystem.PrepareNetViews(zoneLocation.m_prefab, zoneLocation.m_netViews);
-                            ZoneSystem.PrepareRandomSpawns(zoneLocation.m_prefab, zoneLocation.m_randomSpawns);
-                            if (!self.m_locationsByHash.ContainsKey(zoneLocation.m_hash))
+                            if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(znet.GetPrefabName().GetStableHashCode()))
                             {
-                                self.m_locationsByHash.Add(zoneLocation.m_hash, zoneLocation);
+                                var prefab = Object.Instantiate(znet.gameObject,
+                                    PrefabManager.Instance.PrefabContainer.transform);
+                                prefab.name = znet.GetPrefabName();
+                                PrefabManager.Instance.AddPrefab(prefab);
+                                PrefabManager.Instance.RegisterToZNetScene(prefab);
                             }
+                        }
+
+                        ZoneSystem.PrepareRandomSpawns(zoneLocation.m_prefab, zoneLocation.m_randomSpawns);
+                        
+                        foreach (var znet in zoneLocation.m_randomSpawns.SelectMany(x => x.m_childNetViews))
+                        {
+                            if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(znet.GetPrefabName().GetStableHashCode()))
+                            {
+                                var prefab = Object.Instantiate(znet.gameObject,
+                                    PrefabManager.Instance.PrefabContainer.transform);
+                                prefab.name = znet.GetPrefabName();
+                                PrefabManager.Instance.AddPrefab(prefab);
+                                PrefabManager.Instance.RegisterToZNetScene(prefab);
+                            }
+                        }
+
+                        if (!self.m_locationsByHash.ContainsKey(zoneLocation.m_hash))
+                        {
+                            self.m_locationsByHash.Add(zoneLocation.m_hash, zoneLocation);
                         }
                     }
                     catch (Exception ex)
