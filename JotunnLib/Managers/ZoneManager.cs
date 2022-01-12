@@ -37,8 +37,8 @@ namespace Jotunn.Managers
         /// </summary>
         internal GameObject LocationContainer;
 
-        private readonly Dictionary<string, CustomLocation> Locations = new Dictionary<string, CustomLocation>();
-        private readonly Dictionary<string, CustomVegetation> Vegetations = new Dictionary<string, CustomVegetation>();
+        internal readonly Dictionary<string, CustomLocation> Locations = new Dictionary<string, CustomLocation>();
+        internal readonly Dictionary<string, CustomVegetation> Vegetations = new Dictionary<string, CustomVegetation>();
 
         /// <summary>
         ///     Initialize the manager
@@ -51,16 +51,6 @@ namespace Jotunn.Managers
             LocationContainer.SetActive(false);
 
             On.ZoneSystem.SetupLocations += ZoneSystem_SetupLocations;
-            On.ZoneSystem.SpawnLocation += ZoneSystem_SpawnLocation;
-        }
-
-        private GameObject ZoneSystem_SpawnLocation(On.ZoneSystem.orig_SpawnLocation orig, ZoneSystem self, ZoneLocation location, int seed, Vector3 pos, Quaternion rot, ZoneSystem.SpawnMode mode, List<GameObject> spawnedGhostObjects)
-        {
-            if (Locations.ContainsKey(location.m_prefabName))
-            {
-                Logger.LogMessage($"spawned {location.m_prefabName}, mode: {mode}");
-            }
-            return orig(self, location, seed, pos, rot, mode, spawnedGhostObjects);
         }
 
         /// <summary>
