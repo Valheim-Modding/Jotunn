@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
@@ -32,7 +31,7 @@ namespace Jotunn.Entities
         ///     Name of this custom location
         /// </summary>
         public string Name { get; }
-        
+
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
@@ -58,7 +57,7 @@ namespace Jotunn.Entities
         [Obsolete("Use CustomLocation(GameObject, GameObject, bool, LocationConfig) instead and define if references should be fixed")]
         public CustomLocation(GameObject exteriorPrefab, GameObject interiorPrefab, LocationConfig locationConfig)
             : this(exteriorPrefab, interiorPrefab, false, locationConfig) { }
-        
+
         /// <summary>
         ///     Custom location from a prefab with a <see cref="LocationConfig"/> attached.
         /// </summary>
@@ -79,7 +78,7 @@ namespace Jotunn.Entities
         {
             Prefab = exteriorPrefab;
             Name = exteriorPrefab.name;
-            
+
             if (exteriorPrefab.TryGetComponent<Location>(out var location))
             {
                 Location = location;
@@ -91,8 +90,8 @@ namespace Jotunn.Entities
                 Location.m_exteriorRadius = locationConfig.ExteriorRadius;
                 Location.m_interiorPrefab = interiorPrefab;
                 Location.m_hasInterior = locationConfig.HasInterior;
-                location.m_interiorRadius = locationConfig.InteriorRadius;
-                location.m_interiorEnvironment = locationConfig.InteriorEnvironment;
+                Location.m_interiorRadius = locationConfig.InteriorRadius;
+                Location.m_interiorEnvironment = locationConfig.InteriorEnvironment;
             }
 
             ZoneLocation = locationConfig.GetZoneLocation();
