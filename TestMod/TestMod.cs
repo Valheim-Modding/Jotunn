@@ -98,9 +98,10 @@ namespace TestMod
             // Create a custom item with variants
             PrefabManager.OnVanillaPrefabsAvailable += AddCustomVariants;
 
-            // Crate a custom item with rendered icons
+            // Create a custom item with rendered icons
             PrefabManager.OnVanillaPrefabsAvailable += AddItemsWithRenderedIcons;
 
+            // Create custom locations and vegetation
             PrefabManager.OnVanillaPrefabsAvailable += AddCustomLocationsAndVegetation;
             ZoneManager.OnVanillaLocationsAvailable += AddClonedVanillaLocationsAndVegetations;
             ZoneManager.OnVanillaLocationsAvailable += ModifyVanillaLocationsAndVegetation;
