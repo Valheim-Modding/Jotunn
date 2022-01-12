@@ -1,7 +1,6 @@
 ﻿# Changelog
 
 ## Version 2.4.6
-* Fixed some skill issues
 * Custom skills add an additional localization token to the game using the format "$skill_\{hashcode\}"
 * Fixed multiple issues with custom locations (mocking, ZNetView handling, RandomSpawns)
 * Added FixReference property to CustomLocation, obsoleted the parameter on ZoneManager.AddLocation and the old CustomLocation constructors
