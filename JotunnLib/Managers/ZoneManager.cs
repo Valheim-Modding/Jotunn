@@ -200,7 +200,6 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public bool AddCustomVegetation(CustomVegetation customVegetation)
         {
-            Logger.LogDebug($"Registering custom vegetation {customVegetation.Name}");
             if (!PrefabManager.Instance.Prefabs.ContainsKey(customVegetation.Prefab.name.GetStableHashCode()))
             {
                 PrefabManager.Instance.AddPrefab(customVegetation.Prefab);
