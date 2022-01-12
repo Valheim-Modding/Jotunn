@@ -88,7 +88,7 @@ namespace Jotunn.Managers
             return biomes;
         }
 #pragma warning restore S3265 // Non-flags enums should not be used in bitwise operations
-        
+
         /// <summary>
         ///     Create an empty GameObject that is disabled, so any Components in instantiated GameObjects will not start their lifecycle.
         /// </summary>
@@ -103,7 +103,7 @@ namespace Jotunn.Managers
             container.transform.SetParent(LocationContainer.transform);
             return container;
         }
-        
+
         /// <summary>
         ///     Copy your GameObject to a disabled container, so any Components in instantiated GameObjects will not start their lifecycle     
         /// </summary>
@@ -247,7 +247,7 @@ namespace Jotunn.Managers
                     {
                         Logger.LogDebug(
                             $"Adding custom location {customLocation.Prefab.name} in {string.Join(", ", GetMatchingBiomes(customLocation.ZoneLocation.m_biome))}");
-                        
+
                         // Fix references if needed
                         if (customLocation.FixReference)
                         {
@@ -257,7 +257,7 @@ namespace Jotunn.Managers
 
                         var zoneLocation = customLocation.ZoneLocation;
                         self.m_locations.Add(zoneLocation);
-                        
+
                         ZoneSystem.PrepareNetViews(zoneLocation.m_prefab, zoneLocation.m_netViews);
 
                         foreach (var znet in zoneLocation.m_netViews)
@@ -273,7 +273,7 @@ namespace Jotunn.Managers
                         }
 
                         ZoneSystem.PrepareRandomSpawns(zoneLocation.m_prefab, zoneLocation.m_randomSpawns);
-                        
+
                         foreach (var znet in zoneLocation.m_randomSpawns.SelectMany(x => x.m_childNetViews))
                         {
                             if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(znet.GetPrefabName().GetStableHashCode()))
