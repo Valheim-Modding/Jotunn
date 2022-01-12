@@ -2,6 +2,11 @@
 
 ## Version 2.4.6
 * Fixed some skill issues
+* Custom skills add an additional localization token to the game using the format "$skill_\{hashcode\}"
+* Fixed multiple issues with custom locations (mocking, ZNetView handling, RandomSpawns)
+* Added FixReference property to CustomLocation, obsoleted the parameter on ZoneManager.AddLocation and the old CustomLocation constructors
+* Added possibility to create CustomLocation instances as early as the mod's Awake()
+* __Mod authors are encouraged to adapt their mods to the new FixReference property__
 
 ## Version 2.4.5
 * Added MinimapManager, enabling mods to draw on the map or create overlays for it (see https://valheim-modding.github.io/Jotunn/tutorials/map.html for tutorials) (thx Nosirrom)
