@@ -1211,11 +1211,15 @@ namespace TestMod
                 {
                     Name = "$lulz_shield",
                     Description = "$lulz_shield_desc",
-                    Icons = new Sprite[]
+                    Icons = new []
                     {
                         var1, var2
                     },
-                    StyleTex = styleTex
+                    StyleTex = styleTex,
+                    Requirements = new []
+                    {
+                        new RequirementConfig { Item = "Wood" }
+                    }
                 });
                 ItemManager.Instance.AddItem(CI);
             }
@@ -1244,11 +1248,15 @@ namespace TestMod
                 {
                     Name = "Lulz Sword",
                     Description = "Lulz on a stick",
-                    Icons = new Sprite[]
+                    Icons = new []
                     {
                         var1, var2, var3, var4
                     },
-                    StyleTex = styleTex
+                    StyleTex = styleTex,
+                    Requirements = new []
+                    {
+                        new RequirementConfig { Item = "Wood" }
+                    }
                 });
                 ItemManager.Instance.AddItem(sword);
 
@@ -1256,11 +1264,15 @@ namespace TestMod
                 {
                     Name = "Lulz Cape",
                     Description = "Lulz to the rescue",
-                    Icons = new Sprite[]
+                    Icons = new []
                     {
                         var1, var2, var3, var4
                     },
-                    StyleTex = styleTex
+                    StyleTex = styleTex,
+                    Requirements = new []
+                    {
+                        new RequirementConfig { Item = "Wood" }
+                    }
                 });
                 ItemManager.Instance.AddItem(cape);
 
@@ -1269,11 +1281,15 @@ namespace TestMod
                 {
                     Name = "Lulz Armor",
                     Description = "Lol, that hit",
-                    Icons = new Sprite[]
+                    Icons = new []
                     {
                         var1, var2, var3, var4
                     },
-                    StyleTex = styleTexArmor
+                    StyleTex = styleTexArmor,
+                    Requirements = new []
+                    {
+                        new RequirementConfig { Item = "Wood" }
+                    }
                 });
                 ItemManager.Instance.AddItem(chest);
             }
@@ -1334,15 +1350,16 @@ namespace TestMod
                         locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"));
 
                 ZoneManager.Instance.AddCustomLocation(
-                    new CustomLocation(cubeArchLocation, true, new LocationConfig
-                    {
-                        Biome = Heightmap.Biome.BlackForest,
-                        Quantity = 200,
-                        Priotized = true,
-                        ExteriorRadius = 2f,
-                        MinAltitude = 1f,
-                        ClearArea = true
-                    }));
+                    new CustomLocation(cubeArchLocation, true,
+                        new LocationConfig
+                        {
+                            Biome = Heightmap.Biome.BlackForest,
+                            Quantity = 200,
+                            Priotized = true,
+                            ExteriorRadius = 2f,
+                            MinAltitude = 1f,
+                            ClearArea = true
+                        }));
 
                 // Create location from AssetBundle using spawners and random spawns
                 var spawnerLocation =
@@ -1350,15 +1367,16 @@ namespace TestMod
                         locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation"));
 
                 ZoneManager.Instance.AddCustomLocation(
-                    new CustomLocation(spawnerLocation, true, new LocationConfig
-                    {
-                        Biome = Heightmap.Biome.Meadows,
-                        Quantity = 200,
-                        Priotized = true,
-                        ExteriorRadius = 2f,
-                        MinAltitude = 1f,
-                        ClearArea = true
-                    }));
+                    new CustomLocation(spawnerLocation, true,
+                        new LocationConfig
+                        {
+                            Biome = Heightmap.Biome.Meadows,
+                            Quantity = 100,
+                            Priotized = true,
+                            ExteriorRadius = 2f,
+                            MinAltitude = 1f,
+                            ClearArea = true
+                        }));
 
                 // Use empty location containers for locations instantiated in code
                 var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
@@ -1384,13 +1402,14 @@ namespace TestMod
                     }));
 
                 // Use vegetation for singular prefabs
-                CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, new VegetationConfig
-                {
-                    Biome = Heightmap.Biome.Meadows,
-                    BlockCheck = true
-                });
+                CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab,
+                    new VegetationConfig {Biome = Heightmap.Biome.Meadows, BlockCheck = true});
 
                 ZoneManager.Instance.AddCustomVegetation(customVegetation);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception caught while adding custom locations: {ex}");
             }
             finally
             {
@@ -1432,6 +1451,10 @@ namespace TestMod
                     GroupRadius = 10,
                     Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest),
                 }));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception caught while adding cloned locations: {ex}");
             }
             finally
             {
