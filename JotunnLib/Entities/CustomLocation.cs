@@ -87,10 +87,12 @@ namespace Jotunn.Entities
             else
             {
                 Location = exteriorPrefab.AddComponent<Location>();
-                Location.m_hasInterior = locationConfig.InteriorRadius > 0f;
-                Location.m_exteriorRadius = locationConfig.ExteriorRadius;
                 Location.m_clearArea = locationConfig.ClearArea;
+                Location.m_exteriorRadius = locationConfig.ExteriorRadius;
                 Location.m_interiorPrefab = interiorPrefab;
+                Location.m_hasInterior = locationConfig.HasInterior;
+                location.m_interiorRadius = locationConfig.InteriorRadius;
+                location.m_interiorEnvironment = locationConfig.InteriorEnvironment;
             }
 
             ZoneLocation = locationConfig.GetZoneLocation();

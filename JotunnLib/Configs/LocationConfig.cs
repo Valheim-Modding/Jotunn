@@ -102,13 +102,17 @@ namespace Jotunn.Configs
         /// </summary>
         public bool SlopeRotation { get; set; }
         /// <summary>
-        ///     Enable to
+        ///     Enable to activate interior handling
         /// </summary>
         public bool HasInterior { get; set; }
         /// <summary>
         ///     Radius of the interior attached to the location
         /// </summary>
         public float InteriorRadius { get; set; } = 0f;
+        /// <summary>
+        ///     Environment string used by the interior
+        /// </summary>
+        public string InteriorEnvironment { get; set; }
         /// <summary>
         ///     Randomize location rotation when placing
         /// </summary>
@@ -159,7 +163,9 @@ namespace Jotunn.Configs
             MinTerrainDelta = zoneLocation.m_minTerrainDelta;
             MaxTerrainDelta = zoneLocation.m_maxTerrainDelta;
             MinDistanceFromSimilar = zoneLocation.m_minDistanceFromSimilar;
+            HasInterior = zoneLocation.m_location && zoneLocation.m_location.m_hasInterior;
             InteriorRadius = zoneLocation.m_interiorRadius;
+            InteriorEnvironment = zoneLocation.m_location?.m_interiorEnvironment;
             SlopeRotation = zoneLocation.m_slopeRotation;
             RandomRotation = zoneLocation.m_randomRotation;
             SnapToWater = zoneLocation.m_snapToWater;
