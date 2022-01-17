@@ -81,7 +81,7 @@ namespace Jotunn
         {
             // This is totally arbitrary.
             // I had to add a depth because of call stack exploding otherwise
-            if (depth == 2)
+            if (depth == 3)
                 return;
 
             depth++;
