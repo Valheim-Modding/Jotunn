@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.4.7
+* Fixed mock resolving of certain components (piece place effects for example)
+
 ## Version 2.4.6
 * Custom skills add an additional localization token to the game using the format "$skill_\{hashcode\}"
 * Fixed multiple issues with custom locations (mocking, ZNetView handling, RandomSpawns)
