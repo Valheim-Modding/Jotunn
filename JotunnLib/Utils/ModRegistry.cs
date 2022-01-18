@@ -130,6 +130,36 @@ namespace Jotunn.Utils
             PieceManager.Instance.Pieces.Where(x => x.SourceMod.GUID.Equals(modGuid));
         
         /// <summary>
+        ///     Get all added <see cref="CustomLocation">CustomLocations</see>
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomLocation"/> from all loaded mods</returns>
+        public static IEnumerable<CustomLocation> GetLocations() => 
+            ZoneManager.Instance.Locations.Values;
+        
+        /// <summary>
+        ///     Get all added <see cref="CustomLocation">CustomLocations</see> of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomLocation"/> from a specific mod</returns>
+        public static IEnumerable<CustomLocation> GetLocations(string modGuid) => 
+            ZoneManager.Instance.Locations.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
+        
+        /// <summary>
+        ///     Get all added <see cref="CustomVegetation">CustomVegetations</see>
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomVegetation"/> from all loaded mods</returns>
+        public static IEnumerable<CustomVegetation> GetVegetation() => 
+            ZoneManager.Instance.Vegetations.Values;
+        
+        /// <summary>
+        ///     Get all added <see cref="CustomVegetation">CustomVegetations</see> of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomVegetation"/> from a specific mod</returns>
+        public static IEnumerable<CustomVegetation> GetVegetation(string modGuid) => 
+            ZoneManager.Instance.Vegetations.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
+
+        /// <summary>
         ///     Get all added <see cref="ConsoleCommand">ConsoleCommands</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="ConsoleCommand"/> from all loaded mods</returns>
@@ -213,6 +243,16 @@ namespace Jotunn.Utils
             ///     Custom pieces added by that mod
             /// </summary>
             public IEnumerable<CustomPiece> Pieces => GetPieces(GUID);
+            
+            /// <summary>
+            ///     Custom locations added by that mod
+            /// </summary>
+            public IEnumerable<CustomLocation> Locations => GetLocations(GUID);
+            
+            /// <summary>
+            ///     Custom Vegetation added by that mod
+            /// </summary>
+            public IEnumerable<CustomVegetation> Vegetation => GetVegetation(GUID);
 
             /// <summary>
             ///     Custom commands added by that mod
