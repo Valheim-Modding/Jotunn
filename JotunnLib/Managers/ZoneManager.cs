@@ -169,7 +169,8 @@ namespace Jotunn.Managers
                 return customLocation.ZoneLocation;
             }
 
-            if (ZoneSystem.instance.m_locationsByHash.TryGetValue(name.GetStableHashCode(), out ZoneLocation location))
+            if (ZoneSystem.instance &&
+                ZoneSystem.instance.m_locationsByHash.TryGetValue(name.GetStableHashCode(), out ZoneLocation location))
             {
                 return location;
             }
