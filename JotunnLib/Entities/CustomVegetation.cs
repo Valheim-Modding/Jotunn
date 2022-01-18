@@ -14,11 +14,11 @@ namespace Jotunn.Entities
         /// <summary>
         ///     The prefab for this custom vegetation.
         /// </summary>
-        public GameObject Prefab { get; private set; }
+        public GameObject Prefab { get; }
         /// <summary>
         ///     Associated <see cref="ZoneSystem.ZoneVegetation"/> component
         /// </summary>
-        public ZoneSystem.ZoneVegetation Vegetation { get; private set; }
+        public ZoneSystem.ZoneVegetation Vegetation { get; }
         /// <summary>
         ///     Name of this custom vegetation
         /// </summary>
@@ -35,6 +35,12 @@ namespace Jotunn.Entities
             Name = prefab.name;
             Vegetation = config.ToVegetation();
             Vegetation.m_prefab = prefab;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

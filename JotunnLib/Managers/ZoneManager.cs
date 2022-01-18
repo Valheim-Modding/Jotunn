@@ -245,7 +245,7 @@ namespace Jotunn.Managers
                     try
                     {
                         Logger.LogDebug(
-                            $"Adding custom location {customLocation.Prefab.name} in {string.Join(", ", GetMatchingBiomes(customLocation.ZoneLocation.m_biome))}");
+                            $"Adding custom location {customLocation} in {string.Join(", ", GetMatchingBiomes(customLocation.ZoneLocation.m_biome))}");
 
                         // Fix references if needed
                         if (customLocation.FixReference)
@@ -313,7 +313,7 @@ namespace Jotunn.Managers
                     try
                     {
                         Logger.LogDebug(
-                            $"Adding custom vegetation {customVegetation.Prefab.name} in {string.Join(", ", GetMatchingBiomes(customVegetation.Vegetation.m_biome))}");
+                            $"Adding custom vegetation {customVegetation} in {string.Join(", ", GetMatchingBiomes(customVegetation.Vegetation.m_biome))}");
                         self.m_vegetation.Add(customVegetation.Vegetation);
                     }
                     catch (Exception ex)

@@ -102,5 +102,11 @@ namespace Jotunn.Entities
 
             FixReference = fixReference;
         }
+        
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
