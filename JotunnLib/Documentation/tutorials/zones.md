@@ -160,27 +160,25 @@ ZoneManager.Instance.AddCustomLocation(
 
 You can also create your locations in Unity, it should have a Location component.
 
-You can use `JVLmock_<prefab_name>` GameObjects to reference vanilla prefabs in your location by setting the `fixReference` parameter of the CustomLocation constructor to `true`.
-You can have multiple instances of the same `JVLmock_<prefab> (<number>)`, these will all be replaced by the `prefab`.
+You can use `JVLmock_<prefab_name>` GameObjects to [reference vanilla prefabs](asset-mocking.md) in your location by setting the `fixReference` parameter of the CustomLocation constructor to `true`.
 
 ```cs
-var cubeArchLocation =
+// Create location from AssetBundle using spawners and random spawns
+var spawnerLocation =
     ZoneManager.Instance.CreateLocationContainer(
-        locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"));
+        locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation"));
 
 ZoneManager.Instance.AddCustomLocation(
-    new CustomLocation(cubeArchLocation, true,
+    new CustomLocation(spawnerLocation, true,
         new LocationConfig
         {
-            Biome = Heightmap.Biome.BlackForest,
-            Quantity = 200,
+            Biome = Heightmap.Biome.Meadows,
+            Quantity = 100,
             Priotized = true,
             ExteriorRadius = 2f,
             MinAltitude = 1f,
             ClearArea = true
         }));
-
-
 ```
 
 
