@@ -21,7 +21,9 @@ namespace Jotunn.Utils
         private static void CacheDependentPlugins()
         {
             var dependent = new List<BaseUnityPlugin>();
-            var loaded = BepInEx.Bootstrap.Chainloader.PluginInfos.Where(x => x.Value != null && x.Value.Instance != null).Select(x => x.Value.Instance);
+            var loaded = BepInEx.Bootstrap.Chainloader.PluginInfos
+                .Where(x => x.Value != null && x.Value.Instance != null)
+                .Select(x => x.Value.Instance);
 
             foreach (var plugin in loaded)
             {
@@ -130,8 +132,8 @@ namespace Jotunn.Utils
         public static PluginInfo GetPluginInfoFromPath(FileInfo fileInfo) =>
             BepInEx.Bootstrap.Chainloader.PluginInfos.Values
                 .Where(pi => pi.Location != null)
-                .FirstOrDefault(pi => 
-                    fileInfo.DirectoryName != null && 
+                .FirstOrDefault(pi =>
+                    fileInfo.DirectoryName != null &&
                     fileInfo.DirectoryName.Contains(new FileInfo(pi.Location).DirectoryName) &&
                     new FileInfo(pi.Location).DirectoryName != BepInEx.Paths.PluginPath);
 
