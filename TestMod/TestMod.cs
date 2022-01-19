@@ -1386,7 +1386,7 @@ namespace TestMod
                     }));
 
                 // Use vegetation for singular prefabs
-                CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab,
+                CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, false,
                     new VegetationConfig {Biome = Heightmap.Biome.Meadows, BlockCheck = true});
 
                 ZoneManager.Instance.AddCustomVegetation(customVegetation);
@@ -1426,15 +1426,17 @@ namespace TestMod
 
                 // Add more seed carrots to the meadows & black forest
                 ZoneSystem.ZoneVegetation pickableSeedCarrot = ZoneManager.Instance.GetZoneVegetation("Pickable_SeedCarrot");
-                ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(pickableSeedCarrot.m_prefab, new VegetationConfig(pickableSeedCarrot)
-                {
-                    Min = 3,
-                    Max = 10,
-                    GroupSizeMin = 3,
-                    GroupSizeMax = 10,
-                    GroupRadius = 10,
-                    Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest),
-                }));
+                ZoneManager.Instance.AddCustomVegetation(
+                    new CustomVegetation(pickableSeedCarrot.m_prefab, false, 
+                        new VegetationConfig(pickableSeedCarrot)
+                        {
+                            Min = 3,
+                            Max = 10,
+                            GroupSizeMin = 3,
+                            GroupSizeMax = 10,
+                            GroupRadius = 10,
+                            Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest),
+                        }));
             }
             catch (Exception ex)
             {

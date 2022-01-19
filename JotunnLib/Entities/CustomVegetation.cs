@@ -1,4 +1,5 @@
-﻿using Jotunn.Configs;
+﻿using System;
+using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -23,18 +24,40 @@ namespace Jotunn.Entities
         ///     Name of this custom vegetation
         /// </summary>
         public string Name { get; internal set; }
+        
+        /// <summary>
+        ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
+        /// </summary>
+        public bool FixReference { get; set; }
 
         /// <summary>
         ///     Custom vegetation from a prefab.<br />
         /// </summary>
         /// <param name="prefab">The prefab for this custom vegetation.</param>
         /// <param name="config">The vegetation config for this custom vegation.</param> 
+        [Obsolete("Use CustomVegetation(GameObject, bool, VegetationConfig) instead and define if references should be fixed")]
         public CustomVegetation(GameObject prefab, VegetationConfig config)
         {
             Prefab = prefab;
             Name = prefab.name;
             Vegetation = config.ToVegetation();
             Vegetation.m_prefab = prefab;
+        }
+        
+        /// <summary>
+        ///     Custom vegetation from a prefab.<br />
+        ///     Can fix references for mocks.
+        /// </summary>
+        /// <param name="prefab">The prefab for this custom vegetation.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="config">The vegetation config for this custom vegation.</param> 
+        public CustomVegetation(GameObject prefab, bool fixReference, VegetationConfig config)
+        {
+            Prefab = prefab;
+            Name = prefab.name;
+            Vegetation = config.ToVegetation();
+            Vegetation.m_prefab = prefab;
+            FixReference = fixReference;
         }
 
         /// <inheritdoc/>

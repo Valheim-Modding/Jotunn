@@ -317,6 +317,14 @@ namespace Jotunn.Managers
                     {
                         Logger.LogDebug(
                             $"Adding custom vegetation {customVegetation} in {string.Join(", ", GetMatchingBiomes(customVegetation.Vegetation.m_biome))}");
+                        
+                        // Fix references if needed
+                        if (customVegetation.FixReference)
+                        {
+                            customVegetation.Prefab.FixReferences(true);
+                            customVegetation.FixReference = false;
+                        }
+
                         self.m_vegetation.Add(customVegetation.Vegetation);
                     }
                     catch (Exception ex)

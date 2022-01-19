@@ -203,11 +203,12 @@ raspberryBush.m_groupSizeMax = 30;
 Any prefab can be added as vegetation:
 
 ```cs
-CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, new VegetationConfig
-{
-    Biome = Heightmap.Biome.Meadows,
-    BlockCheck = true
-});
+// Use vegetation for singular prefabs
+CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, false,
+    new VegetationConfig
+    {
+        Biome = Heightmap.Biome.Meadows, BlockCheck = true
+    });
 ```
 
 This example defines very little filters, so this prefab will be found all over every Meadows.
