@@ -139,11 +139,11 @@ namespace Jotunn.Managers
                     }
 
                     // Allow duplicated JVLmocks (child names must be unique)
-                    Match match = CopyRegex.Match(unityObjectName);
-                    if (match.Success)
-                    {
-                        unityObjectName = unityObjectName.Substring(0, match.Index);
-                    }
+                    // Match match = CopyRegex.Match(unityObjectName);
+                    // if (match.Success)
+                    // {
+                    //     unityObjectName = unityObjectName.Substring(0, match.Index);
+                    // }
 
                     Object ret = PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);
 

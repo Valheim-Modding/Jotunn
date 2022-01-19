@@ -47,11 +47,3 @@ private void AddMockedItems()
 > You don't need to copy vanilla prefabs in order to use mocked references. You can facilitate the system using you own prefabs, too. Just make sure to create a custom entity using that prefab (CustomPrefab, CustomItem, etc) and set the fixReference parameter to true.
 
 If you have been following the Unity Asset Creation guide, you can return back to where you [left off](asset-creation.md#assetbundle).
-
-## Mocking GameObjects from within a Prefab
-
-As well as mocking assets to use for referencing, it is also possible to reference complete GameObjects from within an asset. The Recursive Reference Resolver will dig through children of an asset, querying for any prefabs with the `JVLmock_` prefix, it will strip the prefix and then try to resolve the name to an existing asset.
-
-This is also by no means limited to vanilla assets. In our example project we create [custom locations and vegetation](zones.md). For this we mocked our own custom piece `piece_lul` as well as the vanilla prefab `crystal_wall_1x1` like this:
-
-![mocking gameobjects](../images/data/mock_gameobjects.png)

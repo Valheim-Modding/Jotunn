@@ -110,9 +110,11 @@ namespace Jotunn.Managers
         /// <param name="gameObject">Location prefab</param>
         public GameObject CreateLocationContainer(GameObject gameObject)
         {
-            var container = Object.Instantiate(gameObject, LocationContainer.transform);
-            container.name = gameObject.name;
-            return container;
+            // var container = Object.Instantiate(gameObject, LocationContainer.transform);
+            // container.name = gameObject.name;
+            // return container;
+            gameObject.transform.SetParent(LocationContainer.transform);
+            return gameObject;
         }
 
         /// <summary>

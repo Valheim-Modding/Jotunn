@@ -1345,23 +1345,6 @@ namespace TestMod
             AssetBundle locationsAssetBundle = AssetUtils.LoadAssetBundleFromResources("custom_locations", typeof(TestMod).Assembly);
             try
             {
-                // Create location from AssetBundle
-                var cubeArchLocation =
-                    ZoneManager.Instance.CreateLocationContainer(
-                        locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"));
-
-                ZoneManager.Instance.AddCustomLocation(
-                    new CustomLocation(cubeArchLocation, true,
-                        new LocationConfig
-                        {
-                            Biome = Heightmap.Biome.BlackForest,
-                            Quantity = 200,
-                            Priotized = true,
-                            ExteriorRadius = 2f,
-                            MinAltitude = 1f,
-                            ClearArea = true
-                        }));
-
                 // Create location from AssetBundle using spawners and random spawns
                 var spawnerLocation =
                     ZoneManager.Instance.CreateLocationContainer(
@@ -1380,7 +1363,7 @@ namespace TestMod
                         }));
 
                 // Use empty location containers for locations instantiated in code
-                var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
+                var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lel");
                 var cubesLocation = ZoneManager.Instance.CreateLocationContainer("lulzcube_location");
 
                 // Stack of lulzcubes to easily spot the instances

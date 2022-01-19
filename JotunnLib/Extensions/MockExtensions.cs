@@ -56,7 +56,10 @@ namespace Jotunn
             
             foreach (Transform tf in gameObject.transform)
             {
-                var realPrefab = MockManager.GetRealPrefabFromMock<GameObject>(tf.gameObject);
+                tf.gameObject.FixReferences(true);
+
+                // only works with instantiated prefabs...
+                /*var realPrefab = MockManager.GetRealPrefabFromMock<GameObject>(tf.gameObject);
                 if (realPrefab)
                 {
                     var realInstance = Object.Instantiate(realPrefab, gameObject.transform);
@@ -70,8 +73,7 @@ namespace Jotunn
                 else
                 {
                     tf.gameObject.FixReferences(true);
-                }
-
+                }*/
             }
         }
 
