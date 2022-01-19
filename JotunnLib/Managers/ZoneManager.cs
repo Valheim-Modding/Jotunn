@@ -112,6 +112,7 @@ namespace Jotunn.Managers
         {
             var container = Object.Instantiate(gameObject, LocationContainer.transform);
             container.name = gameObject.name;
+            Object.Destroy(gameObject);
             return container;
         }
 

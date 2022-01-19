@@ -53,16 +53,15 @@ namespace Jotunn
             {
                 return;
             }
-
-            var childCount = gameObject.transform.childCount;
-            for (int i = 0; i < childCount; i++)
+            
+            foreach (Transform tf in gameObject.transform)
             {
-                Transform tf = gameObject.transform.GetChild(i);
-
                 var realPrefab = MockManager.GetRealPrefabFromMock<GameObject>(tf.gameObject);
                 if (realPrefab)
                 {
                     var realInstance = Object.Instantiate(realPrefab, gameObject.transform);
+                    realInstance.transform.SetSiblingIndex(tf.GetSiblingIndex()+1);
+                    realInstance.name = realPrefab.name;
                     realInstance.transform.localPosition = tf.localPosition;
                     realInstance.transform.localRotation = tf.localRotation;
                     realInstance.transform.localScale = tf.localScale;
@@ -72,6 +71,7 @@ namespace Jotunn
                 {
                     tf.gameObject.FixReferences(true);
                 }
+
             }
         }
 
@@ -345,6 +345,11 @@ namespace Jotunn
                 {
                     if (!fieldInfo.IsLiteral && !fieldInfo.IsInitOnly)
                         fieldValues.Add(fieldInfo, fieldInfo.GetValue(origComponent));
+                }
+
+                if (!gameObject.GetComponent(origComponent.GetType()))
+                {
+                    gameObject.AddComponent(origComponent.GetType());
                 }
             }
 
