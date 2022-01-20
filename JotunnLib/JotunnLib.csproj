@@ -6,7 +6,6 @@
     <LangVersion>8.0</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Valheim-Modding team</Authors>
-    <Description>Jötunn (/ˈjɔːtʊn/, "giant") is a modding library for Valheim, with the goal of making the lives of mod developers easier.</Description>
     <projectUrl>https://github.com/Valheim-Modding/</projectUrl>
     <PackageIcon>images\JVL_Logo_128x128.png</PackageIcon>
     <iconUrl>https://github.com/Valheim-Modding/Jotunn/raw/dev/resources/JVL_Logo.gif</iconUrl>
@@ -22,9 +21,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <PackageId>JotunnLib</PackageId>
+    <Description>Jötunn (/ˈjɔːtʊn/, "giant") is a modding library for Valheim, with the goal of making the lives of mod developers easier.</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <PackageId>JotunnLib.Debug</PackageId>
+    <Description>Jötunn (/ˈjɔːtʊn/, "giant") is a modding library for Valheim, with the goal of making the lives of mod developers easier. The debug version has additional developer QoL additions implemented.</Description>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Unity\Assets\Plugins\**" />
