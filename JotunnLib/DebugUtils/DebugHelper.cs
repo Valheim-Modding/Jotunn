@@ -33,7 +33,8 @@ namespace Jotunn.DebugUtils
             {
                 self.m_firstSpawn = false;
                 orig(self);
-
+                
+                Player.m_debugMode = true;
                 Terminal.m_cheat = true;
                 Console.instance.m_autoCompleteSecrets = true;
                 Console.instance.updateCommandList();
