@@ -1,9 +1,9 @@
 ﻿# Changelog
 
 ## Version 2.4.8
-* Removed direct GO mock replacement
 * Added mock support for custom vegetation
 * Added mock support for DropTable structs
+* Removed direct GO mock replacement
 
 ## Version 2.4.7
 * Fixed mock resolving of certain components (piece place effects for example)
