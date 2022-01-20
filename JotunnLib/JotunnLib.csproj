@@ -3,16 +3,28 @@
     <TargetFramework>net462</TargetFramework>
     <Product>JotunnLib</Product>
     <Id>JotunnLib</Id>
-    <PackageId>JotunnLib</PackageId>
+    <LangVersion>8.0</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Valheim-Modding team</Authors>
     <Description>Jötunn (/ˈjɔːtʊn/, "giant") is a modding library for Valheim, with the goal of making the lives of mod developers easier.</Description>
     <projectUrl>https://github.com/Valheim-Modding/</projectUrl>
     <PackageIcon>images\JVL_Logo_128x128.png</PackageIcon>
     <iconUrl>https://github.com/Valheim-Modding/Jotunn/raw/dev/resources/JVL_Logo.gif</iconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Valheim-Modding</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Valheim-Modding/Jotunn</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Valheim Modding Library</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
+    <AssemblyName>Jotunn</AssemblyName>
+    <RootNamespace>Jotunn</RootNamespace>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <PropertyGroup>
-    <LangVersion>8.0</LangVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <PackageId>JotunnLib</PackageId>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <PackageId>JotunnLib.Debug</PackageId>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Unity\Assets\Plugins\**" />
@@ -420,18 +432,6 @@
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'" AfterTargets="Build">
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot; -DeployPath &quot;$(MOD_DEPLOYPATH.TrimEnd('\'))&quot; -ProjectPath &quot;$(ProjectDir.TrimEnd('\'))&quot;" />
   </Target>
-
-  <PropertyGroup>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Valheim-Modding</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Valheim-Modding/Jotunn</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>Valheim Modding Library</PackageTags>
-    <NeutralLanguage>en</NeutralLanguage>
-    <AssemblyName>Jotunn</AssemblyName>
-    <RootNamespace>Jotunn</RootNamespace>
-    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
-  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
