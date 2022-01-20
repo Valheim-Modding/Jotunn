@@ -104,6 +104,27 @@ namespace Jotunn
             {
                 var fieldType = field.FieldType;
 
+                // Special treatment for DropTable, its a List of struct DropData
+                // Maybe there comes a time when I am willing to do some generic stuff
+                // But mono did not implement FieldInfo.GetValueDirect()
+                if (fieldType == typeof(DropTable))
+                {
+                    var drops = ((DropTable)field.GetValue(objectToFix)).m_drops;
+
+                    for (int i = 0; i < drops.Count; i++)
+                    {
+                        var drop = drops[i];
+                        var realPrefab = MockManager.GetRealPrefabFromMock(drop.m_item, typeof(GameObject));
+                        if (realPrefab)
+                        {
+                            drop.m_item = (GameObject)realPrefab;
+                        }
+                        drops[i] = drop;
+                    }
+
+                    continue;
+                }
+
                 var isUnityObject = fieldType.IsSameOrSubclass(typeof(Object));
                 if (isUnityObject)
                 {
