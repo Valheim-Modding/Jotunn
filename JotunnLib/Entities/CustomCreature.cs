@@ -11,12 +11,12 @@ namespace Jotunn.Entities
     public class CustomCreature : CustomEntity
     {
         /// <summary>
-        ///     The creature prefab
+        ///     The creature prefab.
         /// </summary>
         public GameObject Prefab { get; }
 
         /// <summary>
-        ///     Associated <see cref="SpawnSystem.SpawnData"/>
+        ///     Associated <see cref="SpawnSystem.SpawnData"/>.
         /// </summary>
         public SpawnSystem.SpawnData SpawnData { get; }
 
