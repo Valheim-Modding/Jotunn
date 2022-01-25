@@ -11,9 +11,14 @@ namespace Jotunn.Configs
     public class CreatureConfig
     {
         /// <summary>
-        ///     Is this spawn enabled, defaults to true
+        ///     The unique name for your creature, may be tokenized
         /// </summary>
-        public bool Enabled { get; set; } = true;
+        public string Name { get; set; } = string.Empty;
+        
+        /// <summary>
+        ///     Should this creature be loaded into the world spawn lists, defaults to true
+        /// </summary>
+        public bool WorldSpawnEnabled { get; set; } = true;
 
         /// <summary>
         ///     Biome to spawn in, multiple Biomes can be allowed with <see cref="ZoneManager.AnyBiomeOf"/>
@@ -158,7 +163,7 @@ namespace Jotunn.Configs
         {
             return new SpawnSystem.SpawnData
             {
-                m_enabled = Enabled,
+                m_enabled = WorldSpawnEnabled,
                 m_biome = Biome,
                 m_biomeArea = BiomeArea,
                 m_maxSpawned = MaxSpawned,

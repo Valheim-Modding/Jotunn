@@ -16,12 +16,7 @@ namespace Jotunn.Entities
         public GameObject Prefab { get; }
 
         /// <summary>
-        ///     Name of this custom creature
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        ///     Associated <see cref="SpawnSystem.SpawnData"/> component
+        ///     Associated <see cref="SpawnSystem.SpawnData"/>
         /// </summary>
         public SpawnSystem.SpawnData SpawnData { get; }
 
@@ -31,15 +26,14 @@ namespace Jotunn.Entities
         public bool FixReference { get; set; }
 
         /// <summary>
-        ///     Custom location from a prefab with a <see cref="LocationConfig"/> attached.
+        ///     Custom creature from a prefab with a <see cref="CreatureConfig"/> attached.
         /// </summary>
-        /// <param name="creaturePrefab">The exterior prefab for this custom location.</param>
+        /// <param name="creaturePrefab">The prefab of this custom creature.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
-        /// <param name="creatureConfig">The <see cref="LocationConfig"/> for this custom location.</param>
+        /// <param name="creatureConfig">The <see cref="CreatureConfig"/> for this custom creature.</param>
         public CustomCreature(GameObject creaturePrefab, bool fixReference, CreatureConfig creatureConfig)
         {
             Prefab = creaturePrefab;
-            Name = creaturePrefab.name;
             SpawnData = creatureConfig.GetSpawnData();
             SpawnData.m_prefab = creaturePrefab;
             SpawnData.m_name = creaturePrefab.name;
@@ -49,7 +43,7 @@ namespace Jotunn.Entities
         /// <inheritdoc/>
         public override string ToString()
         {
-            return Name;
+            return Prefab.name;
         }
     }
 }
