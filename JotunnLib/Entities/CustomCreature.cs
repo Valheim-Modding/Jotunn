@@ -1,4 +1,6 @@
-﻿using Jotunn.Configs;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -16,9 +18,9 @@ namespace Jotunn.Entities
         public GameObject Prefab { get; }
 
         /// <summary>
-        ///     Associated <see cref="SpawnSystem.SpawnData"/>.
+        ///     Associated list of <see cref="SpawnSystem.SpawnData"/> of the creature.
         /// </summary>
-        public SpawnSystem.SpawnData SpawnData { get; }
+        public List<SpawnSystem.SpawnData> Spawns { get; }
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
@@ -26,7 +28,7 @@ namespace Jotunn.Entities
         public bool FixReference { get; set; }
 
         /// <summary>
-        ///     Custom creature from a prefab with a <see cref="CreatureConfig"/> attached.
+        ///     Custom creature from a prefab with a <see cref="SpawnConfig"/> attached.
         /// </summary>
         /// <param name="creaturePrefab">The prefab of this custom creature.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
@@ -34,10 +36,55 @@ namespace Jotunn.Entities
         public CustomCreature(GameObject creaturePrefab, bool fixReference, CreatureConfig creatureConfig)
         {
             Prefab = creaturePrefab;
-            SpawnData = creatureConfig.GetSpawnData();
-            SpawnData.m_prefab = creaturePrefab;
-            SpawnData.m_name = creaturePrefab.name;
+            if (creaturePrefab.TryGetComponent<Character>(out var character))
+            {
+                character.m_name = string.IsNullOrEmpty(character.m_name) ? creatureConfig.Name : character.m_name;
+            }
+            Spawns = creatureConfig.GetSpawns().ToList();
+            foreach (var spawnData in Spawns)
+            {
+                spawnData.m_prefab = creaturePrefab;
+            }
             FixReference = fixReference;
+        }
+        
+        /// <summary>
+        ///     Checks if a custom creature is valid (i.e. has a prefab, a <see cref="Character"/> component and a <see cref="BaseAI"/> component).
+        /// </summary>
+        /// <returns>true if all criteria is met</returns>
+        public bool IsValid()
+        {
+            bool valid = true;
+
+            if (!Prefab)
+            {
+                Logger.LogError($"CustomCreature {this} has no prefab");
+                valid = false;
+            }
+            if (!Prefab.GetComponent<Character>())
+            {
+                Logger.LogError($"CustomCreature {this} has no Character component");
+                valid = false;
+            }
+            if (!Prefab.GetComponent<BaseAI>())
+            {
+                Logger.LogError($"CustomCreature {this} has no BaseAI component");
+                valid = false;
+            }
+
+            return valid;
+        }
+        
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            return obj.GetHashCode() == GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return Prefab.name.GetStableHashCode();
         }
 
         /// <inheritdoc/>
