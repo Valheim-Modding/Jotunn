@@ -67,7 +67,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Only spawn if this environment is active, see <see cref="Jotunn.Utils.GameConstants.Weather"/> for constant values
         /// </summary>
-        public List<string> RequiredEnvironments { get; set; }
+        public List<string> RequiredEnvironments { get; set; } = new List<string>();
 
         /// <summary>
         ///     Minimum group size that can spawn. Defaults to 1.
