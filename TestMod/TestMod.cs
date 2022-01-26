@@ -106,6 +106,9 @@ namespace TestMod
             ZoneManager.OnVanillaLocationsAvailable += AddClonedVanillaLocationsAndVegetations;
             ZoneManager.OnVanillaLocationsAvailable += ModifyVanillaLocationsAndVegetation;
 
+            // Create custome creatures and spawns
+            AddCustomCreaturesAndSpawns();
+
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
             {
@@ -1468,6 +1471,42 @@ namespace TestMod
             raspberryBush.m_groupSizeMax = 30;
 
             // Not unregistering this hook, it needs to run every world load
+        }
+
+        private void AddCustomCreaturesAndSpawns()
+        {
+            AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(TestMod).Assembly);
+            try
+            {
+                // Create location from AssetBundle using spawners and random spawns
+                var cubeThing = creaturesAssetBundle.LoadAsset<GameObject>("CubeThing");
+                cubeThing.GetComponentInChildren<MeshRenderer>().material.mainTexture = TestTex;
+                var cubeCreature = new CustomCreature(cubeThing, true,
+                    new CreatureConfig
+                    {
+                        Name = "CubeThing",
+                        SpawnConfigs = new[]
+                        {
+                            new SpawnConfig
+                            {
+                                Name = "CubeSpawn1",
+                                SpawnChance = 100,
+                                SpawnInterval = 1f,
+                                SpawnDistance = 1f,
+                                Biome = Heightmap.Biome.Meadows
+                            }
+                        }
+                    });
+                CreatureManager.Instance.AddCreature(cubeCreature);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception caught while adding custom creatures: {ex}");
+            }
+            finally
+            {
+                creaturesAssetBundle.Unload(false);
+            }
         }
 
         // Set version of the plugin for the mod compatibility test
