@@ -55,6 +55,7 @@ namespace Jotunn.Managers
             SpawnListContainer.SetActive(false);
             SpawnList = SpawnListContainer.AddComponent<SpawnSystemList>();
 
+            On.ZNetScene.Awake += ResolveMocks;
             On.SpawnSystem.Awake += AddSpawnListToSpawnSystem;
         }
 
@@ -129,9 +130,50 @@ namespace Jotunn.Managers
                 PrefabManager.Instance.RemovePrefab(creature.Prefab.name);
             }
         }
+        
+        private void ResolveMocks(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        {
+            orig(self);
+
+            if (Creatures.Any())
+            {
+                Logger.LogInfo($"Adding {Creatures.Count} custom creatures to the ZNetScene");
+
+                List<CustomCreature> toDelete = new List<CustomCreature>();
+
+                foreach (var customCreature in Creatures)
+                {
+                    try
+                    {
+                        if (customCreature.FixReference)
+                        {
+                            customCreature.Prefab.FixReferences(true);
+                            customCreature.FixReference = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning($"Error caught while adding creature {customCreature}: {ex}");
+                        toDelete.Add(customCreature);
+                    }
+                }
+
+                // Delete custom creatures with errors
+                foreach (var creature in toDelete)
+                {
+                    if (creature.Prefab)
+                    {
+                        PrefabManager.Instance.DestroyPrefab(creature.Prefab.name);
+                    }
+                    RemoveCreature(creature);
+                }
+            }
+        }
 
         private void AddSpawnListToSpawnSystem(On.SpawnSystem.orig_Awake orig, SpawnSystem self)
         {
+            orig(self);
+
             if (!self.m_spawnLists.Contains(SpawnList))
             {
                 self.m_spawnLists.Add(SpawnList);
