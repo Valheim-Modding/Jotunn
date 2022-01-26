@@ -172,12 +172,12 @@ namespace Jotunn.Managers
 
         private void AddSpawnListToSpawnSystem(On.SpawnSystem.orig_Awake orig, SpawnSystem self)
         {
-            orig(self);
-
             if (!self.m_spawnLists.Contains(SpawnList))
             {
                 self.m_spawnLists.Add(SpawnList);
             }
+            
+            orig(self);
         }
     }
 }

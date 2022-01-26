@@ -38,7 +38,7 @@ namespace Jotunn.Entities
             Prefab = creaturePrefab;
             if (creaturePrefab.TryGetComponent<Character>(out var character))
             {
-                if (string.IsNullOrEmpty(character.m_name))
+                if (!string.IsNullOrEmpty(creatureConfig.Name))
                 {
                     character.m_name = creatureConfig.Name;
                 }
