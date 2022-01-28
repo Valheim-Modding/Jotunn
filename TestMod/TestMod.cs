@@ -1346,9 +1346,7 @@ namespace TestMod
             try
             {
                 // Create location from AssetBundle using spawners and random spawns
-                var spawnerLocation =
-                    ZoneManager.Instance.CreateLocationContainer(
-                        locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation"));
+                var spawnerLocation = locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation");
 
                 ZoneManager.Instance.AddCustomLocation(
                     new CustomLocation(spawnerLocation, true,
