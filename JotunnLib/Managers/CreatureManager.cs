@@ -57,7 +57,7 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            SpawnListContainer = new GameObject("Spawns");
+            SpawnListContainer = new GameObject("Creatures");
             SpawnListContainer.transform.parent = Main.RootObject.transform;
             SpawnListContainer.SetActive(false);
             SpawnList = SpawnListContainer.AddComponent<SpawnSystemList>();
