@@ -158,15 +158,20 @@ ZoneManager.Instance.AddCustomLocation(
 
 ### Creating locations from AssetBundles
 
-You can also create your locations in Unity, it should have a Location component.
+You can also create your locations in Unity, it should have a Location component. If you plan on further altering your prefab in code, you must create a location container from your prefab, which creates an instance of it for you to use as a parent. If you don't plan on altering your prefab, you can just create a CustomLocation without creating the additional container.
 
 You can use `JVLmock_<prefab_name>` GameObjects to [reference vanilla prefabs](asset-mocking.md) in your location by setting the `fixReference` parameter of the CustomLocation constructor to `true`.
 
 ```cs
 // Create location from AssetBundle using spawners and random spawns
+var spawnerLocation = locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation");
+
+// Create a location container from your prefab if you want to alter it before adding the location to the manager.
+/* 
 var spawnerLocation =
     ZoneManager.Instance.CreateLocationContainer(
         locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation"));
+*/
 
 ZoneManager.Instance.AddCustomLocation(
     new CustomLocation(spawnerLocation, true,

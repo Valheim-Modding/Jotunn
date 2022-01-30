@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.4.9
+* LocationContainer always create instances, add your custom locations directly to the manager if you don't want to alter it further (see https://valheim-modding.github.io/Jotunn/tutorials/zones.html#creating-locations-from-assetbundles for more information)
+
 ## Version 2.4.8
 * Added mock support for custom vegetation
 * Added mock support for DropTable structs

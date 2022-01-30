@@ -93,7 +93,7 @@ namespace Jotunn.Managers
         ///     Create an empty GameObject that is disabled, so any Components in instantiated GameObjects will not start their lifecycle.
         /// </summary>
         /// <param name="name">Name of the location</param>
-        /// <returns></returns>
+        /// <returns>Empty and hierarchy disabled GameObject</returns>
         public GameObject CreateLocationContainer(string name)
         {
             GameObject container = new GameObject
@@ -103,18 +103,20 @@ namespace Jotunn.Managers
             container.transform.SetParent(LocationContainer.transform);
             return container;
         }
-
+        
         /// <summary>
-        ///     Copy your GameObject to a disabled container, so any Components in instantiated GameObjects will not start their lifecycle     
+        ///     Create a copy that is disabled, so any Components in instantiated child GameObjects will not start their lifecycle.<br />
+        ///     Use this if you plan to alter your location prefab in code after importing it. <br />
+        ///     Don't create a separate container if you won't alter the prefab afterwards as it creates a new instance for the container.
         /// </summary>
-        /// <param name="gameObject">Location prefab</param>
+        /// <param name="gameObject">Instantiated and hierarchy disabled location prefab</param>
         public GameObject CreateLocationContainer(GameObject gameObject)
         {
-            // var container = Object.Instantiate(gameObject, LocationContainer.transform);
-            // container.name = gameObject.name;
-            // return container;
-            gameObject.transform.SetParent(LocationContainer.transform);
-            return gameObject;
+            var container = Object.Instantiate(gameObject, LocationContainer.transform);
+            container.name = gameObject.name;
+            return container;
+            // gameObject.transform.SetParent(LocationContainer.transform);
+            // return gameObject;
         }
 
         /// <summary>
