@@ -189,10 +189,11 @@ namespace Jotunn.Managers
                 {
                     try
                     {
-                        if (customCreature.FixReference)
+                        if (customCreature.FixReference | customCreature.FixConfig)
                         {
-                            customCreature.Prefab.FixReferences(true);
+                            customCreature.Prefab.FixReferences(customCreature.FixReference);
                             customCreature.FixReference = false;
+                            customCreature.FixConfig = false;
                         }
 
                         PrefabManager.Instance.RegisterToZNetScene(customCreature.Prefab);

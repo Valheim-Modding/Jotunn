@@ -1480,10 +1480,17 @@ namespace TestMod
                 // Create location from AssetBundle using spawners and random spawns
                 var cubeThing = creaturesAssetBundle.LoadAsset<GameObject>("CubeThing");
                 cubeThing.GetComponentInChildren<MeshRenderer>().material.mainTexture = TestTex;
-                var cubeCreature = new CustomCreature(cubeThing, true,
+                var cubeCreature = new CustomCreature(cubeThing, false,
                     new CreatureConfig
                     {
                         Name = "CubeThing",
+                        DropConfigs = new []
+                        {
+                            new DropConfig
+                            {
+                                Item = "ArmorStand_Male"
+                            }
+                        },
                         SpawnConfigs = new[]
                         {
                             new SpawnConfig
@@ -1521,6 +1528,8 @@ namespace TestMod
             {
                 Logger.LogWarning($"Exception caught while modifying vanilla creatures: {ex}");
             }
+            
+            // Not unregistering this hook, it needs to run every world load
         }
 
         // Set version of the plugin for the mod compatibility test

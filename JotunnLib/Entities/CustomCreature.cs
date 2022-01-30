@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Jotunn.Configs;
 using Jotunn.Managers;
@@ -26,6 +27,11 @@ namespace Jotunn.Entities
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
+        
+        /// <summary>
+        ///     Indicator if references from configs should get replaced
+        /// </summary>
+        internal bool FixConfig { get; set; }
 
         /// <summary>
         ///     Custom creature from a prefab with a <see cref="SpawnConfig"/> attached.
@@ -48,11 +54,22 @@ namespace Jotunn.Entities
                     character.m_name = creaturePrefab.name;
                 }
             }
+            
+            var drops = creatureConfig.GetDrops().ToList();
+            if (drops.Any())
+            {
+                var comp = Prefab.GetOrAddComponent<CharacterDrop>();
+                comp.m_drops = drops;
+                
+                FixReference = true;
+            }
+
             Spawns = creatureConfig.GetSpawns().ToList();
             foreach (var spawnData in Spawns)
             {
                 spawnData.m_prefab = creaturePrefab;
             }
+
             FixReference = fixReference;
         }
         
@@ -69,15 +86,20 @@ namespace Jotunn.Entities
                 Logger.LogError($"CustomCreature {this} has no prefab");
                 valid = false;
             }
-            if (!Prefab.GetComponent<Character>())
+
+            var required = new[]
             {
-                Logger.LogError($"CustomCreature {this} has no Character component");
-                valid = false;
-            }
-            if (!Prefab.GetComponent<BaseAI>())
+                typeof(Character), typeof(BaseAI), typeof(CapsuleCollider), typeof(Rigidbody),
+                typeof(ZSyncAnimation)
+            };
+            foreach (var type in required)
             {
-                Logger.LogError($"CustomCreature {this} has no BaseAI component");
-                valid = false;
+                if (!Prefab.GetComponent(type))
+                {
+                    Logger.LogError($"CustomCreature {this} has no {type} component");
+                    valid = false;
+                    break;
+                }
             }
             if (!Prefab.GetComponentInChildren<Animator>())
             {
