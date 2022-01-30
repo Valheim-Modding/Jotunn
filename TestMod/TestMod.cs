@@ -1478,12 +1478,12 @@ namespace TestMod
             try
             {
                 // Create creature from AssetBundle
-                var cubeThing = creaturesAssetBundle.LoadAsset<GameObject>("CubeThing");
+                var cubeThing = creaturesAssetBundle.LoadAsset<GameObject>("LulzThing");
                 cubeThing.GetComponentInChildren<MeshRenderer>().material.mainTexture = TestTex;
                 var cubeCreature = new CustomCreature(cubeThing, false,
                     new CreatureConfig
                     {
-                        Name = "CubeThing",
+                        Name = "LulzThing",
                         DropConfigs = new []
                         {
                             new DropConfig
@@ -1495,7 +1495,7 @@ namespace TestMod
                         {
                             new SpawnConfig
                             {
-                                Name = "CubeSpawn1",
+                                Name = "LulzSpawn1",
                                 SpawnChance = 100,
                                 SpawnInterval = 1f,
                                 SpawnDistance = 1f,
