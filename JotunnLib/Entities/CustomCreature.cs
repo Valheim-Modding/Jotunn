@@ -58,10 +58,10 @@ namespace Jotunn.Entities
             var drops = creatureConfig.GetDrops().ToList();
             if (drops.Any())
             {
-                var comp = Prefab.GetOrAddComponent<CharacterDrop>();
+                var comp = creaturePrefab.GetOrAddComponent<CharacterDrop>();
                 comp.m_drops = drops;
                 
-                FixReference = true;
+                FixConfig = true;
             }
 
             Spawns = creatureConfig.GetSpawns().ToList();
