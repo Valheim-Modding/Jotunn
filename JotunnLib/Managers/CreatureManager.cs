@@ -31,6 +31,13 @@ namespace Jotunn.Managers
         public static event Action OnVanillaCreaturesAvailable;
         
         /// <summary>
+        ///     Event that gets fired after registering all custom creatures to <see cref="ZNetScene"/>.
+        ///     Your code will execute every time a new ZNetScene is created (on every game start).
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
+        public static event Action OnCreaturesRegistered;
+
+        /// <summary>
         ///     Internal lists of all custom entities added
         /// </summary>
         internal readonly List<CustomCreature> Creatures = new List<CustomCreature>();
@@ -56,7 +63,7 @@ namespace Jotunn.Managers
             SpawnList = SpawnListContainer.AddComponent<SpawnSystemList>();
 
             On.ObjectDB.CopyOtherDB += InvokeOnVanillaCreaturesAvailable;
-            On.ZNetScene.Awake += ResolveMocks;
+            On.ZNetScene.Awake += RegisterAllToZNetScene;
             On.SpawnSystem.Awake += AddSpawnListToSpawnSystem;
         }
 
@@ -80,10 +87,10 @@ namespace Jotunn.Managers
                 return false;
             }
 
-            // Add prefab to PrefabManager
-            PrefabManager.Instance.AddPrefab(customCreature.Prefab, customCreature.SourceMod);
+            // Add prefab to the container
+            customCreature.Prefab.transform.SetParent(SpawnListContainer.transform, false);
 
-            // Add custom Creature to CreatureManager
+            // Add custom creature to CreatureManager
             Creatures.Add(customCreature);
 
             // Add spawners to Jötunn's own spawner list
@@ -93,7 +100,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Get a custom Creature by its name.
+        ///     Get a custom creature by its name.
         /// </summary>
         /// <param name="creatureName">Name of the custom creature to search.</param>
         /// <returns>The <see cref="CustomCreature"/> if found.</returns>
@@ -123,8 +130,7 @@ namespace Jotunn.Managers
 
             return null;
         }
-
-
+        
         /// <summary>
         ///     Remove a custom creature by its name.
         /// </summary>
@@ -142,7 +148,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Remove a custom Creature by its ref. Removes the custom recipe, too.
+        ///     Remove a custom creature by its ref. Removes the custom recipe, too.
         /// </summary>
         /// <param name="creature"><see cref="CustomCreature"/> to remove.</param>
         public void RemoveCreature(CustomCreature creature)
@@ -166,7 +172,10 @@ namespace Jotunn.Managers
             orig(self, other);
         }
         
-        private void ResolveMocks(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        /// <summary>
+        ///     Resolve mocks of all custom creatures if necessary and register the prefabs to the ZNetScene.
+        /// </summary>
+        private void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);
 
@@ -185,6 +194,8 @@ namespace Jotunn.Managers
                             customCreature.Prefab.FixReferences(true);
                             customCreature.FixReference = false;
                         }
+
+                        PrefabManager.Instance.RegisterToZNetScene(customCreature.Prefab);
                     }
                     catch (Exception ex)
                     {
@@ -202,9 +213,23 @@ namespace Jotunn.Managers
                     }
                     RemoveCreature(creature);
                 }
+
+                // Invoke event that prefabs have been registered
+                InvokeOnCreaturesRegistered();
             }
         }
+        
+        /// <summary>
+        ///     Safely invoke the <see cref="OnCreaturesRegistered"/> event.
+        /// </summary>
+        private void InvokeOnCreaturesRegistered()
+        {
+            OnCreaturesRegistered?.SafeInvoke();
+        }
 
+        /// <summary>
+        ///     Add the internal <see cref="SpawnSystemList"/> to the awoken spawner if not already added.
+        /// </summary>
         private void AddSpawnListToSpawnSystem(On.SpawnSystem.orig_Awake orig, SpawnSystem self)
         {
             if (!self.m_spawnLists.Contains(SpawnList))
