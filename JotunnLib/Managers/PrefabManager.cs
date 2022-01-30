@@ -60,13 +60,13 @@ namespace Jotunn.Managers
             PrefabContainer.SetActive(false);
 
             On.ZNetScene.Awake += RegisterAllToZNetScene;
-            SceneManager.sceneUnloaded += (current) => Cache.ClearCache();
+            SceneManager.sceneUnloaded += current => Cache.ClearCache();
 
             // Fire events as a late action in the detour so all mods can load before
             // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
             using (new DetourContext(int.MaxValue - 1000))
             {
-                On.ObjectDB.CopyOtherDB += InvokeOnVanillaObjectsAvailable; ;
+                On.ObjectDB.CopyOtherDB += InvokeOnVanillaObjectsAvailable;
                 On.ZNetScene.Awake += InvokeOnPrefabsRegistered;
             }
         }

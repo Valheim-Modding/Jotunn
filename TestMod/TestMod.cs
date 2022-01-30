@@ -108,6 +108,7 @@ namespace TestMod
 
             // Create custome creatures and spawns
             AddCustomCreaturesAndSpawns();
+            CreatureManager.OnVanillaCreaturesAvailable += ModifyAndCloneVanillaCreatures;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -1349,9 +1350,7 @@ namespace TestMod
             try
             {
                 // Create location from AssetBundle using spawners and random spawns
-                var spawnerLocation =
-                    ZoneManager.Instance.CreateLocationContainer(
-                        locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation"));
+                var spawnerLocation = locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation");
 
                 ZoneManager.Instance.AddCustomLocation(
                     new CustomLocation(spawnerLocation, true,
@@ -1506,6 +1505,21 @@ namespace TestMod
             finally
             {
                 creaturesAssetBundle.Unload(false);
+            }
+        }
+        
+        private void ModifyAndCloneVanillaCreatures()
+        {
+            try
+            {
+                // Get a vanilla creature prefab and change some values
+                var goblin = CreatureManager.Instance.GetCreaturePrefab("Skeleton_NoArcher");
+                var humanoid = goblin.GetComponent<Humanoid>();
+                humanoid.m_walkSpeed = 2;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception caught while modifying vanilla creatures: {ex}");
             }
         }
 

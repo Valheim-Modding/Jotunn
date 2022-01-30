@@ -22,14 +22,14 @@ namespace Jotunn.Managers
         ///     Hide .ctor
         /// </summary>
         private CreatureManager() { }
-
+        
         /// <summary>
-        ///     Event that gets fired after all Creatures were added to the ObjectDB.
-        ///     Your code will execute every time a new ObjectDB is created (on every game start).
+        ///     Event that gets fired after the vanilla creatures are in memory and available for cloning.
+        ///     Your code will execute every time before a new <see cref="ObjectDB"/> is copied (on every menu start).
         ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
-        public static event Action OnCreaturesRegistered;
-
+        public static event Action OnVanillaCreaturesAvailable;
+        
         /// <summary>
         ///     Internal lists of all custom entities added
         /// </summary>
@@ -55,6 +55,7 @@ namespace Jotunn.Managers
             SpawnListContainer.SetActive(false);
             SpawnList = SpawnListContainer.AddComponent<SpawnSystemList>();
 
+            On.ObjectDB.CopyOtherDB += InvokeOnVanillaCreaturesAvailable;
             On.ZNetScene.Awake += ResolveMocks;
             On.SpawnSystem.Awake += AddSpawnListToSpawnSystem;
         }
@@ -94,12 +95,35 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Get a custom Creature by its name.
         /// </summary>
-        /// <param name="creatureName">Name of the creature to search.</param>
-        /// <returns></returns>
+        /// <param name="creatureName">Name of the custom creature to search.</param>
+        /// <returns>The <see cref="CustomCreature"/> if found.</returns>
         public CustomCreature GetCreature(string creatureName)
         {
             return Creatures.FirstOrDefault(x => x.Prefab.name.Equals(creatureName));
         }
+
+        /// <summary>
+        ///     Get a custom or vanilla creature prefab by its name.
+        /// </summary>
+        /// <param name="creatureName">Name of the creature to search.</param>
+        /// <returns>The prefab of the creature if found.</returns>
+        public GameObject GetCreaturePrefab(string creatureName)
+        {
+            var custom = GetCreature(creatureName);
+            if (custom != null)
+            {
+                return custom.Prefab;
+            }
+
+            var vanilla = PrefabManager.Cache.GetPrefab<Character>(creatureName);
+            if (vanilla != null)
+            {
+                return vanilla.gameObject;
+            }
+
+            return null;
+        }
+
 
         /// <summary>
         ///     Remove a custom creature by its name.
@@ -129,6 +153,17 @@ namespace Jotunn.Managers
             {
                 PrefabManager.Instance.RemovePrefab(creature.Prefab.name);
             }
+        }
+        
+        /// <summary>
+        ///     Safely invoke the <see cref="OnVanillaCreaturesAvailable"/> event
+        /// </summary>
+        /// 
+        private void InvokeOnVanillaCreaturesAvailable(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        {
+            OnVanillaCreaturesAvailable?.SafeInvoke();
+
+            orig(self, other);
         }
         
         private void ResolveMocks(On.ZNetScene.orig_Awake orig, ZNetScene self)

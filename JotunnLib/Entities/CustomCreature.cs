@@ -79,6 +79,16 @@ namespace Jotunn.Entities
                 Logger.LogError($"CustomCreature {this} has no BaseAI component");
                 valid = false;
             }
+            if (!Prefab.GetComponentInChildren<Animator>())
+            {
+                Logger.LogError($"CustomCreature {this} has no Animator component");
+                valid = false;
+            }
+            if (!Prefab.GetComponentInChildren<CharacterAnimEvent>())
+            {
+                Logger.LogError($"CustomCreature {this} has no CharacterAnimEvent component");
+                valid = false;
+            }
 
             return valid;
         }
