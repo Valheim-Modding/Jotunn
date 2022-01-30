@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
@@ -21,12 +20,7 @@ namespace Jotunn.Managers
         ///     Hide .ctor
         /// </summary>
         private MockManager() {}
-
-        /// <summary>
-        ///     Regex to identify multiple instances of mock objects from Unity
-        /// </summary>
-        private static readonly Regex CopyRegex = new Regex(@" \([0-9]+\)");
-
+        
         /// <summary>
         ///     Legacy ValheimLib prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
         /// </summary>
@@ -51,25 +45,42 @@ namespace Jotunn.Managers
             MockPrefabContainer = new GameObject("MockPrefabs");
             MockPrefabContainer.transform.parent = Main.RootObject.transform;
             MockPrefabContainer.SetActive(false);
-
-            On.ObjectDB.Awake += RemoveMockPrefabs;
         }
 
-        public T CreateMockedPrefab<T>(string prefabName) where T : Component
+        /// <summary>
+        ///     Create an empty GameObject with the mock string prepended
+        /// </summary>
+        /// <param name="prefabName">Name of the mocked vanilla prefab</param>
+        /// <returns>Mocked GameObject reference</returns>
+        public GameObject CreateMockedGameObject(string prefabName)
         {
             string name = JVLMockPrefix + prefabName;
 
             Transform transform = MockPrefabContainer.transform.Find(name);
             if (transform != null)
             {
-                return transform.gameObject.GetComponent<T>();
+                return transform.gameObject;
             }
 
             GameObject g = new GameObject(name);
             g.transform.parent = MockPrefabContainer.transform;
             g.SetActive(false);
 
-            T mock = g.AddComponent<T>();
+            return g;
+        }
+
+        /// <summary>
+        ///     Create a mocked component on an empty GameObject
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="prefabName"></param>
+        /// <returns></returns>
+        public T CreateMockedPrefab<T>(string prefabName) where T : Component
+        {
+            GameObject g = CreateMockedGameObject(prefabName);
+            string name = g.name;
+
+            T mock = g.GetOrAddComponent<T>();
             if (mock == null)
             {
                 Logger.LogWarning($"Could not create mock for prefab {prefabName} of type {typeof(T)}");
@@ -81,22 +92,7 @@ namespace Jotunn.Managers
 
             return mock;
         }
-
-        private void RemoveMockPrefabs(On.ObjectDB.orig_Awake orig, ObjectDB self)
-        {
-            orig(self);
-
-            if (SceneManager.GetActiveScene().name == "main")
-            {
-                Logger.LogInfo("Destroying Mock prefabs");
-
-                foreach (var transform in MockPrefabContainer.transform)
-                {
-                    Object.Destroy(((Transform)transform).gameObject);
-                }
-            }
-        }
-
+        
         /// <summary>
         ///     Will try to find the real vanilla prefab from the given mock
         /// </summary>
@@ -137,14 +133,7 @@ namespace Jotunn.Managers
                                 unityObjectName.Substring(0, unityObjectName.Length - materialInstance.Length);
                         }
                     }
-
-                    // Allow duplicated JVLmocks (child names must be unique)
-                    // Match match = CopyRegex.Match(unityObjectName);
-                    // if (match.Success)
-                    // {
-                    //     unityObjectName = unityObjectName.Substring(0, match.Index);
-                    // }
-
+                    
                     Object ret = PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);
 
                     if (!ret)
