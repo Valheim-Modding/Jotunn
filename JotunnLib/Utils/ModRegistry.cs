@@ -158,6 +158,21 @@ namespace Jotunn.Utils
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomVegetation"/> from a specific mod</returns>
         public static IEnumerable<CustomVegetation> GetVegetation(string modGuid) => 
             ZoneManager.Instance.Vegetations.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
+        
+        /// <summary>
+        ///     Get all added <see cref="CustomCreature">CustomCreatures</see>
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomCreature"/> from all loaded mods</returns>
+        public static IEnumerable<CustomCreature> GetCreatures() => 
+            CreatureManager.Instance.Creatures;
+        
+        /// <summary>
+        ///     Get all added <see cref="CustomCreature">CustomCreatures</see> of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomCreature"/> from a specific mod</returns>
+        public static IEnumerable<CustomCreature> GetCreatures(string modGuid) => 
+            CreatureManager.Instance.Creatures.Where(x => x.SourceMod.GUID.Equals(modGuid));
 
         /// <summary>
         ///     Get all added <see cref="ConsoleCommand">ConsoleCommands</see>
@@ -253,6 +268,11 @@ namespace Jotunn.Utils
             ///     Custom Vegetation added by that mod
             /// </summary>
             public IEnumerable<CustomVegetation> Vegetation => GetVegetation(GUID);
+            
+            /// <summary>
+            ///     Custom Creatures added by that mod
+            /// </summary>
+            public IEnumerable<CustomCreature> Creatures => GetCreatures(GUID);
 
             /// <summary>
             ///     Custom commands added by that mod

@@ -69,8 +69,7 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Add a <see cref="CustomCreature"/> to the game.<br />
-        ///     Checks if the custom creature is valid and unique and adds it to the list of custom creatures.<br />
-        ///     Also adds the prefab of the custom ´creature to the <see cref="PrefabManager"/>.
+        ///     Checks if the custom creature is valid and unique and adds it to the list of custom creatures.
         /// </summary>
         /// <param name="customCreature">The custom Creature to add.</param>
         /// <returns>true if the custom Creature was added to the manager.</returns>
