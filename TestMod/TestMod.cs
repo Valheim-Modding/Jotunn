@@ -1500,6 +1500,14 @@ namespace TestMod
                                 SpawnInterval = 1f,
                                 SpawnDistance = 1f,
                                 Biome = Heightmap.Biome.Meadows
+                            },
+                            new SpawnConfig
+                            {
+                                Name = "LulzSpawn2",
+                                SpawnChance = 100,
+                                SpawnInterval = 1f,
+                                SpawnDistance = 1f,
+                                Biome = Heightmap.Biome.BlackForest
                             }
                         }
                     });
