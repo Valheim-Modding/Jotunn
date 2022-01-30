@@ -1477,7 +1477,7 @@ namespace TestMod
             AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(TestMod).Assembly);
             try
             {
-                // Create location from AssetBundle using spawners and random spawns
+                // Create creature from AssetBundle
                 var cubeThing = creaturesAssetBundle.LoadAsset<GameObject>("CubeThing");
                 cubeThing.GetComponentInChildren<MeshRenderer>().material.mainTexture = TestTex;
                 var cubeCreature = new CustomCreature(cubeThing, false,
