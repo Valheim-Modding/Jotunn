@@ -8,7 +8,7 @@ namespace Jotunn.Entities
 {
     /// <summary>
     ///     Main interface for adding custom creatures to the game.<br />
-    ///     All custom creatures have to be wrapped inside this class to add it to Jötunns <see cref="ZoneManager"/>.
+    ///     All custom creatures have to be wrapped inside this class to add it to Jötunns <see cref="CreatureManager"/>.
     /// </summary>
     public class CustomCreature : CustomEntity
     {
@@ -88,7 +88,7 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
-        ///     Checks if a custom creature is valid (i.e. has a prefab, a <see cref="Character"/> component and a <see cref="BaseAI"/> component).
+        ///     Checks if a custom creature is valid (i.e. has a prefab and all required components).
         /// </summary>
         /// <returns>true if all criteria is met</returns>
         public bool IsValid()
