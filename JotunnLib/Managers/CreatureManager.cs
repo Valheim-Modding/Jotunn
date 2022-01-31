@@ -194,6 +194,10 @@ namespace Jotunn.Managers
                 {
                     try
                     {
+                        // Always try to fix the physics material component of the capsule collider
+                        customCreature.Prefab.GetComponent<CapsuleCollider>()?.FixReferences();
+
+                        // Fix other mock references
                         if (customCreature.FixReference | customCreature.FixConfig)
                         {
                             customCreature.Prefab.FixReferences(customCreature.FixReference);
