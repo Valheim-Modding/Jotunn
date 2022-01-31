@@ -29,6 +29,7 @@ Each section will have examples showing how this is done. All of the examples sh
 * [Pieces and Piece Tables](pieces.md): Create building pieces and use custom categories.
 * [Status Effects](status-effects.md): Add custom Status Effects.
 * [Skills](skills.md): Add custom trainable Skills.
+* [Creatures](creatures.md): Add custom enemies, animals and NPCs and provide basic spawn data.
 * [Zones / Locations / Vegetation](zones.md): Add to or change Valheim's world generation using your custom assets.
 * [Console Commands](console-commands.md): Add custom commands to the Console that can execute your methods.
 * [Inputs](inputs.md): Register custom inputs and add key hints to your custom items.

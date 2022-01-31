@@ -106,7 +106,7 @@ namespace TestMod
             ZoneManager.OnVanillaLocationsAvailable += AddClonedVanillaLocationsAndVegetations;
             ZoneManager.OnVanillaLocationsAvailable += ModifyVanillaLocationsAndVegetation;
 
-            // Create custome creatures and spawns
+            // Create custom creatures and spawns
             AddCustomCreaturesAndSpawns();
             CreatureManager.OnVanillaCreaturesAvailable += ModifyAndCloneVanillaCreatures;
 
