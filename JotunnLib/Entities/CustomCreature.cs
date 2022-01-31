@@ -41,8 +41,8 @@ namespace Jotunn.Entities
         public CustomCreature(GameObject creaturePrefab, bool fixReference, CreatureConfig creatureConfig)
         {
             Prefab = creaturePrefab;
-            creatureConfig.Apply(creaturePrefab);
 
+            creatureConfig.Apply(creaturePrefab);
             if (creatureConfig.DropConfigs.Any())
             {
                 FixConfig = true;
@@ -71,9 +71,9 @@ namespace Jotunn.Entities
             if (creaturePrefab)
             {
                 Prefab = creaturePrefab;
+
                 creatureConfig.Name = name;
                 creatureConfig.Apply(creaturePrefab);
-
                 if (creatureConfig.DropConfigs.Any())
                 {
                     FixConfig = true;

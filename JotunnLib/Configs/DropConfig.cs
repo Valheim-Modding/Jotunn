@@ -1,6 +1,5 @@
 ﻿using Jotunn.Entities;
 using Jotunn.Managers;
-using UnityEngine;
 
 namespace Jotunn.Configs
 {
@@ -18,12 +17,12 @@ namespace Jotunn.Configs
         ///     Minimum amount of this drop. Defaults to 1.
         /// </summary>
         public int MinAmount { get; set; } = 1;
-        
+
         /// <summary>
         ///     Maximum amount of this drop. Defaults to 1.
         /// </summary>
         public int MaxAmount { get; set; } = 1;
-        
+
         /// <summary>
         ///     Chance of this drop in percent. Defaults to 100f.
         /// </summary>
@@ -33,7 +32,7 @@ namespace Jotunn.Configs
         ///     Should the drop be multiplied so every player gets the same amount. Defaults to false.
         /// </summary>
         public bool OnePerPlayer { get; set; } = false;
-        
+
         /// <summary>
         ///     Should the drop amount be multiplied by the creature level. Defaults to true.
         /// </summary>
