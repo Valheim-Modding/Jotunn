@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Jotunn.Configs;
 using Jotunn.Managers;
@@ -27,7 +26,7 @@ namespace Jotunn.Entities
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
-        
+
         /// <summary>
         ///     Indicator if references from configs should get replaced
         /// </summary>
@@ -42,25 +41,10 @@ namespace Jotunn.Entities
         public CustomCreature(GameObject creaturePrefab, bool fixReference, CreatureConfig creatureConfig)
         {
             Prefab = creaturePrefab;
-            if (creaturePrefab.TryGetComponent<Character>(out var character))
-            {
-                if (!string.IsNullOrEmpty(creatureConfig.Name))
-                {
-                    character.m_name = creatureConfig.Name;
-                }
+            creatureConfig.Apply(creaturePrefab);
 
-                if (string.IsNullOrEmpty(character.m_name))
-                {
-                    character.m_name = creaturePrefab.name;
-                }
-            }
-            
-            var drops = creatureConfig.GetDrops().ToList();
-            if (drops.Any())
+            if (creatureConfig.DropConfigs.Any())
             {
-                var comp = creaturePrefab.GetOrAddComponent<CharacterDrop>();
-                comp.m_drops = drops;
-                
                 FixConfig = true;
             }
 
@@ -72,7 +56,37 @@ namespace Jotunn.Entities
 
             FixReference = fixReference;
         }
-        
+
+        /// <summary>
+        ///     Custom creature created as a copy of a vanilla Valheim creature.<br />
+        ///     SpawnData is not cloned, you will have to add <see cref="SpawnConfig">SpawnConfigs</see> to your <see cref="CreatureConfig"/>
+        ///     if you want to spawn the cloned creature automatically.
+        /// </summary>
+        /// <param name="name">The new name of the creature after cloning.</param>
+        /// <param name="basePrefabName">The name of the base prefab the custom creature is cloned from.</param>
+        /// <param name="creatureConfig">The <see cref="CreatureConfig"/> for this custom creature.</param>
+        public CustomCreature(string name, string basePrefabName, CreatureConfig creatureConfig)
+        {
+            var creaturePrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
+            if (creaturePrefab)
+            {
+                Prefab = creaturePrefab;
+                creatureConfig.Name = name;
+                creatureConfig.Apply(creaturePrefab);
+
+                if (creatureConfig.DropConfigs.Any())
+                {
+                    FixConfig = true;
+                }
+
+                Spawns = creatureConfig.GetSpawns().ToList();
+                foreach (var spawnData in Spawns)
+                {
+                    spawnData.m_prefab = creaturePrefab;
+                }
+            }
+        }
+
         /// <summary>
         ///     Checks if a custom creature is valid (i.e. has a prefab, a <see cref="Character"/> component and a <see cref="BaseAI"/> component).
         /// </summary>
@@ -114,7 +128,7 @@ namespace Jotunn.Entities
 
             return valid;
         }
-        
+
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {

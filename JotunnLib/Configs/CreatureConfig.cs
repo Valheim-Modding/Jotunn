@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Jotunn.Entities;
+using UnityEngine;
 
 namespace Jotunn.Configs
 {
@@ -26,6 +28,37 @@ namespace Jotunn.Configs
         ///     Leave empty if you don't want your creature to spawn in the world automatically.
         /// </summary>
         public SpawnConfig[] SpawnConfigs = Array.Empty<SpawnConfig>();
+
+        /// <summary>
+        ///     Apply this config's values to a creature GameObject.
+        /// </summary>
+        /// <param name="prefab"></param>
+        public void Apply(GameObject prefab)
+        {
+            var character = prefab.GetComponent<Character>();
+            if (character == null)
+            {
+                Logger.LogError($"GameObject has no Character attached");
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(Name))
+            {
+                character.m_name = Name;
+            }
+
+            if (string.IsNullOrEmpty(character.m_name))
+            {
+                character.m_name = prefab.name;
+            }
+
+            var drops = GetDrops().ToList();
+            if (drops.Any())
+            {
+                var comp = prefab.GetOrAddComponent<CharacterDrop>();
+                comp.m_drops = drops;
+            }
+        }
 
         /// <summary>
         ///     Converts the <see cref="DropConfig">DropConfigs</see> to Valheim style <see cref="CharacterDrop.Drop"/> array.

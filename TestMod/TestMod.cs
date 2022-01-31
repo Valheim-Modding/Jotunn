@@ -1527,6 +1527,27 @@ namespace TestMod
         {
             try
             {
+                // Clone a vanilla creature with and add new spawn information
+                var lulzeton = new CustomCreature("Lulzeton", "Skeleton_NoArcher",
+                    new CreatureConfig
+                    {
+                        SpawnConfigs = new[]
+                        {
+                            new SpawnConfig
+                            {
+                                Name = "SkelSpawn1",
+                                SpawnChance = 100,
+                                SpawnInterval = 1f,
+                                SpawnDistance = 1f,
+                                Biome = Heightmap.Biome.Meadows,
+                                MinLevel = 3
+                            }
+                        }
+                    });
+                var lulzoid = lulzeton.Prefab.GetComponent<Humanoid>();
+                lulzoid.m_walkSpeed = 0.1f;
+                CreatureManager.Instance.AddCreature(lulzeton);
+
                 // Get a vanilla creature prefab and change some values
                 var goblin = CreatureManager.Instance.GetCreaturePrefab("Skeleton_NoArcher");
                 var humanoid = goblin.GetComponent<Humanoid>();
@@ -1536,8 +1557,11 @@ namespace TestMod
             {
                 Logger.LogWarning($"Exception caught while modifying vanilla creatures: {ex}");
             }
-            
-            // Not unregistering this hook, it needs to run every world load
+            finally
+            {
+                // Unregister the hook, modified and cloned creatures are kept over the whole game session
+                CreatureManager.OnVanillaCreaturesAvailable -= ModifyAndCloneVanillaCreatures;
+            }
         }
 
         // Set version of the plugin for the mod compatibility test
