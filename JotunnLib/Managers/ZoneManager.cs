@@ -115,8 +115,6 @@ namespace Jotunn.Managers
             var container = Object.Instantiate(gameObject, LocationContainer.transform);
             container.name = gameObject.name;
             return container;
-            // gameObject.transform.SetParent(LocationContainer.transform);
-            // return gameObject;
         }
 
         /// <summary>
@@ -205,9 +203,9 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public bool AddCustomVegetation(CustomVegetation customVegetation)
         {
-            if (!PrefabManager.Instance.Prefabs.ContainsKey(customVegetation.Prefab.name.GetStableHashCode()))
+            if (!PrefabManager.Instance.AddPrefab(customVegetation.Prefab, customVegetation.SourceMod))
             {
-                PrefabManager.Instance.AddPrefab(customVegetation.Prefab);
+                return false;
             }
             Vegetations.Add(customVegetation.Name, customVegetation);
             return true;

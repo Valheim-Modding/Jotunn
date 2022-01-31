@@ -63,7 +63,7 @@ namespace Jotunn.Managers
             SpawnList = SpawnListContainer.AddComponent<SpawnSystemList>();
 
             On.ObjectDB.CopyOtherDB += InvokeOnVanillaCreaturesAvailable;
-            On.ZNetScene.Awake += RegisterAllToZNetScene;
+            On.ZNetScene.Awake += FixReferences;
             On.SpawnSystem.Awake += AddSpawnListToSpawnSystem;
         }
 
@@ -86,7 +86,13 @@ namespace Jotunn.Managers
                 return false;
             }
 
-            // Add prefab to the container
+            // Add prefab to the PrefabManager
+            if (!PrefabManager.Instance.AddPrefab(customCreature.Prefab, customCreature.SourceMod))
+            {
+                return false;
+            }
+
+            // Move prefab to our own container
             customCreature.Prefab.transform.SetParent(SpawnListContainer.transform, false);
 
             // Add custom creature to CreatureManager
@@ -172,15 +178,15 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Resolve mocks of all custom creatures if necessary and register the prefabs to the ZNetScene.
+        ///     Resolve mocks of all custom creatures if necessary.
         /// </summary>
-        private void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        private void FixReferences(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);
 
             if (Creatures.Any())
             {
-                Logger.LogInfo($"Adding {Creatures.Count} custom creatures to the ZNetScene");
+                Logger.LogInfo($"Adding {Creatures.Count} custom creatures");
 
                 List<CustomCreature> toDelete = new List<CustomCreature>();
 
@@ -195,7 +201,7 @@ namespace Jotunn.Managers
                             customCreature.FixConfig = false;
                         }
 
-                        PrefabManager.Instance.RegisterToZNetScene(customCreature.Prefab);
+                        Logger.LogDebug($"Added creature {customCreature}");
                     }
                     catch (Exception ex)
                     {
