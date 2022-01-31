@@ -31,9 +31,20 @@ namespace Jotunn.Entities
         ///     Indicator if references from configs should get replaced
         /// </summary>
         internal bool FixConfig { get; set; }
+        
+        /// <summary>
+        ///     Custom creature from a prefab.
+        /// </summary>
+        /// <param name="creaturePrefab">The prefab of this custom creature.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        public CustomCreature(GameObject creaturePrefab, bool fixReference)
+        {
+            Prefab = creaturePrefab;
+            FixReference = fixReference;
+        }
 
         /// <summary>
-        ///     Custom creature from a prefab with a <see cref="SpawnConfig"/> attached.
+        ///     Custom creature from a prefab with a <see cref="CreatureConfig"/> attached.
         /// </summary>
         /// <param name="creaturePrefab">The prefab of this custom creature.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
