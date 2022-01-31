@@ -201,7 +201,7 @@ namespace Jotunn.Managers
                             customCreature.FixConfig = false;
                         }
 
-                        Logger.LogDebug($"Added creature {customCreature}");
+                        Logger.LogDebug($"Added creature {customCreature} | Spawns: {customCreature.Spawns.Count}");
                     }
                     catch (Exception ex)
                     {
