@@ -108,6 +108,7 @@ namespace TestMod
 
             // Create custom creatures and spawns
             AddCustomCreaturesAndSpawns();
+            // Hook creature manager to get access to vanilla creature prefabs
             CreatureManager.OnVanillaCreaturesAvailable += ModifyAndCloneVanillaCreatures;
 
             // Test config sync event
@@ -1471,7 +1472,8 @@ namespace TestMod
 
             // Not unregistering this hook, it needs to run every world load
         }
-
+        
+        // Add custom made creatures using world spawns and drop lists
         private void AddCustomCreaturesAndSpawns()
         {
             AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(TestMod).Assembly);
@@ -1523,6 +1525,7 @@ namespace TestMod
             }
         }
         
+        // Modify and clone vanilla creatures
         private void ModifyAndCloneVanillaCreatures()
         {
             try

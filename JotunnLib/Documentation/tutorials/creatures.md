@@ -10,9 +10,7 @@ A prefab has to match certain criteria and has to follow a certain layout to be 
 
 ![creature prefab](../images/data/creaturePrefab.png)
 
-The base prefab consists of the prefab root GameObject and at least two child objects for the eye position and the visual part of the prefab (the model). Also note the separate `PhysicsMaterial` asset called `JVLmock_charactermat` which is used in the `CapsuleCollider` of the prefab as a [mocked component](asset-mocking.md) and can be used in multiple creature prefabs:
-
-![creature mocked collider](../images/data/creatureComponentsMockedCollider.png)
+The base prefab consists of the prefab root GameObject and at least two child objects for the eye position and the visual part of the prefab (the armature and model).
 
 ### Base Components
 
@@ -24,7 +22,7 @@ Instead of using the `Character` component you can use any derived class (`Human
 
 ### EyePos
 
-The first child GO of the creature prefab is `EyePos` does not have any mandatory components itself but is a mandatory reference used in the `Character` component:
+The first child GO of the creature prefab is `EyePos` and does not have any mandatory components itself but is a mandatory reference used in the `Character` component:
 
 ![creature eye pos child](../images/data/creatureComponentsEyePos.png)
 
@@ -53,9 +51,10 @@ private void AddCustomCreaturesAndSpawns()
     AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(TestMod).Assembly);
     try
     {
-        // Create creature from AssetBundle
+        // Load creature prefab from asset bundle
         var cubeThing = creaturesAssetBundle.LoadAsset<GameObject>("LulzThing");
-        cubeThing.GetComponentInChildren<MeshRenderer>().material.mainTexture = TestTex;
+        
+        // Create a custom creature with one drop and two spawn configs
         var cubeCreature = new CustomCreature(cubeThing, false,
             new CreatureConfig
             {
@@ -99,3 +98,54 @@ private void AddCustomCreaturesAndSpawns()
     }
 }
 ```
+
+## Modifying and Cloning Vanilla Creatures
+
+```cs
+private void Awake()
+{
+    // Hook creature manager to get access to vanilla creature prefabs
+    CreatureManager.OnVanillaCreaturesAvailable += ModifyAndCloneVanillaCreatures;
+}
+
+// Modify and clone vanilla creatures
+private void ModifyAndCloneVanillaCreatures()
+{
+    try
+    {
+        // Clone a vanilla creature with and add new spawn information
+        var lulzeton = new CustomCreature("Lulzeton", "Skeleton_NoArcher",
+            new CreatureConfig
+            {
+                SpawnConfigs = new[]
+                {
+                    new SpawnConfig
+                    {
+                        Name = "SkelSpawn1",
+                        SpawnChance = 100,
+                        SpawnInterval = 1f,
+                        SpawnDistance = 1f,
+                        Biome = Heightmap.Biome.Meadows,
+                        MinLevel = 3
+                    }
+                }
+            });
+        var lulzoid = lulzeton.Prefab.GetComponent<Humanoid>();
+        lulzoid.m_walkSpeed = 0.1f;
+        CreatureManager.Instance.AddCreature(lulzeton);
+
+        // Get a vanilla creature prefab and change some values
+        var goblin = CreatureManager.Instance.GetCreaturePrefab("Skeleton_NoArcher");
+        var humanoid = goblin.GetComponent<Humanoid>();
+        humanoid.m_walkSpeed = 2;
+    }
+    catch (Exception ex)
+    {
+        Logger.LogWarning($"Exception caught while modifying vanilla creatures: {ex}");
+    }
+    finally
+    {
+        // Unregister the hook, modified and cloned creatures are kept over the whole game session
+        CreatureManager.OnVanillaCreaturesAvailable -= ModifyAndCloneVanillaCreatures;
+    }
+}
