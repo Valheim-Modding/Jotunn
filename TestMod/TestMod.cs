@@ -1080,7 +1080,7 @@ namespace TestMod
                 Category = "Lulzies."  // Test custom category
             });
 
-            if (CP != null)
+            if (CP.PiecePrefab)
             {
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
@@ -1098,7 +1098,7 @@ namespace TestMod
                 Category = "Lulzies."  // Test custom category
             });
 
-            if (CP != null)
+            if (CP.PiecePrefab)
             {
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
@@ -1480,9 +1480,14 @@ namespace TestMod
             try
             {
                 // Create creature from AssetBundle
-                var cubeThing = creaturesAssetBundle.LoadAsset<GameObject>("LulzThing");
-                cubeThing.GetComponentInChildren<MeshRenderer>().material.mainTexture = TestTex;
-                var cubeCreature = new CustomCreature(cubeThing, false,
+                var lulzThing = creaturesAssetBundle.LoadAsset<GameObject>("LulzThing");
+
+                // Set our lulzcube test texture on the first material found
+                var lulztex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
+                lulzThing.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
+                
+                // Create a custom creature with one drop and two spawn configs
+                var cubeCreature = new CustomCreature(lulzThing, false,
                     new CreatureConfig
                     {
                         Name = "LulzThing",
@@ -1490,26 +1495,33 @@ namespace TestMod
                         {
                             new DropConfig
                             {
-                                Item = "ArmorStand_Male"
+                                Item = "Sausages",
+                                Chance = 50f,
+                                LevelMultiplier = false,
+                                MinAmount = 2,
+                                MaxAmount = 3,
+                                //OnePerPlayer = true
                             }
                         },
-                        SpawnConfigs = new[]
+                        SpawnConfigs = new []
                         {
                             new SpawnConfig
                             {
-                                Name = "LulzSpawn1",
+                                Name = "Jotunn_LulzSpawn1",
                                 SpawnChance = 100,
                                 SpawnInterval = 1f,
                                 SpawnDistance = 1f,
+                                MaxSpawned = 10,
                                 Biome = Heightmap.Biome.Meadows
                             },
                             new SpawnConfig
                             {
-                                Name = "LulzSpawn2",
-                                SpawnChance = 100,
-                                SpawnInterval = 1f,
-                                SpawnDistance = 1f,
-                                Biome = Heightmap.Biome.BlackForest
+                                Name = "Jotunn_LulzSpawn2",
+                                SpawnChance = 50,
+                                SpawnInterval = 2f,
+                                SpawnDistance = 2f,
+                                MaxSpawned = 5,
+                                Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
                             }
                         }
                     });
@@ -1534,11 +1546,11 @@ namespace TestMod
                 var lulzeton = new CustomCreature("Lulzeton", "Skeleton_NoArcher",
                     new CreatureConfig
                     {
-                        SpawnConfigs = new[]
+                        SpawnConfigs = new []
                         {
                             new SpawnConfig
                             {
-                                Name = "SkelSpawn1",
+                                Name = "Jotunn_SkelSpawn1",
                                 SpawnChance = 100,
                                 SpawnInterval = 1f,
                                 SpawnDistance = 1f,

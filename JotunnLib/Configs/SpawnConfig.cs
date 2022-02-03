@@ -58,6 +58,16 @@ namespace Jotunn.Configs
         ///     Maximum spawn range.
         /// </summary>
         public float MaxSpawnRadius { get; set; }
+        
+        /// <summary>
+        ///     Minimum level the creature spawns with. Defaults to 1.
+        /// </summary>
+        public int MinLevel { get; set; } = 1;
+
+        /// <summary>
+        ///     Maximum level the creature spawns with. Defaults to 1.
+        /// </summary>
+        public int MaxLevel { get; set; } = 1;
 
         /// <summary>
         ///     Only spawn if this key is set. See <see cref="Jotunn.Utils.GameConstants.GlobalKey"/> for constant values
@@ -70,12 +80,12 @@ namespace Jotunn.Configs
         public List<string> RequiredEnvironments { get; set; } = new List<string>();
 
         /// <summary>
-        ///     Minimum group size that can spawn. Defaults to 1.
+        ///     Minimum number of entities to attempt to spawn at a time. Defaults to 1.
         /// </summary>
         public int MinGroupSize { get; set; } = 1;
 
         /// <summary>
-        ///     Maximum group size that can spawn. Defaults to 1.
+        ///     Maximum number of entities to attempt to spawn at a time. Defaults to 1.
         /// </summary>
         public int MaxGroupSize { get; set; } = 1;
 
@@ -95,24 +105,34 @@ namespace Jotunn.Configs
         public bool SpawnAtNight { get; set; } = true;
 
         /// <summary>
-        ///     The minimum altitude for the creature to spawn. Defaults to -1000f.
+        ///     The minimum altitude (distance to water surface) for the creature to spawn. Defaults to -1000f.
         /// </summary>
         public float MinAltitude { get; set; } = -1000f;
 
         /// <summary>
-        ///     The maximum altitude for the creature to spawn. Defaults to 1000f.
+        ///     The maximum altitude (distance to water surface) for the creature to spawn. Defaults to 1000f.
         /// </summary>
         public float MaxAltitude { get; set; } = 1000f;
 
         /// <summary>
-        ///     The minimum tilt for the creature to spawn.
+        ///     The minimum tilt of terrain required to spawn. Range 0 to 90.
         /// </summary>
         public float MinTilt { get; set; }
 
         /// <summary>
-        ///     The maximum altitude for the creature to spawn. Defaults to 35f.
+        ///     The maximum tilt of terrain required to spawn. Range 0 to 90. Defaults to 35f.
         /// </summary>
         public float MaxTilt { get; set; } = 35f;
+        
+        /// <summary>
+        ///     The minimum ocean depth for the creature to spawn.
+        /// </summary>
+        public float MinOceanDepth { get; set; }
+
+        /// <summary>
+        ///     The maximum ocean depth for the creature to spawn.
+        /// </summary>
+        public float MaxOceanDepth { get; set; }
 
         /// <summary>
         ///     Spawn can happen in forest areas. Defaults to true.
@@ -125,16 +145,6 @@ namespace Jotunn.Configs
         public bool SpawnOutsideForest { get; set; } = true;
 
         /// <summary>
-        ///     The minimum ocean depth for the creature to spawn.
-        /// </summary>
-        public float MinOceanDepth { get; set; }
-
-        /// <summary>
-        ///     The maximum ocean depth for the creature to spawn.
-        /// </summary>
-        public float MaxOceanDepth { get; set; }
-
-        /// <summary>
         ///     Set true to let the AI hunt the player on spawn.
         /// </summary>
         public bool HuntPlayer { get; set; }
@@ -143,16 +153,6 @@ namespace Jotunn.Configs
         ///     Offset to the ground the creature spawns on. Defaults to 0.5f
         /// </summary>
         public float GroundOffset { get; set; } = 0.5f;
-
-        /// <summary>
-        ///     Minimum level the creature spawns with. Defaults to 1.
-        /// </summary>
-        public int MinLevel { get; set; } = 1;
-
-        /// <summary>
-        ///     Maximum level the creature spawns with. Defaults to 1.
-        /// </summary>
-        public int MaxLevel { get; set; } = 1;
 
         /// <summary>
         ///     Converts the SpawnConfig to a Valheim style <see cref="SpawnSystem.SpawnData"/> without a prefab set.

@@ -9,7 +9,7 @@ namespace Jotunn.Configs
     public class DropConfig
     {
         /// <summary>
-        ///     Name of the item prefab of this drop.
+        ///     Name of the item prefab of this drop. Gets resolved by Jötunn at runtime.
         /// </summary>
         public string Item { get; set; } = string.Empty;
 
@@ -48,7 +48,7 @@ namespace Jotunn.Configs
             {
                 m_prefab = MockManager.Instance.CreateMockedGameObject(Item),
                 m_amountMin = MinAmount,
-                m_amountMax = MaxAmount,
+                m_amountMax = MaxAmount < MinAmount ? MinAmount : MaxAmount,
                 m_chance = Chance / 100f,
                 m_onePerPlayer = OnePerPlayer,
                 m_levelMultiplier = LevelMultiplier
