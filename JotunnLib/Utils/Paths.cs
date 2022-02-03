@@ -28,5 +28,10 @@ namespace Jotunn.Utils
         ///     Path to the global translation folder
         /// </summary>
         public static string LanguageTranslationsFolder => BepInEx.Paths.PluginPath;
+
+        /// <summary>
+        ///     Path to cached icons. See <see cref="Managers.RenderManager"/>
+        /// </summary>
+        public static string IconCachePath => Path.Combine(JotunnFolder, "CachedIcons");
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using BepInEx;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -18,6 +20,7 @@ namespace Jotunn.Managers
         public static readonly Quaternion IsometricRotation = Quaternion.Euler(23, 51, 25.8f);
 
         private static RenderManager _instance;
+
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -156,13 +159,73 @@ namespace Jotunn.Managers
                 return null;
             }
 
+            if (renderRequest.UseCache && ContainsIconCache(renderRequest.Target, renderRequest.TargetPlugin, out Sprite icon))
+            {
+                return icon;
+            }
+
             if (!Renderer)
             {
                 SetupRendering();
             }
 
             RenderObject spawned = SpawnSafe(renderRequest);
-            return RenderSprite(spawned);
+            Sprite rendered = RenderSprite(spawned);
+
+            if (renderRequest.UseCache)
+            {
+                CacheIcon(renderRequest.Target, renderRequest.TargetPlugin, rendered);
+            }
+
+            return rendered;
+        }
+
+        private bool ContainsIconCache(GameObject target, BepInPlugin plugin, out Sprite sprite)
+        {
+            string version = GetVersion(plugin);
+            string path = GetCachePath(target.name, version);
+            bool exists = File.Exists(path);
+
+            if (!exists)
+            {
+                sprite = null;
+                return false;
+            }
+
+            byte[] bytesPNG = File.ReadAllBytes(path);
+            Texture2D texture = new Texture2D(1, 1);
+            texture.LoadImage(bytesPNG);
+
+            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one / 2f);
+            return true;
+        }
+
+        private void CacheIcon(GameObject target, BepInPlugin plugin, Sprite rendered)
+        {
+            string version = GetVersion(plugin);
+            Directory.CreateDirectory(Utils.Paths.IconCachePath);
+            File.WriteAllBytes(GetCachePath(target.name, version), rendered.texture.EncodeToPNG());
+        }
+
+        private string GetCachePath(string name, string version)
+        {
+            return Path.Combine(Utils.Paths.IconCachePath, $"{name}-{version}.png");
+        }
+
+        private string GetVersion(BepInPlugin plugin)
+        {
+            string version;
+
+            if (plugin != null)
+            {
+                version = plugin.Name + "-" + plugin.Version;
+            }
+            else
+            {
+                version = Version.GetVersionString();
+            }
+
+            return version.Replace("/", "_"); // some mods add a '/' to the version name
         }
 
         private Sprite RenderSprite(RenderObject renderObject)
@@ -397,6 +460,18 @@ namespace Jotunn.Managers
             /// </summary>
             [Obsolete]
             public Action<Sprite> Callback { get; internal set; }
+
+            /// <summary>
+            ///     Optional, Used for <see cref="UseCache"/> to determine a unique name-version combination
+            /// </summary>
+            public BepInPlugin TargetPlugin { get; set; } = null;
+
+            /// <summary>
+            ///     Save the render on the disc and reuse when called again. This reduces the time to re-render drastically.
+            ///     When the game version changes, a new render will be made. When a <see cref="TargetPlugin"/> is set, the version and name
+            ///     will be used to determine if a new render should be made
+            /// </summary>
+            public bool UseCache { get; set; } = false;
 
             /// <summary>
             ///     Create a new RenderRequest
