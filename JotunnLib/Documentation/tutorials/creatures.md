@@ -202,7 +202,7 @@ MaxSpawned|How many instances of this creature can be spawned in a biome at the 
 SpawnInterval|Seconds between new spawn checks.|4f
 SpawnChance|Spawn chance each spawn interval in percent.|100f
 SpawnDistance|Minimum distance to another instance.|10f
-MinSpawnRadius<br>MaxSpawnRadius|Minimum and maximum distance from player to spawn at. 0 equals the global default of 40<br>A specific player is chosen as a target, this setting basically creates a ring around the player, in which a spawn point can be chosen|0<br>0
+MinSpawnRadius<br>MaxSpawnRadius|Minimum and maximum distance from player to spawn at. 0 equals the global default of 40.<br>A specific player is chosen as a target, this setting basically creates a ring around the player, in which a spawn point can be chosen|0<br>0
 MinLevel<br>MaxLevel|Min/max level the creature spawns with.<br>Level is assigned by rolling levelup-chance for each level from min, until max is reached.|1<br>1
 RequiredGlobalKey|Only spawn if this key is set.<br>See [Jotunn.Utils.GameConstants.GlobalKey](xref:Jotunn.Utils.GameConstants.GlobalKey) for constant values|
 RequiredEnvironments|Only spawn if one of this environments is active.<br>See [Jotunn.Utils.GameConstants.Weather](xref:Jotunn.Utils.GameConstants.Weather) for constant values|
