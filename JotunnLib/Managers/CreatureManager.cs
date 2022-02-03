@@ -24,6 +24,11 @@ namespace Jotunn.Managers
         private CreatureManager() { }
 
         /// <summary>
+        ///     Unity "character" layer ID. Creature 
+        /// </summary>
+        public static int CharacterLayer = LayerMask.NameToLayer("character");
+
+        /// <summary>
         ///     Event that gets fired after the vanilla creatures are in memory and available for cloning.
         ///     Your code will execute every time before a new <see cref="ObjectDB"/> is copied (on every menu start).
         ///     If you want to execute just once you will need to unregister from the event after execution.
@@ -90,6 +95,18 @@ namespace Jotunn.Managers
             if (!PrefabManager.Instance.AddPrefab(customCreature.Prefab, customCreature.SourceMod))
             {
                 return false;
+            }
+
+            // Set the correct Layer if not set
+            if (customCreature.Prefab.layer != CharacterLayer)
+            {
+                customCreature.Prefab.layer = CharacterLayer;
+
+                // Also set the first level of child GOs
+                foreach (Transform child in customCreature.Prefab.transform)
+                {
+                    child.gameObject.layer = CharacterLayer;
+                }
             }
 
             // Move prefab to our own container
