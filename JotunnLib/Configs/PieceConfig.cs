@@ -123,9 +123,9 @@ namespace Jotunn.Configs
         }
 
         /// <summary>
-        ///     Converts the <see cref="RequirementConfig"/>s to Valheim style <see cref="Piece.Requirement"/> array.
+        ///     Converts the <see cref="RequirementConfig">RequirementConfigs</see> to Valheim style <see cref="Piece.Requirement"/> array.
         /// </summary>
-        /// <returns>The Valheim <see cref="global::Piece.Requirement"/> array</returns>
+        /// <returns>The Valheim <see cref="Piece.Requirement"/> array</returns>
         public Piece.Requirement[] GetRequirements()
         {
             Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];

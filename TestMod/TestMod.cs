@@ -106,6 +106,11 @@ namespace TestMod
             ZoneManager.OnVanillaLocationsAvailable += AddClonedVanillaLocationsAndVegetations;
             ZoneManager.OnVanillaLocationsAvailable += ModifyVanillaLocationsAndVegetation;
 
+            // Create custom creatures and spawns
+            AddCustomCreaturesAndSpawns();
+            // Hook creature manager to get access to vanilla creature prefabs
+            CreatureManager.OnVanillaCreaturesAvailable += ModifyAndCloneVanillaCreatures;
+
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
             {
@@ -1075,7 +1080,7 @@ namespace TestMod
                 Category = "Lulzies."  // Test custom category
             });
 
-            if (CP != null)
+            if (CP.PiecePrefab)
             {
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
@@ -1093,7 +1098,7 @@ namespace TestMod
                 Category = "Lulzies."  // Test custom category
             });
 
-            if (CP != null)
+            if (CP.PiecePrefab)
             {
                 var prefab = CP.PiecePrefab;
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
@@ -1466,6 +1471,112 @@ namespace TestMod
             raspberryBush.m_groupSizeMax = 30;
 
             // Not unregistering this hook, it needs to run every world load
+        }
+        
+        // Add custom made creatures using world spawns and drop lists
+        private void AddCustomCreaturesAndSpawns()
+        {
+            AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(TestMod).Assembly);
+            try
+            {
+                // Create creature from AssetBundle
+                var lulzThing = creaturesAssetBundle.LoadAsset<GameObject>("LulzThing");
+
+                // Set our lulzcube test texture on the first material found
+                var lulztex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
+                lulzThing.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
+                
+                // Create a custom creature with one drop and two spawn configs
+                var cubeCreature = new CustomCreature(lulzThing, false,
+                    new CreatureConfig
+                    {
+                        Name = "LulzThing",
+                        DropConfigs = new []
+                        {
+                            new DropConfig
+                            {
+                                Item = "Sausages",
+                                Chance = 50f,
+                                LevelMultiplier = false,
+                                MinAmount = 2,
+                                MaxAmount = 3,
+                                //OnePerPlayer = true
+                            }
+                        },
+                        SpawnConfigs = new []
+                        {
+                            new SpawnConfig
+                            {
+                                Name = "Jotunn_LulzSpawn1",
+                                SpawnChance = 100,
+                                SpawnInterval = 1f,
+                                SpawnDistance = 1f,
+                                MaxSpawned = 10,
+                                Biome = Heightmap.Biome.Meadows
+                            },
+                            new SpawnConfig
+                            {
+                                Name = "Jotunn_LulzSpawn2",
+                                SpawnChance = 50,
+                                SpawnInterval = 2f,
+                                SpawnDistance = 2f,
+                                MaxSpawned = 5,
+                                Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
+                            }
+                        }
+                    });
+                CreatureManager.Instance.AddCreature(cubeCreature);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception caught while adding custom creatures: {ex}");
+            }
+            finally
+            {
+                creaturesAssetBundle.Unload(false);
+            }
+        }
+        
+        // Modify and clone vanilla creatures
+        private void ModifyAndCloneVanillaCreatures()
+        {
+            try
+            {
+                // Clone a vanilla creature with and add new spawn information
+                var lulzeton = new CustomCreature("Lulzeton", "Skeleton_NoArcher",
+                    new CreatureConfig
+                    {
+                        SpawnConfigs = new []
+                        {
+                            new SpawnConfig
+                            {
+                                Name = "Jotunn_SkelSpawn1",
+                                SpawnChance = 100,
+                                SpawnInterval = 1f,
+                                SpawnDistance = 1f,
+                                Biome = Heightmap.Biome.Meadows,
+                                MinLevel = 3
+                            }
+                        }
+                    });
+                var lulzoid = lulzeton.Prefab.GetComponent<Humanoid>();
+                lulzoid.m_walkSpeed = 0.1f;
+                CreatureManager.Instance.AddCreature(lulzeton);
+
+                // Get a vanilla creature prefab and change some values
+                var goblin = CreatureManager.Instance.GetCreaturePrefab("Skeleton_NoArcher");
+                var humanoid = goblin.GetComponent<Humanoid>();
+                humanoid.m_walkSpeed = 2;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception caught while modifying vanilla creatures: {ex}");
+            }
+            finally
+            {
+                // Unregister the hook, modified and cloned creatures are kept over the whole game session
+                CreatureManager.OnVanillaCreaturesAvailable -= ModifyAndCloneVanillaCreatures;
+            }
         }
 
         // Set version of the plugin for the mod compatibility test

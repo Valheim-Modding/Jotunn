@@ -40,6 +40,9 @@
 
     - name: Skills
       href: skills.md
+
+    - name: Creatures
+      href: creatures.md
   
     - name: Zones / Locations / Vegetation
       href: zones.md
