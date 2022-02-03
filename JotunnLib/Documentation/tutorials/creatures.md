@@ -197,7 +197,7 @@ There are plenty of properties to refine your spawn configuration:
 |Property|Effect|Default
 |---|---|---
 WorldSpawnEnabled|Creates the SpawnData for this config but disables the actual spawn.|true
-BiomeArea|Uses the Heihtmap.Biomearea enum to define if the spawn should be in the middle, on the edges or everywhere on the spawning biomes.|Heightmap.BiomeArea.Everywhere
+BiomeArea|Uses the Heightmap.BiomeArea enum to define if the spawn should be in the middle, on the edges or everywhere on the spawning biomes.|Heightmap.BiomeArea.Everywhere
 MaxSpawned|How many instances of this creature can be spawned in a biome at the same time.|1
 SpawnInterval|Seconds between new spawn checks.|4f
 SpawnChance|Spawn chance each spawn interval in percent.|100f
