@@ -30,7 +30,7 @@ namespace Jotunn.Configs
         public Heightmap.BiomeArea BiomeArea { get; set; } = Heightmap.BiomeArea.Everything;
 
         /// <summary>
-        ///     Total number of instances. Defaults to 1.
+        ///     maximum count of instances then can be spawned per spawner at the same time. Defaults to 1.
         /// </summary>
         public int MaxSpawned { get; set; } = 1;
 

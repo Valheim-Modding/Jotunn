@@ -199,7 +199,7 @@ There are plenty of properties to refine your spawn configuration:
 WorldSpawnEnabled|If set to false, Jötunn creatres the SpawnData for this config but disables the actual spawn.|true
 Biome|Biome for your creature to spawn in. Multiple biomes per spawn config are possible.<br>To get the correct value for this property, you can use [ZoneManager.AnyBiomeOf](xref:Jotunn.Managers.ZoneManager.AnyBiomeOf).|
 BiomeArea|Uses the Heightmap.BiomeArea enum to define if the spawn should be in the middle, on the edges or everywhere on the spawning biomes.|Heightmap.BiomeArea.Everywhere
-MaxSpawned|How many instances of this creature can be spawned in a biome at the same time.|1
+MaxSpawned|How many instances of this creature can be spawned per spawner at the same time.|1
 SpawnInterval|Seconds between new spawn checks.|4f
 SpawnChance|Spawn chance each spawn interval in percent.|100f
 SpawnDistance|Minimum distance to another instance.|10f
