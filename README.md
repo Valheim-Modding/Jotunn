@@ -28,19 +28,23 @@ That's it, launch the game and mod away!
 JVL provides three distinct groups of features. Entities, which abstract the game's own entities into easy-to-use interfaces. Managers, which act as interfaces between the entities and native collections or subsystems. Utilities, which are there to aid in generic/common functions that can span many different areas.
 
 #### Entities
+- **CustomCreature** - Represents custom animals, enemies and NPCs.
 - **CustomItem** - Represents ingame items such as weapons, tools and consumables.
-- **CustomRecipe** - Represents ingame recipes for managing crafting and upgrading of items.
-- **CustomPiece** - Represent ingame building pieces.
-- **CustomPieceTable** - Represent ingame building tables. Support for custom categories included.
-- **CustomStatusEffect** - Represents ingame status effects from weapon hit effects to guardian powers.
 - **CustomItemConversion** - Represents ingame item conversions for the CookingStation, Fermenter, Smelter and Incinerator in one abstraction.
 - **CustomLocalization** - Represents custom localizations for your mod.
+- **CustomLocation** - Represents custom locations from simple stone circles to complete villages.
+- **CustomPiece** - Represent ingame building pieces.
+- **CustomPieceTable** - Represent ingame building tables. Support for custom categories included.
+- **CustomRecipe** - Represents ingame recipes for managing crafting and upgrading of items.
+- **CustomStatusEffect** - Represents ingame status effects from weapon hit effects to guardian powers.
+- **CustomVegetation** - Represents vegetation spread throughout biomes from pickables to cosmetics.
 - **KitbashObject** - Represents a custom object assembled from various other prefabs' components.
 - **Mocks** - Fake any vanilla prefab and use it in your custom assets - Jötunn resolves the references to the vanilla objects at runtime.
 - **Config classes** - There are many more abstractions beside the main entities which allow for easy creation of things like key bindings, custom commands, skills and more.
 
 #### Managers
 - **Command Manager** - Facilitates implementation of methods which can be registered as executable console commands.
+- **CreatureManager** - Add new creatures or copy and modify vanilla ones.
 - **GUI Manager** - Allows invocation of UI prefabs on the fly via code.
 - **Input Manager** - Provides an interface for binding keys via ZInput in a consistent manner, facilitating custom keybind hints.
 - **Item Manager** - Abstracts away implementation details of configurations applied to items/recipes to provide a consistent developer experience in adding new items. tl;dr items are easy!
@@ -100,7 +104,7 @@ These people have been integral to pushing JVL out of the door, and without them
 
 *MarcoPogo#6095*: [github](https://github.com/MathiasDecrock), [nexus](https://www.nexusmods.com/users/3030830?tab=user+files)
 
-*blaxxun#9098*: [github](https://github.com/blaxxun-boop) - Creator of the superb [ServerSync](https://github.com/blaxxun-boop/ServerSync) mod which Jötunn adapted
+*blaxxun#9098*: [github](https://github.com/blaxxun-boop)
 
 *Tekla#1012*: [github](https://github.com/T3kla/ValMods/wiki)
 

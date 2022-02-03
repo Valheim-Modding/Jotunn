@@ -25,19 +25,23 @@ That's it, launch the game and mod away!
 JVL provides three distinct groups of features. Entities, which abstract the game's own entities into easy-to-use interfaces. Managers, which act as interfaces between the entities and native collections or subsystems. Utilities, which are there to aid in generic/common functions that can span many different areas.
 
 [size=4][b]Entities[/b][/size]
+- [b]CustomCreature[/b] - Represents custom animals, enemies and NPCs.
 - [b]CustomItem[/b] - Represents ingame items such as weapons, tools and consumables.
-- [b]CustomRecipe[/b] - Represents ingame recipes for managing crafting and upgrading of items.
-- [b]CustomPiece[/b] - Represent ingame building pieces.
-- [b]CustomPieceTable[/b] - Represent ingame building tables. Support for custom categories included.
-- [b]CustomStatusEffect[/b] - Represents ingame status effects from weapon hit effects to guardian powers.
 - [b]CustomItemConversion[/b] - Represents ingame item conversions for the CookingStation, Fermenter and Smelter in one abstraction.
 - [b]CustomLocalization[/b] - Represents custom localizations for your mod.
+- [b]CustomLocation[/b] - Represents custom locations from simple stone circles to complete villages.
+- [b]CustomPiece[/b] - Represent ingame building pieces.
+- [b]CustomPieceTable[/b] - Represent ingame building tables. Support for custom categories included.
+- [b]CustomRecipe[/b] - Represents ingame recipes for managing crafting and upgrading of items.
+- [b]CustomStatusEffect[/b] - Represents ingame status effects from weapon hit effects to guardian powers.
+- [b]CustomVegetation[/b] - Represents vegetation spread throughout biomes from pickables to cosmetics.
 - [b]KitbashObject[/b] - Represents a custom object assembled from various other prefabs' components.
 - [b]Mocks[/b] - Fake any vanilla prefab and use it in your custom assets - Jötunn resolves the references to the vanilla objects at runtime.
 - [b]Config classes[/b] - There are many more abstractions beside the main entities which allow for easy creation of things like key bindings, custom commands, skills and more.
 
 [size=4][b]Managers[/b][/size]
 - [b]Command Manager[/b] - Facilitates implementation of methods which can be registered as executable console commands.
+- [b]Creature Manager[/b] - Add new creatures or copy and modify vanilla ones.
 - [b]GUI Manager[/b] - Allows invocation of UI prefabs on the fly via code.
 - [b]Input Manager[/b] - Provides an interface for binding keys via ZInput in a consistent manner, facilitating custom keybind hints.
 - [b]Item Manager[/b] - Abstracts away implementation details of configurations applied to items/recipes to provide a consistent developer experience in adding new items. tl;dr items are easy!
@@ -84,7 +88,7 @@ These people have been integral to pushing JVL out of the door, and without them
 - GoldenJude#8965: [url=https://github.com/GoldenJude]github[/url], [url=https://www.nexusmods.com/users/48864143?tab=user+files]nexus[/url]
 - zarboz#7828: [url=https://github.com/sbtoonz]github[/url], [url=https://valheim.thunderstore.io/package/sbtoonz/]thunderstore[/url], [url=https://www.nexusmods.com/users/4057483]nexus[/url]
 - MarcoPogo#6095: [url=https://github.com/MathiasDecrock]github[/url], [url=https://www.nexusmods.com/users/3030830?tab=user+files]nexus[/url]
-- blaxxun#9098: [url=https://github.com/blaxxun-boop]github[/url] - Creator of the superb [url=https://github.com/blaxxun-boop/ServerSync]ServerSync[/url] mod which Jötunn adapted.
+- blaxxun#9098: [url=https://github.com/blaxxun-boop]github[/url]
 - Tekla#1012: [url=https://github.com/T3kla/ValMods/wiki]github[/url]
 - Margmas#9562: [url=https://github.com/MSchmoecker]github[/url], [url=https://valheim.thunderstore.io/package/MSchmoecker/]thunderstore[/url], [url=https://www.nexusmods.com/users/111418768]nexus[/url]
 - JoeyParrish#8644: [url=https://github.com/joeyparrish]github[/url], [url=https://valheim.thunderstore.io/package/joeyparrish/]thunderstore[/url], [url=https://www.nexusmods.com/users/128211453]nexus[/url] 
