@@ -190,13 +190,14 @@ There are also additional properties to further the drops for the creature:
 
 ## Spawn Configurations
 
-While adding creatures with Jötunn you can define one or more basic spawn configurations. Those configurations are added to the world spawn list so your creatures spawn into the world automatically. You must at least provide an unique name for your spawn configuration and a Biome for your creature to spawn in. Multiple biomes per spawn config are possible. To get the correct value for this property, you can use [ZoneManager.AnyBiomeOf](xref:Jotunn.Managers.ZoneManager.AnyBiomeOf).
+While adding creatures with Jötunn you can define one or more basic spawn configurations. Those configurations are added to the world spawn list so your creatures spawn into the world automatically. You must at least provide an unique name for your spawn configuration and a spawning biome.
 
 There are plenty of properties to refine your spawn configuration:
 
 |Property|Effect|Default
 |---|---|---
 WorldSpawnEnabled|Creates the SpawnData for this config but disables the actual spawn.|true
+Biome|Biome for your creature to spawn in. Multiple biomes per spawn config are possible.<br>To get the correct value for this property, you can use [ZoneManager.AnyBiomeOf](xref:Jotunn.Managers.ZoneManager.AnyBiomeOf).|
 BiomeArea|Uses the Heightmap.BiomeArea enum to define if the spawn should be in the middle, on the edges or everywhere on the spawning biomes.|Heightmap.BiomeArea.Everywhere
 MaxSpawned|How many instances of this creature can be spawned in a biome at the same time.|1
 SpawnInterval|Seconds between new spawn checks.|4f
@@ -204,8 +205,8 @@ SpawnChance|Spawn chance each spawn interval in percent.|100f
 SpawnDistance|Minimum distance to another instance.|10f
 MinSpawnRadius<br>MaxSpawnRadius|Minimum and maximum distance from player to spawn at. 0 equals the global default of 40.<br>A specific player is chosen as a target, this setting basically creates a ring around the player, in which a spawn point can be chosen|0<br>0
 MinLevel<br>MaxLevel|Min/max level the creature spawns with.<br>Level is assigned by rolling levelup-chance for each level from min, until max is reached.|1<br>1
-RequiredGlobalKey|Only spawn if this key is set.<br>See [Jotunn.Utils.GameConstants.GlobalKey](xref:Jotunn.Utils.GameConstants.GlobalKey) for constant values|
-RequiredEnvironments|Only spawn if one of this environments is active.<br>See [Jotunn.Utils.GameConstants.Weather](xref:Jotunn.Utils.GameConstants.Weather) for constant values|
+RequiredGlobalKey|Only spawn if this key is set.<br>See [GameConstants.GlobalKey](xref:Jotunn.Utils.GameConstants.GlobalKey) for constant values|
+RequiredEnvironments|Only spawn if one of this environments is active.<br>See [GameConstants.Weather](xref:Jotunn.Utils.GameConstants.Weather) for constant values|
 MinGroupSize<br>MaxGroupSize|Min/Max number of entities to attempt to spawn at a time.|1<br>1
 GroupRadius|Radius of circle, in which to spawn a pack of entities<br>Eg., when group size is 3, all 3 spawns will happen inside a circle indicated by this radius.|3f
 SpawnAtDay|Can spawn during day.<br>Note: If not true, creatures with MonsterAI will attempt to despawn at day)|true
