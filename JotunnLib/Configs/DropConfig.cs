@@ -29,7 +29,7 @@ namespace Jotunn.Configs
         public float Chance { get; set; } = 100f;
 
         /// <summary>
-        ///     Should the drop be multiplied so every player gets the same amount. Defaults to false.
+        ///     If true, only one instance per active player will be dropped regardless of min/max amount. Defaults to false.
         /// </summary>
         public bool OnePerPlayer { get; set; } = false;
 

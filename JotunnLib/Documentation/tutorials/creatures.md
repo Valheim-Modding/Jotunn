@@ -183,10 +183,10 @@ There are also additional properties to further the drops for the creature:
 
 |Property|Effect|Default
 |---|---|---
-|MinAmount<br>MaxAmount|How many of the drop items should be spawned|1
-|Chance|The chance of this drop in percent|100
-|OnePerPlayer|Should the drop be multiplied so every player gets the same amount|false
-|LevelMultiplier|Should the drop amount be multiplied by the creature level|true
+|MinAmount<br>MaxAmount|How many of the drop items should be spawned.|1
+|Chance|The chance of this drop in percent.|100
+|OnePerPlayer|If true, one instance per active player will be dropped regardless of min/max amount.|false
+|LevelMultiplier|Should the drop amount be multiplied by the creature level.|true
 
 ## Spawn Configurations
 
@@ -199,17 +199,17 @@ There are plenty of properties to refine your spawn configuration:
 WorldSpawnEnabled|If set to false, Jötunn creatres the SpawnData for this config but disables the actual spawn.|true
 Biome|Biome for your creature to spawn in. Multiple biomes per spawn config are possible.<br>To get the correct value for this property, you can use [ZoneManager.AnyBiomeOf](xref:Jotunn.Managers.ZoneManager.AnyBiomeOf).|
 BiomeArea|Uses the Heightmap.BiomeArea enum to define if the spawn should be in the middle, on the edges or everywhere on the spawning biomes.|Heightmap.BiomeArea.Everywhere
-MaxSpawned|How many instances of this creature can be spawned per spawner at the same time.|1
+MaxSpawned|How many instances of this creature can be active at the same time (excluding event instances).|1
 SpawnInterval|Seconds between new spawn checks.|4f
 SpawnChance|Spawn chance each spawn interval in percent.|100f
 SpawnDistance|Minimum distance to another instance.|10f
-MinSpawnRadius<br>MaxSpawnRadius|Min/max distance from player to spawn at. 0 equals the global default of 40.<br>A specific player is chosen as a target, this setting basically creates a ring around the player, in which a spawn point can be chosen|0<br>0
+MinSpawnRadius<br>MaxSpawnRadius|Min/max distance from player to spawn at.<br>A specific player is chosen as a target, this setting basically creates a ring around the player, in which a spawn point can be chosen|0 (equals the global default of 40)<br>0 (equals the global default of 80)
 MinLevel<br>MaxLevel|Min/max level the creature spawns with.<br>Level is assigned by rolling levelup-chance for each level from min, until max is reached.|1<br>1
 RequiredGlobalKey|Only spawn if this key is set.<br>See [GameConstants.GlobalKey](xref:Jotunn.Utils.GameConstants.GlobalKey) for constant values|
 RequiredEnvironments|Only spawn if one of this environments is active.<br>See [GameConstants.Weather](xref:Jotunn.Utils.GameConstants.Weather) for constant values|
 MinGroupSize<br>MaxGroupSize|Min/Max number of entities to attempt to spawn at a time.|1<br>1
 GroupRadius|Radius of circle, in which to spawn a pack of entities<br>Eg., when group size is 3, all 3 spawns will happen inside a circle indicated by this radius.|3f
-SpawnAtDay|Can spawn during day.<br>Note: If not true, creatures with MonsterAI will attempt to despawn at day)|true
+SpawnAtDay|Can spawn during day.<br>Note: If not true, creatures with MonsterAI will attempt to despawn at day|true
 SpawnAtNight|Can spawn during night|true
 MinAltitude<br>MaxAltitude|The min/max altitude (distance to water surface) for the creature to spawn|-1000f<br>1000f
 MinTilt<br>MaxTilt|The min/max tilt of terrain required to spawn. Tested multiple times to decide where to spawn entity.|35f
