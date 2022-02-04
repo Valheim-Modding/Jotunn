@@ -2,6 +2,7 @@
 
 ## Version 2.4.10
 * Added CreatureManager to inject custom creatures into the game using basic drop and spawn configs (see https://valheim-modding.github.io/Jotunn/tutorials/creatures.html for a tutorial)
+* Added icon cache to the RenderManager
 
 ## Version 2.4.9
 * LocationContainer always create instances, add your custom locations directly to the manager if you don't want to alter it further (see https://valheim-modding.github.io/Jotunn/tutorials/zones.html#creating-locations-from-assetbundles for more information)
