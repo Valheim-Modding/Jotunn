@@ -9,7 +9,7 @@ namespace Jotunn.Configs
     ///     Use this in a constructor of <see cref="CustomLocation"/> and 
     /// </summary>
     public class LocationConfig
-    { 
+    {
         /// <summary>
         ///     Associated <see cref="Location"/> component
         /// </summary>
@@ -84,7 +84,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Group of the location. Used with <see cref="MinDistanceFromSimilar"/>
         /// </summary>
-        public string Group { get;  set; } = "";
+        public string Group { get; set; } = string.Empty;
         /// <summary>
         ///     Minimum distance to a similar location, either the same location or a location with the same <see cref="Group"/>
         /// </summary>
@@ -102,13 +102,17 @@ namespace Jotunn.Configs
         /// </summary>
         public bool SlopeRotation { get; set; }
         /// <summary>
-        ///     Enable to
+        ///     Enable to activate interior handling
         /// </summary>
         public bool HasInterior { get; set; }
         /// <summary>
         ///     Radius of the interior attached to the location
         /// </summary>
-        public float InteriorRadius { get; set; } = 0f;
+        public float InteriorRadius { get; set; }
+        /// <summary>
+        ///     Environment string used by the interior
+        /// </summary>
+        public string InteriorEnvironment { get; set; }
         /// <summary>
         ///     Randomize location rotation when placing
         /// </summary>
@@ -159,7 +163,9 @@ namespace Jotunn.Configs
             MinTerrainDelta = zoneLocation.m_minTerrainDelta;
             MaxTerrainDelta = zoneLocation.m_maxTerrainDelta;
             MinDistanceFromSimilar = zoneLocation.m_minDistanceFromSimilar;
+            HasInterior = zoneLocation.m_location && zoneLocation.m_location.m_hasInterior;
             InteriorRadius = zoneLocation.m_interiorRadius;
+            InteriorEnvironment = zoneLocation.m_location?.m_interiorEnvironment;
             SlopeRotation = zoneLocation.m_slopeRotation;
             RandomRotation = zoneLocation.m_randomRotation;
             SnapToWater = zoneLocation.m_snapToWater;
@@ -199,7 +205,7 @@ namespace Jotunn.Configs
                 m_minDistanceFromSimilar = MinDistanceFromSimilar,
                 m_interiorRadius = InteriorRadius,
                 m_slopeRotation = SlopeRotation,
-                m_randomRotation = RandomRotation, 
+                m_randomRotation = RandomRotation,
                 m_snapToWater = SnapToWater,
                 m_iconPlaced = IconPlaced,
                 m_iconAlways = IconAlways

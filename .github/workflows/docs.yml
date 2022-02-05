@@ -40,6 +40,17 @@ jobs:
         with:
           args: JotunnLib/docfx.json
 
+      # Fix permissions on DocFX output (should not be owned by root!)
+      # See https://github.com/nikeee/docfx-action/issues/13
+      - name: Fix DocFX output permissions
+        run: |
+          sudo chown -R "$UID" JotunnLib/_site
+
+      # Patch broken docfx JavaScript that fails to parse query params for tabs
+      - name: Patch DocFX JavaScript bugs
+        run: |
+          sed -e "s/queryString = ''/queryString = location.search/" -i.orig JotunnLib/_site/styles/docfx.js
+
       # Publish generated site using GitHub Pages
       - uses: maxheld83/ghpages@master
         name: Publish documentation to GitHub Pages

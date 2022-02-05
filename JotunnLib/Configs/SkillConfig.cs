@@ -29,11 +29,11 @@ namespace Jotunn.Configs
             get { return _identifier; }
             set
             {
-                int hashCode = value.GetStableHashCode();
-                if (hashCode < 0 || hashCode > 1000)
+                int hashCode = Math.Abs(value.GetStableHashCode());
+                if (hashCode > (int)Skills.SkillType.All)
                 {
                     _identifier = value;
-                    UID = (Skills.SkillType)value.GetStableHashCode();
+                    UID = (Skills.SkillType)hashCode;
                 }
                 else
                 {
@@ -113,7 +113,7 @@ namespace Jotunn.Configs
         /// <returns>Valheim SkillDef representation of the SkillConfig</returns>
         public Skills.SkillDef ToSkillDef()
         {
-            return new Skills.SkillDef()
+            return new Skills.SkillDef
             {
                 m_description = Description,
                 m_icon = Icon,
@@ -124,9 +124,9 @@ namespace Jotunn.Configs
 
         internal bool IsFromName(string name)
         {
-            return Name.ToLower() == name.ToLower() ||
+            return string.Equals(Name, name, StringComparison.CurrentCultureIgnoreCase) ||
                 Identifier == name ||
-                Localization.instance.Localize(Name).ToLower() == name.ToLower();
+                string.Equals(Localization.instance.Localize(Name), name, StringComparison.CurrentCultureIgnoreCase);
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Jotunn.Configs
         [Obsolete("This is kept for easy compatibility with SkillInjector. Use other ways of registering skills if possible to avoid conflicts with other mods")]
         public static SkillConfig FromSkillInjector(string identifier, Skills.SkillType uid, string name, string description, float increaseStep, Sprite icon)
         {
-            return new SkillConfig()
+            return new SkillConfig
             {
                 Identifier = identifier,
                 UID = uid, // Overrides hash UID

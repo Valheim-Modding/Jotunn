@@ -1,5 +1,32 @@
 ﻿# Changelog
 
+## Version 2.4.10
+* Added CreatureManager to inject custom creatures into the game using basic drop and spawn configs (see https://valheim-modding.github.io/Jotunn/tutorials/creatures.html for a tutorial)
+* Added optional icon cache to the RenderManager
+
+## Version 2.4.9
+* LocationContainer always create instances, add your custom locations directly to the manager if you don't want to alter it further (see https://valheim-modding.github.io/Jotunn/tutorials/zones.html#creating-locations-from-assetbundles for more information)
+
+## Version 2.4.8
+* Added mock support for custom vegetation
+* Added mock support for DropTable structs
+* Removed direct GO mock replacement
+
+## Version 2.4.7
+* Fixed mock resolving of certain components (piece place effects for example)
+
+## Version 2.4.6
+* Custom skills add an additional localization token to the game using the format "$skill_\{hashcode\}"
+* Fixed multiple issues with custom locations (mocking, ZNetView handling, RandomSpawns)
+* Added FixReference property to CustomLocation, obsoleted the parameter on ZoneManager.AddLocation and the old CustomLocation constructors
+* Added possibility to create CustomLocation instances as early as the mod's Awake()
+* __Mod authors are encouraged to adapt their mods to the new FixReference property__
+
+## Version 2.4.5
+* Added MinimapManager, enabling mods to draw on the map or create overlays for it (see https://valheim-modding.github.io/Jotunn/tutorials/map.html for tutorials) (thx Nosirrom)
+* Fixed NRE on mod compat window
+* ModStub can have a different deploy path than the Valheim directory (deploying to a r2modman profile for example)
+
 ## Version 2.4.4
 * Fixed in-game menu not reacting on Esc after closing mod settings
 * Fixed a NRE condition on the mod settings

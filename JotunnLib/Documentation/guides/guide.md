@@ -53,6 +53,8 @@ Jötunn can automatically set references to all important libraries needed to mo
   <PropertyGroup>
     <!-- Needs to be your path to the base Valheim folder -->
     <VALHEIM_INSTALL>X:\PathToYourSteamLibary\steamapps\common\Valheim</VALHEIM_INSTALL>
+    <!-- This is the folder where your build gets copied to when using the post-build automations -->
+    <MOD_DEPLOYPATH>$(VALHEIM_INSTALL)\BepInEx\plugins</MOD_DEPLOYPATH>
   </PropertyGroup>
 </Project>
 ```

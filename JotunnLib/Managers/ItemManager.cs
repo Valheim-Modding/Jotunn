@@ -99,15 +99,18 @@ namespace Jotunn.Managers
                 Logger.LogWarning($"Custom item {customItem} already added");
                 return false;
             }
+            
+            // Add prefab to PrefabManager
+            if (!PrefabManager.Instance.AddPrefab(customItem.ItemPrefab, customItem.SourceMod))
+            {
+                return false;
+            }
 
             // Add prefab to the right layer
             if (customItem.ItemPrefab.layer == 0)
             {
                 customItem.ItemPrefab.layer = LayerMask.NameToLayer("item");
             }
-
-            // Add prefab to PrefabManager
-            PrefabManager.Instance.AddPrefab(customItem.ItemPrefab, customItem.SourceMod);
 
             // Add custom item to ItemManager
             Items.Add(customItem);
@@ -378,10 +381,7 @@ namespace Jotunn.Managers
         ///     No mock references are fixed.
         /// </summary>
         /// <param name="prefab"><see cref="GameObject"/> with an <see cref="ItemDrop"/> component to add to the <see cref="ObjectDB"/></param>
-        public void RegisterItemInObjectDB(GameObject prefab)
-        {
-            RegisterItemInObjectDB(ObjectDB.instance, prefab);
-        }
+        public void RegisterItemInObjectDB(GameObject prefab) => RegisterItemInObjectDB(ObjectDB.instance, prefab);
 
         /// <summary>
         ///     Internal method for adding a prefab to a specific ObjectDB.
@@ -496,7 +496,6 @@ namespace Jotunn.Managers
                         objectDB.m_StatusEffects.Add(statusEffect);
 
                         Logger.LogDebug($"Added status effect {customStatusEffect}");
-
                     }
                     catch (Exception ex)
                     {

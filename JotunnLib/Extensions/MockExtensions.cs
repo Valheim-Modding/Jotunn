@@ -53,31 +53,33 @@ namespace Jotunn
             {
                 return;
             }
-
-            var childCount = gameObject.transform.childCount;
-            for (int i = 0; i < childCount; i++)
+            
+            foreach (Transform tf in gameObject.transform)
             {
-                Transform tf = gameObject.transform.GetChild(i);
+                tf.gameObject.FixReferences(true);
 
-                var realPrefab = MockManager.GetRealPrefabFromMock<GameObject>(tf.gameObject);
+                // only works with instantiated prefabs...
+                /*var realPrefab = MockManager.GetRealPrefabFromMock<GameObject>(tf.gameObject);
                 if (realPrefab)
                 {
                     var realInstance = Object.Instantiate(realPrefab, gameObject.transform);
+                    realInstance.transform.SetSiblingIndex(tf.GetSiblingIndex()+1);
+                    realInstance.name = realPrefab.name;
                     realInstance.transform.localPosition = tf.localPosition;
                     realInstance.transform.localRotation = tf.localRotation;
                     realInstance.transform.localScale = tf.localScale;
-                    Object.Destroy(tf.gameObject);
+                    Object.DestroyImmediate(tf.gameObject);
                 }
                 else
                 {
                     tf.gameObject.FixReferences(true);
-                }
+                }*/
             }
         }
 
         // Thanks for not using the Resources folder IronGate
         // There is probably some oddities in there
-        private static void FixReferences(this object objectToFix, int depth = 0)
+        private static void FixReferences(this object objectToFix, int depth)
         {
             // This is totally arbitrary.
             // I had to add a depth because of call stack exploding otherwise
@@ -101,6 +103,27 @@ namespace Jotunn
             foreach (var field in fields)
             {
                 var fieldType = field.FieldType;
+
+                // Special treatment for DropTable, its a List of struct DropData
+                // Maybe there comes a time when I am willing to do some generic stuff
+                // But mono did not implement FieldInfo.GetValueDirect()
+                if (fieldType == typeof(DropTable))
+                {
+                    var drops = ((DropTable)field.GetValue(objectToFix)).m_drops;
+
+                    for (int i = 0; i < drops.Count; i++)
+                    {
+                        var drop = drops[i];
+                        var realPrefab = MockManager.GetRealPrefabFromMock(drop.m_item, typeof(GameObject));
+                        if (realPrefab)
+                        {
+                            drop.m_item = (GameObject)realPrefab;
+                        }
+                        drops[i] = drop;
+                    }
+
+                    continue;
+                }
 
                 var isUnityObject = fieldType.IsSameOrSubclass(typeof(Object));
                 if (isUnityObject)
@@ -345,6 +368,11 @@ namespace Jotunn
                 {
                     if (!fieldInfo.IsLiteral && !fieldInfo.IsInitOnly)
                         fieldValues.Add(fieldInfo, fieldInfo.GetValue(origComponent));
+                }
+
+                if (!gameObject.GetComponent(origComponent.GetType()))
+                {
+                    gameObject.AddComponent(origComponent.GetType());
                 }
             }
 

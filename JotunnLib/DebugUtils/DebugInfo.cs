@@ -12,7 +12,7 @@ namespace Jotunn.DebugUtils
         private ConfigEntry<Vector2> Position;
 
         private TwoColumnPanel Panel;
-
+        
         // Env
         private Text _envTimeValue;
 
@@ -23,6 +23,7 @@ namespace Jotunn.DebugUtils
         private Text _zoneZdoCountValue;
         
         // Player
+        private Text _debugModeValue;
         private Text _toolValue;
         private Text _hoverValue;
 
@@ -79,7 +80,8 @@ namespace Jotunn.DebugUtils
                     .AddPanelRow("ZDOs", out _zoneZdoCountValue)
                     .AddPanelRow("Tool", out _toolValue)
                     .AddPanelRow("Hover", out _hoverValue)
-                    .AddPanelRow("Key", out _keyValue);
+                    .AddPanelRow("Key", out _keyValue)
+                    .AddPanelRow("DebugMode", out _debugModeValue);
             
             On.Hud.Update += FastUpdate;
             InvokeRepeating("LazyUpdate", 1.0f, 0.5f);
@@ -137,6 +139,8 @@ namespace Jotunn.DebugUtils
 
         private void UpdatePlayer()
         {
+            _debugModeValue.text = Player.m_debugMode ? "<color=#a5d6a7>enabled</color>" : "<color=#ff9999>disabled</color>";
+
             _toolValue.text = string.Empty;
 
             var item = Player.m_localPlayer.GetInventory().GetEquipedtems()

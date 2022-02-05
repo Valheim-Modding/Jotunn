@@ -4,7 +4,7 @@ The world of Valheim is split up into *Zones*, each 64 by 64 meters, controlled 
 
 ## Locations
 
-Locations are bundles of objects that are placed randomly during world generation. These include the boss altars, crypts , Fulin villages and more. For a full overview, check the [Locations list](../data/zones/location-list.md)
+Locations are bundles of objects that are placed randomly during world generation. These include the boss altars, crypts, Fulin villages and more. For a full overview, check the [Locations list](../data/zones/location-list.md)
 
 These are unpacked only when a player gets close to the position of a placed location. Once unpacked, the GameObjects are saved like regular pieces.
 
@@ -94,14 +94,15 @@ Jötunn provides a [ZoneManager](xref:Jotunn.Managers.ZoneManager) singleton for
 
 ## Timing
 
-Locations and Vegetation are loaded during world load. Use the event [ZoneManager.OnVanillaLocationsAvailable](xref:Jotunn.Managers.ZoneManager.OnVanillaLocationsAvailable) to get a callback when the locations are available for use.
-This is called every time a world loads, so make sure to only add your custom locations & vegetations once.
+Locations and Vegetation are loaded during world load. You can add your custom locations and vegetation to the manager as early as your mods Awake().
 
-Modifications to vanilla locations & vegetation must be repeated every time!
+You can use the event [ZoneManager.OnVanillaLocationsAvailable](xref:Jotunn.Managers.ZoneManager.OnVanillaLocationsAvailable) to get a callback to clone or modify vanilla locations when those are available for use but before your custom entites get injected to the game. This is called every time a world loads.
+
+Adding custom and cloned locations & vegetation must only be done once. Modifications to vanilla locations & vegetation must be repeated every time! 
 
 ## Locations
 
-Jötunn uses the [LocationConfig](xref:Jotunn.Configs.LocationConfig) together with [CustomLocation](xref:Jotunn.Entities.CustomLocation) to define new Locations that will be injected into the world generation.
+Jötunn uses the [LocationConfig](xref:Jotunn.Configs.LocationConfig) combined with [CustomLocation](xref:Jotunn.Entities.CustomLocation) to define new Locations that will be injected into the world generation.
 
 ### Modifying existing locations
 
@@ -143,40 +144,52 @@ for (int i = 0; i < 10; i++)
     lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
 }
 
-ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubesLocation, new LocationConfig
-{
-    Biome = Heightmap.Biome.Meadows,
-    Quantity = 5,
-    Priotized = true,
-    ExteriorRadius = 2f,
-    ClearArea = true,
-}));
+ZoneManager.Instance.AddCustomLocation(
+    new CustomLocation(cubesLocation, false, new LocationConfig
+    {
+        Biome = Heightmap.Biome.Meadows,
+        Quantity = 100,
+        Priotized = true,
+        ExteriorRadius = 2f,
+        ClearArea = true,
+    }));
+
 ```
 
 ### Creating locations from AssetBundles
 
-You can also create your locations in Unity, it should have a Location component.
+You can also create your locations in Unity, it should have a Location component. If you plan on further altering your prefab in code, you must create a location container from your prefab, which creates an instance of it for you to use as a parent. If you don't plan on altering your prefab, you can just create a CustomLocation without creating the additional container.
 
-You can use `JVLmock_<prefab_name>` GameObjects to reference vanilla prefabs in your location by adding an optional `true` to the CreateLocationContainer constructor.
-You can have multiple instances of the same `JVLmock_<prefab> (<number>)`, these will all be replaced by the `prefab`.
+You can use `JVLmock_<prefab_name>` GameObjects to [reference vanilla prefabs](asset-mocking.md) in your location by setting the `fixReference` parameter of the CustomLocation constructor to `true`.
 
 ```cs
-var cubeArchLocation = ZoneManager.Instance.CreateLocationContainer(locationsAssetBundle.LoadAsset<GameObject>("CubeArchLocation"), true);
-ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubeArchLocation, new LocationConfig
-{
-    Biome = Heightmap.Biome.BlackForest,
-    Quantity = 200,
-    Priotized = true,
-    ExteriorRadius = 2f,
-    MinAltitude = 1f,
-    ClearArea = true,
-}));
+// Create location from AssetBundle using spawners and random spawns
+var spawnerLocation = locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation");
+
+// Create a location container from your prefab if you want to alter it before adding the location to the manager.
+/* 
+var spawnerLocation =
+    ZoneManager.Instance.CreateLocationContainer(
+        locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation"));
+*/
+
+ZoneManager.Instance.AddCustomLocation(
+    new CustomLocation(spawnerLocation, true,
+        new LocationConfig
+        {
+            Biome = Heightmap.Biome.Meadows,
+            Quantity = 100,
+            Priotized = true,
+            ExteriorRadius = 2f,
+            MinAltitude = 1f,
+            ClearArea = true
+        }));
 ```
 
 
 ## Vegetation
 
-Jötunn uses the [VegetationConfig](xref:Jotunn.Configs.VegetationConfig) together with [CustomVegetation](xref:Jotunn.Entities.CustomVegetation) to define new Vegetation that will be injected into the world generation.
+Jötunn uses the [VegetationConfig](xref:Jotunn.Configs.VegetationConfig) combined with [CustomVegetation](xref:Jotunn.Entities.CustomVegetation) to define new Vegetation that will be injected into the world generation.
 
 ### Modifying existing vegetation
 
@@ -195,11 +208,12 @@ raspberryBush.m_groupSizeMax = 30;
 Any prefab can be added as vegetation:
 
 ```cs
-CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, new VegetationConfig
-{
-    Biome = Heightmap.Biome.Meadows,
-    BlockCheck = true
-});
+// Use vegetation for singular prefabs
+CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, false,
+    new VegetationConfig
+    {
+        Biome = Heightmap.Biome.Meadows, BlockCheck = true
+    });
 ```
 
 This example defines very little filters, so this prefab will be found all over every Meadows.

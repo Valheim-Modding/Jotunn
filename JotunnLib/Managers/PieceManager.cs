@@ -86,7 +86,10 @@ namespace Jotunn.Managers
             }
 
             // Add the prefab to the PrefabManager
-            PrefabManager.Instance.AddPrefab(customPieceTable.PieceTablePrefab, customPieceTable.SourceMod);
+            if (!PrefabManager.Instance.AddPrefab(customPieceTable.PieceTablePrefab, customPieceTable.SourceMod))
+            {
+                return false;
+            }
 
             // Create all custom categories on that table
             foreach (var category in customPieceTable.Categories)
@@ -239,15 +242,18 @@ namespace Jotunn.Managers
                 Logger.LogWarning($"Custom piece {customPiece} already added");
                 return false;
             }
+            
+            // Add the prefab to the PrefabManager
+            if (!PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab, customPiece.SourceMod))
+            {
+                return false;
+            }
 
             // Add to the right layer if necessary
             if (customPiece.PiecePrefab.layer == 0)
             {
                 customPiece.PiecePrefab.layer = LayerMask.NameToLayer("piece");
             }
-
-            // Add the prefab to the PrefabManager
-            PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab, customPiece.SourceMod);
 
             // Add the custom piece to the PieceManager
             Pieces.Add(customPiece);

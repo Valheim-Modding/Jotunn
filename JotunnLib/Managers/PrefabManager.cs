@@ -24,7 +24,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private PrefabManager() {}
+        private PrefabManager() { }
 
         /// <summary>
         ///     Event that gets fired after the vanilla prefabs are in memory and available for cloning.
@@ -58,28 +58,30 @@ namespace Jotunn.Managers
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
-            
+
             On.ZNetScene.Awake += RegisterAllToZNetScene;
-            SceneManager.sceneUnloaded += (current) => Cache.ClearCache();
+            SceneManager.sceneUnloaded += current => Cache.ClearCache();
 
             // Fire events as a late action in the detour so all mods can load before
             // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
             using (new DetourContext(int.MaxValue - 1000))
             {
-                On.ObjectDB.CopyOtherDB += InvokeOnVanillaObjectsAvailable; ;
+                On.ObjectDB.CopyOtherDB += InvokeOnVanillaObjectsAvailable;
                 On.ZNetScene.Awake += InvokeOnPrefabsRegistered;
             }
         }
 
         /// <summary>
-        ///     Add a custom prefab to the manager with known source mod metadata.
+        ///     Add a custom prefab to the manager with known source mod metadata. Don't fix references.
         /// </summary>
         /// <param name="prefab">Prefab to add</param>
         /// <param name="sourceMod">Metadata of the mod adding this prefab</param>
-        internal void AddPrefab(GameObject prefab, BepInPlugin sourceMod)
+        /// <returns>true if the custom prefab was added to the manager.</returns>
+        internal bool AddPrefab(GameObject prefab, BepInPlugin sourceMod)
         {
             CustomPrefab customPrefab = new CustomPrefab(prefab, sourceMod);
             AddPrefab(customPrefab);
+            return Prefabs.ContainsKey(prefab.name.GetStableHashCode());
         }
 
         /// <summary>
@@ -119,7 +121,7 @@ namespace Jotunn.Managers
 
             Prefabs.Add(hash, customPrefab);
         }
-
+        
         /// <summary>
         ///     Create a new prefab from an empty primitive.
         /// </summary>
@@ -360,7 +362,7 @@ namespace Jotunn.Managers
                 }
             }
         }
-        
+
         /// <summary>
         ///     Safely invoke the <see cref="OnVanillaPrefabsAvailable"/> event
         /// </summary>
@@ -371,7 +373,7 @@ namespace Jotunn.Managers
 
             orig(self, other);
         }
-        
+
         private void InvokeOnPrefabsRegistered(On.ZNetScene.orig_Awake orig, ZNetScene self)
         {
             orig(self);
@@ -433,11 +435,8 @@ namespace Jotunn.Managers
                 {
                     return map;
                 }
-                else
-                {
-                    InitCache(type);
-                    return GetPrefabs(type);
-                }
+                InitCache(type);
+                return GetPrefabs(type);
             }
 
             private static void InitCache(Type type, Dictionary<string, Object> map = null)

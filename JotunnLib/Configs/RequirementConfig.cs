@@ -33,7 +33,7 @@ namespace Jotunn.Configs
         /// <returns></returns>
         public Piece.Requirement GetRequirement()
         {
-            return new Piece.Requirement()
+            return new Piece.Requirement
             {
                 m_resItem = Mock<ItemDrop>.Create(Item),
                 m_amount = Amount,

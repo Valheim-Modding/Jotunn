@@ -112,12 +112,7 @@ namespace Jotunn.Configs
             // Assign an extension station for this piece
             if (!string.IsNullOrEmpty(ExtendStation))
             {
-                var stationExt = prefab.GetComponent<StationExtension>();
-                if (stationExt == null)
-                {
-                    stationExt = prefab.AddComponent<StationExtension>();
-                }
-                
+                var stationExt = prefab.GetOrAddComponent<StationExtension>();
                 stationExt.m_craftingStation = Mock<CraftingStation>.Create(ExtendStation);
             }
 
@@ -128,9 +123,9 @@ namespace Jotunn.Configs
         }
 
         /// <summary>
-        ///     Converts the <see cref="RequirementConfig"/>s to Valheim style <see cref="Piece.Requirement"/> array.
+        ///     Converts the <see cref="RequirementConfig">RequirementConfigs</see> to Valheim style <see cref="Piece.Requirement"/> array.
         /// </summary>
-        /// <returns>The Valheim <see cref="global::Piece.Requirement"/> array</returns>
+        /// <returns>The Valheim <see cref="Piece.Requirement"/> array</returns>
         public Piece.Requirement[] GetRequirements()
         {
             Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];

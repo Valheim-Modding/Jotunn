@@ -15,57 +15,64 @@
     - name: Kitbashing
       href: kitbash.md
   
-    - name: Bone Reorder
-      href: bonereorder.md
-
 - name: Adding Content
   items:
+    - name: Console Commands
+      href: console-commands.md
+  
+    - name: Creatures
+      href: creatures.md
+  
+    - name: GUI
+      href: gui.md
+      
+    - name: Inputs
+      href: inputs.md
+  
     - name: Items
       href: items.md
   
-    - name: Item conversions
+    - name: Item Conversions
       href: item-conversions.md
   
-    - name: Item variants
+    - name: Item Variants
       href: item-variants.md
   
+    - name: Localization
+      href: localization.md
+
+    - name: Map Overlays & Drawings
+      href: map.md
+
     - name: Pieces and PieceTables
       href: pieces.md
-
+      
     - name: Recipes
       href: recipes.md
 
-    - name: Status effects
+    - name: Status Effects
       href: status-effects.md
 
     - name: Skills
       href: skills.md
-  
+
     - name: Zones / Locations / Vegetation
       href: zones.md
   
-    - name: Console Commands
-      href: console-commands.md
-  
-    - name: Inputs
-      href: inputs.md
-  
-    - name: GUI
-      href: gui.md
-
-    - name: Localization
-      href: localization.md
-
 - name: Utilities
   items:
+    - name: Bone Reorder
+      href: bonereorder.md
+
     - name: Config / Synchronization
       href: config.md
 
     - name: Network Compatibility
       href: networkcompatibility.md
+      
+    - name: Rendering Queue
+      href: renderqueue.md
 
     - name: RPCs
       href: rpcs.md
   
-    - name: Rendering Queue
-      href: renderqueue.md

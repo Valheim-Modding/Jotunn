@@ -52,7 +52,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/VHINSTALL
-          key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}-BepInExPack-5.4.1601
+          key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}-BepInExPack-5.4.1700
 
       - name: Install SteamCMD
         if: steps.cachevalheim.outputs.cache-hit != 'true'
@@ -61,7 +61,7 @@ jobs:
       - name: Prepare Valheim dependencies
         if: steps.cachevalheim.outputs.cache-hit != 'true'
         run: |
-          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1601/"
+          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1700/"
           unzip bepinex.zip -d ~/BepInExRaw
           steamcmd +login anonymous +force_install_dir ~/VHINSTALL +app_update 896660 validate +exit
           mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
@@ -119,7 +119,9 @@ jobs:
           mv JotunnLib/bin/Debug/net462/Jotunn.dll Jotunn-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
       - name: Publish to NuGet
-        run: dotnet nuget push "JotunnLib/bin/Release/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+        run: |
+          dotnet nuget push "JotunnLib/bin/Release/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push "JotunnLib/bin/Debug/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Create GH Release
         uses: softprops/action-gh-release@v1

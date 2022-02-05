@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -31,7 +33,8 @@ namespace Jotunn.DebugUtils
             {
                 self.m_firstSpawn = false;
                 orig(self);
-
+                
+                Player.m_debugMode = true;
                 Terminal.m_cheat = true;
                 Console.instance.m_autoCompleteSecrets = true;
                 Console.instance.updateCommandList();
@@ -43,7 +46,8 @@ namespace Jotunn.DebugUtils
                 }
                 catch (Exception) { }
             };
-            On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch; 
+            On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch;
+            On.ZoneSystem.SpawnLocation += ZoneSystem_SpawnLocation;
             Harmony.CreateAndPatchAll(typeof(Debug_isDebugBuild)); 
         }
 
@@ -88,6 +92,15 @@ namespace Jotunn.DebugUtils
             }
 
             orig(self, rpc, needPassword);
+        }
+        
+        private GameObject ZoneSystem_SpawnLocation(On.ZoneSystem.orig_SpawnLocation orig, ZoneSystem self, ZoneSystem.ZoneLocation location, int seed, Vector3 pos, Quaternion rot, ZoneSystem.SpawnMode mode, List<GameObject> spawnedGhostObjects)
+        {
+            if (ZoneManager.Instance.Locations.ContainsKey(location.m_prefabName))
+            {
+                Logger.LogDebug($"spawned {location.m_prefabName}, mode: {mode}");
+            }
+            return orig(self, location, seed, pos, rot, mode, spawnedGhostObjects);
         }
 
         /// <summary>

@@ -4,7 +4,6 @@ using BepInEx.Configuration;
 using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace Jotunn.DebugUtils
 {
@@ -27,10 +26,20 @@ namespace Jotunn.DebugUtils
             {
                 Logger.LogDebug("Trying to identify UnityExplorer");
 
-                var plugin = Object.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray()
+                var plugin = FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray()
                     .FirstOrDefault(x => x.Info?.Metadata?.GUID == "com.sinai.unityexplorer");
+                
+                // legacy
                 UnityExplorer = plugin?.gameObject.scene.GetRootGameObjects()
-                    .FirstOrDefault(x => x.name.Equals("ExplorerCanvas"));
+                    .FirstOrDefault(x => x.name.Equals("UnityExplorer"));
+                
+                // 4.4.0 and up
+                if (!UnityExplorer)
+                {
+                    UnityExplorer = plugin?.gameObject.scene.GetRootGameObjects()
+                        .FirstOrDefault(x => x.transform.Find("com.sinai.unityexplorer_Root"))?.transform
+                        .Find("com.sinai.unityexplorer_Root").gameObject;
+                }
 
                 if (UnityExplorer)
                 {

@@ -334,7 +334,8 @@ namespace Jotunn.GUI
             var settings = SettingsRoot.GetComponent<ModSettings>();
 
             // Iterate over all dependent plugins (including Jotunn itself)
-            foreach (var mod in BepInExUtils.GetDependentPlugins(true).OrderBy(x => x.Value.Info.Metadata.Name))
+            foreach (var mod in BepInExUtils.GetDependentPlugins(true)
+                         .OrderBy(x => x.Value.Info.Metadata.Name))
             {
                 if (!GetConfigurationEntries(mod.Value).Any(x => x.Value.IsVisible()))
                 {
