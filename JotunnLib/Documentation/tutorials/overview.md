@@ -18,29 +18,29 @@ Each section will have examples showing how this is done. All of the examples sh
 * [Asset Loading](asset-loading.md): Load Assets into your plugin using Jötunn.
 * [Asset Mocking](asset-mocking.md): Duplicate and modify Assets without the need to include copyrighted content in your plugin.
 * [Kitbashing](kitbash.md): Use individual parts of vanilla prefabs to assemble your custom assets.
-* [Reordering Bones](bonereorder.md): Reoder and preserve bone order so player attached objects preserve their position.
 
 ### Adding Content
 
+* [Console Commands](console-commands.md): Add custom commands to the Console that can execute your methods.
+* [Creatures](creatures.md): Add custom enemies, animals and NPCs and provide basic spawn data.
+* [GUI](gui.md): Add custom windows and UI elements.
+* [Inputs](inputs.md): Register custom inputs and add key hints to your custom items.
 * [Items](items.md): Create equipment and resources.
 * [Item Conversions](item-conversions.md): Add custom item conversions like the cooking of meat or the smelting of ores.
 * [Item Variants](item-variants.md): Create multiple variants of the same items.
-* [Recipes](recipes.md): Add requirements for items and tie them to crafting stations.
+* [Localizations](localization.md): Create language tokens that are replaced at runtime by their specified localization.
+* [Map Overlays & Drawings](map.md): Add custom overlays to the game's Map/Minimap or draw directly on the Map's different layers.
 * [Pieces and Piece Tables](pieces.md): Create building pieces and use custom categories.
+* [Recipes](recipes.md): Add requirements for items and tie them to crafting stations.
 * [Status Effects](status-effects.md): Add custom Status Effects.
 * [Skills](skills.md): Add custom trainable Skills.
-* [Creatures](creatures.md): Add custom enemies, animals and NPCs and provide basic spawn data.
 * [Zones / Locations / Vegetation](zones.md): Add to or change Valheim's world generation using your custom assets.
-* [Console Commands](console-commands.md): Add custom commands to the Console that can execute your methods.
-* [Inputs](inputs.md): Register custom inputs and add key hints to your custom items.
-* [UI Elements](gui.md): Add custom windows and UI elements.
-* [Map Overlays & Drawings](map.md): Add custom overlays to the game's Map/Minimap or draw directly on the Map's different layers.
-* [Localizations](localization.md): Create language tokens that are replaced at runtime by their specified localization.
 
 ### Utilities
 
+* [Bone Reordering](bonereorder.md): Reoder and preserve bone order so player attached objects preserve their position.
 * [Config and Synchronization](config.md): Ensures the synchronization of plugin config files between server and client as well as admin states on dedicated servers.
 * [Network Compatibility](networkcompatibility.md): Make sure that clients are running compatible versions of the plugin and it's assets.
-* [RPCs](rpcs.md): Add Client/Server process communications and transfer data with automatic slicing and compression.
 * [Rendering Queue](renderqueue.md): Create rendered Sprites from GameObjects with visual components at runtime.
+* [RPCs](rpcs.md): Add Client/Server process communications and transfer data with automatic slicing and compression.
 * [JSON](https://github.com/mhallin/SimpleJSON.NET): JVL integrates the MIT licensed SimpleJSON, accessible via its namespace.
