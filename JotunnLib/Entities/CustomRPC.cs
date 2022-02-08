@@ -18,9 +18,9 @@ namespace Jotunn.Entities
     /// </summary>
     public class CustomRPC : CustomEntity
     {
-        private const byte INIT_PACKAGE = 0;
-        private const byte FRAGMENTED_PACKAGE = 64;
-        private const byte COMPRESSED_PACKAGE = 128;
+        private const byte JOTUNN_PACKAGE = 1;
+        private const byte FRAGMENTED_PACKAGE = 2;
+        private const byte COMPRESSED_PACKAGE = 4;
 
         /// <summary>
         ///     Name of the custom RPC as defined at instantiation
@@ -91,7 +91,7 @@ namespace Jotunn.Entities
         public void Initiate() =>
             ZNet.instance?.StartCoroutine(SendPackageRoutine(
                 ZRoutedRpc.instance.GetServerPeerID(),
-                new ZPackage(new[] { INIT_PACKAGE })));
+                new ZPackage(new[] { JOTUNN_PACKAGE })));
 
         /// <summary>
         ///     Send a package to a single target. Compresses and fragments the package if necessary.
@@ -147,6 +147,12 @@ namespace Jotunn.Entities
             try
             {
                 ++SendCount;
+
+                byte[] originalData = package.GetArray();
+                ZPackage jotunnpackage = new ZPackage();
+                jotunnpackage.Write(JOTUNN_PACKAGE);
+                jotunnpackage.Write(originalData);
+                package = jotunnpackage;
 
                 const int compressMinSize = 10000;
 
@@ -347,9 +353,19 @@ namespace Jotunn.Entities
                     }
 
                     package = new ZPackage(output.ToArray());
+                    packageFlags = package.ReadByte();
 
                     Logger.LogDebug($"[{ID}] Decompressed package to length {output.Length}");
                 }
+                
+                if ((packageFlags & 0) != 0)
+                {
+                    Logger.LogWarning($"[{ID}] Package flag does not equal {JOTUNN_PACKAGE} ({packageFlags:X4})");
+                }
+
+                byte[] finalBytes = package.ReadByteArray();
+                ZPackage finalPackage = new ZPackage(finalBytes);
+                package = finalPackage;
 
                 package.SetPos(0);
 

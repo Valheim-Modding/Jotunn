@@ -643,7 +643,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private const byte INITIAL_CONFIG = 1;
+        private const byte INITIAL_CONFIG = 64;
 
         private IEnumerator ConfigRPC_OnClientReceive(long sender, ZPackage package)
         {
