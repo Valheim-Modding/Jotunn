@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jotunn.Utils
@@ -66,7 +67,66 @@ namespace Jotunn.Utils
             }
             return result;
         }
-        
+
+        /// <summary>
+        ///     Create a new, scaled texture from a given texture.
+        /// </summary>
+        /// <param name="texture">Source texture to scale</param>
+        /// <param name="width">New width of the scaled texture</param>
+        /// <returns></returns>
+        public static Texture2D CreateScaledTexture(Texture2D texture, int width)
+        {
+            Texture2D copyTexture = new Texture2D(texture.width, texture.height, texture.format, false);
+            copyTexture.SetPixels(texture.GetPixels());
+            copyTexture.Apply();
+            ScaleTexture(copyTexture, width);
+            return copyTexture;
+        }
+
+        /// <summary>
+        ///     Scale a texture to a certain width, aspect ratio is preserved.
+        /// </summary>
+        /// <param name="texture">Texture to scale</param>
+        /// <param name="width">New width of the scaled texture</param>
+        public static void ScaleTexture(Texture2D texture, int width)
+        {
+            Texture2D copyTexture = new Texture2D(texture.width, texture.height, texture.format, false);
+            copyTexture.SetPixels(texture.GetPixels());
+            copyTexture.Apply();
+
+            int height = (int)Math.Round((float)width * texture.height / texture.width);
+            texture.Resize(width, height);
+            texture.Apply();
+
+            Color[] rpixels = texture.GetPixels(0);
+            float incX = 1.0f / width;
+            float incY = 1.0f / height;
+            for (int px = 0; px < rpixels.Length; px++)
+            {
+                rpixels[px] = copyTexture.GetPixelBilinear(incX * ((float)px % width), incY * Mathf.Floor((float)px / width));
+            }
+            texture.SetPixels(rpixels, 0);
+            texture.Apply();
+
+            UnityEngine.Object.Destroy(copyTexture);
+
+            /*for (var y = 0; y < height; y++)
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    var xp = 1f * x / width;
+                    var yp = 1f * y / height;
+                    var xo = (int)Mathf.Round(xp * copyTexture.width); // Other X pos
+                    var yo = (int)Mathf.Round(yp * copyTexture.height); // Other Y pos
+                    Color origPixel = copyTexture.GetPixel(xo, yo);
+                    //origPixel.a = 1f;
+                    texture.SetPixel(x, y, origPixel);
+                }
+            }
+            texture.Apply();
+            UnityEngine.Object.Destroy(copyTexture);*/
+        }
+
         /// <summary>
         ///     Dumps all shader information of a GameObject and its childs onto debug log
         /// </summary>
