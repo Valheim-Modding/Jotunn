@@ -103,6 +103,16 @@ namespace Jotunn.Entities
             FixReference = fixReference;
         }
         
+        /// <summary>
+        ///     Helper method to determine if a location prefab with a given name is a custom location created with Jötunn.
+        /// </summary>
+        /// <param name="prefabName">Name of the prefab to test.</param>
+        /// <returns>true if the prefab is added as a custom piece to the <see cref="PieceManager"/>.</returns>
+        public static bool IsCustomLocation(string prefabName)
+        {
+            return ZoneManager.Instance.Locations.ContainsKey(prefabName);
+        }
+        
         /// <inheritdoc/>
         public override string ToString()
         {
