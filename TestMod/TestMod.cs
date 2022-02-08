@@ -1552,7 +1552,7 @@ namespace TestMod
                             {
                                 Name = "Jotunn_SkelSpawn1",
                                 SpawnChance = 100,
-                                SpawnInterval = 1f,
+                                SpawnInterval = 20f,
                                 SpawnDistance = 1f,
                                 Biome = Heightmap.Biome.Meadows,
                                 MinLevel = 3
