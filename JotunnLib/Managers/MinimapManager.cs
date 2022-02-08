@@ -643,20 +643,24 @@ namespace Jotunn.Managers
         private void AddOverlayToGUI(MapOverlay ovl)
         {
             var toggle = OverlayPanel?.AddOverlayToggle(ovl.SourceMod.Name, ovl.Name);
+            toggle?.SetIsOnWithoutNotify(ovl.Enabled);
             toggle?.onValueChanged.AddListener(active =>
             {
                 ovl.Enabled = active;
             });
+            ovl.Toggle = toggle;
             OverlayPanel?.gameObject.SetActive(true);
         }
 
         private void AddDrawingToGUI(MapDrawing ovl)
         {
             var toggle = OverlayPanel?.AddOverlayToggle(ovl.SourceMod.Name, ovl.Name);
+            toggle?.SetIsOnWithoutNotify(ovl.Enabled);
             toggle?.onValueChanged.AddListener(active =>
             {
                 ovl.Enabled = active;
             });
+            ovl.Toggle = toggle;
             OverlayPanel?.gameObject.SetActive(true);
         }
 
@@ -779,6 +783,8 @@ namespace Jotunn.Managers
                         {
                             Instance.SetFogDirty();
                         }
+
+                        Toggle?.SetIsOnWithoutNotify(value);
                     }
                 }
             }
@@ -893,6 +899,8 @@ namespace Jotunn.Managers
                         {
                             Instance.SetFogDirty();
                         }
+
+                        Toggle?.SetIsOnWithoutNotify(value);
                     }
                 }
             }
@@ -1055,6 +1063,11 @@ namespace Jotunn.Managers
             ///     Initial texture size to calculate the relative drawing position
             /// </summary>
             public int TextureSize { get; internal set; }
+
+            /// <summary>
+            ///     Reference to the GUI toggle element to notify changes on the overlay state
+            /// </summary>
+            internal Toggle Toggle;
             
             /// <summary>
             ///     Hide .ctor

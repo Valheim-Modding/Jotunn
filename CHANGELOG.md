@@ -1,8 +1,13 @@
 ﻿# Changelog
 
+## Version 2.4.11
+* Added utility methods for texture rescaling to Utils.ShaderHelper
+* Added CustomLocation.IsCustomLocation to check if a prefab is a custom location added by Jötunn
+* Fixed setting MapOverlay.Enabled in code to also change the GUI toggle
+
 ## Version 2.4.10
 * Added CreatureManager to inject custom creatures into the game using basic drop and spawn configs (see https://valheim-modding.github.io/Jotunn/tutorials/creatures.html for a tutorial)
-* Added optional icon cache to the RenderManager
+* Added optional icon cache to the RenderManager (thx MSchmoecker)
 
 ## Version 2.4.9
 * LocationContainer always create instances, add your custom locations directly to the manager if you don't want to alter it further (see https://valheim-modding.github.io/Jotunn/tutorials/zones.html#creating-locations-from-assetbundles for more information)
