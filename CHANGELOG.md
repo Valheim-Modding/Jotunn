@@ -3,6 +3,7 @@
 ## Version 2.5.0
 * Added utility methods for texture rescaling to Utils.ShaderHelper
 * Added CustomLocation.IsCustomLocation to check if a prefab is a custom location added by Jötunn
+* Added CustomVegetation.IsCustomVegetation to check if a prefab is a custom vegetation added by Jötunn
 * Added ZoneManager.GetCustomLocation
 * Fixed setting MapOverlay.Enabled in code to also change the GUI toggle
 * Fixed ZPackage corruption in certain custom RPC scenarios

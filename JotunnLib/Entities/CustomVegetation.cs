@@ -59,6 +59,16 @@ namespace Jotunn.Entities
             Vegetation.m_prefab = prefab;
             FixReference = fixReference;
         }
+        
+        /// <summary>
+        ///     Helper method to determine if a prefab with a given name is a custom Vegetation created with Jötunn.
+        /// </summary>
+        /// <param name="prefabName">Name of the prefab to test.</param>
+        /// <returns>true if the prefab is added as a custom vegetation to the <see cref="ZoneManager"/>.</returns>
+        public static bool IsCustomVegetation(string prefabName)
+        {
+            return ZoneManager.Instance.Vegetations.ContainsKey(prefabName);
+        }
 
         /// <inheritdoc/>
         public override string ToString()
