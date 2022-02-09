@@ -1,9 +1,11 @@
 ﻿# Changelog
 
-## Version 2.4.11
+## Version 2.5.0
 * Added utility methods for texture rescaling to Utils.ShaderHelper
 * Added CustomLocation.IsCustomLocation to check if a prefab is a custom location added by Jötunn
+* Added ZoneManager.GetCustomLocation
 * Fixed setting MapOverlay.Enabled in code to also change the GUI toggle
+* Fixed ZPackage corruption in certain custom RPC scenarios
 
 ## Version 2.4.10
 * Added CreatureManager to inject custom creatures into the game using basic drop and spawn configs (see https://valheim-modding.github.io/Jotunn/tutorials/creatures.html for a tutorial)
