@@ -67,7 +67,7 @@ if ($Target.Equals("Debug")) {
         Write-Host "Dedicated server is running, plugin will not be updated"
       }
       else {
-        $dediplug = New-Item -Type Directory -Path "$dedi\$name" -Force
+        $dediplug = New-Item -Type Directory -Path "$dedi\BepInEx\plugins\$name" -Force
         Write-Host "Copy $TargetAssembly to $dediplug"
         Copy-Item -Path "$TargetPath\$name.dll" -Destination "$dediplug" -Force
         Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$dediplug" -Force
