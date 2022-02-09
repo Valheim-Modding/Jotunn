@@ -92,7 +92,7 @@ namespace Jotunn.Entities
             ZNet.instance?.StartCoroutine(SendPackageRoutine(
                 ZRoutedRpc.instance.GetServerPeerID(),
                 new ZPackage(new[] { JOTUNN_PACKAGE })));
-
+        
         /// <summary>
         ///     Send a package to a single target. Compresses and fragments the package if necessary.
         /// </summary>
@@ -358,16 +358,15 @@ namespace Jotunn.Entities
                     Logger.LogDebug($"[{ID}] Decompressed package to length {output.Length}");
                 }
                 
-                if ((packageFlags & 0) != 0)
+                if ((packageFlags & JOTUNN_PACKAGE) != JOTUNN_PACKAGE)
                 {
                     Logger.LogWarning($"[{ID}] Package flag does not equal {JOTUNN_PACKAGE} ({packageFlags:X4})");
+                    yield break;
                 }
 
                 byte[] finalBytes = package.ReadByteArray();
                 ZPackage finalPackage = new ZPackage(finalBytes);
                 package = finalPackage;
-
-                package.SetPos(0);
 
                 if (ZNet.instance.IsServer())
                 {
