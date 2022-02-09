@@ -153,6 +153,16 @@ namespace Jotunn.Managers
             Locations.Add(customLocation.Name, customLocation);
             return true;
         }
+        
+        /// <summary>
+        ///     Get a custom location by name.
+        /// </summary>
+        /// <param name="name">Name of the location (normally the prefab name)</param>
+        /// <returns>The <see cref="CustomLocation"/> object with the given name if found</returns>
+        public CustomLocation GetCustomLocation(string name)
+        {
+            return Locations[name];
+        }
 
         /// <summary>
         ///     Get a ZoneLocation by its name.<br /><br />
