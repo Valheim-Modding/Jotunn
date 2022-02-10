@@ -2,7 +2,6 @@
 using System.Linq;
 using Jotunn.Entities;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Jotunn.Configs
 {
@@ -16,6 +15,17 @@ namespace Jotunn.Configs
         ///     The unique name for your custom creature. May be tokenized.
         /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        ///     Group tag of this creature.<br/>
+        ///     Creatures in the same group don't attack each other, regardless of faction.
+        /// </summary>
+        public string Group { get; set; } = string.Empty;
+
+        /// <summary>
+        ///     <see cref="Character.Faction"/> of this creature.
+        /// </summary>
+        public Character.Faction? Faction { get; set; }
 
         // /// <summary>
         // ///     Set true to make this creature tameable.<br/>
@@ -60,7 +70,7 @@ namespace Jotunn.Configs
                 Logger.LogError($"GameObject {prefab.name} has no Character component attached");
                 return;
             }
-            
+
             // if (MakeTameable && !prefab.GetComponent<Humanoid>())
             // {
             //     Logger.LogError($"GameObject {prefab.name} has no Humanoid component attached, can't make it tameable");
@@ -75,6 +85,16 @@ namespace Jotunn.Configs
             if (string.IsNullOrEmpty(character.m_name))
             {
                 character.m_name = prefab.name;
+            }
+
+            if (!string.IsNullOrEmpty(Group))
+            {
+                character.m_group = Group;
+            }
+
+            if (Faction.HasValue)
+            {
+                character.m_faction = Faction.Value;
             }
 
             /*if (MakeTameable)
@@ -164,7 +184,7 @@ namespace Jotunn.Configs
         public ItemDrop[] GetConsumeItems()
         {
             ItemDrop[] itemDrops = new ItemDrop[Consumables.Length];
-            
+
             for (int i = 0; i < itemDrops.Length; i++)
             {
                 itemDrops[i] = Mock<ItemDrop>.Create(Consumables[i]);
