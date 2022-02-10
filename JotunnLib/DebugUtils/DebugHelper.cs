@@ -29,6 +29,8 @@ namespace Jotunn.DebugUtils
             Main.RootObject.AddComponent<UEInputBlocker>();
             Main.RootObject.AddComponent<ZNetDiddelybug>();
 
+            On.Terminal.ConsoleCommand.IsValid += (orig, self, context, check) => true;
+            
             On.Player.OnSpawned += (orig, self) =>
             {
                 self.m_firstSpawn = false;
@@ -48,7 +50,7 @@ namespace Jotunn.DebugUtils
             };
             On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch;
             On.ZoneSystem.SpawnLocation += ZoneSystem_SpawnLocation;
-            Harmony.CreateAndPatchAll(typeof(Debug_isDebugBuild)); 
+            Main.Harmony.PatchAll(typeof(Debug_isDebugBuild));
         }
 
         private void Update()
@@ -93,8 +95,13 @@ namespace Jotunn.DebugUtils
 
             orig(self, rpc, needPassword);
         }
-        
-        private GameObject ZoneSystem_SpawnLocation(On.ZoneSystem.orig_SpawnLocation orig, ZoneSystem self, ZoneSystem.ZoneLocation location, int seed, Vector3 pos, Quaternion rot, ZoneSystem.SpawnMode mode, List<GameObject> spawnedGhostObjects)
+
+        /// <summary>
+        ///     Output custom location spawns
+        /// </summary>
+        private GameObject ZoneSystem_SpawnLocation(On.ZoneSystem.orig_SpawnLocation orig, ZoneSystem self,
+            ZoneSystem.ZoneLocation location, int seed, Vector3 pos, Quaternion rot, ZoneSystem.SpawnMode mode,
+            List<GameObject> spawnedGhostObjects)
         {
             if (ZoneManager.Instance.Locations.ContainsKey(location.m_prefabName))
             {
