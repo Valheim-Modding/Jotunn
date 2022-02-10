@@ -35,7 +35,8 @@ namespace Jotunn.DebugUtils
             {
                 self.m_firstSpawn = false;
                 orig(self);
-                
+
+                Character.m_dpsDebugEnabled = true;
                 Player.m_debugMode = true;
                 Terminal.m_cheat = true;
                 Console.instance.m_autoCompleteSecrets = true;
