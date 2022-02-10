@@ -30,6 +30,10 @@
 
 * Your project base is now ready for use! You can proceed to step 3 to activate the Jötunn PreBuild tasks which add references, publicized dlls and MMHook dlls to your project. Or select a specific [Tutorial](../tutorials/overview.md) to learn more about Jötunn and mod development for Valheim.
 
+## Optional: Use the renaming script
+
+Inside your solution folder is a PowerShell script called `RenameSolution.ps1`. Right-click on it and select 'Run with Powershell' from the context menu. Follow the on-screen instructions to customise your project automatically.
+
 ## Optional: Use or create a project template
 
 * You can grab the [pre built VS Project Template](https://github.com/Valheim-Modding/JotunnModStub/raw/master/JotunnModStub.zip) which you can use to add new projects to your current solution, based on the mod stub boilerplate. Or create your own Template file using `Project` -> `Export Template`.
