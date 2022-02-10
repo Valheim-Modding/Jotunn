@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## Version 2.5.1
+* Added consumable items to CreatureConfig
+* Added various properties to CreatureConfig
+
 ## Version 2.5.0
 * Added utility methods for texture rescaling to Utils.ShaderHelper
 * Added CustomLocation.IsCustomLocation to check if a prefab is a custom location added by Jötunn

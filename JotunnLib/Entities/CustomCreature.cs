@@ -23,7 +23,7 @@ namespace Jotunn.Entities
         public List<SpawnSystem.SpawnData> Spawns { get; }
 
         /// <summary>
-        ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
+        ///     Indicator if references from <see cref="Entities.Mock{T}">mocks</see> will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
 
