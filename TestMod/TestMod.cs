@@ -1455,7 +1455,8 @@ namespace TestMod
 
         private void ModifyVanillaLocationsAndVegetation()
         {
-            var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
+            //var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
+            var lulzCubePrefab = PrefabManager.Instance.CreateClonedPrefab("piece_lul_location", "piece_lul");
 
             // Modify existing locations
             var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
@@ -1479,26 +1480,52 @@ namespace TestMod
             AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(TestMod).Assembly);
             try
             {
+                // LulzCube test texture and sprite
+                var lulztex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
+                var lulzsprite = Sprite.Create(lulztex, new Rect(0f, 0f, lulztex.width, lulztex.height), Vector2.zero);
+
+                // Create a little lulz cube as the creature's drop and consume item
+                var lulzItem = new CustomItem("item_lul", true, new ItemConfig
+                {
+                    Name = "LulzThing Parts",
+                    Description = "Remains of a LulzThing. It still giggles when touched.",
+                    Icons = new [] { lulzsprite }
+                });
+                lulzItem.ItemPrefab.AddComponent<Rigidbody>();
+                
+                // Set our lulzcube test texture on the first material found
+                lulzItem.ItemPrefab.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
+
+                // Make it smol
+                lulzItem.ItemPrefab.GetComponent<ZNetView>().m_syncInitialScale = true;
+                lulzItem.ItemPrefab.transform.localScale = new Vector3(0.33f, 0.33f, 0.33f);
+
+                // Add to the ItemManager
+                ItemManager.Instance.AddItem(lulzItem);
+
                 // Create creature from AssetBundle
                 var lulzThing = creaturesAssetBundle.LoadAsset<GameObject>("LulzThing");
 
                 // Set our lulzcube test texture on the first material found
-                var lulztex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
                 lulzThing.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
                 
-                // Create a custom creature with one drop and two spawn configs
-                var cubeCreature = new CustomCreature(lulzThing, false,
+                // Create a custom creature
+                var cubeCreature = new CustomCreature(lulzThing, true,
                     new CreatureConfig
                     {
                         Name = "LulzThing",
+                        Consumables = new []
+                        {
+                            "item_lul"
+                        },
                         DropConfigs = new []
                         {
                             new DropConfig
                             {
-                                Item = "Sausages",
-                                Chance = 50f,
+                                Item = "item_lul",
+                                Chance = 100f,
                                 LevelMultiplier = false,
-                                MinAmount = 2,
+                                MinAmount = 1,
                                 MaxAmount = 3,
                                 //OnePerPlayer = true
                             }

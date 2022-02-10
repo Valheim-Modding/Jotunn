@@ -52,9 +52,9 @@ namespace Jotunn.Entities
         public CustomCreature(GameObject creaturePrefab, bool fixReference, CreatureConfig creatureConfig)
         {
             Prefab = creaturePrefab;
-
             creatureConfig.Apply(creaturePrefab);
-            if (creatureConfig.DropConfigs.Any())
+
+            if (creatureConfig.DropConfigs.Any() || creatureConfig.Consumables.Any())
             {
                 FixConfig = true;
             }
@@ -70,22 +70,23 @@ namespace Jotunn.Entities
 
         /// <summary>
         ///     Custom creature created as a copy of a vanilla Valheim creature.<br />
-        ///     SpawnData is not cloned, you will have to add <see cref="SpawnConfig">SpawnConfigs</see> to your <see cref="CreatureConfig"/>
-        ///     if you want to spawn the cloned creature automatically.
+        ///     SpawnData is not cloned, you will have to add <see cref="SpawnConfig">SpawnConfigs</see>
+        ///     to your <see cref="CreatureConfig"/> if you want to spawn the cloned creature automatically.
         /// </summary>
         /// <param name="name">The new name of the creature after cloning.</param>
         /// <param name="basePrefabName">The name of the base prefab the custom creature is cloned from.</param>
         /// <param name="creatureConfig">The <see cref="CreatureConfig"/> for this custom creature.</param>
         public CustomCreature(string name, string basePrefabName, CreatureConfig creatureConfig)
         {
-            var creaturePrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
-            if (creaturePrefab)
+            var vanilla = CreatureManager.Instance.GetCreaturePrefab(basePrefabName);
+            if (vanilla)
             {
+                var creaturePrefab = PrefabManager.Instance.CreateClonedPrefab(name, vanilla);
                 Prefab = creaturePrefab;
-
                 creatureConfig.Name = name;
                 creatureConfig.Apply(creaturePrefab);
-                if (creatureConfig.DropConfigs.Any())
+
+                if (creatureConfig.DropConfigs.Any() || creatureConfig.Consumables.Any())
                 {
                     FixConfig = true;
                 }
@@ -138,6 +139,16 @@ namespace Jotunn.Entities
             }
 
             return valid;
+        }
+        
+        /// <summary>
+        ///     Helper method to determine if a prefab with a given name is a custom creature created with Jötunn.
+        /// </summary>
+        /// <param name="prefabName">Name of the prefab to test.</param>
+        /// <returns>true if the prefab is added as a custom creature to the <see cref="CreatureManager"/>.</returns>
+        public static bool IsCustomCreature(string prefabName)
+        {
+            return CreatureManager.Instance.Creatures.Any(x => x.Prefab.name == prefabName);
         }
 
         /// <inheritdoc/>

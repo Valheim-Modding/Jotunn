@@ -24,7 +24,7 @@ namespace Jotunn.Managers
         private CreatureManager() { }
 
         /// <summary>
-        ///     Unity "character" layer ID. Creature 
+        ///     Unity "character" layer ID. 
         /// </summary>
         public static int CharacterLayer = LayerMask.NameToLayer("character");
 
