@@ -56,7 +56,7 @@ namespace Jotunn.Managers
         ///     Reference to the SpawnList component of the container.
         /// </summary>
         internal SpawnSystemList SpawnList;
-
+        
         /// <summary>
         ///     Creates the spawner container and registers all hooks.
         /// </summary>
@@ -70,6 +70,7 @@ namespace Jotunn.Managers
             On.ObjectDB.CopyOtherDB += InvokeOnVanillaCreaturesAvailable;
             On.ZNetScene.Awake += FixReferences;
             On.SpawnSystem.Awake += AddSpawnListToSpawnSystem;
+            On.LevelEffects.SetupLevelVisualization += EnableCumulativeLevelEffects;
         }
 
         /// <summary>
@@ -117,7 +118,7 @@ namespace Jotunn.Managers
 
             // Add spawners to Jötunn's own spawner list
             SpawnList.m_spawners.AddRange(customCreature.Spawns);
-
+            
             return true;
         }
 
@@ -265,6 +266,40 @@ namespace Jotunn.Managers
             }
 
             orig(self);
+        }
+
+        /// <summary>
+        ///     Enable cumulative level effects for custom creatures requesting it. Thx ASP for the code.
+        /// </summary>
+        private void EnableCumulativeLevelEffects(On.LevelEffects.orig_SetupLevelVisualization orig, LevelEffects self, int level)
+        {
+            orig(self, level);
+
+            if (level <= 2)
+            {
+                return;
+            }
+
+            if (!Creatures.Any(x => x.Prefab.name == self.m_character.m_nview.GetPrefabName() && x.UseCumulativeLevelEffects))
+            {
+                return;
+            }
+            
+            for (int index = level - 2; index >= 0; --index)
+            {
+                if (index >= self.m_levelSetups.Count)
+                {
+                    continue;
+                }
+
+                var levelSetup = self.m_levelSetups[index];
+
+                if (levelSetup.m_enableObject)
+                {
+                    Logger.LogDebug($"Enabling {(level - 1)} star equipment: '{levelSetup.m_enableObject.name}'");
+                    levelSetup.m_enableObject.SetActive(true);
+                }
+            }
         }
     }
 }

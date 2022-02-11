@@ -1491,6 +1491,7 @@ namespace TestMod
                     Description = "Remains of a LulzThing. It still giggles when touched.",
                     Icons = new [] { lulzsprite }
                 });
+                lulzItem.ItemDrop.m_itemData.m_shared.m_maxStackSize = 20;
                 lulzItem.ItemPrefab.AddComponent<Rigidbody>();
                 
                 // Set our lulzcube test texture on the first material found
@@ -1503,7 +1504,7 @@ namespace TestMod
                 // Add to the ItemManager
                 ItemManager.Instance.AddItem(lulzItem);
 
-                // Create creature from AssetBundle
+                // Load creature prefab from AssetBundle
                 var lulzThing = creaturesAssetBundle.LoadAsset<GameObject>("LulzThing");
 
                 // Set our lulzcube test texture on the first material found
@@ -1514,6 +1515,7 @@ namespace TestMod
                     new CreatureConfig
                     {
                         Name = "LulzThing",
+                        UseCumulativeLevelEffects = true,
                         Consumables = new []
                         {
                             "item_lul"

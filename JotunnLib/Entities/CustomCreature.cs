@@ -31,6 +31,11 @@ namespace Jotunn.Entities
         ///     Indicator if references from configs should get replaced
         /// </summary>
         internal bool FixConfig { get; set; }
+
+        /// <summary>
+        ///     Internal flag for the cumulative level effects hook. Value is set in the config.
+        /// </summary>
+        internal bool UseCumulativeLevelEffects { get; set; }
         
         /// <summary>
         ///     Custom creature from a prefab.
@@ -58,6 +63,8 @@ namespace Jotunn.Entities
             {
                 FixConfig = true;
             }
+
+            UseCumulativeLevelEffects = creatureConfig.UseCumulativeLevelEffects;
 
             Spawns = creatureConfig.GetSpawns().ToList();
             foreach (var spawnData in Spawns)
@@ -90,6 +97,8 @@ namespace Jotunn.Entities
                 {
                     FixConfig = true;
                 }
+                
+                UseCumulativeLevelEffects = creatureConfig.UseCumulativeLevelEffects;
 
                 Spawns = creatureConfig.GetSpawns().ToList();
                 foreach (var spawnData in Spawns)

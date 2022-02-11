@@ -38,6 +38,12 @@ namespace Jotunn.Configs
         // ///     When <see cref="MakeTameable"/> is true use this to also make the creature commandable.
         // /// </summary>
         // public bool MakeCommandable { get; set; }
+        
+        /// <summary>
+        ///     If set to true, <see cref="LevelEffects"/> stack the "EnableObject" action for all levels
+        ///     instead of only activating the GameObject of the highest level matched.
+        /// </summary>
+        public bool UseCumulativeLevelEffects { get; set; }
 
         /// <summary>
         ///     Array of <see cref="DropConfig">DropConfigs</see> to use for this creature's <see cref="CharacterDrop"/>.<br/>
