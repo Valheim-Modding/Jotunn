@@ -4,6 +4,7 @@
 * Added consumable items to CreatureConfig
 * Added faction/group to CreatureConfig
 * Added cumulative level effects for custom creatures (thx A Sharp Pen)
+* Compiled against BepInEx 5.4.1900
 
 ## Version 2.5.0
 * Added utility methods for texture rescaling to Utils.ShaderHelper
