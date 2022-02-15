@@ -18,7 +18,7 @@ The root GameObject of the prefab has several mandatory components attached:
 
 ![creature base components](../images/data/creatureComponentsBase.png)
 
-Instead of using the `Character` component you can use any derived class (`Humanoid` for example). The same applies for the `AnimalAI` used in the screenshot, which is derived from `BaseAI` which is the absolute minimum a creature has to have (the other component currently in the game being `MonsterAI`).
+Instead of using the `Character` and `AnimalAI` components you can also use a combination of `Humanoid` and `MonsterAI`. The first combination is used for "passive mobs" like deers or other animals. The latter combination is used for mobs which can attack the player like Boars or Skeletons.
 
 ### EyePos
 
@@ -39,11 +39,15 @@ When validating the creature prefab the game looks for the `Animator` and `Chara
 There are some "gotcha"'s when creating more complex creatures.
 
 * Certain child GameObjects have to be added to the `character` layer for the game's collision and attack calculations (and probably more use cases). Jötunn will set the base GO and the first level of child GOs to this layer automatically for you. There is also the static [CreatureManager.CharacterLayer](xref:Jotunn.Managers.CreatureManager.CharacterLayer) field for mods to assign this layer in code.
-* Creatures wanting to use Valheim's `Tameable` and `Procreation` components must have a functioning `MonsterAI` component, too.
+* Creatures wanting to use Valheim's `Tameable` or `Procreation` components must have `Humanoid` and `MonsterAI` components attached.
 
 ## Adding Custom Creature Prefabs
 
-After preparing the creature prefab using the minimal requirements, we will load and import the prefab as a [CustomCreature](xref:Jotunn.Entities.CustomCreature). This can be done as early as the mods Awake() call. All loaded creature prefabs added to the [CreatureManager](xref:Jotunn.Managers.CreatureManager) are kept between world loads. The most basic use case is to only add a prefab using as a custom creature and define if Jötunn should [resolve mock references](asset-mocking.md). In our example we opted to also define world spawning and a drop table for this creature by providing a [CreatureConfig](xref:Jotunn.Configs.CreatureConfig).
+After preparing the creature prefab using the minimal requirements, we will load and import the prefab as a [CustomCreature](xref:Jotunn.Entities.CustomCreature). This can be done as early as the mods Awake() call. All loaded creature prefabs added to the [CreatureManager](xref:Jotunn.Managers.CreatureManager) are kept between world loads. The most basic use case is to only add a prefab using as a custom creature and define if Jötunn should [resolve mock references](asset-mocking.md). In our example we opted to have more advanced uses to show all of Jötunn's possibilities. This example does:
+* Create a new custom item to be used as the drop and consume item (see the [item tutorial](items.md) for more information on how to do that)
+* Load an "animal" creature and add it to the game using drop and spawn configs by providing a [CreatureConfig](xref:Jotunn.Configs.CreatureConfig)
+* Load an "enemy" creature and add it to the game using consume and spawn configs by providing a [CreatureConfig](xref:Jotunn.Configs.CreatureConfig).
+* Add localization for all added entities (see the [localization tutorial](localization.md) for more information on that topic)
 
 ```cs
 private void Awake()
@@ -58,53 +62,27 @@ private void AddCustomCreaturesAndSpawns()
     AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(TestMod).Assembly);
     try
     {
-        // Create creature from AssetBundle
-        var lulzThing = creaturesAssetBundle.LoadAsset<GameObject>("LulzThing");
-
-        // Set our lulzcube test texture on the first material found
+        // Load LulzCube test texture and sprite
         var lulztex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
-        lulzThing.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
-        
-        // Create a custom creature with one drop and two spawn configs
-        var cubeCreature = new CustomCreature(lulzThing, false,
-            new CreatureConfig
-            {
-                Name = "LulzThing",
-                DropConfigs = new []
-                {
-                    new DropConfig
-                    {
-                        Item = "Sausages",
-                        Chance = 50f,
-                        LevelMultiplier = false,
-                        MinAmount = 2,
-                        MaxAmount = 3,
-                        //OnePerPlayer = true
-                    }
-                },
-                SpawnConfigs = new []
-                {
-                    new SpawnConfig
-                    {
-                        Name = "Jotunn_LulzSpawn1",
-                        SpawnChance = 100,
-                        SpawnInterval = 1f,
-                        SpawnDistance = 1f,
-                        MaxSpawned = 10,
-                        Biome = Heightmap.Biome.Meadows
-                    },
-                    new SpawnConfig
-                    {
-                        Name = "Jotunn_LulzSpawn2",
-                        SpawnChance = 50,
-                        SpawnInterval = 2f,
-                        SpawnDistance = 2f,
-                        MaxSpawned = 5,
-                        Biome = Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
-                    }
-                }
-            });
-        CreatureManager.Instance.AddCreature(cubeCreature);
+        var lulzsprite = Sprite.Create(lulztex, new Rect(0f, 0f, lulztex.width, lulztex.height), Vector2.zero);
+
+        // Create an optional drop/consume item for this creature
+        CreateDropConsumeItem(lulzsprite, lulztex);
+
+        // Load and create a custom animal creature
+        CreateAnimalCreature(creaturesAssetBundle, lulztex);
+                
+        // Load and create a custom monster creature
+        CreateMonsterCreature(creaturesAssetBundle, lulztex);
+                
+        // Add localization for all stuff added
+        Localization.AddTranslation("English", new Dictionary<string, string>
+        {
+            {"item_lulzanimalparts", "Parts of a Lulz Animal"},
+            {"item_lulzanimalparts_desc", "Remains of a LulzAnimal. It still giggles when touched."},
+            {"creature_lulzanimal", "Lulz Animal"},
+            {"creature_lulzmonster", "Lulz Monster"}
+        });
     }
     catch (Exception ex)
     {
@@ -114,6 +92,124 @@ private void AddCustomCreaturesAndSpawns()
     {
         creaturesAssetBundle.Unload(false);
     }
+}
+
+private void CreateDropConsumeItem(Sprite lulzsprite, Texture2D lulztex)
+{
+    // Create a little lulz cube as the drop and consume item for both creatures
+    var lulzItem = new CustomItem("item_lul", true, new ItemConfig
+    {
+        Name = "$item_lulzanimalparts",
+        Description = "$item_lulzanimalparts_desc",
+        Icons = new[] {lulzsprite}
+    });
+    lulzItem.ItemDrop.m_itemData.m_shared.m_maxStackSize = 20;
+    lulzItem.ItemPrefab.AddComponent<Rigidbody>();
+
+    // Set our lulzcube test texture on the first material found
+    lulzItem.ItemPrefab.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
+
+    // Make it smol
+    lulzItem.ItemPrefab.GetComponent<ZNetView>().m_syncInitialScale = true;
+    lulzItem.ItemPrefab.transform.localScale = new Vector3(0.33f, 0.33f, 0.33f);
+
+    // Add to the ItemManager
+    ItemManager.Instance.AddItem(lulzItem);
+}
+        
+private void CreateAnimalCreature(AssetBundle creaturesAssetBundle, Texture2D lulztex)
+{
+    // Load creature prefab from AssetBundle
+    var lulzAnimalPrefab = creaturesAssetBundle.LoadAsset<GameObject>("LulzAnimal");
+
+    // Set our lulzcube test texture on the first material found
+    lulzAnimalPrefab.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
+
+    // Create a custom creature using our drop item and spawn configs
+    var lulzAnimal = new CustomCreature(lulzAnimalPrefab, false,
+        new CreatureConfig
+        {
+            Name = "$creature_lulzanimal",
+            Faction = Character.Faction.AnimalsVeg,
+            DropConfigs = new[]
+            {
+                new DropConfig
+                {
+                    Item = "item_lul",
+                    Chance = 100f,
+                    LevelMultiplier = false,
+                    MinAmount = 1,
+                    MaxAmount = 3,
+                    //OnePerPlayer = true
+                }
+            },
+            SpawnConfigs = new[]
+            {
+                new SpawnConfig
+                {
+                    Name = "Jotunn_LulzAnimalSpawn1",
+                    SpawnChance = 100f,
+                    SpawnInterval = 1f,
+                    SpawnDistance = 1f,
+                    MaxSpawned = 10,
+                    Biome = Heightmap.Biome.Meadows
+                },
+                new SpawnConfig
+                {
+                    Name = "Jotunn_LulzAnimalSpawn2",
+                    SpawnChance = 50f,
+                    SpawnInterval = 2f,
+                    SpawnDistance = 2f,
+                    MaxSpawned = 5,
+                    Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
+                }
+            }
+        });
+            
+    // Add it to the manager
+    CreatureManager.Instance.AddCreature(lulzAnimal);
+}
+        
+private void CreateMonsterCreature(AssetBundle creaturesAssetBundle, Texture2D lulztex)
+{
+    // Load creature prefab from AssetBundle
+    var lulzMonsterPrefab = creaturesAssetBundle.LoadAsset<GameObject>("LulzMonster");
+
+    // Set our lulzcube test texture on the first material found
+    lulzMonsterPrefab.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
+
+    // Create a custom creature using our consume item and spawn configs
+    var lulzMonster = new CustomCreature(lulzMonsterPrefab, true,
+        new CreatureConfig
+        {
+            Name = "$creature_lulzmonster",
+            Faction = Character.Faction.ForestMonsters,
+            UseCumulativeLevelEffects = true,
+            Consumables = new[]
+            {
+                "item_lul"
+            },
+            SpawnConfigs = new[]
+            {
+                new SpawnConfig
+                {
+                    Name = "Jotunn_LulzMonsterSpawn1",
+                    SpawnChance = 100f,
+                    MaxSpawned = 1,
+                    Biome = Heightmap.Biome.Meadows
+                },
+                new SpawnConfig
+                {
+                    Name = "Jotunn_LulzMonsterSpawn2",
+                    SpawnChance = 50f,
+                    MaxSpawned = 1,
+                    Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
+                }
+            }
+        });
+
+    // Add it to the manager
+    CreatureManager.Instance.AddCreature(lulzMonster);
 }
 ```
 
@@ -177,7 +273,7 @@ private void ModifyAndCloneVanillaCreatures()
 
 ## Drop Configurations
 
-You can add one or more [SpawnConfigurations](xref:Jotunn.Configs.DropConfig) to your custom creature. Drops are items a creature leaves behind on its death. You must provide a prefab name for the drop as a string, Jötunn resolves that prefab at runtime for you.
+You can add one or more [Drop Configurations](xref:Jotunn.Configs.DropConfig) to your custom creature. Drops are items a creature leaves behind on its death. You must provide a prefab name for the drop as a string, Jötunn resolves that prefab at runtime for you.
 
 There are also additional properties to further the drops for the creature:
 
@@ -190,7 +286,7 @@ There are also additional properties to further the drops for the creature:
 
 ## Spawn Configurations
 
-While adding creatures with Jötunn you can define one or more basic spawn configurations. Those configurations are added to the world spawn list so your creatures spawn into the world automatically. You must at least provide an unique name for your spawn configuration and a spawning biome.
+While adding creatures with Jötunn you can define one or more basic [Spawn Configurations](xref:Jotunn.Configs.SpawnConfig). Those configurations are added to the world spawn list so your creatures spawn into the world automatically. You must at least provide an unique name for your spawn configuration and a spawning biome.
 
 There are plenty of properties to refine your spawn configuration:
 
@@ -221,3 +317,11 @@ GroundOffset|Offset to the ground the creature spawns on|0.5f
 
 
 Jötunn's spawn configuration covers all of the game's default spawning options. To have much tighter control of your creature spawns, we recommend using the [SpawnThat! mod](https://www.nexusmods.com/valheim/mods/453) by A Sharp Pen.
+
+## Consumable Items
+
+Creatures using the `MonsterAI` component can have `ItemDrop` references attached to define which items this creature can consume when it encounters it in the world. This list is also used to define the items needed to tame the creature (if the `Tameable` component is also attached). You can add prefab strings to the [CreatureConfig.Consumables](xref:Jotunn.Configs.CreatureConfig.Consumables) array and Jötunn will try to resolve the `ItemDrop` component for you at runtime.
+
+## Cumulative Level Effects
+
+When using the `LevelEffects` component on a creature prefab, the game only enables the effects for the actual creature level upon spawning a creature with a level higher than 0. Besides some material and transform alteration, those level effects also include an additional `GameObject` you can set per level to be enabled. Using Jötunn, you can set [CreatureConfig.UseCumulativeLevelEffects](xref:Jotunn.Configs.CreatureConfig.UseCumulativeLevelEffects) for any added custom creature to `true`. This will enable _all_ previous levels `GamneObjects` as well as the object of your current level upon spawning the creature. If you spawn a 3-star creature for example, the objects for level 2 and 1 will also be enabled.
