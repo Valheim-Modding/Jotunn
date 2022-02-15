@@ -1656,8 +1656,8 @@ namespace TestMod
                 CreatureManager.Instance.AddCreature(lulzeton);
 
                 // Get a vanilla creature prefab and change some values
-                var goblin = CreatureManager.Instance.GetCreaturePrefab("Skeleton_NoArcher");
-                var humanoid = goblin.GetComponent<Humanoid>();
+                var skeleton = CreatureManager.Instance.GetCreaturePrefab("Skeleton_NoArcher");
+                var humanoid = skeleton.GetComponent<Humanoid>();
                 humanoid.m_walkSpeed = 2;
             }
             catch (Exception ex)
