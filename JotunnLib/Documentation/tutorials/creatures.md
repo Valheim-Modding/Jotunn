@@ -59,11 +59,11 @@ private void Awake()
 // Add custom made creatures using world spawns and drop lists
 private void AddCustomCreaturesAndSpawns()
 {
-    AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(TestMod).Assembly);
+    AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(JotunnModExample).Assembly);
     try
     {
         // Load LulzCube test texture and sprite
-        var lulztex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
+        var lulztex = AssetUtils.LoadTexture("JotunnModExample/Assets/test_tex.jpg");
         var lulzsprite = Sprite.Create(lulztex, new Rect(0f, 0f, lulztex.width, lulztex.height), Vector2.zero);
 
         // Create an optional drop/consume item for this creature
@@ -292,7 +292,7 @@ There are plenty of properties to refine your spawn configuration:
 
 |Property|Effect|Default
 |---|---|---
-WorldSpawnEnabled|If set to false, Jötunn creatres the SpawnData for this config but disables the actual spawn.|true
+WorldSpawnEnabled|If set to false, Jötunn creates the SpawnData for this config but disables the actual spawn.|true
 Biome|Heightmap.Biome for your creature to spawn in. Multiple biomes per spawn config are possible.<br>To get the correct value for a multi-biome spawn, you can use [ZoneManager.AnyBiomeOf](xref:Jotunn.Managers.ZoneManager.AnyBiomeOf).|
 BiomeArea|Uses the Heightmap.BiomeArea enum to define if the spawn should be in the middle, on the edges or everywhere on the spawning biomes.|Heightmap.BiomeArea.Everywhere
 MaxSpawned|How many instances of this creature can be active at the same time (excluding event instances).|1
