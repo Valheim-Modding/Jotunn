@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Jotunn.Entities;
+using Jotunn.Managers;
 using UnityEngine;
 
 namespace JotunnDoc.Docs
@@ -20,6 +22,9 @@ namespace JotunnDoc.Docs
             {
                 return;
             }
+            
+            var imageDirectory = Path.Combine(DocumentationDirConfig.Value, "images/characters");
+            Directory.CreateDirectory(imageDirectory);
 
             Jotunn.Logger.LogInfo("Documenting characters");
 
@@ -34,6 +39,12 @@ namespace JotunnDoc.Docs
 
             foreach (GameObject obj in allPrefabs.Where(x => !CustomPrefab.IsCustomPrefab(x.name) && x.GetComponent<Character>() != null).OrderBy(x => x.name))
             {
+                string name = obj.name;
+                if (RequestSprite(Path.Combine(imageDirectory, $"{name}.png"), obj, RenderManager.IsometricRotation))
+                {
+                    name += $"<br><img src=\"../../images/characters/{name}.png\">";
+                }
+
                 string components = "<ul>";
 
                 foreach (Component comp in obj.GetComponents<Component>())
@@ -44,7 +55,7 @@ namespace JotunnDoc.Docs
                 components += "</ul>";
 
                 AddTableRow(
-                    obj.name,
+                    name,
                     components
                 );
             }

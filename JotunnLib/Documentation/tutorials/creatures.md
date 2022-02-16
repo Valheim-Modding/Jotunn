@@ -293,7 +293,7 @@ There are plenty of properties to refine your spawn configuration:
 |Property|Effect|Default
 |---|---|---
 WorldSpawnEnabled|If set to false, Jötunn creates the SpawnData for this config but disables the actual spawn.|true
-Biome|Heightmap.Biome for your creature to spawn in. Multiple biomes per spawn config are possible.<br>To get the correct value for a multi-biome spawn, you can use [ZoneManager.AnyBiomeOf](xref:Jotunn.Managers.ZoneManager.AnyBiomeOf).|
+Biome|Heightmap.Biome for your creature to spawn in. Multiple biomes per spawn config are possible.<br>To get the correct value for a multi-biome spawn, you can use [ZoneManager.AnyBiomeOf](xref:Jotunn.Managers.ZoneManager.AnyBiomeOf(Heightmap.Biome[])).|
 BiomeArea|Uses the Heightmap.BiomeArea enum to define if the spawn should be in the middle, on the edges or everywhere on the spawning biomes.|Heightmap.BiomeArea.Everywhere
 MaxSpawned|How many instances of this creature can be active at the same time (excluding event instances).|1
 SpawnInterval|Seconds between new spawn checks.|4f

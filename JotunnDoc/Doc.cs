@@ -77,7 +77,11 @@ namespace JotunnDoc
 
             foreach (string val in vals)
             {
-                text.Append(val + "|");
+                if (!string.IsNullOrEmpty(val))
+                {
+                    text.Append(string.Join("<br/>", val.TrimEnd('\r','\n').Split('\r','\n')));
+                }
+                text.Append('|');
             }
 
             writer.WriteLine(text);
