@@ -415,10 +415,10 @@ namespace Jotunn.Managers
             orig(self);
 
             GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
-            Transform gui = root?.transform.Find("GUI");
+            Transform gui = root?.transform.Find("LoadingGUI");
             if (!gui)
             {
-                Logger.LogWarning("_GameMain GUI not found, not creating custom GUI");
+                Logger.LogWarning("_GameMain LoadingGUI not found, not creating custom GUI");
                 return;
             }
             GUIInStart = false;
