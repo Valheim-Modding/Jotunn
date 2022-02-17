@@ -279,18 +279,24 @@ namespace Jotunn.Managers
                 foreach (var pair in Buttons)
                 {
                     var btn = pair.Value;
+                    ZInput.ButtonDef def = null;
 
                     if (!string.IsNullOrEmpty(btn.Axis))
                     {
-                        self.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
+                        def = self.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
                     }
                     else if (btn.Key != KeyCode.None)
                     {
-                        self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
+                        def = self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
                     }
                     else if (btn.Shortcut.MainKey != KeyCode.None)
                     {
-                        self.AddButton(btn.Name, btn.Shortcut.MainKey, btn.RepeatDelay, btn.RepeatInterval);
+                        def = self.AddButton(btn.Name, btn.Shortcut.MainKey, btn.RepeatDelay, btn.RepeatInterval);
+                    }
+
+                    if (def != null)
+                    {
+                        def.m_save = false;
                     }
 
                     if (btn.GamepadButton != GamepadButton.None)
@@ -298,16 +304,22 @@ namespace Jotunn.Managers
                         var joyBtnName = $"Joy!{btn.Name}";
                         KeyCode keyCode = GetGamepadKeyCode(btn.GamepadButton);
                         string axis = GetGamepadAxis(btn.GamepadButton);
+                        ZInput.ButtonDef joyDef = null;
 
                         if (keyCode != KeyCode.None)
                         {
-                            self.AddButton(joyBtnName, keyCode, btn.RepeatDelay, btn.RepeatInterval);
+                            joyDef = self.AddButton(joyBtnName, keyCode, btn.RepeatDelay, btn.RepeatInterval);
                         }
 
                         if (!string.IsNullOrEmpty(axis))
                         {
                             bool invert = axis.StartsWith("-");
-                            self.AddButton(joyBtnName, axis.TrimStart('-'), invert, btn.RepeatDelay, btn.RepeatInterval);
+                            joyDef = self.AddButton(joyBtnName, axis.TrimStart('-'), invert, btn.RepeatDelay, btn.RepeatInterval);
+                        }
+
+                        if (joyDef != null)
+                        {
+                            joyDef.m_save = false;
                         }
                     }
 
