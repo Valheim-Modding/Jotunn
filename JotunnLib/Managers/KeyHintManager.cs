@@ -252,8 +252,8 @@ namespace Jotunn.Managers
 
             foreach (var buttonConfig in config.ButtonConfigs)
             {
-                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
-                if (key.Contains("MISSING"))
+                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name, true);
+                if (string.IsNullOrEmpty(key))
                 {
                     key = buttonConfig.Name;
                 }
@@ -474,8 +474,8 @@ namespace Jotunn.Managers
             // Update bound key strings if not backed by a ConfigEntry
             foreach (var buttonConfig in hintConfig.ButtonConfigs.Where(x => !x.IsConfigBacked))
             {
-                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name);
-                if (key.Contains("MISSING"))
+                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name, true);
+                if (string.IsNullOrEmpty(key))
                 {
                     key = buttonConfig.Name;
                 }
