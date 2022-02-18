@@ -68,6 +68,7 @@ namespace Jotunn.Managers
                 On.KeyHints.Start += GetBaseGameObjects;
                 On.KeyHints.Start += KeyHints_Start;
                 On.KeyHints.UpdateHints += KeyHints_UpdateHints;
+                On.ZInput.Save += ZInput_Save;
             }
         }
 
@@ -441,25 +442,7 @@ namespace Jotunn.Managers
                         return false;
                     }
                 }
-
-                // Update bound key strings if not backed by a ConfigEntry
-                foreach (var buttonConfig in hintConfig.ButtonConfigs.Where(x => !x.IsConfigBacked))
-                {
-                    string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name, true);
-                    if (string.IsNullOrEmpty(key))
-                    {
-                        key = buttonConfig.Name;
-                    }
-                    if (key[0].Equals(LocalizationManager.TokenFirstChar))
-                    {
-                        key = LocalizationManager.Instance.TryTranslate(key);
-                    }
-                    if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
-                    {
-                        hintObject.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
-                    }
-                }
-
+                
                 if (!hintObject.activeSelf)
                 {
                     self.m_buildHints.SetActive(false);
@@ -475,6 +458,19 @@ namespace Jotunn.Managers
             {
                 KeyHintObjects.Values.Where(x => x.activeSelf).Do(x => x.SetActive(false));
                 orig(self);
+            }
+        }
+        
+        /// <summary>
+        ///     Set any key hint config using buttons without a backing bep config dirty
+        /// </summary>
+        private void ZInput_Save(On.ZInput.orig_Save orig, ZInput self)
+        {
+            orig(self);
+
+            foreach (var config in KeyHints.Values.Where(x => x.ButtonConfigs.Any(y => !y.IsConfigBacked)))
+            {
+                config.Dirty = true;
             }
         }
     }
