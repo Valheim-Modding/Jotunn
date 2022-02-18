@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using Jotunn.Configs;
 using UnityEngine;
 using UnityEngine.UI;
@@ -228,7 +229,7 @@ namespace Jotunn.Managers
             // Clone BuildHints and add it under KeyHints to get the position right
             var baseKeyHint = Object.Instantiate(KeyHintInstance.m_buildHints, KeyHintContainer, false);
             baseKeyHint.name = config.ToString();
-            baseKeyHint.SetActive(false);
+            //baseKeyHint.SetActive(false);
 
             // Get the Transforms of Keyboard and Gamepad
             var inputHint = baseKeyHint.GetComponent<UIInputHint>();
@@ -373,127 +374,108 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hook on <see cref="global::KeyHints.UpdateHints" /> to show custom key hints instead of the vanilla ones.
         /// </summary>
-        /// <param name="orig"></param>
-        /// <param name="self"></param>
         private void KeyHints_UpdateHints(On.KeyHints.orig_UpdateHints orig, KeyHints self)
         {
-            orig(self);
-
-            // Needs at least a localPlayer
-            if (Player.m_localPlayer == null)
-            {
-                return;
-            }
-
             // If something went wrong, dont NRE every Update
             if (KeyHintInstance == null || KeyHintContainer == null)
             {
+                orig(self);
                 return;
             }
 
-            // First disable all custom key hints
-            foreach (var obj in KeyHintObjects.Values)
+            bool UseCustomKeyHint()
             {
-                obj.SetActive(false);
-            }
-
-            // Don't show hints when chat window is visible
-            if (Chat.instance.IsChatDialogWindowVisible())
-            {
-                return;
-            }
-
-            // Get the current equipped item name
-            ItemDrop.ItemData item = null;
-            try
-            {
-                item = Player.m_localPlayer.GetInventory().GetEquipedtems().FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
-            if (item == null)
-            {
-                return;
-            }
-            string prefabName = item.m_dropPrefab?.name;
-            if (string.IsNullOrEmpty(prefabName))
-            {
-                return;
-            }
-
-            // Get the current selected piece name if any
-            string pieceName = null;
-            try
-            {
-                pieceName = Player.m_localPlayer.m_buildPieces.GetSelectedPiece()?.name;
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
-            // Try to get a KeyHint for the item and piece selected or just the item without a piece
-            KeyHintConfig hintConfig = null;
-            if (!string.IsNullOrEmpty(pieceName))
-            {
-                KeyHints.TryGetValue($"{prefabName}:{pieceName}", out hintConfig);
-            }
-            if (hintConfig == null)
-            {
-                KeyHints.TryGetValue(prefabName, out hintConfig);
-            }
-            if (hintConfig == null)
-            {
-                return;
-            }
-
-            // Try to get the hint object, if the keyhint is "dirty" (i.e. some config backed button changed), destroy the hint object
-            if (KeyHintObjects.TryGetValue(hintConfig.ToString(), out var hintObject) && hintConfig.Dirty)
-            {
-                Object.DestroyImmediate(hintObject);
-            }
-
-            // Display the KeyHint instead the vanilla one or remove the config if it fails
-            if (!hintObject)
-            {
-                try
+                // Guard
+                if (!self.m_keyHintsEnabled || !Player.m_localPlayer || Player.m_localPlayer.IsDead() || Chat.instance.IsChatDialogWindowVisible())
                 {
-                    hintObject = CreateKeyHintObject(hintConfig);
+                    return false;
                 }
-                catch (Exception ex)
+                
+                // Get the current equipped item name
+                ItemDrop.ItemData item = Player.m_localPlayer.m_rightItem;
+                if (!(item != null && (item.IsWeapon() || item.m_shared?.m_buildPieces != null)))
                 {
-                    Logger.LogWarning($"Exception caught while creating KeyHint {hintConfig}: {ex}");
-                    KeyHints.Remove(hintConfig.ToString());
-                    return;
+                    return false;
                 }
-            }
+                string prefabName = item.m_dropPrefab?.name;
+                if (string.IsNullOrEmpty(prefabName))
+                {
+                    return false;
+                }
 
-            // Update bound key strings if not backed by a ConfigEntry
-            foreach (var buttonConfig in hintConfig.ButtonConfigs.Where(x => !x.IsConfigBacked))
+                // Get the current selected piece name if any
+                string pieceName = Player.m_localPlayer.m_buildPieces?.GetSelectedPiece()?.name;
+
+                // Try to get a KeyHint for the item and piece selected or just the item without a piece
+                KeyHintConfig hintConfig = null;
+                if (!string.IsNullOrEmpty(pieceName))
+                {
+                    KeyHints.TryGetValue($"{prefabName}:{pieceName}", out hintConfig);
+                }
+                if (hintConfig == null)
+                {
+                    KeyHints.TryGetValue(prefabName, out hintConfig);
+                }
+                if (hintConfig == null)
+                {
+                    return false;
+                }
+                
+                // Try to get the hint object, if the keyhint is "dirty" (i.e. some config backed button changed), destroy the hint object
+                if (KeyHintObjects.TryGetValue(hintConfig.ToString(), out var hintObject) && hintConfig.Dirty)
+                {
+                    Object.DestroyImmediate(hintObject);
+                }
+
+                // Display the KeyHint instead the vanilla one or remove the config if it fails
+                if (!hintObject)
+                {
+                    try
+                    {
+                        hintObject = CreateKeyHintObject(hintConfig);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning($"Exception caught while creating KeyHint {hintConfig}: {ex}");
+                        KeyHints.Remove(hintConfig.ToString());
+                        return false;
+                    }
+                }
+
+                // Update bound key strings if not backed by a ConfigEntry
+                foreach (var buttonConfig in hintConfig.ButtonConfigs.Where(x => !x.IsConfigBacked))
+                {
+                    string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name, true);
+                    if (string.IsNullOrEmpty(key))
+                    {
+                        key = buttonConfig.Name;
+                    }
+                    if (key[0].Equals(LocalizationManager.TokenFirstChar))
+                    {
+                        key = LocalizationManager.Instance.TryTranslate(key);
+                    }
+                    if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
+                    {
+                        hintObject.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
+                    }
+                }
+
+                if (!hintObject.activeSelf)
+                {
+                    self.m_buildHints.SetActive(false);
+                    self.m_combatHints.SetActive(false);
+                    KeyHintObjects.Values.Where(x => x.activeSelf).Do(x => x.SetActive(false));
+                    hintObject.SetActive(true);
+                }
+
+                return true;
+            }
+            
+            if (!UseCustomKeyHint())
             {
-                string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name, true);
-                if (string.IsNullOrEmpty(key))
-                {
-                    key = buttonConfig.Name;
-                }
-                if (key[0].Equals(LocalizationManager.TokenFirstChar))
-                {
-                    key = LocalizationManager.Instance.TryTranslate(key);
-                }
-                if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
-                {
-                    hintObject.transform.Find($"Keyboard/{buttonConfig.Name}/key_bkg/Key")?.gameObject?.SetText(key);
-                }
+                KeyHintObjects.Values.Where(x => x.activeSelf).Do(x => x.SetActive(false));
+                orig(self);
             }
-
-            self.m_buildHints.SetActive(false);
-            self.m_combatHints.SetActive(false);
-
-            hintObject.SetActive(true);
-            hintObject.GetComponent<UIInputHint>()?.Update();
         }
     }
 }
