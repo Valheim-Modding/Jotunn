@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## Version 2.5.2
+* Compatible with patch version 0.207.15
+* KeyHint performance improvements
+
 ## Version 2.5.1
 * Added consumable items to CreatureConfig
 * Added faction/group to CreatureConfig
