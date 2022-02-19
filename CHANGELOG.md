@@ -1,8 +1,9 @@
 ﻿# Changelog
 
-## Version 2.5.2
+## Version 2.6.0
 * Compatible with patch version 0.207.15
 * KeyHint performance improvements
+* Fixed custom RPCs not routing to "self"
 
 ## Version 2.5.1
 * Added consumable items to CreatureConfig
