@@ -121,9 +121,18 @@ namespace Jotunn.Entities
             {
                 return Enumerable.Empty<object>().GetEnumerator();
             }
-
+            
             List<ZNetPeer> peers = ZRoutedRpc.instance.m_peers;
-            if (target != ZRoutedRpc.Everybody)
+            if (target == ZRoutedRpc.instance.m_id || target == ZRoutedRpc.Everybody)
+            {
+                byte[] originalData = package.GetArray();
+                ZPackage jotunnpackage = new ZPackage();
+                jotunnpackage.Write(originalData);
+                jotunnpackage.SetPos(0);
+                ZNet.instance.StartCoroutine(
+                    HandlePackageRoutine(ZRoutedRpc.instance.m_id, jotunnpackage, JOTUNN_PACKAGE));
+            }
+            else
             {
                 peers = peers.Where(p => p.m_uid == target).ToList();
             }
@@ -140,6 +149,11 @@ namespace Jotunn.Entities
         public IEnumerator SendPackageRoutine(List<ZNetPeer> peers, ZPackage package)
         {
             if (!ZNet.instance)
+            {
+                yield break;
+            }
+
+            if (peers.Count == 0)
             {
                 yield break;
             }
@@ -337,6 +351,7 @@ namespace Jotunn.Entities
 
         private IEnumerator HandlePackageRoutine(long sender, ZPackage package, byte packageFlags)
         {
+            Logger.LogDebug($"[{ID}] Processing package");
             try
             {
                 ++ProcessingCount;
@@ -368,13 +383,13 @@ namespace Jotunn.Entities
                 ZPackage finalPackage = new ZPackage(finalBytes);
                 package = finalPackage;
 
-                if (ZNet.instance.IsServer())
+                if (!ZNet.instance.IsServer())
                 {
-                    yield return OnServerReceive(sender, package);
+                    yield return OnClientReceive(sender, package);
                 }
                 else
                 {
-                    yield return OnClientReceive(sender, package);
+                    yield return OnServerReceive(sender, package);
                 }
             }
             finally
