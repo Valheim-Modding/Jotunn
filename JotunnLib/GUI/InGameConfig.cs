@@ -1030,6 +1030,10 @@ namespace Jotunn.GUI
 
             public override KeyboardShortcut GetValue()
             {
+                if (Text.text == KeyboardShortcut.Empty.ToString())
+                {
+                    return KeyboardShortcut.Empty;
+                }
                 return KeyboardShortcut.Deserialize(Text.text);
             }
 
