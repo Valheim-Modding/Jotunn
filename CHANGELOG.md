@@ -5,6 +5,7 @@
 * KeyHint performance improvements
 * Fixed custom RPCs not routing to "self"
 * Fixed empty KeyboardShortcut saving (thx Heinermann)
+* Fixed Settings closing on Escape in KeyBind
 
 ## Version 2.5.1
 * Added consumable items to CreatureConfig

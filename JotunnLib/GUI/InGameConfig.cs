@@ -174,9 +174,11 @@ namespace Jotunn.GUI
         /// </summary>
         private class CloseBehaviour : MonoBehaviour
         {
+            private ModSettings settings;
+
             private void Awake()
             {
-                var settings = GetComponent<ModSettings>();
+                settings = GetComponent<ModSettings>();
 
                 settings.CancelButton.onClick.AddListener(() =>
                 {
@@ -198,7 +200,12 @@ namespace Jotunn.GUI
             {
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    GetComponent<ModSettings>().CancelButton.onClick.Invoke();
+                    if (settings.BindWasActive)
+                    {
+                        settings.BindWasActive = false;
+                        return;
+                    }
+                    settings.CancelButton.onClick.Invoke();
                 }
             }
         }

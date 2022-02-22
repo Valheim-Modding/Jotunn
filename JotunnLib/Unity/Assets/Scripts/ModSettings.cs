@@ -25,6 +25,8 @@ namespace Jotunn.GUI
         public readonly List<ModSettingSection> Sections = new List<ModSettingSection>();
         public readonly List<ModSettingConfig> Configs = new List<ModSettingConfig>();
 
+        public bool BindWasActive;
+
         public void AddPlugin(string pluginName, string text)
         {
             if (Plugins.ContainsKey(pluginName))
@@ -123,6 +125,13 @@ namespace Jotunn.GUI
 
         private void Update()
         {
+            if (BindDialog.activeSelf && Input.GetKeyDown(KeyCode.Escape))
+            {
+                BindDialog.SetActive(false);
+                BindWasActive = true;
+                return;
+            }
+
             if (BindDialog.activeSelf && CurrentKeyBindCheck.Invoke())
             {
                 BindDialog.SetActive(false);
