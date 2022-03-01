@@ -52,7 +52,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/VHINSTALL
-          key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}-BepInExPack-5.4.1900-release
+          key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}-BepInExPack-5.4.1900
 
       - name: Install SteamCMD
         if: steps.cachevalheim.outputs.cache-hit != 'true'
