@@ -294,10 +294,10 @@ namespace Jotunn.Managers
                         def = self.AddButton(btn.Name, btn.Shortcut.MainKey, btn.RepeatDelay, btn.RepeatInterval);
                     }
 
-                    if (def != null)
-                    {
-                        def.m_save = false;
-                    }
+                    // if (def != null)
+                    // {
+                    //     def.m_save = false;
+                    // }
 
                     if (btn.GamepadButton != GamepadButton.None)
                     {
