@@ -137,7 +137,7 @@ namespace Jotunn.Managers
             OnLocalizationAdded?.SafeInvoke();
         }
 
-        private void Localization_LoadLanguages(ref List<string> __result)
+        private void Localization_LoadLanguages(ref List<string> result)
         {
             Logger.LogInfo("Loading custom localizations");
 
@@ -153,9 +153,9 @@ namespace Jotunn.Managers
                 {
                     foreach (var language in ct.GetLanguages())
                     {
-                        if (!__result.Contains(language))
+                        if (!result.Contains(language))
                         {
-                            __result.Add(language);
+                            result.Add(language);
                         }
                     }
                 }
@@ -166,7 +166,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private void Localization_SetupLanguage(Localization __instance, string language)
+        private void Localization_SetupLanguage(Localization self, string language)
         {
             Logger.LogInfo($"Adding tokens for language '{language}'");
             
@@ -185,7 +185,7 @@ namespace Jotunn.Managers
                     foreach (var pair in langDic)
                     {
                         Logger.LogDebug($"Added translation: {pair.Key} -> {pair.Value}");
-                        __instance.AddWord(pair.Key, pair.Value);
+                        self.AddWord(pair.Key, pair.Value);
                     }
                 }
             }

@@ -673,25 +673,25 @@ namespace Jotunn.Managers
             OverlayPanel?.gameObject.SetActive(true);
         }
 
-        private void Minimap_CenterMap(Minimap __instance, Vector3 centerPoint)
+        private void Minimap_CenterMap(Minimap self, Vector3 centerpoint)
         {
             if (!OverlayLarge)
             {
                 return;
             }
 
-            __instance.WorldToMapPoint(centerPoint, out var mx, out var my);
+            self.WorldToMapPoint(centerpoint, out var mx, out var my);
             RectTransform rectTransform = OverlayLarge.transform as RectTransform;
             float aspect = rectTransform.rect.width / rectTransform.rect.height;
 
-            float localZoom = 1 / __instance.m_largeZoom;
+            float localZoom = 1 / self.m_largeZoom;
 
             OverlayLarge.transform.localScale = new Vector2(localZoom, localZoom);
 
             // WorldToPixel code without the Int conversions.
-            int num = __instance.m_textureSize / 2;
-            float ix = (centerPoint.x / __instance.m_pixelSize + (float)num);
-            float iy = (centerPoint.z / __instance.m_pixelSize + (float)num);
+            int num = self.m_textureSize / 2;
+            float ix = (centerpoint.x / self.m_pixelSize + (float)num);
+            float iy = (centerpoint.z / self.m_pixelSize + (float)num);
 
 
             var offset = new Vector2();
@@ -703,9 +703,9 @@ namespace Jotunn.Managers
             offset.y *= localZoom;
             rectTransform.anchoredPosition = offset;
 
-            Rect smallRect = __instance.m_mapImageSmall.uvRect;
-            smallRect.width += __instance.m_smallZoom / 2f;
-            smallRect.height += __instance.m_smallZoom / 2f;
+            Rect smallRect = self.m_mapImageSmall.uvRect;
+            smallRect.width += self.m_smallZoom / 2f;
+            smallRect.height += self.m_smallZoom / 2f;
             smallRect.center = new Vector2(mx, my);
             OverlaySmall.GetComponent<RawImage>().uvRect = smallRect;
         }
