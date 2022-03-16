@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
+using HarmonyLib;
 using Jotunn.Entities;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
@@ -59,16 +60,20 @@ namespace Jotunn.Managers
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);
 
-            On.ZNetScene.Awake += RegisterAllToZNetScene;
+            Main.Harmony.PatchAll(typeof(Patches));
             SceneManager.sceneUnloaded += current => Cache.ClearCache();
+        }
 
-            // Fire events as a late action in the detour so all mods can load before
-            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
-            using (new DetourContext(int.MaxValue - 1000))
-            {
-                On.ObjectDB.CopyOtherDB += InvokeOnVanillaObjectsAvailable;
-                On.ZNetScene.Awake += InvokeOnPrefabsRegistered;
-            }
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix]
+            private static void RegisterAllToZNetScene(ZNetScene __instance) => Instance.RegisterAllToZNetScene(__instance);
+
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPrefix, HarmonyPriority(Priority.Last)]
+            private static void InvokeOnVanillaObjectsAvailable(ObjectDB __instance, ObjectDB other) => Instance.InvokeOnVanillaObjectsAvailable(__instance, other);
+
+            [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
+            private static void InvokeOnPrefabsRegistered(ZNetScene __instance) => Instance.InvokeOnPrefabsRegistered(__instance);
         }
 
         /// <summary>
@@ -289,10 +294,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Register all custom prefabs to m_prefabs/m_namedPrefabs in <see cref="ZNetScene" />.
         /// </summary>
-        private void RegisterAllToZNetScene(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        private void RegisterAllToZNetScene(ZNetScene self)
         {
-            orig(self);
-
             if (Prefabs.Any())
             {
                 Logger.LogInfo($"Adding {Prefabs.Count} custom prefabs to the ZNetScene");
@@ -367,17 +370,13 @@ namespace Jotunn.Managers
         ///     Safely invoke the <see cref="OnVanillaPrefabsAvailable"/> event
         /// </summary>
         /// 
-        private void InvokeOnVanillaObjectsAvailable(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void InvokeOnVanillaObjectsAvailable(ObjectDB self, ObjectDB other)
         {
             OnVanillaPrefabsAvailable?.SafeInvoke();
-
-            orig(self, other);
         }
 
-        private void InvokeOnPrefabsRegistered(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        private void InvokeOnPrefabsRegistered(ZNetScene self)
         {
-            orig(self);
-
             OnPrefabsRegistered?.SafeInvoke();
         }
 
