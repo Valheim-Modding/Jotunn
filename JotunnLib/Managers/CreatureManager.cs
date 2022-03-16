@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using Jotunn.Entities;
 using UnityEngine;
 
@@ -67,10 +68,22 @@ namespace Jotunn.Managers
             SpawnListContainer.SetActive(false);
             SpawnList = SpawnListContainer.AddComponent<SpawnSystemList>();
 
-            On.ObjectDB.CopyOtherDB += InvokeOnVanillaCreaturesAvailable;
-            On.ZNetScene.Awake += FixReferences;
-            On.SpawnSystem.Awake += AddSpawnListToSpawnSystem;
-            On.LevelEffects.SetupLevelVisualization += EnableCumulativeLevelEffects;
+            Main.Harmony.PatchAll(typeof(Patches));
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPrefix]
+            private static void InvokeOnVanillaCreaturesAvailable() => Instance.InvokeOnVanillaCreaturesAvailable();
+
+            [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix]
+            private static void FixReferences(ZNetScene __instance) => Instance.FixReferences(__instance);
+
+            [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Awake)), HarmonyPrefix]
+            private static void AddSpawnListToSpawnSystem(SpawnSystem __instance) => Instance.AddSpawnListToSpawnSystem(__instance);
+
+            [HarmonyPatch(typeof(LevelEffects), nameof(LevelEffects.SetupLevelVisualization)), HarmonyPostfix]
+            private static void EnableCumulativeLevelEffects(LevelEffects __instance, int level) => Instance.EnableCumulativeLevelEffects(__instance, level);
         }
 
         /// <summary>
@@ -188,20 +201,16 @@ namespace Jotunn.Managers
         ///     Safely invoke the <see cref="OnVanillaCreaturesAvailable"/> event
         /// </summary>
         /// 
-        private void InvokeOnVanillaCreaturesAvailable(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void InvokeOnVanillaCreaturesAvailable()
         {
             OnVanillaCreaturesAvailable?.SafeInvoke();
-
-            orig(self, other);
         }
 
         /// <summary>
         ///     Resolve mocks of all custom creatures if necessary.
         /// </summary>
-        private void FixReferences(On.ZNetScene.orig_Awake orig, ZNetScene self)
+        private void FixReferences(ZNetScene self)
         {
-            orig(self);
-
             if (Creatures.Any())
             {
                 Logger.LogInfo($"Adding {Creatures.Count} custom creatures");
@@ -258,23 +267,19 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Add the internal <see cref="SpawnSystemList"/> to the awoken spawner if not already added.
         /// </summary>
-        private void AddSpawnListToSpawnSystem(On.SpawnSystem.orig_Awake orig, SpawnSystem self)
+        private void AddSpawnListToSpawnSystem(SpawnSystem self)
         {
             if (!self.m_spawnLists.Contains(SpawnList))
             {
                 self.m_spawnLists.Add(SpawnList);
             }
-
-            orig(self);
         }
 
         /// <summary>
         ///     Enable cumulative level effects for custom creatures requesting it. Thx ASP for the code.
         /// </summary>
-        private void EnableCumulativeLevelEffects(On.LevelEffects.orig_SetupLevelVisualization orig, LevelEffects self, int level)
+        private void EnableCumulativeLevelEffects(LevelEffects self, int level)
         {
-            orig(self, level);
-
             if (level <= 2)
             {
                 return;
