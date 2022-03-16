@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.CompilerServices;
+using HarmonyLib;
 using Jotunn.Utils;
 using MonoMod.Cil;
 
@@ -22,18 +23,28 @@ namespace Jotunn.Managers
 
         internal ConditionalWeakTable<Inventory, Container> InventoryToContainer = new ConditionalWeakTable<Inventory, Container>();
 
-
-
         public void Init()
         {
             Directory.CreateDirectory(Paths.CustomItemDataFolder);
 
-            On.Container.Awake += AddToCache;
-            On.Container.OnDestroyed += RemoveFromCache;
+            Main.Harmony.PatchAll(typeof(Patches));
 
             IL.Inventory.MoveAll += FixMoveAllPerformance;
-            On.Inventory.Save += SaveModdedItems;
-            On.Inventory.Load += AddBackCustomItems;
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(Container), nameof(Container.Awake)), HarmonyPostfix]
+            private static void AddToCache(Container __instance) => Instance.AddToCache(__instance);
+
+            [HarmonyPatch(typeof(Container), nameof(Container.OnDestroyed)), HarmonyPostfix]
+            private static void RemoveFromCache(Container __instance) => Instance.RemoveFromCache(__instance);
+
+            [HarmonyPatch(typeof(Inventory), nameof(Inventory.Save)), HarmonyPostfix]
+            private static void SaveModdedItems(Inventory __instance, ZPackage pkg) => Instance.SaveModdedItems(__instance, pkg);
+
+            [HarmonyPatch(typeof(Inventory), nameof(Inventory.Load)), HarmonyPostfix]
+            private static void AddBackCustomItems(Inventory __instance, ZPackage pkg) => Instance.AddBackCustomItems(__instance, pkg);
         }
 
         private static bool OptimizedRemoveItem(Inventory fromInventory, ItemDrop.ItemData item)
@@ -66,30 +77,24 @@ namespace Jotunn.Managers
             }
         }
 
-        private void AddToCache(On.Container.orig_Awake orig, Container self)
+        private void AddToCache(Container self)
         {
-            orig(self);
-
             if (self && self.m_inventory != null)
             {
                 InventoryToContainer.Add(self.m_inventory, self);
             }
         }
 
-        private void RemoveFromCache(On.Container.orig_OnDestroyed orig, Container self)
+        private void RemoveFromCache(Container self)
         {
-            orig(self);
-
             if (self && self.m_inventory != null)
             {
                 InventoryToContainer.Remove(self.m_inventory);
             }
         }
 
-        private void SaveModdedItems(On.Inventory.orig_Save orig, Inventory self, ZPackage pkg)
+        private void SaveModdedItems(Inventory self, ZPackage pkg)
         {
-            orig(self, pkg);
-
             string inventoryId = self.GetInventoryUID();
 
             if (inventoryId != null)
@@ -119,10 +124,8 @@ namespace Jotunn.Managers
             }
         }
 
-        private void AddBackCustomItems(On.Inventory.orig_Load orig, Inventory self, ZPackage pkg)
+        private void AddBackCustomItems(Inventory self, ZPackage pkg)
         {
-            orig(self, pkg);
-
             string inventoryId = self.GetInventoryUID();
 
             if (inventoryId != null)
