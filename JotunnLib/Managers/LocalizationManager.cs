@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BepInEx;
+using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Utils;
@@ -85,7 +86,7 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            On.FejdStartup.SetupGui += LoadAndSetupModLanguages;
+            Main.Harmony.PatchAll(typeof(Patches));
 
             DoQuoteLineSplit = (Func<StringReader, List<List<string>>>)
                 Delegate.CreateDelegate(
@@ -96,15 +97,22 @@ namespace Jotunn.Managers
                         ReflectionHelper.AllBindingFlags));
         }
 
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui)), HarmonyPostfix]
+            private static void LoadAndSetupModLanguages() => Instance.LoadAndSetupModLanguages();
+
+            [HarmonyPatch(typeof(Localization), nameof(Localization.LoadLanguages)), HarmonyPostfix]
+            private static void Localization_LoadLanguages(ref List<string> __result) => Instance.Localization_LoadLanguages(ref __result);
+
+            [HarmonyPatch(typeof(Localization), nameof(Localization.SetupLanguage)), HarmonyPostfix]
+            private static void Localization_SetupLanguage(Localization __instance, string language) => Instance.Localization_SetupLanguage(__instance, language);
+        }
+
         // Some mod could have initialized Localization before all mods are loaded.
         // See https://github.com/Valheim-Modding/Jotunn/issues/193
-        private void LoadAndSetupModLanguages(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
+        private void LoadAndSetupModLanguages()
         {
-            orig(self);
-            
-            On.Localization.LoadLanguages += Localization_LoadLanguages;
-            On.Localization.SetupLanguage += Localization_SetupLanguage;
-
             var tmp = new HashSet<string>(Localization.instance.m_languages.ToList());
             foreach (var language in Localization.instance.LoadLanguages())
             {
@@ -122,9 +130,6 @@ namespace Jotunn.Managers
             }
             
             InvokeOnLocalizationAdded();
-            
-            On.Localization.LoadLanguages -= Localization_LoadLanguages;
-            On.Localization.SetupLanguage -= Localization_SetupLanguage;
         }
 
         private void InvokeOnLocalizationAdded()
@@ -132,10 +137,8 @@ namespace Jotunn.Managers
             OnLocalizationAdded?.SafeInvoke();
         }
 
-        private List<string> Localization_LoadLanguages(On.Localization.orig_LoadLanguages orig, Localization self)
+        private void Localization_LoadLanguages(ref List<string> __result)
         {
-            var result = orig(self);
-
             Logger.LogInfo("Loading custom localizations");
 
             try
@@ -150,9 +153,9 @@ namespace Jotunn.Managers
                 {
                     foreach (var language in ct.GetLanguages())
                     {
-                        if (!result.Contains(language))
+                        if (!__result.Contains(language))
                         {
-                            result.Add(language);
+                            __result.Add(language);
                         }
                     }
                 }
@@ -161,14 +164,10 @@ namespace Jotunn.Managers
             {
                 Logger.LogWarning($"Exception caught while loading custom localizations: {ex}");
             }
-
-            return result;
         }
 
-        private bool Localization_SetupLanguage(On.Localization.orig_SetupLanguage orig, Localization self, string language)
+        private void Localization_SetupLanguage(Localization __instance, string language)
         {
-            var result = orig(self, language);
-            
             Logger.LogInfo($"Adding tokens for language '{language}'");
             
             try
@@ -186,7 +185,7 @@ namespace Jotunn.Managers
                     foreach (var pair in langDic)
                     {
                         Logger.LogDebug($"Added translation: {pair.Key} -> {pair.Value}");
-                        self.AddWord(pair.Key, pair.Value);
+                        __instance.AddWord(pair.Key, pair.Value);
                     }
                 }
             }
@@ -194,8 +193,6 @@ namespace Jotunn.Managers
             {
                 Logger.LogWarning($"Exception caught while adding custom localizations: {ex}");
             }
-
-            return result;
         }
 
         private IEnumerable<FileInfo> GetTranslationFiles(string path, string searchPattern) => GetTranslationFiles(new DirectoryInfo(path), searchPattern);
