@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
@@ -8,6 +9,8 @@ namespace Jotunn.DebugUtils
 {
     internal class Eraser : MonoBehaviour
     {
+        private static Eraser instance;
+
         private ConfigEntry<bool> _isModEnabled;
         private ConfigEntry<KeyCode> _deleteObjectConfig;
         private ButtonConfig _deleteObjectButton;
@@ -18,6 +21,8 @@ namespace Jotunn.DebugUtils
 
         private void Awake()
         {
+            instance = this;
+
             _isModEnabled = Main.Instance.Config.Bind<bool>(nameof(Eraser), "Enabled", false, "Globally enable or disable the prefab eraser.");
             _isModEnabled.SettingChanged += (sender, eventArgs) =>
             {
@@ -37,9 +42,19 @@ namespace Jotunn.DebugUtils
             };
             InputManager.Instance.AddButton(Main.ModGuid, _deleteObjectButton);
 
-            On.Hud.Awake += HudAwakePostfix;
-            On.Hud.UpdateCrosshair += HudUpdateCrosshairPostfix;
-            On.Player.Update += PlayerUpdatePostfix;
+            Main.Harmony.PatchAll(typeof(Patches));
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix]
+            private static void HudAwakePostfix(Hud __instance) => instance.HudAwakePostfix(__instance);
+
+            [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateCrosshair)), HarmonyPostfix]
+            private static void HudUpdateCrosshairPostfix(Player player) => instance.HudUpdateCrosshairPostfix(player);
+
+            [HarmonyPatch(typeof(Player), nameof(Player.Update)), HarmonyPostfix]
+            private static void PlayerUpdatePostfix(Player __instance) => instance.PlayerUpdatePostfix(__instance);
         }
 
         private void CreatePanel(Hud hud)
@@ -58,20 +73,16 @@ namespace Jotunn.DebugUtils
             _eraserPanel?.DestroyPanel();
         }
 
-        private void HudAwakePostfix(On.Hud.orig_Awake orig, Hud self)
+        private void HudAwakePostfix(Hud self)
         {
-            orig(self);
-
             if (_isModEnabled.Value)
             {
                 CreatePanel(self);
             }
         }
 
-        private void HudUpdateCrosshairPostfix(On.Hud.orig_UpdateCrosshair orig, Hud self, Player player, float bowDrawPercentage)
+        private void HudUpdateCrosshairPostfix(Player player)
         {
-            orig(self, player, bowDrawPercentage);
-
             if (_isModEnabled.Value)
             {
                 GameObject hover = GetValidHoverObject(player);
@@ -97,10 +108,8 @@ namespace Jotunn.DebugUtils
             return hoverObject;
         }
 
-        private void PlayerUpdatePostfix(On.Player.orig_Update orig, Player self)
+        private void PlayerUpdatePostfix(Player self)
         {
-            orig(self);
-
             if (!_isModEnabled.Value
                 || self != Player.m_localPlayer
                 || !self.m_hovering
