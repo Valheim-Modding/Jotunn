@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,8 @@ namespace Jotunn.DebugUtils
 {
     internal class HoverInfo : MonoBehaviour
     {
+        private static HoverInfo instance;
+
         private ConfigEntry<bool> _isModEnabled;
         private ConfigEntry<Vector2> _hoverPiecePanelPosition;
         private ConfigEntry<Vector2> _placementGhostPanelPosition;
@@ -35,6 +38,8 @@ namespace Jotunn.DebugUtils
 
         private void Awake()
         {
+            instance = this;
+
             _isModEnabled = Main.Instance.Config.Bind(nameof(HoverInfo), "Enabled", true, "Globally enable or disable the hover info.");
 
             _isModEnabled.SettingChanged += (sender, eventArgs) =>
@@ -67,24 +72,28 @@ namespace Jotunn.DebugUtils
             _placementGhostPanelPosition.SettingChanged +=
                 (sender, eventArgs) => _placementGhostPanel?.SetPosition(_placementGhostPanelPosition.Value);
 
-            On.Hud.Awake += HudAwakePostfix;
-            On.Hud.UpdateCrosshair += HudUpdateCrosshairPostfix;
+            Main.Harmony.PatchAll(typeof(Patches));
         }
 
-        private void HudAwakePostfix(On.Hud.orig_Awake orig, Hud self)
+        private static class Patches
         {
-            orig(self);
+            [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix]
+            private static void HudAwakePostfix(Hud __instance) => instance.HudAwakePostfix(__instance);
 
+            [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateCrosshair)), HarmonyPostfix]
+            private static void HudUpdateCrosshairPostfix(Hud __instance, Player player) => instance.HudUpdateCrosshairPostfix(__instance, player);
+        }
+
+        private void HudAwakePostfix(Hud self)
+        {
             if (_isModEnabled.Value)
             {
                 CreatePanels(self);
             }
         }
 
-        private void HudUpdateCrosshairPostfix(On.Hud.orig_UpdateCrosshair orig, Hud self, Player player, float bowDrawPercentage)
+        private void HudUpdateCrosshairPostfix(Hud self, Player player)
         {
-            orig(self, player, bowDrawPercentage);
-
             if (_isModEnabled.Value)
             {
                 UpdateHoverPieceProperties(player.m_hoveringPiece);
