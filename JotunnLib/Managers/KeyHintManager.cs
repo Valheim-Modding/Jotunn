@@ -57,6 +57,8 @@ namespace Jotunn.Managers
         private GameObject BaseStick;
         private GameObject BaseDPad;
 
+        private bool hasInitBaseGameObjects;
+
         /// <summary>
         ///     Initialize the manager
         /// </summary>
@@ -65,11 +67,24 @@ namespace Jotunn.Managers
             // Dont init on a headless server
             if (!GUIManager.IsHeadless())
             {
-                On.KeyHints.Start += GetBaseGameObjects;
-                On.KeyHints.Start += KeyHints_Start;
-                On.KeyHints.UpdateHints += KeyHints_UpdateHints;
-                On.ZInput.Save += ZInput_Save;
+                Main.Harmony.PatchAll(typeof(Patches));
             }
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(KeyHints), "Start"), HarmonyPostfix]
+            private static void KeyHints_Start(KeyHints __instance)
+            {
+                Instance.GetBaseGameObjects(__instance);
+                Instance.KeyHints_Start(__instance);
+            }
+
+            [HarmonyPatch(typeof(KeyHints), "UpdateHints"), HarmonyPrefix]
+            private static bool KeyHints_UpdateHints(KeyHints __instance) => Instance.KeyHints_UpdateHints(__instance);
+
+            [HarmonyPatch(typeof(ZInput), nameof(ZInput.Save)), HarmonyPostfix]
+            private static void ZInput_Save(ZInput __instance) => Instance.ZInput_Save(__instance);
         }
 
         /// <summary>
@@ -137,9 +152,14 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Instantiate base GameObjects from vanilla KeyHints to use in our custom key hints
         /// </summary>
-        private void GetBaseGameObjects(On.KeyHints.orig_Start orig, KeyHints self)
+        private void GetBaseGameObjects(KeyHints self)
         {
-            orig(self);
+            if (hasInitBaseGameObjects)
+            {
+                return;
+            }
+
+            hasInitBaseGameObjects = true;
 
             var baseKeyHint = self.m_buildHints;
 
@@ -197,20 +217,15 @@ namespace Jotunn.Managers
             BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
             BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().sizeDelta = new Vector2(25f, 25f);
             PrefabManager.Instance.AddPrefab(BaseDPad);
-
-            // Prefabs are cached in the PrefabManager
-            On.KeyHints.Start -= GetBaseGameObjects;
         }
         
         /// <summary>
         ///     Extract base key hint elements and create key hint objects.
         /// </summary>
-        private void KeyHints_Start(On.KeyHints.orig_Start orig, KeyHints self)
+        private void KeyHints_Start(KeyHints self)
         {
             try
             {
-                orig(self);
-
                 KeyHintInstance = self;
                 KeyHintContainer = self.transform as RectTransform;
                 KeyHintObjects.Clear();
@@ -375,13 +390,12 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hook on <see cref="global::KeyHints.UpdateHints" /> to show custom key hints instead of the vanilla ones.
         /// </summary>
-        private void KeyHints_UpdateHints(On.KeyHints.orig_UpdateHints orig, KeyHints self)
+        private bool KeyHints_UpdateHints(KeyHints self)
         {
             // If something went wrong, dont NRE every Update
             if (KeyHintInstance == null || KeyHintContainer == null)
             {
-                orig(self);
-                return;
+                return true;
             }
 
             bool UseCustomKeyHint()
@@ -457,17 +471,17 @@ namespace Jotunn.Managers
             if (!UseCustomKeyHint())
             {
                 KeyHintObjects.Values.Where(x => x.activeSelf).Do(x => x.SetActive(false));
-                orig(self);
+                return true;
             }
+
+            return false;
         }
         
         /// <summary>
         ///     Set any key hint config using buttons without a backing bep config dirty
         /// </summary>
-        private void ZInput_Save(On.ZInput.orig_Save orig, ZInput self)
+        private void ZInput_Save(ZInput self)
         {
-            orig(self);
-
             foreach (var config in KeyHints.Values.Where(x => x.ButtonConfigs.Any(y => !y.IsConfigBacked)))
             {
                 config.Dirty = true;
