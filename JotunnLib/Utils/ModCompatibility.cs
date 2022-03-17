@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HarmonyLib;
 using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,66 +22,41 @@ namespace Jotunn.Utils
 
         private static readonly Dictionary<string, ZPackage> ClientVersions = new Dictionary<string, ZPackage>();
 
-        /// <summary>
-        ///     Initialize Patches
-        /// </summary>
-        [PatchInit(-1000)]
-        public static void InitPatch()
-        {
-            On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
-            On.ZNet.SendPeerInfo += ZNet_SendPeerInfo;
-            On.ZNet.OnNewConnection += ZNet_OnNewConnection;
-            On.FejdStartup.ShowConnectError += FejdStartup_ShowConnectError;
-        }
-
-        /// <summary>
-        ///     Initialize early running patches
-        /// </summary>
-        [PatchInit(int.MaxValue - 1000)]
-        public static void InitPatchEarly()
-        {
-            On.ZNet.RPC_ClientHandshake += ZNet_RPC_ClientHandshake;
-            On.ZNet.RPC_ServerHandshake += ZNet_RPC_ServerHandshake;
-        }
-
-        // Register our RPC
-        private static void ZNet_OnNewConnection(On.ZNet.orig_OnNewConnection orig, ZNet self, ZNetPeer peer)
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection)), HarmonyPrefix, HarmonyPriority(Priority.First)]
+        private static void ZNet_OnNewConnection(ZNet __instance, ZNetPeer peer)
         {
             // Register our RPC very early
             peer.m_rpc.Register<ZPackage>(nameof(RPC_Jotunn_ReceiveVersionData), RPC_Jotunn_ReceiveVersionData);
-            orig(self, peer);
         }
 
         // Send client module list to server
-        private static void ZNet_RPC_ClientHandshake(On.ZNet.orig_RPC_ClientHandshake orig, ZNet self, ZRpc rpc, bool needPassword)
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_ClientHandshake)), HarmonyPrefix, HarmonyPriority(Priority.Last)]
+        private static void ZNet_RPC_ClientHandshake(ZNet __instance, ZRpc rpc)
         {
             rpc.Invoke(nameof(RPC_Jotunn_ReceiveVersionData), new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
-
-            orig(self, rpc, needPassword);
         }
 
         // Send server module list to client
-        private static void ZNet_RPC_ServerHandshake(On.ZNet.orig_RPC_ServerHandshake orig, ZNet self, ZRpc rpc)
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_ServerHandshake)), HarmonyPrefix, HarmonyPriority(Priority.Last)]
+        private static void ZNet_RPC_ServerHandshake(ZNet __instance, ZRpc rpc)
         {
             rpc.Invoke(nameof(RPC_Jotunn_ReceiveVersionData), new ModuleVersionData(GetEnforcableMods().ToList()).ToZPackage());
-
-            orig(self, rpc);
         }
 
         // Show mod compatibility error message when needed
-        private static void FejdStartup_ShowConnectError(On.FejdStartup.orig_ShowConnectError orig, FejdStartup self)
+        [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.ShowConnectError)), HarmonyPostfix, HarmonyPriority(Priority.First)]
+        private static void FejdStartup_ShowConnectError(FejdStartup __instance)
         {
-            orig(self);
-
             if (LastServerVersion != null && ZNet.m_connectionStatus == ZNet.ConnectionStatus.ErrorVersion)
             {
                 ShowModCompatibilityErrorMessage();
-                self.m_connectionFailedPanel.SetActive(false);
+                __instance.m_connectionFailedPanel.SetActive(false);
             }
         }
 
         // Hook client sending of PeerInfo
-        private static void ZNet_SendPeerInfo(On.ZNet.orig_SendPeerInfo orig, ZNet self, ZRpc rpc, string password)
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.SendPeerInfo)), HarmonyPrefix, HarmonyPriority(Priority.First)]
+        private static void ZNet_SendPeerInfo(ZNet __instance, ZRpc rpc, string password)
         {
             if (ZNet.instance.IsClientInstance())
             {
@@ -98,12 +74,11 @@ namespace Jotunn.Utils
                 // If we got this far, clear lastServerVersion again
                 LastServerVersion = null;
             }
-
-            orig(self, rpc, password);
         }
 
         // Hook RPC_PeerInfo to check in front of the original method
-        private static void ZNet_RPC_PeerInfo(On.ZNet.orig_RPC_PeerInfo orig, ZNet self, ZRpc rpc, ZPackage pkg)
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPrefix, HarmonyPriority(Priority.First)]
+        private static void ZNet_RPC_PeerInfo(ZNet __instance, ZRpc rpc, ZPackage pkg)
         {
             if (!ZNet.instance.IsClientInstance())
             {
@@ -121,9 +96,6 @@ namespace Jotunn.Utils
                     }
                 }
             }
-
-            // call original method
-            orig(self, rpc, pkg);
         }
 
         /// <summary>

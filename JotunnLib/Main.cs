@@ -45,6 +45,7 @@ namespace Jotunn
             
             // Harmony patches
             Harmony = new Harmony(ModGuid);
+            Harmony.PatchAll(typeof(ModCompatibility));
 
             // Initialize Logger
             Jotunn.Logger.Init();
