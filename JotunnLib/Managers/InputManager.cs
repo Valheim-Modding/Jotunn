@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
+using HarmonyLib;
 using Jotunn.Configs;
 using UnityEngine;
 
@@ -200,11 +201,32 @@ namespace Jotunn.Managers
             // Dont init on a dedicated server
             if (!GUIManager.IsHeadless())
             {
-                On.ZInput.Load += RegisterCustomInputs;
-                On.ZInput.GetButtonDown += ZInput_GetButtonDown;
-                On.ZInput.GetButton += ZInput_GetButton;
-                On.ZInput.GetButtonUp += ZInput_GetButtonUp;
+                Main.Harmony.PatchAll(typeof(Patches));
             }
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(ZInput), nameof(ZInput.Load)), HarmonyPostfix]
+            private static void RegisterCustomInputs(ZInput __instance) => Instance.RegisterCustomInputs(__instance);
+
+            [HarmonyPatch(typeof(ZInput), nameof(ZInput.GetButtonDown)), HarmonyPostfix]
+            private static void ZInput_GetButtonDown(string name, ref bool __result) => __result = Instance.ZInput_GetButtonDown(name);
+
+            [HarmonyPatch(typeof(ZInput), nameof(ZInput.GetButton)), HarmonyPostfix]
+            private static void ZInput_GetButton(string name, ref bool __result) => __result = Instance.ZInput_GetButton(name);
+
+            [HarmonyPatch(typeof(ZInput), nameof(ZInput.GetButtonUp)), HarmonyPostfix]
+            private static void ZInput_GetButtonUp(string name, ref bool __result) => __result = Instance.ZInput_GetButtonUp(name);
+
+            [HarmonyPatch(typeof(ZInput), nameof(ZInput.GetButtonDown)), HarmonyReversePatch]
+            public static bool ZInput_GetButtonDown_Original(string name) => throw new NotImplementedException("It's a stub");
+
+            [HarmonyPatch(typeof(ZInput), nameof(ZInput.GetButton)), HarmonyReversePatch]
+            public static bool ZInput_GetButton_Original(string name) => throw new NotImplementedException("It's a stub");
+
+            [HarmonyPatch(typeof(ZInput), nameof(ZInput.GetButtonUp)), HarmonyReversePatch]
+            public static bool ZInput_GetButtonUp_Original(string name) => throw new NotImplementedException("It's a stub");
         }
 
         /// <summary>
@@ -268,10 +290,8 @@ namespace Jotunn.Managers
             Buttons.Add(buttonConfig.Name, buttonConfig);
         }
         
-        private void RegisterCustomInputs(On.ZInput.orig_Load orig, ZInput self)
+        private void RegisterCustomInputs(ZInput self)
         {
-            orig(self);
-
             if (Buttons.Any())
             {
                 Logger.LogInfo($"Registering {Buttons.Count} custom inputs");
@@ -328,9 +348,9 @@ namespace Jotunn.Managers
             }
         }
 
-        private bool ZInput_GetButtonDown(On.ZInput.orig_GetButtonDown orig, string name)
+        private bool ZInput_GetButtonDown(string name)
         {
-            if (!orig(name) && !orig($"Joy!{name}"))
+            if (!Patches.ZInput_GetButtonDown_Original(name) && !Patches.ZInput_GetButtonDown_Original($"Joy!{name}"))
             {
                 return false;
             }
@@ -348,9 +368,9 @@ namespace Jotunn.Managers
             return TakeInput(button);
         }
 
-        private bool ZInput_GetButton(On.ZInput.orig_GetButton orig, string name)
+        private bool ZInput_GetButton(string name)
         {
-            if (!orig(name) && !orig($"Joy!{name}"))
+            if (!Patches.ZInput_GetButton_Original(name) && !Patches.ZInput_GetButton_Original($"Joy!{name}"))
             {
                 return false;
             }
@@ -368,9 +388,9 @@ namespace Jotunn.Managers
             return TakeInput(button);
         }
 
-        private bool ZInput_GetButtonUp(On.ZInput.orig_GetButtonUp orig, string name)
+        private bool ZInput_GetButtonUp(string name)
         {
-            if (!orig(name) && !orig($"Joy!{name}"))
+            if (!Patches.ZInput_GetButtonUp_Original(name) && !Patches.ZInput_GetButtonUp_Original($"Joy!{name}"))
             {
                 return false;
             }
