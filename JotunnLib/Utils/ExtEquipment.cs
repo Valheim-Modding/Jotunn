@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HarmonyLib;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using UnityEngine;
@@ -17,43 +18,36 @@ namespace Jotunn.Utils
         {
             if (!Enabled)
             {
-                On.VisEquipment.Awake += VisEquipment_Awake;
+                Enabled = true;
+                Main.Harmony.PatchAll(typeof(ExtEquipment));
 
-                On.VisEquipment.UpdateEquipmentVisuals += VisEquipment_UpdateEquipmentVisuals;
                 IL.VisEquipment.SetRightHandEquiped += VisEquipment_SetRightHandEquiped;
                 IL.VisEquipment.SetBackEquiped += VisEquipment_SetBackEquiped;
                 IL.VisEquipment.SetChestEquiped += VisEquipment_SetChestEquiped;
-
-                On.VisEquipment.SetRightItem += VisEquipment_SetRightItem;
-                On.VisEquipment.SetRightBackItem += VisEquipment_SetRightBackItem;
-                On.VisEquipment.SetChestItem += VisEquipment_SetChestItem;
-
-                Enabled = true;
             }
         }
 
-        private static void VisEquipment_Awake(On.VisEquipment.orig_Awake orig, VisEquipment self)
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.Awake)), HarmonyPostfix]
+        private static void VisEquipment_Awake(VisEquipment __instance)
         {
-            orig(self);
-            self.gameObject.AddComponent<ExtEquipment>();
+            __instance.gameObject.AddComponent<ExtEquipment>();
         }
 
         /// <summary>
         ///     Get non-vanilla variant indices from the ZDO
         /// </summary>
-        private static void VisEquipment_UpdateEquipmentVisuals(On.VisEquipment.orig_UpdateEquipmentVisuals orig, VisEquipment self)
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.UpdateEquipmentVisuals)), HarmonyPrefix]
+        private static void VisEquipment_UpdateEquipmentVisuals(VisEquipment __instance)
         {
-            if (self.m_nview && self.m_nview.GetZDO() is ZDO zdo)
+            if (__instance.m_nview && __instance.m_nview.GetZDO() is ZDO zdo)
             {
-                if (Instances.TryGetValue(self, out var instance))
+                if (Instances.TryGetValue(__instance, out var instance))
                 {
                     instance.NewRightItemVariant = zdo.GetInt("RightItemVariant");
                     instance.NewChestVariant = zdo.GetInt("ChestItemVariant");
                     instance.NewRightBackItemVariant = zdo.GetInt("RightBackItemVariant");
                 }
             }
-
-            orig(self);
         }
 
         /// <summary>
@@ -171,58 +165,55 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Store the variant index of the right hand item to the ZDO if the variant has changed
         /// </summary>
-        private static void VisEquipment_SetRightItem(On.VisEquipment.orig_SetRightItem orig, VisEquipment self, string name)
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightItem)), HarmonyPrefix]
+        private static void VisEquipment_SetRightItem(VisEquipment __instance, string name)
         {
-            if (Instances.TryGetValue(self, out var instance) &&
+            if (Instances.TryGetValue(__instance, out var instance) &&
                 instance.MyHumanoid && instance.MyHumanoid.m_rightItem != null &&
-                !(self.m_rightItem == name && instance.MyHumanoid.m_rightItem.m_variant == instance.CurrentRightItemVariant))
+                !(__instance.m_rightItem == name && instance.MyHumanoid.m_rightItem.m_variant == instance.CurrentRightItemVariant))
             {
                 instance.NewRightItemVariant = instance.MyHumanoid.m_rightItem.m_variant;
-                if (self.m_nview && self.m_nview.GetZDO() is ZDO zdo)
+                if (__instance.m_nview && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
                     zdo.Set("RightItemVariant", (!string.IsNullOrEmpty(name)) ? instance.NewRightItemVariant : 0);
                 }
             }
-
-            orig(self, name);
         }
 
         /// <summary>
         ///     Store the variant index of the right back item to the ZDO if the variant has changed
         /// </summary>
-        private static void VisEquipment_SetRightBackItem(On.VisEquipment.orig_SetRightBackItem orig, VisEquipment self, string name)
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightBackItem)), HarmonyPrefix]
+        private static void VisEquipment_SetRightBackItem(VisEquipment __instance, string name)
         {
-            if (Instances.TryGetValue(self, out var instance) &&
+            if (Instances.TryGetValue(__instance, out var instance) &&
                 instance.MyHumanoid && instance.MyHumanoid.m_hiddenRightItem != null &&
-                !(self.m_rightBackItem == name && instance.MyHumanoid.m_hiddenRightItem.m_variant == instance.CurrentRightBackItemVariant))
+                !(__instance.m_rightBackItem == name && instance.MyHumanoid.m_hiddenRightItem.m_variant == instance.CurrentRightBackItemVariant))
             {
                 instance.NewRightBackItemVariant = instance.MyHumanoid.m_hiddenRightItem.m_variant;
-                if (self.m_nview && self.m_nview.GetZDO() is ZDO zdo)
+                if (__instance.m_nview && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
                     zdo.Set("RightBackItemVariant", (!string.IsNullOrEmpty(name)) ? instance.NewRightBackItemVariant : 0);
                 }
             }
-
-            orig(self, name);
         }
 
         /// <summary>
         ///     Store the variant index of the chest item to the ZDO if the variant has changed
         /// </summary>
-        private static void VisEquipment_SetChestItem(On.VisEquipment.orig_SetChestItem orig, VisEquipment self, string name)
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetChestItem)), HarmonyPrefix]
+        private static void VisEquipment_SetChestItem(VisEquipment __instance, string name)
         {
-            if (Instances.TryGetValue(self, out var instance) &&
+            if (Instances.TryGetValue(__instance, out var instance) &&
                 instance.MyHumanoid && instance.MyHumanoid.m_chestItem != null &&
-                !(self.m_chestItem == name && instance.MyHumanoid.m_chestItem.m_variant == instance.CurrentChestVariant))
+                !(__instance.m_chestItem == name && instance.MyHumanoid.m_chestItem.m_variant == instance.CurrentChestVariant))
             {
                 instance.NewChestVariant = instance.MyHumanoid.m_chestItem.m_variant;
-                if (self.m_nview && self.m_nview.GetZDO() is ZDO zdo)
+                if (__instance.m_nview && __instance.m_nview.GetZDO() is ZDO zdo)
                 {
                     zdo.Set("ChestItemVariant", (!string.IsNullOrEmpty(name)) ? instance.NewChestVariant : 0);
                 }
             }
-
-            orig(self, name);
         }
 
         private Humanoid MyHumanoid;
