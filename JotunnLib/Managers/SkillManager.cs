@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Utils;
 using UnityEngine;
@@ -28,14 +29,28 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            On.Skills.Awake += RegisterCustomSkills;
-            On.Skills.IsSkillValid += Skills_IsSkillValid;
-            On.Skills.GetSkill += Skills_GetSkill;
-            On.Skills.CheatRaiseSkill += Skills_CheatRaiseSkill;
-            On.Skills.CheatResetSkill += Skills_CheatResetSkill;
+            Main.Harmony.PatchAll(typeof(Patches));
         }
 
-        internal Dictionary<Skills.SkillType, SkillConfig> Skills = new Dictionary<Skills.SkillType, SkillConfig>();
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(Skills), nameof(Skills.Awake)), HarmonyPostfix]
+            private static void RegisterCustomSkills(Skills __instance) => Instance.RegisterCustomSkills(__instance);
+
+            [HarmonyPatch(typeof(Skills), nameof(Skills.IsSkillValid)), HarmonyPostfix]
+            private static void Skills_IsSkillValid(Skills __instance, Skills.SkillType type, ref bool __result) => Instance.Skills_IsSkillValid(__instance, type, ref __result);
+
+            [HarmonyPatch(typeof(Skills), nameof(Skills.GetSkill)), HarmonyPrefix]
+            private static void Skills_GetSkill(Skills __instance, ref Skills.SkillType skillType) => Instance.Skills_GetSkill(__instance, ref skillType);
+
+            [HarmonyPatch(typeof(Skills), nameof(Skills.CheatRaiseSkill)), HarmonyPrefix]
+            private static void Skills_CheatRaiseSkill(Skills __instance, string name, float value) => Instance.Skills_CheatRaiseSkill(__instance, name, value);
+
+            [HarmonyPatch(typeof(Skills), nameof(Skills.CheatResetSkill)), HarmonyPrefix]
+            private static void Skills_CheatResetSkill(Skills __instance, string name) => Instance.Skills_CheatResetSkill(__instance, name);
+        }
+
+        internal Dictionary<Skills.SkillType, SkillConfig> CustomSkills = new Dictionary<Skills.SkillType, SkillConfig>();
 
         /// <summary>
         ///     Add a new skill with given SkillConfig object.
@@ -50,7 +65,7 @@ namespace Jotunn.Managers
                 return global::Skills.SkillType.None;
             }
 
-            Skills.Add(skillConfig.UID, skillConfig);
+            CustomSkills.Add(skillConfig.UID, skillConfig);
 
             return skillConfig.UID;
         }
@@ -111,9 +126,9 @@ namespace Jotunn.Managers
         /// <returns>Custom skill with given SkillType</returns>
         public Skills.SkillDef GetSkill(Skills.SkillType skillType)
         {
-            if (Skills.ContainsKey(skillType))
+            if (CustomSkills.ContainsKey(skillType))
             {
-                return Skills[skillType].ToSkillDef();
+                return CustomSkills[skillType].ToSkillDef();
             }
 
             return Player.m_localPlayer?.GetSkills()?.m_skills?
@@ -135,15 +150,13 @@ namespace Jotunn.Managers
             return GetSkill((Skills.SkillType)Math.Abs(identifier.GetStableHashCode()));
         }
 
-        private void RegisterCustomSkills(On.Skills.orig_Awake orig, Skills self)
+        private void RegisterCustomSkills(Skills self)
         {
-            orig(self);
-
-            if (Skills.Count > 0)
+            if (CustomSkills.Count > 0)
             {
-                Logger.LogInfo($"Registering {Skills.Count} custom skills");
+                Logger.LogInfo($"Registering {CustomSkills.Count} custom skills");
 
-                foreach (var skill in Skills.Values)
+                foreach (var skill in CustomSkills.Values)
                 {
                     var localizedName = skill.Name.StartsWith("$") ? Localization.instance.Localize(skill.Name) : skill.Name;
                     Localization.instance.AddWord($"skill_{skill.UID}", localizedName);
@@ -153,34 +166,25 @@ namespace Jotunn.Managers
             }
         }
 
-        private bool Skills_IsSkillValid(On.Skills.orig_IsSkillValid orig, Skills self, Skills.SkillType skillType)
+        private void Skills_IsSkillValid(Skills self, Skills.SkillType skillType, ref bool result)
         {
-            var ret = orig(self, skillType);
-
-            if (!ret && Skills.ContainsKey((Skills.SkillType)Math.Abs((int)skillType)))
-            {
-                ret = true;
-            }
-
-            return ret;
+            result = result || CustomSkills.ContainsKey((Skills.SkillType)Math.Abs((int)skillType));
         }
 
-        private Skills.Skill Skills_GetSkill(On.Skills.orig_GetSkill orig, Skills self, Skills.SkillType skillType)
+        private void Skills_GetSkill(Skills self, ref Skills.SkillType skillType)
         {
             // Fix the mess of whoever decided to have negative skill IDs and implement several workarounds...
             var abs = (Skills.SkillType)Math.Abs((int)skillType);
 
-            if ((int)skillType < 0 && Skills.ContainsKey(abs))
+            if ((int)skillType < 0 && CustomSkills.ContainsKey(abs))
             {
-                return orig(self, abs);
+                skillType = abs;
             }
-
-            return orig(self, skillType);
         }
 
-        private void Skills_CheatRaiseSkill(On.Skills.orig_CheatRaiseSkill orig, Skills self, string name, float value)
+        private void Skills_CheatRaiseSkill(Skills self, string name, float value)
         {
-            foreach (var config in Skills.Values)
+            foreach (var config in CustomSkills.Values)
             {
                 if (config.IsFromName(name))
                 {
@@ -197,13 +201,11 @@ namespace Jotunn.Managers
                     return;
                 }
             }
-
-            orig(self, name, value);
         }
 
-        private void Skills_CheatResetSkill(On.Skills.orig_CheatResetSkill orig, Skills self, string name)
+        private void Skills_CheatResetSkill(Skills self, string name)
         {
-            foreach (var config in Skills.Values)
+            foreach (var config in CustomSkills.Values)
             {
                 if (config.IsFromName(name))
                 {
@@ -212,8 +214,6 @@ namespace Jotunn.Managers
                     return;
                 }
             }
-
-            orig(self, name);
         }
     }
 }
