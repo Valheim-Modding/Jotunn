@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using UnityEngine;
@@ -45,12 +46,17 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-
             LocationContainer = new GameObject("Locations");
             LocationContainer.transform.parent = Main.RootObject.transform;
             LocationContainer.SetActive(false);
 
-            On.ZoneSystem.SetupLocations += ZoneSystem_SetupLocations;
+            Main.Harmony.PatchAll(typeof(Patches));
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations)), HarmonyPostfix]
+            private static void ZoneSystem_SetupLocations(ZoneSystem __instance) => Instance.ZoneSystem_SetupLocations(__instance);
         }
 
         /// <summary>
@@ -242,10 +248,8 @@ namespace Jotunn.Managers
                 .FirstOrDefault(zv => zv.m_prefab && zv.m_prefab.name == name);
         }
 
-        private void ZoneSystem_SetupLocations(On.ZoneSystem.orig_SetupLocations orig, ZoneSystem self)
+        private void ZoneSystem_SetupLocations(ZoneSystem self)
         {
-            orig(self);
-
             InvokeOnVanillaLocationsAvailable();
 
             if (Locations.Count > 0)
