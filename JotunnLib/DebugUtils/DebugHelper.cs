@@ -21,37 +21,38 @@ namespace Jotunn.DebugUtils
                                             DEBUG MÖDE
 ";
 
+        private static DebugHelper instance;
+
         private void Awake()
         {
+            instance = this;
+
             Main.RootObject.AddComponent<Eraser>();
             Main.RootObject.AddComponent<DebugInfo>();
             Main.RootObject.AddComponent<HoverInfo>();
             Main.RootObject.AddComponent<UEInputBlocker>();
             Main.RootObject.AddComponent<ZNetDiddelybug>();
 
-            On.Terminal.ConsoleCommand.IsValid += (orig, self, context, check) => true;
-            
-            On.Player.OnSpawned += (orig, self) =>
-            {
-                self.m_firstSpawn = false;
-                orig(self);
-
-                Character.m_dpsDebugEnabled = true;
-                Player.m_debugMode = true;
-                Terminal.m_cheat = true;
-                Console.instance.m_autoCompleteSecrets = true;
-                Console.instance.updateCommandList();
-                try
-                {
-                    Font fnt = Font.CreateDynamicFontFromOSFont("Consolas", 14);
-                    Console.instance.gameObject.GetComponentInChildren<Text>(true).font = fnt;
-                    Console.instance.Print(jtn);
-                }
-                catch (Exception) { }
-            };
-            On.ZNet.RPC_ClientHandshake += ProvidePasswordPatch;
-            On.ZoneSystem.SpawnLocation += ZoneSystem_SpawnLocation;
+            Main.Harmony.PatchAll(typeof(Patches));
             Main.Harmony.PatchAll(typeof(Debug_isDebugBuild));
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(Terminal.ConsoleCommand), nameof(Terminal.ConsoleCommand.IsValid)), HarmonyPostfix]
+            private static void Terminal_ConsoleCommand_IsValid(ref bool __result) => __result = true;
+
+            [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_ClientHandshake)), HarmonyPrefix]
+            private static void ProvidePasswordPatch(ZNet __instance, ZRpc rpc, bool needPassword) => instance.ProvidePasswordPatch(__instance, rpc, needPassword);
+
+            [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SpawnLocation)), HarmonyPrefix]
+            private static void ZoneSystem_SpawnLocation(ZoneSystem.ZoneLocation location, ZoneSystem.SpawnMode mode) => instance.ZoneSystem_SpawnLocation(location, mode);
+
+            [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPrefix]
+            private static void Player_OnSpawned_Prefix(Player __instance) => __instance.m_firstSpawn = false;
+
+            [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPostfix]
+            private static void Player_OnSpawned_Postfix() => instance.Player_OnSpawned_Postfix();
         }
 
         private void Update()
@@ -69,7 +70,24 @@ namespace Jotunn.DebugUtils
                 UnityEngine.GUI.Label(new Rect(Screen.width - 100, 5, 100, 25), "Jötunn v" + Main.Version);
             }
         }
-        private void ProvidePasswordPatch(On.ZNet.orig_RPC_ClientHandshake orig, ZNet self, ZRpc rpc, bool needPassword)
+
+        private void Player_OnSpawned_Postfix()
+        {
+            Character.m_dpsDebugEnabled = true;
+            Player.m_debugMode = true;
+            Terminal.m_cheat = true;
+            Console.instance.m_autoCompleteSecrets = true;
+            Console.instance.updateCommandList();
+            try
+            {
+                Font fnt = Font.CreateDynamicFontFromOSFont("Consolas", 14);
+                Console.instance.gameObject.GetComponentInChildren<Text>(true).font = fnt;
+                Console.instance.Print(jtn);
+            }
+            catch (Exception) { }
+        }
+
+        private void ProvidePasswordPatch(ZNet self, ZRpc rpc, bool needPassword)
         {
             if (Environment.GetCommandLineArgs().Any(x => x.ToLower() == "+password"))
             {
@@ -93,22 +111,17 @@ namespace Jotunn.DebugUtils
                     return;
                 }
             }
-
-            orig(self, rpc, needPassword);
         }
 
         /// <summary>
         ///     Output custom location spawns
         /// </summary>
-        private GameObject ZoneSystem_SpawnLocation(On.ZoneSystem.orig_SpawnLocation orig, ZoneSystem self,
-            ZoneSystem.ZoneLocation location, int seed, Vector3 pos, Quaternion rot, ZoneSystem.SpawnMode mode,
-            List<GameObject> spawnedGhostObjects)
+        private void ZoneSystem_SpawnLocation(ZoneSystem.ZoneLocation location, ZoneSystem.SpawnMode mode)
         {
             if (ZoneManager.Instance.Locations.ContainsKey(location.m_prefabName))
             {
                 Logger.LogDebug($"spawned {location.m_prefabName}, mode: {mode}");
             }
-            return orig(self, location, seed, pos, rot, mode, spawnedGhostObjects);
         }
 
         /// <summary>
