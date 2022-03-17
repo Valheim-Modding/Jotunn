@@ -660,9 +660,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Safely invoke the <see cref="OnItemsRegisteredFejd"/> event late in the detour chain
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
-        /// <param name="other"></param>
         private void InvokeOnItemsRegisteredFejd(ObjectDB self)
         {
             OnItemsRegisteredFejd?.SafeInvoke();
@@ -671,7 +669,6 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hook on <see cref="ObjectDB.Awake"/> to register all custom entities from this manager to the <see cref="ObjectDB"/>.
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
         private void RegisterCustomData(ObjectDB self)
         {
@@ -688,7 +685,6 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Safely invoke the <see cref="OnItemsRegistered"/> event
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
         private void InvokeOnItemsRegistered(ObjectDB self)
         {
@@ -701,7 +697,6 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hook on <see cref="Player.OnSpawned"/> to refresh recipes for the custom items.
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
         private void ReloadKnownRecipes(Player self)
         {

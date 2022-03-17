@@ -111,8 +111,8 @@ namespace Jotunn.Managers
         ///     Fire <see cref="OnGetTabOptions"/> for any ConsoleCommand when its tabOptions member
         ///     is first populated to add Jötunn entities to the option list
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
+        /// <param name="result"></param>
         /// <returns></returns>
         private void ConsoleCommand_GetTabOptions(Terminal.ConsoleCommand self, ref List<string> result)
         {
