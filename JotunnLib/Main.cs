@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using HarmonyLib;
+using Jotunn.GUI;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -81,6 +82,8 @@ namespace Jotunn
                 Logger.LogInfo("Initializing " + manager.GetType().Name);
                 manager.Init();
             }
+
+            InGameConfig.Init();
 
 #if DEBUG
             // Enable helper on DEBUG build
