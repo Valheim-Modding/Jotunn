@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Utils;
@@ -66,17 +67,25 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            On.ObjectDB.CopyOtherDB += RegisterCustomDataFejd;
-            On.ObjectDB.Awake += RegisterCustomData;
-            On.Player.OnSpawned += ReloadKnownRecipes;
+            Main.Harmony.PatchAll(typeof(Patches));
+        }
 
-            // Fire events as a late action in the detour so all mods can load before
-            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
-            using (new DetourContext(int.MaxValue - 1000))
-            {
-                On.ObjectDB.CopyOtherDB += InvokeOnItemsRegisteredFejd;
-                On.ObjectDB.Awake += InvokeOnItemsRegistered;
-            }
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPrefix]
+            private static void RegisterCustomDataFejd(ObjectDB __instance, ObjectDB other) => Instance.RegisterCustomDataFejd(__instance, other);
+
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPrefix]
+            private static void RegisterCustomData(ObjectDB __instance) => Instance.RegisterCustomData(__instance);
+
+            [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPostfix]
+            private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
+
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
+            private static void InvokeOnItemsRegisteredFejd(ObjectDB __instance) => Instance.InvokeOnItemsRegisteredFejd(__instance);
+
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
+            private static void InvokeOnItemsRegistered(ObjectDB __instance) => Instance.InvokeOnItemsRegistered(__instance);
         }
 
         /// <summary>
@@ -620,9 +629,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Prefix on <see cref="ObjectDB.CopyOtherDB"/> to add custom items to FejdStartup screen (aka main menu)
         /// </summary>
-        private void RegisterCustomDataFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void RegisterCustomDataFejd(ObjectDB self, ObjectDB other)
         {
-
             #pragma warning disable 612
             InvokeOnVanillaItemsAvailable();
             #pragma warning restore 612
@@ -630,8 +638,6 @@ namespace Jotunn.Managers
 
             other.UpdateItemHashes();
             RegisterCustomItems(other);
-
-            orig(self, other);
         }
 
         /// <summary>
@@ -657,10 +663,8 @@ namespace Jotunn.Managers
         /// <param name="orig"></param>
         /// <param name="self"></param>
         /// <param name="other"></param>
-        private void InvokeOnItemsRegisteredFejd(On.ObjectDB.orig_CopyOtherDB orig, ObjectDB self, ObjectDB other)
+        private void InvokeOnItemsRegisteredFejd(ObjectDB self)
         {
-            orig(self, other);
-
             OnItemsRegisteredFejd?.SafeInvoke();
         }
 
@@ -669,7 +673,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="orig"></param>
         /// <param name="self"></param>
-        private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void RegisterCustomData(ObjectDB self)
         {
             if (SceneManager.GetActiveScene().name == "main")
             {
@@ -679,8 +683,6 @@ namespace Jotunn.Managers
                 RegisterCustomStatusEffects(self);
                 RegisterCustomItemConversions();
             }
-
-            orig(self);
         }
 
         /// <summary>
@@ -688,10 +690,8 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="orig"></param>
         /// <param name="self"></param>
-        private void InvokeOnItemsRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void InvokeOnItemsRegistered(ObjectDB self)
         {
-            orig(self);
-
             if (SceneManager.GetActiveScene().name == "main")
             {
                 OnItemsRegistered?.SafeInvoke();
@@ -703,10 +703,8 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="orig"></param>
         /// <param name="self"></param>
-        private void ReloadKnownRecipes(On.Player.orig_OnSpawned orig, Player self)
+        private void ReloadKnownRecipes(Player self)
         {
-            orig(self);
-
             if (Items.Count > 0 || Recipes.Count > 0)
             {
                 try
