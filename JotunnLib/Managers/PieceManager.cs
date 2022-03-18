@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -53,16 +53,79 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            // Setup Hooks
-            On.ObjectDB.Awake += RegisterCustomData;
-            On.Player.OnSpawned += ReloadKnownRecipes;
+            Main.Harmony.PatchAll(typeof(Patches));
+        }
 
-            // Fire events as a late action in the detour so all mods can load before
-            // Leave space for mods to forcefully run after us. 1000 is an arbitrary "good amount" of space.
-            using (new DetourContext(int.MaxValue - 1000))
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.SetCategory)), HarmonyPostfix]
+            public static void PieceTable_SetCategory(PieceTable __instance, int index)
             {
-                On.ObjectDB.Awake += InvokeOnPiecesRegistered;
+                if (PieceTableCategories.currentActive != null)
+                {
+                    PieceTableCategories.currentActive.PieceTable_SetCategory(__instance, index);
+                }
             }
+
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.NextCategory)), HarmonyPrefix]
+            public static void PieceTable_NextCategory_Prefix(PieceTable __instance, ref Piece.PieceCategory __state)
+            {
+                __state = __instance.m_selectedCategory;
+            }
+
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.NextCategory)), HarmonyPostfix]
+            public static void PieceTable_NextCategory_Postfix(PieceTable __instance, ref Piece.PieceCategory __state)
+            {
+                if (PieceTableCategories.currentActive != null)
+                {
+                    PieceTableCategories.currentActive.PieceTable_NextCategory(__instance, __state);
+                }
+            }
+
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.PrevCategory)), HarmonyPrefix]
+            public static void PieceTable_PrevCategory_Prefix(PieceTable __instance, ref Piece.PieceCategory __state)
+            {
+                __state = __instance.m_selectedCategory;
+            }
+
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.PrevCategory)), HarmonyPostfix]
+            public static void PieceTable_PrevCategory_Postfix(PieceTable __instance, ref Piece.PieceCategory __state)
+            {
+                if (PieceTableCategories.currentActive != null)
+                {
+                    PieceTableCategories.currentActive.PieceTable_PrevCategory(__instance, __state);
+                }
+            }
+
+            [HarmonyPatch(typeof(Hud), nameof(Hud.OnLeftClickCategory)), HarmonyPostfix]
+            public static void Hud_OnLeftClickCategory(Hud __instance)
+            {
+                if (PieceTableCategories.currentActive != null)
+                {
+                    PieceTableCategories.currentActive.Hud_OnLeftClickCategory(__instance);
+                }
+            }
+
+            [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix]
+            private static void Hud_Awake()
+            {
+                Instance.CreateCategoryTabs();
+            }
+
+            [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateBuild)), HarmonyPrefix]
+            private static void Hud_UpdateBuild()
+            {
+                Instance.TogglePieceCategories();
+            }
+
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix]
+            private static void RegisterCustomData(ObjectDB __instance) => Instance.RegisterCustomData(__instance);
+
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
+            private static void InvokeOnPiecesRegistered(ObjectDB __instance) => Instance.InvokeOnPiecesRegistered(__instance);
+
+            [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPostfix]
+            private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
         }
 
         /// <summary>
@@ -408,26 +471,8 @@ namespace Jotunn.Managers
                     Logger.LogError($"Error while adding categories for table {table.name}: {ex}");
                 }
             }
-
-            // Hook for generation of custom category tabs
-            On.Hud.Awake -= CreateCategoryTabs;
-            On.Hud.Awake += CreateCategoryTabs;
-
-            // Hook for custom category tab toggle
-            On.Hud.UpdateBuild -= TogglePieceCategories;
-            On.Hud.UpdateBuild += TogglePieceCategories;
         }
         
-        /// <summary>
-        ///     Create tabs for the ingame GUI for every piece table category.
-        ///     Only executes when custom piece table catego-ries were added.
-        /// </summary>
-        private void CreateCategoryTabs(On.Hud.orig_Awake orig, Hud self)
-        {
-            orig(self);
-            CreateCategoryTabs();
-        }
-
         private void CreateCategoryTabs()
         {
             // Get the GUI elements
@@ -487,9 +532,9 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Hook for piece table toggle. Only active when custom categories were added.
+        ///     Hook for piece table toggle
         /// </summary>
-        private void TogglePieceCategories(On.Hud.orig_UpdateBuild orig, Hud self, Player player, bool forceUpdateAllBuildStatuses)
+        private void TogglePieceCategories()
         {
             // Get currently selected tool and toggle PieceTableCategories
             try
@@ -504,8 +549,6 @@ namespace Jotunn.Managers
             {
                 Logger.LogError($"Error toggling piece selection window: {ex}");
             }
-
-            orig(self, player, forceUpdateAllBuildStatuses);
         }
 
         /// <summary>
@@ -612,10 +655,8 @@ namespace Jotunn.Managers
             Logger.LogDebug($"Added piece {prefab.name} | Token: {piece.TokenName()}");
         }
 
-        private void RegisterCustomData(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void RegisterCustomData(ObjectDB self)
         {
-            orig(self);
-
             if (SceneManager.GetActiveScene().name == "main")
             {
                 LoadPieceTables();
@@ -624,10 +665,8 @@ namespace Jotunn.Managers
             }
         }
 
-        private void InvokeOnPiecesRegistered(On.ObjectDB.orig_Awake orig, ObjectDB self)
+        private void InvokeOnPiecesRegistered(ObjectDB self)
         {
-            orig(self);
-
             if (SceneManager.GetActiveScene().name == "main")
             {
                 OnPiecesRegistered?.SafeInvoke();
@@ -637,12 +676,9 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hook on <see cref="Player.OnSpawned"/> to refresh recipes for the custom items.
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
-        private void ReloadKnownRecipes(On.Player.orig_OnSpawned orig, Player self)
+        private void ReloadKnownRecipes(Player self)
         {
-            orig(self);
-
             if (!Pieces.Any())
             {
                 return;
@@ -660,7 +696,7 @@ namespace Jotunn.Managers
 
         internal class PieceTableCategories : Dictionary<string, Piece.PieceCategory>
         {
-            private static PieceTableCategories currentActive;
+            public static PieceTableCategories currentActive;
 
             private Piece.PieceCategory lastCategory = Piece.PieceCategory.All;
 
@@ -695,12 +731,6 @@ namespace Jotunn.Managers
                         PieceCategoryScroll(lastCategory);
                     }
 
-                    // Hook navigation
-                    On.PieceTable.SetCategory += PieceTable_SetCategory;
-                    On.PieceTable.NextCategory += PieceTable_NextCategory;
-                    On.PieceTable.PrevCategory += PieceTable_PrevCategory;
-                    On.Hud.OnLeftClickCategory += Hud_OnLeftClickCategory;
-
                     currentActive = this;
                 }
                 if (!isActive && currentActive != null && currentActive == this)
@@ -713,12 +743,6 @@ namespace Jotunn.Managers
 
                     // Reorder tabs
                     ReorderActiveTabs();
-
-                    // Remove hooks
-                    On.PieceTable.SetCategory -= PieceTable_SetCategory;
-                    On.PieceTable.NextCategory -= PieceTable_NextCategory;
-                    On.PieceTable.PrevCategory -= PieceTable_PrevCategory;
-                    On.Hud.OnLeftClickCategory -= Hud_OnLeftClickCategory;
 
                     currentActive = null;
                 }
@@ -753,10 +777,8 @@ namespace Jotunn.Managers
                 }
             }
 
-            private void PieceTable_SetCategory(On.PieceTable.orig_SetCategory orig, PieceTable self, int index)
+            public void PieceTable_SetCategory(PieceTable self, int index)
             {
-                orig(self, index);
-
                 if (self.m_useCategories)
                 {
                     if (ContainsValue((Piece.PieceCategory)index))
@@ -766,11 +788,8 @@ namespace Jotunn.Managers
                 }
             }
 
-            private void PieceTable_NextCategory(On.PieceTable.orig_NextCategory orig, PieceTable self)
+            public void PieceTable_NextCategory(PieceTable self, Piece.PieceCategory oldCat)
             {
-                var oldCat = self.m_selectedCategory;
-                orig(self);
-
                 if (self.m_useCategories)
                 {
                     if (self.m_selectedCategory != oldCat)
@@ -792,11 +811,8 @@ namespace Jotunn.Managers
                 PieceCategoryScroll(self.m_selectedCategory);
             }
 
-            private void PieceTable_PrevCategory(On.PieceTable.orig_PrevCategory orig, PieceTable self)
+            public void PieceTable_PrevCategory(PieceTable self, Piece.PieceCategory oldCat)
             {
-                var oldCat = self.m_selectedCategory;
-                orig(self);
-
                 if (self.m_useCategories)
                 {
                     if (self.m_selectedCategory != oldCat)
@@ -818,10 +834,8 @@ namespace Jotunn.Managers
                 PieceCategoryScroll(self.m_selectedCategory);
             }
 
-            private void Hud_OnLeftClickCategory(On.Hud.orig_OnLeftClickCategory orig, Hud self, UIInputHandler ih)
+            public void Hud_OnLeftClickCategory(Hud self)
             {
-                orig(self, ih);
-
                 PieceCategoryScroll(Player.m_localPlayer.m_buildPieces.m_selectedCategory);
             }
 
