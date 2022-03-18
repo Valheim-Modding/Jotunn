@@ -29,7 +29,8 @@ namespace Jotunn.Managers
 
             Main.Harmony.PatchAll(typeof(Patches));
 
-            IL.Inventory.MoveAll += FixMoveAllPerformance;
+            // hook is disabled as the whole manager is disabled anyway. Has to be reworked with a HarmonyTranspiler in the future
+            // IL.Inventory.MoveAll += FixMoveAllPerformance;
         }
 
         private static class Patches
