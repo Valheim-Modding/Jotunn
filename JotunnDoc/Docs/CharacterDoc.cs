@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using JotunnDoc.Patches;
 using UnityEngine;
 
 namespace JotunnDoc.Docs
@@ -11,13 +12,11 @@ namespace JotunnDoc.Docs
     {
         public CharacterDoc() : base("prefabs/character-list.md")
         {
-            On.Player.OnSpawned += DocCharacters;
+            GameEvents.OnPlayerSpawned += DocCharacters;
         }
 
-        private void DocCharacters(On.Player.orig_OnSpawned orig, Player self)
+        private void DocCharacters(Player self)
         {
-            orig(self);
-
             if (Generated)
             {
                 return;

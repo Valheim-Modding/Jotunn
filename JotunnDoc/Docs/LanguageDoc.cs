@@ -9,10 +9,10 @@ namespace JotunnDoc.Docs
 
         public LanguageDoc() : base("localization/language-list.md")
         {
-            SceneManager.sceneLoaded += docLanguages;
+            SceneManager.sceneLoaded += DocLanguages;
         }
 
-        private void docLanguages(Scene scene, LoadSceneMode mode)
+        private void DocLanguages(Scene scene, LoadSceneMode mode)
         {
             if (Generated)
             {

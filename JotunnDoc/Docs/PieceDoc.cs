@@ -11,10 +11,10 @@ namespace JotunnDoc.Docs
     {
         public PieceDoc() : base("pieces/piece-list.md")
         {
-            PieceManager.OnPiecesRegistered += docPieces;
+            PieceManager.OnPiecesRegistered += DocPieces;
         }
 
-        public void docPieces()
+        public void DocPieces()
         {
             if (Generated)
             {

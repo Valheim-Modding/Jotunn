@@ -34,6 +34,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony, Version=2.9.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\HarmonyX.2.9.0\lib\net45\0Harmony.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="assembly_googleanalytics_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_googleanalytics_publicized.dll</HintPath>
       <Private>False</Private>
@@ -126,15 +130,29 @@
       <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\HarmonyXInterop.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoMod.RuntimeDetour, Version=20.11.26.2, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Mono.Cecil, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MonoMod.Utils, Version=20.11.26.2, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\MonoMod.Utils.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MonoMod.RuntimeDetour, Version=22.1.29.1, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\MonoMod.RuntimeDetour.22.1.29.1\lib\net452\MonoMod.RuntimeDetour.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MonoMod.Utils, Version=22.1.29.1, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\MonoMod.Utils.22.1.29.1\lib\net452\MonoMod.Utils.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -467,12 +485,14 @@
     <Compile Include="Docs\PrefabDoc.cs" />
     <Compile Include="Docs\CharacterDoc.cs" />
     <Compile Include="JotunnDoc.cs" />
+    <Compile Include="Patches\GameEvents.cs" />
     <Compile Include="Patches\ZRoutedRpcPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">

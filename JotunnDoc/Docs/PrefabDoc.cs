@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Jotunn.Entities;
+using JotunnDoc.Patches;
 using UnityEngine;
 
 namespace JotunnDoc.Docs
@@ -9,13 +10,11 @@ namespace JotunnDoc.Docs
     {
         public PrefabDoc() : base("prefabs/prefab-list.md")
         {
-            On.Player.OnSpawned += DocPrefabs;
+            GameEvents.OnPlayerSpawned += DocPrefabs;
         }
 
-        private void DocPrefabs(On.Player.orig_OnSpawned orig, Player self)
+        private void DocPrefabs(Player self)
         {
-            orig(self);
-
             if (Generated)
             {
                 return;

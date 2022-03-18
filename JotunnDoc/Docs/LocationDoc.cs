@@ -12,10 +12,10 @@ namespace JotunnDoc.Docs
 
         public LocationDoc() : base("zones/location-list.md")
         {
-            ZoneManager.OnVanillaLocationsAvailable += docLocations;
+            ZoneManager.OnVanillaLocationsAvailable += DocLocations;
         }
 
-        private void docLocations()
+        private void DocLocations()
         {
             if (Generated)
             {

@@ -4,6 +4,7 @@ using BepInEx;
 using UnityEngine;
 using JotunnDoc.Docs;
 using System.IO;
+using HarmonyLib;
 
 namespace JotunnDoc
 {
@@ -12,9 +13,13 @@ namespace JotunnDoc
     public class JotunnDoc : BaseUnityPlugin
     {
         private List<Doc> docs;
+        private Harmony harmony;
 
         private void Awake()
         {
+            harmony = new Harmony("com.jotunn.jotunn.jotunndoc");
+            harmony.PatchAll();
+
             Doc.DocumentationDirConfig = Config.Bind(new BepInEx.Configuration.ConfigDefinition("Folders", "Documentation"), Path.Combine(Paths.PluginPath, nameof(JotunnDoc), "Docs"));
 
             docs = new List<Doc>()
