@@ -119,7 +119,7 @@ namespace Jotunn.Managers
                 _ => string.Empty
             };
         }
-        
+
         internal static string GetGamepadString(GamepadButton @enum)
         {
             return @enum switch
@@ -211,13 +211,13 @@ namespace Jotunn.Managers
             private static void RegisterCustomInputs(ZInput __instance) => Instance.RegisterCustomInputs(__instance);
 
             [HarmonyPatch(typeof(ZInput), nameof(ZInput.GetButtonDown)), HarmonyPostfix]
-            private static void ZInput_GetButtonDown(string name, ref bool __result) => __result = __result || Instance.ZInput_GetButtonDown(name);
+            private static void ZInput_GetButtonDown(string name, ref bool __result) => __result = Instance.ZInput_GetButtonDown(name);
 
             [HarmonyPatch(typeof(ZInput), nameof(ZInput.GetButton)), HarmonyPostfix]
-            private static void ZInput_GetButton(string name, ref bool __result) => __result = __result || Instance.ZInput_GetButton(name);
+            private static void ZInput_GetButton(string name, ref bool __result) => __result = Instance.ZInput_GetButton(name);
 
             [HarmonyPatch(typeof(ZInput), nameof(ZInput.GetButtonUp)), HarmonyPostfix]
-            private static void ZInput_GetButtonUp(string name, ref bool __result) => __result = __result || Instance.ZInput_GetButtonUp(name);
+            private static void ZInput_GetButtonUp(string name, ref bool __result) => __result = Instance.ZInput_GetButtonUp(name);
 
             [HarmonyPatch(typeof(ZInput), nameof(ZInput.GetButtonDown)), HarmonyReversePatch]
             public static bool ZInput_GetButtonDown_Original(string name) => throw new NotImplementedException("It's a stub");
@@ -289,7 +289,7 @@ namespace Jotunn.Managers
             buttonConfig.Name += "!" + modGuid;
             Buttons.Add(buttonConfig.Name, buttonConfig);
         }
-        
+
         private void RegisterCustomInputs(ZInput self)
         {
             if (Buttons.Any())
