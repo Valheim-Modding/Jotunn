@@ -98,11 +98,6 @@ namespace Jotunn
             InitializePatches();
         }
 
-        private void OnDestroy()
-        {
-            Harmony?.UnpatchSelf();
-        }
-
         private void OnApplicationQuit()
         {
             // Unload still loaded asset bundles to keep unity from crashing
