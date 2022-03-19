@@ -43,7 +43,7 @@ namespace Jotunn
         {
             // Set instance
             Instance = this;
-            
+
             // Harmony patches
             Harmony = new Harmony(ModGuid);
             Harmony.PatchAll(typeof(ModCompatibility));
