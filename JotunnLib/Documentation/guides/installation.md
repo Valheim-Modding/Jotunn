@@ -13,15 +13,11 @@ It should look something like this:
 
 ## 1. Downloading Jötunn
 
-First, download Jötunn from your prefered public mirror (Note: You can find test builds through the public Discord):
+Download Jötunn from your prefered public mirror (Note: You can find test builds through the public Discord):
 - [Nexus Mods](https://www.nexusmods.com/valheim/mods/1138)
 - [Thunderstore](https://valheim.thunderstore.io/package/ValheimModding/Jotunn/)
 
-Secondly, download the MMHookGen dependency, if you have not already got it:
-- [Nexus Mods](https://www.nexusmods.com/valheim/mods/505)
-- [Thunderstore](https://valheim.thunderstore.io/package/ValheimModding/HookGenPatcher/)
-
-If you downloaded both, you should have two ZIP files like so (names may vary depending on download source and version, but contents should be the same):
+Now you should have the ZIP file like so (names may vary depending on download source and version, but contents should be the same):
 
 ![Downloaded Files](../images/installation/downloads.png)
 
@@ -31,12 +27,6 @@ Now that you have everything downloaded, you'll need to extract them in order to
 
 First, navigate to your Valheim BepInEx directory (eg. `C:\<PathToYourSteamLibary>\steamapps\common\Valheim\BepInEx`). Now, we can extract them:
 
-**For MMHookGen**: Extract the ZIP and put the `patchers` and `config` folders inside your BepInEx folder. These folders, in a clean installation, should look like so:
-
-![BepInEx Patchers Folder](../images/installation/patchers.png)
-
-![BepInEx Config Folder](../images/installation/config.png)
-
 **For Jötunn**: Extract the ZIP, and put the `Jotunn.dll` file into your BepInEx `plugins` folder. These folders, in a clean installation, should look like so:
 
 ![BepInEx Plugins Folder](../images/installation/plugins.png)
@@ -45,9 +35,6 @@ First, navigate to your Valheim BepInEx directory (eg. `C:\<PathToYourSteamLibar
 
 That's it, you're done! Now you can launch Valheim and enjoy your modding!  
 
-You can tell it worked by looking at the console output, which, depending on your environment, should look something like this, telling you it loaded BepInEx, HookGenPatcher and Jötunn:
+You can tell it worked by looking at the console output, which, depending on your environment, should look something like this, telling you it loaded BepInEx and Jötunn:
 
 ![Console output](../images/installation/console.png)
-
-> [!NOTE]
-> Your first run of the game may take a few seconds longer than it would without any mods. **This is normal.** This is due to MMHookGen creating the MMHook DLL files that are needed for Jötunn and various mods to run. This will only take longer on first install, and after Valheim updates.
