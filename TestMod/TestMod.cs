@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
+using HarmonyLib;
 using Jotunn;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -22,6 +23,7 @@ namespace TestMod
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     [BepInDependency(Main.ModGuid)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch)]
+    [HarmonyPatch]
     internal class TestMod : BaseUnityPlugin
     {
         private const string ModGUID = "com.jotunn.testmod";
@@ -57,13 +59,18 @@ namespace TestMod
         private ButtonConfig ServerShortcutButton;
 
         private ConfigEntry<bool> EnableVersionMismatch;
-        private ConfigEntry<bool> EnableExtVersionMismatch;
+        private static ConfigEntry<bool> EnableExtVersionMismatch;
 
         private CustomLocalization Localization;
+
+        private static Harmony harmony;
 
         // Load, create and init your custom mod stuff
         private void Awake()
         {
+            harmony = new Harmony("com.jotunn.testmod");
+            harmony.PatchAll();
+
             // Show DateTime on Logs
             //Jotunn.Logger.ShowDate = true;
 
@@ -134,12 +141,7 @@ namespace TestMod
             // Get current version for the mod compatibility test
             CurrentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
-
-            // Hook GetVersionString for ext version string compat test
-            On.Version.GetVersionString += Version_GetVersionString;
         }
-
-
 
         // Called every frame
         private void Update()
@@ -1688,9 +1690,10 @@ namespace TestMod
             }
         }
 
-        private string Version_GetVersionString(On.Version.orig_GetVersionString orig)
+        [HarmonyPatch(typeof(Version), nameof(Version.GetVersionString)), HarmonyPostfix]
+        private static void Version_GetVersionString(ref string __result)
         {
-            return EnableExtVersionMismatch.Value ? "Non.Business.You" : orig();
+            __result = EnableExtVersionMismatch.Value ? "Non.Business.You" : __result;
         }
     }
 }

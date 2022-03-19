@@ -17,7 +17,7 @@ namespace JotunnDoc
 
         private void Awake()
         {
-            harmony = new Harmony("com.jotunn.jotunn.jotunndoc");
+            harmony = new Harmony("com.jotunn.jotunndoc");
             harmony.PatchAll();
 
             Doc.DocumentationDirConfig = Config.Bind(new BepInEx.Configuration.ConfigDefinition("Folders", "Documentation"), Path.Combine(Paths.PluginPath, nameof(JotunnDoc), "Docs"));
