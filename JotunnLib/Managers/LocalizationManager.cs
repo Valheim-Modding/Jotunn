@@ -81,6 +81,8 @@ namespace Jotunn.Managers
         /// </summary>
         internal static Func<StringReader, List<List<string>>> DoQuoteLineSplit;
 
+        private static bool applyLocalization;
+
         /// <summary> 
         ///     Initialize localization manager.
         /// </summary>
@@ -103,16 +105,30 @@ namespace Jotunn.Managers
             private static void LoadAndSetupModLanguages() => Instance.LoadAndSetupModLanguages();
 
             [HarmonyPatch(typeof(Localization), nameof(Localization.LoadLanguages)), HarmonyPostfix]
-            private static void Localization_LoadLanguages(ref List<string> __result) => Instance.Localization_LoadLanguages(ref __result);
+            private static void Localization_LoadLanguages(ref List<string> __result)
+            {
+                if (applyLocalization)
+                {
+                    Instance.Localization_LoadLanguages(ref __result);
+                }
+            }
 
             [HarmonyPatch(typeof(Localization), nameof(Localization.SetupLanguage)), HarmonyPostfix]
-            private static void Localization_SetupLanguage(Localization __instance, string language) => Instance.Localization_SetupLanguage(__instance, language);
+            private static void Localization_SetupLanguage(Localization __instance, string language)
+            {
+                if (applyLocalization)
+                {
+                    Instance.Localization_SetupLanguage(__instance, language);
+                }
+            }
         }
 
         // Some mod could have initialized Localization before all mods are loaded.
         // See https://github.com/Valheim-Modding/Jotunn/issues/193
         private void LoadAndSetupModLanguages()
         {
+            applyLocalization = true;
+
             var tmp = new HashSet<string>(Localization.instance.m_languages.ToList());
             foreach (var language in Localization.instance.LoadLanguages())
             {
@@ -128,8 +144,10 @@ namespace Jotunn.Managers
             {
                 Localization.instance.SetupLanguage(lang);
             }
-            
+
             InvokeOnLocalizationAdded();
+
+            applyLocalization = false;
         }
 
         private void InvokeOnLocalizationAdded()
