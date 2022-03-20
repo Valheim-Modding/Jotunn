@@ -72,7 +72,7 @@ namespace Jotunn.Managers
 
         private static class Patches
         {
-            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPrefix]
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPrefix, HarmonyPriority(-100)]
             private static void RegisterCustomDataFejd(ObjectDB __instance, ObjectDB other) => Instance.RegisterCustomDataFejd(__instance, other);
 
             [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPrefix]
