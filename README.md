@@ -1,5 +1,5 @@
 ﻿# Jötunn, the Valheim Library
-![Banner](JotunnLib/Documentation/images/banner.png)
+![Banner](https://raw.github.com/Valheim-Modding/Jotunn/prod/JotunnLib/Documentation/images/banner.png)
 
 Jötunn (/ˈjɔːtʊn/, "giant"), the Valheim Library was created with the intent to facilitate developer creativity, unify the communities problem solving efforts, and enhance developer productivity by curating a library of common helper utilities. Additionally, it supplies specific interfaces and abstractions which aid with mod interoperability, networked gameplay consistency, and remove the need to maintain valheim version specific code by acting as an interface between the developer and the games changing internals.
 
@@ -16,10 +16,10 @@ However, here is a quick run-down:
 1. **Install BepInEx**  
 Download [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/), extract everything inside `BepInEx_Valheim` into your Valheim folder (typically `C:\<PathToYourSteamLibary>\steamapps\common\Valheim`).
 
-3. **Install Jötunn**
-Download from either Nexus/Thunderstore, extract the ZIP, and put the `Jotunn.dll` file inside the `plugins` folder in your Valheim install.
+2. **Install Jötunn**
+Download from either [Nexus](https://www.nexusmods.com/valheim/mods/1138) / [Thunderstore](https://valheim.thunderstore.io/package/ValheimModding/Jotunn), extract the ZIP, and put the `Jotunn.dll` file inside the `plugins` folder in your Valheim install.
 
-That's it, launch the game and mod away!
+That's it, launch the game and mod away! MMHOOK is no longer required for Jötunn.
 
 ## Features
 JVL provides three distinct groups of features. Entities, which abstract the game's own entities into easy-to-use interfaces. Managers, which act as interfaces between the entities and native collections or subsystems. Utilities, which are there to aid in generic/common functions that can span many different areas.
