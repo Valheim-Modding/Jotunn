@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## Version 2.6.1
+* Removed the MMHOOK dependency from Jötunn. Mods using MMHOOK themself should list the HookGenPatcher as a dependency directly.
+* Jötunn's PrebuildTask does not generate MMHOOK dlls any more, publicized dlls can still be generated automatically.
+
 ## Version 2.6.0
 * Compatible with patch version 0.207.20
 * KeyHint performance improvements

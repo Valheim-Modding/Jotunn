@@ -19,7 +19,7 @@ Download [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_
 2. **Install Jötunn**
 Download from either [Nexus](https://www.nexusmods.com/valheim/mods/1138) / [Thunderstore](https://valheim.thunderstore.io/package/ValheimModding/Jotunn), extract the ZIP, and put the `Jotunn.dll` file inside the `plugins` folder in your Valheim install.
 
-That's it, launch the game and mod away! MMHOOK is no longer required for Jötunn.
+That's it, launch the game and mod away!
 
 ## Features
 JVL provides three distinct groups of features. Entities, which abstract the game's own entities into easy-to-use interfaces. Managers, which act as interfaces between the entities and native collections or subsystems. Utilities, which are there to aid in generic/common functions that can span many different areas.
