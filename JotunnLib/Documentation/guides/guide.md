@@ -28,7 +28,7 @@
 
 * Rename the `PluginGUID` `PluginName`, and `PluginVersion` to match your intended base release metadata. Your PluginGUID should contain your github username/organisation.
 
-* Your project base is now ready for use! You can proceed to step 3 to activate the Jötunn PreBuild tasks which add references, publicized dlls and MMHook dlls to your project. Or select a specific [Tutorial](../tutorials/overview.md) to learn more about Jötunn and mod development for Valheim.
+* Your project base is now ready for use! You can proceed to step 3 to activate the Jötunn PreBuild tasks which add references, publicized dlls to your project. Or select a specific [Tutorial](../tutorials/overview.md) to learn more about Jötunn and mod development for Valheim.
 
 ## Optional: Use the renaming script
 
@@ -49,7 +49,7 @@ Inside your solution folder is a PowerShell script called `RenameSolution.ps1`. 
 
 ## Add project references
 
-Jötunn can automatically set references to all important libraries needed to mod the game on your project. To use this feature browse to your solution directory. Create a new file called `Environment.props` and place the following contents inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. This sets up references in your project to BepInEx, the publicised dlls, the unstripped corlibs from Unity and MMHook dlls.
+Jötunn can automatically set references to all important libraries needed to mod the game on your project. To use this feature browse to your solution directory. Create a new file called `Environment.props` and place the following contents inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. This sets up references in your project to BepInEx, the publicised dlls, the unstripped corlibs from Unity.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -66,9 +66,9 @@ Jötunn can automatically set references to all important libraries needed to mo
 > [!WARNING]
 > This prebuild task will add references to your current project. If you already have setup that references it most certainly will duplicate them.
 
-## Publicize and MMHook Valheim assemblies
+## Publicize Valheim assemblies
 
-Jötunn can automatically create the publicised and MMHook assemblies for you. To use this feature you must have the `Environment.props` file from the last step. Additionally you need to create a new file called `DoPrebuild.props` in your solution directory. If you are using the ModStub the file will already be there so just change `ExecutePrebuild` to `true`. If you opt not to utilise this automation, you will need to generate your method detours and publicised assemblies, and add them to your projects references manually.
+Jötunn can automatically create the publicised assemblies for you. To use this feature you must have the `Environment.props` file from the last step. Additionally you need to create a new file called `DoPrebuild.props` in your solution directory. If you are using the ModStub the file will already be there so just change `ExecutePrebuild` to `true`. If you opt not to utilise this automation, you will need to generate your publicised assemblies, and add them to your projects references manually.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -80,15 +80,12 @@ Jötunn can automatically create the publicised and MMHook assemblies for you. T
 ```
 
 > [!WARNING]
-> This prebuild task will automate the generation of MonoMod method detours and publicising of game assemblies. By enabling this, you understand that you will be generating new publicised assemblies and method detours upon PreBuild **IF** the binaries have been updated since the last time the PreBuild has run.
+> This prebuild task will automate the generation of publicising the game assemblies. By enabling this, you understand that you will be generating new publicised assemblies upon PreBuild **IF** the binaries have been updated since the last time the PreBuild has run.
 
 ## Manual setup
 
 If you decide to disable the prebuild, you will need to:
-- acquire and install [HookGen](https://valheim.thunderstore.io/package/ValheimModding/HookGenPatcher/)
-- launch the game to generate event wrappers
-- add the `/BepInEx/plugins/MMHook/assembly_*` files to your project references. 
-- grab the [Assembly Publicizer](https://github.com/CabbageCrow/AssemblyPublicizer) *(drag drop your `/BepInEx/plugins/MMHook/assembly_*` files on top of the publiciser)* and add the resulting assemblies to your stub project.
+- Publicized assemblies are manually generated with [AssemblyPublicizer](https://github.com/CabbageCrow/AssemblyPublicizer). Please follow the instructions found on GitHub using the Valheim assembly DLLs found under `Valheim/valheim_Data/Managed`.
 - Build the stub, make sure it compiles and automates the postbuild tasks, producing compiled binaries in your plugin directory `BepInEx/plugins/yourtestmod/` folder and also generated a `yourtestmod.dll.mdb` monodebug symbols file.
 - You may now proceed to one of the [Tutorials](../tutorials/overview.md)
 
