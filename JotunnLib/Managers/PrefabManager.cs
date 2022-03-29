@@ -4,7 +4,6 @@ using System.Linq;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Entities;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -126,7 +125,7 @@ namespace Jotunn.Managers
 
             Prefabs.Add(hash, customPrefab);
         }
-        
+
         /// <summary>
         ///     Create a new prefab from an empty primitive.
         /// </summary>

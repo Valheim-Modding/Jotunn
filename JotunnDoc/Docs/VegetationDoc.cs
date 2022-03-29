@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Jotunn.Managers;
-using UnityEngine;
 
 namespace JotunnDoc.Docs
 {

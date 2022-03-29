@@ -5,7 +5,6 @@ using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Utils;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -26,7 +25,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private ItemManager() {}
+        private ItemManager() { }
 
         /// <summary>
         ///     Event that gets fired after the vanilla items are in memory and available for cloning.
@@ -108,7 +107,7 @@ namespace Jotunn.Managers
                 Logger.LogWarning($"Custom item {customItem} already added");
                 return false;
             }
-            
+
             // Add prefab to PrefabManager
             if (!PrefabManager.Instance.AddPrefab(customItem.ItemPrefab, customItem.SourceMod))
             {
@@ -631,9 +630,9 @@ namespace Jotunn.Managers
         /// </summary>
         private void RegisterCustomDataFejd(ObjectDB self, ObjectDB other)
         {
-            #pragma warning disable 612
+#pragma warning disable 612
             InvokeOnVanillaItemsAvailable();
-            #pragma warning restore 612
+#pragma warning restore 612
             InvokeOnKitbashItemsAvailable();
 
             other.UpdateItemHashes();

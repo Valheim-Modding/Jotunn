@@ -1,5 +1,4 @@
-﻿using Jotunn.GUI;
-using Jotunn.Managers;
+﻿using Jotunn.Managers;
 using UnityEngine;
 
 namespace TestMod

@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using Jotunn.Entities;
+﻿using Jotunn.Entities;
 
 namespace TestMod.ConsoleCommands
 {

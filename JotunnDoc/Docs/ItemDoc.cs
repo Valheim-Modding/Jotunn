@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using UnityEngine;

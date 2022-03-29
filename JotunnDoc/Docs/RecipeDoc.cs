@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Jotunn.Managers;
-using UnityEngine;
 
 namespace JotunnDoc.Docs
 {
