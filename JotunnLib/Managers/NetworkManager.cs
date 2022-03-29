@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
+using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Utils;
 using UnityEngine;
@@ -44,7 +45,13 @@ namespace Jotunn.Managers
         /// </summary>
         public void Init()
         {
-            On.Game.Start += Game_Start;
+            Main.Harmony.PatchAll(typeof(Patches));
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(Game), nameof(Game.Start)), HarmonyPostfix]
+            private static void Game_Start() => Instance.Game_Start();
         }
 
         /// <summary>
@@ -84,10 +91,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Register all custom RPCs as <see cref="ZRoutedRpc">ZRoutedRPCs</see>
         /// </summary>
-        private void Game_Start(On.Game.orig_Start orig, Game self)
+        private void Game_Start()
         {
-            orig(self);
-
             if (!RPCs.Any())
             {
                 return;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using HarmonyLib;
+using Jotunn.GUI;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -42,9 +43,10 @@ namespace Jotunn
         {
             // Set instance
             Instance = this;
-            
+
             // Harmony patches
             Harmony = new Harmony(ModGuid);
+            Harmony.PatchAll(typeof(ModCompatibility));
 
             // Initialize Logger
             Jotunn.Logger.Init();
@@ -81,6 +83,8 @@ namespace Jotunn
                 manager.Init();
             }
 
+            InGameConfig.Init();
+
 #if DEBUG
             // Enable helper on DEBUG build
             RootObject.AddComponent<DebugUtils.DebugHelper>();
@@ -92,11 +96,6 @@ namespace Jotunn
         private void Start()
         {
             InitializePatches();
-        }
-
-        private void OnDestroy()
-        {
-            Harmony?.UnpatchSelf();
         }
 
         private void OnApplicationQuit()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.GUI;
 using Jotunn.Utils;
@@ -213,10 +214,6 @@ namespace Jotunn.Managers
         {
             InputBlocked = true;
 
-            On.Player.TakeInput += Player_TakeInput;
-            On.PlayerController.TakeInput += PlayerController_TakeInput;
-            On.Menu.IsVisible += Menu_IsVisible;
-
             if (GameCamera.instance)
             {
                 GameCamera.instance.m_mouseCapture = false;
@@ -232,10 +229,6 @@ namespace Jotunn.Managers
             InputBlocked = false;
             InputBlockRequests = 0;
 
-            On.Player.TakeInput -= Player_TakeInput;
-            On.PlayerController.TakeInput -= PlayerController_TakeInput;
-            On.Menu.IsVisible -= Menu_IsVisible;
-
             if (GameCamera.instance)
             {
                 GameCamera.instance.m_mouseCapture = true;
@@ -243,20 +236,28 @@ namespace Jotunn.Managers
             }
         }
 
-        private static bool PlayerController_TakeInput(On.PlayerController.orig_TakeInput orig, PlayerController self)
+        private static void PlayerController_TakeInput(ref bool __result)
         {
-            orig(self);
-            return false;
+            if (InputBlocked)
+            {
+                __result = false;
+            }
         }
-        private static bool Player_TakeInput(On.Player.orig_TakeInput orig, Player self)
+
+        private static void Player_TakeInput(ref bool __result)
         {
-            orig(self);
-            return false;
+            if (InputBlocked)
+            {
+                __result = false;
+            }
         }
-        private static bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
+
+        private static void Menu_IsVisible(ref bool __result)
         {
-            orig();
-            return true;
+            if (InputBlocked)
+            {
+                __result = true;
+            }
         }
 
         /// <summary>
@@ -273,9 +274,26 @@ namespace Jotunn.Managers
                 return;
             }
 
+            Main.Harmony.PatchAll(typeof(Patches));
             SceneManager.sceneLoaded += InitialLoad;
-            On.FejdStartup.SetupGui += FejdStartup_SetupGui;
-            On.Game.Start += Game_Start;
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(Player), nameof(Player.TakeInput)), HarmonyPostfix]
+            private static void Player_TakeInput(ref bool __result) => GUIManager.Player_TakeInput(ref __result);
+
+            [HarmonyPatch(typeof(PlayerController), nameof(PlayerController.TakeInput)), HarmonyPostfix]
+            private static void PlayerController_TakeInput(ref bool __result) => GUIManager.PlayerController_TakeInput(ref __result);
+
+            [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible)), HarmonyPostfix]
+            private static void Menu_IsVisible(ref bool __result) => GUIManager.Menu_IsVisible(ref __result);
+
+            [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui)), HarmonyPostfix]
+            private static void FejdStartup_SetupGui(FejdStartup __instance) => Instance.FejdStartup_SetupGui(__instance);
+
+            [HarmonyPatch(typeof(Game), nameof(Game.Start)), HarmonyPostfix]
+            private static void Game_Start(Game __instance) => Instance.Game_Start(__instance);
         }
 
         /// <summary>
@@ -394,10 +412,8 @@ namespace Jotunn.Managers
             }
         }
 
-        private void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
+        private void FejdStartup_SetupGui(FejdStartup self)
         {
-            orig(self);
-
             GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "GuiRoot");
             Transform gui = root?.transform.Find("GUI");
             if (!gui)
@@ -410,10 +426,8 @@ namespace Jotunn.Managers
             ResetInputBlock();
         }
 
-        private void Game_Start(On.Game.orig_Start orig, Game self)
+        private void Game_Start(Game self)
         {
-            orig(self);
-
             GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
             Transform gui = root?.transform.Find("LoadingGUI");
             if (!gui)

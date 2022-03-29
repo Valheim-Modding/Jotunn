@@ -8,10 +8,10 @@
   <Import Project="JotunnLibRefsManaged.props" Condition="Exists('$(SolutionDir)Environment.props') And Exists('$(VALHEIM_INSTALL)/unstripped_managed/mscorlib.dll') And !Exists('$(VALHEIM_INSTALL)/unstripped_corlib/mscorlib.dll')" />
   <UsingTask TaskName="JotunnBuildTask" AssemblyFile="JotunnBuildTask.dll" />
   <Target Name="JotunnBuildTaskRunner" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(SolutionDir)Environment.props')" >
-    <Message Importance="High" Text="Executing Jotunn Prebuild Task creating MMHOOK dlls"/> 
+    <Message Importance="High" Text="Executing Jotunn Prebuild Task"/> 
     <JotunnBuildTask ValheimPath="$(VALHEIM_INSTALL)" />
   </Target>
   <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' != 'true' And Exists('$(SolutionDir)Environment.props')" >
-    <Message Importance="High" Text="Skipping MMHOOK dll generation"/>
+    <Message Importance="High" Text="Skipping Jotunn Prebuild Task"/>
   </Target>
 </Project>

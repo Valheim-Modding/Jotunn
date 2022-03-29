@@ -1,16 +1,21 @@
 ﻿using System;
 using BepInEx.Configuration;
+using HarmonyLib;
 using UnityEngine;
 
 namespace Jotunn.DebugUtils
 {
     internal class ZNetDiddelybug : MonoBehaviour
     {
+        private static ZNetDiddelybug instance;
+
         private ConfigEntry<bool> _isModEnabled;
         private ConfigEntry<bool> _isOutputEnabled;
 
         private void Awake()
         {
+            instance = this;
+
             _isModEnabled = Main.Instance.Config.Bind<bool>(
                 nameof(ZNetDiddelybug), "Enabled", false, 
                 new ConfigDescription("Globally enable or disable the RPC debug flag in ZRpc. Needs a server restart.", null,
@@ -21,24 +26,33 @@ namespace Jotunn.DebugUtils
                 new ConfigDescription("Enable or disable RPC debug logging. Needs the debug flag to be enabled.", null,
                     new ConfigurationManagerAttributes() { IsAdminOnly = true }));
 
-            On.ZNet.Awake += ZNet_Awake;
-            On.ZSteamSocket.Send += ZSteamSocket_Send;
-            On.ZSteamSocket.Recv += ZSteamSocket_Recv;
-            On.ZNetView.Awake += ZNetView_Awake;
+           Main.Harmony.PatchAll(typeof(Patches));
         }
 
-        private void ZNetView_Awake(On.ZNetView.orig_Awake orig, ZNetView self)
-        { 
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(ZNet), nameof(ZNet.Awake)), HarmonyPrefix]
+            private static void ZNet_Awake(ZNet __instance) => instance.ZNet_Awake(__instance);
 
-            if (_isModEnabled.Value
-                && (ZNetView.m_forceDisableInit || ZDOMan.instance == null))
+            [HarmonyPatch(typeof(ZNetView), nameof(ZNetView.Awake)), HarmonyPrefix]
+            private static void ZNetView_Awake(ZNetView __instance) => instance.ZNetView_Awake(__instance);
+
+            [HarmonyPatch(typeof(ZSteamSocket), nameof(ZSteamSocket.Send)), HarmonyPrefix]
+            private static void ZSteamSocket_Send(ZSteamSocket __instance, ZPackage pkg) => instance.ZSteamSocket_Send(__instance, pkg);
+
+            [HarmonyPatch(typeof(ZSteamSocket), nameof(ZSteamSocket.Recv)), HarmonyPostfix]
+            private static void ZSteamSocket_Recv(ZSteamSocket __instance, ref ZPackage __result) => instance.ZSteamSocket_Recv(__instance, __result);
+        }
+
+        private void ZNetView_Awake(ZNetView self)
+        {
+            if (_isModEnabled.Value && (ZNetView.m_forceDisableInit || ZDOMan.instance == null))
             {
-                Jotunn.Logger.LogWarning($"ZNetView of {self.name} will self-destruct");
-            } 
-            orig(self);
+                Logger.LogWarning($"ZNetView of {self.name} will self-destruct");
+            }
         }
 
-        private void ZNet_Awake(On.ZNet.orig_Awake orig, ZNet self)
+        private void ZNet_Awake(ZNet self)
         {
             Logger.LogDebug($"ZNet awoken. IsServer: {self.IsServer()} IsDedicated: {self.IsDedicated()}");
 
@@ -46,15 +60,12 @@ namespace Jotunn.DebugUtils
             {
                 ZRpc.m_DEBUG = true;
             }
-
-            orig(self);
         }
 
-        private void ZSteamSocket_Send(On.ZSteamSocket.orig_Send orig, ZSteamSocket self, ZPackage pkg)
+        private void ZSteamSocket_Send(ZSteamSocket self, ZPackage pkg)
         {
             if (!(_isModEnabled.Value && _isOutputEnabled.Value))
             {
-                orig(self, pkg);
                 return;
             }
             
@@ -81,17 +92,14 @@ namespace Jotunn.DebugUtils
                 }
                 catch (Exception) { }
             }
-
-            orig(self, pkg);
         }
-        private ZPackage ZSteamSocket_Recv(On.ZSteamSocket.orig_Recv orig, ZSteamSocket self)
+
+        private void ZSteamSocket_Recv(ZSteamSocket self, ZPackage pkg)
         {
             if (!(_isModEnabled.Value && _isOutputEnabled.Value))
             {
-                return orig(self);
+                return;
             }
-
-            var pkg = orig(self);
 
             if (pkg != null)
             {
@@ -119,8 +127,6 @@ namespace Jotunn.DebugUtils
                 }
                 pkg.SetPos(0);
             }
-
-            return pkg;
         }
     }
 }

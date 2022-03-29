@@ -8,10 +8,10 @@ namespace JotunnDoc.Docs
     {
         public SpriteDoc() : base("gui/sprite-list.md")
         {
-            SceneManager.sceneLoaded += docSprites;
+            SceneManager.sceneLoaded += DocSprites;
         }
 
-        public void docSprites(Scene scene, LoadSceneMode mode)
+        public void DocSprites(Scene scene, LoadSceneMode mode)
         {
             if (Generated)
             {

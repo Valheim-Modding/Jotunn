@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Text;
 using Jotunn.Managers;
+using JotunnDoc.Patches;
 using UnityEngine;
 
 namespace JotunnDoc.Docs
@@ -9,13 +10,11 @@ namespace JotunnDoc.Docs
     {
         public ShaderDoc() : base("prefabs/shader-list.md")
         {
-            On.Player.OnSpawned += DocShaders;
+            GameEvents.OnPlayerSpawned += DocShaders;
         }
 
-        private void DocShaders(On.Player.orig_OnSpawned orig, Player self)
+        private void DocShaders(Player self)
         {
-            orig(self);
-
             if (Generated)
             {
                 return;

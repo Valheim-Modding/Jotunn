@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using BepInEx.Configuration;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ namespace Jotunn.DebugUtils
 {
     internal class DebugInfo : MonoBehaviour
     {
+        private static DebugInfo instance;
         private ConfigEntry<bool> Enabled;
         private ConfigEntry<Vector2> Position;
 
@@ -32,6 +34,8 @@ namespace Jotunn.DebugUtils
 
         private void Awake()
         {
+            instance = this;
+
             Enabled = Main.Instance.Config.Bind(nameof(DebugInfo), "Enabled", true, "Globally enable or disable the debug info panel.");
 
             Enabled.SettingChanged += (sender, eventArgs) =>
@@ -51,16 +55,22 @@ namespace Jotunn.DebugUtils
                     new Vector2(40f, 600f),
                     "Position of the DebugInfo panel, starting at the lower left corner.");
 
-            Position.SettingChanged +=
-                (sender, eventArgs) => Panel?.SetPosition(Position.Value);
-            
-            On.Hud.Awake += Hud_Awake;
+            Position.SettingChanged += (sender, eventArgs) => Panel?.SetPosition(Position.Value);
+
+            Main.Harmony.PatchAll(typeof(Patches));
         }
 
-        private void Hud_Awake(On.Hud.orig_Awake orig, Hud self)
+        private static class Patches
         {
-            orig(self);
+            [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix]
+            private static void Hud_Awake(Hud __instance) => instance.Hud_Awake(__instance);
 
+            [HarmonyPatch(typeof(Hud), nameof(Hud.Update)), HarmonyPostfix]
+            private static void Hud_Update(Hud __instance) => instance.FastUpdate(__instance);
+        }
+
+        private void Hud_Awake(Hud self)
+        {
             if (Enabled.Value)
             {
                 CreatePanel(self);
@@ -83,28 +93,30 @@ namespace Jotunn.DebugUtils
                     .AddPanelRow("Key", out _keyValue)
                     .AddPanelRow("DebugMode", out _debugModeValue);
             
-            On.Hud.Update += FastUpdate;
             InvokeRepeating("LazyUpdate", 1.0f, 0.5f);
         }
 
         private void DestroyPanel()
         {
             Panel?.DestroyPanel();
-            
-            On.Hud.Update -= FastUpdate;
+            Panel = null;
+
             CancelInvoke("LazyUpdate");
         }
-        
-        private void FastUpdate(On.Hud.orig_Update orig, Hud self)
+
+        private void FastUpdate(Hud self)
         {
-            orig(self);
-            
-            if (EnvMan.instance != null && ZNet.instance != null)
+            if (Panel == null)
+            {
+                return;
+            }
+
+            if (EnvMan.instance && ZNet.instance)
             {
                 UpdateTime();
             }
 
-            if (Player.m_localPlayer != null)
+            if (Player.m_localPlayer)
             {
                 UpdatePlayer();
             }
@@ -122,7 +134,7 @@ namespace Jotunn.DebugUtils
                 UpdateZones();
             }
         }
-        
+
         private void UpdateTime()
         {
             _envTimeValue.text = string.Empty;

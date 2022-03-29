@@ -104,11 +104,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            // Setup hooks
-            On.Minimap.Start += Minimap_Start;
-            On.Minimap.LoadMapData += Minimap_LoadMapData;
-            On.Minimap.OnDestroy += Minimap_OnDestroy;
-            On.Minimap.CenterMap += Minimap_CenterMap;
+            Main.Harmony.PatchAll(typeof(Patches));
 
             // Load texture with all pixels (RGBA) set to 0f and our overlay panel.
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
@@ -124,6 +120,21 @@ namespace Jotunn.Managers
             Main.Harmony.Patch(
                 AccessTools.DeclaredMethod(typeof(Texture2D), nameof(Texture2D.Apply), new[] {typeof(bool), typeof(bool)}),
                 new HarmonyMethod(AccessTools.DeclaredMethod(typeof(MinimapManager), nameof(Texture2D_Apply))));
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(Minimap), nameof(Minimap.Start)), HarmonyPostfix]
+            private static void Start() => Instance.Minimap_Start();
+
+            [HarmonyPatch(typeof(Minimap), nameof(Minimap.LoadMapData)), HarmonyPostfix]
+            private static void LoadMapData() => Instance.Minimap_LoadMapData();
+
+            [HarmonyPatch(typeof(Minimap), nameof(Minimap.CenterMap)), HarmonyPostfix]
+            private static void Minimap_CenterMap(Minimap __instance, Vector3 centerPoint) => Instance.Minimap_CenterMap(__instance, centerPoint);
+
+            [HarmonyPatch(typeof(Minimap), nameof(Minimap.OnDestroy)), HarmonyPostfix]
+            private static void Minimap_OnDestroy() => Instance.Minimap_OnDestroy();
         }
 
         /// <summary>
@@ -266,9 +277,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Setup GUI on <see cref="Minimap.Start"/>.
         /// </summary>
-        private void Minimap_Start(On.Minimap.orig_Start orig, Minimap self)
+        private void Minimap_Start()
         {
-            orig(self);
             SetupGUI();
             StartWatchdog();
             InvokeOnVanillaMapAvailable();
@@ -285,9 +295,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Setup textures and GUI on <see cref="Minimap.LoadMapData"/>
         /// </summary>
-        private void Minimap_LoadMapData(On.Minimap.orig_LoadMapData orig, Minimap self)
+        private void Minimap_LoadMapData()
         {
-            orig(self);
             InvokeOnVanillaMapDataLoaded();
         }
 
@@ -664,10 +673,8 @@ namespace Jotunn.Managers
             OverlayPanel?.gameObject.SetActive(true);
         }
 
-        private void Minimap_CenterMap(On.Minimap.orig_CenterMap orig, Minimap self, Vector3 centerpoint)
+        private void Minimap_CenterMap(Minimap self, Vector3 centerpoint)
         {
-            orig(self, centerpoint);
-
             if (!OverlayLarge)
             {
                 return;
@@ -703,10 +710,8 @@ namespace Jotunn.Managers
             OverlaySmall.GetComponent<RawImage>().uvRect = smallRect;
         }
 
-        private void Minimap_OnDestroy(On.Minimap.orig_OnDestroy orig, Minimap self)
+        private void Minimap_OnDestroy()
         {
-            orig(self);
-
             foreach (var overlay in Overlays.Values)
             {
                 overlay.Destroy();

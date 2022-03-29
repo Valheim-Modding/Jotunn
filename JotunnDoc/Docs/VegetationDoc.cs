@@ -12,10 +12,10 @@ namespace JotunnDoc.Docs
 
         public VegetationDoc() : base("zones/vegetation-list.md")
         {
-            ZoneManager.OnVanillaLocationsAvailable += docVegetations;
+            ZoneManager.OnVanillaLocationsAvailable += DocVegetations;
         }
 
-        private void docVegetations()
+        private void DocVegetations()
         {
             if (Generated)
             {

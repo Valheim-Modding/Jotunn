@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JotunnDoc.Patches;
 
 namespace JotunnDoc.Docs
 {
@@ -15,7 +16,7 @@ namespace JotunnDoc.Docs
             On.ZNetView.InvokeRPC_string_ObjectArray += ZNetView_InvokeRPC1;
             On.ZNetView.InvokeRPC_long_string_ObjectArray += ZNetView_InvokeRPC2;
             On.ZRpc.Invoke += ZRpc_Invoke;*/
-            On.Game.OnDestroy += docCollectedRPCs;
+            GameEvents.OnGameDestory += DocCollectedRPCs;
         }
 /*
         private void ZNetView_InvokeRPC2(On.ZNetView.orig_InvokeRPC_long_string_ObjectArray orig, ZNetView self, long targetID, string method, object[] parameters)
@@ -70,7 +71,7 @@ namespace JotunnDoc.Docs
             }
         }
 */
-        private void docCollectedRPCs(On.Game.orig_OnDestroy orig, Game self)
+        private void DocCollectedRPCs(Game self)
         {
             if (Generated)
             {

@@ -65,20 +65,7 @@ namespace Jotunn.Managers
             AdminRPC = NetworkManager.Instance.AddRPC(
                 Main.Instance.Info.Metadata, "AdminStatus", null, AdminRPC_OnClientReceive);
 
-            On.ZNet.Awake += ZNet_Awake;
-
-            // Hook RPC_PeerInfo for initial retrieval of admin status and configuration
-            On.ZNet.RPC_PeerInfo += ZNet_RPC_PeerInfo;
-
-            // Hook SyncedList for admin list changes
-            On.SyncedList.Load += SyncedList_Load;
-            On.SyncedList.Save += SyncedList_Save;
-
-            // Hook menu for ConfigManager integration
-            On.Menu.IsVisible += Menu_IsVisible;
-
-            // Hook Fejd for ConfigReloaded event subscription
-            On.FejdStartup.Awake += FejdStartup_Awake;
+            Main.Harmony.PatchAll(typeof(Patches));
 
             // Hook start scene to reset config
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
@@ -106,6 +93,34 @@ namespace Jotunn.Managers
             }
         }
 
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(ZNet), nameof(ZNet.Awake)), HarmonyPostfix]
+            private static void ZNet_Awake(ZNet __instance) => Instance.ZNet_Awake(__instance);
+
+            // Hook RPC_PeerInfo for initial retrieval of admin status and configuration
+            [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPrefix]
+            private static void ZNet_RPC_Pre_PeerInfo(ZNet __instance, ZRpc rpc, ref PeerInfoBlockingSocket __state) => Instance.ZNet_RPC_Pre_PeerInfo(__instance, rpc, ref __state);
+
+            [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPostfix]
+            private static void ZNet_RPC_Post_PeerInfo(ZNet __instance, ZRpc rpc, ref PeerInfoBlockingSocket __state) => Instance.ZNet_RPC_Post_PeerInfo(__instance, rpc, ref __state);
+
+            // Hook SyncedList for admin list changes
+            [HarmonyPatch(typeof(SyncedList), nameof(SyncedList.Load)), HarmonyPostfix]
+            private static void SyncedList_Load(SyncedList __instance) => Instance.SyncedList_Load(__instance);
+
+            [HarmonyPatch(typeof(SyncedList), nameof(SyncedList.Save)), HarmonyPostfix]
+            private static void SyncedList_Save(SyncedList __instance) => Instance.SyncedList_Save(__instance);
+
+            // Hook menu for ConfigManager integration
+            [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible)), HarmonyPostfix]
+            private static void Menu_IsVisible(ref bool __result) => Instance.Menu_IsVisible(ref __result);
+
+            // Hook Fejd for ConfigReloaded event subscription
+            [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake)), HarmonyPrefix]
+            private static void FejdStartup_Awake(FejdStartup __instance) => Instance.FejdStartup_Awake(__instance);
+        }
+
         /// <summary>
         ///     Init or reset admin and configuration state
         /// </summary>
@@ -125,12 +140,9 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hook <see cref="ZNet.Awake"/> to start a watchdog Coroutine which monitors the admin list.
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
-        private void ZNet_Awake(On.ZNet.orig_Awake orig, ZNet self)
+        private void ZNet_Awake(ZNet self)
         {
-            orig(self);
-
             if (self.IsServer())
             {
                 IEnumerator watchdog()
@@ -148,11 +160,10 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hook ZNet.RPC_PeerInfo on the server to send initial data
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
         /// <param name="rpc"></param>
-        /// <param name="pkg"></param>
-        private void ZNet_RPC_PeerInfo(On.ZNet.orig_RPC_PeerInfo orig, ZNet self, ZRpc rpc, ZPackage pkg)
+        /// <param name="__state"></param>
+        private void ZNet_RPC_Pre_PeerInfo(ZNet self, ZRpc rpc, ref PeerInfoBlockingSocket __state)
         {
             PeerInfoBlockingSocket bufferingSocket = null;
 
@@ -163,7 +174,12 @@ namespace Jotunn.Managers
                 rpc.m_socket = bufferingSocket;
             }
 
-            orig(self, rpc, pkg);
+            __state = bufferingSocket;
+        }
+
+        private void ZNet_RPC_Post_PeerInfo(ZNet self, ZRpc rpc, ref PeerInfoBlockingSocket __state)
+        {
+            PeerInfoBlockingSocket bufferingSocket = __state;
 
             // Send initial data
             if (self.IsServer())
@@ -194,6 +210,7 @@ namespace Jotunn.Managers
                         bufferingSocket.Original.Send(package);
                     }
                 }
+
                 self.StartCoroutine(SynchronizeInitialData());
             }
         }
@@ -201,12 +218,9 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hook <see cref="SyncedList.Save"/> to synchronize the admin status to the clients
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
-        private void SyncedList_Save(On.SyncedList.orig_Save orig, SyncedList self)
+        private void SyncedList_Save(SyncedList self)
         {
-            orig(self);
-
             // Check if it really is the admin list
             if (ZNet.instance != null && self == ZNet.instance.m_adminList)
             {
@@ -217,12 +231,9 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hook <see cref="SyncedList.Load"/> to synchronize the admin status to the clients
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
-        private void SyncedList_Load(On.SyncedList.orig_Load orig, SyncedList self)
+        private void SyncedList_Load(SyncedList self)
         {
-            orig(self);
-
             // Check if it really is the admin list
             if (ZNet.instance != null && self == ZNet.instance.m_adminList)
             {
@@ -371,11 +382,11 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hook <see cref="Menu.IsVisible"/> to unlock cursor properly and disable camera rotation
         /// </summary>
-        /// <param name="orig"></param>
+        /// <param name="result"></param>
         /// <returns></returns>
-        private bool Menu_IsVisible(On.Menu.orig_IsVisible orig)
+        private void Menu_IsVisible(ref bool result)
         {
-            return orig() | ConfigurationManagerWindowShown;
+            result = result || ConfigurationManagerWindowShown;
         }
 
         /// <summary>
@@ -399,9 +410,8 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Initial cache the config values of dependent plugins and register ourself to config change events
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
-        private void FejdStartup_Awake(On.FejdStartup.orig_Awake orig, FejdStartup self)
+        private void FejdStartup_Awake(FejdStartup self)
         {
             var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
             foreach (var config in loadedPlugins.Where(x => x.Value.Config != null).Select(x => x.Value.Config))
@@ -418,8 +428,6 @@ namespace Jotunn.Managers
                 AccessTools.DeclaredMethod(typeof(ConfigEntryBase), nameof(ConfigEntryBase.SetSerializedValue)),
                 new HarmonyMethod(AccessTools.DeclaredMethod(typeof(SynchronizationManager),
                     nameof(ConfigEntryBase_SetSerializedValue))));
-
-            orig(self);
         }
 
         /// <summary>

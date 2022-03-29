@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Jotunn.Entities;
 using Jotunn.Utils;
+using JotunnDoc.Patches;
 using UnityEngine;
 
 namespace JotunnDoc.Docs
@@ -11,13 +12,11 @@ namespace JotunnDoc.Docs
     {
         public MaterialDoc() : base("prefabs/material-list.md")
         {
-            On.Player.OnSpawned += DocMaterials;
+            GameEvents.OnPlayerSpawned += DocMaterials;
         }
 
-        private void DocMaterials(On.Player.orig_OnSpawned orig, Player self)
+        private void DocMaterials(Player self)
         {
-            orig(self);
-
             if (Generated)
             {
                 return;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using HarmonyLib;
 using Jotunn.ConsoleCommands;
 using Jotunn.Entities;
 
@@ -43,8 +44,16 @@ namespace Jotunn.Managers
         {
             AddConsoleCommand(new ClearCommand());
 
-            On.Console.Awake += AddCustomCommands;
-            On.Terminal.ConsoleCommand.GetTabOptions += ConsoleCommand_GetTabOptions;
+            Main.Harmony.PatchAll(typeof(Patches));
+        }
+
+        private static class Patches
+        {
+            [HarmonyPatch(typeof(Console), nameof(Console.Awake)), HarmonyPostfix]
+            private static void AddCustomCommands(Console __instance) => Instance.AddCustomCommands(__instance);
+
+            [HarmonyPatch(typeof(Terminal.ConsoleCommand), nameof(Terminal.ConsoleCommand.GetTabOptions)), HarmonyPostfix]
+            private static void ConsoleCommand_GetTabOptions(Terminal.ConsoleCommand __instance, ref List<string> __result) => Instance.ConsoleCommand_GetTabOptions(__instance, ref __result);
         }
 
         /// <summary>
@@ -70,10 +79,8 @@ namespace Jotunn.Managers
             _customCommands.Add(cmd);
         }
 
-        private void AddCustomCommands(On.Console.orig_Awake orig, Console self)
+        private void AddCustomCommands(Console self)
         {
-            orig(self);
-
             if (_customCommands.Any())
             {
                 Logger.LogInfo($"Adding {_customCommands.Count} commands to the Console");
@@ -104,19 +111,15 @@ namespace Jotunn.Managers
         ///     Fire <see cref="OnGetTabOptions"/> for any ConsoleCommand when its tabOptions member
         ///     is first populated to add Jötunn entities to the option list
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="self"></param>
+        /// <param name="result"></param>
         /// <returns></returns>
-        private List<string> ConsoleCommand_GetTabOptions(On.Terminal.ConsoleCommand.orig_GetTabOptions orig, Terminal.ConsoleCommand self)
+        private void ConsoleCommand_GetTabOptions(Terminal.ConsoleCommand self, ref List<string> result)
         {
             if (self.m_tabOptions == null && self.m_tabOptionsFetcher != null)
             {
-                var ret = orig(self);
-                OnGetTabOptions?.SafeInvoke(self.Command, ret);
-                return ret;
+                OnGetTabOptions?.SafeInvoke(self.Command, result);
             }
-
-            return orig(self);
         }
     }
 }

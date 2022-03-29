@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using HarmonyLib;
 
 namespace Jotunn.Utils
 {
@@ -9,13 +10,8 @@ namespace Jotunn.Utils
     /// </summary>
     public static class BoneReorder
     {
-        private static bool utilityChanged = false,
-            chestChanged = false,
-            helmetChanged = false,
-            legChanged = false,
-            shoulderChanged = false,
-            applied = false;
-        
+        private static bool applied = false;
+
         /// <summary>
         ///     Corrects any bone disorder caused by unity incorrectly importing ripped assets.
         ///     Once enabled, bone reordering will occur whenever the equipment changes.
@@ -25,12 +21,7 @@ namespace Jotunn.Utils
         {
             if (!applied)
             {
-                On.VisEquipment.SetUtilityEquiped += VisEquipmentOnSetUtilityEquiped;
-                On.VisEquipment.SetShoulderEquiped += VisEquipmentOnSetShoulderEquiped;
-                On.VisEquipment.SetChestEquiped += VisEquipmentOnSetChestEquiped;
-                On.VisEquipment.SetHelmetEquiped += VisEquipmentOnSetHelmetEquiped;
-                On.VisEquipment.SetLegEquiped += VisEquipmentOnSetLegEquiped;
-
+                Main.Harmony.PatchAll(typeof(BoneReorder));
                 applied = true;
             }
         }
@@ -44,55 +35,50 @@ namespace Jotunn.Utils
             return applied;
         }
 
-        private static bool VisEquipmentOnSetLegEquiped(On.VisEquipment.orig_SetLegEquiped orig, VisEquipment self, int hash)
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLegEquiped)), HarmonyPostfix]
+        private static void VisEquipmentOnSetLegEquiped(VisEquipment __instance, int hash, ref bool __result)
         {
-            var changed = self.m_currentLegItemHash == hash;
-            if (changed) legChanged = false;
-            else legChanged = true;
-            var ret = orig(self, hash);
-            if (legChanged && self.m_legItemInstances != null) ReorderBones(self, hash, self.m_legItemInstances);
-            return ret;
+            if (__result && __instance.m_legItemInstances != null)
+            {
+                ReorderBones(__instance, hash, __instance.m_legItemInstances);
+            }
         }
 
-        private static bool VisEquipmentOnSetHelmetEquiped(On.VisEquipment.orig_SetHelmetEquiped orig, VisEquipment self, int hash, int hairhash)
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetHelmetEquiped)), HarmonyPostfix]
+
+        private static void VisEquipmentOnSetHelmetEquiped(VisEquipment __instance, int hash, int hairHash, ref bool __result)
         {
-            var changed = self.m_currentHelmetItemHash == hash;
-            if (changed) helmetChanged = false;
-            else helmetChanged = true;
-            var ret = orig(self, hash, hairhash);
-            if (helmetChanged && self.m_helmetItemInstance != null)
-                ReorderBones(self, hash, new List<GameObject>{self.m_helmetItemInstance}); //This is a single object instead of a collection, because reasons?
-            return ret;
+            if (__result && __instance.m_helmetItemInstance != null)
+            {
+                ReorderBones(__instance, hash, new List<GameObject>{__instance.m_helmetItemInstance}); //This is a single object instead of a collection, because reasons?
+            }
         }
 
-        private static bool VisEquipmentOnSetChestEquiped(On.VisEquipment.orig_SetChestEquiped orig, VisEquipment self, int hash)
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetChestEquiped)), HarmonyPostfix]
+        private static void VisEquipmentOnSetChestEquiped(VisEquipment __instance, int hash, ref bool __result)
         {
-            var changed = self.m_currentChestItemHash == hash;
-            if (changed) chestChanged = false;
-            else chestChanged = true;
-            var ret = orig(self, hash);
-            if (chestChanged && self.m_chestItemInstances != null) ReorderBones(self, hash, self.m_chestItemInstances);
-            return ret;
+            if (__result && __instance.m_chestItemInstances != null)
+            {
+                ReorderBones(__instance, hash, __instance.m_chestItemInstances);
+            }
         }
 
-        private static bool VisEquipmentOnSetShoulderEquiped(On.VisEquipment.orig_SetShoulderEquiped orig, VisEquipment self, int hash, int variant)
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetShoulderEquiped)), HarmonyPostfix]
+        private static void VisEquipmentOnSetShoulderEquiped(VisEquipment __instance, int hash, int variant, ref bool __result)
         {
-            var changed = self.m_currentShoulderItemHash == hash;
-            if (changed) shoulderChanged = false;
-            else shoulderChanged = true;
-            var ret = orig(self, hash, variant);
-            if(shoulderChanged && self.m_shoulderItemInstances != null) ReorderBones(self, hash, self.m_shoulderItemInstances);
-            return ret;
+            if (__result && __instance.m_shoulderItemInstances != null)
+            {
+                ReorderBones(__instance, hash, __instance.m_shoulderItemInstances);
+            }
         }
-        
-        private static bool VisEquipmentOnSetUtilityEquiped(On.VisEquipment.orig_SetUtilityEquiped orig, VisEquipment self, int hash)
+
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetUtilityEquiped)), HarmonyPostfix]
+        private static void VisEquipmentOnSetUtilityEquiped(VisEquipment __instance, int hash, ref bool __result)
         {
-            var changed = self.m_currentUtilityItemHash == hash;
-            if (changed) utilityChanged = false;
-            else utilityChanged = true;
-            var ret = orig(self, hash);
-            if(utilityChanged && self.m_utilityItemInstances != null) ReorderBones(self, hash, self.m_utilityItemInstances);
-            return ret;
+            if (__result && __instance.m_utilityItemInstances != null)
+            {
+                ReorderBones(__instance, hash, __instance.m_utilityItemInstances);
+            }
         }
 
         /// <summary>

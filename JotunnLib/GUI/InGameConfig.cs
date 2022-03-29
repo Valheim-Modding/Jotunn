@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
+using HarmonyLib;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -58,7 +59,6 @@ namespace Jotunn.GUI
         /// <summary>
         ///     Load and init hooks on client instances
         /// </summary>
-        [PatchInit(0)]
         public static void Init()
         {
             // Dont init on a headless server
@@ -69,8 +69,7 @@ namespace Jotunn.GUI
 
             LoadDefaultLocalization();
             GUIManager.OnCustomGUIAvailable += LoadModSettingsPrefab;
-            On.FejdStartup.SetupGui += FejdStartup_SetupGui;
-            On.Menu.Start += Menu_Start;
+            Main.Harmony.PatchAll(typeof(InGameConfig));
         }
 
         /// <summary>
@@ -213,15 +212,14 @@ namespace Jotunn.GUI
         /// <summary>
         ///     Add default localization and instantiate the mod settings button in Fejd.
         /// </summary>
-        private static void FejdStartup_SetupGui(On.FejdStartup.orig_SetupGui orig, FejdStartup self)
+        [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui)), HarmonyPostfix]
+        private static void FejdStartup_SetupGui(FejdStartup __instance)
         {
-            orig(self);
-
             try
             {
-                var menuList = self.m_mainMenu.transform.Find("MenuList");
+                var menuList = __instance.m_mainMenu.transform.Find("MenuList");
                 CreateMenu(menuList);
-                self.StartCoroutine(CreateWindow(menuList));
+                __instance.StartCoroutine(CreateWindow(menuList));
             }
             catch (Exception ex)
             {
@@ -234,15 +232,14 @@ namespace Jotunn.GUI
         ///     Cache current configuration values for possible sync and instantiate
         ///     the mod settings button on first in-game menu start.
         /// </summary>
-        private static void Menu_Start(On.Menu.orig_Start orig, Menu self)
+        [HarmonyPatch(typeof(Menu), nameof(Menu.Start)), HarmonyPostfix]
+        private static void Menu_Start(Menu __instance)
         {
-            orig(self);
-
             try
             {
                 SynchronizationManager.Instance.CacheConfigurationValues();
-                CreateMenu(self.m_menuDialog);
-                self.StartCoroutine(CreateWindow(self.m_menuDialog));
+                CreateMenu(__instance.m_menuDialog);
+                __instance.StartCoroutine(CreateWindow(__instance.m_menuDialog));
             }
             catch (Exception ex)
             {

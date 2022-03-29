@@ -6,10 +6,10 @@ namespace JotunnDoc.Docs
     {
         public InputDoc() : base("input/input-list.md")
         {
-            SceneManager.sceneLoaded += docInputs;
+            SceneManager.sceneLoaded += DocInputs;
         }
 
-        public void docInputs(Scene scene, LoadSceneMode mode)
+        public void DocInputs(Scene scene, LoadSceneMode mode)
         {
             if (Generated)
             {

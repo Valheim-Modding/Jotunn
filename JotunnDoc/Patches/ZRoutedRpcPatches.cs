@@ -1,22 +1,16 @@
 ﻿using System;
-using Jotunn.Utils;
+using HarmonyLib;
 using UnityEngine;
 
 namespace JotunnDoc.Patches
 {
+    [HarmonyPatch]
     internal class ZRoutedRpcPatches
     {
-        [PatchInit(0)]
-        public static void Init()
-        {
-            On.ZRoutedRpc.Register += ZRoutedRpc_Register;
-        }
-
-        internal static void ZRoutedRpc_Register(On.ZRoutedRpc.orig_Register orig, ZRoutedRpc self, string name, Action<long> f)
+        [HarmonyPatch(typeof(ZRoutedRpc), nameof(ZRoutedRpc.Register)), HarmonyPrefix]
+        internal static void ZRoutedRpc_Register(ZRoutedRpc self, string name, Action<long> f)
         {
             Debug.Log("Registered RPC: " + name + " (" + name.GetStableHashCode() + ")");
-            orig(self, name, f);
         }
-
     }
 }

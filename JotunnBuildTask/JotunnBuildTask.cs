@@ -22,24 +22,7 @@ namespace JotunnBuildTask
         internal const string PublicizedAssemblies = "publicized_assemblies";
         internal const string Bepinex = "BepInEx";
         internal const string Plugins = "plugins";
-        internal const string Mmhook = "MMHOOK";
         internal const string Publicized = "publicized";
-
-        /// <summary>
-        ///     Hash file and compare with old hash.
-        /// </summary>
-        /// <param name="assembly">Valheim assembly</param>
-        /// <param name="managedPath">Path to managed assemblies</param>
-        private bool HashAndCompare(string assembly, string mmhookfolder, out string hash)
-        {
-            Log.LogMessage(MessageImportance.High, $"Processing {assembly}");
-
-            hash = MD5HashFile(assembly);
-
-            string oldHash = ReadHashFromDll(Path.Combine(mmhookfolder, $"{Mmhook}_{Path.GetFileName(assembly)}"));
-
-            return hash == oldHash;
-        }
 
         private string ReadHashFromDll(string dllFile)
         {
@@ -100,28 +83,15 @@ namespace JotunnBuildTask
                     Directory.CreateDirectory(publicizedFolder);
                 }
 
-                // Get MMHOOK folder
-                string mmhookFolder = Path.Combine(ValheimPath, Bepinex, Plugins, Mmhook);
-                if (!Directory.Exists(mmhookFolder))
-                {
-                    Directory.CreateDirectory(mmhookFolder);
-                }
-
                 // Loop assemblies and check if the hash has changed
                 foreach (var assembly in Directory.GetFiles(managedFolder, "assembly_*.dll"))
                 {
-                    if (!HashAndCompare(assembly, mmhookFolder, out var hash) || !File.Exists(Path.Combine(publicizedFolder, $"{Path.GetFileNameWithoutExtension(assembly)}_{Publicized}{Path.GetExtension(assembly)}")))
+                    if (!File.Exists(Path.Combine(publicizedFolder, $"{Path.GetFileNameWithoutExtension(assembly)}_{Publicized}{Path.GetExtension(assembly)}")))
                     {
                         try
                         {
                             // Try to publicize
                             if (!AssemblyPublicizer.PublicizeDll(assembly, publicizedFolder, ValheimPath, Log))
-                            {
-                                return false;
-                            }
-                            
-                            // Try to generate MMHook
-                            if (!MMHookGenerator.GenerateMMHook(assembly, mmhookFolder, hash, ValheimPath, Log))
                             {
                                 return false;
                             }
