@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## Version 2.6.2
+* Fixed custom category display using Auga (and probably other UI mods)
+* Fixed Mod Settings FPS drop
+
 ## Version 2.6.1
 * Removed the MMHOOK dependency from Jötunn. Mods using MMHOOK themself should list the HookGenPatcher as a dependency directly.
 * Jötunn's PrebuildTask does not generate MMHOOK dlls any more, publicized dlls can still be generated automatically.
