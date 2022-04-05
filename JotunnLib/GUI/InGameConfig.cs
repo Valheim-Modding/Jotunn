@@ -219,7 +219,7 @@ namespace Jotunn.GUI
             {
                 var menuList = __instance.m_mainMenu.transform.Find("MenuList");
                 CreateMenu(menuList);
-                __instance.StartCoroutine(CreateWindow(menuList));
+                //__instance.StartCoroutine(CreateWindow(menuList));
             }
             catch (Exception ex)
             {
@@ -239,7 +239,7 @@ namespace Jotunn.GUI
             {
                 SynchronizationManager.Instance.CacheConfigurationValues();
                 CreateMenu(__instance.m_menuDialog);
-                __instance.StartCoroutine(CreateWindow(__instance.m_menuDialog));
+                //__instance.StartCoroutine(CreateWindow(__instance.m_menuDialog));
             }
             catch (Exception ex)
             {
@@ -289,7 +289,8 @@ namespace Jotunn.GUI
                     {
                         try
                         {
-                            ShowWindow();
+                            Main.Instance.StartCoroutine(CreateWindow(menuList));
+                            //ShowWindow();
                         }
                         catch (Exception ex)
                         {
@@ -357,6 +358,14 @@ namespace Jotunn.GUI
 
                 yield return null;
             }
+
+            if (Menu.instance)
+            {
+                Menu.instance.m_settingsInstance = SettingsRoot;
+            }
+            
+            // Actually show the window
+            SettingsRoot.SetActive(true);
         }
 
         /// <summary>
@@ -524,60 +533,14 @@ namespace Jotunn.GUI
             }
         }
         
-        /// <summary>
-        ///     Refresh the displayed values
-        /// </summary>
-        private static void ShowWindow()
-        {
-            var settings = SettingsRoot.GetComponent<ModSettings>();
-            
-            if (Menu.instance)
-            {
-                Menu.instance.m_settingsInstance = SettingsRoot;
-            }
-
-            foreach (var plugin in settings.Plugins)
-            {
-                plugin.Value.gameObject.SetActive(
-                    GetConfigurationEntries(plugin.Key)
-                        .Any(x => x.Value.IsVisible() && x.Value.IsWritable()));
-            }
-            
-            foreach (var section in settings.Sections)
-            {
-                section.gameObject.SetActive(
-                    GetConfigurationEntries(section.GUID)
-                        .Any(x => x.Key.Section == section.name && x.Value.IsVisible() && x.Value.IsWritable()));
-            }
-
-            foreach (var comp in settings.Configs
-                         .SelectMany(config => config.GetComponents<MonoBehaviour>()
-                             .Where(x => x.GetType().HasImplementedRawGeneric(typeof(ConfigBound<>)))))
-            {
-                var config = (IConfigBound)comp;
-                config.Read();
-                comp.gameObject.SetActive(config.Entry.IsWritable());
-            }
-            
-            // Actually show the window
-            SettingsRoot.SetActive(true);
-        }
         private static void HideWindow()
         {
-            var settings = SettingsRoot.GetComponent<ModSettings>();
-            
             if (Menu.instance)
             {
                 Menu.instance.m_settingsInstance = null;
             }
-
-            foreach (var plugin in settings.Plugins.Values)
-            {
-                plugin.Content.gameObject.SetActive(false);
-            }
-            settings.CurrentPluginButton.gameObject.SetActive(false);
-            settings.ScrollRect.normalizedPosition = new Vector2(0f, 1f);
-            SettingsRoot.SetActive(false);
+            
+            Object.Destroy(SettingsRoot);
         }
 
         /// <summary>
