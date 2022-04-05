@@ -106,7 +106,7 @@ namespace Jotunn.Managers
                 }
             }
 
-            [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix]
+            [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
             private static void Hud_Awake()
             {
                 Instance.CreateCategoryTabs();
