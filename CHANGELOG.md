@@ -1,4 +1,6 @@
 ﻿# Changelog
+## Version 2.6.3
+* Fixed connection error on first connection attempt with QuickConnect
 
 ## Version 2.6.2
 * Fixed custom category display using Auga (and probably other UI mods)
