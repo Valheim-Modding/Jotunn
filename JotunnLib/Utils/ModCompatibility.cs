@@ -97,6 +97,18 @@ namespace Jotunn.Utils
                         return false;
                     }
                 }
+                else
+                {
+                    var serverData = new ModuleVersionData(GetEnforcableMods().ToList());
+                    var clientData = new ModuleVersionData(ClientVersions[rpc.m_socket.GetEndPointString()]);
+
+                    if (!CompareVersionData(serverData, clientData))
+                    {
+                        // Disconnect if mods are not network compatible
+                        rpc.Invoke("Error", (int)ZNet.ConnectionStatus.ErrorVersion);
+                        return false;
+                    }
+                }
             }
 
             return true;
