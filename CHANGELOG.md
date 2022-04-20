@@ -1,6 +1,8 @@
 ﻿# Changelog
 ## Version 2.6.3
 * Fixed connection error on first connection attempt with QuickConnect
+* Fixed the compatibility window was not showing up, if the server has no password
+* Fixed a client could sometimes connect to a server, even if mods are incompatible
 
 ## Version 2.6.2
 * Fixed custom category display using Auga (and probably other UI mods)
