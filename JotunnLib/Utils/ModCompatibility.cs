@@ -25,6 +25,9 @@ namespace Jotunn.Utils
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection)), HarmonyPrefix, HarmonyPriority(Priority.First)]
         private static void ZNet_OnNewConnection(ZNet __instance, ZNetPeer peer)
         {
+            // clear the previous connection, if existing
+            LastServerVersion = null;
+
             // Register our RPC very early
             peer.m_rpc.Register<ZPackage>(nameof(RPC_Jotunn_ReceiveVersionData), RPC_Jotunn_ReceiveVersionData);
         }
@@ -56,7 +59,7 @@ namespace Jotunn.Utils
 
         // Hook client sending of PeerInfo
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.SendPeerInfo)), HarmonyPrefix, HarmonyPriority(Priority.First)]
-        private static void ZNet_SendPeerInfo(ZNet __instance, ZRpc rpc, string password)
+        private static bool ZNet_SendPeerInfo(ZNet __instance, ZRpc rpc, string password)
         {
             if (ZNet.instance.IsClientInstance())
             {
@@ -68,17 +71,16 @@ namespace Jotunn.Utils
                     LastServerVersion =
                         new ModuleVersionData(new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>()).ToZPackage();
                     ZNet.m_connectionStatus = ZNet.ConnectionStatus.ErrorVersion;
-                    return;
+                    return false;
                 }
-
-                // If we got this far, clear lastServerVersion again
-                LastServerVersion = null;
             }
+
+            return true;
         }
 
         // Hook RPC_PeerInfo to check in front of the original method
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPrefix, HarmonyPriority(Priority.First)]
-        private static void ZNet_RPC_PeerInfo(ZNet __instance, ZRpc rpc, ZPackage pkg)
+        private static bool ZNet_RPC_PeerInfo(ZNet __instance, ZRpc rpc, ZPackage pkg)
         {
             if (!ZNet.instance.IsClientInstance())
             {
@@ -91,11 +93,13 @@ namespace Jotunn.Utils
                         // There is a mod, which needs to be client side too
                         // Lets disconnect the vanilla client with Incompatible Version message
 
-                        rpc.Invoke("Error", 3);
-                        return;
+                        rpc.Invoke("Error", (int)ZNet.ConnectionStatus.ErrorVersion);
+                        return false;
                     }
                 }
             }
+
+            return true;
         }
 
         /// <summary>
@@ -116,7 +120,7 @@ namespace Jotunn.Utils
                 if (!CompareVersionData(serverData, clientData))
                 {
                     // Disconnect if mods are not network compatible
-                    sender.Invoke("Error", 3);
+                    sender.Invoke("Error", (int)ZNet.ConnectionStatus.ErrorVersion);
                 }
             }
             else
