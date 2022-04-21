@@ -215,9 +215,9 @@ private void CreateMonsterCreature(AssetBundle creaturesAssetBundle, Texture2D l
 
 ## Modifying and Cloning Vanilla Creatures
 
-You can get vanilla creatures and either clone them or modify the original to change any aspect of that creature you want. To make sure all vanilla creature prefabs are loaded, use the [provided event OnVanillaCreaturesAvailable](xref:Jotunn.Managers.CreatureManager.OnVanillaCreaturesAvailable).
+You can get vanilla creatures and either clone them or modify the original to change any aspect of that creature you want. To make sure all vanilla creature prefabs are loaded, use the provided event [OnVanillaCreaturesAvailable](xref:Jotunn.Managers.CreatureManager.OnVanillaCreaturesAvailable).
 
-Cloned creatures keep their components as they are but don't copy any existing spawn data for that creature. If you don't provide a new DropConfig for the cloned creature, all vanilla drops are kept. Providing a new DropConfig completely overrides all vanilla drops.
+Cloned creatures keep all of their vanilla components except for the spawn configurations. This means unless you provide new spawn configurations, a cloned creature does not spawn at all. If you don't provide a new DropConfig for the cloned creature, all vanilla drops are kept. Providing a new DropConfig completely overrides all vanilla drops.
 
 Since creature prefabs are loaded globally and Jötunn keeps all added creatures for the game session after adding them once, you can unsubscribe from the event after its first execution. Keep in mind that other mods could alter vanilla cratures, too, so it might be required to modify vanilla creatures on every event execution.
 
