@@ -1,4 +1,7 @@
 ﻿# Changelog
+## Version 2.6.4
+* Fixed a CustomLocation was not prepared correctly if a deactivated prefab was passed, causing it to spawn inside itself when proximity loaded again
+
 ## Version 2.6.3
 * Fixed connection error on first connection attempt with QuickConnect
 * Fixed the compatibility window was not showing up, if the server has no password

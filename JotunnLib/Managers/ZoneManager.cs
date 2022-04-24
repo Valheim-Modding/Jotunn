@@ -16,6 +16,7 @@ namespace Jotunn.Managers
     public class ZoneManager : IManager
     {
         private static ZoneManager _instance;
+
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
@@ -109,7 +110,7 @@ namespace Jotunn.Managers
             container.transform.SetParent(LocationContainer.transform);
             return container;
         }
-        
+
         /// <summary>
         ///     Create a copy that is disabled, so any Components in instantiated child GameObjects will not start their lifecycle.<br />
         ///     Use this if you plan to alter your location prefab in code after importing it. <br />
@@ -156,10 +157,14 @@ namespace Jotunn.Managers
             }
 
             customLocation.Prefab.transform.SetParent(LocationContainer.transform);
+
+            // The root prefab needs to be active, otherwise ZNetViews are not prepared correctly
+            customLocation.Prefab.SetActive(true);
+
             Locations.Add(customLocation.Name, customLocation);
             return true;
         }
-        
+
         /// <summary>
         ///     Get a custom location by name.
         /// </summary>
