@@ -536,6 +536,12 @@ namespace Jotunn.Managers
         /// </summary>
         private void TogglePieceCategories()
         {
+            // Only touch categories when new ones were added
+            if (!PieceCategories.Any())
+            {
+                return;
+            }
+
             // Get currently selected tool and toggle PieceTableCategories
             try
             {
