@@ -1,6 +1,7 @@
 ﻿# Changelog
 ## Version 2.6.4
 * Fixed a CustomLocation was not prepared correctly if a deactivated prefab was passed, causing it to spawn inside itself when proximity loaded again
+* Fixed vanilla piece categories could be hidden when a mod used the long piece table name
 
 ## Version 2.6.3
 * Fixed connection error on first connection attempt with QuickConnect
