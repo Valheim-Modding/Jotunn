@@ -475,6 +475,12 @@ namespace Jotunn.Managers
         
         private void CreateCategoryTabs()
         {
+            // Only touch categories when new ones were added
+            if (!PieceCategories.Any())
+            {
+                return;
+            }
+
             // Get the GUI elements
             GameObject root = Hud.instance.m_pieceCategoryRoot;
             if (root.GetComponent<RectMask2D>() == null)
