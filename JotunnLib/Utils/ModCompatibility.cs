@@ -67,6 +67,7 @@ namespace Jotunn.Utils
                 if (LastServerVersion == null &&
                     GetEnforcableMods().Any(x => x.Item3 == CompatibilityLevel.EveryoneMustHaveMod || x.Item3 == CompatibilityLevel.ServerMustHaveMod))
                 {
+                    Logger.LogWarning("Jötunn is not installed on the server. Client has mandatory mods. Cancelling connection");
                     rpc.Invoke("Disconnect");
                     LastServerVersion =
                         new ModuleVersionData(new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>()).ToZPackage();
@@ -93,6 +94,8 @@ namespace Jotunn.Utils
                         // There is a mod, which needs to be client side too
                         // Lets disconnect the vanilla client with Incompatible Version message
 
+                        Logger.LogWarning("Disconnecting vanilla client with incompatible version message. " +
+                                          "There are mods that need to be installed on the client");
                         rpc.Invoke("Error", (int)ZNet.ConnectionStatus.ErrorVersion);
                         return false;
                     }
@@ -105,6 +108,8 @@ namespace Jotunn.Utils
                     if (!CompareVersionData(serverData, clientData))
                     {
                         // Disconnect if mods are not network compatible
+                        Logger.LogWarning("RPC_PeerInfo: Disconnecting modded client with incompatible version message. " +
+                                          "Mods are not compatible");
                         rpc.Invoke("Error", (int)ZNet.ConnectionStatus.ErrorVersion);
                         return false;
                     }
@@ -132,6 +137,8 @@ namespace Jotunn.Utils
                 if (!CompareVersionData(serverData, clientData))
                 {
                     // Disconnect if mods are not network compatible
+                    Logger.LogWarning("RPC_Jotunn_ReceiveVersionData: Disconnecting modded client with incompatible version message. " +
+                                      "Mods are not compatible");
                     sender.Invoke("Error", (int)ZNet.ConnectionStatus.ErrorVersion);
                 }
             }
