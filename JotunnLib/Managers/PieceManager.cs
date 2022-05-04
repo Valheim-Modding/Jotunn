@@ -126,6 +126,9 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPostfix]
             private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
+
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), HarmonyPostfix]
+            public static void PieceTable_UpdateAvailable_Postfix(PieceTable __instance) => Instance.AddPieceWithAllCategoryToAvailablePieces(__instance);
         }
 
         /// <summary>
@@ -703,6 +706,37 @@ namespace Jotunn.Managers
             catch (Exception ex)
             {
                 Logger.LogWarning($"Exception caught while reloading player recipes: {ex}");
+            }
+        }
+
+        private void AddPieceWithAllCategoryToAvailablePieces(PieceTable pieceTable)
+        {
+            // pieces with All category are always available at the first category
+            List<Piece> firstCategory = pieceTable.m_availablePieces.FirstOrDefault();
+
+            if (firstCategory == null)
+            {
+                return;
+            }
+
+            List<Piece> piecesWithAllCategory = firstCategory.FindAll(i => i.m_category == Piece.PieceCategory.All);
+
+            for (int i = 0; i < (int)PieceCategoryMax; i++)
+            {
+                int index = 0;
+
+                foreach (var piece in piecesWithAllCategory)
+                {
+                    // m_availablePieces are already populated. Add pieces at the beginning of the list, to replicate vanilla behaviour
+
+                    if (pieceTable.m_availablePieces[i].Contains(piece))
+                    {
+                        pieceTable.m_availablePieces[i].Remove(piece);
+                    }
+
+                    pieceTable.m_availablePieces[i].Insert(Mathf.Min(index, pieceTable.m_availablePieces.Count), piece);
+                    index++;
+                }
             }
         }
 
