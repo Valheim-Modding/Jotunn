@@ -76,8 +76,15 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(KeyHints), "Start"), HarmonyPostfix]
             private static void KeyHints_Start(KeyHints __instance)
             {
-                Instance.GetBaseGameObjects(__instance);
-                Instance.KeyHints_Start(__instance);
+                try
+                {
+                    Instance.GetBaseGameObjects(__instance);
+                    Instance.KeyHints_Start(__instance);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning($"Exception caught while creating key hint objects: {ex}");
+                }
             }
 
             [HarmonyPatch(typeof(KeyHints), "UpdateHints"), HarmonyPrefix]
@@ -226,16 +233,9 @@ namespace Jotunn.Managers
         /// </summary>
         private void KeyHints_Start(KeyHints self)
         {
-            try
-            {
-                KeyHintInstance = self;
-                KeyHintContainer = self.transform as RectTransform;
-                KeyHintObjects.Clear();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning($"Exception caught while creating key hint objects: {ex}");
-            }
+            KeyHintInstance = self;
+            KeyHintContainer = self.transform as RectTransform;
+            KeyHintObjects.Clear();
         }
         
         /// <summary>
