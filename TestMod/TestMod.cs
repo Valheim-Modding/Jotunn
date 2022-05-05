@@ -673,6 +673,7 @@ namespace TestMod
             CommandManager.Instance.AddConsoleCommand(new SkinColorCommand());
             CommandManager.Instance.AddConsoleCommand(new BetterSpawnCommand());
             CommandManager.Instance.AddConsoleCommand(new CreateCategoryTabCommand());
+            CommandManager.Instance.AddConsoleCommand(new RemoveCategoryTabCommand());
             CommandManager.Instance.AddConsoleCommand(new ResetCartographyCommand());
         }
 
