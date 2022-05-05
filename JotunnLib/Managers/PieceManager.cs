@@ -25,7 +25,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private PieceManager() {}
+        private PieceManager() { }
 
         /// <summary>
         ///     Event that gets fired after all pieces were added to their respective PieceTables.
@@ -118,7 +118,7 @@ namespace Jotunn.Managers
                 Instance.TogglePieceCategories();
             }
 
-            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix]
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
             private static void RegisterCustomData(ObjectDB __instance) => Instance.RegisterCustomData(__instance);
 
             [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
@@ -217,6 +217,17 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Returns all <see cref="global::PieceTable"/> instances in the game.
+        ///     The list is gathered on every ObjectDB.Awake() from all items in it,
+        ///     so depending on the timing of the call, the list might not be complete.
+        /// </summary>
+        /// <returns>A list of <see cref="global::PieceTable"/> instances</returns>
+        public List<PieceTable> GetPieceTables()
+        {
+            return PieceTableMap.Values.ToList();
+        }
+
+        /// <summary>
         ///     Add a new <see cref="Piece.PieceCategory"/> by name. A new category
         ///     gets assigned a random integer for internal use. If you pass a vanilla category
         ///     the actual integer value of the enum is returned. 
@@ -275,7 +286,40 @@ namespace Jotunn.Managers
 
             return categoryID;
         }
-        
+
+        /// <summary>
+        ///     Remove a <see cref="Piece.PieceCategory"/> from a table by name.
+        ///     This does not remove the category from the game but "hides" it
+        ///     in the given table.
+        /// </summary>
+        /// <param name="table">Prefab or item name of the PieceTable.</param>
+        /// <param name="name">Name of the category.</param>
+        public void RemovePieceCategory(string table, string name)
+        {
+            var actualTable = table;
+            if (PieceTableNameMap.ContainsKey(table))
+            {
+                actualTable = PieceTableNameMap[table];
+            }
+            if (PieceTableCategoriesMap.ContainsKey(actualTable))
+            {
+                PieceTableCategoriesMap[actualTable].Remove(name);
+            }
+
+            if (SceneManager.GetActiveScene().name == "main")
+            {
+                CreatePieceTableCategories();
+            }
+            if (Hud.instance != null)
+            {
+                CreateCategoryTabs();
+            }
+            if (Player.m_localPlayer != null)
+            {
+                UpdatePieceCategories();
+            }
+        }
+
         /// <summary>
         ///     Get a list of all custom piece category names
         /// </summary>
@@ -305,7 +349,7 @@ namespace Jotunn.Managers
                 Logger.LogWarning($"Custom piece {customPiece} already added");
                 return false;
             }
-            
+
             // Add the prefab to the PrefabManager
             if (!PrefabManager.Instance.AddPrefab(customPiece.PiecePrefab, customPiece.SourceMod))
             {
@@ -472,7 +516,7 @@ namespace Jotunn.Managers
                 }
             }
         }
-        
+
         private void CreateCategoryTabs()
         {
             // Only touch categories when new ones were added
@@ -514,7 +558,7 @@ namespace Jotunn.Managers
                     newTabs.Add(newTab);
                 }
             }
-            
+
             // Replace the HUD arrays
             Hud.instance.m_buildCategoryNames = newNames.ToList();
             Hud.instance.m_pieceCategoryTabs = newTabs.ToArray();
@@ -868,7 +912,7 @@ namespace Jotunn.Managers
                 float maxX = tab.GetComponent<RectTransform>().anchoredPosition.x + PieceCategoryTabSize + PieceCategoryTabOffset;
                 if (maxX > PieceCategorySize)
                 {
-                    float offsetX = selectedCategory == Values.Max() ? maxX - PieceCategorySize - PieceCategoryTabOffset: maxX - PieceCategorySize;
+                    float offsetX = selectedCategory == Values.Max() ? maxX - PieceCategorySize - PieceCategoryTabOffset : maxX - PieceCategorySize;
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
                         go.GetComponent<RectTransform>().anchoredPosition -= new Vector2(offsetX, 0);

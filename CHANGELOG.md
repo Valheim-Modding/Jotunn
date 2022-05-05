@@ -1,4 +1,9 @@
 ﻿# Changelog
+
+## Version 2.6.5
+* Added RemovePieceCategory to the PieceManager to remove a category from a piece table again (works at runtime)
+* Added GetPieceTables to the PieceManager to get a list of all piece tables in the game
+
 ## Version 2.6.4
 * Fixed a CustomLocation was not prepared correctly if a deactivated prefab was passed, causing it to spawn inside itself when proximity loaded again
 * Fixed vanilla piece categories could be hidden when a mod used the long piece table name
