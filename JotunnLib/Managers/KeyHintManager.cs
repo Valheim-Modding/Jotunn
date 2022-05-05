@@ -170,7 +170,8 @@ namespace Jotunn.Managers
 
             if (kb == null || gp == null)
             {
-                throw new Exception("Could not find child objects for KeyHints");
+                Logger.LogWarning("Could not find child objects for KeyHints");
+                return;
             }
 
             // Clone vanilla key hint objects and use it as the base for custom key hints
@@ -183,7 +184,8 @@ namespace Jotunn.Managers
 
             if (!origKey || !origRotate || !origButton || !origTrigger || !origShoulder || !origStick)
             {
-                throw new Exception("Could not find child objects for KeyHints");
+                Logger.LogWarning("Could not find child objects for KeyHints");
+                return;
             }
 
             BaseKey = Object.Instantiate(origKey);
