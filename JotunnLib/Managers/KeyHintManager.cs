@@ -57,7 +57,7 @@ namespace Jotunn.Managers
         private GameObject BaseStick;
         private GameObject BaseDPad;
 
-        private bool hasInitBaseGameObjects;
+        private bool HasInitBaseGameObjects;
 
         /// <summary>
         ///     Initialize the manager
@@ -161,13 +161,11 @@ namespace Jotunn.Managers
         /// </summary>
         private void GetBaseGameObjects(KeyHints self)
         {
-            if (hasInitBaseGameObjects)
+            if (HasInitBaseGameObjects)
             {
                 return;
             }
-
-            hasInitBaseGameObjects = true;
-
+            
             var baseKeyHint = self.m_buildHints;
 
             // Get the Transforms of Keyboard and Gamepad
@@ -226,6 +224,8 @@ namespace Jotunn.Managers
             BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
             BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().sizeDelta = new Vector2(25f, 25f);
             PrefabManager.Instance.AddPrefab(BaseDPad);
+            
+            HasInitBaseGameObjects = true;
         }
         
         /// <summary>
@@ -233,6 +233,11 @@ namespace Jotunn.Managers
         /// </summary>
         private void KeyHints_Start(KeyHints self)
         {
+            if (!HasInitBaseGameObjects)
+            {
+                return;
+            }
+
             KeyHintInstance = self;
             KeyHintContainer = self.transform as RectTransform;
             KeyHintObjects.Clear();
@@ -395,7 +400,7 @@ namespace Jotunn.Managers
         private bool KeyHints_UpdateHints(KeyHints self)
         {
             // If something went wrong, dont NRE every Update
-            if (KeyHintInstance == null || KeyHintContainer == null)
+            if (!HasInitBaseGameObjects || KeyHintInstance == null || KeyHintContainer == null)
             {
                 return true;
             }
