@@ -45,7 +45,7 @@ namespace Jotunn.Managers
         private Piece.PieceCategory PieceCategoryMax = Piece.PieceCategory.Max;
 
         private const float PieceCategorySize = 700f;
-        private const float PieceCategoryTabSize = 150f;
+        private const float PieceCategoryTabSize = 140f;
         private const float PieceCategoryTabOffset = 50f;
 
         /// <summary>
@@ -824,12 +824,13 @@ namespace Jotunn.Managers
                 float offset = 0f;
                 foreach (GameObject go in Hud.instance.m_pieceCategoryTabs.Where(x => x.activeSelf))
                 {
+                    float width = CalculateTabWidth(go);
                     go.SetMiddleLeft();
                     go.SetHeight(30f);
-                    go.SetWidth(PieceCategoryTabSize);
+                    go.SetWidth(width);
                     RectTransform tf = (go.transform as RectTransform);
                     tf.anchoredPosition = new Vector2(offset, 0f);
-                    offset += PieceCategoryTabSize;
+                    offset += width;
                 }
             }
 
@@ -909,7 +910,7 @@ namespace Jotunn.Managers
                         go.GetComponent<RectTransform>().anchoredPosition += new Vector2(offsetX, 0);
                     }
                 }
-                float maxX = tab.GetComponent<RectTransform>().anchoredPosition.x + PieceCategoryTabSize + PieceCategoryTabOffset;
+                float maxX = tab.GetComponent<RectTransform>().anchoredPosition.x + CalculateTabWidth(tab) + PieceCategoryTabOffset;
                 if (maxX > PieceCategorySize)
                 {
                     float offsetX = selectedCategory == Values.Max() ? maxX - PieceCategorySize - PieceCategoryTabOffset : maxX - PieceCategorySize;
@@ -918,6 +919,11 @@ namespace Jotunn.Managers
                         go.GetComponent<RectTransform>().anchoredPosition -= new Vector2(offsetX, 0);
                     }
                 }
+            }
+
+            private static float CalculateTabWidth(GameObject tab)
+            {
+                return Mathf.Max(PieceCategoryTabSize, 11f * (tab.name.Length + 6f));
             }
         }
     }
