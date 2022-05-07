@@ -1,9 +1,12 @@
 ﻿# Changelog
+## Version 2.6.6
+* Added automatic refresh of vanilla locations after OnVanillaLocationsAvailable to prevent ZNetView problems
 
 ## Version 2.6.5
 * Added RemovePieceCategory to the PieceManager to remove a category from a piece table again (works at runtime)
 * Added GetPieceTables to the PieceManager to get a list of all piece tables in the game
 * Added dynamic tab width calculation for custom piece categories
+* Fixed pieces with PieceCategory.All were not displayed in custom tabs
 
 ## Version 2.6.4
 * Fixed a CustomLocation was not prepared correctly if a deactivated prefab was passed, causing it to spawn inside itself when proximity loaded again
