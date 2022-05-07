@@ -1473,6 +1473,12 @@ namespace TestMod
             raspberryBush.m_groupSizeMin = 10;
             raspberryBush.m_groupSizeMax = 30;
 
+            // Add a prefab with a ZNetView component
+            var woodHouse3 = ZoneManager.Instance.GetZoneLocation("WoodHouse3");
+            var thistlePrefab = PrefabManager.Instance.GetPrefab("Pickable_Thistle");
+            var thistle = Instantiate(thistlePrefab, woodHouse3.m_prefab.transform);
+            thistle.transform.localPosition = new Vector3(-4.48f, 0f, 3f);
+
             // Not unregistering this hook, it needs to run every world load
         }
         

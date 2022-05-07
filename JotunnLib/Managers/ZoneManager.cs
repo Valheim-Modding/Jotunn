@@ -257,6 +257,18 @@ namespace Jotunn.Managers
         {
             InvokeOnVanillaLocationsAvailable();
 
+            // Prepare vanilla locations again as they may have been modified by a mod
+            foreach (var location in ZoneSystem.instance.m_locations)
+            {
+                if (!location.m_enable || !location.m_prefab)
+                {
+                    continue;
+                }
+
+                ZoneSystem.PrepareNetViews(location.m_prefab, location.m_netViews);
+                ZoneSystem.PrepareRandomSpawns(location.m_prefab, location.m_randomSpawns);
+            }
+
             if (Locations.Count > 0)
             {
                 List<string> toDelete = new List<string>();
