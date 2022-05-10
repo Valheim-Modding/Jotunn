@@ -289,6 +289,27 @@ namespace Jotunn.Managers
 
             return categoryID;
         }
+        
+        /// <summary>
+        ///     Get a <see cref="Piece.PieceCategory"/> by name. Translates
+        ///     vanilla or custom Piece Categories to their current integer value.
+        /// </summary>
+        /// <param name="name">Name of the category.</param>
+        /// <returns>int value of the vanilla or custom category</returns>
+        public Piece.PieceCategory? GetPieceCategory(string name)
+        {
+            // Get or create global category ID
+            if (Enum.IsDefined(typeof(Piece.PieceCategory), name))
+            {
+                return (Piece.PieceCategory)Enum.Parse(typeof(Piece.PieceCategory), name);
+            }
+            if (PieceCategories.ContainsKey(name))
+            {
+                return PieceCategories[name];
+            }
+            
+            return null;
+        }
 
         /// <summary>
         ///     Remove a <see cref="Piece.PieceCategory"/> from a table by name.
