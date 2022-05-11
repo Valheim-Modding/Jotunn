@@ -91,28 +91,33 @@ namespace Jotunn.Utils
         private static void FejdStartup_Awake_Postfix()
         {
             var zNetAwake = AccessTools.Method(typeof(ZNetScene), nameof(ZNetScene.Awake));
-            PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake).Prefixes);
-            PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake).Postfixes);
-            PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake).Finalizers);
+            PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake)?.Prefixes);
+            PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake)?.Postfixes);
+            PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake)?.Finalizers);
 
             var objectDBAwake = AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.Awake));
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBAwake).Prefixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBAwake).Postfixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBAwake).Finalizers);
+            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBAwake)?.Prefixes);
+            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBAwake)?.Postfixes);
+            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBAwake)?.Finalizers);
 
             var objectDBCopyOtherDB = AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB));
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBCopyOtherDB).Prefixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBCopyOtherDB).Postfixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBCopyOtherDB).Finalizers);
+            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBCopyOtherDB)?.Prefixes);
+            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBCopyOtherDB)?.Postfixes);
+            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBCopyOtherDB)?.Finalizers);
 
             var objectDBUpdateItemHashes = AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.UpdateItemHashes));
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBUpdateItemHashes).Prefixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBUpdateItemHashes).Postfixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBUpdateItemHashes).Finalizers);
+            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBUpdateItemHashes)?.Prefixes);
+            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBUpdateItemHashes)?.Postfixes);
+            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBUpdateItemHashes)?.Finalizers);
         }
 
         private static void PatchZNetViewPatches(ICollection<Patch> patches)
         {
+            if (patches == null)
+            {
+                return;
+            }
+
             foreach (var patch in patches)
             {
                 var pre = AccessTools.Method(typeof(ModQuery), nameof(BeforeZNetPatch));
@@ -123,6 +128,11 @@ namespace Jotunn.Utils
 
         private static void PatchObjectDbPatches(ICollection<Patch> patches)
         {
+            if (patches == null)
+            {
+                return;
+            }
+
             foreach (var patch in patches)
             {
                 var pre = AccessTools.Method(typeof(ModQuery), nameof(BeforeObjectDBPatch));
