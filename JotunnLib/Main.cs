@@ -83,6 +83,7 @@ namespace Jotunn
                 manager.Init();
             }
 
+            ModQuery.Init();
             InGameConfig.Init();
 
 #if DEBUG
