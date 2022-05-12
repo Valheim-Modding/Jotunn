@@ -185,6 +185,13 @@ namespace Jotunn.Managers
             if (self.IsServer())
             {
                 ZNetPeer peer = self.GetPeer(rpc);
+
+                if (peer == null || !peer.IsReady())
+                {
+                    Logger.LogInfo($"Peer has disconnected. Skipping initial data send.");
+                    return;
+                }
+
                 Logger.LogInfo($"Sending initial data to peer #{peer.m_uid}");
 
                 IEnumerator SynchronizeInitialData()
