@@ -10,6 +10,18 @@ namespace Jotunn.Utils
     internal class ModuleVersionData
     {
         /// <summary>
+        ///     Valheim version
+        /// </summary>
+        public System.Version ValheimVersion { get; }
+
+        /// <summary>
+        ///     Module data
+        /// </summary>
+        public List<ModModule> Modules { get; } = new List<ModModule>();
+
+        public string RemoteVersionString { get; } = string.Empty;
+
+        /// <summary>
         ///     Create from module data
         /// </summary>
         /// <param name="versionData"></param>
@@ -46,6 +58,12 @@ namespace Jotunn.Utils
                     Modules.Add(new ModModule(pkg));
                     numberOfModules--;
                 }
+
+                // TODO end of stream check can be removed on minor version bump
+                if (pkg.m_reader.BaseStream.Position != pkg.m_reader.BaseStream.Length)
+                {
+                    RemoteVersionString = pkg.ReadString();
+                }
             }
             catch (Exception ex)
             {
@@ -53,16 +71,6 @@ namespace Jotunn.Utils
                 Logger.LogError(ex.Message);
             }
         }
-
-        /// <summary>
-        ///     Valheim version
-        /// </summary>
-        public System.Version ValheimVersion { get; }
-
-        /// <summary>
-        ///     Module data
-        /// </summary>
-        public List<ModModule> Modules { get; } = new List<ModModule>();
 
         /// <summary>
         ///     Create ZPackage
@@ -86,6 +94,8 @@ namespace Jotunn.Utils
                 pkg.Write((int)module.compatibilityLevel);
                 pkg.Write((int)module.versionStrictness);
             }
+
+            pkg.Write(Version.GetVersionString());
 
             return pkg;
         }

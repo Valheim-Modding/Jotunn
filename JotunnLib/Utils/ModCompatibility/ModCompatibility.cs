@@ -316,6 +316,15 @@ namespace Jotunn.Utils
                     yield return new Tuple<Color, string>(Color.white, "Please contact the server admin for a server update." + Environment.NewLine);
                 }
             }
+            else
+            {
+                if (serverData.RemoteVersionString != String.Empty && serverData.RemoteVersionString != Version.GetVersionString())
+                {
+                    yield return new Tuple<Color, string>(Color.red, "Valheim modded version string mismatch:");
+                    yield return new Tuple<Color, string>(Color.white, $"Local: {Version.GetVersionString()}");
+                    yield return new Tuple<Color, string>(Color.white, $"Remote: {serverData.RemoteVersionString}{Environment.NewLine}");
+                }
+            }
 
             // And then each module
             foreach (var serverModule in serverData.Modules)
