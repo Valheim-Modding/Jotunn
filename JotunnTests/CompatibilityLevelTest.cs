@@ -10,8 +10,8 @@ namespace Jotunn.Utils
         [TestMethod]
         public void BothOnlyJotunn()
         {
-            var clientVersionData = new ModuleVersionData(new System.Version(1, 0, 0), new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>());
-            var serverVersionData = new ModuleVersionData(new System.Version(1, 0, 0), new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>());
+            var clientVersionData = new ModuleVersionData(new System.Version(1, 0, 0), new List<ModModule>());
+            var serverVersionData = new ModuleVersionData(new System.Version(1, 0, 0), new List<ModModule>());
 
             Assert.IsTrue(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData));
         }
@@ -19,12 +19,12 @@ namespace Jotunn.Utils
         [TestMethod]
         public void ClientHasModButServerDoesNot()
         {
-            var clientMods = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>
+            var clientMods = new List<ModModule>
             {
-                new Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>("TestMod", new System.Version(1, 0, 0), CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)
+                new ModModule("TestMod", new System.Version(1, 0, 0), CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)
             };
             var clientVersionData = new ModuleVersionData(new System.Version(1, 0, 0), clientMods);
-            var serverMods = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
+            var serverMods = new List<ModModule>();
             var serverVersionData = new ModuleVersionData(new System.Version(1, 0, 0), serverMods);
 
             Assert.IsFalse(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData));
@@ -33,11 +33,11 @@ namespace Jotunn.Utils
         [TestMethod]
         public void ServerHasModButClientDoesntNeedIt()
         {
-            var clientMods = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
+            var clientMods = new List<ModModule>();
             var clientVersionData = new ModuleVersionData(new System.Version(1, 0, 0), clientMods);
-            var serverMods = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>
+            var serverMods = new List<ModModule>
             {
-                new Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>("TestMod", new System.Version(1, 0, 0), CompatibilityLevel.ServerMustHaveMod, VersionStrictness.Minor)
+                new ModModule("TestMod", new System.Version(1, 0, 0), CompatibilityLevel.ServerMustHaveMod, VersionStrictness.Minor)
             };
             var serverVersionData = new ModuleVersionData(new System.Version(1, 0, 0), serverMods);
 

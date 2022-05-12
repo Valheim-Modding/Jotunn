@@ -13,17 +13,17 @@ namespace Jotunn.Utils
         ///     Create from module data
         /// </summary>
         /// <param name="versionData"></param>
-        internal ModuleVersionData(List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> versionData)
+        internal ModuleVersionData(List<ModModule> versionData)
         {
             ValheimVersion = new System.Version(Version.m_major, Version.m_minor, Version.m_patch);
-            Modules = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
+            Modules = new List<ModModule>();
             Modules.AddRange(versionData);
         }
 
-        internal ModuleVersionData(System.Version valheimVersion, List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> versionData)
+        internal ModuleVersionData(System.Version valheimVersion, List<ModModule> versionData)
         {
             ValheimVersion = valheimVersion;
-            Modules = new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
+            Modules = new List<ModModule>();
             Modules.AddRange(versionData);
         }
 
@@ -43,9 +43,7 @@ namespace Jotunn.Utils
 
                 while (numberOfModules > 0)
                 {
-                    Modules.Add(new Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>(pkg.ReadString(),
-                         new System.Version(pkg.ReadInt(), pkg.ReadInt(), pkg.ReadInt()), (CompatibilityLevel)pkg.ReadInt(),
-                         (VersionStrictness)pkg.ReadInt()));
+                    Modules.Add(new ModModule(pkg));
                     numberOfModules--;
                 }
             }
@@ -64,9 +62,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Module data
         /// </summary>
-        public List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>> Modules { get; } =
-            new List<Tuple<string, System.Version, CompatibilityLevel, VersionStrictness>>();
-
+        public List<ModModule> Modules { get; } = new List<ModModule>();
 
         /// <summary>
         ///     Create ZPackage
@@ -83,12 +79,12 @@ namespace Jotunn.Utils
 
             foreach (var module in Modules)
             {
-                pkg.Write(module.Item1);
-                pkg.Write(module.Item2.Major);
-                pkg.Write(module.Item2.Minor);
-                pkg.Write(module.Item2.Build);
-                pkg.Write((int)module.Item3);
-                pkg.Write((int)module.Item4);
+                pkg.Write(module.name);
+                pkg.Write(module.version.Major);
+                pkg.Write(module.version.Minor);
+                pkg.Write(module.version.Build);
+                pkg.Write((int)module.compatibilityLevel);
+                pkg.Write((int)module.versionStrictness);
             }
 
             return pkg;
@@ -111,7 +107,7 @@ namespace Jotunn.Utils
 
             foreach (var mod in Modules)
             {
-                sb.AppendLine($"{mod.Item1} {mod.Item2.Major}.{mod.Item2.Minor}.{mod.Item2.Build} {mod.Item3} {mod.Item4}");
+                sb.AppendLine($"{mod.name} {mod.GetVersionString()} {mod.compatibilityLevel} {mod.versionStrictness}");
             }
 
             return sb.ToString();
@@ -125,7 +121,7 @@ namespace Jotunn.Utils
 
             foreach (var mod in Modules)
             {
-                sb.AppendLine($"{mod.Item1} {mod.Item2.Major}.{mod.Item2.Minor}.{mod.Item2.Build}" + (showEnforce ? " {mod.Item3} {mod.Item4}" : ""));
+                sb.AppendLine($"{mod.name} {mod.GetVersionString()}" + (showEnforce ? $" {mod.compatibilityLevel} {mod.versionStrictness}" : ""));
             }
 
             return sb.ToString();
