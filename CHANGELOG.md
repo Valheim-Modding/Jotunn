@@ -3,6 +3,7 @@
 ## Version 2.6.6
 * Added automatic refresh of vanilla locations after OnVanillaLocationsAvailable to prevent ZNetView problems
 * Added GetPieceCategory to the PieceManager for runtime translation of custom piece table categories to their int values
+* Fixed NRE error message when client has disconnected before initial data sending
 
 ## Version 2.6.5
 * Added RemovePieceCategory to the PieceManager to remove a category from a piece table again (works at runtime)
