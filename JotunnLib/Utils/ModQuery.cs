@@ -120,6 +120,11 @@ namespace Jotunn.Utils
 
             foreach (var patch in patches)
             {
+                if (patch.owner == Main.ModGuid)
+                {
+                    continue;
+                }
+
                 var pre = AccessTools.Method(typeof(ModQuery), nameof(BeforeZNetPatch));
                 var post = AccessTools.Method(typeof(ModQuery), nameof(AfterZNetPatch));
                 Main.Harmony.Patch(patch.PatchMethod, new HarmonyMethod(pre), new HarmonyMethod(post));
@@ -135,6 +140,11 @@ namespace Jotunn.Utils
 
             foreach (var patch in patches)
             {
+                if (patch.owner == Main.ModGuid)
+                {
+                    continue;
+                }
+
                 var pre = AccessTools.Method(typeof(ModQuery), nameof(BeforeObjectDBPatch));
                 var post = AccessTools.Method(typeof(ModQuery), nameof(AfterObjectDBPatch));
                 Main.Harmony.Patch(patch.PatchMethod, new HarmonyMethod(pre), new HarmonyMethod(post));
@@ -229,7 +239,6 @@ namespace Jotunn.Utils
                 }
             }
         }
-
 
         private static void AddRecipes(IEnumerable<Recipe> recipes, BepInPlugin plugin)
         {
