@@ -170,7 +170,6 @@ namespace Jotunn.Utils
 
             if (plugin == null)
             {
-                Logger.LogWarning($"Assembly {ReflectionHelper.GetCallingAssembly().FullName} is not a BepInEx plugin");
                 return;
             }
 
@@ -179,13 +178,6 @@ namespace Jotunn.Utils
 
             AddPrefabs(namedAdded.Select(i => i.Value), plugin.Metadata);
             AddPrefabs(prefabsAdded, plugin.Metadata);
-
-            Logger.LogInfo($"{plugin.Metadata.GUID} added {Prefabs[plugin.Metadata.GUID].Count} prefabs");
-
-            foreach (var prefab in Prefabs[plugin.Metadata.GUID])
-            {
-                Logger.LogInfo($"\t{prefab.Value.Prefab.name}");
-            }
         }
 
         private static void AfterObjectDBPatch(object[] __args, ref ObjectDBState __state)
@@ -195,7 +187,6 @@ namespace Jotunn.Utils
 
             if (plugin == null)
             {
-                Logger.LogWarning($"Assembly {ReflectionHelper.GetCallingAssembly().FullName} is not a BepInEx plugin");
                 return;
             }
 
@@ -206,20 +197,6 @@ namespace Jotunn.Utils
             AddPrefabs(itemsAdded, plugin.Metadata);
             AddPrefabs(itemByHashAdded.Select(i => i.Value), plugin.Metadata);
             AddRecipes(recipesAdded, plugin.Metadata);
-
-            Logger.LogInfo($"{plugin.Metadata.GUID} added {Prefabs[plugin.Metadata.GUID].Count} prefabs");
-
-            foreach (var prefab in Prefabs[plugin.Metadata.GUID])
-            {
-                Logger.LogInfo($"\t{prefab.Value.Prefab.name}");
-            }
-
-            Logger.LogInfo($"{plugin.Metadata.GUID} added {Recipes[plugin.Metadata.GUID].Count} recipes");
-
-            foreach (var recipe in Recipes[plugin.Metadata.GUID])
-            {
-                Logger.LogInfo($"\t{recipe.m_item.name}");
-            }
         }
 
         private static void AddPrefabs(IEnumerable<GameObject> prefabs, BepInPlugin plugin)
