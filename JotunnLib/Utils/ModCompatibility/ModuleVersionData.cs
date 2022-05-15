@@ -12,14 +12,14 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Valheim version
         /// </summary>
-        public System.Version ValheimVersion { get; }
+        public System.Version ValheimVersion { get; internal set; }
 
         /// <summary>
         ///     Module data
         /// </summary>
-        public List<ModModule> Modules { get; } = new List<ModModule>();
+        public List<ModModule> Modules { get; internal set; } = new List<ModModule>();
 
-        public string RemoteVersionString { get; } = string.Empty;
+        public string RemoteVersionString { get; internal set; } = string.Empty;
 
         /// <summary>
         ///     Create from module data
@@ -28,15 +28,13 @@ namespace Jotunn.Utils
         internal ModuleVersionData(List<ModModule> versionData)
         {
             ValheimVersion = new System.Version(Version.m_major, Version.m_minor, Version.m_patch);
-            Modules = new List<ModModule>();
-            Modules.AddRange(versionData);
+            Modules = new List<ModModule>(versionData);
         }
 
         internal ModuleVersionData(System.Version valheimVersion, List<ModModule> versionData)
         {
             ValheimVersion = valheimVersion;
-            Modules = new List<ModModule>();
-            Modules.AddRange(versionData);
+            Modules = new List<ModModule>(versionData);
         }
 
         /// <summary>
