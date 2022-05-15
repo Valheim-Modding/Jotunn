@@ -173,11 +173,8 @@ namespace Jotunn.Utils
                 return;
             }
 
-            var namedAdded = zNetScene.m_namedPrefabs.Except(__state.namedPrefabs);
-            var prefabsAdded = zNetScene.m_prefabs.Except(__state.prefabs);
-
-            AddPrefabs(namedAdded.Select(i => i.Value), plugin.Metadata);
-            AddPrefabs(prefabsAdded, plugin.Metadata);
+            AddPrefabs(__state.namedPrefabs, zNetScene.m_namedPrefabs, plugin.Metadata);
+            AddPrefabs(__state.prefabs, zNetScene.m_prefabs, plugin.Metadata);
         }
 
         private static void AfterObjectDBPatch(object[] __args, ref ObjectDBState __state)
@@ -190,24 +187,35 @@ namespace Jotunn.Utils
                 return;
             }
 
-            var itemsAdded = objectDB.m_items.Except(__state.items);
-            var itemByHashAdded = objectDB.m_itemByHash.Except(__state.itemByHash);
-            var recipesAdded = objectDB.m_recipes.Except(__state.recipes);
-
-            AddPrefabs(itemsAdded, plugin.Metadata);
-            AddPrefabs(itemByHashAdded.Select(i => i.Value), plugin.Metadata);
-            AddRecipes(recipesAdded, plugin.Metadata);
+            AddPrefabs(__state.items, objectDB.m_items, plugin.Metadata);
+            AddPrefabs(__state.itemByHash, objectDB.m_itemByHash, plugin.Metadata);
+            AddRecipes(__state.recipes, objectDB.m_recipes, plugin.Metadata);
         }
 
-        private static void AddPrefabs(IEnumerable<GameObject> prefabs, BepInPlugin plugin)
+        private static void AddPrefabs(IEnumerable<GameObject> before, IEnumerable<GameObject> after, BepInPlugin plugin)
+        {
+            AddPrefabs(new HashSet<GameObject>(before), new HashSet<GameObject>(after), plugin);
+        }
+
+        private static void AddPrefabs(Dictionary<int, GameObject> before, Dictionary<int, GameObject> after, BepInPlugin plugin)
+        {
+            AddPrefabs(new HashSet<GameObject>(before.Values), new HashSet<GameObject>(after.Values), plugin);
+        }
+
+        private static void AddPrefabs(HashSet<GameObject> before, HashSet<GameObject> after, BepInPlugin plugin)
         {
             if (!Prefabs.ContainsKey(plugin.GUID))
             {
                 Prefabs.Add(plugin.GUID, new Dictionary<int, ModPrefab>());
             }
 
-            foreach (var prefab in prefabs)
+            foreach (var prefab in after)
             {
+                if (before.Contains(prefab))
+                {
+                    continue;
+                }
+
                 int hash = prefab.name.GetStableHashCode();
 
                 if (!Prefabs[plugin.GUID].ContainsKey(hash))
@@ -217,25 +225,30 @@ namespace Jotunn.Utils
             }
         }
 
-        private static void AddRecipes(IEnumerable<Recipe> recipes, BepInPlugin plugin)
+        private static void AddRecipes(IEnumerable<Recipe> before, IEnumerable<Recipe> after, BepInPlugin plugin)
+        {
+            AddRecipes(new HashSet<Recipe>(before), new HashSet<Recipe>(after), plugin);
+        }
+
+        private static void AddRecipes(HashSet<Recipe> before, HashSet<Recipe> after, BepInPlugin plugin)
         {
             if (!Recipes.ContainsKey(plugin.GUID))
             {
                 Recipes.Add(plugin.GUID, new List<Recipe>());
             }
 
-            foreach (var recipe in recipes)
+            foreach (var recipe in after)
             {
+                if (before.Contains(recipe))
+                {
+                    continue;
+                }
+
                 if (!Recipes[plugin.GUID].Contains(recipe))
                 {
                     Recipes[plugin.GUID].Add(recipe);
                 }
             }
-        }
-
-        private static IEnumerable<KeyValuePair<T1, T2>> DictionaryDiff<T1, T2>(IDictionary<T1, T2> dicOne, IDictionary<T1, T2> dicTwo)
-        {
-            return dicOne.Except(dicTwo).Concat(dicTwo.Except(dicOne));
         }
 
         private static ZNetScene GetZNetScene(object[] __args)
