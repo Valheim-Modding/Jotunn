@@ -318,11 +318,11 @@ namespace Jotunn.Utils
             }
             else
             {
-                if (serverData.RemoteVersionString != String.Empty && serverData.RemoteVersionString != Version.GetVersionString())
+                if (!string.IsNullOrEmpty(serverData.VersionString) && serverData.VersionString != clientData.VersionString)
                 {
                     yield return new Tuple<Color, string>(Color.red, "Valheim modded version string mismatch:");
-                    yield return new Tuple<Color, string>(Color.white, $"Local: {Version.GetVersionString()}");
-                    yield return new Tuple<Color, string>(Color.white, $"Remote: {serverData.RemoteVersionString}{Environment.NewLine}");
+                    yield return new Tuple<Color, string>(Color.white, $"Local: {clientData.VersionString}");
+                    yield return new Tuple<Color, string>(Color.white, $"Remote: {serverData.VersionString}{Environment.NewLine}");
                 }
             }
 

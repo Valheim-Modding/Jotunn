@@ -19,7 +19,7 @@ namespace Jotunn.Utils
         /// </summary>
         public List<ModModule> Modules { get; internal set; } = new List<ModModule>();
 
-        public string RemoteVersionString { get; internal set; } = string.Empty;
+        public string VersionString { get; internal set; } = string.Empty;
 
         /// <summary>
         ///     Create from module data
@@ -28,12 +28,14 @@ namespace Jotunn.Utils
         internal ModuleVersionData(List<ModModule> versionData)
         {
             ValheimVersion = new System.Version(Version.m_major, Version.m_minor, Version.m_patch);
+            VersionString = Version.GetVersionString();
             Modules = new List<ModModule>(versionData);
         }
 
         internal ModuleVersionData(System.Version valheimVersion, List<ModModule> versionData)
         {
             ValheimVersion = valheimVersion;
+            VersionString = Version.GetVersionString();
             Modules = new List<ModModule>(versionData);
         }
 
@@ -57,10 +59,9 @@ namespace Jotunn.Utils
                     numberOfModules--;
                 }
 
-                // TODO end of stream check can be removed on minor version bump
                 if (pkg.m_reader.BaseStream.Position != pkg.m_reader.BaseStream.Length)
                 {
-                    RemoteVersionString = pkg.ReadString();
+                    VersionString = pkg.ReadString();
                 }
             }
             catch (Exception ex)
@@ -93,7 +94,7 @@ namespace Jotunn.Utils
                 pkg.Write((int)module.versionStrictness);
             }
 
-            pkg.Write(Version.GetVersionString());
+            pkg.Write(VersionString);
 
             return pkg;
         }
@@ -111,7 +112,15 @@ namespace Jotunn.Utils
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Valheim {ValheimVersion.Major}.{ValheimVersion.Minor}.{ValheimVersion.Build}");
+
+            if (string.IsNullOrEmpty(VersionString))
+            {
+                sb.AppendLine($"Valheim {ValheimVersion.Major}.{ValheimVersion.Minor}.{ValheimVersion.Build}");
+            }
+            else
+            {
+                sb.AppendLine($"Valheim {VersionString}");
+            }
 
             foreach (var mod in Modules)
             {
@@ -125,7 +134,15 @@ namespace Jotunn.Utils
         public string ToString(bool showEnforce)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Valheim {ValheimVersion.Major}.{ValheimVersion.Minor}.{ValheimVersion.Build}");
+
+            if (string.IsNullOrEmpty(VersionString))
+            {
+                sb.AppendLine($"Valheim {ValheimVersion.Major}.{ValheimVersion.Minor}.{ValheimVersion.Build}");
+            }
+            else
+            {
+                sb.AppendLine($"Valheim {VersionString}");
+            }
 
             foreach (var mod in Modules)
             {
