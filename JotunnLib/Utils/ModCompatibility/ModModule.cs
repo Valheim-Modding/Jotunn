@@ -25,6 +25,16 @@ namespace Jotunn.Utils
             versionStrictness = (VersionStrictness)pkg.ReadInt();
         }
 
+        public void WriteToPackage(ZPackage pkg)
+        {
+            pkg.Write(name);
+            pkg.Write(version.Major);
+            pkg.Write(version.Minor);
+            pkg.Write(version.Build);
+            pkg.Write((int)compatibilityLevel);
+            pkg.Write((int)versionStrictness);
+        }
+
         public ModModule(BepInPlugin plugin, NetworkCompatibilityAttribute networkAttribute)
         {
             this.name = plugin.Name;

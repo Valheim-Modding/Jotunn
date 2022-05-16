@@ -86,12 +86,7 @@ namespace Jotunn.Utils
 
             foreach (var module in Modules)
             {
-                pkg.Write(module.name);
-                pkg.Write(module.version.Major);
-                pkg.Write(module.version.Minor);
-                pkg.Write(module.version.Build);
-                pkg.Write((int)module.compatibilityLevel);
-                pkg.Write((int)module.versionStrictness);
+                module.WriteToPackage(pkg);
             }
 
             pkg.Write(VersionString);
