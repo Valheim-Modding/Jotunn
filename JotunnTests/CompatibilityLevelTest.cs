@@ -64,94 +64,52 @@ namespace Jotunn.Utils
             Assert.False(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData));
         }
 
-        public static IEnumerable<object[]> MajorStrictnessData()
+        [Fact]
+        public void ModVersionCompare_MajorStrictness()
         {
-            // Mayor different
-            yield return new object[] { v_1_0_0, v_2_0_0, false };
-            yield return new object[] { v_2_0_0, v_1_0_0, false };
-            yield return new object[] { v_1_0_5, v_2_0_4, false };
-            // Minor different
-            yield return new object[] { v_1_0_0, v_1_1_0, true };
-            yield return new object[] { v_1_1_0, v_1_0_0, true };
-            // Patch different
-            yield return new object[] { v_1_1_1, v_1_1_0, true };
-            yield return new object[] { v_1_1_0, v_1_1_1, true };
+            // At least Mayor different
+            TestVersionCompare(v_1_0_0, v_2_0_0, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Major, false);
+            TestVersionCompare(v_1_0_5, v_2_0_4, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Major, false);
+            // At least Minor different
+            TestVersionCompare(v_1_0_0, v_1_1_0, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Major, true);
+            // At least Patch different
+            TestVersionCompare(v_1_1_1, v_1_1_0, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Major, true);
         }
 
-        [Theory]
-        [MemberData(nameof(MajorStrictnessData))]
-        public void ModVersionCompare_MajorStrictness(System.Version modServerVersion, System.Version modClientVersion, bool expectedResult)
+        [Fact]
+        public void ModVersionCompare_MinorStrictness()
         {
-            serverVersionData.Modules = new List<ModModule>
-            {
-                new ModModule("TestMod", modServerVersion, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Major)
-            };
-            clientVersionData.Modules = new List<ModModule>
-            {
-                new ModModule("TestMod", modClientVersion, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Major)
-            };
-            Assert.Equal(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData), expectedResult);
+            // At least Mayor different
+            TestVersionCompare(v_1_0_0, v_2_0_0, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor, false);
+            TestVersionCompare(v_1_0_5, v_2_0_4, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor, false);
+            // At least Minor different
+            TestVersionCompare(v_1_0_0, v_1_1_0, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor, false);
+            // At least Patch different
+            TestVersionCompare(v_1_1_1, v_1_1_0, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor, true);
         }
 
-        public static IEnumerable<object[]> MinorStrictnessData()
+        [Fact]
+        public void ModVersionCompare_PatchStrictness()
         {
-            // Mayor different
-            yield return new object[] { v_1_0_0, v_2_0_0, false };
-            yield return new object[] { v_2_0_0, v_1_0_0, false };
-            yield return new object[] { v_1_0_5, v_2_0_4, false };
-            // Mayor same
-            yield return new object[] { v_2_0_0, v_2_0_4, true };
-            yield return new object[] { v_2_0_4, v_2_0_0, true };
-            // Minor different
-            yield return new object[] { v_1_0_0, v_1_1_0, false };
-            yield return new object[] { v_1_1_0, v_1_0_0, false };
-            // Patch different
-            yield return new object[] { v_1_1_1, v_1_1_0, true };
-            yield return new object[] { v_1_1_0, v_1_1_1, true };
+            // At least Mayor different
+            TestVersionCompare(v_1_0_0, v_2_0_0, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch, false);
+            TestVersionCompare(v_1_0_5, v_2_0_4, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch, false);
+            // At least Minor different
+            TestVersionCompare(v_1_1_0, v_1_0_0, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch, false);
+            // At least Patch different
+            TestVersionCompare(v_1_1_1, v_1_1_0, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch, false);
         }
 
-        [Theory]
-        [MemberData(nameof(MinorStrictnessData))]
-        public void ModVersionCompare_MinorStrictness(System.Version modServerVersion, System.Version modClientVersion, bool expectedResult)
+        private void TestVersionCompare(System.Version v1, System.Version v2, CompatibilityLevel level, VersionStrictness strictness,
+            bool expected)
         {
-            serverVersionData.Modules = new List<ModModule>
-            {
-                new ModModule("TestMod", modServerVersion, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)
-            };
-            clientVersionData.Modules = new List<ModModule>
-            {
-                new ModModule("TestMod", modClientVersion, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)
-            };
-            Assert.Equal(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData), expectedResult);
-        }
+            serverVersionData.Modules = new List<ModModule> { new ModModule("TestMod", v1, level, strictness) };
+            clientVersionData.Modules = new List<ModModule> { new ModModule("TestMod", v2, level, strictness) };
+            Assert.Equal(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData), expected);
 
-        public static IEnumerable<object[]> PatchStrictnessData()
-        {
-            // Mayor different
-            yield return new object[] { v_1_0_0, v_2_0_0, false };
-            yield return new object[] { v_2_0_0, v_1_0_0, false };
-            yield return new object[] { v_1_0_5, v_2_0_4, false };
-            // Minor different
-            yield return new object[] { v_1_0_0, v_1_1_0, false };
-            yield return new object[] { v_1_1_0, v_1_0_0, false };
-            // Patch different
-            yield return new object[] { v_1_1_1, v_1_1_0, false };
-            yield return new object[] { v_1_1_0, v_1_1_1, false };
-        }
-
-        [Theory]
-        [MemberData(nameof(PatchStrictnessData))]
-        public void ModVersionCompare_PatchStrictness(System.Version modServerVersion, System.Version modClientVersion, bool expectedResult)
-        {
-            serverVersionData.Modules = new List<ModModule>
-            {
-                new ModModule("TestMod", modServerVersion, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch)
-            };
-            clientVersionData.Modules = new List<ModModule>
-            {
-                new ModModule("TestMod", modClientVersion, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Patch)
-            };
-            Assert.Equal(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData), expectedResult);
+            serverVersionData.Modules = new List<ModModule> { new ModModule("TestMod", v2, level, strictness) };
+            clientVersionData.Modules = new List<ModModule> { new ModModule("TestMod", v1, level, strictness) };
+            Assert.Equal(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData), expected);
         }
     }
 }
