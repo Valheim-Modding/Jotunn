@@ -8,12 +8,16 @@ using UnityEngine;
 namespace Jotunn.Utils
 {
     /// <summary>
-    ///     Utility class to query metadata about added content of any mod
+    ///     Utility class to query metadata about added content of any loaded mod, including non-Jötunn ones.
+    ///     It is disabled by default, as it unnecessary increases the loading time when not used.<br/>
+    ///     <see cref="ModQuery.Enable()"/> has to be called anytime before FejdStartup.Awake, meaning in your plugin's Awake or Start.
     /// </summary>
     public class ModQuery
     {
         private static readonly Dictionary<string, Dictionary<int, ModPrefab>> Prefabs = new Dictionary<string, Dictionary<int, ModPrefab>>();
         private static readonly Dictionary<string, List<Recipe>> Recipes = new Dictionary<string, List<Recipe>>();
+
+        private static bool enabled = false;
 
         internal static void Init()
         {
@@ -30,6 +34,16 @@ namespace Jotunn.Utils
                 Prefab = prefab;
                 SourceMod = mod;
             }
+        }
+
+        /// <summary>
+        ///     Enables the collection of mod metadata.
+        ///     It is disabled by default, as it unnecessary increases the loading time when not used.<br/>
+        ///     This method has to be called anytime before FejdStartup.Awake, meaning in your plugin's Awake or Start.
+        /// </summary>
+        public static void Enable()
+        {
+            enabled = true;
         }
 
         /// <summary>
@@ -63,7 +77,9 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
-        ///     Get an prefab by its name. Does not include Vanilla prefabs, see <see cref="PrefabManager.GetPrefab" />
+        ///     Get an prefab by its name.
+        ///     Does not include Vanilla prefabs, see <see cref="PrefabManager.GetPrefab">PrefabManager.GetPrefab(string)</see>
+        ///     for those.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -90,6 +106,11 @@ namespace Jotunn.Utils
         [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake)), HarmonyPostfix]
         private static void FejdStartup_Awake_Postfix()
         {
+            if (!enabled)
+            {
+                return;
+            }
+
             var zNetAwake = AccessTools.Method(typeof(ZNetScene), nameof(ZNetScene.Awake));
             PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake)?.Prefixes);
             PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake)?.Postfixes);
