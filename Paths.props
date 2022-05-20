@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="Environment.props" Condition="Exists('Environment.props')" />
+  <Choose>
+    <When Condition="($(OS) == 'Unix' OR $(OS) == 'OSX') AND $(VALHEIM_INSTALL) == ''">
+      <PropertyGroup>
+        <VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)')">$(HOME)/.steam/steam/steamapps/common/Valheim</VALHEIM_INSTALL>
+        <VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)')">$(HOME)/Library/Application Support/Steam/steamapps/common/Valheim/Contents/MacOS</VALHEIM_INSTALL>
+      </PropertyGroup>
+    </When>
+    <When Condition="($(OS) == 'Windows_NT') AND $(VALHEIM_INSTALL) == ''">
+      <PropertyGroup>
+        <VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)')">$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 892970', 'InstallLocation', null, RegistryView.Registry64, RegistryView.Registry32))</VALHEIM_INSTALL>
+        <_SteamLibraryPath>$([MSBuild]::GetRegistryValueFromView('HKEY_CURRENT_USER\SOFTWARE\Valve\Steam', 'SteamPath', null, RegistryView.Registry32))</_SteamLibraryPath>
+        <VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)') AND '$(_SteamLibraryPath)' != ''">$(_SteamLibraryPath)\steamapps\common\Valheim</VALHEIM_INSTALL>
+        <VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)')">C:\Program Files\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
+        <VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)')">C:\Program Files (x86)\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
+      </PropertyGroup>
+    </When>
+  </Choose>
+</Project>

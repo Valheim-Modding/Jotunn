@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{
 		publish.ps1 = publish.ps1
 		README.bbcode = README.bbcode
 		README.md = README.md
+		Paths.props = Paths.props
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnTests", "JotunnTests\JotunnTests.csproj", "{36C128CC-45A6-4436-A595-734164B0FAA7}"

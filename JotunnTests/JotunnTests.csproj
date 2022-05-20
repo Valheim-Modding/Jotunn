@@ -386,13 +386,7 @@
     </Reference>
   </ItemGroup>
   <Import Project="BuildProps\version.props" Condition="Exists('BuildProps\version.props')" />
-  <Target Name="EnsureEnvironmentPropsImport" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project needs a Environment.props file with the path to your Valheim installation. See https://github.com/Valheim-Modding/Jotunn. {0} is missing.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\Environment.props')" Text="$([System.String]::Format('$(ErrorText)', 'Environment.props'))" />
-  </Target>
-  <Import Project="..\Environment.props" Condition="Exists('..\Environment.props')" />
+  <Import Project="..\Paths.props" />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
