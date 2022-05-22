@@ -28,6 +28,26 @@ namespace Jotunn.Configs
         public bool Recover { get; set; } = false;
 
         /// <summary>
+        ///     Creates a new requirement config with default values.
+        /// </summary>
+        public RequirementConfig() { }
+
+        /// <summary>
+        ///     Creates a new requirement config with the given values.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="amount"></param>
+        /// <param name="amountPerLevel"></param>
+        /// <param name="recover"></param>
+        public RequirementConfig(string item, int amount = 1, int amountPerLevel = 0, bool recover = false)
+        {
+            Item = item;
+            Amount = amount;
+            AmountPerLevel = amountPerLevel;
+            Recover = recover;
+        }
+
+        /// <summary>
         ///     Creates a Valheim Piece.Requirement from this config. 
         /// </summary>
         /// <returns></returns>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HarmonyLib;
 using UnityEngine;
 using Jotunn.Entities;
 
@@ -129,6 +130,15 @@ namespace Jotunn.Configs
         public static List<RecipeConfig> ListFromJson(string json)
         {
             return SimpleJson.SimpleJson.DeserializeObject<List<RecipeConfig>>(json);
+        }
+
+        /// <summary>
+        ///     Appends a new <see cref="RequirementConfig"/> to the array existing ones.
+        /// </summary>
+        /// <param name="requirementConfig"></param>
+        public void AddRequirement(RequirementConfig requirementConfig)
+        {
+            Requirements = Requirements.AddToArray(requirementConfig);
         }
     }
 }

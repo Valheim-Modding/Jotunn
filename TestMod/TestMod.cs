@@ -828,17 +828,14 @@ namespace TestMod
             PieceManager.Instance.AddPieceTable(rune_table);
 
             // Create and add a custom item
-            var rune_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
-            var rune = new CustomItem(rune_prefab, fixReference: false,  // Prefab did not use mocked refs so no need to fix them
-                new ItemConfig
-                {
-                    Amount = 1,
-                    Requirements = new[]
-                    {
-                        new RequirementConfig { Item = "Stone", Amount = 1 }
-                    }
-                });
-            ItemManager.Instance.AddItem(rune);
+            var runePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
+
+            ItemConfig runePrefabConfig = new ItemConfig();
+            runePrefabConfig.Amount = 1;
+            runePrefabConfig.AddRequirement(new RequirementConfig("Stone", 1));
+
+            // Prefab did not use mocked refs so no need to fix them
+            ItemManager.Instance.AddItem(new CustomItem(runePrefab, fixReference: false, runePrefabConfig));
 
             // Create and add custom pieces
             var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
@@ -1157,29 +1154,29 @@ namespace TestMod
             try
             {
                 // Create and add a custom item based on SwordBlackmetal
-                var CI = new CustomItem("EvilSword", "SwordBlackmetal");
-                ItemManager.Instance.AddItem(CI);
+                ItemConfig evilSwordConfig = new ItemConfig();
+                evilSwordConfig.Name = "$item_evilsword";
+                evilSwordConfig.Description = "$item_evilsword_desc";
+                evilSwordConfig.CraftingStation = "piece_workbench";
+                evilSwordConfig.AddRequirement(new RequirementConfig("Stone", 1));
+                evilSwordConfig.AddRequirement(new RequirementConfig("Wood", 1));
 
-                // Replace vanilla properties of the custom item
-                var itemDrop = CI.ItemDrop;
-                itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
-                itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
+                CustomItem evilSword = new CustomItem("EvilSword", "SwordBlackmetal", evilSwordConfig);
+                ItemManager.Instance.AddItem(evilSword);
 
                 // Add our custom status effect to it
+                var itemDrop = evilSword.ItemDrop;
                 itemDrop.m_itemData.m_shared.m_equipStatusEffect = EvilSwordEffect.StatusEffect;
 
                 // Create and add a recipe for the copied item
-                var recipe = ScriptableObject.CreateInstance<Recipe>();
-                recipe.name = "Recipe_EvilSword";
-                recipe.m_item = itemDrop;
-                recipe.m_craftingStation = PrefabManager.Cache.GetPrefab<CraftingStation>("piece_workbench");
-                recipe.m_resources = new[]
-                {
-                    new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Stone"), m_amount = 1},
-                    new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Wood"), m_amount = 1}
-                };
-                var CR = new CustomRecipe(recipe, fixReference: false, fixRequirementReferences: false);  // no need to fix because the refs from the cache are valid
-                ItemManager.Instance.AddRecipe(CR);
+                RecipeConfig recipeConfig = new RecipeConfig();
+                recipeConfig.Name = "Recipe_EvilSword2";
+                recipeConfig.Item = "EvilSword";
+                recipeConfig.CraftingStation = "piece_workbench";
+                recipeConfig.AddRequirement(new RequirementConfig("Stone", 2));
+                recipeConfig.AddRequirement(new RequirementConfig("Wood", 3));
+
+                ItemManager.Instance.AddRecipe(new CustomRecipe(recipeConfig));
 
                 // Create custom KeyHints for the item
                 KeyHintConfig KHC = new KeyHintConfig

@@ -9,47 +9,52 @@ This example requires [assets](asset-loading.md) to be loaded. The code snippets
 
 ## Cloning existing prefabs
 
-In this example, we will clone a resource and a weapon which the user may equip. In order to do this, we will need to reference already instantiated game assets. One method of doing so is by using the "vanilla prefabs available" event provided by Jötunn. The event is fired when the vanilla items are in memory and thus clonable (more precisely in the start scene before the initial ObjectDB is cloned).
+In this example, we will clone a resource and a weapon which the user may equip.
+In order to do this, we will need to reference already instantiated game assets.
+One method of doing so is by using the "vanilla prefabs available" event provided by Jötunn.
+The event is fired when the vanilla items are in memory and thus clonable (more precisely in the start scene before the initial ObjectDB is cloned).
 
 ```cs
 private void Awake()
 {
     PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
 }
-```
 
-First we use the [CustomItem](xref:Jotunn.Entities.CustomItem) constructor to define the name of our item, and the existing prefab name which it should be cloned from. The item can be immediately added via the [AddItem](xref:Jotunn.Managers.ItemManager.AddItem(Jotunn.Entities.CustomItem)) method, and then modified to make our clone a little bit more unique.
-
-```cs
-// Implementation of cloned items
 private void AddClonedItems()
 {
-    try
-    {
-        // Create and add a custom item based on SwordBlackmetal
-        CustomItem CI = new CustomItem("EvilSword", "SwordBlackmetal");
-        ItemManager.Instance.AddItem(CI);
+    // Add cloned items here
 
-        // Replace vanilla properties of the custom item
-        var itemDrop = CI.ItemDrop;
-        itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
-        itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
+    // You want that to run only once, Jotunn has the item cached for the game session
+    PrefabManager.OnVanillaPrefabsAvailable -= AddClonedItems;
+}
+```
+First we use the [ItemConfig](xref:Jotunn.Configs.ItemConfig) constructor to define the name of our item, and the existing prefab name which it should be cloned from.
+An [CustomItem](xref:Jotunn.Entities.CustomItem) can then be created from this config and immediately added via the [AddItem](xref:Jotunn.Managers.ItemManager.AddItem(Jotunn.Entities.CustomItem)) method, and then modified to make our clone a little bit more unique.
 
-        // Create the recipe for the sword
-        RecipeEvilSword(itemDrop);
+```cs
+private void Awake()
+{
+    PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
+}
 
-        // Show a different KeyHint for the sword.
-        KeyHintsEvilSword();
-    }
-    catch (Exception ex)
-    {
-        Jotunn.Logger.LogError($"Error while adding cloned item: {ex.Message}");
-    }
-    finally
-    {
-        // You want that to run only once, Jotunn has the item cached for the game session
-        PrefabManager.OnVanillaPrefabsAvailable -= AddClonedItems;
-    }
+private void AddClonedItems()
+{
+    // Create and add a custom item based on SwordBlackmetal
+    ItemConfig evilSwordConfig = new ItemConfig();
+    evilSwordConfig.Name = "$item_evilsword";
+    evilSwordConfig.Description = "$item_evilsword_desc";
+    evilSwordConfig.CraftingStation = "piece_workbench";
+    evilSwordConfig.AddRequirement(new RequirementConfig("Stone", 1));
+    evilSwordConfig.AddRequirement(new RequirementConfig("Wood", 1));
+
+    CustomItem evilSword = new CustomItem("EvilSword", "SwordBlackmetal", evilSwordConfig);
+    ItemManager.Instance.AddItem(evilSword);
+
+    // Show a different KeyHint for the sword.
+    KeyHintsEvilSword();
+
+    // You want that to run only once, Jotunn has the item cached for the game session
+    PrefabManager.OnVanillaPrefabsAvailable -= AddClonedItems;
 }
 ```
 
@@ -74,28 +79,21 @@ Similarly in this example instead of cloning our prefabs, we are just going to i
 private void CreateBlueprintRune()
 {
     // Create and add a custom item
-    var rune_prefab = blueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
-    var rune = new CustomItem(rune_prefab, fixReference: false,
-        new ItemConfig
-        {
-            Amount = 1,
-            Requirements = new[]
-            {
-                new RequirementConfig
-                {
-                    Item = "Stone",
-                    //Amount = 1,           // These are all the defaults, so no need to specify
-                    //AmountPerLevel = 0,
-                    //Recover = false 
-                }
-            }
-        });
-    ItemManager.Instance.AddItem(rune);
+    var runePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
+
+    ItemConfig runePrefabConfig = new ItemConfig();
+    runePrefabConfig.Amount = 1;
+    runePrefabConfig.AddRequirement(new RequirementConfig("Stone", 1));
+
+    // Prefab did not use mocked refs so no need to fix them
+    ItemManager.Instance.AddItem(new CustomItem(runePrefab, fixReference: false, runePrefabConfig));
 }
 ```
 
 ![Blueprint Rune Item](../images/data/blueprintRuneItem.png) ![Blueprint Recipe Config](../images/data/blueprintRecipeConfig.png)
 
-As in the example before, our item does not hold the display text we might prefer. In order to resolve this you can read our [localization](localization.md) tutorial.
+As in the example before, our item does not hold the display text we might prefer.
+In order to resolve this you can read our [localization](localization.md) tutorial.
 
-We have now added two custom items, both of which can be equipped, as well as a custom resource which is used to create items. This concludes the items tutorial. [Go back to the index](overview.md).
+We have now added two custom items, both of which can be equipped, as well as a custom resource which is used to create items.
+This concludes the items tutorial. [Go back to the index](overview.md).
