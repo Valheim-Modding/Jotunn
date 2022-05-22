@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HarmonyLib;
 using Jotunn.Entities;
 using UnityEngine;
 
@@ -197,6 +198,33 @@ namespace Jotunn.Configs
             }
 
             return itemDrops;
+        }
+
+        /// <summary>
+        ///     Appends a new <see cref="DropConfig"/> to the array of existing ones.
+        /// </summary>
+        /// <param name="dropConfig"></param>
+        public void AddDropConfig(DropConfig dropConfig)
+        {
+            DropConfigs = DropConfigs.AddToArray(dropConfig);
+        }
+
+        /// <summary>
+        ///     Appends a new <see cref="SpawnConfig"/> to the array of existing ones.
+        /// </summary>
+        /// <param name="spawnConfig"></param>
+        public void AddSpawnConfig(SpawnConfig spawnConfig)
+        {
+            SpawnConfigs = SpawnConfigs.AddToArray(spawnConfig);
+        }
+
+        /// <summary>
+        ///     Appends a new consumable to the array of existing ones.
+        /// </summary>
+        /// <param name="consumable"></param>
+        public void AddConsumable(string consumable)
+        {
+            Consumables = Consumables.AddToArray(consumable);
         }
     }
 }

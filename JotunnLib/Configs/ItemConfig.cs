@@ -232,7 +232,7 @@ namespace Jotunn.Configs
         }
 
         /// <summary>
-        ///     Appends a new <see cref="RequirementConfig"/> to the array existing ones.
+        ///     Appends a new <see cref="RequirementConfig"/> to the array of existing ones.
         /// </summary>
         /// <param name="requirementConfig"></param>
         public void AddRequirement(RequirementConfig requirementConfig)

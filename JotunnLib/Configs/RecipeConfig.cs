@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
 using Jotunn.Entities;
@@ -52,7 +53,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
-        public RequirementConfig[] Requirements { get; set; } = new RequirementConfig[0];
+        public RequirementConfig[] Requirements { get; set; } = Array.Empty<RequirementConfig>();
 
         /// <summary>
         ///     Converts the RequirementConfigs to Valheim style Piece.Requirements
@@ -133,7 +134,7 @@ namespace Jotunn.Configs
         }
 
         /// <summary>
-        ///     Appends a new <see cref="RequirementConfig"/> to the array existing ones.
+        ///     Appends a new <see cref="RequirementConfig"/> to the array of existing ones.
         /// </summary>
         /// <param name="requirementConfig"></param>
         public void AddRequirement(RequirementConfig requirementConfig)
