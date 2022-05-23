@@ -39,7 +39,7 @@ namespace Jotunn.Configs
         /// <param name="amount"></param>
         /// <param name="amountPerLevel"></param>
         /// <param name="recover"></param>
-        public RequirementConfig(string item, int amount = 1, int amountPerLevel = 0, bool recover = false)
+        public RequirementConfig(string item, int amount, int amountPerLevel = 0, bool recover = false)
         {
             Item = item;
             Amount = amount;

@@ -18,6 +18,22 @@ namespace Jotunn.Configs
         public int Amount { get; set; }
 
         /// <summary>
+        ///     Creates a new incinerator requirement config with default values.
+        /// </summary>
+        public IncineratorRequirementConfig() { }
+
+        /// <summary>
+        ///     Creates a new incinerator requirement config with the given values.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="amount"></param>
+        public IncineratorRequirementConfig(string item, int amount)
+        {
+            Item = item;
+            Amount = amount;
+        }
+
+        /// <summary>
         ///     Creates a Valheim Piece.Requirement from this config. 
         /// </summary>
         /// <returns></returns>

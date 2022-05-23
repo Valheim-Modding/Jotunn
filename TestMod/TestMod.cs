@@ -722,72 +722,57 @@ namespace TestMod
         private void AddVanillaItemConversions()
         {
             // Add an item conversion for the CookingStation. The items must have an "attach" child GameObject to display it on the station.
-            var cookConversion = new CustomItemConversion(new CookingConversionConfig
-            {
-                FromItem = "CookedMeat",
-                ToItem = "CookedLoxMeat",
-                CookTime = 2f
-            });
-            ItemManager.Instance.AddItemConversion(cookConversion);
+            var cookConfig = new CookingConversionConfig();
+            cookConfig.FromItem = "CookedMeat";
+            cookConfig.ToItem = "CookedLoxMeat";
+            cookConfig.CookTime = 2f;
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(cookConfig));
 
             // Add an item conversion for the Fermenter. You can specify how much new items the conversion yields.
-            var fermentConversion = new CustomItemConversion(new FermenterConversionConfig
-            {
-                FromItem = "Coal",
-                ToItem = "CookedLoxMeat",
-                ProducedItems = 10
-            });
-            ItemManager.Instance.AddItemConversion(fermentConversion);
+            var fermentConfig = new FermenterConversionConfig();
+            fermentConfig.ToItem = "CookedLoxMeat";
+            fermentConfig.FromItem = "Coal";
+            fermentConfig.ProducedItems = 10;
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(fermentConfig));
 
             // Add an item conversion for the smelter
-            var smeltConversion = new CustomItemConversion(new SmelterConversionConfig
-            {
-                //Station = "smelter",  // Use the default from the config
-                FromItem = "Stone",
-                ToItem = "CookedLoxMeat"
-            });
-            ItemManager.Instance.AddItemConversion(smeltConversion);
+            var smelterConfig = new SmelterConversionConfig();
+            smelterConfig.FromItem = "Stone";
+            smelterConfig.ToItem = "CookedLoxMeat";
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(smelterConfig));
 
             // Add an item conversion which does not resolve the mock
-            var faultConversion = new CustomItemConversion(new SmelterConversionConfig
-            {
-                //Station = "smelter",  // Use the default from the config
-                FromItem = "StonerDude",
-                ToItem = "CookedLoxMeat"
-            });
-            ItemManager.Instance.AddItemConversion(faultConversion);
+            var faultConfig = new SmelterConversionConfig();
+            faultConfig.FromItem = "StonerDude";
+            faultConfig.ToItem = "CookedLoxMeat";
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(faultConfig));
 
             // Add an incinerator conversion. This one is special since the incinerator conversion script 
             // takes one or more items to produce any amount of a new item
-            var inciConversion = new CustomItemConversion(new IncineratorConversionConfig
-            {
-                //Station = "incinerator"  // Use the default from the config
-                Requirements = new List<IncineratorRequirementConfig>
-                {
-                    new IncineratorRequirementConfig {Item = "Wood", Amount = 1},
-                    new IncineratorRequirementConfig {Item = "Stone", Amount = 1}
-                },
-                ToItem = "Coins",
-                ProducedItems = 20,
-                RequireOnlyOneIngredient = false,  // true = only one of the requirements is needed to produce the output
-                Priority = 5                       // Higher priorities get preferred when multiple requirements are met
-            });
-            ItemManager.Instance.AddItemConversion(inciConversion);
+            var incineratorConfig = new IncineratorConversionConfig();
+            incineratorConfig.Requirements.Add(new IncineratorRequirementConfig("Wood", 1));
+            incineratorConfig.Requirements.Add(new IncineratorRequirementConfig("Stone", 1));
+            incineratorConfig.ToItem = "Coins";
+            incineratorConfig.ProducedItems = 20;
+            incineratorConfig.RequireOnlyOneIngredient = false;  // true = only one of the requirements is needed to produce the output
+            incineratorConfig.Priority = 5;                      // Higher priorities get preferred when multiple requirements are met
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(incineratorConfig));
         }
 
         // Add custom item conversion (gives a steel ingot to smelter)
         private void AddCustomItemConversion()
         {
-            var steel_prefab = Steelingot.LoadAsset<GameObject>("Steel");
-            var ingot = new CustomItem(steel_prefab, fixReference: false);
-            var blastConversion = new CustomItemConversion(new SmelterConversionConfig
-            {
-                Station = "blastfurnace", // Let's specify something other than default here 
-                FromItem = "Iron",
-                ToItem = "Steel" // This is our custom prefabs name we have loaded just above 
-            });
+            var steelPrefab = Steelingot.LoadAsset<GameObject>("Steel");
+            var ingot = new CustomItem(steelPrefab, fixReference: false);
             ItemManager.Instance.AddItem(ingot);
-            ItemManager.Instance.AddItemConversion(blastConversion);
+
+            // Create a conversion for the blastfurnace, the custom item is the new outcome
+            var blastConfig = new SmelterConversionConfig();
+            blastConfig.Station = "blastfurnace"; // let's specify something other than default here
+            blastConfig.FromItem = "Iron";
+            blastConfig.ToItem = "Steel"; // this is our custom prefabs name we have loaded just above
+
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(blastConfig));
             Steelingot.Unload(false);
         }
 
