@@ -1235,21 +1235,21 @@ namespace TestMod
                 Sprite var4 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var4.png");
                 Texture2D styleTex = AssetUtils.LoadTexture("TestMod/Assets/test_varpaint.png");
 
-                CustomItem sword = new CustomItem("item_swordvariants", "SwordBronze", new ItemConfig
-                {
-                    Name = "Lulz Sword",
-                    Description = "Lulz on a stick",
-                    Icons = new []
-                    {
-                        var1, var2, var3, var4
-                    },
-                    StyleTex = styleTex,
-                    Requirements = new []
-                    {
-                        new RequirementConfig { Item = "Wood" }
-                    }
-                });
-                ItemManager.Instance.AddItem(sword);
+                ItemConfig shieldConfig = new ItemConfig();
+                shieldConfig.Name = "$lulz_shield";
+                shieldConfig.Description = "$lulz_shield_desc";
+                shieldConfig.AddRequirement(new RequirementConfig("Wood", 1));
+                shieldConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
+                shieldConfig.StyleTex = styleTex;
+                ItemManager.Instance.AddItem(new CustomItem("item_lulzshield", "ShieldWood", shieldConfig));
+
+                ItemConfig swordConfig = new ItemConfig();
+                swordConfig.Name = "$lulz_sword";
+                swordConfig.Description = "$lulz_sword_desc";
+                swordConfig.AddRequirement(new RequirementConfig("Stone", 1));
+                swordConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
+                shieldConfig.StyleTex = styleTex;
+                ItemManager.Instance.AddItem(new CustomItem("item_lulzsword", "SwordBronze", shieldConfig));
 
                 CustomItem cape = new CustomItem("item_lulzcape", "CapeLinen", new ItemConfig
                 {
