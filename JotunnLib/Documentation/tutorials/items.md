@@ -1,8 +1,10 @@
 ﻿# Items
 
-_Items_ can be equipment, resources, or building pieces. In this tutorial you will learn how to set up custom items within the game, either based upon existing assets, or through the creation of entirely custom assets.
+_Items_ can be equipment, resources, or building pieces.
+In this tutorial you will learn how to set up custom items within the game, either based upon existing assets, or through the creation of entirely custom assets.
 
-This example requires [assets](asset-loading.md) to be loaded. The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
+This example requires [assets](asset-loading.md) to be loaded.
+The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
 
 > [!NOTE]
 > You **must** only use names of existing prefabs. This can be prefabs you created, that have already been registered by another mod, or that already exist in the game.
@@ -19,24 +21,11 @@ private void Awake()
 {
     PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
 }
-
-private void AddClonedItems()
-{
-    // Add cloned items here
-
-    // You want that to run only once, Jotunn has the item cached for the game session
-    PrefabManager.OnVanillaPrefabsAvailable -= AddClonedItems;
-}
 ```
 First we use the [ItemConfig](xref:Jotunn.Configs.ItemConfig) constructor to define the name of our item, and the existing prefab name which it should be cloned from.
 An [CustomItem](xref:Jotunn.Entities.CustomItem) can then be created from this config and immediately added via the [AddItem](xref:Jotunn.Managers.ItemManager.AddItem(Jotunn.Entities.CustomItem)) method, and then modified to make our clone a little bit more unique.
 
 ```cs
-private void Awake()
-{
-    PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
-}
-
 private void AddClonedItems()
 {
     // Create and add a custom item based on SwordBlackmetal
@@ -62,15 +51,19 @@ If we load up the game, type `devcommands` into the console (F5), and `spawn Evi
 
 ![Custom Cloned Item Pickup](../images/data/customClonedItemPickup.png) ![Custom Cloned Item Hover](../images/data/customClonedItemHover.png)
 
-As you may notice, our item does not hold the display text we might prefer. In order to resolve this you can read our [localization](localization.md) tutorial.
+As you may notice, our item does not hold the display text we might prefer.
+In order to resolve this you can read our [localization](localization.md) tutorial.
 
-To be able to craft the item on a workbench, a `Recipe` must be created. This is done in the `RecipeEvilSword()` method. Refer to our [recipe tutorial](recipes.md#adding-a-recipe-using-valheim-recipe--prefab-cache) to learn about recipe creation.
+To be able to craft the item on a workbench, a `Recipe` must be created.
+This is done in the `RecipeEvilSword()` method. Refer to our [recipe tutorial](recipes.md#adding-a-recipe-using-valheim-recipe--prefab-cache) to learn about recipe creation.
 
-There is also a custom key hint added in the `KeyHintEvilSword()` method. To learn about the custom key hints, refer to our [input tutorial](inputs.md#creating-custom-keyhints).
+There is also a custom key hint added in the `KeyHintEvilSword()` method.
+To learn about the custom key hints, refer to our [input tutorial](inputs.md#creating-custom-keyhints).
 
 ## Instantiating items from prefabs
 
-In the previous examples we saw that its possible to easily clone existing items and customise our recipe's required for the items, however these examples are rather verbose, and requires a fair amount of setup. In order to better facilitate configurations such as these, we have introduced the [ItemConfig](xref:Jotunn.Configs.ItemConfig) abstraction, which exposes common properties such as the ItemDrop, CraftingStation, and needed Resources via [RequirementConfig's](xref:Jotunn.Configs.RequirementConfig).
+In the previous examples we saw that its possible to easily clone existing items and customise our recipe's required for the items, however these examples are rather verbose, and requires a fair amount of setup.
+In order to better facilitate configurations such as these, we have introduced the [ItemConfig](xref:Jotunn.Configs.ItemConfig) abstraction, which exposes common properties such as the ItemDrop, CraftingStation, and needed Resources via [RequirementConfig's](xref:Jotunn.Configs.RequirementConfig).
 
 Similarly in this example instead of cloning our prefabs, we are just going to import a custom prefab directly from an asset bundle (for more information about asset loading see our [asset loading tutorial](asset-loading.md)). Using the `*Config` classes we create the [CustomItem](xref:Jotunn.Entities.CustomItem) and the corresponding recipe in one call and finally add it to the ItemManager.
 
