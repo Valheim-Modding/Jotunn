@@ -698,6 +698,12 @@ namespace TestMod
         {
             // Load recipes from JSON file
             ItemManager.Instance.AddRecipesFromJson("TestMod/Assets/recipes.json");
+
+            var meatConfig = new RecipeConfig();
+            meatConfig.Item = "CookedMeat"; // Name of the item prefab to be crafted
+            meatConfig.AddRequirement(new RequirementConfig("Stone", 2));
+            meatConfig.AddRequirement(new RequirementConfig("Wood", 1));
+            ItemManager.Instance.AddRecipe(new CustomRecipe(meatConfig));
         }
 
         // Add new status effects
