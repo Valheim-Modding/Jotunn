@@ -44,9 +44,31 @@ namespace Jotunn.Managers
         internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private Piece.PieceCategory PieceCategoryMax = Piece.PieceCategory.Max;
 
-        private const float PieceCategorySize = 700f;
-        private const float PieceCategoryTabSize = 140f;
-        private const float PieceCategoryTabOffset = 50f;
+        /// <summary>
+        ///     Settings of the hammer UI tab selection.
+        /// </summary>
+        public static class PieceCategorySettings
+        {
+            /// <summary>
+            ///     Piece table tab header width.
+            /// </summary>
+            public static float HeaderWidth { get; set; } = 700f;
+
+            /// <summary>
+            ///     Minimum size of a piece table tab. The tab can grow bigger than this the name doesn't fit.
+            /// </summary>
+            public static float MinTabSize { get; set; } = 140f;
+
+            /// <summary>
+            ///     Tab size per name character. This determines how fast the tab size grows.
+            /// </summary>
+            public static float TabSizePerCharacter { get; set; } = 11f;
+
+            /// <summary>
+            ///     Minimum left/right space that is visible for not selected adjacent tabs.
+            /// </summary>
+            public static float TabMargin { get; set; } = 50f;
+        }
 
         /// <summary>
         ///     Creates the piece table container and registers all hooks.
@@ -554,7 +576,7 @@ namespace Jotunn.Managers
             if (root.GetComponent<RectMask2D>() == null)
             {
                 root.AddComponent<RectMask2D>();
-                root.SetWidth(PieceCategorySize);
+                root.SetWidth(PieceCategorySettings.HeaderWidth);
 
                 Transform border = root.transform.Find("TabBorder");
                 border?.SetParent(root.transform.parent, true);
@@ -956,19 +978,19 @@ namespace Jotunn.Managers
                 var tab = Hud.instance.m_pieceCategoryTabs[(int)selectedCategory];
                 lastCategory = selectedCategory;
 
-                float minX = tab.GetComponent<RectTransform>().anchoredPosition.x - PieceCategoryTabOffset;
+                float minX = tab.GetComponent<RectTransform>().anchoredPosition.x - PieceCategorySettings.TabMargin;
                 if (minX < 0f)
                 {
-                    float offsetX = selectedCategory == Values.Min() ? minX * -1 - PieceCategoryTabOffset : minX * -1;
+                    float offsetX = selectedCategory == Values.Min() ? minX * -1 - PieceCategorySettings.TabMargin : minX * -1;
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
                         go.GetComponent<RectTransform>().anchoredPosition += new Vector2(offsetX, 0);
                     }
                 }
-                float maxX = tab.GetComponent<RectTransform>().anchoredPosition.x + CalculateTabWidth(tab) + PieceCategoryTabOffset;
-                if (maxX > PieceCategorySize)
+                float maxX = tab.GetComponent<RectTransform>().anchoredPosition.x + CalculateTabWidth(tab) + PieceCategorySettings.TabMargin;
+                if (maxX > PieceCategorySettings.HeaderWidth)
                 {
-                    float offsetX = selectedCategory == Values.Max() ? maxX - PieceCategorySize - PieceCategoryTabOffset : maxX - PieceCategorySize;
+                    float offsetX = selectedCategory == Values.Max() ? maxX - PieceCategorySettings.HeaderWidth - PieceCategorySettings.TabMargin : maxX - PieceCategorySettings.HeaderWidth;
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
                         go.GetComponent<RectTransform>().anchoredPosition -= new Vector2(offsetX, 0);
@@ -978,7 +1000,7 @@ namespace Jotunn.Managers
 
             private static float CalculateTabWidth(GameObject tab)
             {
-                return Mathf.Max(PieceCategoryTabSize, 11f * (tab.name.Length + 6f));
+                return Mathf.Max(PieceCategorySettings.MinTabSize, PieceCategorySettings.TabSizePerCharacter * (tab.name.Length + 6f));
             }
         }
     }
