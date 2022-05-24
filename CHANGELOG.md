@@ -1,4 +1,8 @@
 ﻿# Changelog
+## Version 2.6.7
+* Added display of the Valheim version string to the compatibility window. If a mismatch is produced by a mod, it will be displayed accordingly
+* Added the ModQuery class which allows to get metadata about content of loaded mods, including non-Jötunn ones. It is disabled by default to not create unnecessary loading time when not used
+* Added hammer tab UI settings to the public API
 
 ## Version 2.6.6
 * Added automatic refresh of vanilla locations after OnVanillaLocationsAvailable to prevent ZNetView problems
