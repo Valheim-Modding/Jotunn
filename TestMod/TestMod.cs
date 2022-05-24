@@ -1599,7 +1599,8 @@ namespace TestMod
             lulzMonsterConfig.AddSpawnConfig(new SpawnConfig
             {
                 Name = "Jotunn_LulzMonsterSpawn2",
-                SpawnChance = 50f, MaxSpawned = 1,
+                SpawnChance = 50f,
+                MaxSpawned = 1,
                 Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
             });
 
