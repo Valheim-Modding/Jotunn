@@ -14,18 +14,18 @@ namespace Jotunn.Utils
         /// </summary>
         private static BaseUnityPlugin[] Plugins;
 
+        private static Dictionary<PluginInfo, string> PluginInfoTypeNameCache { get; } = new Dictionary<PluginInfo, string>();
+        private static Dictionary<Assembly, PluginInfo> AssemblyToPluginInfoCache { get; } = new Dictionary<Assembly, PluginInfo>();
+
         /// <summary>
         ///     Cache loaded plugins which depend on Jotunn.
         /// </summary>
         /// <returns></returns>
-        private static void CacheDependentPlugins()
+        private static BaseUnityPlugin[] CacheDependentPlugins()
         {
             var dependent = new List<BaseUnityPlugin>();
-            var loaded = BepInEx.Bootstrap.Chainloader.PluginInfos
-                .Where(x => x.Value != null && x.Value.Instance != null)
-                .Select(x => x.Value.Instance);
 
-            foreach (var plugin in loaded)
+            foreach (var plugin in GetLoadedPlugins())
             {
                 if (plugin.Info == null)
                 {
@@ -53,7 +53,7 @@ namespace Jotunn.Utils
                 }
             }
 
-            Plugins = dependent.ToArray();
+            return dependent.ToArray();
         }
 
         /// <summary>
@@ -62,28 +62,28 @@ namespace Jotunn.Utils
         /// <returns>Dictionary of plugin GUID and <see cref="BaseUnityPlugin"/></returns>
         public static Dictionary<string, BaseUnityPlugin> GetDependentPlugins(bool includeJotunn = false)
         {
-            var result = new Dictionary<string, BaseUnityPlugin>();
-
-            if (Plugins == null && ReflectionHelper.GetPrivateField<bool>(typeof(BepInEx.Bootstrap.Chainloader), "_loaded"))
+            if (Plugins == null)
             {
-                CacheDependentPlugins();
-            }
-
-            foreach (var plugin in Plugins)
-            {
-                if (plugin.Info.Metadata.GUID == Main.ModGuid)
+                if (ReflectionHelper.GetPrivateField<bool>(typeof(BepInEx.Bootstrap.Chainloader), "_loaded"))
                 {
-                    if (includeJotunn)
-                    {
-                        result.Add(plugin.Info.Metadata.GUID, plugin);
-                    }
-                    continue;
+                    Plugins = CacheDependentPlugins();
                 }
-
-                result.Add(plugin.Info.Metadata.GUID, plugin);
+                else
+                {
+                    return new Dictionary<string, BaseUnityPlugin>();
+                }
             }
 
-            return result;
+            return Plugins
+                   .Where(plugin => includeJotunn || plugin.Info.Metadata.GUID != Main.ModGuid)
+                   .ToDictionary(plugin => plugin.Info.Metadata.GUID);
+        }
+
+        public static Dictionary<string, BaseUnityPlugin> GetPlugins(bool includeJotunn = false)
+        {
+            return GetLoadedPlugins()
+                   .Where(plugin => includeJotunn || plugin.Info.Metadata.GUID != Main.ModGuid)
+                   .ToDictionary(plugin => plugin.Info.Metadata.GUID);
         }
 
         /// <summary>
@@ -105,6 +105,18 @@ namespace Jotunn.Utils
             return null;
         }
 
+        private static string GetPluginInfoTypeName(PluginInfo info)
+        {
+            if (PluginInfoTypeNameCache.ContainsKey(info))
+            {
+                return PluginInfoTypeNameCache[info];
+            }
+
+            var typeName = ReflectionHelper.GetPrivateProperty<string>(info, "TypeName");
+            PluginInfoTypeNameCache.Add(info, typeName);
+            return typeName;
+        }
+
         /// <summary>
         ///     Get <see cref="PluginInfo"/> from an <see cref="Assembly"/>
         /// </summary>
@@ -112,11 +124,16 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static PluginInfo GetPluginInfoFromAssembly(Assembly assembly)
         {
+            if (AssemblyToPluginInfoCache.ContainsKey(assembly))
+            {
+                return AssemblyToPluginInfoCache[assembly];
+            }
+
             foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
             {
-                var typeName = ReflectionHelper.GetPrivateProperty<string>(info, "TypeName");
-                if (assembly.GetType(typeName) != null)
+                if (assembly.GetType(GetPluginInfoTypeName(info)) != null)
                 {
+                    AssemblyToPluginInfoCache.Add(assembly, info);
                     return info;
                 }
             }
@@ -148,6 +165,13 @@ namespace Jotunn.Utils
             return GetPluginInfoFromType(callingType)?.Metadata ??
                    GetPluginInfoFromAssembly(callingType.Assembly)?.Metadata ??
                    Main.Instance.Info.Metadata;
+        }
+
+        private static IEnumerable<BaseUnityPlugin> GetLoadedPlugins()
+        {
+            return BepInEx.Bootstrap.Chainloader.PluginInfos
+                          .Where(x => x.Value != null && x.Value.Instance != null)
+                          .Select(x => x.Value.Instance);
         }
     }
 }

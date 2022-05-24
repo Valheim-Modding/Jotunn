@@ -6,7 +6,7 @@ using Jotunn.Managers;
 namespace Jotunn.Utils
 {
     /// <summary>
-    ///     Utility class to query metadata about loaded mods and their added content
+    ///     Utility class to query metadata about loaded Jötunn mods and their added content
     /// </summary>
     public static class ModRegistry
     {

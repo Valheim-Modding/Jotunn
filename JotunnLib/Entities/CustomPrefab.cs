@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -7,18 +8,18 @@ namespace Jotunn.Entities
     /// <summary>
     ///     Wrapper for custom added GameObjects holding the mod reference.
     /// </summary>
-    public class CustomPrefab : CustomEntity
+    public class CustomPrefab : CustomEntity, IModPrefab
     {
         /// <summary>
         ///     Original prefab
         /// </summary>
         public GameObject Prefab { get; }
-        
+
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
-        
+
         /// <summary>
         ///     Internal ctor with provided <see cref="BepInPlugin"/> metadata.<br />
         ///     Does not fix references.
@@ -29,7 +30,7 @@ namespace Jotunn.Entities
         {
             Prefab = prefab;
         }
-        
+
         /// <summary>
         ///     Custom prefab.<br />
         ///     Can fix references for <see cref="Entities.Mock{T}"/>s.
@@ -57,7 +58,7 @@ namespace Jotunn.Entities
             }
             return valid;
         }
-        
+
         /// <summary>
         ///     Helper method to determine if a prefab with a given name is a custom prefab created with Jötunn.
         /// </summary>
