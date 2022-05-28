@@ -803,20 +803,13 @@ namespace TestMod
         private void AddItemsWithConfigs()
         {
             // Add a custom piece table with custom categories
-            var table_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
-            CustomPieceTable rune_table = new CustomPieceTable(table_prefab,
-                new PieceTableConfig
-                {
-                    CanRemovePieces = false,
-                    UseCategories = false,
-                    UseCustomCategories = true,
-                    CustomCategories = new string[]
-                    {
-                        "Make", "Place"
-                    }
-                }
-            );
-            PieceManager.Instance.AddPieceTable(rune_table);
+            var tablePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
+            PieceTableConfig runeTable = new PieceTableConfig();
+            runeTable.CanRemovePieces = false;
+            runeTable.UseCategories = false;
+            runeTable.UseCustomCategories = true;
+            runeTable.CustomCategories = new string[] { "Make", "Place" };
+            PieceManager.Instance.AddPieceTable(new CustomPieceTable(tablePrefab, runeTable));
 
             // Create and add a custom item
             var runePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
@@ -838,19 +831,15 @@ namespace TestMod
                 });
             PieceManager.Instance.AddPiece(makebp);
 
-            var placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
-            var placebp = new CustomPiece(placebp_prefab, fixReference: false,
-                new PieceConfig
-                {
-                    PieceTable = "_BlueprintTestTable",
-                    Category = "Place",
-                    AllowedInDungeons = true,
-                    Requirements = new[]
-                    {
-                        new RequirementConfig { Item = "Wood", Amount = 2 }
-                    }
-                });
-            PieceManager.Instance.AddPiece(placebp);
+            var placePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
+
+            var place = new PieceConfig();
+            place.PieceTable = "_BlueprintTestTable";
+            place.Category = "Place";
+            place.AllowedInDungeons = true;
+            place.AddRequirement(new RequirementConfig("Wood", 2));
+
+            PieceManager.Instance.AddPiece(new CustomPiece(placePrefab, fixReference: false, place));
 
             // Add localizations from the asset bundle
             var textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
