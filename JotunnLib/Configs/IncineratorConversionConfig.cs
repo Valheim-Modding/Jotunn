@@ -13,11 +13,11 @@ namespace Jotunn.Configs
         ///     The name of the station prefab this conversion is added to. Defaults to "incinerator".
         /// </summary>
         public override string Station { get; set; } = "incinerator";
-        
+
         /// <summary>
         ///     List of requirements for this conversion.
         /// </summary>
-        public List<IncineratorRequirementConfig> Requirements { get; set; }
+        public List<IncineratorRequirementConfig> Requirements { get; set; } = new List<IncineratorRequirementConfig>();
 
         /// <summary>
         ///     The amount of items one conversion yields. Defaults to 1.
