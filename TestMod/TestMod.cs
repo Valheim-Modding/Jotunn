@@ -95,6 +95,7 @@ namespace TestMod
             AddKitbashedPieces();
             AddPieceCategories();
             AddInvalidEntities();
+            AddPieces();
 
             // Add custom items cloned from vanilla items
             PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
@@ -941,6 +942,42 @@ namespace TestMod
             var cheaty = cheatybundle.LoadAsset<GameObject>("Cheaty");
             ItemManager.Instance.AddItem(new CustomItem(cheaty, fixReference: true));
             cheatybundle.Unload(false);
+        }
+
+        private AssetBundle pieceBundle;
+
+        private void AddPieces()
+        {
+            pieceBundle = AssetUtils.LoadAssetBundleFromResources("pieces", Assembly.GetExecutingAssembly());
+            CreateCylinderPiece();
+            PrefabManager.OnVanillaPrefabsAvailable += CreateDeerRugPiece;
+        }
+
+        private void CreateCylinderPiece()
+        {
+            GameObject cylinderPrefab = pieceBundle.LoadAsset<GameObject>("Cylinder");
+
+            PieceConfig cylinder = new PieceConfig();
+            cylinder.Name = "$cylinder_display_name";
+            cylinder.PieceTable = "Hammer";
+            cylinder.Icon = RenderManager.Instance.Render(cylinderPrefab, RenderManager.IsometricRotation);
+            cylinder.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+
+            PieceManager.Instance.AddPiece(new CustomPiece(cylinderPrefab, fixReference: false, cylinder));
+        }
+
+        private void CreateDeerRugPiece()
+        {
+            PieceConfig rug = new PieceConfig();
+            rug.Name = "$our_rug_deer_display_name";
+            rug.PieceTable = "Hammer";
+            rug.Category = "Misc";
+            rug.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+
+            PieceManager.Instance.AddPiece(new CustomPiece("our_rug_deer", "rug_deer", rug));
+
+            // You want that to run only once, Jotunn has the piece cached for the game session
+            PrefabManager.OnVanillaPrefabsAvailable -= CreateDeerRugPiece;
         }
 
         // Adds Kitbashed pieces

@@ -19,67 +19,60 @@ The code snippets are taken from our [example mod](https://github.com/Valheim-Mo
 > You **must** only use names of existing prefabs.
 > This can be prefabs you created, that have already been registered by another mod, or that already exist in the game.
 
-## Creating custom pieces with prefabs
-
-The `Blueprint Rune`, a custom item one of our developers has been working on, is intended to duplicate existing structures.
-In order to keep this example simple, we are not including this functionality, but are utilising these assets to provide an example of loading pieces via prefabs.
-So please bear in mind that while the code below is perfectly functional, there is no mesh/model associated with the following pieces due to the nature of their intended function.
-
-### Custom item
-
-Loading the `Blueprint Rune` item is covered in the [items tutorial](items.md).
-Refer to this if you want to learn how to add your custom tool item first and return to this tutorial afterwards.
-
-### Custom piece table
-
-After loading our custom item, we will load a piece table GameObject from our example asset bundle, create a [CustomPieceTable](xref:Jotunn.Entities.CustomPieceTable) from it and add it to the [PieceManager](xref:Jotunn.Managers.PieceManager).
-
-```cs
-private void CreateRunePieceTable()
-{
-    GameObject tablePrefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
-    CustomPieceTable CPT = new CustomPieceTable(tablePrefab);
-    PieceManager.Instance.AddPieceTable(CPT);
-}
-```
+## Creating custom pieces
 
 ### Custom pieces using PieceConfigs
 
-Now we will load two new pieces into the previously created blueprint piecetable.
+Now we will load two new pieces. One is loaded from an asset bundle, the other is copied from a vanilla prefab.
 In order to better facilitate creation of pieces we have introduced the abstractions of [PieceConfig's](xref:Jotunn.Configs.PieceConfig) and [RequirementConfig](xref:Jotunn.Configs.RequirementConfig).
 These allow us to quickly and easily define common properties for pieces, such as the table they belong too, any restrictions or resources required.
 
 ```cs
-private void CreateRuneMakePiece()
+private AssetBundle pieceBundle;
+
+private void Awake()
 {
-    // Create and add a custom piece for the rune. Add the prefab name of the PieceTable to the config.
-    var makePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
+    pieceBundle = AssetUtils.LoadAssetBundleFromResources("pieces", Assembly.GetExecutingAssembly());
+    CreateCylinderPiece();
+}
 
-    PieceConfig makeConfig = new PieceConfig();
-    makeConfig.PieceTable = "_BlueprintTestTable";
+private void CreateCylinderPiece()
+{
+    GameObject cylinderPrefab = pieceBundle.LoadAsset<GameObject>("Cylinder");
 
-    PieceManager.Instance.AddPiece(new CustomPiece(makePrefab, fixReference: false, makeConfig));
+    PieceConfig cylinder = new PieceConfig();
+    cylinder.Name = "$cylinder_display_name";
+    cylinder.PieceTable = "Hammer";
+    cylinder.Icon = RenderManager.Instance.Render(cylinderPrefab, RenderManager.IsometricRotation);
+    cylinder.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+
+    PieceManager.Instance.AddPiece(new CustomPiece(cylinderPrefab, fixReference: false, cylinder));
 }
 ```
 
 ```cs
-private void CreateRunePiecePiece()
+private void Awake()
 {
-    // Load, create and add another custom piece for the rune. This piece uses more properties
-    // of the PieceConfig - it can now be build in dungeons and has actual requirements to build it.
-    var placePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
+    PrefabManager.OnVanillaPrefabsAvailable += CreateDeerRugPiece;
+}
 
-    PieceConfig placeConfig = new PieceConfig();
-    placeConfig.PieceTable = "_BlueprintTestTable";
-    placeConfig.AllowedInDungeons = true;
-    placeConfig.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+private void CreateDeerRugPiece()
+{
+    PieceConfig rug = new PieceConfig();
+    rug.Name = "$our_rug_deer_display_name";
+    rug.PieceTable = "Hammer";
+    rug.Category = "Misc";
+    rug.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
 
-    PieceManager.Instance.AddPiece(new CustomPiece(placePrefab, fixReference: false, placeConfig));
+    PieceManager.Instance.AddPiece(new CustomPiece("our_rug_deer", "rug_deer", rug));
+
+    // You want that to run only once, Jotunn has the piece cached for the game session
+    PrefabManager.OnVanillaPrefabsAvailable -= CreateDeerRugPiece;
 }
 ```
 
 And here we have our final results:<br />
-![Blue Print Rune Piece Table](../images/data/BluePrintRunePieceTable.png)
+![Blue Print Rune Piece Table](../images/data/customPieces.png)
 
 As you can see in the screenshot the name and description are not yet localized.
 To read more about localization/translation head over to the [localization tutorial pages](localization.md).
@@ -93,6 +86,7 @@ For this example we create "empty" pieces (GameObjects with just a cube model an
 // Implementation of custom pieces from an "empty" prefab with new piece categories
 private void AddPieceCategories()
 {
+    // load a test texture from out mod folder
     var testTexture = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
 
     GameObject cube = PrefabManager.Instance.CreateEmptyPrefab("piece_lul");
@@ -102,8 +96,8 @@ private void AddPieceCategories()
     PieceConfig lulConfig = new PieceConfig();
     lulConfig.Name = "$piece_lul";
     lulConfig.Description = "$piece_lul_description";
-    lulConfig.Icon = RenderManager.Instance.Render(cube, RenderManager.IsometricRotation); // render a new icon at runtime
     lulConfig.PieceTable = "Hammer";
+    lulConfig.Icon = RenderManager.Instance.Render(cube, RenderManager.IsometricRotation); // render a new icon at runtime
     lulConfig.ExtendStation = "piece_workbench"; // Makes this piece a station extension
     lulConfig.Category = "Lulzies";  // Adds a custom category for the Hammer
     PieceManager.Instance.AddPiece(new CustomPiece(cube, false, lulConfig));
@@ -112,9 +106,22 @@ private void AddPieceCategories()
 
 The result is a new category added to the piece table of the Hammer:<br />
 ![Custom Vanilla Categories](../images/data/customVanillaCategories.png)
-<br />
+
 One of the pieces placed in the world:<br />
 ![Piece Stub Placed](../images/data/pieceStubPlaced.png)
+
+### Custom piece table
+
+After loading our custom item, we will load a piece table GameObject from our example asset bundle, create a [CustomPieceTable](xref:Jotunn.Entities.CustomPieceTable) from it and add it to the [PieceManager](xref:Jotunn.Managers.PieceManager).
+
+```cs
+private void CreateRunePieceTable()
+{
+    GameObject tablePrefab = blueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
+    CustomPieceTable CPT = new CustomPieceTable(tablePrefab);
+    PieceManager.Instance.AddPieceTable(CPT);
+}
+```
 
 ## Creating completely new categories using PieceTableConfigs
 
@@ -163,7 +170,6 @@ private void AddItemsWithConfigs()
     place.AddRequirement(new RequirementConfig("Wood", 2));
 
     PieceManager.Instance.AddPiece(new CustomPiece(placePrefab, fixReference: false, place));
-
 }
 ```
 
