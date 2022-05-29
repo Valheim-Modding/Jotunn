@@ -19,6 +19,37 @@ The code snippets are taken from our [example mod](https://github.com/Valheim-Mo
 > You **must** only use names of existing prefabs.
 > This can be prefabs you created, that have already been registered by another mod, or that already exist in the game.
 
+## Vanilla Piece Tables
+| GameObject Name       | Jotunn Alias |
+|-----------------------|--------------|
+| _CultivatorPieceTable | Cultivator   |
+| _HammerPieceTable     | Hammer       |
+| _HoePieceTable        | Hoe          |
+
+To set what piece table is used, you can either use the GameObject name or the Jötunn alias for vanilla tables.
+This works with custom piece tables as well.
+```cs
+PieceConfig pieceConfig = new PieceConfig();
+pieceConfig.PieceTable = "Hammer";
+```
+
+## Vanilla Crafting Stations
+
+| GameObject Name      | Localized Name |
+|----------------------|----------------|
+| forge                | Forge          |
+| piece_artisanstation | Artisan table  |
+| piece_cauldron       | Cauldron       |
+| piece_stonecutter    | Stonecutter    |
+| piece_workbench      | Workbench      |
+
+To set what crafting station is needed to place, repair and remove the piece, the GameObject name has to be used.
+This works with custom crafting stations as well.
+```cs
+PieceConfig pieceConfig = new PieceConfig();
+pieceConfig.CraftingStation = "piece_workbench";
+```
+
 ## Creating custom pieces
 
 ### Custom pieces using PieceConfigs
