@@ -437,12 +437,51 @@ namespace Jotunn.Managers
                 return GetPrefabs(type);
             }
 
+            private static Transform GetParent(Object obj)
+            {
+                return obj is GameObject gameObject ? gameObject.transform.parent : null;
+            }
+
+            /// <summary>
+            ///     Determines the best matching asset for a given name.
+            ///     Only one asset can be associated with a name, this ties to find the best match if there is already a cached one present.
+            /// </summary>
+            /// <param name="map"></param>
+            /// <param name="unityObject"></param>
+            /// <param name="name"></param>
+            /// <returns></returns>
+            private static Object FindBestAsset(IDictionary<string, Object> map, Object unityObject, string name)
+            {
+                if (!map.TryGetValue(name, out Object cached))
+                {
+                    return unityObject;
+                }
+
+                bool cachedHasParent = GetParent(cached);
+                bool otherHasParent = GetParent(unityObject);
+
+                if (!cachedHasParent && otherHasParent)
+                {
+                    // as the cached object has no parent, it is more likely a real prefab and not a child GameObject
+                    return cached;
+                }
+
+                if (cachedHasParent && !otherHasParent)
+                {
+                    // as the new object has no parent, it is more likely a real prefab and not a child GameObject
+                    return unityObject;
+                }
+
+                return unityObject;
+            }
+
             private static void InitCache(Type type, Dictionary<string, Object> map = null)
             {
                 map ??= new Dictionary<string, Object>();
                 foreach (var unityObject in Resources.FindObjectsOfTypeAll(type))
                 {
-                    map[unityObject.name] = unityObject;
+                    string name = unityObject.name;
+                    map[name] = FindBestAsset(map, unityObject, name);
                 }
 
                 dictionaryCache[type] = map;
