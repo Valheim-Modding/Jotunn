@@ -466,5 +466,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\Paths.props" />
+  <Import Project="$(SolutionDir)JotunnLib\BuildProps\Paths.props" />
 </Project>

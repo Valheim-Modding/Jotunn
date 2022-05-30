@@ -362,7 +362,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="BuildProps\version.props" Condition="Exists('BuildProps\version.props')" />
-  <Import Project="..\Paths.props" />
+  <Import Project="$(SolutionDir)JotunnLib\BuildProps\Paths.props" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

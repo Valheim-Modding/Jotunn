@@ -1,17 +1,16 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(SolutionDir)Environment.props" Condition="'$(VALHEIM_INSTALL)' == '' And Exists('$(SolutionDir)Environment.props')"/>
-  <Import Project="$(SolutionDir)DoPrebuild.props" Condition="Exists('$(SolutionDir)DoPrebuild.props') And '$(ExecutePrebuild)' == ''" />
+  <Import Project="Paths.props" />
   <PropertyGroup>
     <GenerateResourceNeverLockTypeAssemblies>true</GenerateResourceNeverLockTypeAssemblies>
   </PropertyGroup>
-  <Import Project="JotunnLibRefsCorlib.props" Condition="Exists('$(SolutionDir)Environment.props') And Exists('$(VALHEIM_INSTALL)/unstripped_corlib/mscorlib.dll')" />
-  <Import Project="JotunnLibRefsManaged.props" Condition="Exists('$(SolutionDir)Environment.props') And Exists('$(VALHEIM_INSTALL)/unstripped_managed/mscorlib.dll') And !Exists('$(VALHEIM_INSTALL)/unstripped_corlib/mscorlib.dll')" />
+  <Import Project="JotunnLibRefsCorlib.props" Condition="Exists('$(VALHEIM_INSTALL)/unstripped_corlib/mscorlib.dll')" />
+  <Import Project="JotunnLibRefsManaged.props" Condition="Exists('$(VALHEIM_INSTALL)/unstripped_managed/mscorlib.dll') And !Exists('$(VALHEIM_INSTALL)/unstripped_corlib/mscorlib.dll')" />
   <UsingTask TaskName="JotunnBuildTask" AssemblyFile="JotunnBuildTask.dll" />
-  <Target Name="JotunnBuildTaskRunner" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(SolutionDir)Environment.props')" >
+  <Target Name="JotunnBuildTaskRunner" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(VALHEIM_INSTALL)')" >
     <Message Importance="High" Text="Executing Jotunn Prebuild Task"/> 
     <JotunnBuildTask ValheimPath="$(VALHEIM_INSTALL)" />
   </Target>
-  <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' != 'true' And Exists('$(SolutionDir)Environment.props')" >
+  <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' != 'true'" >
     <Message Importance="High" Text="Skipping Jotunn Prebuild Task"/>
   </Target>
 </Project>

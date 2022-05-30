@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="Environment.props" Condition="Exists('Environment.props')" />
+  <Import Project="$(SolutionDir)Environment.props" Condition="Exists('$(SolutionDir)Environment.props')" />
+  <Import Project="$(SolutionDir)DoPrebuild.props" Condition="Exists('$(SolutionDir)DoPrebuild.props') And '$(ExecutePrebuild)' == ''" />
   <Choose>
     <When Condition="($(OS) == 'Unix' OR $(OS) == 'OSX') AND $(VALHEIM_INSTALL) == ''">
       <PropertyGroup>
