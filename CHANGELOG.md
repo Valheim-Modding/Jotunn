@@ -1,4 +1,7 @@
 ﻿# Changelog
+## Version 2.6.8
+* Fixed the PrefabManager Cache chose a child GameObject in rare cases, even if a better prefab with the same name exists
+
 ## Version 2.6.7
 * Added display of the Valheim version string to the compatibility window. If a mismatch is produced by a mod, it will be displayed accordingly
 * Added the ModQuery class which allows to get metadata about content of loaded mods, including non-Jötunn ones. It is disabled by default to not create unnecessary loading time when not used
