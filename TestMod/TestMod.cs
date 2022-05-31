@@ -1330,36 +1330,23 @@ namespace TestMod
         // Create rendered icons from prefabs
         private void AddItemsWithRenderedIcons()
         {
-            try
-            {
-                // use the vanilla beech tree prefab to render our icon from
-                GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
+            // use the vanilla beech tree prefab to render our icon from
+            GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
 
-                // create the custom item with the rendered icon
-                CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds", new ItemConfig
-                {
-                    Name = "$rendered_tree",
-                    Description = "$rendered_tree_desc",
-                    Icons = new[]
-                    {
-                        RenderManager.Instance.Render(beech)
-                    },
-                    Requirements = new[]
-                    {
-                        new RequirementConfig { Item = "Wood", Amount = 1, Recover = true }
-                    }
-                });
-                ItemManager.Instance.AddItem(treeItem);
-            }
-            catch (Exception ex)
-            {
-                Jotunn.Logger.LogError($"Error while adding item with rendering: {ex}");
-            }
-            finally
-            {
-                // You want that to run only once, Jotunn has the item cached for the game session
-                PrefabManager.OnVanillaPrefabsAvailable -= AddItemsWithRenderedIcons;
-            }
+            // rendered the icon
+            Sprite renderedIcon = RenderManager.Instance.Render(beech, RenderManager.IsometricRotation);
+
+            // create the custom item with the icon
+            ItemConfig treeItemConfig = new ItemConfig();
+            treeItemConfig.Name = "$rendered_tree";
+            treeItemConfig.Description = "$rendered_tree_desc";
+            treeItemConfig.Icons = new Sprite[] { renderedIcon };
+            treeItemConfig.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+
+            ItemManager.Instance.AddItem(new CustomItem("item_MyTree", "BeechSeeds", treeItemConfig));
+
+            // You want that to run only once, Jotunn has the item cached for the game session
+            PrefabManager.OnVanillaPrefabsAvailable -= AddItemsWithRenderedIcons;
         }
 
         private void AddCustomLocationsAndVegetation()
