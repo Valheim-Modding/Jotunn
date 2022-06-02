@@ -159,6 +159,10 @@ namespace Jotunn.GUI
                 .GetComponent<ModSettingConfig>();
             config.InputField.gameObject.SetActive(true);
             config.Dropdown.gameObject.SetActive(true);
+            config.Dropdown.GetComponent<RectTransform>().anchoredPosition -= new Vector2(0f, 35f);
+            config = AddConfig(modName, "Vector Test", Color.black, "Testing Vectors", Color.black)
+                .GetComponent<ModSettingConfig>();
+            config.Vector2InputX.transform.parent.gameObject.SetActive(true);
         }
     }
 }

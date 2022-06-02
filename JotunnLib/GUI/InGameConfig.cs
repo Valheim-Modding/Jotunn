@@ -344,7 +344,7 @@ namespace Jotunn.GUI
             // When in game, offset panel
             if (FejdStartup.instance == null)
             {
-                var rect = settings.Panel.GetComponent<RectTransform>();
+                var rect = settings.GetComponent<RectTransform>();
                 rect.anchoredPosition += new Vector2(0f, 90f);
             }
 
@@ -1075,6 +1075,7 @@ namespace Jotunn.GUI
             public override void Register()
             {
                 Config.Dropdown.gameObject.SetActive(true);
+                Config.Dropdown.GetComponent<RectTransform>().anchoredPosition -= new Vector2(0f, 35f);
                 Config.Dropdown.AddOptions(Enum.GetNames(typeof(InputManager.GamepadButton)).ToList());
             }
 
