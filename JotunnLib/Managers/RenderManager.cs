@@ -214,18 +214,13 @@ namespace Jotunn.Managers
 
         private string GetVersion(BepInPlugin plugin)
         {
-            string version;
-
             if (plugin != null)
             {
-                version = plugin.Name + "-" + plugin.Version;
-            }
-            else
-            {
-                version = Version.GetVersionString();
+                return plugin.GUID + "-" + plugin.Version;
             }
 
-            return version.Replace("/", "_"); // some mods add a '/' to the version name
+            // some mods add a '/' to the version name
+            return Version.CombineVersion(Version.m_major, Version.m_minor, Version.m_patch).Replace("/", "_");
         }
 
         private Sprite RenderSprite(RenderObject renderObject)
