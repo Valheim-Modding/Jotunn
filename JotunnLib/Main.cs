@@ -98,6 +98,9 @@ namespace Jotunn
             RootObject.AddComponent<DebugUtils.DebugHelper>();
 #endif
 
+            // Flip the "modded" switch of Valheim
+            Game.isModded = true;
+
             Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
         }
 
