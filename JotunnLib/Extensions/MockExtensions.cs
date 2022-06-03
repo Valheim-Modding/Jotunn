@@ -243,7 +243,7 @@ namespace Jotunn
                 var propertyType = property.PropertyType;
 
                 var isUnityObject = propertyType.IsSameOrSubclass(typeof(Object));
-                if (isUnityObject)
+                if (isUnityObject && property.GetMethod != null)
                 {
                     var mock = (Object)property.GetValue(objectToFix, null);
                     var realPrefab = MockManager.GetRealPrefabFromMock(mock, propertyType);
@@ -342,9 +342,9 @@ namespace Jotunn
                     }
                     else if (propertyType.IsClass)
                     {
-                        if (property.GetIndexParameters().Length == 0)
+                        if (property.GetIndexParameters().Length == 0 && property.GetMethod != null)
                         {
-                            property.GetValue(objectToFix, null)?.FixReferences(depth);
+                            property.GetValue(objectToFix)?.FixReferences(depth);
                         }
                     }
                 }

@@ -56,9 +56,9 @@ namespace Jotunn
 
             foreach (PropertyInfo propertyInfo in duplicate.GetType().GetProperties(flags))
             {
-                if (propertyInfo.CanWrite)
+                if (propertyInfo.CanWrite && propertyInfo.GetMethod != null)
                 {
-                    propertyInfo.SetValue(target, propertyInfo.GetValue(duplicate, null), null);
+                    propertyInfo.SetValue(target, propertyInfo.GetValue(duplicate));
                 }
             }
 
