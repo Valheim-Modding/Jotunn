@@ -140,7 +140,7 @@ namespace Jotunn.Managers
 
             Localization.instance.SetupLanguage(DefaultLanguage);
             string lang = PlayerPrefs.GetString("language", DefaultLanguage);
-            if (lang != DefaultLanguage)
+            if (lang != DefaultLanguage && !string.IsNullOrEmpty(lang))
             {
                 Localization.instance.SetupLanguage(lang);
             }
