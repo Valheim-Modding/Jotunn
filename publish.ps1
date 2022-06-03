@@ -44,12 +44,12 @@ if (Test-Path -Path "$pdb") {
 
 # Debug copies the dll to Valheim
 if ($Target.Equals("Debug")) {
-    $mono = "$ValheimPath\MonoBleedingEdge\EmbedRuntime"
-    Write-Host "Copy mono-2.0-bdwgc.dll to $mono"
-    if (!(Test-Path -Path "$mono\mono-2.0-bdwgc.dll.orig")) {
-        Copy-Item -Path "$mono\mono-2.0-bdwgc.dll" -Destination "$mono\mono-2.0-bdwgc.dll.orig" -Force
-    }
-    Copy-Item -Path "$(Get-Location)\libraries\Debug\mono-2.0-bdwgc.dll" -Destination "$mono" -Force
+    #$mono = "$ValheimPath\MonoBleedingEdge\EmbedRuntime"
+    #Write-Host "Copy mono-2.0-bdwgc.dll to $mono"
+    #if (!(Test-Path -Path "$mono\mono-2.0-bdwgc.dll.orig")) {
+    #    Copy-Item -Path "$mono\mono-2.0-bdwgc.dll" -Destination "$mono\mono-2.0-bdwgc.dll.orig" -Force
+    #}
+    #Copy-Item -Path "$(Get-Location)\libraries\Debug\mono-2.0-bdwgc.dll" -Destination "$mono" -Force
     
     if ($DeployPath.Equals("")){
       $DeployPath = "$ValheimPath\BepInEx\plugins"
