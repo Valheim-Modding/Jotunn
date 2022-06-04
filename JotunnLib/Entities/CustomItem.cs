@@ -61,13 +61,7 @@ namespace Jotunn.Entities
             ItemPrefab = itemPrefab;
             ItemDrop = itemPrefab.GetComponent<ItemDrop>();
             FixReference = fixReference;
-            itemConfig.Apply(ItemPrefab);
-            FixConfig = true;
-            var recipe = itemConfig.GetRecipe();
-            if (recipe != null)
-            {
-                Recipe = new CustomRecipe(recipe, true, true);
-            }
+            ApplyItemConfig(itemConfig);
         }
 
         /// <summary>
@@ -95,13 +89,8 @@ namespace Jotunn.Entities
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
             ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
-            itemConfig.Apply(ItemPrefab);
-            FixConfig = true;
-            var recipe = itemConfig.GetRecipe();
-            if (recipe != null)
-            {
-                Recipe = new CustomRecipe(recipe, true, true);
-            }
+            ItemDrop.m_itemData.m_shared.m_name = name;
+            ApplyItemConfig(itemConfig);
         }
 
         /// <summary>
@@ -132,13 +121,7 @@ namespace Jotunn.Entities
             {
                 ItemPrefab = itemPrefab;
                 ItemDrop = itemPrefab.GetComponent<ItemDrop>();
-                itemConfig.Apply(itemPrefab);
-                FixConfig = true;
-                var recipe = itemConfig.GetRecipe();
-                if (recipe != null)
-                {
-                    Recipe = new CustomRecipe(recipe, true, true);
-                }
+                ApplyItemConfig(itemConfig);
             }
         }
 
@@ -207,6 +190,22 @@ namespace Jotunn.Entities
         public override string ToString()
         {
             return ItemPrefab.name;
+        }
+
+        private void ApplyItemConfig(ItemConfig itemConfig)
+        {
+            itemConfig.Apply(ItemPrefab);
+            FixConfig = true;
+            AssignRecipeFromConfig(itemConfig);
+        }
+
+        private void AssignRecipeFromConfig(ItemConfig itemConfig)
+        {
+            var recipe = itemConfig.GetRecipe();
+            if (recipe != null)
+            {
+                Recipe = new CustomRecipe(recipe, true, true);
+            }
         }
     }
 }
