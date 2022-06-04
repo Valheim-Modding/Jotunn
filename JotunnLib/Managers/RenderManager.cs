@@ -369,6 +369,16 @@ namespace Jotunn.Managers
             return clone;
         }
 
+        private static Transform MapRealBoneToClonedBone(Dictionary<GameObject, GameObject> resolver, Transform transform)
+        {
+            if (transform)
+            {
+                return resolver[transform.gameObject].transform;
+            }
+
+            return transform;
+        }
+
         private static void CopyVisualComponents(GameObject prefab, GameObject clone, Dictionary<GameObject, GameObject> resolver)
         {
             foreach (MeshFilter meshFilter in prefab.GetComponents<MeshFilter>())
@@ -389,7 +399,7 @@ namespace Jotunn.Managers
 
                 if (skinnedMeshRenderer.rootBone != null)
                 {
-                    Transform[] bones = skinnedMeshRenderer.bones.Select(transform => resolver[transform.gameObject].transform).ToArray();
+                    Transform[] bones = skinnedMeshRenderer.bones.Select(t => MapRealBoneToClonedBone(resolver, t)).ToArray();
                     clonedSkinnedMeshRenderer.bones = bones;
                     clonedSkinnedMeshRenderer.updateWhenOffscreen = true;
                 }
