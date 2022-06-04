@@ -54,7 +54,7 @@ pieceConfig.CraftingStation = "piece_workbench";
 
 ### Custom pieces using PieceConfigs
 
-Now we will load two new pieces. One is loaded from an asset bundle, the other is copied from a vanilla prefab.
+Now we will load a new piece from an asset bundle.
 In order to better facilitate creation of pieces we have introduced the abstractions of [PieceConfig's](xref:Jotunn.Configs.PieceConfig) and [RequirementConfig](xref:Jotunn.Configs.RequirementConfig).
 These allow us to quickly and easily define common properties for pieces, such as the table they belong too, any restrictions or resources required.
 
@@ -72,6 +72,10 @@ private void Awake()
 }
 ```
 
+To clone an existing pieces, they first have to be loaded by the game and are not available in `Awake`.
+Jötunn provides the `PrefabManager.OnVanillaPrefabsAvailable` event where vanilla prefabs are loaded.
+This event is called every time before a new <see cref="ObjectDB"/> is copied.
+This means we have to unregister after adding our custom pieces, because Jötunn already cached the custom piece.
 ```cs
 private void Awake()
 {
