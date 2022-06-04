@@ -804,43 +804,35 @@ namespace TestMod
         private void AddItemsWithConfigs()
         {
             // Add a custom piece table with custom categories
-            var tablePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
             PieceTableConfig runeTable = new PieceTableConfig();
             runeTable.CanRemovePieces = false;
             runeTable.UseCategories = false;
             runeTable.UseCustomCategories = true;
             runeTable.CustomCategories = new string[] { "Make", "Place" };
-            PieceManager.Instance.AddPieceTable(new CustomPieceTable(tablePrefab, runeTable));
+            PieceManager.Instance.AddPieceTable(new CustomPieceTable(BlueprintRuneBundle, "_BlueprintTestTable", runeTable));
 
             // Create and add a custom item
-            var runePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
-
-            ItemConfig runePrefabConfig = new ItemConfig();
-            runePrefabConfig.Amount = 1;
-            runePrefabConfig.AddRequirement(new RequirementConfig("Stone", 1));
-
+            ItemConfig runeConfig = new ItemConfig();
+            runeConfig.Amount = 1;
+            runeConfig.AddRequirement(new RequirementConfig("Stone", 1));
             // Prefab did not use mocked refs so no need to fix them
-            ItemManager.Instance.AddItem(new CustomItem(runePrefab, fixReference: false, runePrefabConfig));
+            var runeItem = new CustomItem(BlueprintRuneBundle, "BlueprintTestRune", fixReference: false, runeConfig);
+            ItemManager.Instance.AddItem(runeItem);
 
             // Create and add custom pieces
-            var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
-            var makebp = new CustomPiece(makebp_prefab, fixReference: false,
-                new PieceConfig
-                {
-                    PieceTable = "_BlueprintTestTable",
-                    Category = "Make"
-                });
-            PieceManager.Instance.AddPiece(makebp);
+            PieceConfig makeConfig = new PieceConfig();
+            makeConfig.PieceTable = "_BlueprintTestTable";
+            makeConfig.Category = "Make";
+            var makePiece = new CustomPiece(BlueprintRuneBundle, "make_testblueprint", fixReference: false, makeConfig);
+            PieceManager.Instance.AddPiece(makePiece);
 
-            var placePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
-
-            var place = new PieceConfig();
-            place.PieceTable = "_BlueprintTestTable";
-            place.Category = "Place";
-            place.AllowedInDungeons = true;
-            place.AddRequirement(new RequirementConfig("Wood", 2));
-
-            PieceManager.Instance.AddPiece(new CustomPiece(placePrefab, fixReference: false, place));
+            var placeConfig = new PieceConfig();
+            placeConfig.PieceTable = "_BlueprintTestTable";
+            placeConfig.Category = "Place";
+            placeConfig.AllowedInDungeons = true;
+            placeConfig.AddRequirement(new RequirementConfig("Wood", 2));
+            var placePiece = new CustomPiece(BlueprintRuneBundle, "piece_testblueprint", fixReference: false, placeConfig);
+            PieceManager.Instance.AddPiece(placePiece);
 
             // Add localizations from the asset bundle
             var textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
@@ -944,26 +936,18 @@ namespace TestMod
             cheatybundle.Unload(false);
         }
 
-        private AssetBundle pieceBundle;
-
         private void AddPieces()
         {
-            pieceBundle = AssetUtils.LoadAssetBundleFromResources("pieces", Assembly.GetExecutingAssembly());
-            CreateCylinderPiece();
             PrefabManager.OnVanillaPrefabsAvailable += CreateDeerRugPiece;
-        }
 
-        private void CreateCylinderPiece()
-        {
-            GameObject cylinderPrefab = pieceBundle.LoadAsset<GameObject>("Cylinder");
+            AssetBundle pieceBundle = AssetUtils.LoadAssetBundleFromResources("pieces", Assembly.GetExecutingAssembly());
 
             PieceConfig cylinder = new PieceConfig();
             cylinder.Name = "$cylinder_display_name";
             cylinder.PieceTable = "Hammer";
-            cylinder.Icon = RenderManager.Instance.Render(cylinderPrefab, RenderManager.IsometricRotation);
             cylinder.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
 
-            PieceManager.Instance.AddPiece(new CustomPiece(cylinderPrefab, fixReference: false, cylinder));
+            PieceManager.Instance.AddPiece(new CustomPiece(pieceBundle, "Cylinder", fixReference: false, cylinder));
         }
 
         private void CreateDeerRugPiece()

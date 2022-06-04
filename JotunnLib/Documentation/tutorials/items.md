@@ -72,14 +72,13 @@ Similarly in this example instead of cloning our prefabs, we are just going to i
 private void CreateBlueprintRune()
 {
     // Create and add a custom item
-    var runePrefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
-
-    ItemConfig runePrefabConfig = new ItemConfig();
-    runePrefabConfig.Amount = 1;
-    runePrefabConfig.AddRequirement(new RequirementConfig("Stone", 1));
+    ItemConfig runeConfig = new ItemConfig();
+    runeConfig.Amount = 1;
+    runeConfig.AddRequirement(new RequirementConfig("Stone", 1));
 
     // Prefab did not use mocked refs so no need to fix them
-    ItemManager.Instance.AddItem(new CustomItem(runePrefab, fixReference: false, runePrefabConfig));
+    var runeItem = new CustomItem(BlueprintRuneBundle, "BlueprintTestRune", fixReference: false, runeConfig);
+    ItemManager.Instance.AddItem(runeItem);
 }
 ```
 
