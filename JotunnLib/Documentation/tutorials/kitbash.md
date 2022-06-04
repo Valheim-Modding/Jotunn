@@ -161,7 +161,7 @@ Here we have prepared quite a few things:
 See [Asset creation - AssetBundle ](./asset-creation.md#assetbundle) on how to create the AssetBundle
 
 ```cs 
-AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash", typeof(TestMod).Assembly);
+AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash");
 try
 { 
     KitbashObject kitbashObject = KitbashManager.Instance.AddKitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig

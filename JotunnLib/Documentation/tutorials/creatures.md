@@ -70,7 +70,7 @@ private void Awake()
 // Add custom made creatures using world spawns and drop lists
 private void AddCustomCreaturesAndSpawns()
 {
-    AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(JotunnModExample).Assembly);
+    AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures");
     try
     {
         // Load LulzCube test texture and sprite

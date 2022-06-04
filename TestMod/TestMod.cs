@@ -591,7 +591,7 @@ namespace TestMod
             Jotunn.Logger.LogInfo(BlueprintRuneBundle);
 
             // Load Steel ingot from streamed resource
-            Steelingot = AssetUtils.LoadAssetBundleFromResources("steel", typeof(TestMod).Assembly);
+            Steelingot = AssetUtils.LoadAssetBundleFromResources("steel");
 
             // Embedded Resources
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
@@ -930,7 +930,7 @@ namespace TestMod
             }
 
             // Load completely mocked "Shit Sword" (Cheat Sword copy)
-            var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword", typeof(TestMod).Assembly);
+            var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword");
             var cheaty = cheatybundle.LoadAsset<GameObject>("Cheaty");
             ItemManager.Instance.AddItem(new CustomItem(cheaty, fixReference: true));
             cheatybundle.Unload(false);
@@ -940,7 +940,7 @@ namespace TestMod
         {
             PrefabManager.OnVanillaPrefabsAvailable += CreateDeerRugPiece;
 
-            AssetBundle pieceBundle = AssetUtils.LoadAssetBundleFromResources("pieces", Assembly.GetExecutingAssembly());
+            AssetBundle pieceBundle = AssetUtils.LoadAssetBundleFromResources("pieces");
 
             PieceConfig cylinder = new PieceConfig();
             cylinder.Name = "$cylinder_display_name";
@@ -1010,7 +1010,7 @@ namespace TestMod
             });
 
             // A more complex Kitbash piece, this has a prepared GameObject for Kitbash to build upon
-            AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash", typeof(TestMod).Assembly);
+            AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash");
             try
             {
                 KitbashObject kitbashObject = KitbashManager.Instance.AddKitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
@@ -1335,7 +1335,7 @@ namespace TestMod
 
         private void AddCustomLocationsAndVegetation()
         {
-            AssetBundle locationsAssetBundle = AssetUtils.LoadAssetBundleFromResources("custom_locations", typeof(TestMod).Assembly);
+            AssetBundle locationsAssetBundle = AssetUtils.LoadAssetBundleFromResources("custom_locations");
             try
             {
                 // Create location from AssetBundle using spawners and random spawns
@@ -1470,7 +1470,7 @@ namespace TestMod
         // Add custom made creatures using world spawns and drop lists
         private void AddCustomCreaturesAndSpawns()
         {
-            AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(TestMod).Assembly);
+            AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures");
             try
             {
                 // Load LulzCube test texture and sprite

@@ -61,7 +61,7 @@ These allow us to quickly and easily define common properties for pieces, such a
 ```cs
 private void Awake()
 {
-    AssetBundle pieceBundle = AssetUtils.LoadAssetBundleFromResources("pieces", Assembly.GetExecutingAssembly());
+    AssetBundle pieceBundle = AssetUtils.LoadAssetBundleFromResources("pieces");
 
     PieceConfig cylinder = new PieceConfig();
     cylinder.Name = "$cylinder_display_name";

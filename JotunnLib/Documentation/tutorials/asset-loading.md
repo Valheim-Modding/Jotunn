@@ -35,7 +35,7 @@ private void LoadAssets()
     Jotunn.Logger.LogInfo(testAssets);
 
     // Load asset bundle from embedded resources
-    embeddedResourceBundle = AssetUtils.LoadAssetBundleFromResources("eviesbackpacks", typeof(JotunnModExample).Assembly);
+    embeddedResourceBundle = AssetUtils.LoadAssetBundleFromResources("eviesbackpacks");
     backpackPrefab = embeddedResourceBundle.LoadAsset<GameObject>("Assets/Evie/CapeSilverBackpack.prefab");
     Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(JotunnModExample).Assembly.GetManifestResourceNames())}");
 }

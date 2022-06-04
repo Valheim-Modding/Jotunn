@@ -111,7 +111,7 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
-        ///     Load an assembly-embedded <see cref="AssetBundle" />
+        ///     Load an assembly-embedded <see cref="AssetBundle" />. Use this if the automatic detection of the assembly fails.
         /// </summary>
         /// <param name="bundleName">Name of the bundle. Folders are point-seperated e.g. folder/bundle becomes folder.bundle</param>
         /// <param name="resourceAssembly">Executing assembly</param>
@@ -142,6 +142,16 @@ namespace Jotunn.Utils
             }
 
             return ret;
+        }
+
+        /// <summary>
+        ///     Load an assembly-embedded <see cref="AssetBundle" />. The calling assembly is automatically detected.
+        /// </summary>
+        /// <param name="bundleName">Name of the bundle. Folders are point-seperated e.g. folder/bundle becomes folder.bundle</param>
+        /// <returns></returns>
+        public static AssetBundle LoadAssetBundleFromResources(string bundleName)
+        {
+            return LoadAssetBundleFromResources(bundleName, ReflectionHelper.GetCallingAssembly());
         }
 
         /// <summary>

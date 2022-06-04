@@ -36,7 +36,7 @@ That's it. When importing your prefabs into the game, Jötunn will automatically
 private void AddMockedItems()
 {
     // Load completely mocked "Shit Sword" (Cheat Sword copy)
-    var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword", typeof(JotunnModExample).Assembly);
+    var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword");
     var cheaty = cheatybundle.LoadAsset<GameObject>("Cheaty");
     ItemManager.Instance.AddItem(new CustomItem(cheaty, fixReference: true));
     cheatybundle.Unload(false);
