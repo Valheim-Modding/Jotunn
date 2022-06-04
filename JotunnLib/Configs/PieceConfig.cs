@@ -163,7 +163,6 @@ namespace Jotunn.Configs
         ///     Appends a new <see cref="RequirementConfig"/> to the array of existing ones.
         /// </summary>
         /// <param name="requirementConfig"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void AddRequirement(RequirementConfig requirementConfig)
         {
             Requirements = Requirements.AddToArray(requirementConfig);

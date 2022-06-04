@@ -44,6 +44,23 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
+        ///     Custom prefab loaded from an <see cref="AssetBundle"/>.<br />
+        ///     Can fix references for <see cref="Entities.Mock{T}"/>s.
+        /// </summary>
+        /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
+        /// <param name="assetName">Name of the prefab in the bundle.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        public CustomPrefab(AssetBundle assetBundle, string assetName, bool fixReference)
+        {
+            var prefab = assetBundle.LoadAsset<GameObject>(assetName);
+            if (prefab)
+            {
+                Prefab = prefab;
+                FixReference = fixReference;
+            }
+        }
+
+        /// <summary>
         ///     Checks if a custom item is valid (i.e. has a prefab, an <see cref="ItemDrop"/> and an icon, if it should be craftable).
         /// </summary>
         /// <returns>true if all criteria is met</returns>
