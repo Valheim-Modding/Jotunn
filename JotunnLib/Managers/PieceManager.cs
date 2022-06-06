@@ -34,7 +34,7 @@ namespace Jotunn.Managers
         /// </summary>
         public static event Action OnPiecesRegistered;
 
-        internal readonly List<CustomPiece> Pieces = new List<CustomPiece>();
+        internal readonly Dictionary<string, CustomPiece> Pieces = new Dictionary<string, CustomPiece>();
         internal readonly List<CustomPieceTable> PieceTables = new List<CustomPieceTable>();
 
         internal readonly Dictionary<string, PieceTable> PieceTableMap = new Dictionary<string, PieceTable>();
@@ -401,7 +401,7 @@ namespace Jotunn.Managers
                 Logger.LogWarning($"Custom piece {customPiece} is not valid");
                 return false;
             }
-            if (Pieces.Contains(customPiece))
+            if (Pieces.ContainsKey(customPiece.PiecePrefab.name))
             {
                 Logger.LogWarning($"Custom piece {customPiece} already added");
                 return false;
@@ -420,7 +420,7 @@ namespace Jotunn.Managers
             }
 
             // Add the custom piece to the PieceManager
-            Pieces.Add(customPiece);
+            Pieces.Add(customPiece.PiecePrefab.name, customPiece);
 
             return true;
         }
@@ -432,7 +432,7 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public CustomPiece GetPiece(string pieceName)
         {
-            return Pieces.FirstOrDefault(x => x.PiecePrefab.name.Equals(pieceName));
+            return Pieces.TryGetValue(pieceName, out CustomPiece piece) ? piece : null;
         }
 
         /// <summary>
@@ -457,13 +457,15 @@ namespace Jotunn.Managers
         /// <param name="piece"><see cref="CustomPiece"/> to remove.</param>
         public void RemovePiece(CustomPiece piece)
         {
-            if (!Pieces.Contains(piece))
+            string name = piece.PiecePrefab.name;
+
+            if (!Pieces.ContainsKey(name))
             {
                 Logger.LogWarning($"Could not remove piece {piece}: Not found");
                 return;
             }
 
-            Pieces.Remove(piece);
+            Pieces.Remove(name);
 
             if (piece.PiecePrefab && PrefabManager.Instance.GetPrefab(piece.PiecePrefab.name))
             {
@@ -679,8 +681,10 @@ namespace Jotunn.Managers
 
             List<CustomPiece> toDelete = new List<CustomPiece>();
 
-            foreach (var customPiece in Pieces)
+            foreach (var pair in Pieces)
             {
+                CustomPiece customPiece = pair.Value;
+
                 try
                 {
                     // Fix references if needed

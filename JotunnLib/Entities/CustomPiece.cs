@@ -285,15 +285,7 @@ namespace Jotunn.Entities
         /// <returns>true if the prefab is added as a custom piece to the <see cref="PieceManager"/>.</returns>
         public static bool IsCustomPiece(string prefabName)
         {
-            foreach (var customPiece in PieceManager.Instance.Pieces)
-            {
-                if (customPiece.PiecePrefab.name == prefabName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return PieceManager.Instance.Pieces.ContainsKey(prefabName);
         }
 
         /// <inheritdoc/>

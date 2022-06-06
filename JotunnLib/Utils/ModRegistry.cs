@@ -113,22 +113,22 @@ namespace Jotunn.Utils
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomPieceTable"/> from a specific mod</returns>
         public static IEnumerable<CustomPieceTable> GetPieceTables(string modGuid) => 
             PieceManager.Instance.PieceTables.Where(x => x.SourceMod.GUID.Equals(modGuid));
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomPiece">CustomPieces</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomPiece"/> from all loaded mods</returns>
-        public static IEnumerable<CustomPiece> GetPieces() => 
-            PieceManager.Instance.Pieces.AsReadOnly();
-        
+        public static IEnumerable<CustomPiece> GetPieces() =>
+            PieceManager.Instance.Pieces.Values;
+
         /// <summary>
         ///     Get all added <see cref="CustomPiece">CustomPieces</see> of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomPiece"/> from a specific mod</returns>
-        public static IEnumerable<CustomPiece> GetPieces(string modGuid) => 
-            PieceManager.Instance.Pieces.Where(x => x.SourceMod.GUID.Equals(modGuid));
-        
+        public static IEnumerable<CustomPiece> GetPieces(string modGuid) =>
+            PieceManager.Instance.Pieces.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
+
         /// <summary>
         ///     Get all added <see cref="CustomLocation">CustomLocations</see>
         /// </summary>
