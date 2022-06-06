@@ -67,6 +67,12 @@ namespace Jotunn.GUI
                 return;
             }
 
+            // Dont init when mod settings are disabled in the config
+            if (!Main.ModSettingsEnabledConfig.Value)
+            {
+                return;
+            }
+
             LoadDefaultLocalization();
             GUIManager.OnCustomGUIAvailable += LoadModSettingsPrefab;
             Main.Harmony.PatchAll(typeof(InGameConfig));
@@ -219,7 +225,6 @@ namespace Jotunn.GUI
             {
                 var menuList = __instance.m_mainMenu.transform.Find("MenuList");
                 CreateMenu(menuList);
-                //__instance.StartCoroutine(CreateWindow(menuList));
             }
             catch (Exception ex)
             {
@@ -237,9 +242,7 @@ namespace Jotunn.GUI
         {
             try
             {
-                SynchronizationManager.Instance.CacheConfigurationValues();
                 CreateMenu(__instance.m_menuDialog);
-                //__instance.StartCoroutine(CreateWindow(__instance.m_menuDialog));
             }
             catch (Exception ex)
             {
@@ -254,7 +257,7 @@ namespace Jotunn.GUI
         /// <param name="menuList"></param>
         private static void CreateMenu(Transform menuList)
         {
-            var anyConfig = BepInExUtils.GetDependentPlugins(true).Any(x => GetConfigurationEntries(x.Value).Any());
+            var anyConfig = BepInExUtils.GetPlugins(true).Any(x => GetConfigurationEntries(x.Value).Any());
 
             if (!anyConfig)
             {
@@ -338,8 +341,21 @@ namespace Jotunn.GUI
 
             var settings = SettingsRoot.GetComponent<ModSettings>();
 
+            // When in game, offset panel
+            if (FejdStartup.instance == null)
+            {
+                var rect = settings.GetComponent<RectTransform>();
+                rect.anchoredPosition += new Vector2(0f, 90f);
+            }
+
+            // Cache admin config values for sync check when playing as a client
+            if (ZNet.instance != null && ZNet.instance.IsClientInstance())
+            {
+                SynchronizationManager.Instance.CacheConfigurationValues();
+            }
+
             // Iterate over all dependent plugins (including Jotunn itself)
-            foreach (var mod in BepInExUtils.GetDependentPlugins(true)
+            foreach (var mod in BepInExUtils.GetPlugins(true)
                          .OrderBy(x => x.Value.Info.Metadata.Name))
             {
                 if (!GetConfigurationEntries(mod.Value).Any(x => x.Value.IsVisible()))
@@ -363,7 +379,7 @@ namespace Jotunn.GUI
             {
                 Menu.instance.m_settingsInstance = SettingsRoot;
             }
-            
+
             // Actually show the window
             SettingsRoot.SetActive(true);
         }
@@ -532,14 +548,14 @@ namespace Jotunn.GUI
                 yield return enumerator.Current;
             }
         }
-        
+
         private static void HideWindow()
         {
             if (Menu.instance)
             {
                 Menu.instance.m_settingsInstance = null;
             }
-            
+
             Object.Destroy(SettingsRoot);
         }
 
@@ -558,10 +574,13 @@ namespace Jotunn.GUI
                 ((IConfigBound)comp).Write();
             }
 
-            // Sync changed config
-            SynchronizationManager.Instance.SynchronizeChangedConfig();
+            // Sync changed admin config when playing as a client
+            if (ZNet.instance != null && ZNet.instance.IsClientInstance())
+            {
+                SynchronizationManager.Instance.SynchronizeChangedConfig();
+            }
         }
-        
+
         /// <summary>
         ///     Interface for the generic config bind class used in <see cref="SaveConfiguration"/>
         /// </summary>
@@ -1056,6 +1075,7 @@ namespace Jotunn.GUI
             public override void Register()
             {
                 Config.Dropdown.gameObject.SetActive(true);
+                Config.Dropdown.GetComponent<RectTransform>().anchoredPosition -= new Vector2(0f, 35f);
                 Config.Dropdown.AddOptions(Enum.GetNames(typeof(InputManager.GamepadButton)).ToList());
             }
 

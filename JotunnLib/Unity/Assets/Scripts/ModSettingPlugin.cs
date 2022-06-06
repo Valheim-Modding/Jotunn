@@ -7,7 +7,7 @@ namespace Jotunn.GUI
     {
         public Button Button;
         public Text Text;
-        public Transform Content;
+        public RectTransform Content;
 
         public void Toggle()
         {

@@ -56,6 +56,8 @@ namespace Jotunn.GUI
             section.GUID = pluginName;
             section.Text.text = sectionName;
             Sections.Add(section);
+
+            plugin.Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, plugin.Content.rect.height + 30);
         }
 
         public GameObject AddConfig(string pluginName, string entryName, Color entryColor, string description, Color descriptionColor)
@@ -73,6 +75,8 @@ namespace Jotunn.GUI
             config.Description.text = description;
             config.Description.color = descriptionColor;
             Configs.Add(config);
+            
+            plugin.Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, plugin.Content.rect.height + 120);
 
             return go;
         }
@@ -147,7 +151,7 @@ namespace Jotunn.GUI
             config = AddConfig(modName, "Bool Test", Color.black, "Testing booleans", Color.black)
                 .GetComponent<ModSettingConfig>();
             config.Toggle.gameObject.SetActive(true);
-            config = AddConfig(modName, "String Test", Color.black, "Testing strings", Color.black)
+            config = AddConfig(modName, "String Test", Color.black, "Testing strings and longer text so it starts to wrap and bladibla. even more text, dunno when this will wrap", Color.black)
                 .GetComponent<ModSettingConfig>();
             config.InputField.gameObject.SetActive(true);
             AddSection(modName, "Second section");
@@ -155,6 +159,10 @@ namespace Jotunn.GUI
                 .GetComponent<ModSettingConfig>();
             config.InputField.gameObject.SetActive(true);
             config.Dropdown.gameObject.SetActive(true);
+            config.Dropdown.GetComponent<RectTransform>().anchoredPosition -= new Vector2(0f, 35f);
+            config = AddConfig(modName, "Vector Test", Color.black, "Testing Vectors", Color.black)
+                .GetComponent<ModSettingConfig>();
+            config.Vector2InputX.transform.parent.gameObject.SetActive(true);
         }
     }
 }
