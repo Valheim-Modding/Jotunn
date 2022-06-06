@@ -1,9 +1,13 @@
 ﻿# Changelog
 ## Version 2.6.8
+* Changed mod settings displays all mods, not only Jötunn mods
+* Added config option to disable the mod settings
 * Fixed the PrefabManager Cache chose a child GameObject in rare cases, even if a better prefab with the same name exists
 * Fixed cache path of rendered icons could contain illegal characters
 * Fixed NRE of icon rendering if the prefab has null bones
 * Fixed language loading if an empty language was saved
+* Fixed tabs where rebuild every time in RemovePieceCategory, even if categories have not changed
+* Improved performance of adding and retrieving custom pieces
 
 ## Version 2.6.7
 * Added display of the Valheim version string to the compatibility window. If a mismatch is produced by a mod, it will be displayed accordingly
