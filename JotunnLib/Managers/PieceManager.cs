@@ -343,26 +343,37 @@ namespace Jotunn.Managers
         public void RemovePieceCategory(string table, string name)
         {
             var actualTable = table;
+            bool changed = false;
+
             if (PieceTableNameMap.ContainsKey(table))
             {
                 actualTable = PieceTableNameMap[table];
             }
+
             if (PieceTableCategoriesMap.ContainsKey(actualTable))
             {
+                if (PieceTableCategoriesMap[actualTable].ContainsKey(name))
+                {
+                    changed = true;
+                }
+
                 PieceTableCategoriesMap[actualTable].Remove(name);
             }
 
-            if (SceneManager.GetActiveScene().name == "main")
+            if (changed)
             {
-                CreatePieceTableCategories();
-            }
-            if (Hud.instance != null)
-            {
-                CreateCategoryTabs();
-            }
-            if (Player.m_localPlayer != null)
-            {
-                UpdatePieceCategories();
+                if (SceneManager.GetActiveScene().name == "main")
+                {
+                    CreatePieceTableCategories();
+                }
+                if (Hud.instance != null)
+                {
+                    CreateCategoryTabs();
+                }
+                if (Player.m_localPlayer != null)
+                {
+                    UpdatePieceCategories();
+                }
             }
         }
 
