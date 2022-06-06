@@ -7,6 +7,8 @@
 * Fixed NRE of icon rendering if the prefab has null bones
 * Fixed language loading if an empty language was saved
 * Fixed tabs where rebuild every time in RemovePieceCategory, even if categories have not changed
+* Fixed NRE of ModQuery and slightly improved performance
+* Fixed vanilla items could be detected as modded ones in ModQuery if the mod calls UpdateItemHashes in a prefix before vanilla
 * Improved performance of adding and retrieving custom pieces
 
 ## Version 2.6.7
