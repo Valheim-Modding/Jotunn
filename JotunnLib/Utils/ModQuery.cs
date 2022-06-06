@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Managers;
@@ -16,6 +17,14 @@ namespace Jotunn.Utils
     {
         private static readonly Dictionary<string, Dictionary<int, ModPrefab>> Prefabs = new Dictionary<string, Dictionary<int, ModPrefab>>();
         private static readonly Dictionary<string, List<Recipe>> Recipes = new Dictionary<string, List<Recipe>>();
+
+        private static readonly HashSet<MethodInfo> PatchedZNetMethods = new HashSet<MethodInfo>();
+        private static readonly HashSet<MethodInfo> PatchedObjectDBMethods = new HashSet<MethodInfo>();
+
+        private static readonly MethodInfo PreZNetPatch = AccessTools.Method(typeof(ModQuery), nameof(BeforeZNetPatch));
+        private static readonly MethodInfo PostZNetPatch = AccessTools.Method(typeof(ModQuery), nameof(AfterZNetPatch));
+        private static readonly MethodInfo PreObjectDB = AccessTools.Method(typeof(ModQuery), nameof(BeforeObjectDBPatch));
+        private static readonly MethodInfo PostObjectDB = AccessTools.Method(typeof(ModQuery), nameof(AfterObjectDBPatch));
 
         private static bool enabled = false;
 
@@ -132,28 +141,30 @@ namespace Jotunn.Utils
             PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBUpdateItemHashes)?.Finalizers);
         }
 
-        private static void PatchZNetViewPatches(ICollection<Patch> patches)
+        [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPrefix, HarmonyPriority(1000)]
+        private static void ObjectDBAwake(ObjectDB __instance)
         {
-            if (patches == null)
+            if (!enabled)
             {
                 return;
             }
 
-            foreach (var patch in patches)
-            {
-                if (patch.owner == Main.ModGuid)
-                {
-                    continue;
-                }
+            // make sure vanilla prefabs are already added to not assign them to the first mod that call this function in a prefix
+            __instance.UpdateItemHashes();
+        }
 
-                var pre = AccessTools.Method(typeof(ModQuery), nameof(BeforeZNetPatch));
-                var post = AccessTools.Method(typeof(ModQuery), nameof(AfterZNetPatch));
-                Main.Harmony.Patch(patch.PatchMethod, new HarmonyMethod(pre), new HarmonyMethod(post));
-            }
+        private static void PatchZNetViewPatches(ICollection<Patch> patches)
+        {
+            PatchPatches(patches, PatchedZNetMethods, PreZNetPatch, PostZNetPatch);
         }
 
         private static void PatchObjectDbPatches(ICollection<Patch> patches)
         {
+            PatchPatches(patches, PatchedObjectDBMethods, PreObjectDB, PostObjectDB);
+        }
+
+        private static void PatchPatches(ICollection<Patch> patches, HashSet<MethodInfo> patchedMethods, MethodInfo pre, MethodInfo post)
+        {
             if (patches == null)
             {
                 return;
@@ -166,8 +177,12 @@ namespace Jotunn.Utils
                     continue;
                 }
 
-                var pre = AccessTools.Method(typeof(ModQuery), nameof(BeforeObjectDBPatch));
-                var post = AccessTools.Method(typeof(ModQuery), nameof(AfterObjectDBPatch));
+                if (patchedMethods.Contains(patch.PatchMethod))
+                {
+                    continue;
+                }
+
+                patchedMethods.Add(patch.PatchMethod);
                 Main.Harmony.Patch(patch.PatchMethod, new HarmonyMethod(pre), new HarmonyMethod(post));
             }
         }
@@ -298,7 +313,7 @@ namespace Jotunn.Utils
             return ObjectDB.instance;
         }
 
-        private struct ZNetSceneState
+        private class ZNetSceneState
         {
             public readonly Dictionary<int, GameObject> namedPrefabs;
             public readonly List<GameObject> prefabs;
@@ -310,7 +325,7 @@ namespace Jotunn.Utils
             }
         }
 
-        private struct ObjectDBState
+        private class ObjectDBState
         {
             public List<GameObject> items;
             public List<Recipe> recipes;
