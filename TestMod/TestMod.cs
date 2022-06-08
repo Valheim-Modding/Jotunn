@@ -95,10 +95,13 @@ namespace TestMod
             AddKitbashedPieces();
             AddPieceCategories();
             AddInvalidEntities();
-            AddPieces();
+            AddConePiece();
 
             // Add custom items cloned from vanilla items
             PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
+
+            // Add custom pieces cloned from vanilla pieces
+            PrefabManager.OnVanillaPrefabsAvailable += CreateDeerRugPiece;
 
             // Clone an item with variants and replace them
             PrefabManager.OnVanillaPrefabsAvailable += AddVariants;
@@ -936,10 +939,8 @@ namespace TestMod
             cheatybundle.Unload(false);
         }
 
-        private void AddPieces()
+        private void AddConePiece()
         {
-            PrefabManager.OnVanillaPrefabsAvailable += CreateDeerRugPiece;
-
             AssetBundle pieceBundle = AssetUtils.LoadAssetBundleFromResources("pieces");
 
             PieceConfig cylinder = new PieceConfig();
@@ -1341,17 +1342,15 @@ namespace TestMod
                 // Create location from AssetBundle using spawners and random spawns
                 var spawnerLocation = locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation");
 
-                ZoneManager.Instance.AddCustomLocation(
-                    new CustomLocation(spawnerLocation, true,
-                        new LocationConfig
-                        {
-                            Biome = Heightmap.Biome.Meadows,
-                            Quantity = 100,
-                            Priotized = true,
-                            ExteriorRadius = 2f,
-                            MinAltitude = 1f,
-                            ClearArea = true
-                        }));
+                var spawnerConfig = new LocationConfig();
+                spawnerConfig.Biome = Heightmap.Biome.Meadows;
+                spawnerConfig.Quantity = 100;
+                spawnerConfig.Priotized = true;
+                spawnerConfig.ExteriorRadius = 2f;
+                spawnerConfig.MinAltitude = 1f;
+                spawnerConfig.ClearArea = true;
+
+                ZoneManager.Instance.AddCustomLocation(new CustomLocation(spawnerLocation, true, spawnerConfig));
 
                 // Use empty location containers for locations instantiated in code
                 var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lel");
@@ -1366,21 +1365,21 @@ namespace TestMod
                     lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
                 }
 
-                ZoneManager.Instance.AddCustomLocation(
-                    new CustomLocation(cubesLocation, false, new LocationConfig
-                    {
-                        Biome = Heightmap.Biome.Meadows,
-                        Quantity = 100,
-                        Priotized = true,
-                        ExteriorRadius = 2f,
-                        ClearArea = true,
-                    }));
+                var cubesConfig = new LocationConfig();
+                cubesConfig.Biome = Heightmap.Biome.Meadows;
+                cubesConfig.Quantity = 100;
+                cubesConfig.Priotized = true;
+                cubesConfig.ExteriorRadius = 2f;
+                cubesConfig.ClearArea = true;
+
+                ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubesLocation, false, cubesConfig));
 
                 // Use vegetation for singular prefabs
-                CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, false,
-                    new VegetationConfig {Biome = Heightmap.Biome.Meadows, BlockCheck = true});
+                var singleLulz = new VegetationConfig();
+                singleLulz.Biome = Heightmap.Biome.Meadows;
+                singleLulz.BlockCheck = true;
 
-                ZoneManager.Instance.AddCustomVegetation(customVegetation);
+                ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(lulzCubePrefab, false, singleLulz));
             }
             catch (Exception ex)
             {
@@ -1417,17 +1416,16 @@ namespace TestMod
 
                 // Add more seed carrots to the meadows & black forest
                 ZoneSystem.ZoneVegetation pickableSeedCarrot = ZoneManager.Instance.GetZoneVegetation("Pickable_SeedCarrot");
-                ZoneManager.Instance.AddCustomVegetation(
-                    new CustomVegetation(pickableSeedCarrot.m_prefab, false, 
-                        new VegetationConfig(pickableSeedCarrot)
-                        {
-                            Min = 3,
-                            Max = 10,
-                            GroupSizeMin = 3,
-                            GroupSizeMax = 10,
-                            GroupRadius = 10,
-                            Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest),
-                        }));
+
+                var carrotSeed = new VegetationConfig(pickableSeedCarrot);
+                carrotSeed.Min = 3;
+                carrotSeed.Max = 10;
+                carrotSeed.GroupSizeMin = 3;
+                carrotSeed.GroupSizeMax = 10;
+                carrotSeed.GroupRadius = 10;
+                carrotSeed.Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest);
+
+                ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(pickableSeedCarrot.m_prefab, false, carrotSeed));
             }
             catch (Exception ex)
             {
