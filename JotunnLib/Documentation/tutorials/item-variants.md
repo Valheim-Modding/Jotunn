@@ -11,7 +11,7 @@ Valheim's style variants are implemented using a custom shader. That means enabl
 In this example, we will clone a vanilla shield and a sword which the user can equip and add custom variants. In order to do this, we will need to reference already instantiated game assets. One method of doing so is by using an event provided by Jötunn. The event is fired when the vanilla items are in memory and thus clonable (more precisely in the start scene before the initial ObjectDB is cloned).
 
 ```cs
-private voic Awake()
+private void Awake()
 {
     PrefabManager.OnVanillaPrefabsAvailable += AddVariants;
 }
@@ -23,55 +23,30 @@ Inside the method we load different sprites for the variant icons and a sprite a
 // Clone the wooden shield and the bronze sword and add own variations to it
 private void AddVariants()
 {
-    try
-    {
-        Sprite var1 = AssetUtils.LoadSpriteFromFile("JotunnModExample/Assets/test_var1.png");
-        Sprite var2 = AssetUtils.LoadSpriteFromFile("JotunnModExample/Assets/test_var2.png");
-        Sprite var3 = AssetUtils.LoadSpriteFromFile("JotunnModExample/Assets/test_var3.png");
-        Sprite var4 = AssetUtils.LoadSpriteFromFile("JotunnModExample/Assets/test_var4.png");
-        Texture2D styleTex = AssetUtils.LoadTexture("JotunnModExample/Assets/test_varpaint.png");
+    Sprite var1 = AssetUtils.LoadSpriteFromFile("JotunnModExample/Assets/test_var1.png");
+    Sprite var2 = AssetUtils.LoadSpriteFromFile("JotunnModExample/Assets/test_var2.png");
+    Sprite var3 = AssetUtils.LoadSpriteFromFile("JotunnModExample/Assets/test_var3.png");
+    Sprite var4 = AssetUtils.LoadSpriteFromFile("JotunnModExample/Assets/test_var4.png");
+    Texture2D styleTex = AssetUtils.LoadTexture("JotunnModExample/Assets/test_varpaint.png");
 
-        CustomItem shield = new CustomItem("item_lulzshield", "ShieldWood", new ItemConfig
-        {
-            Name = "$lulz_shield",
-            Description = "$lulz_shield_desc",
-            Requirements = new RequirementConfig[]
-            {
-                new RequirementConfig{ Item = "Wood", Amount = 1 }
-            },
-            Icons = new Sprite[]
-            {
-                var1, var2, var3, var4
-            },
-            StyleTex = styleTex
-        });
-        ItemManager.Instance.AddItem(shield);
-                
-        CustomItem sword = new CustomItem("item_lulzsword", "SwordBronze", new ItemConfig
-        {
-            Name = "$lulz_sword",
-            Description = "$lulz_sword_desc",
-            Requirements = new RequirementConfig[]
-            {
-                new RequirementConfig{ Item = "Stone", Amount = 1 }
-            },
-            Icons = new Sprite[]
-            {
-                var1, var2, var3, var4
-            },
-            StyleTex = styleTex
-        });
-        ItemManager.Instance.AddItem(sword);
-    }
-    catch (Exception ex)
-    {
-        Jotunn.Logger.LogError($"Error while adding variant item: {ex}");
-    }
-    finally
-    {
-        // You want that to run only once, Jotunn has the item cached for the game session
-        PrefabManager.OnVanillaPrefabsAvailable -= AddVariants;
-    }
+    ItemConfig shieldConfig = new ItemConfig();
+    shieldConfig.Name = "$lulz_shield";
+    shieldConfig.Description = "$lulz_shield_desc";
+    shieldConfig.AddRequirement(new RequirementConfig("Wood", 1));
+    shieldConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
+    shieldConfig.StyleTex = styleTex;
+    ItemManager.Instance.AddItem(new CustomItem("item_lulzshield", "ShieldWood", shieldConfig));
+
+    ItemConfig swordConfig = new ItemConfig();
+    swordConfig.Name = "$lulz_sword";
+    swordConfig.Description = "$lulz_sword_desc";
+    swordConfig.AddRequirement(new RequirementConfig("Stone", 1));
+    swordConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
+    shieldConfig.StyleTex = styleTex;
+    ItemManager.Instance.AddItem(new CustomItem("item_lulzsword", "SwordBronze", shieldConfig));
+
+    // You want that to run only once, Jotunn has the item cached for the game session
+    PrefabManager.OnVanillaPrefabsAvailable -= AddVariants;
 }
 ```
 

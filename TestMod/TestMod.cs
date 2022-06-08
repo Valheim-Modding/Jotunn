@@ -95,9 +95,13 @@ namespace TestMod
             AddKitbashedPieces();
             AddPieceCategories();
             AddInvalidEntities();
+            AddConePiece();
 
             // Add custom items cloned from vanilla items
             PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
+
+            // Add custom pieces cloned from vanilla pieces
+            PrefabManager.OnVanillaPrefabsAvailable += CreateDeerRugPiece;
 
             // Clone an item with variants and replace them
             PrefabManager.OnVanillaPrefabsAvailable += AddVariants;
@@ -590,7 +594,7 @@ namespace TestMod
             Jotunn.Logger.LogInfo(BlueprintRuneBundle);
 
             // Load Steel ingot from streamed resource
-            Steelingot = AssetUtils.LoadAssetBundleFromResources("steel", typeof(TestMod).Assembly);
+            Steelingot = AssetUtils.LoadAssetBundleFromResources("steel");
 
             // Embedded Resources
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
@@ -698,6 +702,12 @@ namespace TestMod
         {
             // Load recipes from JSON file
             ItemManager.Instance.AddRecipesFromJson("TestMod/Assets/recipes.json");
+
+            var meatConfig = new RecipeConfig();
+            meatConfig.Item = "CookedMeat"; // Name of the item prefab to be crafted
+            meatConfig.AddRequirement(new RequirementConfig("Stone", 2));
+            meatConfig.AddRequirement(new RequirementConfig("Wood", 1));
+            ItemManager.Instance.AddRecipe(new CustomRecipe(meatConfig));
         }
 
         // Add new status effects
@@ -722,72 +732,57 @@ namespace TestMod
         private void AddVanillaItemConversions()
         {
             // Add an item conversion for the CookingStation. The items must have an "attach" child GameObject to display it on the station.
-            var cookConversion = new CustomItemConversion(new CookingConversionConfig
-            {
-                FromItem = "CookedMeat",
-                ToItem = "CookedLoxMeat",
-                CookTime = 2f
-            });
-            ItemManager.Instance.AddItemConversion(cookConversion);
+            var cookConfig = new CookingConversionConfig();
+            cookConfig.FromItem = "CookedMeat";
+            cookConfig.ToItem = "CookedLoxMeat";
+            cookConfig.CookTime = 2f;
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(cookConfig));
 
             // Add an item conversion for the Fermenter. You can specify how much new items the conversion yields.
-            var fermentConversion = new CustomItemConversion(new FermenterConversionConfig
-            {
-                FromItem = "Coal",
-                ToItem = "CookedLoxMeat",
-                ProducedItems = 10
-            });
-            ItemManager.Instance.AddItemConversion(fermentConversion);
+            var fermentConfig = new FermenterConversionConfig();
+            fermentConfig.ToItem = "CookedLoxMeat";
+            fermentConfig.FromItem = "Coal";
+            fermentConfig.ProducedItems = 10;
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(fermentConfig));
 
             // Add an item conversion for the smelter
-            var smeltConversion = new CustomItemConversion(new SmelterConversionConfig
-            {
-                //Station = "smelter",  // Use the default from the config
-                FromItem = "Stone",
-                ToItem = "CookedLoxMeat"
-            });
-            ItemManager.Instance.AddItemConversion(smeltConversion);
+            var smelterConfig = new SmelterConversionConfig();
+            smelterConfig.FromItem = "Stone";
+            smelterConfig.ToItem = "CookedLoxMeat";
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(smelterConfig));
 
             // Add an item conversion which does not resolve the mock
-            var faultConversion = new CustomItemConversion(new SmelterConversionConfig
-            {
-                //Station = "smelter",  // Use the default from the config
-                FromItem = "StonerDude",
-                ToItem = "CookedLoxMeat"
-            });
-            ItemManager.Instance.AddItemConversion(faultConversion);
+            var faultConfig = new SmelterConversionConfig();
+            faultConfig.FromItem = "StonerDude";
+            faultConfig.ToItem = "CookedLoxMeat";
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(faultConfig));
 
             // Add an incinerator conversion. This one is special since the incinerator conversion script 
             // takes one or more items to produce any amount of a new item
-            var inciConversion = new CustomItemConversion(new IncineratorConversionConfig
-            {
-                //Station = "incinerator"  // Use the default from the config
-                Requirements = new List<IncineratorRequirementConfig>
-                {
-                    new IncineratorRequirementConfig {Item = "Wood", Amount = 1},
-                    new IncineratorRequirementConfig {Item = "Stone", Amount = 1}
-                },
-                ToItem = "Coins",
-                ProducedItems = 20,
-                RequireOnlyOneIngredient = false,  // true = only one of the requirements is needed to produce the output
-                Priority = 5                       // Higher priorities get preferred when multiple requirements are met
-            });
-            ItemManager.Instance.AddItemConversion(inciConversion);
+            var incineratorConfig = new IncineratorConversionConfig();
+            incineratorConfig.Requirements.Add(new IncineratorRequirementConfig("Wood", 1));
+            incineratorConfig.Requirements.Add(new IncineratorRequirementConfig("Stone", 1));
+            incineratorConfig.ToItem = "Coins";
+            incineratorConfig.ProducedItems = 20;
+            incineratorConfig.RequireOnlyOneIngredient = false;  // true = only one of the requirements is needed to produce the output
+            incineratorConfig.Priority = 5;                      // Higher priorities get preferred when multiple requirements are met
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(incineratorConfig));
         }
 
         // Add custom item conversion (gives a steel ingot to smelter)
         private void AddCustomItemConversion()
         {
-            var steel_prefab = Steelingot.LoadAsset<GameObject>("Steel");
-            var ingot = new CustomItem(steel_prefab, fixReference: false);
-            var blastConversion = new CustomItemConversion(new SmelterConversionConfig
-            {
-                Station = "blastfurnace", // Let's specify something other than default here 
-                FromItem = "Iron",
-                ToItem = "Steel" // This is our custom prefabs name we have loaded just above 
-            });
+            var steelPrefab = Steelingot.LoadAsset<GameObject>("Steel");
+            var ingot = new CustomItem(steelPrefab, fixReference: false);
             ItemManager.Instance.AddItem(ingot);
-            ItemManager.Instance.AddItemConversion(blastConversion);
+
+            // Create a conversion for the blastfurnace, the custom item is the new outcome
+            var blastConfig = new SmelterConversionConfig();
+            blastConfig.Station = "blastfurnace"; // let's specify something other than default here
+            blastConfig.FromItem = "Iron";
+            blastConfig.ToItem = "Steel"; // this is our custom prefabs name we have loaded just above
+
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(blastConfig));
             Steelingot.Unload(false);
         }
 
@@ -812,57 +807,35 @@ namespace TestMod
         private void AddItemsWithConfigs()
         {
             // Add a custom piece table with custom categories
-            var table_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("_BlueprintTestTable");
-            CustomPieceTable rune_table = new CustomPieceTable(table_prefab,
-                new PieceTableConfig
-                {
-                    CanRemovePieces = false,
-                    UseCategories = false,
-                    UseCustomCategories = true,
-                    CustomCategories = new string[]
-                    {
-                        "Make", "Place"
-                    }
-                }
-            );
-            PieceManager.Instance.AddPieceTable(rune_table);
+            PieceTableConfig runeTable = new PieceTableConfig();
+            runeTable.CanRemovePieces = false;
+            runeTable.UseCategories = false;
+            runeTable.UseCustomCategories = true;
+            runeTable.CustomCategories = new string[] { "Make", "Place" };
+            PieceManager.Instance.AddPieceTable(new CustomPieceTable(BlueprintRuneBundle, "_BlueprintTestTable", runeTable));
 
             // Create and add a custom item
-            var rune_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("BlueprintTestRune");
-            var rune = new CustomItem(rune_prefab, fixReference: false,  // Prefab did not use mocked refs so no need to fix them
-                new ItemConfig
-                {
-                    Amount = 1,
-                    Requirements = new[]
-                    {
-                        new RequirementConfig { Item = "Stone", Amount = 1 }
-                    }
-                });
-            ItemManager.Instance.AddItem(rune);
+            ItemConfig runeConfig = new ItemConfig();
+            runeConfig.Amount = 1;
+            runeConfig.AddRequirement(new RequirementConfig("Stone", 1));
+            // Prefab did not use mocked refs so no need to fix them
+            var runeItem = new CustomItem(BlueprintRuneBundle, "BlueprintTestRune", fixReference: false, runeConfig);
+            ItemManager.Instance.AddItem(runeItem);
 
             // Create and add custom pieces
-            var makebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("make_testblueprint");
-            var makebp = new CustomPiece(makebp_prefab, fixReference: false,
-                new PieceConfig
-                {
-                    PieceTable = "_BlueprintTestTable",
-                    Category = "Make"
-                });
-            PieceManager.Instance.AddPiece(makebp);
+            PieceConfig makeConfig = new PieceConfig();
+            makeConfig.PieceTable = "_BlueprintTestTable";
+            makeConfig.Category = "Make";
+            var makePiece = new CustomPiece(BlueprintRuneBundle, "make_testblueprint", fixReference: false, makeConfig);
+            PieceManager.Instance.AddPiece(makePiece);
 
-            var placebp_prefab = BlueprintRuneBundle.LoadAsset<GameObject>("piece_testblueprint");
-            var placebp = new CustomPiece(placebp_prefab, fixReference: false,
-                new PieceConfig
-                {
-                    PieceTable = "_BlueprintTestTable",
-                    Category = "Place",
-                    AllowedInDungeons = true,
-                    Requirements = new[]
-                    {
-                        new RequirementConfig { Item = "Wood", Amount = 2 }
-                    }
-                });
-            PieceManager.Instance.AddPiece(placebp);
+            var placeConfig = new PieceConfig();
+            placeConfig.PieceTable = "_BlueprintTestTable";
+            placeConfig.Category = "Place";
+            placeConfig.AllowedInDungeons = true;
+            placeConfig.AddRequirement(new RequirementConfig("Wood", 2));
+            var placePiece = new CustomPiece(BlueprintRuneBundle, "piece_testblueprint", fixReference: false, placeConfig);
+            PieceManager.Instance.AddPiece(placePiece);
 
             // Add localizations from the asset bundle
             var textAssets = BlueprintRuneBundle.LoadAllAssets<TextAsset>();
@@ -960,10 +933,36 @@ namespace TestMod
             }
 
             // Load completely mocked "Shit Sword" (Cheat Sword copy)
-            var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword", typeof(TestMod).Assembly);
+            var cheatybundle = AssetUtils.LoadAssetBundleFromResources("cheatsword");
             var cheaty = cheatybundle.LoadAsset<GameObject>("Cheaty");
             ItemManager.Instance.AddItem(new CustomItem(cheaty, fixReference: true));
             cheatybundle.Unload(false);
+        }
+
+        private void AddConePiece()
+        {
+            AssetBundle pieceBundle = AssetUtils.LoadAssetBundleFromResources("pieces");
+
+            PieceConfig cylinder = new PieceConfig();
+            cylinder.Name = "$cylinder_display_name";
+            cylinder.PieceTable = "Hammer";
+            cylinder.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+
+            PieceManager.Instance.AddPiece(new CustomPiece(pieceBundle, "Cylinder", fixReference: false, cylinder));
+        }
+
+        private void CreateDeerRugPiece()
+        {
+            PieceConfig rug = new PieceConfig();
+            rug.Name = "$our_rug_deer_display_name";
+            rug.PieceTable = "Hammer";
+            rug.Category = "Misc";
+            rug.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+
+            PieceManager.Instance.AddPiece(new CustomPiece("our_rug_deer", "rug_deer", rug));
+
+            // You want that to run only once, Jotunn has the piece cached for the game session
+            PrefabManager.OnVanillaPrefabsAvailable -= CreateDeerRugPiece;
         }
 
         // Adds Kitbashed pieces
@@ -1012,7 +1011,7 @@ namespace TestMod
             });
 
             // A more complex Kitbash piece, this has a prepared GameObject for Kitbash to build upon
-            AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash", typeof(TestMod).Assembly);
+            AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources("kitbash");
             try
             {
                 KitbashObject kitbashObject = KitbashManager.Instance.AddKitbash(kitbashAssetBundle.LoadAsset<GameObject>("piece_odin_statue"), new KitbashConfig
@@ -1157,29 +1156,29 @@ namespace TestMod
             try
             {
                 // Create and add a custom item based on SwordBlackmetal
-                var CI = new CustomItem("EvilSword", "SwordBlackmetal");
-                ItemManager.Instance.AddItem(CI);
+                ItemConfig evilSwordConfig = new ItemConfig();
+                evilSwordConfig.Name = "$item_evilsword";
+                evilSwordConfig.Description = "$item_evilsword_desc";
+                evilSwordConfig.CraftingStation = "piece_workbench";
+                evilSwordConfig.AddRequirement(new RequirementConfig("Stone", 1));
+                evilSwordConfig.AddRequirement(new RequirementConfig("Wood", 1));
 
-                // Replace vanilla properties of the custom item
-                var itemDrop = CI.ItemDrop;
-                itemDrop.m_itemData.m_shared.m_name = "$item_evilsword";
-                itemDrop.m_itemData.m_shared.m_description = "$item_evilsword_desc";
+                CustomItem evilSword = new CustomItem("EvilSword", "SwordBlackmetal", evilSwordConfig);
+                ItemManager.Instance.AddItem(evilSword);
 
                 // Add our custom status effect to it
+                var itemDrop = evilSword.ItemDrop;
                 itemDrop.m_itemData.m_shared.m_equipStatusEffect = EvilSwordEffect.StatusEffect;
 
                 // Create and add a recipe for the copied item
-                var recipe = ScriptableObject.CreateInstance<Recipe>();
-                recipe.name = "Recipe_EvilSword";
-                recipe.m_item = itemDrop;
-                recipe.m_craftingStation = PrefabManager.Cache.GetPrefab<CraftingStation>("piece_workbench");
-                recipe.m_resources = new[]
-                {
-                    new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Stone"), m_amount = 1},
-                    new Piece.Requirement {m_resItem = PrefabManager.Cache.GetPrefab<ItemDrop>("Wood"), m_amount = 1}
-                };
-                var CR = new CustomRecipe(recipe, fixReference: false, fixRequirementReferences: false);  // no need to fix because the refs from the cache are valid
-                ItemManager.Instance.AddRecipe(CR);
+                RecipeConfig recipeConfig = new RecipeConfig();
+                recipeConfig.Name = "Recipe_EvilSword2";
+                recipeConfig.Item = "EvilSword";
+                recipeConfig.CraftingStation = "piece_workbench";
+                recipeConfig.AddRequirement(new RequirementConfig("Stone", 2));
+                recipeConfig.AddRequirement(new RequirementConfig("Wood", 3));
+
+                ItemManager.Instance.AddRecipe(new CustomRecipe(recipeConfig));
 
                 // Create custom KeyHints for the item
                 KeyHintConfig KHC = new KeyHintConfig
@@ -1253,21 +1252,21 @@ namespace TestMod
                 Sprite var4 = AssetUtils.LoadSpriteFromFile("TestMod/Assets/test_var4.png");
                 Texture2D styleTex = AssetUtils.LoadTexture("TestMod/Assets/test_varpaint.png");
 
-                CustomItem sword = new CustomItem("item_swordvariants", "SwordBronze", new ItemConfig
-                {
-                    Name = "Lulz Sword",
-                    Description = "Lulz on a stick",
-                    Icons = new []
-                    {
-                        var1, var2, var3, var4
-                    },
-                    StyleTex = styleTex,
-                    Requirements = new []
-                    {
-                        new RequirementConfig { Item = "Wood" }
-                    }
-                });
-                ItemManager.Instance.AddItem(sword);
+                ItemConfig shieldConfig = new ItemConfig();
+                shieldConfig.Name = "$lulz_shield";
+                shieldConfig.Description = "$lulz_shield_desc";
+                shieldConfig.AddRequirement(new RequirementConfig("Wood", 1));
+                shieldConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
+                shieldConfig.StyleTex = styleTex;
+                ItemManager.Instance.AddItem(new CustomItem("item_lulzshield", "ShieldWood", shieldConfig));
+
+                ItemConfig swordConfig = new ItemConfig();
+                swordConfig.Name = "$lulz_sword";
+                swordConfig.Description = "$lulz_sword_desc";
+                swordConfig.AddRequirement(new RequirementConfig("Stone", 1));
+                swordConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
+                shieldConfig.StyleTex = styleTex;
+                ItemManager.Instance.AddItem(new CustomItem("item_lulzsword", "SwordBronze", shieldConfig));
 
                 CustomItem cape = new CustomItem("item_lulzcape", "CapeLinen", new ItemConfig
                 {
@@ -1316,57 +1315,42 @@ namespace TestMod
         // Create rendered icons from prefabs
         private void AddItemsWithRenderedIcons()
         {
-            try
-            {
-                // use the vanilla beech tree prefab to render our icon from
-                GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
+            // use the vanilla beech tree prefab to render our icon from
+            GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
 
-                // create the custom item with the rendered icon
-                CustomItem treeItem = new CustomItem("item_MyTree", "BeechSeeds", new ItemConfig
-                {
-                    Name = "$rendered_tree",
-                    Description = "$rendered_tree_desc",
-                    Icons = new[]
-                    {
-                        RenderManager.Instance.Render(beech)
-                    },
-                    Requirements = new[]
-                    {
-                        new RequirementConfig { Item = "Wood", Amount = 1, Recover = true }
-                    }
-                });
-                ItemManager.Instance.AddItem(treeItem);
-            }
-            catch (Exception ex)
-            {
-                Jotunn.Logger.LogError($"Error while adding item with rendering: {ex}");
-            }
-            finally
-            {
-                // You want that to run only once, Jotunn has the item cached for the game session
-                PrefabManager.OnVanillaPrefabsAvailable -= AddItemsWithRenderedIcons;
-            }
+            // rendered the icon
+            Sprite renderedIcon = RenderManager.Instance.Render(beech, RenderManager.IsometricRotation);
+
+            // create the custom item with the icon
+            ItemConfig treeItemConfig = new ItemConfig();
+            treeItemConfig.Name = "$rendered_tree";
+            treeItemConfig.Description = "$rendered_tree_desc";
+            treeItemConfig.Icons = new Sprite[] { renderedIcon };
+            treeItemConfig.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+
+            ItemManager.Instance.AddItem(new CustomItem("item_MyTree", "BeechSeeds", treeItemConfig));
+
+            // You want that to run only once, Jotunn has the item cached for the game session
+            PrefabManager.OnVanillaPrefabsAvailable -= AddItemsWithRenderedIcons;
         }
 
         private void AddCustomLocationsAndVegetation()
         {
-            AssetBundle locationsAssetBundle = AssetUtils.LoadAssetBundleFromResources("custom_locations", typeof(TestMod).Assembly);
+            AssetBundle locationsAssetBundle = AssetUtils.LoadAssetBundleFromResources("custom_locations");
             try
             {
                 // Create location from AssetBundle using spawners and random spawns
                 var spawnerLocation = locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation");
 
-                ZoneManager.Instance.AddCustomLocation(
-                    new CustomLocation(spawnerLocation, true,
-                        new LocationConfig
-                        {
-                            Biome = Heightmap.Biome.Meadows,
-                            Quantity = 100,
-                            Priotized = true,
-                            ExteriorRadius = 2f,
-                            MinAltitude = 1f,
-                            ClearArea = true
-                        }));
+                var spawnerConfig = new LocationConfig();
+                spawnerConfig.Biome = Heightmap.Biome.Meadows;
+                spawnerConfig.Quantity = 100;
+                spawnerConfig.Priotized = true;
+                spawnerConfig.ExteriorRadius = 2f;
+                spawnerConfig.MinAltitude = 1f;
+                spawnerConfig.ClearArea = true;
+
+                ZoneManager.Instance.AddCustomLocation(new CustomLocation(spawnerLocation, true, spawnerConfig));
 
                 // Use empty location containers for locations instantiated in code
                 var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lel");
@@ -1381,21 +1365,21 @@ namespace TestMod
                     lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
                 }
 
-                ZoneManager.Instance.AddCustomLocation(
-                    new CustomLocation(cubesLocation, false, new LocationConfig
-                    {
-                        Biome = Heightmap.Biome.Meadows,
-                        Quantity = 100,
-                        Priotized = true,
-                        ExteriorRadius = 2f,
-                        ClearArea = true,
-                    }));
+                var cubesConfig = new LocationConfig();
+                cubesConfig.Biome = Heightmap.Biome.Meadows;
+                cubesConfig.Quantity = 100;
+                cubesConfig.Priotized = true;
+                cubesConfig.ExteriorRadius = 2f;
+                cubesConfig.ClearArea = true;
+
+                ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubesLocation, false, cubesConfig));
 
                 // Use vegetation for singular prefabs
-                CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, false,
-                    new VegetationConfig {Biome = Heightmap.Biome.Meadows, BlockCheck = true});
+                var singleLulz = new VegetationConfig();
+                singleLulz.Biome = Heightmap.Biome.Meadows;
+                singleLulz.BlockCheck = true;
 
-                ZoneManager.Instance.AddCustomVegetation(customVegetation);
+                ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(lulzCubePrefab, false, singleLulz));
             }
             catch (Exception ex)
             {
@@ -1432,17 +1416,16 @@ namespace TestMod
 
                 // Add more seed carrots to the meadows & black forest
                 ZoneSystem.ZoneVegetation pickableSeedCarrot = ZoneManager.Instance.GetZoneVegetation("Pickable_SeedCarrot");
-                ZoneManager.Instance.AddCustomVegetation(
-                    new CustomVegetation(pickableSeedCarrot.m_prefab, false, 
-                        new VegetationConfig(pickableSeedCarrot)
-                        {
-                            Min = 3,
-                            Max = 10,
-                            GroupSizeMin = 3,
-                            GroupSizeMax = 10,
-                            GroupRadius = 10,
-                            Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest),
-                        }));
+
+                var carrotSeed = new VegetationConfig(pickableSeedCarrot);
+                carrotSeed.Min = 3;
+                carrotSeed.Max = 10;
+                carrotSeed.GroupSizeMin = 3;
+                carrotSeed.GroupSizeMax = 10;
+                carrotSeed.GroupRadius = 10;
+                carrotSeed.Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.Meadows, Heightmap.Biome.BlackForest);
+
+                ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(pickableSeedCarrot.m_prefab, false, carrotSeed));
             }
             catch (Exception ex)
             {
@@ -1485,7 +1468,7 @@ namespace TestMod
         // Add custom made creatures using world spawns and drop lists
         private void AddCustomCreaturesAndSpawns()
         {
-            AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures", typeof(TestMod).Assembly);
+            AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources("creatures");
             try
             {
                 // Load LulzCube test texture and sprite
@@ -1523,12 +1506,12 @@ namespace TestMod
         private void CreateDropConsumeItem(Sprite lulzsprite, Texture2D lulztex)
         {
             // Create a little lulz cube as the drop and consume item for both creatures
-            var lulzItem = new CustomItem("item_lul", true, new ItemConfig
-            {
-                Name = "$item_lulzanimalparts",
-                Description = "$item_lulzanimalparts_desc",
-                Icons = new[] {lulzsprite}
-            });
+            ItemConfig lulzCubeConfig = new ItemConfig();
+            lulzCubeConfig.Name = "$item_lulzanimalparts";
+            lulzCubeConfig.Description = "$item_lulzanimalparts_desc";
+            lulzCubeConfig.Icons = new[] {lulzsprite};
+
+            var lulzItem = new CustomItem("item_lul", true, lulzCubeConfig);
             lulzItem.ItemDrop.m_itemData.m_shared.m_maxStackSize = 20;
             lulzItem.ItemPrefab.AddComponent<Rigidbody>();
 
@@ -1552,48 +1535,39 @@ namespace TestMod
             lulzAnimalPrefab.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
 
             // Create a custom creature using our drop item and spawn configs
-            var lulzAnimal = new CustomCreature(lulzAnimalPrefab, false,
-                new CreatureConfig
-                {
-                    Name = "$creature_lulzanimal",
-                    Faction = Character.Faction.AnimalsVeg,
-                    DropConfigs = new[]
-                    {
-                        new DropConfig
-                        {
-                            Item = "item_lul",
-                            Chance = 100f,
-                            LevelMultiplier = false,
-                            MinAmount = 1,
-                            MaxAmount = 3,
-                            //OnePerPlayer = true
-                        }
-                    },
-                    SpawnConfigs = new[]
-                    {
-                        new SpawnConfig
-                        {
-                            Name = "Jotunn_LulzAnimalSpawn1",
-                            SpawnChance = 100f,
-                            SpawnInterval = 1f,
-                            SpawnDistance = 1f,
-                            MaxSpawned = 10,
-                            Biome = Heightmap.Biome.Meadows
-                        },
-                        new SpawnConfig
-                        {
-                            Name = "Jotunn_LulzAnimalSpawn2",
-                            SpawnChance = 50f,
-                            SpawnInterval = 2f,
-                            SpawnDistance = 2f,
-                            MaxSpawned = 5,
-                            Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
-                        }
-                    }
-                });
-            
+            var lulzAnimalConfig = new CreatureConfig();
+            lulzAnimalConfig.Name = "$creature_lulzanimal";
+            lulzAnimalConfig.Faction = Character.Faction.AnimalsVeg;
+            lulzAnimalConfig.AddDropConfig(new DropConfig
+            {
+                Item = "item_lul",
+                Chance = 100f,
+                LevelMultiplier = false,
+                MinAmount = 1,
+                MaxAmount = 3,
+                //OnePerPlayer = true
+            });
+            lulzAnimalConfig.AddSpawnConfig(new SpawnConfig
+            {
+                Name = "Jotunn_LulzAnimalSpawn1",
+                SpawnChance = 100f,
+                SpawnInterval = 1f,
+                SpawnDistance = 1f,
+                MaxSpawned = 10,
+                Biome = Heightmap.Biome.Meadows
+            });
+            lulzAnimalConfig.AddSpawnConfig(new SpawnConfig
+            {
+                Name = "Jotunn_LulzAnimalSpawn2",
+                SpawnChance = 50f,
+                SpawnInterval = 2f,
+                SpawnDistance = 2f,
+                MaxSpawned = 5,
+                Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
+            });
+
             // Add it to the manager
-            CreatureManager.Instance.AddCreature(lulzAnimal);
+            CreatureManager.Instance.AddCreature(new CustomCreature(lulzAnimalPrefab, false, lulzAnimalConfig));
         }
         
         private void CreateMonsterCreature(AssetBundle creaturesAssetBundle, Texture2D lulztex)
@@ -1605,79 +1579,57 @@ namespace TestMod
             lulzMonsterPrefab.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
 
             // Create a custom creature using our consume item and spawn configs
-            var lulzMonster = new CustomCreature(lulzMonsterPrefab, true,
-                new CreatureConfig
-                {
-                    Name = "$creature_lulzmonster",
-                    Faction = Character.Faction.ForestMonsters,
-                    UseCumulativeLevelEffects = true,
-                    Consumables = new[]
-                    {
-                        "item_lul"
-                    },
-                    SpawnConfigs = new[]
-                    {
-                        new SpawnConfig
-                        {
-                            Name = "Jotunn_LulzMonsterSpawn1",
-                            SpawnChance = 100f,
-                            MaxSpawned = 1,
-                            Biome = Heightmap.Biome.Meadows
-                        },
-                        new SpawnConfig
-                        {
-                            Name = "Jotunn_LulzMonsterSpawn2",
-                            SpawnChance = 50f,
-                            MaxSpawned = 1,
-                            Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
-                        }
-                    }
-                });
+            var lulzMonsterConfig = new CreatureConfig();
+            lulzMonsterConfig.Name = "$creature_lulzmonster";
+            lulzMonsterConfig.Faction = Character.Faction.ForestMonsters;
+            lulzMonsterConfig.UseCumulativeLevelEffects = true;
+            lulzMonsterConfig.AddConsumable("item_lul");
+            lulzMonsterConfig.AddSpawnConfig(new SpawnConfig
+            {
+                Name = "Jotunn_LulzMonsterSpawn1",
+                SpawnChance = 100f,
+                MaxSpawned = 1,
+                Biome = Heightmap.Biome.Meadows
+            });
+            lulzMonsterConfig.AddSpawnConfig(new SpawnConfig
+            {
+                Name = "Jotunn_LulzMonsterSpawn2",
+                SpawnChance = 50f,
+                MaxSpawned = 1,
+                Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
+            });
 
             // Add it to the manager
-            CreatureManager.Instance.AddCreature(lulzMonster);
+            CreatureManager.Instance.AddCreature(new CustomCreature(lulzMonsterPrefab, true, lulzMonsterConfig));
         }
 
         // Modify and clone vanilla creatures
         private void ModifyAndCloneVanillaCreatures()
         {
-            try
+            // Clone a vanilla creature with and add new spawn information
+            var lulzetonConfig = new CreatureConfig();
+            lulzetonConfig.AddSpawnConfig(new SpawnConfig
             {
-                // Clone a vanilla creature with and add new spawn information
-                var lulzeton = new CustomCreature("Lulzeton", "Skeleton_NoArcher",
-                    new CreatureConfig
-                    {
-                        SpawnConfigs = new []
-                        {
-                            new SpawnConfig
-                            {
-                                Name = "Jotunn_SkelSpawn1",
-                                SpawnChance = 100,
-                                SpawnInterval = 20f,
-                                SpawnDistance = 1f,
-                                Biome = Heightmap.Biome.Meadows,
-                                MinLevel = 3
-                            }
-                        }
-                    });
-                var lulzoid = lulzeton.Prefab.GetComponent<Humanoid>();
-                lulzoid.m_walkSpeed = 0.1f;
-                CreatureManager.Instance.AddCreature(lulzeton);
+                Name = "Jotunn_SkelSpawn1",
+                SpawnChance = 100,
+                SpawnInterval = 20f,
+                SpawnDistance = 1f,
+                Biome = Heightmap.Biome.Meadows,
+                MinLevel = 3
+            });
 
-                // Get a vanilla creature prefab and change some values
-                var skeleton = CreatureManager.Instance.GetCreaturePrefab("Skeleton_NoArcher");
-                var humanoid = skeleton.GetComponent<Humanoid>();
-                humanoid.m_walkSpeed = 2;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning($"Exception caught while modifying vanilla creatures: {ex}");
-            }
-            finally
-            {
-                // Unregister the hook, modified and cloned creatures are kept over the whole game session
-                CreatureManager.OnVanillaCreaturesAvailable -= ModifyAndCloneVanillaCreatures;
-            }
+            var lulzeton = new CustomCreature("Lulzeton", "Skeleton_NoArcher", lulzetonConfig);
+            var lulzoid = lulzeton.Prefab.GetComponent<Humanoid>();
+            lulzoid.m_walkSpeed = 0.1f;
+            CreatureManager.Instance.AddCreature(lulzeton);
+
+            // Get a vanilla creature prefab and change some values
+            var skeleton = CreatureManager.Instance.GetCreaturePrefab("Skeleton_NoArcher");
+            var humanoid = skeleton.GetComponent<Humanoid>();
+            humanoid.m_walkSpeed = 2;
+
+            // Unregister the hook, modified and cloned creatures are kept over the whole game session
+            CreatureManager.OnVanillaCreaturesAvailable -= ModifyAndCloneVanillaCreatures;
         }
 
         // Set version of the plugin for the mod compatibility test

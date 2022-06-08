@@ -35,7 +35,7 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Custom piece table from a prefab.
         /// </summary>
-        /// <param name="pieceTablePrefab">The prefab for this custom piece table.</param>
+        /// <param name="pieceTablePrefab">The prefab for this custom piece table. It has to have a <see cref="PieceTable"/> component attached</param>
         public CustomPieceTable(GameObject pieceTablePrefab)
         {
             PieceTablePrefab = pieceTablePrefab;
@@ -54,7 +54,7 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Custom piece table from a prefab with a <see cref="PieceTableConfig"/> attached.
         /// </summary>
-        /// <param name="pieceTablePrefab">The prefab for this custom piece table.</param>
+        /// <param name="pieceTablePrefab">The prefab for this custom piece table. It has to have a <see cref="PieceTable"/> component attached.</param>
         /// <param name="config">The <see cref="PieceTableConfig"/> for this custom piece table.</param>
         public CustomPieceTable(GameObject pieceTablePrefab, PieceTableConfig config)
         {
@@ -74,6 +74,21 @@ namespace Jotunn.Entities
             PieceTablePrefab = new GameObject(name);
             PieceTable = PieceTablePrefab.AddComponent<PieceTable>();
             config.Apply(PieceTablePrefab);
+            Categories = config.GetCategories();
+        }
+
+        /// <summary>
+        ///     Custom piece table from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="PieceTableConfig"/> attached.
+        /// </summary>
+        /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
+        /// <param name="assetName">Name of the prefab in the bundle. It has to have a <see cref="PieceTable"/> component attached.</param>
+        /// <param name="config">The <see cref="PieceTableConfig"/> for this custom piece table.</param>
+        public CustomPieceTable(AssetBundle assetBundle, string assetName, PieceTableConfig config)
+        {
+            var pieceTablePrefab = assetBundle.LoadAsset<GameObject>(assetName);
+            PieceTablePrefab = pieceTablePrefab;
+            config.Apply(pieceTablePrefab);
+            PieceTable = pieceTablePrefab.GetComponent<PieceTable>();
             Categories = config.GetCategories();
         }
 

@@ -11,20 +11,21 @@ namespace Jotunn.Entities
     /// </summary>
     public class CustomVegetation : CustomEntity
     {
-
         /// <summary>
         ///     The prefab for this custom vegetation.
         /// </summary>
         public GameObject Prefab { get; }
+
         /// <summary>
         ///     Associated <see cref="ZoneSystem.ZoneVegetation"/> component
         /// </summary>
         public ZoneSystem.ZoneVegetation Vegetation { get; }
+
         /// <summary>
         ///     Name of this custom vegetation
         /// </summary>
         public string Name { get; internal set; }
-        
+
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
@@ -43,14 +44,14 @@ namespace Jotunn.Entities
             Vegetation = config.ToVegetation();
             Vegetation.m_prefab = prefab;
         }
-        
+
         /// <summary>
         ///     Custom vegetation from a prefab.<br />
         ///     Can fix references for mocks.
         /// </summary>
         /// <param name="prefab">The prefab for this custom vegetation.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
-        /// <param name="config">The vegetation config for this custom vegation.</param> 
+        /// <param name="config">The <see cref="VegetationConfig"/> for this custom vegation.</param>
         public CustomVegetation(GameObject prefab, bool fixReference, VegetationConfig config)
         {
             Prefab = prefab;
@@ -59,7 +60,28 @@ namespace Jotunn.Entities
             Vegetation.m_prefab = prefab;
             FixReference = fixReference;
         }
-        
+
+        /// <summary>
+        ///     Custom vegetation from a prefab loaded from an <see cref="AssetBundle"/>.<br />
+        ///     Can fix references for mocks.
+        /// </summary>
+        /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
+        /// <param name="assetName">Name of the prefab in the bundle.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="config">The <see cref="VegetationConfig"/> for this custom vegation.</param>
+        public CustomVegetation(AssetBundle assetBundle, string assetName, bool fixReference, VegetationConfig config)
+        {
+            var prefab = assetBundle.LoadAsset<GameObject>(assetName);
+            if (prefab)
+            {
+                Prefab = prefab;
+                Name = prefab.name;
+                Vegetation = config.ToVegetation();
+                Vegetation.m_prefab = prefab;
+                FixReference = fixReference;
+            }
+        }
+
         /// <summary>
         ///     Helper method to determine if a prefab with a given name is a custom Vegetation created with Jötunn.
         /// </summary>

@@ -472,6 +472,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AssetsEmbedded\pieces" />
     <Content Include="Assets\test_tex.jpg" />
     <Content Include="Assets\reee.png" />
     <Content Include="Assets\test_var1.png" />

@@ -61,13 +61,7 @@ namespace Jotunn.Entities
             ItemPrefab = itemPrefab;
             ItemDrop = itemPrefab.GetComponent<ItemDrop>();
             FixReference = fixReference;
-            itemConfig.Apply(ItemPrefab);
-            FixConfig = true;
-            var recipe = itemConfig.GetRecipe();
-            if (recipe != null)
-            {
-                Recipe = new CustomRecipe(recipe, true, true);
-            }
+            ApplyItemConfig(itemConfig);
         }
 
         /// <summary>
@@ -95,13 +89,8 @@ namespace Jotunn.Entities
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
             ItemDrop.m_itemData.m_shared = new ItemDrop.ItemData.SharedData();
-            itemConfig.Apply(ItemPrefab);
-            FixConfig = true;
-            var recipe = itemConfig.GetRecipe();
-            if (recipe != null)
-            {
-                Recipe = new CustomRecipe(recipe, true, true);
-            }
+            ItemDrop.m_itemData.m_shared.m_name = name;
+            ApplyItemConfig(itemConfig);
         }
 
         /// <summary>
@@ -132,13 +121,26 @@ namespace Jotunn.Entities
             {
                 ItemPrefab = itemPrefab;
                 ItemDrop = itemPrefab.GetComponent<ItemDrop>();
-                itemConfig.Apply(itemPrefab);
-                FixConfig = true;
-                var recipe = itemConfig.GetRecipe();
-                if (recipe != null)
-                {
-                    Recipe = new CustomRecipe(recipe, true, true);
-                }
+                ApplyItemConfig(itemConfig);
+            }
+        }
+
+        /// <summary>
+        ///     Custom item from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="global::Recipe"/> made from a <see cref="ItemConfig"/>.<br />
+        ///     Can fix references for <see cref="Entities.Mock{T}"/>s.
+        /// </summary>
+        /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
+        /// <param name="assetName">Name of the prefab in the bundle.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="itemConfig">The item config for this custom item.</param>
+        public CustomItem(AssetBundle assetBundle, string assetName, bool fixReference, ItemConfig itemConfig)
+        {
+            ItemPrefab = assetBundle.LoadAsset<GameObject>(assetName);
+            if (ItemPrefab)
+            {
+                ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
+                FixReference = fixReference;
+                ApplyItemConfig(itemConfig);
             }
         }
 
@@ -207,6 +209,22 @@ namespace Jotunn.Entities
         public override string ToString()
         {
             return ItemPrefab.name;
+        }
+
+        private void ApplyItemConfig(ItemConfig itemConfig)
+        {
+            itemConfig.Apply(ItemPrefab);
+            FixConfig = true;
+            AssignRecipeFromConfig(itemConfig);
+        }
+
+        private void AssignRecipeFromConfig(ItemConfig itemConfig)
+        {
+            var recipe = itemConfig.GetRecipe();
+            if (recipe != null)
+            {
+                Recipe = new CustomRecipe(recipe, true, true);
+            }
         }
     }
 }

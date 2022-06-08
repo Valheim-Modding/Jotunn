@@ -20,7 +20,7 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Associated list of <see cref="SpawnSystem.SpawnData"/> of the creature.
         /// </summary>
-        public List<SpawnSystem.SpawnData> Spawns { get; }
+        public List<SpawnSystem.SpawnData> Spawns { get; } = new List<SpawnSystem.SpawnData>();
 
         /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}">mocks</see> will be replaced at runtime.
@@ -57,21 +57,7 @@ namespace Jotunn.Entities
         public CustomCreature(GameObject creaturePrefab, bool fixReference, CreatureConfig creatureConfig)
         {
             Prefab = creaturePrefab;
-            creatureConfig.Apply(creaturePrefab);
-
-            if (creatureConfig.DropConfigs.Any() || creatureConfig.Consumables.Any())
-            {
-                FixConfig = true;
-            }
-
-            UseCumulativeLevelEffects = creatureConfig.UseCumulativeLevelEffects;
-
-            Spawns = creatureConfig.GetSpawns().ToList();
-            foreach (var spawnData in Spawns)
-            {
-                spawnData.m_prefab = creaturePrefab;
-            }
-
+            ApplyCreatureConfig(creatureConfig);
             FixReference = fixReference;
         }
 
@@ -88,23 +74,9 @@ namespace Jotunn.Entities
             var vanilla = CreatureManager.Instance.GetCreaturePrefab(basePrefabName);
             if (vanilla)
             {
-                var creaturePrefab = PrefabManager.Instance.CreateClonedPrefab(name, vanilla);
-                Prefab = creaturePrefab;
+                Prefab = PrefabManager.Instance.CreateClonedPrefab(name, vanilla);
                 creatureConfig.Name = name;
-                creatureConfig.Apply(creaturePrefab);
-
-                if (creatureConfig.DropConfigs.Any() || creatureConfig.Consumables.Any())
-                {
-                    FixConfig = true;
-                }
-                
-                UseCumulativeLevelEffects = creatureConfig.UseCumulativeLevelEffects;
-
-                Spawns = creatureConfig.GetSpawns().ToList();
-                foreach (var spawnData in Spawns)
-                {
-                    spawnData.m_prefab = creaturePrefab;
-                }
+                ApplyCreatureConfig(creatureConfig);
             }
         }
 
@@ -176,6 +148,20 @@ namespace Jotunn.Entities
         public override string ToString()
         {
             return Prefab.name;
+        }
+
+        private void ApplyCreatureConfig(CreatureConfig creatureConfig)
+        {
+            creatureConfig.Apply(Prefab);
+
+            FixConfig = creatureConfig.DropConfigs.Any() || creatureConfig.Consumables.Any();
+            UseCumulativeLevelEffects = creatureConfig.UseCumulativeLevelEffects;
+
+            Spawns.AddRange(creatureConfig.GetSpawns());
+            foreach (var spawnData in Spawns)
+            {
+                spawnData.m_prefab = Prefab;
+            }
         }
     }
 }
