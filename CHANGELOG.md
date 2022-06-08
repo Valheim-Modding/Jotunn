@@ -3,6 +3,7 @@
 ## Version 2.6.8
 * Changed mod settings to display all mods, not just Jötunn ones
 * Added config option to disable the mod settings completely
+* Added helper methods for CustomConfigs
 * Fixed the PrefabManager Cache chose a child GameObject in rare cases, even if a better prefab with the same name existed
 * Fixed cache path of rendered icons could contain illegal characters
 * Fixed NRE of icon rendering if the prefab has null bones
