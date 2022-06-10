@@ -42,8 +42,8 @@ private void AddVariants()
     swordConfig.Description = "$lulz_sword_desc";
     swordConfig.AddRequirement(new RequirementConfig("Stone", 1));
     swordConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
-    shieldConfig.StyleTex = styleTex;
-    ItemManager.Instance.AddItem(new CustomItem("item_lulzsword", "SwordBronze", shieldConfig));
+    swordConfig.StyleTex = styleTex;
+    ItemManager.Instance.AddItem(new CustomItem("item_lulzsword", "SwordBronze", swordConfig));
 
     // You want that to run only once, Jotunn has the item cached for the game session
     PrefabManager.OnVanillaPrefabsAvailable -= AddVariants;
