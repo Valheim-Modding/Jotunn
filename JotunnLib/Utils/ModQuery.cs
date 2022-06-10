@@ -201,6 +201,11 @@ namespace Jotunn.Utils
 
         private static void AfterZNetPatch(object[] __args, ref ZNetSceneState __state)
         {
+            if (!__state.valid)
+            {
+                return;
+            }
+
             ZNetScene zNetScene = GetZNetScene(__args);
             var plugin = BepInExUtils.GetPluginInfoFromAssembly(ReflectionHelper.GetCallingAssembly());
 
@@ -215,6 +220,11 @@ namespace Jotunn.Utils
 
         private static void AfterObjectDBPatch(object[] __args, ref ObjectDBState __state)
         {
+            if (!__state.valid)
+            {
+                return;
+            }
+
             ObjectDB objectDB = GetObjectDB(__args);
             var plugin = BepInExUtils.GetPluginInfoFromAssembly(ReflectionHelper.GetCallingAssembly());
 
@@ -304,9 +314,9 @@ namespace Jotunn.Utils
         {
             foreach (var arg in __args)
             {
-                if (arg is ObjectDB zNetScene)
+                if (arg is ObjectDB objectDB)
                 {
-                    return zNetScene;
+                    return objectDB;
                 }
             }
 
@@ -315,11 +325,19 @@ namespace Jotunn.Utils
 
         private class ZNetSceneState
         {
+            public bool valid;
             public readonly Dictionary<int, GameObject> namedPrefabs;
             public readonly List<GameObject> prefabs;
 
             public ZNetSceneState(ZNetScene zNetScene)
             {
+                valid = (bool)zNetScene;
+
+                if (!valid)
+                {
+                    return;
+                }
+
                 this.namedPrefabs = new Dictionary<int, GameObject>(zNetScene.m_namedPrefabs);
                 this.prefabs = new List<GameObject>(zNetScene.m_prefabs);
             }
@@ -327,12 +345,20 @@ namespace Jotunn.Utils
 
         private class ObjectDBState
         {
+            public bool valid;
             public List<GameObject> items;
             public List<Recipe> recipes;
             public Dictionary<int, GameObject> itemByHash;
 
             public ObjectDBState(ObjectDB objectDB)
             {
+                valid = (bool)objectDB;
+
+                if (!valid)
+                {
+                    return;
+                }
+
                 items = new List<GameObject>(objectDB.m_items);
                 recipes = new List<Recipe>(objectDB.m_recipes);
                 itemByHash = new Dictionary<int, GameObject>(objectDB.m_itemByHash);

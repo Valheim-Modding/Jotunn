@@ -1,4 +1,6 @@
 ﻿# Changelog
+## Version 2.6.9
+* Fixed error of ModQuery if no ObjectDB/ZNetScene is available.
 
 ## Version 2.6.8
 * Changed mod settings to display all mods, not just Jötunn ones
