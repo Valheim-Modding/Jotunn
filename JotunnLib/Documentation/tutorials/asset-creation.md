@@ -11,7 +11,6 @@ Creation Tools
 
 Game Mods (install these into your game as our mod has dependencies on them)
 * [Jötunn, the Valheim Library](https://valheim.thunderstore.io/package/ValheimModding/Jotunn/) - Mod with convenience methods we will use
-* [HookGenPatcher](https://valheim.thunderstore.io/package/ValheimModding/HookGenPatcher/) - Patcher that adds convenient hooks to execute our mod code at the right times, that Jötunn relies on
 
 ## Summary of Steps
 
