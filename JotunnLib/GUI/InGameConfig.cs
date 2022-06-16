@@ -641,25 +641,12 @@ namespace Jotunn.GUI
 
                 Value = (T)Entry.BoxedValue;
                 Clamp = Entry.Description.AcceptableValues;
-                Attributes =
-                    Entry.Description.Tags.FirstOrDefault(x =>
-                        x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
+                Attributes = new ConfigurationManagerAttributes();
+                Attributes.SetFromAttributes(Entry.Description?.Tags);
 
-                if (Attributes != null)
-                {
-                    SetReadOnly(Attributes.ReadOnly == true);
-
-                    if (Attributes.IsAdminOnly && !Attributes.IsUnlocked)
-                    {
-                        SetEnabled(false);
-                    }
-                    else
-                    {
-                        SetEnabled(true);
-                    }
-
-                    Default = (T)Entry.DefaultValue;
-                }
+                SetReadOnly(Attributes.ReadOnly == true);
+                SetEnabled(!Attributes.IsAdminOnly || Attributes.IsUnlocked);
+                Default = (T)Entry.DefaultValue;
             }
 
             public abstract void Register();
