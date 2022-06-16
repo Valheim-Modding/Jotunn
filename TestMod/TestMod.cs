@@ -532,6 +532,9 @@ namespace TestMod
             Config.Bind(JotunnTestModConfigSection, "Server Color", new Color(0f, 1f, 0f, 1f),
                 new ConfigDescription("Server side Color", null,
                     new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Config.Bind(JotunnTestModConfigSection, "Server Integer Range", 7,
+                        new ConfigDescription("Server Integer Range", new AcceptableValueRange<int>(5, 15),
+                                              new ConfigurationManagerAttributes() { IsAdminOnly = true }));
 
             // Keys
             ServerKeyCodeConfig =
@@ -554,6 +557,11 @@ namespace TestMod
             Config.Bind(JotunnTestModConfigSection, "InvisibleInt", 150,
                 new ConfigDescription("Invisible int, testing browsable=false", null,
                     new ConfigurationManagerAttributes() { Browsable = false }));
+
+            // Test ReadOnly
+            Config.Bind(JotunnTestModConfigSection, "ReadOnlyInt", 7,
+                        new ConfigDescription("ReadOnly int, testing ReadOnly=true", new AcceptableValueRange<int>(5, 15),
+                                              new ConfigurationManagerAttributes() { ReadOnly = true }));
 
             // Add client config to test ModCompatibility
             EnableVersionMismatch = Config.Bind(JotunnTestModConfigSection, nameof(EnableVersionMismatch), false,

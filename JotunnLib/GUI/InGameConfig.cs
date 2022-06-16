@@ -699,7 +699,7 @@ namespace Jotunn.GUI
 
             public override void SetReadOnly(bool readOnly)
             {
-                Config.Toggle.enabled = !readOnly;
+                Config.Toggle.interactable = !readOnly;
             }
         }
 
@@ -753,12 +753,14 @@ namespace Jotunn.GUI
             public override void SetEnabled(bool enabled)
             {
                 Config.InputField.enabled = enabled;
+                Config.Slider.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
                 Config.InputField.readOnly = readOnly;
                 Config.InputField.textComponent.color = readOnly ? Color.grey : Color.white;
+                Config.Slider.interactable = !readOnly;
             }
         }
 
@@ -814,12 +816,14 @@ namespace Jotunn.GUI
             public override void SetEnabled(bool enabled)
             {
                 Config.InputField.enabled = enabled;
+                Config.Slider.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
                 Config.InputField.readOnly = readOnly;
                 Config.InputField.textComponent.color = readOnly ? Color.grey : Color.white;
+                Config.Slider.interactable = !readOnly;
             }
         }
 
@@ -875,12 +879,14 @@ namespace Jotunn.GUI
             public override void SetEnabled(bool enabled)
             {
                 Config.InputField.enabled = enabled;
+                Config.Slider.enabled = enabled;
             }
 
             public override void SetReadOnly(bool readOnly)
             {
                 Config.InputField.readOnly = readOnly;
                 Config.InputField.textComponent.color = readOnly ? Color.grey : Color.white;
+                Config.Slider.interactable = !readOnly;
             }
         }
 
@@ -981,7 +987,7 @@ namespace Jotunn.GUI
 
             public override void SetReadOnly(bool readOnly)
             {
-                Config.Button.enabled &= readOnly;
+                Config.Button.interactable = !readOnly;
                 Text.color = readOnly ? Color.grey : Color.white;
             }
         }
@@ -1049,7 +1055,7 @@ namespace Jotunn.GUI
 
             public override void SetReadOnly(bool readOnly)
             {
-                Config.Button.enabled &= readOnly;
+                Config.Button.interactable = !readOnly;
                 Text.color = readOnly ? Color.grey : Color.white;
             }
         }
@@ -1118,7 +1124,7 @@ namespace Jotunn.GUI
 
             public override void SetReadOnly(bool readOnly)
             {
-                Config.Dropdown.enabled = !readOnly;
+                Config.Dropdown.interactable = !readOnly;
                 Config.Dropdown.itemText.color = readOnly ? Color.grey : Color.white;
             }
         }
@@ -1177,7 +1183,7 @@ namespace Jotunn.GUI
             {
                 Config.ColorInput.readOnly = readOnly;
                 Config.ColorInput.textComponent.color = readOnly ? Color.grey : Color.white;
-                Config.ColorButton.enabled = !readOnly;
+                Config.ColorButton.interactable = !readOnly;
             }
 
             private void SetButtonColor(string value)
@@ -1303,7 +1309,7 @@ namespace Jotunn.GUI
 
             public override void SetReadOnly(bool readOnly)
             {
-                Config.Dropdown.enabled = !readOnly;
+                Config.Dropdown.interactable = !readOnly;
                 Config.Dropdown.itemText.color = readOnly ? Color.grey : Color.white;
             }
         }
