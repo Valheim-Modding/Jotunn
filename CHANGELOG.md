@@ -1,4 +1,8 @@
 ﻿# Changelog
+## Version 2.6.10
+* Fixed mod settings could bypass ServerSync settings
+* Fixed mod settings slider could bypass readonly settings
+
 ## Version 2.6.9
 * Fixed error of ModQuery if no ObjectDB/ZNetScene is available.
 
