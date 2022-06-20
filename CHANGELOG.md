@@ -1,4 +1,8 @@
 ﻿# Changelog
+## Version 2.6.11
+* Compatible with patch version 0.209.8
+* Fixed ModQuery has not cleared old prefabs, resulting in null instances
+
 ## Version 2.6.10
 * Fixed mod settings could bypass ServerSync settings
 * Fixed mod settings slider could bypass readonly settings
