@@ -112,6 +112,13 @@ namespace Jotunn.Utils
             return null;
         }
 
+        [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.OnDestroy)), HarmonyPostfix]
+        private static void ZNetSceneOnDestroy()
+        {
+            Prefabs.Clear();
+            Recipes.Clear();
+        }
+
         [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake)), HarmonyPostfix]
         private static void FejdStartup_Awake_Postfix()
         {
