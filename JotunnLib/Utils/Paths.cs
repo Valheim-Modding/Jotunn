@@ -14,7 +14,7 @@ namespace Jotunn.Utils
         {
             get
             {
-                var saveDataPath = global::Utils.GetSaveDataPath();
+                var saveDataPath = global::Utils.GetSaveDataPath(FileHelpers.FileSource.Local);
                 return Path.Combine(saveDataPath, Main.ModName);
             }
         }
