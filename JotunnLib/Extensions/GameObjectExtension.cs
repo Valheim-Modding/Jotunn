@@ -56,6 +56,11 @@ namespace Jotunn
 
             foreach (PropertyInfo propertyInfo in duplicate.GetType().GetProperties(flags))
             {
+                if (propertyInfo.Name == "rayTracingMode")
+                {
+                    continue;
+                }
+
                 if (propertyInfo.CanWrite && propertyInfo.GetMethod != null)
                 {
                     propertyInfo.SetValue(target, propertyInfo.GetValue(duplicate));
@@ -64,6 +69,11 @@ namespace Jotunn
 
             foreach (FieldInfo fieldInfo in duplicate.GetType().GetFields(flags))
             {
+                if (fieldInfo.Name == "rayTracingMode")
+                {
+                    continue;
+                }
+
                 fieldInfo.SetValue(target, fieldInfo.GetValue(duplicate));
             }
 
