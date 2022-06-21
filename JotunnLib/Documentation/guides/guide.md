@@ -99,7 +99,6 @@ Included in the ModStub and ModExample repos is a PowerShell script `publish.ps1
 
 * The compiled dll file for this project is copied to `<ValheimDir>\BepInEx\plugins`.
 * A .mdb file is generated for the compiled project dll and copied to `<ValheimDir>\BepInEx\plugins`.
-* `<ValheimModStub>\libraries\Debug\mono-2.0-bdwgc.dll` is copied to `<ValheimDir>\MonoBleedingEdge\EmbedRuntime` replacing the original file (a backup is created before).
 
 ## Building Release
 
