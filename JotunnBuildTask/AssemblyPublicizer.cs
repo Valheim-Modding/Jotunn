@@ -30,20 +30,26 @@ namespace JotunnBuildTask
                 Log.LogMessage(MessageImportance.High, $"Publicizing {input}.");
 
                 assemblyDefinition = AssemblyDefinition.ReadAssembly(input);
-                if (Directory.Exists(Path.Combine(publicizedFolder, JotunnBuildTask.ValheimData,
-                    JotunnBuildTask.Managed)))
+                BaseAssemblyResolver assemblyResolver = (BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver;
+
+                string managedFolder = Path.Combine(ValheimPath, JotunnBuildTask.ValheimData, JotunnBuildTask.Managed);
+                string serverManagedFolder = Path.Combine(ValheimPath, JotunnBuildTask.ValheimServerData, JotunnBuildTask.Managed);
+                string corlibFolder = Path.Combine(ValheimPath, JotunnBuildTask.UnstrippedCorlib);
+
+                if (Directory.Exists(managedFolder))
                 {
-                    ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, JotunnBuildTask.ValheimData,
-                        JotunnBuildTask.Managed));
-                }
-                if (Directory.Exists(Path.Combine(publicizedFolder, JotunnBuildTask.ValheimServerData,
-                    JotunnBuildTask.Managed)))
-                {
-                    ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, JotunnBuildTask.ValheimServerData,
-                        JotunnBuildTask.Managed));
+                    assemblyResolver.AddSearchDirectory(managedFolder);
                 }
 
-                ((BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(ValheimPath, JotunnBuildTask.UnstrippedCorlib));
+                if (Directory.Exists(serverManagedFolder))
+                {
+                    assemblyResolver.AddSearchDirectory(serverManagedFolder);
+                }
+
+                if (Directory.Exists(corlibFolder))
+                {
+                    assemblyResolver.AddSearchDirectory(corlibFolder);
+                }
             }
             catch (Exception exception)
             {
@@ -82,7 +88,6 @@ namespace JotunnBuildTask
             {
                 field.IsPublic = true;
             }
-
 
             var outputFilename = Path.Combine(publicizedFolder, $"{Path.GetFileNameWithoutExtension(input)}_{JotunnBuildTask.Publicized}{Path.GetExtension(input)}");
 
