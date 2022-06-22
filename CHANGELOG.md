@@ -1,4 +1,7 @@
 ﻿# Changelog
+## Version 2.6.12
+* Fixed JotunnBuildTask. This has no effect on the actual game but fixes the NuGet package upload, meaning the mod version and NuGet version match again
+
 ## Version 2.6.11
 * Compatible with patch version 0.209.8
 * Fixed ModQuery has not cleared old prefabs, resulting in null instances
