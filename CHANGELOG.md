@@ -1,4 +1,7 @@
 ﻿# Changelog
+## Version 2.7.0
+* Removed mod settings as they have caused problems and are a redundant feature. The BepInEx ConfigurationManager can be used instead
+
 ## Version 2.6.12
 * Fixed JotunnBuildTask. This has no effect on the actual game but fixes the NuGet package upload, meaning the mod version and NuGet version match again
 
