@@ -47,7 +47,6 @@
   <ItemGroup>
     <None Remove="Unity\AssetBundles\colorpicker" />
     <None Remove="Unity\AssetBundles\jotunn" />
-    <None Remove="Unity\AssetBundles\modsettings" />
     <None Remove="Unity\Assets\Plugins.meta" />
     <None Remove="Unity\AssetBundles\minimapmanager" />
   </ItemGroup>
@@ -419,7 +418,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Unity\AssetBundles\colorpicker" />
     <EmbeddedResource Include="Unity\AssetBundles\jotunn" />
-    <EmbeddedResource Include="Unity\AssetBundles\modsettings" />
     <EmbeddedResource Include="Unity\AssetBundles\minimapmanager" />
   </ItemGroup>
 </Project>

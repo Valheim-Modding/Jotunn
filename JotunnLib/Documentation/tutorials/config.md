@@ -4,10 +4,6 @@ Jötunn itself does not provide any implementations or abstractions for persisen
 
 **Note:** `IsAdminOnly` is provided via JVL, not BepInEx.
 
-Jötunn also provides a possibility to edit your configuration values via the "Mod Settings" menu added to the game. That only applies to configuration created with mods using Jötunn.
-
-![Config Manager UI](../images/utils/ConfigManagerUI.png)
-
 **Note**: The code snippets are taken from our [example mod](https://github.com/Valheim-Modding/JotunnModExample).
 
 ## Binding and accessing configurations

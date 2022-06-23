@@ -38,8 +38,6 @@ namespace Jotunn
         internal static Harmony Harmony;
         internal static GameObject RootObject;
 
-        internal static ConfigEntry<bool> ModSettingsEnabledConfig;
-
         private List<IManager> Managers;
 
         private void Awake()
@@ -57,10 +55,6 @@ namespace Jotunn
             // Root Container for GameObjects in the DontDestroyOnLoad scene
             RootObject = new GameObject("_JotunnRoot");
             DontDestroyOnLoad(RootObject);
-
-            // Jotunn config
-            ModSettingsEnabledConfig = Config.Bind("General", "Enable Mod Settings", true, 
-                "Should Jötunn add the Mod Settings entry for editing mod's configuration files to the menu?");
 
             // Create and initialize all managers
             Managers = new List<IManager>
@@ -91,7 +85,6 @@ namespace Jotunn
             }
 
             ModQuery.Init();
-            InGameConfig.Init();
 
 #if DEBUG
             // Enable helper on DEBUG build
