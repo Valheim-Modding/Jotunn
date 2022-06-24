@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
-using BepInEx.Configuration;
 using HarmonyLib;
-using Jotunn.GUI;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -107,7 +105,7 @@ namespace Jotunn
             // Unload still loaded asset bundles to keep unity from crashing
             AssetBundle.UnloadAllAssetBundles(false);
         }
-        
+
         /// <summary>
         ///     Invoke patch initialization methods for all loaded mods.
         /// </summary>

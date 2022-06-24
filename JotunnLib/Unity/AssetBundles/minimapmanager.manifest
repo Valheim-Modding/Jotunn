@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2962394251
+CRC: 2567697484
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 0f1f5e84609c3c414bf0daf6cdb23249
+    Hash: 271833548eae46eb97eb7ef3cde43b0b
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 26660b72274436405ac7a3f134213ee0
+    Hash: 6c7d9f1860f62be23175a757a43599b8
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -18,21 +18,21 @@ ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 24fab2dacfbc05348a64aa98107b05e4, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -43,15 +43,39 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 224
   Script: {instanceID: 0}
-SerializeReferenceClassIdentifiers: []
+SerializeReferenceClassIdentifiers:
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.ArgumentCache
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentCallGroup
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentListenerMode
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.RectOffset
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.AnimationTriggers
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.Button/ButtonClickedEvent
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.ColorBlock
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.FontData
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.Navigation
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.SpriteState
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.Toggle/ToggleEvent
 Assets:
-- Assets/Textures/CircleMask.png
 - Assets/Resources/MinimapComposeOverlay.shader
-- Assets/Resources/MinimapComposeFog.shader
+- Assets/Resources/MinimapComposeMainR.shader
+- Assets/Textures/CircleMask.png
+- Assets/Prefabs/MinimapOverlayPanel.prefab
 - Assets/Textures/2048x2048_clear.png
 - Assets/Resources/MinimapComposeForest.shader
-- Assets/Resources/MinimapComposeMain.shader
 - Assets/Resources/MinimapComposeHeight.shader
-- Assets/Prefabs/MinimapOverlayPanel.prefab
-- Assets/Resources/MinimapComposeMainR.shader
+- Assets/Resources/MinimapComposeFog.shader
+- Assets/Resources/MinimapComposeMain.shader
 Dependencies: []
