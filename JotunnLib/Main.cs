@@ -14,6 +14,7 @@ namespace Jotunn
     ///     Main class implementing BaseUnityPlugin.
     /// </summary>
     [BepInPlugin(ModGuid, ModName, Version)]
+    [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.VersionCheckOnly, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {

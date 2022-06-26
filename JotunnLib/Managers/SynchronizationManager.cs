@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
 {
@@ -75,8 +75,7 @@ namespace Jotunn.Managers
             {
                 Logger.LogDebug("Trying to hook config manager");
 
-                ConfigurationManager = Object.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>().ToArray()
-                    .FirstOrDefault(x => x.Info?.Metadata?.GUID == "com.bepis.bepinex.configurationmanager");
+                ConfigurationManager = Chainloader.PluginInfos.Values.FirstOrDefault(x => x.Metadata?.GUID == "com.bepis.bepinex.configurationmanager")?.Instance;
 
                 if (ConfigurationManager)
                 {

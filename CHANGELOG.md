@@ -1,4 +1,8 @@
 ﻿# Changelog
+
+## Version 2.7.1
+* Fixed Bep ConfigManager hooking for config sync
+
 ## Version 2.7.0
 * Removed mod settings as they have caused problems and are a redundant feature. The BepInEx ConfigurationManager can be used instead
 
