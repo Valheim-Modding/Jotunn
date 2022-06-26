@@ -71,23 +71,19 @@ namespace Jotunn.Managers
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
 
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
-            if (!ConfigurationManager)
+            const string configManagerGuid = "com.bepis.bepinex.configurationmanager";
+            if (!ConfigurationManager && Chainloader.PluginInfos.TryGetValue(configManagerGuid, out var configManagerInfo))
             {
-                Logger.LogDebug("Trying to hook config manager");
+                ConfigurationManager = configManagerInfo.Instance;
 
-                ConfigurationManager = Chainloader.PluginInfos.Values.FirstOrDefault(x => x.Metadata?.GUID == "com.bepis.bepinex.configurationmanager")?.Instance;
-
-                if (ConfigurationManager)
+                Logger.LogDebug("Configuration manager found, trying to hook DisplayingWindowChanged");
+                var eventinfo = ConfigurationManager.GetType().GetEvent("DisplayingWindowChanged");
+                if (eventinfo != null)
                 {
-                    Logger.LogDebug("Configuration manager found, trying to hook DisplayingWindowChanged");
-                    var eventinfo = ConfigurationManager.GetType().GetEvent("DisplayingWindowChanged");
-                    if (eventinfo != null)
-                    {
-                        Action<object, object> local = ConfigurationManager_DisplayingWindowChanged;
-                        var converted = Delegate.CreateDelegate(eventinfo.EventHandlerType, local.Target, local.Method);
+                    Action<object, object> local = ConfigurationManager_DisplayingWindowChanged;
+                    var converted = Delegate.CreateDelegate(eventinfo.EventHandlerType, local.Target, local.Method);
 
-                        eventinfo.AddEventHandler(ConfigurationManager, converted);
-                    }
+                    eventinfo.AddEventHandler(ConfigurationManager, converted);
                 }
             }
         }
