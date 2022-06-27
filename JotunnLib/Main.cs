@@ -112,15 +112,25 @@ namespace Jotunn
         /// </summary>
         private void InitializePatches()
         {
-            // Reflect through everything
             List<Tuple<MethodInfo, int>> types = new List<Tuple<MethodInfo, int>>();
+            HashSet<Assembly> searchedAssemblies = new HashSet<Assembly>();
 
-            // Check in all assemblies
-            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            // Check in all Jotunn mods
+            foreach (var baseUnityPlugin in BepInExUtils.GetDependentPlugins().Values)
             {
                 try
                 {
-                    // And all types
+                    Assembly asm = baseUnityPlugin.GetType().Assembly;
+
+                    // Skip already searched assemblies
+                    if (searchedAssemblies.Contains(asm))
+                    {
+                        continue;
+                    }
+
+                    searchedAssemblies.Add(asm);
+
+                    // Search in all types
                     foreach (var type in asm.GetTypes())
                     {
                         try
