@@ -57,7 +57,7 @@ namespace Jotunn.Managers
         ///     Reference to the SpawnList component of the container.
         /// </summary>
         internal SpawnSystemList SpawnList;
-        
+
         /// <summary>
         ///     Creates the spawner container and registers all hooks.
         /// </summary>
@@ -131,7 +131,7 @@ namespace Jotunn.Managers
 
             // Add spawners to Jötunn's own spawner list
             SpawnList.m_spawners.AddRange(customCreature.Spawns);
-            
+
             return true;
         }
 
@@ -248,6 +248,7 @@ namespace Jotunn.Managers
                     {
                         PrefabManager.Instance.DestroyPrefab(creature.Prefab.name);
                     }
+
                     RemoveCreature(creature);
                 }
 
@@ -289,7 +290,7 @@ namespace Jotunn.Managers
             {
                 return;
             }
-            
+
             for (int index = level - 2; index >= 0; --index)
             {
                 if (index >= self.m_levelSetups.Count)

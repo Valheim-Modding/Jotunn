@@ -44,7 +44,7 @@ namespace Jotunn.Utils
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomItem"/> from all loaded mods</returns>
         public static IEnumerable<CustomItem> GetItems() => 
-            ItemManager.Instance.Items.AsReadOnly();
+            ItemManager.Instance.Items;
         
         /// <summary>
         ///     Get all added <see cref="CustomItem">CustomItems</see> of a mod by GUID
@@ -59,7 +59,7 @@ namespace Jotunn.Utils
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomRecipe"/> from all loaded mods</returns>
         public static IEnumerable<CustomRecipe> GetRecipes() => 
-            ItemManager.Instance.Recipes.AsReadOnly();
+            ItemManager.Instance.Recipes;
         
         /// <summary>
         ///     Get all added <see cref="CustomRecipe">CustomRecipes</see> of a mod by GUID
@@ -74,7 +74,7 @@ namespace Jotunn.Utils
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomItemConversion"/> from all loaded mods</returns>
         public static IEnumerable<CustomItemConversion> GetItemConversions() => 
-            ItemManager.Instance.ItemConversions.AsReadOnly();
+            ItemManager.Instance.ItemConversions;
         
         /// <summary>
         ///     Get all added <see cref="CustomItemConversion">CustomItemConversions</see> of a mod by GUID
@@ -89,7 +89,7 @@ namespace Jotunn.Utils
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomStatusEffect"/> from all loaded mods</returns>
         public static IEnumerable<CustomStatusEffect> GetStatusEffects() => 
-            ItemManager.Instance.StatusEffects.AsReadOnly();
+            ItemManager.Instance.StatusEffects;
         
         /// <summary>
         ///     Get all added <see cref="CustomStatusEffect">CustomStatusEffects</see> of a mod by GUID

@@ -56,10 +56,10 @@ namespace Jotunn.Managers
         public static event Action OnItemsRegistered;
 
         // Internal lists of all custom entities added
-        internal readonly List<CustomItem> Items = new List<CustomItem>();
-        internal readonly List<CustomRecipe> Recipes = new List<CustomRecipe>();
-        internal readonly List<CustomStatusEffect> StatusEffects = new List<CustomStatusEffect>();
-        internal readonly List<CustomItemConversion> ItemConversions = new List<CustomItemConversion>();
+        internal readonly HashSet<CustomItem> Items = new HashSet<CustomItem>();
+        internal readonly HashSet<CustomRecipe> Recipes = new HashSet<CustomRecipe>();
+        internal readonly HashSet<CustomStatusEffect> StatusEffects = new HashSet<CustomStatusEffect>();
+        internal readonly HashSet<CustomItemConversion> ItemConversions = new HashSet<CustomItemConversion>();
 
         /// <summary>
         ///     Registers all hooks.
