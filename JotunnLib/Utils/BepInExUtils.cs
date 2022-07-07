@@ -82,6 +82,10 @@ namespace Jotunn.Utils
                    .ToDictionary(plugin => plugin.Info.Metadata.GUID);
         }
 
+        /// <summary>
+        ///     Get a dictionary of all plugins loaded by BepInEx
+        /// </summary>
+        /// <returns>Dictionary of plugin GUID and <see cref="BaseUnityPlugin"/></returns>
         public static Dictionary<string, BaseUnityPlugin> GetPlugins(bool includeJotunn = false)
         {
             return GetLoadedPlugins()
