@@ -88,7 +88,10 @@ namespace Jotunn.Managers
             RightStickButton
         }
 
-        internal static KeyCode GetGamepadKeyCode(GamepadButton @enum)
+        /// <summary>
+        ///     Translate a <see cref="GamepadButton"/> to its <see cref="KeyCode"/> value
+        /// </summary>
+        public static KeyCode GetGamepadKeyCode(GamepadButton @enum)
         {
             return @enum switch
             {
@@ -105,8 +108,11 @@ namespace Jotunn.Managers
                 _ => KeyCode.None
             };
         }
-
-        internal static string GetGamepadAxis(GamepadButton @enum)
+        
+        /// <summary>
+        ///     Translate a <see cref="GamepadButton"/> to its axis string value
+        /// </summary>
+        public static string GetGamepadAxis(GamepadButton @enum)
         {
             return @enum switch
             {
@@ -119,8 +125,11 @@ namespace Jotunn.Managers
                 _ => string.Empty
             };
         }
-
-        internal static string GetGamepadString(GamepadButton @enum)
+        
+        /// <summary>
+        ///     Translate a <see cref="GamepadButton"/> to its printable string value
+        /// </summary>
+        public static string GetGamepadString(GamepadButton @enum)
         {
             return @enum switch
             {
@@ -144,8 +153,11 @@ namespace Jotunn.Managers
                 _ => string.Empty
             };
         }
-
-        internal static GamepadButton GetGamepadButton(string axis)
+        
+        /// <summary>
+        ///     Translate an axis string to its <see cref="GamepadButton"/> value
+        /// </summary>
+        public static GamepadButton GetGamepadButton(string axis)
         {
             return axis switch
             {
@@ -158,8 +170,11 @@ namespace Jotunn.Managers
                 _ => GamepadButton.None
             };
         }
-
-        internal static GamepadButton GetGamepadButton(KeyCode key)
+        
+        /// <summary>
+        ///     Translate a <see cref="KeyCode"/> to its <see cref="GamepadButton"/> value
+        /// </summary>
+        public static GamepadButton GetGamepadButton(KeyCode key)
         {
             return key switch
             {

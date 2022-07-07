@@ -7,7 +7,10 @@ using BepInEx;
 
 namespace Jotunn.Utils
 {
-    internal class BepInExUtils
+    /// <summary>
+    ///     Helper methods to access BepInEx plugin information
+    /// </summary>
+    public static class BepInExUtils
     {
         /// <summary>
         ///     Cached plugin list

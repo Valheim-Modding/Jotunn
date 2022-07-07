@@ -100,10 +100,10 @@ public sealed class ConfigurationManagerAttributes
     /// <summary>
     ///     Whether a config is locked for direct writing
     /// </summary>
-    internal bool IsUnlocked
+    public bool IsUnlocked
     {
         get => isUnlocked;
-        set
+        internal set
         {
             ReadOnly = !value;
             HideDefaultButton = !value;
@@ -121,7 +121,11 @@ public sealed class ConfigurationManagerAttributes
     private static readonly PropertyInfo[] _myProperties = typeof(ConfigurationManagerAttributes).GetProperties(BindingFlags.Instance | BindingFlags.Public);
     private static readonly FieldInfo[] _myFields = typeof(ConfigurationManagerAttributes).GetFields(BindingFlags.Instance | BindingFlags.Public);
 
-    internal void SetFromAttributes(object[] attribs)
+    /// <summary>
+    ///     Set config values from an attribute array
+    /// </summary>
+    /// <param name="attribs">Array of attribute values</param>
+    public void SetFromAttributes(object[] attribs)
     {
         if (attribs == null || attribs.Length == 0)
         {

@@ -2,6 +2,7 @@
 
 ## Version 2.7.2
 * Fixed possible NRE in SyncManager
+* Opened up some previously internal interfaces for mods to use (e.g. BepInExUtils)
 
 ## Version 2.7.1
 * Fixed Bep ConfigManager hooking for config sync not working sometimes

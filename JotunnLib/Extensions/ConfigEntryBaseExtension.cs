@@ -16,21 +16,18 @@ namespace Jotunn
     /// <summary>
     ///     Extends <see cref="ConfigEntryBase"/> with convenience functions.
     /// </summary>
-    internal static class ConfigEntryBaseExtension
+    public static class ConfigEntryBaseExtension
     {
         /// <summary>
         ///     Check, if this config entry is "visible"
         /// </summary>
         /// <param name="configurationEntry"></param>
         /// <returns></returns>
-        internal static bool IsVisible(this ConfigEntryBase configurationEntry)
+        public static bool IsVisible(this ConfigEntryBase configurationEntry)
         {
-            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
-            if (cma != null)
-            {
-                return cma.Browsable != false;
-            }
-            return true;
+            ConfigurationManagerAttributes attributes = new ConfigurationManagerAttributes();
+            attributes.SetFromAttributes(configurationEntry.Description?.Tags);
+            return attributes.Browsable != false;
         }
 
         /// <summary>
@@ -38,7 +35,7 @@ namespace Jotunn
         /// </summary>
         /// <param name="configurationEntry"></param>
         /// <returns></returns>
-        internal static bool IsSyncable(this ConfigEntryBase configurationEntry)
+        public static bool IsSyncable(this ConfigEntryBase configurationEntry)
         {
             var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
             if (cma != null)
@@ -47,20 +44,56 @@ namespace Jotunn
             }
             return false;
         }
-
+        
         /// <summary>
-        ///     Check, if this config entry is "writable"
+        ///     Get bound button's name
         /// </summary>
         /// <param name="configurationEntry"></param>
         /// <returns></returns>
-        internal static bool IsWritable(this ConfigEntryBase configurationEntry)
+        /// <exception cref="ArgumentNullException"></exception>
+        public static string GetBoundButtonName(this ConfigEntryBase configurationEntry)
         {
-            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
-            if (cma != null)
+            if (configurationEntry == null)
             {
-                return !cma.IsAdminOnly || (cma.IsAdminOnly && cma.IsUnlocked);
+                throw new ArgumentNullException(nameof(configurationEntry));
             }
-            return true;
+
+            if (configurationEntry.SettingType != typeof(KeyCode) &&
+                configurationEntry.SettingType != typeof(KeyboardShortcut) &&
+                configurationEntry.SettingType != typeof(InputManager.GamepadButton))
+            {
+                return null;
+            }
+
+            return InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig)
+                ? buttonConfig.Name
+                : null;
+        }
+
+
+        /// <summary>
+        ///     Get bound button config
+        /// </summary>
+        /// <param name="configurationEntry"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static ButtonConfig GetButtonConfig(this ConfigEntryBase configurationEntry)
+        {
+            if (configurationEntry == null)
+            {
+                throw new ArgumentNullException(nameof(configurationEntry));
+            }
+
+            if (configurationEntry.SettingType != typeof(KeyCode) &&
+                configurationEntry.SettingType != typeof(KeyboardShortcut) &&
+                configurationEntry.SettingType != typeof(InputManager.GamepadButton))
+            {
+                return null;
+            }
+            
+            InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig);
+
+            return buttonConfig;
         }
 
         /// <summary>
@@ -91,59 +124,6 @@ namespace Jotunn
             {
                 cma.LocalValue = value; 
             }
-        }
-        
-        /// <summary>
-        ///     Get bound button's name
-        /// </summary>
-        /// <param name="configurationEntry"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        internal static string GetBoundButtonName(this ConfigEntryBase configurationEntry)
-        {
-            if (configurationEntry == null)
-            {
-                throw new ArgumentNullException(nameof(configurationEntry));
-            }
-
-            if (configurationEntry.SettingType != typeof(KeyCode) &&
-                configurationEntry.SettingType != typeof(KeyboardShortcut) &&
-                configurationEntry.SettingType != typeof(InputManager.GamepadButton))
-            {
-                return null;
-            }
-
-            return InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig)
-                ? buttonConfig.Name
-                : null;
-
-            //return configurationEntry.Definition.Key;
-        }
-
-
-        /// <summary>
-        ///     Get bound button config
-        /// </summary>
-        /// <param name="configurationEntry"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        internal static ButtonConfig GetButtonConfig(this ConfigEntryBase configurationEntry)
-        {
-            if (configurationEntry == null)
-            {
-                throw new ArgumentNullException(nameof(configurationEntry));
-            }
-
-            if (configurationEntry.SettingType != typeof(KeyCode) &&
-                configurationEntry.SettingType != typeof(KeyboardShortcut) &&
-                configurationEntry.SettingType != typeof(InputManager.GamepadButton))
-            {
-                return null;
-            }
-            
-            InputManager.ButtonToConfigDict.TryGetValue(configurationEntry, out var buttonConfig);
-
-            return buttonConfig;
         }
     }
 }
