@@ -115,8 +115,8 @@ namespace Jotunn.Managers
             if (unityObject)
             {
                 var unityObjectName = unityObject.name;
-                var isVLMock = unityObjectName.StartsWith(MockPrefix);
-                var isJVLMock = unityObjectName.StartsWith(JVLMockPrefix);
+                var isVLMock = unityObjectName.StartsWith(MockPrefix, StringComparison.Ordinal);
+                var isJVLMock = unityObjectName.StartsWith(JVLMockPrefix, StringComparison.Ordinal);
                 if (isVLMock || isJVLMock)
                 {
                     if (isVLMock) unityObjectName = unityObjectName.Substring(MockPrefix.Length);
