@@ -55,7 +55,7 @@ As you may notice, our item does not hold the display text we might prefer.
 In order to resolve this you can read our [localization](localization.md) tutorial.
 
 To be able to craft the item on a workbench, a `Recipe` must be created.
-This is done in the `RecipeEvilSword()` method. Refer to our [recipe tutorial](recipes.md#adding-a-recipe-using-valheim-recipe--prefab-cache) to learn about recipe creation.
+This is done in the `RecipeEvilSword()` method. Refer to our [recipe tutorial](recipes.md) to learn about recipe creation.
 
 There is also a custom key hint added in the `KeyHintEvilSword()` method.
 To learn about the custom key hints, refer to our [input tutorial](inputs.md#creating-custom-keyhints).
