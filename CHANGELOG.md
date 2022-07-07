@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.7.2
+* Fixed possible NRE in SyncManager
+
 ## Version 2.7.1
 * Fixed Bep ConfigManager hooking for config sync not working sometimes
 * Slight improvements of startup time

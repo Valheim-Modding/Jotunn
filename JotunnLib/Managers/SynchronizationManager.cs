@@ -72,7 +72,8 @@ namespace Jotunn.Managers
 
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
             const string configManagerGuid = "com.bepis.bepinex.configurationmanager";
-            if (!ConfigurationManager && Chainloader.PluginInfos.TryGetValue(configManagerGuid, out var configManagerInfo))
+            if (Chainloader.PluginInfos.TryGetValue(configManagerGuid, out var configManagerInfo) &&
+                configManagerInfo.Instance)
             {
                 ConfigurationManager = configManagerInfo.Instance;
 
