@@ -51,7 +51,7 @@ namespace Jotunn.Managers
         private UndoManager() { }
 
         /// <summary>
-        ///     Container to hold all live Overlays.
+        ///     Container to hold all Queues.
         /// </summary>
         private readonly Dictionary<string, UndoQueue> Queues = new Dictionary<string, UndoQueue>();
 
@@ -109,7 +109,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Add a new action to a queue. If a queue with the provided name does not exist it gets automatically created.
         /// </summary>
-        /// <param name="name">Name of the queue. Multiple mods can use the same queue name.</param>
+        /// <param name="name">Global name of the queue. Multiple mods can use the same queue name.</param>
         /// <param name="action">Mod provided action which can undo and redo whatever was executed.</param>
         public void Add(string name, IUndoAction action)
         {
@@ -124,11 +124,23 @@ namespace Jotunn.Managers
             Queues.Add(name, queue);
         }
 
+        /// <summary>
+        ///     Execute the undo action of the item at the current queue's position.
+        /// </summary>
+        /// <param name="name">Global name of the queue.</param>
+        /// <param name="terminal"></param>
+        /// <returns></returns>
         public bool Undo(string name, Terminal terminal)
         {
             return Queues.TryGetValue(name, out var queue) && queue.Undo(terminal);
         }
 
+        /// <summary>
+        ///     Execute the undo action of the item at the current queue's position.
+        /// </summary>
+        /// <param name="name">Global name of the queue.</param>
+        /// <param name="terminal"></param>
+        /// <returns></returns>
         public bool Redo(string name, Terminal terminal)
         {
             return Queues.TryGetValue(name, out var queue) && queue.Redo(terminal);
