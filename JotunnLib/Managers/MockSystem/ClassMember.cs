@@ -15,13 +15,28 @@ namespace Jotunn {
         {
             foreach (var fieldInfo in fieldInfos)
             {
-                members.Add(new FieldMember(fieldInfo));
+                AddMember(new FieldMember(fieldInfo));
             }
 
             foreach (var propertyInfo in propertyInfos)
             {
-                members.Add(new PropertyMember(propertyInfo));
+                AddMember(new PropertyMember(propertyInfo));
             }
+        }
+
+        private void AddMember(MemberBase member)
+        {
+            if (!member.IsClass || member.MemberType == typeof(string))
+            {
+                return;
+            }
+
+            if (member.EnumeratedType != null && (!member.IsEnumeratedClass || member.EnumeratedType == typeof(string)))
+            {
+                return;
+            }
+
+            members.Add(member);
         }
 
         private static T[] GetMembersFromType<T>(Type type, Func<Type, T[]> getMembers)
