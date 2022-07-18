@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 
@@ -118,7 +119,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            queue = new UndoQueue();
+            queue = new UndoQueue(name);
             queue.Add(action);
             Queues.Add(name, queue);
         }
@@ -145,10 +146,16 @@ namespace Jotunn.Managers
 
         private class UndoQueue
         {
+            private string Name;
             private List<IUndoAction> History = new List<IUndoAction>();
             private int Index = -1;
             private bool Executing = false;
             private int MaxSteps = 50;
+
+            public UndoQueue(string name)
+            {
+                Name = name;
+            }
             
             public void Add(IUndoAction action)
             {
@@ -182,7 +189,10 @@ namespace Jotunn.Managers
                     History[Index].Undo();
                     AddMessage(History[Index].UndoMessage());
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Logger.LogWarning($"Exception thrown at index {Index} in queue {Name}:\n{e}");
+                }
                 Index--;
                 Executing = false;
                 return true;
@@ -199,7 +209,10 @@ namespace Jotunn.Managers
                         History[Index].Redo();
                         AddMessage(History[Index].RedoMessage());
                     }
-                    catch { }
+                    catch (Exception e)
+                    {
+                        Logger.LogWarning($"Exception thrown at index {Index} in queue {Name}:\n{e}");
+                    }
                     Executing = false;
                     return true;
                 }
