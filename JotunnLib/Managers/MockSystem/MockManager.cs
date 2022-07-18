@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Jotunn.Utils;
@@ -171,117 +172,127 @@ namespace Jotunn.Managers
 
             foreach (var member in classMember.members)
             {
-                // Special treatment for DropTable, its a List of struct DropData
-                // Maybe there comes a time when I am willing to do some generic stuff
-                // But mono did not implement FieldInfo.GetValueDirect()
-                if (member.MemberType == typeof(DropTable))
+                FixMemberReferences(member, objectToFix, depth);
+            }
+        }
+
+        private static void FixMemberReferences(MemberBase member, object objectToFix, int depth)
+        {
+            // Special treatment for DropTable, its a List of struct DropData
+            // Maybe there comes a time when I am willing to do some generic stuff
+            // But mono did not implement FieldInfo.GetValueDirect()
+            if (member.MemberType == typeof(DropTable))
+            {
+                var drops = ((DropTable)member.GetValue(objectToFix)).m_drops;
+
+                for (int i = 0; i < drops.Count; i++)
                 {
-                    var drops = ((DropTable)member.GetValue(objectToFix)).m_drops;
-
-                    for (int i = 0; i < drops.Count; i++)
-                    {
-                        var drop = drops[i];
-                        var realPrefab = MockManager.GetRealPrefabFromMock(drop.m_item, typeof(GameObject));
-                        if (realPrefab)
-                        {
-                            drop.m_item = (GameObject)realPrefab;
-                        }
-
-                        drops[i] = drop;
-                    }
-
-                    continue;
-                }
-
-                if (member.IsUnityObject && member.HasGetMethod)
-                {
-                    var target = (Object)member.GetValue(objectToFix);
-                    var realPrefab = MockManager.GetRealPrefabFromMock(target, member.MemberType);
+                    var drop = drops[i];
+                    var realPrefab = GetRealPrefabFromMock(drop.m_item, typeof(GameObject));
                     if (realPrefab)
                     {
-                        member.SetValue(objectToFix, realPrefab);
+                        drop.m_item = (GameObject)realPrefab;
+                    }
+
+                    drops[i] = drop;
+                }
+
+                return;
+            }
+
+            if (member.IsUnityObject && member.HasGetMethod)
+            {
+                var target = (Object)member.GetValue(objectToFix);
+                var realPrefab = GetRealPrefabFromMock(target, member.MemberType);
+                if (realPrefab)
+                {
+                    member.SetValue(objectToFix, realPrefab);
+                }
+            }
+            else
+            {
+                if (member.IsEnumeratedClass && member.IsEnumerableOfUnityObjects)
+                {
+                    var isArray = member.MemberType.IsArray;
+                    var isList = member.MemberType.IsGenericType && member.MemberType.GetGenericTypeDefinition() == typeof(List<>);
+                    var isHashSet = member.MemberType.IsGenericType && member.MemberType.GetGenericTypeDefinition() == typeof(HashSet<>);
+
+                    if (!(isArray || isList || isHashSet))
+                    {
+                        Logger.LogWarning($"Not fixing potential mock references for field {member.MemberType.Name} : {member.MemberType} is not supported.");
+                        return;
+                    }
+
+                    var currentValues = (IEnumerable<Object>)member.GetValue(objectToFix);
+                    if (currentValues == null)
+                    {
+                        return;
+                    }
+
+                    if (isArray || isList)
+                    {
+                        int count = ((ICollection)currentValues).Count;
+                        IList values = (IList)currentValues;
+
+                        for (int i = 0; i < count; i++)
+                        {
+                            var unityObject = values[i];
+                            var realPrefab = GetRealPrefabFromMock((Object)unityObject, member.EnumeratedType);
+                            if (realPrefab)
+                            {
+                                values[i] = unityObject;
+                            }
+                        }
+                    }
+                    else if (isHashSet)
+                    {
+                        bool hasAnyMockResolved = false;
+                        var list = new List<Object>();
+
+                        foreach (var unityObject in currentValues)
+                        {
+                            var realPrefab = GetRealPrefabFromMock(unityObject, member.EnumeratedType);
+                            list.Add(realPrefab ? realPrefab : unityObject);
+                            hasAnyMockResolved = hasAnyMockResolved || realPrefab;
+                        }
+
+                        if (list.Count > 0 && hasAnyMockResolved)
+                        {
+                            MethodInfo cast = ReflectionHelper.Cache.EnumerableCast;
+                            MethodInfo castT = cast.MakeGenericMethod(member.EnumeratedType);
+                            object correctTypeList = castT.Invoke(null, new object[] { list });
+
+
+                            var hash = typeof(HashSet<>).MakeGenericType(member.EnumeratedType);
+
+                            var newHash = Activator.CreateInstance(hash, correctTypeList);
+                            member.SetValue(objectToFix, newHash);
+                        }
                     }
                 }
-                else
+                else if (member.IsEnumeratedClass)
                 {
-                    if (member.IsEnumeratedClass && member.IsEnumerableOfUnityObjects)
+                    var isDict = member.MemberType.IsGenericType && member.MemberType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+                    if (isDict)
                     {
-                        var isArray = member.MemberType.IsArray;
-                        var isList = member.MemberType.IsGenericType && member.MemberType.GetGenericTypeDefinition() == typeof(List<>);
-                        var isHashSet = member.MemberType.IsGenericType && member.MemberType.GetGenericTypeDefinition() == typeof(HashSet<>);
-
-                        if (!(isArray || isList || isHashSet))
-                        {
-                            Logger.LogWarning($"Not fixing potential mock references for field {member.MemberType.Name} : {member.MemberType} is not supported.");
-                            continue;
-                        }
-
-                        var currentValues = (IEnumerable<Object>)member.GetValue(objectToFix);
-                        if (currentValues != null)
-                        {
-                            var list = new List<Object>();
-                            foreach (var unityObject in currentValues)
-                            {
-                                var realPrefab = MockManager.GetRealPrefabFromMock(unityObject, member.EnumeratedType);
-                                list.Add(realPrefab ? realPrefab : unityObject);
-                            }
-
-                            if (list.Count > 0)
-                            {
-                                MethodInfo cast = ReflectionHelper.Cache.EnumerableCast;
-                                MethodInfo castT = cast.MakeGenericMethod(member.EnumeratedType);
-                                object correctTypeList = castT.Invoke(null, new object[] { list });
-
-                                if (isArray)
-                                {
-                                    var toArray = ReflectionHelper.Cache.EnumerableToArray;
-                                    var toArrayT = toArray.MakeGenericMethod(member.EnumeratedType);
-
-                                    var array = toArrayT.Invoke(null, new object[] { correctTypeList });
-                                    member.SetValue(objectToFix, array);
-                                }
-                                else if (isList)
-                                {
-                                    var toList = ReflectionHelper.Cache.EnumerableToList;
-                                    var toListT = toList.MakeGenericMethod(member.EnumeratedType);
-
-                                    var newList = toListT.Invoke(null, new object[] { correctTypeList });
-                                    member.SetValue(objectToFix, newList);
-                                }
-                                else if (isHashSet)
-                                {
-                                    var hash = typeof(HashSet<>).MakeGenericType(member.EnumeratedType);
-
-                                    var newHash = Activator.CreateInstance(hash, correctTypeList);
-                                    member.SetValue(objectToFix, newHash);
-                                }
-                            }
-                        }
+                        Logger.LogWarning($"Not fixing potential mock references for field {member.MemberType.Name} : Dictionary is not supported.");
+                        return;
                     }
-                    else if (member.IsEnumeratedClass)
+
+                    var currentValues = (IEnumerable<object>)member.GetValue(objectToFix);
+                    if (currentValues == null)
                     {
-                        var isDict = member.MemberType.IsGenericType && member.MemberType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
-                        if (isDict)
-                        {
-                            Logger.LogWarning($"Not fixing potential mock references for field {member.MemberType.Name} : Dictionary is not supported.");
-                            continue;
-                        }
-
-                        var currentValues = (IEnumerable<object>)member.GetValue(objectToFix);
-                        if (currentValues == null)
-                        {
-                            continue;
-                        }
-
-                        foreach (var value in currentValues)
-                        {
-                            FixReferences(value, depth);
-                        }
+                        return;
                     }
-                    else if (member.IsClass && member.HasGetMethod)
+
+                    foreach (var value in currentValues)
                     {
-                        FixReferences(member.GetValue(objectToFix), depth);
+                        FixReferences(value, depth);
                     }
+                }
+                else if (member.IsClass && member.HasGetMethod)
+                {
+                    FixReferences(member.GetValue(objectToFix), depth);
                 }
             }
         }
