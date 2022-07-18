@@ -8,15 +8,33 @@ namespace Jotunn.Managers
     ///     Manager for handling undo and redo actions in mods. Can handle multiple undo queues.<br/>
     ///     Mods can make their own UndoActions using the provided <see cref="IUndoAction">interface</see>
     ///     or use the default ones Jötunn provides in <see cref="Jotunn.Utils.UndoActions"/>.<br />
-    ///     Undo queues get automatically reset on every logout.
+    ///     Undo queues get automatically reset on every login and logout.
     /// </summary>
     public class UndoManager : IManager
     {
+        /// <summary>
+        ///     Interface for actions which can be added to the undo queue.
+        /// </summary>
         public interface IUndoAction
         {
+            /// <summary>
+            ///     Code to revert whatever was executed.
+            /// </summary>
             void Undo();
+
+            /// <summary>
+            ///     Code to replay whatever was executed.
+            /// </summary>
             void Redo();
+
+            /// <summary>
+            ///     Message being displayed after a successful undo.
+            /// </summary>
             string UndoMessage();
+
+            /// <summary>
+            ///     Message being displayed after a successful redo.
+            /// </summary>
             string RedoMessage();
         }
 
@@ -47,10 +65,19 @@ namespace Jotunn.Managers
 
         private static class Patches
         {
+            [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
+            private static void ClearUndoQueuesBefore(ZNetScene __instance) => Instance.Queues.Clear();
+
             [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Shutdown)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
-            private static void ClearUndoQueues(ZNetScene __instance) => Instance.Queues.Clear();
+            private static void ClearUndoQueuesAfter(ZNetScene __instance) => Instance.Queues.Clear();
         }
         
+        /// <summary>
+        ///     Add a message to the console or in the player HUD
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="message"></param>
+        /// <param name="priority"></param>
         private static void AddMessage(Terminal context, string message, bool priority = true)
         {
             if (context == Console.instance)
@@ -79,13 +106,13 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Add a new action to a queue. If a queue with the provided name does not exist it gets automatically created.
+        /// </summary>
+        /// <param name="name">Name of the queue. Multiple mods can use the same queue name.</param>
+        /// <param name="action">Mod provided action which can undo and redo whatever was executed.</param>
         public void Add(string name, IUndoAction action)
         {
-            if (!ZNetScene.instance)
-            {
-                return;
-            }
-
             if (Queues.TryGetValue(name, out var queue))
             {
                 queue.Add(action);
@@ -113,12 +140,7 @@ namespace Jotunn.Managers
             private int Index = -1;
             private bool Executing = false;
             private int MaxSteps = 50;
-
-            /// <summary>
-            ///     Hide .ctor
-            /// </summary>
-            internal UndoQueue() { }
-
+            
             public void Add(IUndoAction action)
             {
                 // During undo/redo more steps won't be added.
