@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.7.3
+* Added UndoManager to handle undo and redo actions and queue management (big thx to Jere)
+
 ## Version 2.7.2
 * Fixed possible NRE in SyncManager
 * Opened up some previously internal interfaces for mods to use (e.g. BepInExUtils)

@@ -135,7 +135,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Execute the undo action of the item at the current queue's position and increase the position pointer.
+        ///     Execute the redo action of the item at the current queue's position and increase the position pointer.
         /// </summary>
         /// <param name="name">Global name of the queue.</param>
         /// <returns></returns>
