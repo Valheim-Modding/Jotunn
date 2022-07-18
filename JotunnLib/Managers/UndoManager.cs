@@ -75,14 +75,13 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Add a message to the console or in the player HUD
         /// </summary>
-        /// <param name="context"></param>
         /// <param name="message"></param>
         /// <param name="priority"></param>
-        private static void AddMessage(Terminal context, string message, bool priority = true)
+        private static void AddMessage(string message, bool priority = true)
         {
-            if (context == Console.instance)
+            if (Console.IsVisible())
             {
-                context.AddString(message);
+                Console.instance.AddString(message);
             }
             var hud = MessageHud.instance;
             if (!hud)
@@ -128,22 +127,20 @@ namespace Jotunn.Managers
         ///     Execute the undo action of the item at the current queue's position.
         /// </summary>
         /// <param name="name">Global name of the queue.</param>
-        /// <param name="terminal"></param>
         /// <returns></returns>
-        public bool Undo(string name, Terminal terminal)
+        public bool Undo(string name)
         {
-            return Queues.TryGetValue(name, out var queue) && queue.Undo(terminal);
+            return Queues.TryGetValue(name, out var queue) && queue.Undo();
         }
 
         /// <summary>
         ///     Execute the undo action of the item at the current queue's position.
         /// </summary>
         /// <param name="name">Global name of the queue.</param>
-        /// <param name="terminal"></param>
         /// <returns></returns>
-        public bool Redo(string name, Terminal terminal)
+        public bool Redo(string name)
         {
-            return Queues.TryGetValue(name, out var queue) && queue.Redo(terminal);
+            return Queues.TryGetValue(name, out var queue) && queue.Redo();
         }
 
         private class UndoQueue
@@ -172,18 +169,18 @@ namespace Jotunn.Managers
                 Index = History.Count - 1;
             }
 
-            public bool Undo(Terminal terminal)
+            public bool Undo()
             {
                 if (Index < 0)
                 {
-                    AddMessage(terminal, "Nothing to undo.");
+                    AddMessage("Nothing to undo.");
                     return false;
                 }
                 Executing = true;
                 try
                 {
                     History[Index].Undo();
-                    AddMessage(terminal, History[Index].UndoMessage());
+                    AddMessage(History[Index].UndoMessage());
                 }
                 catch { }
                 Index--;
@@ -191,7 +188,7 @@ namespace Jotunn.Managers
                 return true;
             }
 
-            public bool Redo(Terminal terminal)
+            public bool Redo()
             {
                 if (Index < History.Count - 1)
                 {
@@ -200,13 +197,13 @@ namespace Jotunn.Managers
                     try
                     {
                         History[Index].Redo();
-                        AddMessage(terminal, History[Index].RedoMessage());
+                        AddMessage(History[Index].RedoMessage());
                     }
                     catch { }
                     Executing = false;
                     return true;
                 }
-                AddMessage(terminal, "Nothing to redo.");
+                AddMessage("Nothing to redo.");
                 return false;
             }
         }

@@ -102,7 +102,7 @@ namespace TestMod
                     return;
                 }
 
-                UndoManager.Instance.Undo(QueueName, Console.instance);
+                UndoManager.Instance.Undo(QueueName);
             }
         }
 
@@ -120,7 +120,7 @@ namespace TestMod
                     return;
                 }
 
-                UndoManager.Instance.Redo(QueueName, Console.instance);
+                UndoManager.Instance.Redo(QueueName);
             }
         }
     }
