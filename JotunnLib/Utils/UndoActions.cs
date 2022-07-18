@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Jotunn.Utils
 {
     /// <summary>
-    ///     Pre defined actions to use with the <see cref="UndoManager"/>.
+    ///     Pre-defined actions to use with the <see cref="UndoManager"/>.
     /// </summary>
     public static class UndoActions
     {
@@ -130,83 +130,166 @@ namespace Jotunn.Utils
             }
         }
         
+        /// <summary>
+        ///     "Create" action for the <see cref="UndoManager"/>. Can undo and redo ZDO creation.
+        /// </summary>
         public class UndoCreate : UndoManager.IUndoAction
         {
-
             private ZDO[] Data;
 
+            /// <summary>
+            ///     Create new undo data for ZDO creation operations. Clones all ZDO data to prevent NREs.
+            /// </summary>
+            /// <param name="data">Enumerable of ZDOs which were created.</param>
             public UndoCreate(IEnumerable<ZDO> data)
             {
                 Data = UndoHelper.Clone(data);
             }
 
+            /// <summary>
+            ///     Remove stored ZDOs again.
+            /// </summary>
             public void Undo()
             {
                 Data = UndoHelper.Remove(Data);
             }
-
+            
+            /// <summary>
+            ///     Success message.
+            /// </summary>
             public string UndoMessage() => $"Undo: Removed {UndoHelper.Print(Data)}";
-
+            
+            /// <summary>
+            ///     Recreate stored ZDOs again.
+            /// </summary>
             public void Redo()
             {
                 Data = UndoHelper.Place(Data);
             }
-
+            
+            /// <summary>
+            ///     Success message.
+            /// </summary>
             public string RedoMessage() => $"Redo: Restored {UndoHelper.Print(Data)}";
         }
-
+        
+        /// <summary>
+        ///     "Remove" action for the <see cref="UndoManager"/>. Can undo and redo ZDO removal.
+        /// </summary>
         public class UndoRemove : UndoManager.IUndoAction
         {
-
             private ZDO[] Data;
+            
+            /// <summary>
+            ///     Create new undo data for ZDO removal operations. Clones all ZDO data to prevent NREs.
+            /// </summary>
+            /// <param name="data">Enumerable of ZDOs which were removed.</param>
             public UndoRemove(IEnumerable<ZDO> data)
             {
                 Data = UndoHelper.Clone(data);
             }
+            
+            /// <summary>
+            ///     Recreate stored ZDOs again.
+            /// </summary>
             public void Undo()
             {
                 Data = UndoHelper.Place(Data);
             }
-
+            
+            /// <summary>
+            ///     Success message.
+            /// </summary>
+            public string UndoMessage() => $"Undo: Restored {UndoHelper.Print(Data)}";
+            
+            /// <summary>
+            ///     Remove stored ZDOs again.
+            /// </summary>
             public void Redo()
             {
                 Data = UndoHelper.Remove(Data);
             }
-
-            public string UndoMessage() => $"Undo: Restored {UndoHelper.Print(Data)}";
-
+            
+            /// <summary>
+            ///     Success message.
+            /// </summary>
             public string RedoMessage() => $"Redo: Removed {UndoHelper.Print(Data)}";
         }
 
+        /// <summary>
+        ///     Heightmap data wrapper
+        /// </summary>
         public class HeightUndoData
         {
+            /// <summary>
+            ///     "Smooth" member of the heightmap
+            /// </summary>
             public float Smooth = 0f;
+            /// <summary>
+            ///     "Level" member of the heightmap
+            /// </summary>
             public float Level = 0f;
+            /// <summary>
+            ///     "Index" member of the heightmap
+            /// </summary>
             public int Index = -1;
+            /// <summary>
+            ///     "HeightModified" member of the heightmap
+            /// </summary>
             public bool HeightModified = false;
         }
 
+        /// <summary>
+        ///     Paint data wrapper
+        /// </summary>
         public class PaintUndoData
         {
+            /// <summary>
+            ///     "PaintModified" member of the heightmap paint
+            /// </summary>
             public bool PaintModified = false;
+            /// <summary>
+            ///     "Paint" member of the heightmap paint
+            /// </summary>
             public Color Paint = Color.black;
+            /// <summary>
+            ///     "Index" member of the heightmap paint
+            /// </summary>
             public int Index = -1;
         }
 
+        /// <summary>
+        ///     Heightmap and Paint data collection
+        /// </summary>
         public class TerrainUndoData
         {
+            /// <summary>
+            ///     Collection of <see cref="HeightUndoData"/>
+            /// </summary>
             public HeightUndoData[] Heights = new HeightUndoData[0];
+            /// <summary>
+            ///     Collection of <see cref="PaintUndoData"/>
+            /// </summary>
             public PaintUndoData[] Paints = new PaintUndoData[0];
         }
-
+        
+        /// <summary>
+        ///     "Terrain" action for the <see cref="UndoManager"/>. Can undo and redo terrain modifications.
+        /// </summary>
         public class UndoTerrain : UndoManager.IUndoAction
         {
+            private readonly Dictionary<Vector3, TerrainUndoData> Before;
+            private readonly Dictionary<Vector3, TerrainUndoData> After;
+            private readonly Vector3 Position;
+            private readonly float Radius;
 
-            private Dictionary<Vector3, TerrainUndoData> Before = new Dictionary<Vector3, TerrainUndoData>();
-            private Dictionary<Vector3, TerrainUndoData> After = new Dictionary<Vector3, TerrainUndoData>();
-            public Vector3 Position;
-            public float Radius;
-
+            /// <summary>
+            ///     Create new undo data for terrain modifications.
+            /// </summary>
+            /// <param name="before">Terrain state before modification</param>
+            /// <param name="after">Terrain state after modification</param>
+            /// <param name="position">Position of the terrain modification center</param>
+            /// <param name="radius">Radius of the terrain modification</param>
             public UndoTerrain(Dictionary<Vector3, TerrainUndoData> before, Dictionary<Vector3, TerrainUndoData> after, Vector3 position, float radius)
             {
                 Before = before;
@@ -215,18 +298,30 @@ namespace Jotunn.Utils
                 Radius = radius;
             }
 
+            /// <summary>
+            ///     Sets terrain data to the stored values of the "before" state.
+            /// </summary>
             public void Undo()
             {
                 UndoHelper.ApplyData(Before, Position, Radius);
             }
 
+            /// <summary>
+            ///     Success message.
+            /// </summary>
             public string UndoMessage() => "Undoing terrain changes";
-
+            
+            /// <summary>
+            ///     Sets terrain data to the stored values of the "after" state.
+            /// </summary>
             public void Redo()
             {
                 UndoHelper.ApplyData(After, Position, Radius);
             }
-
+            
+            /// <summary>
+            ///     Success message.
+            /// </summary>
             public string RedoMessage() => "Redoing terrain changes";
         }
     }
