@@ -75,7 +75,8 @@ namespace Jotunn
                 NetworkManager.Instance,
                 SynchronizationManager.Instance,
                 RenderManager.Instance,
-                MinimapManager.Instance
+                MinimapManager.Instance,
+                UndoManager.Instance
             };
             foreach (IManager manager in Managers)
             {
