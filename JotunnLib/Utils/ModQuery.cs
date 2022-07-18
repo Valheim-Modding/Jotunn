@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -200,10 +201,11 @@ namespace Jotunn.Utils
             __state = new ZNetSceneState(zNetScene);
         }
 
-        private static void BeforeObjectDBPatch(object[] __args, ref ObjectDBState __state)
+        private static void BeforeObjectDBPatch(object[] __args, ref Tuple<ZNetSceneState, ObjectDBState> __state)
         {
             ObjectDB objectDB = GetObjectDB(__args);
-            __state = new ObjectDBState(objectDB);
+            ZNetScene zNetScene = ZNetScene.instance;
+            __state = new Tuple<ZNetSceneState, ObjectDBState>(new ZNetSceneState(zNetScene), new ObjectDBState(objectDB));
         }
 
         private static void AfterZNetPatch(object[] __args, ref ZNetSceneState __state)
@@ -213,7 +215,6 @@ namespace Jotunn.Utils
                 return;
             }
 
-            ZNetScene zNetScene = GetZNetScene(__args);
             var plugin = BepInExUtils.GetPluginInfoFromAssembly(ReflectionHelper.GetCallingAssembly());
 
             if (plugin == null)
@@ -221,18 +222,16 @@ namespace Jotunn.Utils
                 return;
             }
 
-            AddPrefabs(__state.namedPrefabs, zNetScene.m_namedPrefabs, plugin.Metadata);
-            AddPrefabs(__state.prefabs, zNetScene.m_prefabs, plugin.Metadata);
+            __state.AddNewPrefabs(GetZNetScene(__args), plugin);
         }
 
-        private static void AfterObjectDBPatch(object[] __args, ref ObjectDBState __state)
+        private static void AfterObjectDBPatch(object[] __args, ref Tuple<ZNetSceneState, ObjectDBState> __state)
         {
-            if (!__state.valid)
+            if (!__state.Item1.valid && !__state.Item2.valid)
             {
                 return;
             }
 
-            ObjectDB objectDB = GetObjectDB(__args);
             var plugin = BepInExUtils.GetPluginInfoFromAssembly(ReflectionHelper.GetCallingAssembly());
 
             if (plugin == null)
@@ -240,9 +239,8 @@ namespace Jotunn.Utils
                 return;
             }
 
-            AddPrefabs(__state.items, objectDB.m_items, plugin.Metadata);
-            AddPrefabs(__state.itemByHash, objectDB.m_itemByHash, plugin.Metadata);
-            AddRecipes(__state.recipes, objectDB.m_recipes, plugin.Metadata);
+            __state.Item1.AddNewPrefabs(ZNetScene.instance, plugin);
+            __state.Item2.AddNewPrefabs(GetObjectDB(__args), plugin);
         }
 
         private static void AddPrefabs(IEnumerable<GameObject> before, IEnumerable<GameObject> after, BepInPlugin plugin)
@@ -348,6 +346,17 @@ namespace Jotunn.Utils
                 this.namedPrefabs = new Dictionary<int, GameObject>(zNetScene.m_namedPrefabs);
                 this.prefabs = new List<GameObject>(zNetScene.m_prefabs);
             }
+
+            public void AddNewPrefabs(ZNetScene zNetScene, PluginInfo plugin)
+            {
+                if (!valid || !zNetScene)
+                {
+                    return;
+                }
+
+                AddPrefabs(namedPrefabs, zNetScene.m_namedPrefabs, plugin.Metadata);
+                AddPrefabs(prefabs, zNetScene.m_prefabs, plugin.Metadata);
+            }
         }
 
         private class ObjectDBState
@@ -369,6 +378,18 @@ namespace Jotunn.Utils
                 items = new List<GameObject>(objectDB.m_items);
                 recipes = new List<Recipe>(objectDB.m_recipes);
                 itemByHash = new Dictionary<int, GameObject>(objectDB.m_itemByHash);
+            }
+
+            public void AddNewPrefabs(ObjectDB objectDB, PluginInfo plugin)
+            {
+                if (!valid || !objectDB)
+                {
+                    return;
+                }
+
+                AddPrefabs(items, objectDB.m_items, plugin.Metadata);
+                AddPrefabs(itemByHash, objectDB.m_itemByHash, plugin.Metadata);
+                AddRecipes(recipes, objectDB.m_recipes, plugin.Metadata);
             }
         }
     }
