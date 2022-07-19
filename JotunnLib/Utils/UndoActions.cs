@@ -145,6 +145,11 @@ namespace Jotunn.Utils
             {
                 Data = UndoHelper.Clone(data);
             }
+            
+            /// <summary>
+            ///     Description of the executed action.
+            /// </summary>
+            public string Description() => $"Created {UndoHelper.Print(Data)}";
 
             /// <summary>
             ///     Remove stored ZDOs again.
@@ -189,6 +194,11 @@ namespace Jotunn.Utils
                 Data = UndoHelper.Clone(data);
             }
             
+            /// <summary>
+            ///     Description of the executed action.
+            /// </summary>
+            public string Description() => $"Removed {UndoHelper.Print(Data)}";
+
             /// <summary>
             ///     Recreate stored ZDOs again.
             /// </summary>
@@ -297,6 +307,11 @@ namespace Jotunn.Utils
                 Position = position;
                 Radius = radius;
             }
+            
+            /// <summary>
+            ///     Description of the executed action.
+            /// </summary>
+            public string Description() => "Changed terrain";
 
             /// <summary>
             ///     Sets terrain data to the stored values of the "before" state.

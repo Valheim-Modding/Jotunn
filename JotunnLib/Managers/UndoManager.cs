@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using HarmonyLib;
 
 namespace Jotunn.Managers
@@ -18,6 +19,11 @@ namespace Jotunn.Managers
         /// </summary>
         public interface IUndoAction
         {
+            /// <summary>
+            ///     Description of this action to show on the queue's history.
+            /// </summary>
+            string Description();
+            
             /// <summary>
             ///     Code to revert whatever was executed.
             /// </summary>
@@ -107,54 +113,83 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Create a new queue and optionally specify how many steps are recorded into the queue's history.
+        /// </summary>
+        /// <param name="queueName">Global name of the queue</param>
+        /// <param name="maxSteps">The size of the queue, defaults to 50</param>
+        public void Create(string queueName, int maxSteps = 50)
+        {
+            if (!Queues.TryGetValue(queueName, out _))
+            {
+                Queues.Add(queueName, new UndoQueue(queueName, maxSteps));
+            }
+        }
+
+        /// <summary>
+        ///     Get or create a queue by name
+        /// </summary>
+        private UndoQueue GetOrAddQueue(string queueName)
+        {
+            if (!Queues.TryGetValue(queueName, out var queue))
+            {
+                queue = new UndoQueue(queueName);
+                Queues.Add(queueName, queue);
+            }
+            return queue;
+        }
+
+        /// <summary>
         ///     Add a new action to a queue. If a queue with the provided name does not exist it gets automatically created.
         /// </summary>
-        /// <param name="name">Global name of the queue. Multiple mods can use the same queue name.</param>
-        /// <param name="action">Mod provided action which can undo and redo whatever was executed.</param>
-        public void Add(string name, IUndoAction action)
-        {
-            if (Queues.TryGetValue(name, out var queue))
-            {
-                queue.Add(action);
-                return;
-            }
-
-            queue = new UndoQueue(name);
-            queue.Add(action);
-            Queues.Add(name, queue);
-        }
+        /// <param name="queueName">Global name of the queue</param>
+        /// <param name="action">Mod provided action which can undo and redo whatever was executed</param>
+        public void Add(string queueName, IUndoAction action) => GetOrAddQueue(queueName).Add(action);
 
         /// <summary>
-        ///     Execute the undo action of the item at the current queue's position and decrease the position pointer.
+        ///     Execute the undo action of the item at the queue's current position and decrease the position pointer.
         /// </summary>
-        /// <param name="name">Global name of the queue.</param>
-        /// <returns></returns>
-        public bool Undo(string name)
-        {
-            return Queues.TryGetValue(name, out var queue) && queue.Undo();
-        }
+        /// <param name="queueName">Global name of the queue</param>
+        /// <returns>true if an action was undone, false if no actions exist or the action failed</returns>
+        public bool Undo(string queueName) => GetOrAddQueue(queueName).Undo();
 
         /// <summary>
-        ///     Execute the redo action of the item at the current queue's position and increase the position pointer.
+        ///     Execute the redo action of the item after the queue's current position and increase the position pointer.
         /// </summary>
-        /// <param name="name">Global name of the queue.</param>
-        /// <returns></returns>
-        public bool Redo(string name)
-        {
-            return Queues.TryGetValue(name, out var queue) && queue.Redo();
-        }
+        /// <param name="queueName">Global name of the queue</param>
+        /// <returns>true if an action was redone, false if no actions exist or the action failed</returns>
+        public bool Redo(string queueName) => GetOrAddQueue(queueName).Redo();
 
+        /// <summary>
+        ///     Get a string representation of a given queue including all recorded steps and a marker on the current position pointer.
+        /// </summary>
+        /// <param name="queueName">Global name of the queue</param>
+        /// <returns>New line separated string with all the queue's recorded actions</returns>
+        public string List(string queueName) => GetOrAddQueue(queueName).ToString();
+
+        /// <summary>
+        ///     Queue implementation
+        /// </summary>
         private class UndoQueue
         {
-            private string Name;
+            private readonly string Name;
+            private readonly int MaxSteps = 50;
             private List<IUndoAction> History = new List<IUndoAction>();
             private int Index = -1;
             private bool Executing = false;
-            private int MaxSteps = 50;
 
             public UndoQueue(string name)
             {
                 Name = name;
+            }
+
+            public UndoQueue(string name, int maxSteps)
+            {
+                if (maxSteps <= 0 || maxSteps >= 100)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(maxSteps));
+                }
+                Name = name;
+                MaxSteps = maxSteps;
             }
             
             public void Add(IUndoAction action)
@@ -183,6 +218,7 @@ namespace Jotunn.Managers
                     AddMessage("Nothing to undo.");
                     return false;
                 }
+                bool ret = true;
                 Executing = true;
                 try
                 {
@@ -192,16 +228,18 @@ namespace Jotunn.Managers
                 catch (Exception e)
                 {
                     Logger.LogWarning($"Exception thrown at index {Index} in queue {Name}:\n{e}");
+                    ret = false;
                 }
                 Index--;
                 Executing = false;
-                return true;
+                return ret;
             }
 
             public bool Redo()
             {
                 if (Index < History.Count - 1)
                 {
+                    bool ret = true;
                     Executing = true;
                     Index++;
                     try
@@ -212,12 +250,33 @@ namespace Jotunn.Managers
                     catch (Exception e)
                     {
                         Logger.LogWarning($"Exception thrown at index {Index} in queue {Name}:\n{e}");
+                        ret = false;
                     }
                     Executing = false;
-                    return true;
+                    return ret;
                 }
                 AddMessage("Nothing to redo.");
                 return false;
+            }
+
+            public override string ToString()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"Queue \"{Name}\"");
+                if (Index < 0)
+                {
+                    sb.AppendLine("Empty!");
+                }
+                else
+                {
+                    int idx = 0;
+                    foreach (var action in History)
+                    {
+                        sb.AppendLine($"[{idx:00}{(Index==idx?"*":" ")}] {action.Description()}");
+                        ++idx;
+                    }
+                }
+                return sb.ToString();
             }
         }
     }

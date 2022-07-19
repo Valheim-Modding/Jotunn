@@ -15,8 +15,7 @@ Jötunn supports multiple independent undo queues which are distinguished by the
 > Every mod that uses the same queue name shares that queue. So it is possible for multiple mods to have a common undo queue without having to depend on each other.
 
 ```cs
-// Jötunn's undo queues are identified by name. Every mod that uses
-// the same queue name shares that queue.
+// Defining a queue name for the UndoManager that is shared by all our actions
 private const string QueueName = "TestUndo";
 ```
 
@@ -150,7 +149,7 @@ To be able to use those commands in the game it is important to also add them to
 ```cs
 private void Awake()
 {
-    // Add all our commands to the CommandManager so we can use those in the game's console
+    // Add custom commands for testing the UndoManager
     CommandManager.Instance.AddConsoleCommand(new TestCreateCommand());
     CommandManager.Instance.AddConsoleCommand(new TestRemoveCommand());
     CommandManager.Instance.AddConsoleCommand(new TestUndoCommand());

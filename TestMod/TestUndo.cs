@@ -15,8 +15,7 @@ namespace TestMod
         private const string ModName = "Jotunn Test Undo";
         private const string ModVersion = "0.1.0";
 
-        // Jötunn's undo queues are identified by name. Every mod that uses
-        // the same queue name shares that queue.
+        // Defining a queue name for the UndoManager that is shared by all our actions
         private const string QueueName = "TestUndo";
 
         private void Awake()
@@ -26,6 +25,7 @@ namespace TestMod
             CommandManager.Instance.AddConsoleCommand(new TestRemoveCommand());
             CommandManager.Instance.AddConsoleCommand(new TestUndoCommand());
             CommandManager.Instance.AddConsoleCommand(new TestRedoCommand());
+            CommandManager.Instance.AddConsoleCommand(new TestListCommand());
         }
 
         public class TestCreateCommand : ConsoleCommand
@@ -141,6 +141,25 @@ namespace TestMod
                 // Calling Redo() on the manager using the queue's name will
                 // redo the last action which was removed by using Undo() from that queue
                 UndoManager.Instance.Redo(QueueName);
+            }
+        }
+
+        public class TestListCommand : ConsoleCommand
+        {
+            public override string Name => "undotest.list";
+
+            public override string Help => "List the queue content";
+
+            public override void Run(string[] args)
+            {
+                if (!Player.m_localPlayer)
+                {
+                    Console.instance.Print("Can be used in game only!");
+                    return;
+                }
+                
+                // List the queue's content in the console
+                Console.instance.Print(UndoManager.Instance.List(QueueName));
             }
         }
     }
