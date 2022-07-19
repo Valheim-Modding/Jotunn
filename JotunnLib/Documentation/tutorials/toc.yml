@@ -75,4 +75,7 @@
 
     - name: RPCs
       href: rpcs.md
+
+    - name: Undo/Redo Queue
+      href: undoqueue.md
   

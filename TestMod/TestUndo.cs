@@ -15,10 +15,13 @@ namespace TestMod
         private const string ModName = "Jotunn Test Undo";
         private const string ModVersion = "0.1.0";
 
+        // Jötunn's undo queues are identified by name. Every mod that uses
+        // the same queue name shares that queue.
         private const string QueueName = "TestUndo";
 
         private void Awake()
         {
+            // Add all our commands to the CommandManager so we can use those in the game's console
             CommandManager.Instance.AddConsoleCommand(new TestCreateCommand());
             CommandManager.Instance.AddConsoleCommand(new TestRemoveCommand());
             CommandManager.Instance.AddConsoleCommand(new TestUndoCommand());
@@ -33,12 +36,14 @@ namespace TestMod
 
             public override void Run(string[] args)
             {
+                // Do some validation
                 if (!Player.m_localPlayer)
                 {
                     Console.instance.Print("Can be used in game only!");
                     return;
                 }
 
+                // Get a random prefab from the game
                 GameObject prefab = PrefabManager.Instance.GetPrefab("Hammer");
                 if (!prefab)
                 {
@@ -46,9 +51,15 @@ namespace TestMod
                     return;
                 }
 
+                // Instantiate that prefab in the game
                 var obj = Instantiate(prefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity);
+
+                // Create an UndoCreate action with the ZDO of the prefab
                 var action = new UndoActions.UndoCreate(new[] { obj.GetComponent<ZNetView>().GetZDO() });
                 UndoManager.Instance.Add(QueueName, action);
+
+                // Do some console output
+                Console.instance.Print("Created Hammer");
             }
         }
 
@@ -60,31 +71,36 @@ namespace TestMod
 
             public override void Run(string[] args)
             {
+                // Do some validation
                 if (!Player.m_localPlayer)
                 {
                     Console.instance.Print("Can be used in game only!");
                     return;
                 }
 
+                // Get the current hovered object's ZDO
                 if (!Player.m_localPlayer.GetHoverObject())
                 {
                     Console.instance.Print("Nothing hovered!");
                     return;
                 }
-
                 var hoverObject = Player.m_localPlayer.GetHoverObject();
                 var zNetView = hoverObject.GetComponentInParent<ZNetView>();
-
                 if (!zNetView || !zNetView.IsValid())
                 {
                     return;
                 }
                 
+                // Create an UndoRemove action with that ZDO
                 var action = new UndoActions.UndoRemove(new[] { zNetView.GetZDO() });
                 UndoManager.Instance.Add(QueueName, action);
 
+                // Remove the ZDO from the game
                 zNetView.GetZDO().SetOwner(ZDOMan.instance.GetMyID());
                 ZNetScene.instance.Destroy(zNetView.gameObject);
+                
+                // Do some console output
+                Console.instance.Print("Removed GameObject");
             }
         }
 
@@ -102,6 +118,8 @@ namespace TestMod
                     return;
                 }
 
+                // Calling Undo() on the manager using the queue's name will
+                // undo your last added action to that queue
                 UndoManager.Instance.Undo(QueueName);
             }
         }
@@ -119,7 +137,9 @@ namespace TestMod
                     Console.instance.Print("Can be used in game only!");
                     return;
                 }
-
+                
+                // Calling Redo() on the manager using the queue's name will
+                // redo the last action which was removed by using Undo() from that queue
                 UndoManager.Instance.Redo(QueueName);
             }
         }
