@@ -7,12 +7,15 @@ using Jotunn.Utils;
 namespace Jotunn {
     internal class ClassMember
     {
-        public readonly List<MemberBase> members = new List<MemberBase>();
+        public List<MemberBase> Members { get; private set; } = new List<MemberBase>();
+        public Type Type { get; private set; }
 
         private static readonly Dictionary<Type, ClassMember> CachedClassMembers = new Dictionary<Type, ClassMember>();
 
-        private ClassMember(IEnumerable<FieldInfo> fieldInfos, IEnumerable<PropertyInfo> propertyInfos)
+        private ClassMember(Type type, IEnumerable<FieldInfo> fieldInfos, IEnumerable<PropertyInfo> propertyInfos)
         {
+            this.Type = type;
+
             foreach (var fieldInfo in fieldInfos)
             {
                 AddMember(new FieldMember(fieldInfo));
@@ -36,7 +39,7 @@ namespace Jotunn {
                 return;
             }
 
-            members.Add(member);
+            Members.Add(member);
         }
 
         private static T[] GetMembersFromType<T>(Type type, Func<Type, T[]> getMembers)
@@ -65,7 +68,7 @@ namespace Jotunn {
             var fields = GetMembersFromType(type, t => t.GetFields(flags));
             var properties = GetMembersFromType(type, t => t.GetProperties(flags));
 
-            classMember = new ClassMember(fields, properties);
+            classMember = new ClassMember(type, fields, properties);
             CachedClassMembers[type] = classMember;
             return classMember;
         }

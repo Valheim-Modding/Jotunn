@@ -41,6 +41,8 @@ namespace Jotunn.Managers
         /// </summary>
         internal GameObject MockPrefabContainer;
 
+        private static HashSet<Material> fixedMaterials = new HashSet<Material>();
+
         /// <summary>
         ///     Creates the container and registers all hooks
         /// </summary>
@@ -151,6 +153,11 @@ namespace Jotunn.Managers
                 return ret;
             }
 
+            if (unityObject is Material material)
+            {
+                FixMaterial(material);
+            }
+
             return null;
         }
 #pragma warning restore CS0618
@@ -171,7 +178,7 @@ namespace Jotunn.Managers
             var type = objectToFix.GetType();
             ClassMember classMember = ClassMember.GetClassMember(type);
 
-            foreach (var member in classMember.members)
+            foreach (var member in classMember.Members)
             {
                 FixMemberReferences(member, objectToFix, depth);
             }
@@ -305,6 +312,38 @@ namespace Jotunn.Managers
                 }
 
                 drops[i] = drop;
+            }
+        }
+
+        private static void FixMaterial(Material material)
+        {
+            if (!material || fixedMaterials.Contains(material))
+            {
+                return;
+            }
+
+            fixedMaterials.Add(material);
+
+            foreach (int prop in material.GetTexturePropertyNameIDs())
+            {
+                Texture texture = material.GetTexture(prop);
+                Texture realTexture = GetRealPrefabFromMock<Texture>(texture);
+
+                if (realTexture)
+                {
+                    material.SetTexture(prop, realTexture);
+                }
+            }
+
+            Shader usedShader = material.shader;
+
+            if (usedShader)
+            {
+                Shader realShader = Shader.Find(usedShader.name) ?? PrefabManager.Cache.GetPrefab<Shader>(usedShader.name);
+                if (realShader && realShader != usedShader)
+                {
+                    material.shader = realShader;
+                }
             }
         }
     }

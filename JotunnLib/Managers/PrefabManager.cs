@@ -472,7 +472,7 @@ namespace Jotunn.Managers
                     return unityObject;
                 }
 
-                return unityObject;
+                return cached;
             }
 
             private static void InitCache(Type type, Dictionary<string, Object> map = null)
