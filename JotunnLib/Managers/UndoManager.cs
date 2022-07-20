@@ -111,6 +111,26 @@ namespace Jotunn.Managers
                 Player.m_localPlayer?.Message(MessageHud.MessageType.TopLeft, message);
             }
         }
+        
+        /// <summary>
+        ///     Get a list of all current undo queues.
+        /// </summary>
+        /// <returns>List of all registered queue names</returns>
+        public List<string> GetQueueNames() => Queues.Keys.OrderBy(x => x).ToList();
+        
+        /// <summary>
+        ///     Get a string representation of a given queue including all recorded steps and a marker on the current position pointer.
+        /// </summary>
+        /// <param name="queueName">Global name of the queue</param>
+        /// <returns>New line separated string with all the queue's recorded actions</returns>
+        public string GetQueueList(string queueName)
+        {
+            if (!Queues.TryGetValue(queueName, out var queue))
+            {
+                return $"Queue \"{queueName}\" not found";
+            }
+            return queue.ToString();
+        }
 
         /// <summary>
         ///     Create a new queue and optionally specify how many steps are recorded into the queue's history.
@@ -139,32 +159,28 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Add a new action to a queue. If a queue with the provided name does not exist it gets automatically created.
+        ///     Add a new action to a queue.<br/>
+        ///     If a queue with the provided name does not exist it is automatically created.
         /// </summary>
         /// <param name="queueName">Global name of the queue</param>
         /// <param name="action">Mod provided action which can undo and redo whatever was executed</param>
         public void Add(string queueName, IUndoAction action) => GetOrAddQueue(queueName).Add(action);
 
         /// <summary>
-        ///     Execute the undo action of the item at the queue's current position and decrease the position pointer.
+        ///     Execute the undo action of the item at the queue's current position and decrease the position pointer.<br/>
+        ///     If a queue with the provided name does not exist it is automatically created.
         /// </summary>
         /// <param name="queueName">Global name of the queue</param>
         /// <returns>true if an action was undone, false if no actions exist or the action failed</returns>
         public bool Undo(string queueName) => GetOrAddQueue(queueName).Undo();
 
         /// <summary>
-        ///     Execute the redo action of the item after the queue's current position and increase the position pointer.
+        ///     Execute the redo action of the item after the queue's current position and increase the position pointer.<br/>
+        ///     If a queue with the provided name does not exist it is automatically created.
         /// </summary>
         /// <param name="queueName">Global name of the queue</param>
         /// <returns>true if an action was redone, false if no actions exist or the action failed</returns>
         public bool Redo(string queueName) => GetOrAddQueue(queueName).Redo();
-
-        /// <summary>
-        ///     Get a string representation of a given queue including all recorded steps and a marker on the current position pointer.
-        /// </summary>
-        /// <param name="queueName">Global name of the queue</param>
-        /// <returns>New line separated string with all the queue's recorded actions</returns>
-        public string List(string queueName) => GetOrAddQueue(queueName).ToString();
 
         /// <summary>
         ///     Queue implementation

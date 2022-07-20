@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System.Collections.Generic;
+using BepInEx;
 using Jotunn;
 using Jotunn.Entities;
 using Jotunn.Managers;
@@ -148,18 +149,23 @@ namespace TestMod
         {
             public override string Name => "undotest.list";
 
-            public override string Help => "List the queue content";
+            public override string Help => "List a queue's content";
 
             public override void Run(string[] args)
             {
-                if (!Player.m_localPlayer)
+                string queueName = QueueName;
+                if (args.Length == 1 && !string.IsNullOrEmpty(args[0]))
                 {
-                    Console.instance.Print("Can be used in game only!");
-                    return;
+                    queueName = args[0];
                 }
                 
                 // List the queue's content in the console
-                Console.instance.Print(UndoManager.Instance.List(QueueName));
+                Console.instance.Print(UndoManager.Instance.GetQueueList(queueName));
+            }
+
+            public override List<string> CommandOptionList()
+            {
+                return UndoManager.Instance.GetQueueNames();
             }
         }
     }
