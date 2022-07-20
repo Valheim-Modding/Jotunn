@@ -160,7 +160,7 @@ namespace TestMod
                 }
                 
                 // List the queue's content in the console
-                Console.instance.Print(UndoManager.Instance.GetQueueList(queueName));
+                Console.instance.Print(UndoManager.Instance.GetQueue(queueName).ToString());
             }
 
             public override List<string> CommandOptionList()

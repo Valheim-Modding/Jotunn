@@ -73,10 +73,22 @@ namespace Jotunn.Managers
         private static class Patches
         {
             [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPrefix, HarmonyPriority(Priority.First)]
-            private static void ClearUndoQueuesBefore(ZNetScene __instance) => Instance.Queues.Clear();
+            private static void ClearUndoQueuesBefore(ZNetScene __instance)
+            {
+                foreach (var queuesValue in Instance.Queues.Values)
+                {
+                    queuesValue.Reset();
+                }
+            }
 
             [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Shutdown)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
-            private static void ClearUndoQueuesAfter(ZNetScene __instance) => Instance.Queues.Clear();
+            private static void ClearUndoQueuesAfter(ZNetScene __instance)
+            {
+                foreach (var queuesValue in Instance.Queues.Values)
+                {
+                    queuesValue.Reset();
+                }
+            }
         }
         
         /// <summary>
@@ -118,54 +130,30 @@ namespace Jotunn.Managers
         /// </summary>
         /// <returns>List of all registered queue names</returns>
         public List<string> GetQueueNames() => Queues.Keys.OrderBy(x => x).ToList();
-        
+
         /// <summary>
-        ///     Get a string representation of a given queue including all recorded steps and a marker on the current position pointer.
+        ///     Get a queue by name. Creates a new queue if it does not exist.
         /// </summary>
         /// <param name="queueName">Global name of the queue</param>
-        /// <returns>New line separated string with all the queue's recorded actions</returns>
-        public string GetQueueList(string queueName)
+        /// <param name="maxSteps">Optionally define the max history capacity of a newly generated queue</param>
+        /// <returns>The <see cref="UndoQueue"/> with the given name</returns>
+        public UndoQueue GetQueue(string queueName, int maxSteps = 50)
         {
             if (!Queues.TryGetValue(queueName, out var queue))
             {
-                return $"Queue \"{queueName}\" not found";
-            }
-            return queue.ToString();
-        }
-
-        /// <summary>
-        ///     Create a new queue and optionally specify how many steps are recorded into the queue's history.
-        /// </summary>
-        /// <param name="queueName">Global name of the queue</param>
-        /// <param name="maxSteps">The size of the queue, defaults to 50</param>
-        public void Create(string queueName, int maxSteps = 50)
-        {
-            if (!Queues.TryGetValue(queueName, out _))
-            {
-                Queues.Add(queueName, new UndoQueue(queueName, maxSteps));
-            }
-        }
-
-        /// <summary>
-        ///     Get or create a queue by name
-        /// </summary>
-        private UndoQueue GetOrAddQueue(string queueName)
-        {
-            if (!Queues.TryGetValue(queueName, out var queue))
-            {
-                queue = new UndoQueue(queueName);
+                queue = new UndoQueue(queueName, maxSteps);
                 Queues.Add(queueName, queue);
             }
             return queue;
         }
-
+        
         /// <summary>
         ///     Add a new action to a queue.<br/>
         ///     If a queue with the provided name does not exist it is automatically created.
         /// </summary>
         /// <param name="queueName">Global name of the queue</param>
         /// <param name="action">Mod provided action which can undo and redo whatever was executed</param>
-        public void Add(string queueName, IUndoAction action) => GetOrAddQueue(queueName).Add(action);
+        public void Add(string queueName, IUndoAction action) => GetQueue(queueName).Add(action);
 
         /// <summary>
         ///     Execute the undo action of the item at the queue's current position and decrease the position pointer.<br/>
@@ -173,7 +161,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="queueName">Global name of the queue</param>
         /// <returns>true if an action was undone, false if no actions exist or the action failed</returns>
-        public bool Undo(string queueName) => GetOrAddQueue(queueName).Undo();
+        public bool Undo(string queueName) => GetQueue(queueName).Undo();
 
         /// <summary>
         ///     Execute the redo action of the item after the queue's current position and increase the position pointer.<br/>
@@ -181,25 +169,20 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="queueName">Global name of the queue</param>
         /// <returns>true if an action was redone, false if no actions exist or the action failed</returns>
-        public bool Redo(string queueName) => GetOrAddQueue(queueName).Redo();
-
+        public bool Redo(string queueName) => GetQueue(queueName).Redo();
+        
         /// <summary>
-        ///     Queue implementation
+        ///     Undo queue implementation.
         /// </summary>
-        private class UndoQueue
+        public class UndoQueue
         {
             private readonly string Name;
-            private readonly int MaxSteps = 50;
+            private readonly int MaxSteps;
             private List<IUndoAction> History = new List<IUndoAction>();
             private int Index = -1;
             private bool Executing = false;
-
-            public UndoQueue(string name)
-            {
-                Name = name;
-            }
-
-            public UndoQueue(string name, int maxSteps)
+            
+            internal UndoQueue(string name, int maxSteps)
             {
                 if (maxSteps <= 0 || maxSteps >= 100)
                 {
@@ -209,6 +192,10 @@ namespace Jotunn.Managers
                 MaxSteps = maxSteps;
             }
             
+            /// <summary>
+            ///     Add a new action to this queue.
+            /// </summary>
+            /// <param name="action">Mod provided action which can undo and redo whatever was executed</param>
             public void Add(IUndoAction action)
             {
                 // During undo/redo more steps won't be added.
@@ -228,6 +215,10 @@ namespace Jotunn.Managers
                 Index = History.Count - 1;
             }
 
+            /// <summary>
+            ///     Execute the undo action of the item at the queue's current position and decrease the position pointer.
+            /// </summary>
+            /// <returns>true if an action was undone, false if no actions exist or the action failed</returns>
             public bool Undo()
             {
                 if (Index < 0)
@@ -252,6 +243,10 @@ namespace Jotunn.Managers
                 return ret;
             }
 
+            /// <summary>
+            ///     Execute the redo action of the item after the queue's current position and increase the position pointer.
+            /// </summary>
+            /// <returns>true if an action was redone, false if no actions exist or the action failed</returns>
             public bool Redo()
             {
                 if (Index < History.Count - 1)
@@ -276,6 +271,27 @@ namespace Jotunn.Managers
                 return false;
             }
 
+            /// <summary>
+            ///     Reset the queue's history and position pointer to its initial state.
+            /// </summary>
+            public void Reset()
+            {
+                History.Clear();
+                Index = -1;
+                Executing = false;
+            }
+
+            /// <summary>
+            ///     Get this queue's current position index, -1 when empty.
+            /// </summary>
+            public int GetIndex() => Index;
+
+            /// <summary>
+            ///     Get a string array of this queue's current history.
+            /// </summary>
+            public string[] GetHistory() => History.Select(x => x.Description()).ToArray();
+            
+            /// <inheritdoc/>
             public override string ToString()
             {
                 StringBuilder sb = new StringBuilder();
