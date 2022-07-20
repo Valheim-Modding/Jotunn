@@ -29,9 +29,10 @@ namespace Jotunn.Utils
                 var zs = ZNetScene.instance;
                 if (zs.m_instances.TryGetValue(to, out var view))
                 {
-                    view.transform.position = from.m_position;
-                    view.transform.rotation = from.m_rotation;
-                    view.transform.localScale = from.GetVec3("scale", Vector3.one);
+                    var tf = view.transform;
+                    tf.position = from.m_position;
+                    tf.rotation = from.m_rotation;
+                    tf.localScale = from.GetVec3("scale", Vector3.one);
                     if (refresh)
                     {
                         var newObj = ZNetScene.instance.CreateObject(to);
@@ -64,10 +65,11 @@ namespace Jotunn.Utils
 
             public static string Print(ZDO[] data)
             {
-                if (data.Count() == 1) return Name(data.First());
+                if (data.Length == 1) return Name(data.First());
                 var names = data.GroupBy(Name);
-                if (names.Count() == 1) return $"{names.First().Key} {names.First().Count()}x";
-                return $" objects {data.Count()}x";
+                var enumerable = names as IGrouping<string, ZDO>[] ?? names.ToArray();
+                if (enumerable.Length == 1) return $"{enumerable.First().Key} {enumerable.First().Count()}x";
+                return $" objects {data.Length}x";
             }
 
             public static ZDO[] Remove(ZDO[] toRemove)

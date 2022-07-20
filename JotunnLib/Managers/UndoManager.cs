@@ -91,7 +91,8 @@ namespace Jotunn.Managers
                 Console.instance.AddString(message);
             }
             var hud = MessageHud.instance;
-            if (!hud)
+            var player = Player.m_localPlayer;
+            if (!(player || hud))
             {
                 return;
             }
@@ -99,7 +100,7 @@ namespace Jotunn.Managers
             {
                 var items = hud.m_msgQeue.ToArray();
                 hud.m_msgQeue.Clear();
-                Player.m_localPlayer?.Message(MessageHud.MessageType.TopLeft, message);
+                player.Message(MessageHud.MessageType.TopLeft, message);
                 foreach (var item in items)
                 {
                     hud.m_msgQeue.Enqueue(item);
@@ -108,7 +109,7 @@ namespace Jotunn.Managers
             }
             else
             {
-                Player.m_localPlayer?.Message(MessageHud.MessageType.TopLeft, message);
+                player.Message(MessageHud.MessageType.TopLeft, message);
             }
         }
         
