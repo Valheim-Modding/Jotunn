@@ -4,6 +4,7 @@ using System.Linq;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
+using Jotunn.Managers.MockSystem;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using ZoneLocation = ZoneSystem.ZoneLocation;
@@ -324,9 +325,14 @@ namespace Jotunn.Managers
                             self.m_locationsByHash.Add(zoneLocation.m_hash, zoneLocation);
                         }
                     }
+                    catch (MockResolveException ex)
+                    {
+                        Logger.LogWarning(customLocation?.SourceMod, $"Skipping location {customLocation}: could not resolve mock prefab {ex.FailedMockName}");
+                        toDelete.Add(customLocation.Name);
+                    }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning($"Exception caught while adding location: {ex}");
+                        Logger.LogWarning(customLocation?.SourceMod, $"Exception caught while adding location: {ex}");
                         toDelete.Add(customLocation.Name);
                     }
                 }
@@ -348,7 +354,7 @@ namespace Jotunn.Managers
                     {
                         Logger.LogDebug(
                             $"Adding custom vegetation {customVegetation} in {string.Join(", ", GetMatchingBiomes(customVegetation.Vegetation.m_biome))}");
-                        
+
                         // Fix references if needed
                         if (customVegetation.FixReference)
                         {
@@ -358,9 +364,14 @@ namespace Jotunn.Managers
 
                         self.m_vegetation.Add(customVegetation.Vegetation);
                     }
+                    catch (MockResolveException ex)
+                    {
+                        Logger.LogWarning(customVegetation?.SourceMod, $"Skipping vegetation {customVegetation}: could not resolve mock prefab {ex.FailedMockName}");
+                        toDelete.Add(customVegetation.Name);
+                    }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning($"Exception caught while adding vegetation: {ex}");
+                        Logger.LogWarning(customVegetation?.SourceMod, $"Exception caught while adding vegetation: {ex}");
                         toDelete.Add(customVegetation.Name);
                     }
                 }

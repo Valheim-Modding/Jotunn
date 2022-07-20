@@ -4,6 +4,7 @@ using System.Linq;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
+using Jotunn.Managers.MockSystem;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -694,6 +695,7 @@ namespace Jotunn.Managers
                         customPiece.FixReference = false;
                         customPiece.FixConfig = false;
                     }
+
                     // Assign vfx_ExtensionConnection for StationExtensions
                     var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
                     if (extension != null && !extension.m_connectionPrefab)
@@ -704,9 +706,14 @@ namespace Jotunn.Managers
                     // Assign the piece to the actual PieceTable if not already in there
                     RegisterPieceInPieceTable(customPiece.PiecePrefab, customPiece.PieceTable);
                 }
+                catch (MockResolveException ex)
+                {
+                    Logger.LogWarning(customPiece?.SourceMod, $"Skipping piece {customPiece}: could not resolve mock prefab {ex.FailedMockName}");
+                    toDelete.Add(customPiece);
+                }
                 catch (Exception ex)
                 {
-                    Logger.LogWarning($"Error caught while adding piece {customPiece}: {ex}");
+                    Logger.LogWarning(customPiece?.SourceMod, $"Error caught while adding piece {customPiece}: {ex}");
                     toDelete.Add(customPiece);
                 }
             }

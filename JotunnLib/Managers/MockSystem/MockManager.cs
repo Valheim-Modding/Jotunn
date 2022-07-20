@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -147,7 +148,7 @@ namespace Jotunn.Managers
 
                 if (!ret)
                 {
-                    throw new Exception($"Mock prefab {unityObjectName} could not be resolved");
+                    throw new MockResolveException($"Mock prefab {unityObjectName} could not be resolved", unityObjectName);
                 }
 
                 return ret;

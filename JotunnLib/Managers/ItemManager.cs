@@ -4,6 +4,7 @@ using System.Linq;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
+using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -364,9 +365,14 @@ namespace Jotunn.Managers
 
                         RegisterItemInObjectDB(objectDB, customItem.ItemPrefab);
                     }
+                    catch (MockResolveException ex)
+                    {
+                        Logger.LogWarning(customItem?.SourceMod, $"Skipping item {customItem}: could not resolve mock prefab {ex.FailedMockName}");
+                        toDelete.Add(customItem);
+                    }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning($"Error caught while adding item {customItem}: {ex}");
+                        Logger.LogWarning(customItem?.SourceMod, $"Error caught while adding item {customItem}: {ex}");
                         toDelete.Add(customItem);
                     }
                 }
@@ -463,9 +469,14 @@ namespace Jotunn.Managers
 
                         Logger.LogDebug($"Added recipe for {recipe.m_item.TokenName()}");
                     }
+                    catch (MockResolveException ex)
+                    {
+                        Logger.LogWarning(customRecipe?.SourceMod, $"Skipping recipe {customRecipe}: could not resolve mock prefab {ex.FailedMockName}");
+                        toDelete.Add(customRecipe);
+                    }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning($"Error caught while adding recipe {customRecipe}: {ex}");
+                        Logger.LogWarning(customRecipe?.SourceMod, $"Error caught while adding recipe {customRecipe}: {ex}");
                         toDelete.Add(customRecipe);
                     }
                 }
@@ -505,9 +516,14 @@ namespace Jotunn.Managers
 
                         Logger.LogDebug($"Added status effect {customStatusEffect}");
                     }
+                    catch (MockResolveException ex)
+                    {
+                        Logger.LogWarning(customStatusEffect?.SourceMod, $"Skipping status effect {customStatusEffect}: could not resolve mock prefab {ex.FailedMockName}");
+                        toDelete.Add(customStatusEffect);
+                    }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning($"Error caught while adding status effect {customStatusEffect}: {ex}");
+                        Logger.LogWarning(customStatusEffect?.SourceMod,$"Error caught while adding status effect {customStatusEffect}: {ex}");
                         toDelete.Add(customStatusEffect);
                     }
                 }
@@ -610,9 +626,14 @@ namespace Jotunn.Managers
 
                         Logger.LogDebug($"Added item conversion {conversion}");
                     }
+                    catch (MockResolveException ex)
+                    {
+                        Logger.LogWarning(conversion?.SourceMod, $"Skipping item conversion {conversion}: could not resolve mock prefab {ex.FailedMockName}");
+                        toDelete.Add(conversion);
+                    }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning($"Error caught while adding item conversion {conversion}: {ex}");
+                        Logger.LogWarning(conversion?.SourceMod, $"Error caught while adding item conversion {conversion}: {ex}");
                         toDelete.Add(conversion);
                     }
                 }

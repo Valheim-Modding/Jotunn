@@ -4,6 +4,7 @@ using System.Linq;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Entities;
+using Jotunn.Managers.MockSystem;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -313,9 +314,14 @@ namespace Jotunn.Managers
 
                         RegisterToZNetScene(customPrefab.Prefab);
                     }
+                    catch (MockResolveException ex)
+                    {
+                        Logger.LogWarning(customPrefab?.SourceMod, $"Skipping prefab {customPrefab}: could not resolve mock prefab {ex.FailedMockName}");
+                        toDelete.Add(customPrefab);
+                    }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning($"Error caught while adding prefab {customPrefab}: {ex}");
+                        Logger.LogWarning(customPrefab?.SourceMod, $"Error caught while adding prefab {customPrefab}: {ex}");
                         toDelete.Add(customPrefab);
                     }
                 }
