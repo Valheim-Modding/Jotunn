@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -18,13 +19,9 @@ namespace Jotunn.Utils
         private static readonly Dictionary<string, Dictionary<int, ModPrefab>> Prefabs = new Dictionary<string, Dictionary<int, ModPrefab>>();
         private static readonly Dictionary<string, List<Recipe>> Recipes = new Dictionary<string, List<Recipe>>();
 
-        private static readonly HashSet<MethodInfo> PatchedZNetMethods = new HashSet<MethodInfo>();
-        private static readonly HashSet<MethodInfo> PatchedObjectDBMethods = new HashSet<MethodInfo>();
-
-        private static readonly MethodInfo PreZNetPatch = AccessTools.Method(typeof(ModQuery), nameof(BeforeZNetPatch));
-        private static readonly MethodInfo PostZNetPatch = AccessTools.Method(typeof(ModQuery), nameof(AfterZNetPatch));
-        private static readonly MethodInfo PreObjectDB = AccessTools.Method(typeof(ModQuery), nameof(BeforeObjectDBPatch));
-        private static readonly MethodInfo PostObjectDB = AccessTools.Method(typeof(ModQuery), nameof(AfterObjectDBPatch));
+        private static readonly HashSet<MethodInfo> PatchedMethods = new HashSet<MethodInfo>();
+        private static readonly HarmonyMethod PrePatch = new HarmonyMethod(AccessTools.Method(typeof(ModQuery), nameof(BeforePatch)));
+        private static readonly HarmonyMethod PostPatch = new HarmonyMethod(AccessTools.Method(typeof(ModQuery), nameof(AfterPatch)));
 
         private static bool enabled = false;
 
@@ -127,25 +124,10 @@ namespace Jotunn.Utils
                 return;
             }
 
-            var zNetAwake = AccessTools.Method(typeof(ZNetScene), nameof(ZNetScene.Awake));
-            PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake)?.Prefixes);
-            PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake)?.Postfixes);
-            PatchZNetViewPatches(Harmony.GetPatchInfo(zNetAwake)?.Finalizers);
-
-            var objectDBAwake = AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.Awake));
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBAwake)?.Prefixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBAwake)?.Postfixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBAwake)?.Finalizers);
-
-            var objectDBCopyOtherDB = AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB));
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBCopyOtherDB)?.Prefixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBCopyOtherDB)?.Postfixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBCopyOtherDB)?.Finalizers);
-
-            var objectDBUpdateItemHashes = AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.UpdateItemHashes));
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBUpdateItemHashes)?.Prefixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBUpdateItemHashes)?.Postfixes);
-            PatchObjectDbPatches(Harmony.GetPatchInfo(objectDBUpdateItemHashes)?.Finalizers);
+            FindAndPatchPatches(AccessTools.Method(typeof(ZNetScene), nameof(ZNetScene.Awake)));
+            FindAndPatchPatches(AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.Awake)));
+            FindAndPatchPatches(AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)));
+            FindAndPatchPatches(AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.UpdateItemHashes)));
         }
 
         [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPrefix, HarmonyPriority(1000)]
@@ -160,17 +142,14 @@ namespace Jotunn.Utils
             __instance.UpdateItemHashes();
         }
 
-        private static void PatchZNetViewPatches(ICollection<Patch> patches)
+        private static void FindAndPatchPatches(MethodBase methodInfo)
         {
-            PatchPatches(patches, PatchedZNetMethods, PreZNetPatch, PostZNetPatch);
+            PatchPatches(Harmony.GetPatchInfo(methodInfo)?.Prefixes);
+            PatchPatches(Harmony.GetPatchInfo(methodInfo)?.Postfixes);
+            PatchPatches(Harmony.GetPatchInfo(methodInfo)?.Finalizers);
         }
 
-        private static void PatchObjectDbPatches(ICollection<Patch> patches)
-        {
-            PatchPatches(patches, PatchedObjectDBMethods, PreObjectDB, PostObjectDB);
-        }
-
-        private static void PatchPatches(ICollection<Patch> patches, HashSet<MethodInfo> patchedMethods, MethodInfo pre, MethodInfo post)
+        private static void PatchPatches(ICollection<Patch> patches)
         {
             if (patches == null)
             {
@@ -184,36 +163,30 @@ namespace Jotunn.Utils
                     continue;
                 }
 
-                if (patchedMethods.Contains(patch.PatchMethod))
+                if (PatchedMethods.Contains(patch.PatchMethod))
                 {
                     continue;
                 }
 
-                patchedMethods.Add(patch.PatchMethod);
-                Main.Harmony.Patch(patch.PatchMethod, new HarmonyMethod(pre), new HarmonyMethod(post));
+                PatchedMethods.Add(patch.PatchMethod);
+                Main.Harmony.Patch(patch.PatchMethod, PrePatch, PostPatch);
             }
         }
 
-        private static void BeforeZNetPatch(object[] __args, ref ZNetSceneState __state)
-        {
-            ZNetScene zNetScene = GetZNetScene(__args);
-            __state = new ZNetSceneState(zNetScene);
-        }
-
-        private static void BeforeObjectDBPatch(object[] __args, ref ObjectDBState __state)
+        private static void BeforePatch(object[] __args, ref Tuple<ZNetSceneState, ObjectDBState> __state)
         {
             ObjectDB objectDB = GetObjectDB(__args);
-            __state = new ObjectDBState(objectDB);
+            ZNetScene zNetScene = GetZNetScene(__args);
+            __state = new Tuple<ZNetSceneState, ObjectDBState>(new ZNetSceneState(zNetScene), new ObjectDBState(objectDB));
         }
 
-        private static void AfterZNetPatch(object[] __args, ref ZNetSceneState __state)
+        private static void AfterPatch(object[] __args, ref Tuple<ZNetSceneState, ObjectDBState> __state)
         {
-            if (!__state.valid)
+            if (!__state.Item1.valid && !__state.Item2.valid)
             {
                 return;
             }
 
-            ZNetScene zNetScene = GetZNetScene(__args);
             var plugin = BepInExUtils.GetPluginInfoFromAssembly(ReflectionHelper.GetCallingAssembly());
 
             if (plugin == null)
@@ -221,28 +194,8 @@ namespace Jotunn.Utils
                 return;
             }
 
-            AddPrefabs(__state.namedPrefabs, zNetScene.m_namedPrefabs, plugin.Metadata);
-            AddPrefabs(__state.prefabs, zNetScene.m_prefabs, plugin.Metadata);
-        }
-
-        private static void AfterObjectDBPatch(object[] __args, ref ObjectDBState __state)
-        {
-            if (!__state.valid)
-            {
-                return;
-            }
-
-            ObjectDB objectDB = GetObjectDB(__args);
-            var plugin = BepInExUtils.GetPluginInfoFromAssembly(ReflectionHelper.GetCallingAssembly());
-
-            if (plugin == null)
-            {
-                return;
-            }
-
-            AddPrefabs(__state.items, objectDB.m_items, plugin.Metadata);
-            AddPrefabs(__state.itemByHash, objectDB.m_itemByHash, plugin.Metadata);
-            AddRecipes(__state.recipes, objectDB.m_recipes, plugin.Metadata);
+            __state.Item1.AddNewPrefabs(GetZNetScene(__args), plugin);
+            __state.Item2.AddNewPrefabs(GetObjectDB(__args), plugin);
         }
 
         private static void AddPrefabs(IEnumerable<GameObject> before, IEnumerable<GameObject> after, BepInPlugin plugin)
@@ -348,6 +301,17 @@ namespace Jotunn.Utils
                 this.namedPrefabs = new Dictionary<int, GameObject>(zNetScene.m_namedPrefabs);
                 this.prefabs = new List<GameObject>(zNetScene.m_prefabs);
             }
+
+            public void AddNewPrefabs(ZNetScene zNetScene, PluginInfo plugin)
+            {
+                if (!valid || !zNetScene)
+                {
+                    return;
+                }
+
+                AddPrefabs(namedPrefabs, zNetScene.m_namedPrefabs, plugin.Metadata);
+                AddPrefabs(prefabs, zNetScene.m_prefabs, plugin.Metadata);
+            }
         }
 
         private class ObjectDBState
@@ -369,6 +333,18 @@ namespace Jotunn.Utils
                 items = new List<GameObject>(objectDB.m_items);
                 recipes = new List<Recipe>(objectDB.m_recipes);
                 itemByHash = new Dictionary<int, GameObject>(objectDB.m_itemByHash);
+            }
+
+            public void AddNewPrefabs(ObjectDB objectDB, PluginInfo plugin)
+            {
+                if (!valid || !objectDB)
+                {
+                    return;
+                }
+
+                AddPrefabs(items, objectDB.m_items, plugin.Metadata);
+                AddPrefabs(itemByHash, objectDB.m_itemByHash, plugin.Metadata);
+                AddRecipes(recipes, objectDB.m_recipes, plugin.Metadata);
             }
         }
     }
