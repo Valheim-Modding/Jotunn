@@ -3,7 +3,8 @@
 ## Version 2.7.3
 * Added UndoManager to handle undo and redo actions and queue management, check out the tutorial at https://valheim-modding.github.io/Jotunn/tutorials/undoqueue.html (big thx to Jere)
 * Refactored and improved the ModQuery utility
-* Reworked the mock system for up to five times faster loading times
+* Reworked mock system to improve world loading time, up to 5x faster than the old system
+* Added support for shaders and materials to the mock system
 
 ## Version 2.7.2
 * Fixed possible NRE in SyncManager
