@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## Version 2.7.3
+* Added UndoManager to handle undo and redo actions and queue management, check out the tutorial at https://valheim-modding.github.io/Jotunn/tutorials/undoqueue.html (big thx to Jere)
+* ModQuery improvements
+
 ## Version 2.7.2
 * Fixed possible NRE in SyncManager
 * Opened up some previously internal interfaces for mods to use (e.g. BepInExUtils)
