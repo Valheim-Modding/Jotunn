@@ -53,6 +53,7 @@ JVL provides three distinct groups of features. Entities, which abstract the gam
 - **Prefab Manager** - Provides a cache of prefabs registered through other managers, mostly developers will only query the cache for prefabs added via other managers.
 - **Render Manager** - Provides a custom render queue to render visual GameObjects into a Sprite - Useful to generate icons for your custom items.
 - **Skill Manager** - Facilitates additional custom skills.
+- **Undo Manager** - Provides global undo/redo queues for mods to revert and replay any actions in the game.
 - **Zone Manager** - Create custom locations and vegetation to add in the world generation.
 
 #### Utilities
@@ -79,19 +80,19 @@ These people have been integral to pushing JVL out of the door, and without them
 
 #### Core:
 
+*Jules#7950*: [github](https://github.com/sirskunkalot)
+
+*Margmas#9562*: [github](https://github.com/MSchmoecker), [thunderstore](https://valheim.thunderstore.io/package/MSchmoecker/), [nexus](https://www.nexusmods.com/users/111418768)
+
 *iDeathHD#7866*: [github](https://github.com/xiaoxiao921), [thunderstore](https://valheim.thunderstore.io/package/xiaoxiao921/)
 
 *Algorithman#6741*: [github](https://github.com/Algorithman)
-
-*Jules#7950*: [github](https://github.com/sirskunkalot)
 
 *Quaesar#5604*: [github](https://github.com/RatikKapoor)
 
 *radu#0571*: [github](https://github.com/raduschirliu), [thunderstore](https://valheim.thunderstore.io/package/radu/), [nexus](https://www.nexusmods.com/users/112072898)
 
 *paddy#1337*: [github](https://github.com/paddywaan), [thunderstore](https://valheim.thunderstore.io/package/paddywan/), [nexus](https://valheim.thunderstore.io/package/ValheimModding/)
-
-*Margmas#9562*: [github](https://github.com/MSchmoecker), [thunderstore](https://valheim.thunderstore.io/package/MSchmoecker/), [nexus](https://www.nexusmods.com/users/111418768)
 
 #### Contributors:
 
@@ -110,3 +111,5 @@ These people have been integral to pushing JVL out of the door, and without them
 *JoeyParrish#8644*: [github](https://github.com/joeyparrish), [thunderstore](https://valheim.thunderstore.io/package/joeyparrish/), [nexus](https://www.nexusmods.com/users/128211453)
 
 *Nosirrom#2626*: [github](https://github.com/donchad)
+
+*Jere#0989*: [github](https://github.com/JereKuusela), [thunderstore](https://valheim.thunderstore.io/package/JereKuusela/), [nexus](https://www.nexusmods.com/valheim/users/117845818)
