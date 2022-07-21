@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using Jotunn.Entities;
+using Jotunn.Managers.MockSystem;
 using UnityEngine;
 
 namespace Jotunn.Managers
@@ -234,9 +235,14 @@ namespace Jotunn.Managers
 
                         Logger.LogDebug($"Added creature {customCreature} | Spawns: {customCreature.Spawns.Count}");
                     }
+                    catch (MockResolveException ex)
+                    {
+                        Logger.LogWarning(customCreature?.SourceMod, $"Skipping creature {customCreature}: could not resolve mock prefab {ex.FailedMockName}");
+                        toDelete.Add(customCreature);
+                    }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning($"Error caught while adding creature {customCreature}: {ex}");
+                        Logger.LogWarning(customCreature?.SourceMod, $"Error caught while adding creature {customCreature}: {ex}");
                         toDelete.Add(customCreature);
                     }
                 }
