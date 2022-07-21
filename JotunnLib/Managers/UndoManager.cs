@@ -126,6 +126,23 @@ namespace Jotunn.Managers
         }
         
         /// <summary>
+        ///     Manually create a new queue by name and return it. If the queue already exists
+        ///     no new queue is created but the existing is returned.
+        /// </summary>
+        /// <param name="queueName">Global name of the queue</param>
+        /// <param name="maxSteps">Optionally define the max history capacity of a newly generated queue</param>
+        /// <returns>The <see cref="UndoQueue"/> with the given name</returns>
+        public UndoQueue CreateQueue(string queueName, int maxSteps = 50)
+        {
+            if (!Queues.TryGetValue(queueName, out var queue))
+            {
+                queue = new UndoQueue(queueName, maxSteps);
+                Queues.Add(queueName, queue);
+            }
+            return queue;
+        }
+
+        /// <summary>
         ///     Get a list of all current undo queues.
         /// </summary>
         /// <returns>List of all registered queue names</returns>
@@ -135,13 +152,12 @@ namespace Jotunn.Managers
         ///     Get a queue by name. Creates a new queue if it does not exist.
         /// </summary>
         /// <param name="queueName">Global name of the queue</param>
-        /// <param name="maxSteps">Optionally define the max history capacity of a newly generated queue</param>
         /// <returns>The <see cref="UndoQueue"/> with the given name</returns>
-        public UndoQueue GetQueue(string queueName, int maxSteps = 50)
+        public UndoQueue GetQueue(string queueName)
         {
             if (!Queues.TryGetValue(queueName, out var queue))
             {
-                queue = new UndoQueue(queueName, maxSteps);
+                queue = new UndoQueue(queueName);
                 Queues.Add(queueName, queue);
             }
             return queue;
@@ -182,6 +198,12 @@ namespace Jotunn.Managers
             private int Index = -1;
             private bool Executing = false;
             
+            internal UndoQueue(string name)
+            {
+                Name = name;
+                MaxSteps = 50;
+            }
+
             internal UndoQueue(string name, int maxSteps)
             {
                 if (maxSteps <= 0 || maxSteps >= 100)
