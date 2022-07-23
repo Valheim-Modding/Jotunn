@@ -223,13 +223,45 @@ namespace Jotunn.Managers
                     return;
                 }
 
-                if (isArray || isList)
+                var list = new List<Object>();
+                bool hasAnyMockResolved = false;
+
+                foreach (var unityObject in currentValues)
                 {
-                    FixIndexBasedCollection(member, currentValues);
+                    var realPrefab = GetRealPrefabFromMock(unityObject, member.EnumeratedType);
+                    list.Add(realPrefab ? realPrefab : unityObject);
+                    hasAnyMockResolved = hasAnyMockResolved || realPrefab;
                 }
-                else if (isHashSet)
+
+                if (list.Count > 0 && hasAnyMockResolved)
                 {
-                    FixHashSet(member, objectToFix, currentValues);
+                    MethodInfo cast = ReflectionHelper.Cache.EnumerableCast;
+                    MethodInfo castT = cast.MakeGenericMethod(member.EnumeratedType);
+                    object correctTypeList = castT.Invoke(null, new object[] { list });
+
+                    if (isArray)
+                    {
+                        var toArray = ReflectionHelper.Cache.EnumerableToArray;
+                        var toArrayT = toArray.MakeGenericMethod(member.EnumeratedType);
+
+                        var array = toArrayT.Invoke(null, new object[] { correctTypeList });
+                        member.SetValue(objectToFix, array);
+                    }
+                    else if (isList)
+                    {
+                        var toList = ReflectionHelper.Cache.EnumerableToList;
+                        var toListT = toList.MakeGenericMethod(member.EnumeratedType);
+
+                        var newList = toListT.Invoke(null, new object[] { correctTypeList });
+                        member.SetValue(objectToFix, newList);
+                    }
+                    else if (isHashSet)
+                    {
+                        var hash = typeof(HashSet<>).MakeGenericType(member.EnumeratedType);
+
+                        var newHash = Activator.CreateInstance(hash, correctTypeList);
+                        member.SetValue(objectToFix, newHash);
+                    }
                 }
             }
             else if (member.IsEnumeratedClass)
@@ -255,47 +287,6 @@ namespace Jotunn.Managers
             else if (member.IsClass && member.HasGetMethod)
             {
                 FixReferences(member.GetValue(objectToFix), depth);
-            }
-        }
-
-        private static void FixHashSet(MemberBase member, object objectToFix, IEnumerable<Object> currentValues)
-        {
-            var list = new List<Object>();
-            bool hasAnyMockResolved = false;
-
-            foreach (var unityObject in currentValues)
-            {
-                var realPrefab = GetRealPrefabFromMock(unityObject, member.EnumeratedType);
-                list.Add(realPrefab ? realPrefab : unityObject);
-                hasAnyMockResolved = hasAnyMockResolved || realPrefab;
-            }
-
-            if (list.Count > 0 && hasAnyMockResolved)
-            {
-                MethodInfo cast = ReflectionHelper.Cache.EnumerableCast;
-                MethodInfo castT = cast.MakeGenericMethod(member.EnumeratedType);
-                object correctTypeList = castT.Invoke(null, new object[] { list });
-
-                var hash = typeof(HashSet<>).MakeGenericType(member.EnumeratedType);
-
-                var newHash = Activator.CreateInstance(hash, correctTypeList);
-                member.SetValue(objectToFix, newHash);
-            }
-        }
-
-        private static void FixIndexBasedCollection(MemberBase member, IEnumerable<Object> currentValues)
-        {
-            int count = ((ICollection)currentValues).Count;
-            IList values = (IList)currentValues;
-
-            for (int i = 0; i < count; i++)
-            {
-                var unityObject = values[i];
-                var realPrefab = GetRealPrefabFromMock((Object)unityObject, member.EnumeratedType);
-                if (realPrefab)
-                {
-                    values[i] = unityObject;
-                }
             }
         }
 
