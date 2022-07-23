@@ -328,7 +328,23 @@ namespace Jotunn.Managers
             foreach (int prop in material.GetTexturePropertyNameIDs())
             {
                 Texture texture = material.GetTexture(prop);
-                Texture realTexture = GetRealPrefabFromMock<Texture>(texture);
+
+                if (!texture)
+                {
+                    continue;
+                }
+
+                Texture realTexture;
+
+                try
+                {
+                    realTexture = GetRealPrefabFromMock<Texture>(texture);
+                }
+                catch (MockResolveException ex)
+                {
+                    Logger.LogWarning(ex.Message);
+                    continue;
+                }
 
                 if (realTexture)
                 {
