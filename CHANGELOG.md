@@ -1,4 +1,8 @@
 ﻿# Changelog
+## Version 2.7.4
+* Changed that non-resolvable mock textures on a material only print a warning instead of skipping the whole prefab
+* Fixed mock system did not resolve some arrays correctly
+* Improved warning messages to include the source mod where available
 
 ## Version 2.7.3
 * Added UndoManager to handle undo and redo actions and queue management, check out the tutorial at https://valheim-modding.github.io/Jotunn/tutorials/undoqueue.html (big thx to Jere)
