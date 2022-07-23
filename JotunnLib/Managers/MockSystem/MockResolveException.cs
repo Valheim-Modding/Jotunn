@@ -13,13 +13,31 @@ namespace Jotunn.Managers.MockSystem
         public string FailedMockName { get; private set; }
 
         /// <summary>
+        ///     Type of the prefab that could not be resolved.
+        /// </summary>
+        public Type MockType { get; private set; }
+
+        /// <summary>
         ///     Creates a new instance of the <see cref="MockResolveException" /> class.
         /// </summary>
         /// <param name="message"></param>
         /// <param name="failedMockName"></param>
+        [Obsolete("Use MockResolveException(string, string, Type) instead.")]
         public MockResolveException(string message, string failedMockName) : base(message)
         {
             FailedMockName = failedMockName;
+        }
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="MockResolveException" /> class.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="failedMockName"></param>
+        /// <param name="mockType"></param>
+        public MockResolveException(string message, string failedMockName, Type mockType) : base(message)
+        {
+            FailedMockName = failedMockName;
+            MockType = mockType;
         }
     }
 }

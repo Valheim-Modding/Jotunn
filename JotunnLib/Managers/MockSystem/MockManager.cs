@@ -148,7 +148,7 @@ namespace Jotunn.Managers
 
                 if (!ret)
                 {
-                    throw new MockResolveException($"Mock prefab {unityObjectName} could not be resolved", unityObjectName);
+                    throw new MockResolveException($"Mock {mockObjectType.Name} {unityObjectName} could not be resolved", unityObjectName, mockObjectType);
                 }
 
                 return ret;

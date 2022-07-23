@@ -367,7 +367,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(customItem?.SourceMod, $"Skipping item {customItem}: could not resolve mock prefab {ex.FailedMockName}");
+                        Logger.LogWarning(customItem?.SourceMod, $"Skipping item {customItem}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
                         toDelete.Add(customItem);
                     }
                     catch (Exception ex)
@@ -471,7 +471,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(customRecipe?.SourceMod, $"Skipping recipe {customRecipe}: could not resolve mock prefab {ex.FailedMockName}");
+                        Logger.LogWarning(customRecipe?.SourceMod, $"Skipping recipe {customRecipe}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
                         toDelete.Add(customRecipe);
                     }
                     catch (Exception ex)
@@ -518,7 +518,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(customStatusEffect?.SourceMod, $"Skipping status effect {customStatusEffect}: could not resolve mock prefab {ex.FailedMockName}");
+                        Logger.LogWarning(customStatusEffect?.SourceMod, $"Skipping status effect {customStatusEffect}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
                         toDelete.Add(customStatusEffect);
                     }
                     catch (Exception ex)
@@ -628,7 +628,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(conversion?.SourceMod, $"Skipping item conversion {conversion}: could not resolve mock prefab {ex.FailedMockName}");
+                        Logger.LogWarning(conversion?.SourceMod, $"Skipping item conversion {conversion}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
                         toDelete.Add(conversion);
                     }
                     catch (Exception ex)

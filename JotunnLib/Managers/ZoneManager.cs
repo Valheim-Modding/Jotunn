@@ -327,7 +327,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(customLocation?.SourceMod, $"Skipping location {customLocation}: could not resolve mock prefab {ex.FailedMockName}");
+                        Logger.LogWarning(customLocation?.SourceMod, $"Skipping location {customLocation}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
                         toDelete.Add(customLocation.Name);
                     }
                     catch (Exception ex)
@@ -366,7 +366,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(customVegetation?.SourceMod, $"Skipping vegetation {customVegetation}: could not resolve mock prefab {ex.FailedMockName}");
+                        Logger.LogWarning(customVegetation?.SourceMod, $"Skipping vegetation {customVegetation}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
                         toDelete.Add(customVegetation.Name);
                     }
                     catch (Exception ex)
