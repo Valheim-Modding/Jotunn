@@ -65,14 +65,14 @@ namespace Jotunn.Managers
             // Cannot have two commands with same name
             if (_customCommands.Exists(c => c.Name == cmd.Name))
             {
-                Logger.LogWarning($"Cannot have two console commands with same name: {cmd.Name}");
+                Logger.LogWarning(cmd.SourceMod, $"Cannot have two console commands with same name: {cmd.Name}");
                 return;
             }
 
             // Cannot have command with space in it
             if (cmd.Name.Contains(" "))
             {
-                Logger.LogWarning($"Cannot have command containing space: '{cmd.Name}'");
+                Logger.LogWarning(cmd.SourceMod, $"Cannot have command containing space: '{cmd.Name}'");
                 return;
             }
 
@@ -90,7 +90,7 @@ namespace Jotunn.Managers
                     // Cannot override vanilla commands
                     if (self.m_commandList.Contains(cmd.Name))
                     {
-                        Logger.LogWarning($"Cannot override existing command: {cmd.Name}");
+                        Logger.LogWarning(cmd.SourceMod, $"Cannot override existing command: {cmd.Name}");
                         return;
                     }
 

@@ -97,12 +97,12 @@ namespace Jotunn.Managers
         {
             if (!customCreature.IsValid())
             {
-                Logger.LogWarning($"Custom creature {customCreature} is not valid");
+                Logger.LogWarning(customCreature.SourceMod, $"Custom creature {customCreature} is not valid");
                 return false;
             }
             if (Creatures.Contains(customCreature))
             {
-                Logger.LogWarning($"Custom creature {customCreature} already added");
+                Logger.LogWarning(customCreature.SourceMod, $"Custom creature {customCreature} already added");
                 return false;
             }
 

@@ -418,7 +418,7 @@ namespace Jotunn.Managers
             Transform gui = root?.transform.Find("GUI");
             if (!gui)
             {
-                Logger.LogWarning("GuiRoot GUI not found, not creating custom GUI");
+                Logger.LogError("GuiRoot GUI not found, not creating custom GUI");
                 return;
             }
             GUIInStart = true;
@@ -432,7 +432,7 @@ namespace Jotunn.Managers
             Transform gui = root?.transform.Find("LoadingGUI");
             if (!gui)
             {
-                Logger.LogWarning("_GameMain LoadingGUI not found, not creating custom GUI");
+                Logger.LogError("_GameMain LoadingGUI not found, not creating custom GUI");
                 return;
             }
             GUIInStart = false;

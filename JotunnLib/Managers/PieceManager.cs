@@ -165,12 +165,12 @@ namespace Jotunn.Managers
             // Assert
             if (!customPieceTable.IsValid())
             {
-                Logger.LogWarning($"Custom piece {customPieceTable} is not valid");
+                Logger.LogWarning(customPieceTable.SourceMod, $"Custom piece {customPieceTable} is not valid");
                 return false;
             }
             if (PieceTables.Contains(customPieceTable))
             {
-                Logger.LogWarning($"Piece table {customPieceTable} already added");
+                Logger.LogWarning(customPieceTable.SourceMod, $"Piece table {customPieceTable} already added");
                 return false;
             }
 
@@ -399,12 +399,12 @@ namespace Jotunn.Managers
             // Assert
             if (!customPiece.IsValid())
             {
-                Logger.LogWarning($"Custom piece {customPiece} is not valid");
+                Logger.LogWarning(customPiece.SourceMod, $"Custom piece {customPiece} is not valid");
                 return false;
             }
             if (Pieces.ContainsKey(customPiece.PiecePrefab.name))
             {
-                Logger.LogWarning($"Custom piece {customPiece} already added");
+                Logger.LogWarning(customPiece.SourceMod, $"Custom piece {customPiece} already added");
                 return false;
             }
 
@@ -462,7 +462,7 @@ namespace Jotunn.Managers
 
             if (!Pieces.ContainsKey(name))
             {
-                Logger.LogWarning($"Could not remove piece {piece}: Not found");
+                Logger.LogWarning(piece.SourceMod, $"Could not remove piece {piece}: Not found");
                 return;
             }
 

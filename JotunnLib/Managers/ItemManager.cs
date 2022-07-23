@@ -100,12 +100,12 @@ namespace Jotunn.Managers
         {
             if (!customItem.IsValid())
             {
-                Logger.LogWarning($"Custom item {customItem} is not valid");
+                Logger.LogWarning(customItem.SourceMod, $"Custom item {customItem} is not valid");
                 return false;
             }
             if (Items.Contains(customItem))
             {
-                Logger.LogWarning($"Custom item {customItem} already added");
+                Logger.LogWarning(customItem.SourceMod, $"Custom item {customItem} already added");
                 return false;
             }
 
@@ -189,12 +189,12 @@ namespace Jotunn.Managers
         {
             if (!customRecipe.IsValid())
             {
-                Logger.LogWarning($"Custom recipe {customRecipe} is not valid");
+                Logger.LogWarning(customRecipe.SourceMod, $"Custom recipe {customRecipe} is not valid");
                 return false;
             }
             if (Recipes.Contains(customRecipe))
             {
-                Logger.LogWarning($"Custom recipe {customRecipe} already added");
+                Logger.LogWarning(customRecipe.SourceMod, $"Custom recipe {customRecipe} already added");
                 return false;
             }
 
@@ -276,12 +276,12 @@ namespace Jotunn.Managers
         {
             if (!customStatusEffect.IsValid())
             {
-                Logger.LogWarning($"Custom status effect {customStatusEffect} is not valid");
+                Logger.LogWarning(customStatusEffect.SourceMod, $"Custom status effect {customStatusEffect} is not valid");
                 return false;
             }
             if (StatusEffects.Contains(customStatusEffect))
             {
-                Logger.LogWarning($"Custom status effect {customStatusEffect} already added");
+                Logger.LogWarning(customStatusEffect.SourceMod, $"Custom status effect {customStatusEffect} already added");
                 return false;
             }
 
@@ -298,12 +298,12 @@ namespace Jotunn.Managers
         {
             if (!itemConversion.IsValid())
             {
-                Logger.LogWarning($"Custom item conversion {itemConversion} is not valid");
+                Logger.LogWarning(itemConversion.SourceMod, $"Custom item conversion {itemConversion} is not valid");
                 return false;
             }
             if (ItemConversions.Contains(itemConversion))
             {
-                Logger.LogWarning($"Custom item conversion {itemConversion} already added");
+                Logger.LogWarning(itemConversion.SourceMod, $"Custom item conversion {itemConversion} already added");
                 return false;
             }
 

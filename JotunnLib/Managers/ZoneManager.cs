@@ -153,7 +153,7 @@ namespace Jotunn.Managers
         {
             if (Locations.ContainsKey(customLocation.Name))
             {
-                Logger.LogWarning($"Location {customLocation.Name} already exists");
+                Logger.LogWarning(customLocation.SourceMod, $"Location {customLocation.Name} already exists");
                 return false;
             }
 

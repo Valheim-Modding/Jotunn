@@ -111,14 +111,14 @@ namespace Jotunn.Managers
         {
             if (!customPrefab.IsValid())
             {
-                Logger.LogWarning($"Custom prefab {customPrefab} is not valid");
+                Logger.LogWarning(customPrefab.SourceMod, $"Custom prefab {customPrefab} is not valid");
                 return;
             }
 
             int hash = customPrefab.Prefab.name.GetStableHashCode();
             if (Prefabs.ContainsKey(hash))
             {
-                Logger.LogWarning($"Prefab '{customPrefab}' already exists");
+                Logger.LogWarning(customPrefab.SourceMod, $"Prefab '{customPrefab}' already exists");
                 return;
             }
 
