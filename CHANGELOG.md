@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 ## Version 2.7.4
 * Changed that non-resolvable mock textures on a material only print a warning instead of skipping the whole prefab
 * Fixed mock system did not resolve some arrays correctly
