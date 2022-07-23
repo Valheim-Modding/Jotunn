@@ -1,0 +1,819 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class LocalizationManager
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class LocalizationManager
+   ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Jotunn.Managers.LocalizationManager">
+  
+  
+  <h1 id="Jotunn_Managers_LocalizationManager" data-uid="Jotunn.Managers.LocalizationManager" class="text-break">Class LocalizationManager
+  </h1>
+  <div class="markdown level0 summary">
+Manager for handling localizations for all custom content added to the game.
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">LocalizationManager</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Jotunn.Managers.html">Jotunn.Managers</a></h6>
+  <h6><strong>Assembly</strong>: Jotunn.dll</h6>
+  <h5 id="Jotunn_Managers_LocalizationManager_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class LocalizationManager : IManager</code></pre>
+  </div>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_CommunityTranslationFileName.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.CommunityTranslationFileName%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L43">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_LocalizationManager_CommunityTranslationFileName" data-uid="Jotunn.Managers.LocalizationManager.CommunityTranslationFileName">CommunityTranslationFileName</h4>
+  <div class="markdown level1 summary">
+Name of the community translation files that will be the first custom languages files loaded before any others.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const string CommunityTranslationFileName = &quot;community_translation.json&quot;</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_DefaultLanguage.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.DefaultLanguage%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L33">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_LocalizationManager_DefaultLanguage" data-uid="Jotunn.Managers.LocalizationManager.DefaultLanguage">DefaultLanguage</h4>
+  <div class="markdown level1 summary">
+Default language of the game.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const string DefaultLanguage = &quot;English&quot;</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_TokenFirstChar.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.TokenFirstChar%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L28">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_LocalizationManager_TokenFirstChar" data-uid="Jotunn.Managers.LocalizationManager.TokenFirstChar">TokenFirstChar</h4>
+  <div class="markdown level1 summary">
+Your token must start with this character.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const char TokenFirstChar = '$'</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Char</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_TranslationsFolderName.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.TranslationsFolderName%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L38">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_LocalizationManager_TranslationsFolderName" data-uid="Jotunn.Managers.LocalizationManager.TranslationsFolderName">TranslationsFolderName</h4>
+  <div class="markdown level1 summary">
+Name of the folder that will hold the custom .json translations files.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const string TranslationsFolderName = &quot;Translations&quot;</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_Instance.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.Instance%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L58">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_Instance_" data-uid="Jotunn.Managers.LocalizationManager.Instance*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_Instance" data-uid="Jotunn.Managers.LocalizationManager.Instance">Instance</h4>
+  <div class="markdown level1 summary">
+The singleton instance of this manager.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static LocalizationManager Instance { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Jotunn.Managers.LocalizationManager.html">LocalizationManager</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_AddJson_System_String_System_String_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.AddJson(System.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L405">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_AddJson_" data-uid="Jotunn.Managers.LocalizationManager.AddJson*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_AddJson_System_String_System_String_" data-uid="Jotunn.Managers.LocalizationManager.AddJson(System.String,System.String)">AddJson(String, String)</h4>
+  <div class="markdown level1 summary">
+Add a json language file (match crowdin format).
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use AddLocalization(CustomLocalization) instead&quot;)]
+public void AddJson(string language, string fileContent)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">language</span></td>
+        <td>Language for the json file, for example, &quot;English&quot; </td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">fileContent</span></td>
+        <td>Entire file as string </td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_AddLanguageFile_System_String_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.AddLanguageFile(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L413">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_AddLanguageFile_" data-uid="Jotunn.Managers.LocalizationManager.AddLanguageFile*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_AddLanguageFile_System_String_" data-uid="Jotunn.Managers.LocalizationManager.AddLanguageFile(System.String)">AddLanguageFile(String)</h4>
+  <div class="markdown level1 summary">
+Add a language file that matches Valheim&apos;s language format.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use AddLocalization(CustomLocalization) instead&quot;)]
+public void AddLanguageFile(string fileContent)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">fileContent</span></td>
+        <td>Entire file as string </td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_AddLocalization_Jotunn_Configs_LocalizationConfig_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.AddLocalization(Jotunn.Configs.LocalizationConfig)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L357">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_AddLocalization_" data-uid="Jotunn.Managers.LocalizationManager.AddLocalization*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_AddLocalization_Jotunn_Configs_LocalizationConfig_" data-uid="Jotunn.Managers.LocalizationManager.AddLocalization(Jotunn.Configs.LocalizationConfig)">AddLocalization(LocalizationConfig)</h4>
+  <div class="markdown level1 summary">
+Registers a new Localization for a language.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use AddLocalization(CustomLocalization) instead&quot;)]
+public void AddLocalization(LocalizationConfig config)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Jotunn.Configs.LocalizationConfig.html">LocalizationConfig</a></td>
+        <td><span class="parametername">config</span></td>
+        <td>Wrapper which contains a language and a Token-Value dictionary. </td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_AddLocalization_Jotunn_Entities_CustomLocalization_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.AddLocalization(Jotunn.Entities.CustomLocalization)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L283">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_AddLocalization_" data-uid="Jotunn.Managers.LocalizationManager.AddLocalization*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_AddLocalization_Jotunn_Entities_CustomLocalization_" data-uid="Jotunn.Managers.LocalizationManager.AddLocalization(Jotunn.Entities.CustomLocalization)">AddLocalization(CustomLocalization)</h4>
+  <div class="markdown level1 summary">
+Add your mod&apos;s custom localization. Only one <a class="xref" href="Jotunn.Entities.CustomLocalization.html">CustomLocalization</a> can be added per mod.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AddLocalization(CustomLocalization customLocalization)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Jotunn.Entities.CustomLocalization.html">CustomLocalization</a></td>
+        <td><span class="parametername">customLocalization</span></td>
+        <td>The localization to add.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td>true if the custom localization was added to the manager.</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_AddLocalization_System_String_System_Collections_Generic_Dictionary_System_String_System_String__.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.AddLocalization(System.String%2CSystem.Collections.Generic.Dictionary%7BSystem.String%2CSystem.String%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L366">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_AddLocalization_" data-uid="Jotunn.Managers.LocalizationManager.AddLocalization*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_AddLocalization_System_String_System_Collections_Generic_Dictionary_System_String_System_String__" data-uid="Jotunn.Managers.LocalizationManager.AddLocalization(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">AddLocalization(String, Dictionary&lt;String, String&gt;)</h4>
+  <div class="markdown level1 summary">
+Registers a new Localization for a language.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use AddLocalization(CustomLocalization) instead&quot;)]
+public void AddLocalization(string language, Dictionary&lt;string, string&gt; localization)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">language</span></td>
+        <td>The language being added. </td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.Dictionary</span>&lt;<span class="xref">System.String</span>, <span class="xref">System.String</span>&gt;</td>
+        <td><span class="parametername">localization</span></td>
+        <td>Token-Value dictionary. </td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_AddPath_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.AddPath(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L396">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_AddPath_" data-uid="Jotunn.Managers.LocalizationManager.AddPath*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_AddPath_System_String_System_Boolean_" data-uid="Jotunn.Managers.LocalizationManager.AddPath(System.String,System.Boolean)">AddPath(String, Boolean)</h4>
+  <div class="markdown level1 summary">
+Add a file via absolute path.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use AddLocalization(CustomLocalization) instead&quot;)]
+public void AddPath(string path, bool isJson = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">path</span></td>
+        <td>Absolute path to file. </td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">isJson</span></td>
+        <td>Is the language file a json file. </td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_AddToken_System_String_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.AddToken(System.String%2CSystem.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L376">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_AddToken_" data-uid="Jotunn.Managers.LocalizationManager.AddToken*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_AddToken_System_String_System_String_System_Boolean_" data-uid="Jotunn.Managers.LocalizationManager.AddToken(System.String,System.String,System.Boolean)">AddToken(String, String, Boolean)</h4>
+  <div class="markdown level1 summary">
+Add a token and its value to the &quot;English&quot; language.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use AddLocalization(CustomLocalization) instead&quot;)]
+public void AddToken(string token, string value, bool forceReplace = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">token</span></td>
+        <td>Token </td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">value</span></td>
+        <td>Translation. </td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">forceReplace</span></td>
+        <td>Replace the token if it already exists </td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_AddToken_System_String_System_String_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.AddToken(System.String%2CSystem.String%2CSystem.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L387">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_AddToken_" data-uid="Jotunn.Managers.LocalizationManager.AddToken*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_AddToken_System_String_System_String_System_String_System_Boolean_" data-uid="Jotunn.Managers.LocalizationManager.AddToken(System.String,System.String,System.String,System.Boolean)">AddToken(String, String, String, Boolean)</h4>
+  <div class="markdown level1 summary">
+Add a token and its value to the specified language (default to &quot;English&quot;).
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use AddLocalization(CustomLocalization) instead&quot;)]
+public void AddToken(string token, string value, string language, bool forceReplace = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">token</span></td>
+        <td>Token </td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">value</span></td>
+        <td>Translation. </td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">language</span></td>
+        <td>Language ID for this token. </td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">forceReplace</span></td>
+        <td>Replace the token if it already exists </td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_GetLocalization.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.GetLocalization%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L301">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_GetLocalization_" data-uid="Jotunn.Managers.LocalizationManager.GetLocalization*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_GetLocalization" data-uid="Jotunn.Managers.LocalizationManager.GetLocalization">GetLocalization()</h4>
+  <div class="markdown level1 summary">
+Get the CustomLocalization for your mod.
+Creates a new <a class="xref" href="Jotunn.Entities.CustomLocalization.html">CustomLocalization</a> if no localization was added before.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CustomLocalization GetLocalization()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Jotunn.Entities.CustomLocalization.html">CustomLocalization</a></td>
+        <td>Existing or newly created <a class="xref" href="Jotunn.Entities.CustomLocalization.html">CustomLocalization</a>.</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_Init.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.Init%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L89">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_Init_" data-uid="Jotunn.Managers.LocalizationManager.Init*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_Init" data-uid="Jotunn.Managers.LocalizationManager.Init">Init()</h4>
+  <div class="markdown level1 summary">
+Initialize localization manager.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Init()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_TryTranslate_System_String_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.TryTranslate(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L335">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_LocalizationManager_TryTranslate_" data-uid="Jotunn.Managers.LocalizationManager.TryTranslate*"></a>
+  <h4 id="Jotunn_Managers_LocalizationManager_TryTranslate_System_String_" data-uid="Jotunn.Managers.LocalizationManager.TryTranslate(System.String)">TryTranslate(String)</h4>
+  <div class="markdown level1 summary">
+Retrieve a translation if it&apos;s found in any CustomLocalization or <see cref="!:Localization.Translate"></see>.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string TryTranslate(string word)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">word</span></td>
+        <td>Word to translate. </td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td>Translated word in player language or english as a fallback. </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="events">Events
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager_OnLocalizationAdded.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager.OnLocalizationAdded%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L77">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_LocalizationManager_OnLocalizationAdded" data-uid="Jotunn.Managers.LocalizationManager.OnLocalizationAdded">OnLocalizationAdded</h4>
+  <div class="markdown level1 summary">
+Event that gets fired after all custom localization has been added to the game.
+Use this event if you need to translate strings using the vanilla <see cref="!:Localization"></see> class.
+Your code will execute every time the localization gets reset (on every menu start).
+If you want to execute just once you will need to unregister from the event after execution.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static event Action OnLocalizationAdded</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Action</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="Jotunn.PrefabExtension.html#Jotunn_PrefabExtension_FixReferences_System_Object_">PrefabExtension.FixReferences(Object)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_LocalizationManager.md&amp;value=---%0Auid%3A%20Jotunn.Managers.LocalizationManager%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/LocalizationManager.cs/#L18" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              
+              <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

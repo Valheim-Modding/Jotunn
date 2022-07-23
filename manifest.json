@@ -1,0 +1,6356 @@
+{
+  "homepages": [],
+  "source_base_path": "/github/workspace/JotunnLib",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "source_relative_path": "DocFX/favicon.ico",
+      "output": {
+        "resource": {
+          "relative_path": "favicon.ico"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "DocFX/logo.svg",
+      "output": {
+        "resource": {
+          "relative_path": "logo.svg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.ArrayExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.ArrayExtensions.html",
+          "hash": "Q9xNKwwTisiAbdbZH8gcnA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.ConfigEntryBaseExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.ConfigEntryBaseExtension.html",
+          "hash": "E2cM5YOumDI8esEXWAx7GQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.ButtonConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.ButtonConfig.html",
+          "hash": "fzgnUzUbFho7pTGEhmT/fg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.ConversionConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.ConversionConfig.html",
+          "hash": "rqtZmcDxuSfcaOLYtD+3yA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.CookingConversionConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.CookingConversionConfig.html",
+          "hash": "UzK/i4hVRCgZe/8XVExgXg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.CreatureConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.CreatureConfig.html",
+          "hash": "gJbFSSezj0hZom7qz0rN2g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.DropConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.DropConfig.html",
+          "hash": "uK8nYae2vpq9yplItC1JHA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.FermenterConversionConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.FermenterConversionConfig.html",
+          "hash": "05nQPABOzeEixazHlVd1+g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.IncineratorConversionConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.IncineratorConversionConfig.html",
+          "hash": "fovBLhaotQr9ov8jx9yE2g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.IncineratorRequirementConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.IncineratorRequirementConfig.html",
+          "hash": "DOMNZ1ekpCZ96hG0fTRILw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.ItemConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.ItemConfig.html",
+          "hash": "HjfAZCfmX2GVev4MH8b8Rg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.KeyHintConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.KeyHintConfig.html",
+          "hash": "9S6Ke2ngNoa+aN5b2CFmyg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.KitbashConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.KitbashConfig.html",
+          "hash": "V2zSCStwArAGurQW0eS5JQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.KitbashSourceConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.KitbashSourceConfig.html",
+          "hash": "udDgB2Giy0zxhAGd4WzURQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.LocalizationConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.LocalizationConfig.html",
+          "hash": "9V+9+ot3bem4We1MxYDmMA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.LocationConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.LocationConfig.html",
+          "hash": "i0H9R6GPf29iTCjSuupv4w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.PieceConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.PieceConfig.html",
+          "hash": "T5ewaqV8pZDe7Kr2oWcOKA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.PieceTableConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.PieceTableConfig.html",
+          "hash": "C1+Zu23mCA77+eIcs588Ng=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.RecipeConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.RecipeConfig.html",
+          "hash": "YI6uMgvQNjq2F3ZTY03zeg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.RequirementConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.RequirementConfig.html",
+          "hash": "nUKE8kewyzr41KTFINKpvA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.SkillConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.SkillConfig.html",
+          "hash": "7TMf1+N3Ua+1tiFNJqI6Eg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.SmelterConversionConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.SmelterConversionConfig.html",
+          "hash": "IdWJiFdjieIiQOaMK8gMdg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.SpawnConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.SpawnConfig.html",
+          "hash": "D4wNMGu6dpTryVbt+AsfKg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.VegetationConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.VegetationConfig.html",
+          "hash": "52mK4fUoqONLFQvgUDR0Qg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Configs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Configs.html",
+          "hash": "E30i/NoKGunXYaYXIUKtjg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.ConsoleCommand.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.ConsoleCommand.html",
+          "hash": "HaMhkCByStdRV1nIArvNmQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomCreature.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomCreature.html",
+          "hash": "QMnQ8f/CKXgL+cKriMh74w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomEntity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomEntity.html",
+          "hash": "HYW5R/Tv67gN67YlYaNBbQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomItem.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomItem.html",
+          "hash": "HTPDD/h0BIyvhz7O3MmT7A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomItemConversion.ConversionType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomItemConversion.ConversionType.html",
+          "hash": "34/bLTVMMsConqV4o5/xYw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomItemConversion.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomItemConversion.html",
+          "hash": "c0duG6ZgfNLv7P7J1U76BQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomLocalization.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomLocalization.html",
+          "hash": "BLEHk5ZOZeHS+r8smGCwyQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomLocation.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomLocation.html",
+          "hash": "8ffBwiQAk5jhQ/R0lt2v9g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomPiece.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomPiece.html",
+          "hash": "zRS7FvZcfNPNoS14d/dxfg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomPieceTable.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomPieceTable.html",
+          "hash": "mrWGo9DCLRTi5XWuQ6kcrw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomPrefab.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomPrefab.html",
+          "hash": "dEUrV+n6/Qq4H5T00VD/zw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomRPC.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomRPC.html",
+          "hash": "6B4UJrZxgL6OVuFPnDnN6A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomRecipe.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomRecipe.html",
+          "hash": "a1gJRxR0MpkW+YdZhUuKlw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomStatusEffect.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomStatusEffect.html",
+          "hash": "5YTiVAlNL593CM6HiFzWQw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.CustomVegetation.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.CustomVegetation.html",
+          "hash": "t+XR8iLUr+nhqRx4yku4aA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.KitbashObject.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.KitbashObject.html",
+          "hash": "8gwmmsakwPSt1p5BzYHL8A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.Mock-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.Mock-1.html",
+          "hash": "IPnVq46EUo4u78gjQJi/vQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.MockRequirement.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.MockRequirement.html",
+          "hash": "dqUJLTaoFyY8idkqIIubrA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Entities.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Entities.html",
+          "hash": "DhPZvhHNhjLFB65RQN+Clw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.ExposedGameObjectExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.ExposedGameObjectExtension.html",
+          "hash": "G6D9RegCM3cdJXsNwYpUWA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.GUI.ColorPicker.ColorEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.GUI.ColorPicker.ColorEvent.html",
+          "hash": "0N8j07VA++01CTJJR5lQOw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.GUI.ColorPicker.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.GUI.ColorPicker.html",
+          "hash": "qaT96CR8wGka0mZpIKms8w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.GUI.DragWindowCntrl.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.GUI.DragWindowCntrl.html",
+          "hash": "PrvcHmmdlmq/kgjLUrjQ6Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.GUI.GradientPicker.GradientEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.GUI.GradientPicker.GradientEvent.html",
+          "hash": "wcad2TEX7L003daNPmy8Bw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.GUI.GradientPicker.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.GUI.GradientPicker.html",
+          "hash": "E9hKommXpPkNUPgGwzXiLg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.GUI.MinimapOverlayPanel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.GUI.MinimapOverlayPanel.html",
+          "hash": "IHEjGQrkzlZUw/0FcdAAqw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.GUI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.GUI.html",
+          "hash": "cRLk2bYMnA6hVin2CHsGZQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.GameObjectExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.GameObjectExtension.html",
+          "hash": "IjGaJHSRQDL6WMMoQCwjeA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.ItemDataExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.ItemDataExtension.html",
+          "hash": "6zs5HucZttd/IvJM4pK/Iw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.ItemDropExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.ItemDropExtension.html",
+          "hash": "e/lSp19pI6kO2AURbXtqYA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Logger.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Logger.html",
+          "hash": "Pmkaag7Zaq8pcZidVHobUA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Main.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Main.html",
+          "hash": "QCpQ349eVhyvFC+IVpwD3w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.CommandManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.CommandManager.html",
+          "hash": "qwl32XQ5Y5hSc0EiTnM0qQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.CreatureManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.CreatureManager.html",
+          "hash": "BWi4eYS0T9T1SNVfqL5xcQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.GUIManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.GUIManager.html",
+          "hash": "paWtGoXyJs5zXjtZzXYSkQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.InputManager.GamepadButton.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.InputManager.GamepadButton.html",
+          "hash": "hF8AqdM8666AzVmt2FrIGw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.InputManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.InputManager.html",
+          "hash": "bcRkL8yDJe5byhuQ8ZHEWg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.ItemManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.ItemManager.html",
+          "hash": "Pn1rRTEmX4hsfkz4x9IIzg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.KeyHintManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.KeyHintManager.html",
+          "hash": "scieRStOXtZKAX/3MJvWfw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.KitbashManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.KitbashManager.html",
+          "hash": "BBwIwVEYY2XmPfTNXB32Gg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.LocalizationManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.LocalizationManager.html",
+          "hash": "PbCIDAkrnan8134XAbFofw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.MinimapManager.MapDrawing.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.MinimapManager.MapDrawing.html",
+          "hash": "YgUuzwwTQLypkFWYIQxhmw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.MinimapManager.MapOverlay.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.MinimapManager.MapOverlay.html",
+          "hash": "aYYa7IiW8CziirTm9HEPrA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.MinimapManager.MapOverlayBase.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.MinimapManager.MapOverlayBase.html",
+          "hash": "JQfMvudPasB3zszozby1MA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.MinimapManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.MinimapManager.html",
+          "hash": "Mcm4Ela56GzsZbIZ5RbHPw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.MockSystem.MockResolveException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.MockSystem.MockResolveException.html",
+          "hash": "nmLaquqERtXreVYGqEegTg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.MockSystem.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.MockSystem.html",
+          "hash": "6RJRlEsbrCGc5zb5pJjypw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.NetworkManager.CoroutineHandler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.NetworkManager.CoroutineHandler.html",
+          "hash": "Zax7FDOb5jcJszsFFwc7Cg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.NetworkManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.NetworkManager.html",
+          "hash": "W4hp13qLL8/eeQvtCFUZWA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.PieceManager.PieceCategorySettings.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.PieceManager.PieceCategorySettings.html",
+          "hash": "zkhoRXh7bu6MtebS5+jFbw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.PieceManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.PieceManager.html",
+          "hash": "YdBREqR0voj51QQHBS4/zw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.PrefabManager.Cache.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.PrefabManager.Cache.html",
+          "hash": "tkXIgPLgI+0s3jR7d8higA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.PrefabManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.PrefabManager.html",
+          "hash": "6iAyQbAI1UUQtBUXGMAFYw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.RenderManager.RenderRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.RenderManager.RenderRequest.html",
+          "hash": "f/LQIRPPUA4BkEaSYa0yxw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.RenderManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.RenderManager.html",
+          "hash": "jJtJSYLGMDSHPMiALOfaTg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.SkillManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.SkillManager.html",
+          "hash": "FfhDplvSDI/SKLVsqQyC9Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.SynchronizationManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.SynchronizationManager.html",
+          "hash": "8ITSZkDeeUPtTOjPBPJ28g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.UndoManager.IUndoAction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.UndoManager.IUndoAction.html",
+          "hash": "xzY9XeXLBSeHBqXaytPzOQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.UndoManager.UndoQueue.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.UndoManager.UndoQueue.html",
+          "hash": "bkIJG6v5JOUhFIw6v5knJw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.UndoManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.UndoManager.html",
+          "hash": "cBkiZsrYrPYiW6tckDSnmQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.ZoneManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.ZoneManager.html",
+          "hash": "NkJrQ28xco85zjBzxyV91g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Managers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Managers.html",
+          "hash": "X9O3/Lk+vXuFCPulDFWM5g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.PieceExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.PieceExtension.html",
+          "hash": "Yl05RUqOfRosZ9RC+qd10A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.PrefabExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.PrefabExtension.html",
+          "hash": "kVe6G0B/fVavMvIrLP3QhQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.RecipeExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.RecipeExtension.html",
+          "hash": "t9kYp+5xRp4Jdsqp+mc29g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.RectTransformExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.RectTransformExtensions.html",
+          "hash": "v4aziJa+RNa8oUIYgI7k5Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.StatusEffectExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.StatusEffectExtension.html",
+          "hash": "L+d27C00JM2V4fv5w2TOHw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.AssetUtils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.AssetUtils.html",
+          "hash": "qCZa3LMOMnnfLroWZzIT9A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.BepInExUtils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.BepInExUtils.html",
+          "hash": "aOGkyjyDpGo3sbhez2ax7A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.BoneReorder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.BoneReorder.html",
+          "hash": "12+nSyKA00vVrRUNKWI92w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.CompatibilityLevel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.CompatibilityLevel.html",
+          "hash": "b0JW18+r5x/LAzGoNI1g8Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.ConfigurationSynchronizationEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.ConfigurationSynchronizationEventArgs.html",
+          "hash": "Q7kHGe1Gk+s1jHa3QcRyOQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.GameConstants.GlobalKey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.GameConstants.GlobalKey.html",
+          "hash": "osoyqwH8w8mOYUS3fRUacg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.GameConstants.Weather.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.GameConstants.Weather.html",
+          "hash": "e4oBzDE2GlYjbncuAD0euw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.GameConstants.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.GameConstants.html",
+          "hash": "yhZEwnN2QrwvXi2+bd4hUg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.HashUtils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.HashUtils.html",
+          "hash": "CxVvhN57mIlEE8LOaDmsTw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.IModPrefab.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.IModPrefab.html",
+          "hash": "+Pi/zSZsZp8A3cKzRLDdbA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.ModCompatibility.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.ModCompatibility.html",
+          "hash": "1chzQ3x1L4J1iCKBA7qA6w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.ModQuery.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.ModQuery.html",
+          "hash": "eleB9hDFgoafwKfKtb7Ngw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.ModRegistry.ModInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.ModRegistry.ModInfo.html",
+          "hash": "irzm2jN23eC4yxlWaevDAQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.ModRegistry.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.ModRegistry.html",
+          "hash": "ko3jtoH3GJpuRGIJGakmVw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.NetworkCompatibilityAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.NetworkCompatibilityAttribute.html",
+          "hash": "FpTEduox/5kT6P5LlBSGyQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.PatchInitAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.PatchInitAttribute.html",
+          "hash": "CKNtjnagtnwmhACLlLBgcA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.Paths.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.Paths.html",
+          "hash": "8a5r+WtUnnMtwJWCi6D8eA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.ReflectionHelper.Cache.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.ReflectionHelper.Cache.html",
+          "hash": "dHvhWUll/BSW2ljz9iVfyQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.ReflectionHelper.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.ReflectionHelper.html",
+          "hash": "+MIQe1PlXdVHlK5lumXdEQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.ShaderHelper.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.ShaderHelper.html",
+          "hash": "6r1sUwMsHGwp2dgGzkdOtQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.UndoActions.HeightUndoData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.UndoActions.HeightUndoData.html",
+          "hash": "Rn33aBcqJcse1dxMCEyoPw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.UndoActions.PaintUndoData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.UndoActions.PaintUndoData.html",
+          "hash": "yEpgHjacpjlA1V9GbV71Aw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.UndoActions.TerrainUndoData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.UndoActions.TerrainUndoData.html",
+          "hash": "lOC3FwOzvWZfN0MTZcqNMA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.UndoActions.UndoCreate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.UndoActions.UndoCreate.html",
+          "hash": "rb92VLuFf2QFfMUxaUHHXA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.UndoActions.UndoRemove.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.UndoActions.UndoRemove.html",
+          "hash": "kEVXAra1GBQQPh35UXzkvQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.UndoActions.UndoTerrain.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.UndoActions.UndoTerrain.html",
+          "hash": "TwgnGULoCj9is417Zz8T0g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.UndoActions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.UndoActions.html",
+          "hash": "A3nXaGtd9+fd0+50GJd3IQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.VersionStrictness.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.VersionStrictness.html",
+          "hash": "+qUnQZSVcvKNjV1qcPePdw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.WeightedItem-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.WeightedItem-1.html",
+          "hash": "fmX7ghuc+QCGCMBRYYdmMA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.WeightedList-2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.WeightedList-2.html",
+          "hash": "tqEe7prj4OjKlBGHComZMA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.Utils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.Utils.html",
+          "hash": "0NvyJIfqfy7KeetBTiWAtw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.ZNetExtension.ZNetInstanceType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.ZNetExtension.ZNetInstanceType.html",
+          "hash": "mAnZqFvdgin6UQLUv40npA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.ZNetExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.ZNetExtension.html",
+          "hash": "W9uluVsxN9y6PpF2HsWIVQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/Jotunn.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Jotunn.html",
+          "hash": "VnR6arh9VkHIOMISK5XLYw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/SimpleJson.IJsonSerializerStrategy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SimpleJson.IJsonSerializerStrategy.html",
+          "hash": "ylyEcX2PSwAw+xN2l1/Txw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/SimpleJson.PocoJsonSerializerStrategy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SimpleJson.PocoJsonSerializerStrategy.html",
+          "hash": "hX3+m+DMa0pMJbwSVYUNvw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/SimpleJson.SimpleJson.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SimpleJson.SimpleJson.html",
+          "hash": "LE7kt7uBx7PiMwW51AOrPQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "Documentation/api/SimpleJson.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/SimpleJson.html",
+          "hash": "KSwWu2OQImXYvvrJUm5GRA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "Documentation/api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "h8J+jvujTMTMaQbon1TMdQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/gui/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/gui/overview.html",
+          "hash": "nj3vz+gqnylCgk1D7+v9Tg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/gui/sprite-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/gui/sprite-list.html",
+          "hash": "2LfacbNqSLpx8DBfh6hmFw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/input/input-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/input/input-list.html",
+          "hash": "F8Ri3PJRknfH+akqIRq5SA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/input/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/input/overview.html",
+          "hash": "wNKaSQQMy5F+KY5ClbtDtQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/intro.html",
+          "hash": "irBj13/6WLtfxQSbHyQH3A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/language-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/language-list.html",
+          "hash": "KyQDmt3meRwAtqCBJYdbGQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/overview.html",
+          "hash": "OESR/9iC55QIdqHFa20/SQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Abenaki.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Abenaki.html",
+          "hash": "ufhxLdhYv750FP4LMPg8aA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Bulgarian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Bulgarian.html",
+          "hash": "jrDypiYSUxd0CZygo2deRg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Chinese.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Chinese.html",
+          "hash": "1PoRDKnKoig1TJ2c0HQIkQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Croatian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Croatian.html",
+          "hash": "RTAUFoLZlgxHmGXtZN7BWA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Czech.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Czech.html",
+          "hash": "hBsy0Kn75xH7DiiYcC1w8Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Danish.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Danish.html",
+          "hash": "aGpw8izDV19gwFwZv/H/ng=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Dutch.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Dutch.html",
+          "hash": "fxQI30GSoqg5hTjnZou+Pw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/English.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/English.html",
+          "hash": "46BM3TRWn9YPUToOIQW/9A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Finnish.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Finnish.html",
+          "hash": "jB6kKMfrBqVLy9Ph7a1vAA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/French.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/French.html",
+          "hash": "6uYRh0OAcmlK/lTYE8Wdxg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Georgian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Georgian.html",
+          "hash": "akVuHecQbBoXoMGmc+OIMQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/German.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/German.html",
+          "hash": "vZzVaW+loPuPK+8XSn/hBA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Greek.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Greek.html",
+          "hash": "O4i5L9HRwft7JerBMSi68g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Hindi.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Hindi.html",
+          "hash": "zxLz82eIQJF6bvFWrFCrYg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Hungarian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Hungarian.html",
+          "hash": "2l3SAPhXpsVIPSYApcp1SQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Icelandic.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Icelandic.html",
+          "hash": "WIUzXb7B1T0d2U/VJymqtw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Italian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Italian.html",
+          "hash": "SRJ1ul4DKWFhfKXCwEB2Og=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Japanese.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Japanese.html",
+          "hash": "YWQjqVX+enBsUivjkLpVVA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Korean.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Korean.html",
+          "hash": "Trm9KWsJGClXc6h6wgosaQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Latvian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Latvian.html",
+          "hash": "a0lrIBMZOiX52dw3FnP0rQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Lithuanian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Lithuanian.html",
+          "hash": "roKHTWBtgLOXYxXrtyLurg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Macedonian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Macedonian.html",
+          "hash": "x0xkpdzXOPQZAxCfupMjFA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Norwegian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Norwegian.html",
+          "hash": "RrmOk8/KuVCdt9MKWkSFoA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Polish.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Polish.html",
+          "hash": "vSqbUF+AHLQEf0zsuV4Eog=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Portuguese_Brazilian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Portuguese_Brazilian.html",
+          "hash": "T9EsU8UZw/z2lKPaDYq16w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Portuguese_European.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Portuguese_European.html",
+          "hash": "A7jKb62lStW2IzPni4ZnoA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Romanian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Romanian.html",
+          "hash": "Ay5y16NqN5nZhP4bzCTRCQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Russian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Russian.html",
+          "hash": "qiYGw0jkJ6pcNb/txFPa7w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Serbian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Serbian.html",
+          "hash": "tgBlhfLxy3mYp6miy8zG0g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Slovak.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Slovak.html",
+          "hash": "ufr6rQNbkaoIe2+T50W2Pw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Spanish.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Spanish.html",
+          "hash": "g9eq6pjXyu/BVQ1CSVvRBg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Swedish.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Swedish.html",
+          "hash": "2XfKP8qAyBNlxRYTxnVE6Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Thai.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Thai.html",
+          "hash": "fngJNNAvd6bvsl+6LKq5Bg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Turkish.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Turkish.html",
+          "hash": "+veKNUaCGtKovvtf7L171g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/localization/translations/Ukrainian.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/localization/translations/Ukrainian.html",
+          "hash": "EY0dUIuLQGpM05jj6NNnxQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/objects/item-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/objects/item-list.html",
+          "hash": "5bkmR+iMWOFxwUOt/I23yw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/objects/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/objects/overview.html",
+          "hash": "6RPbL8cWGhA1EhDzEDhQ0g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/objects/recipe-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/objects/recipe-list.html",
+          "hash": "jznwrHS5wYcE7SCvQIAfpA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/pieces/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/pieces/overview.html",
+          "hash": "+qhK3iPOiCCbLrfm7F7yjw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/pieces/piece-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/pieces/piece-list.html",
+          "hash": "aVrTFQ61ScOLd6XqdvTahQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/pieces/piece-table-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/pieces/piece-table-list.html",
+          "hash": "yKuovYXXCyfIBkEmuuVs3g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/prefabs/character-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/prefabs/character-list.html",
+          "hash": "i4jOa4ggqmonQ1tzF6+O6Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/prefabs/material-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/prefabs/material-list.html",
+          "hash": "yhPEXQWNXHFD9hdUjZK0Bw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/prefabs/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/prefabs/overview.html",
+          "hash": "f5C2iBkIyXvycK0XTn1bZw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/prefabs/prefab-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/prefabs/prefab-list.html",
+          "hash": "8B5JhKDGf9q2sIA/T5M81A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/prefabs/shader-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/prefabs/shader-list.html",
+          "hash": "hDt5PxdE2CFzhv3oCdYIhw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/rpc/rpc-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/rpc/rpc-list.html",
+          "hash": "k4ir/+f779nL0N3l/roc1A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/status-effects/status-effect-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/status-effects/status-effect-list.html",
+          "hash": "pt8Sa0yfg1KdIQtRtPNvRQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "Documentation/data/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "data/toc.html",
+          "hash": "z1PoTT+kL8ucKUZAaODUBg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/zones/location-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/zones/location-list.html",
+          "hash": "zB4oMRNbmrJ00ITtOkfzGQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/zones/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/zones/overview.html",
+          "hash": "Mfa13QKsMh8bYeW1Vzyrqg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/data/zones/vegetation-list.md",
+      "output": {
+        ".html": {
+          "relative_path": "data/zones/vegetation-list.html",
+          "hash": "Lc93dSJATaq9AKGHkJVepA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/guides/guide.md",
+      "output": {
+        ".html": {
+          "relative_path": "guides/guide.html",
+          "hash": "jMiWSEeLiTAqQz/z3VssUg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/guides/installation.md",
+      "output": {
+        ".html": {
+          "relative_path": "guides/installation.html",
+          "hash": "/4KIdKTROv1hmrn7OxGVOg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/guides/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "guides/overview.html",
+          "hash": "2D8siQ37ZiJG+rXmoLDgrQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/guides/quickstart.md",
+      "output": {
+        ".html": {
+          "relative_path": "guides/quickstart.html",
+          "hash": "2Z4NWCx9Ltrk52r4oPSHPA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "Documentation/guides/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "guides/toc.html",
+          "hash": "2+zBW/ZVJMPzz1bSTHoxPA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/banner.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/banner.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Abomination.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Abomination.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Bat.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Bat.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Blob.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Blob.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/BlobElite.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/BlobElite.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/BlobTar.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/BlobTar.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Boar.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Boar.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Boar_piggy.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Boar_piggy.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Bonemass.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Bonemass.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Deathsquito.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Deathsquito.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Deer.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Deer.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Dragon.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Dragon.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Draugr.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Draugr.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Draugr_Elite.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Draugr_Elite.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Draugr_Ranged.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Draugr_Ranged.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Eikthyr.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Eikthyr.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Fenring.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Fenring.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Fenring_Cultist.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Fenring_Cultist.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Ghost.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Ghost.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Goblin.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Goblin.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/GoblinArcher.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/GoblinArcher.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/GoblinBrute.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/GoblinBrute.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/GoblinKing.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/GoblinKing.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/GoblinShaman.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/GoblinShaman.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Greydwarf.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Greydwarf.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Greydwarf_Elite.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Greydwarf_Elite.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Greydwarf_Shaman.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Greydwarf_Shaman.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Greyling.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Greyling.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Hatchling.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Hatchling.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Leech.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Leech.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Leech_cave.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Leech_cave.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Lox.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Lox.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Lox_Calf.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Lox_Calf.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Neck.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Neck.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Player.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Player.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Serpent.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Serpent.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Skeleton.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Skeleton.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Skeleton_NoArcher.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Skeleton_NoArcher.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Skeleton_Poison.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Skeleton_Poison.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/StoneGolem.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/StoneGolem.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Surtling.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Surtling.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/TentaRoot.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/TentaRoot.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/TrainingDummy.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/TrainingDummy.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Troll.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Troll.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Ulv.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Ulv.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Wolf.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Wolf.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Wolf_cub.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Wolf_cub.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/Wraith.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/Wraith.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/characters/gd_king.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/characters/gd_king.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/Assets.EmbeddedResource.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/Assets.EmbeddedResource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/BluePrintRunePieceTable.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/BluePrintRunePieceTable.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/EvilSwordKeyHints.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/EvilSwordKeyHints.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/EvilSwordKeyHintsButton.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/EvilSwordKeyHintsButton.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/EvilSwordLocalizations.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/EvilSwordLocalizations.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/EvilSwordStatusEffect.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/EvilSwordStatusEffect.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/EvilSwordStatusStart.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/EvilSwordStatusStart.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/EvilSwordStatusStop.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/EvilSwordStatusStop.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/assetAsmguiutils.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/assetAsmguiutils.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/assetAsmrefs.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/assetAsmrefs.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/assetAsmvalheim.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/assetAsmvalheim.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/assetBundleBuild.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/assetBundleBuild.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/assetBundleLabel.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/assetBundleLabel.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/assetCopiedsteel.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/assetCopiedsteel.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/blueprintRecipeConfig.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/blueprintRecipeConfig.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/blueprintRuneItem.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/blueprintRuneItem.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/blueprintRuneLocalizations.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/blueprintRuneLocalizations.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/cheaty_missingrefs.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/cheaty_missingrefs.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/cheaty_mockicon.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/cheaty_mockicon.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/cheaty_mockmaterial.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/cheaty_mockmaterial.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/cheaty_mockmesh.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/cheaty_mockmesh.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/cheaty_mockprefab.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/cheaty_mockprefab.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/cheaty_mocksassigned.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/cheaty_mocksassigned.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/cheaty_refsfixed.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/cheaty_refsfixed.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/checkbox.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/checkbox.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/colorgradientpicker.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/colorgradientpicker.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/configRecipe.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/configRecipe.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/creatureComponentsBase.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/creatureComponentsBase.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/creatureComponentsEyePos.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/creatureComponentsEyePos.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/creatureComponentsVisual.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/creatureComponentsVisual.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/creaturePrefab.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/creaturePrefab.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/cube-piece-inv.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/cube-piece-inv.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/cube-piece-world.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/cube-piece-world.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/customClonedItemHover.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/customClonedItemHover.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/customClonedItemPickup.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/customClonedItemPickup.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/customPieces.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/customPieces.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/customResourceRecipe.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/customResourceRecipe.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/customSkillRaised.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/customSkillRaised.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/customTableCategories.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/customTableCategories.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/customVanillaCategories.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/customVanillaCategories.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/customVegetation.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/customVegetation.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/jsonRecipes.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/jsonRecipes.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/keybind-button.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/keybind-button.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashChangeMaterial.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashChangeMaterial.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashCollider.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashCollider.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashColliderSkeleton.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashColliderSkeleton.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashDraugrBowSource.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashDraugrBowSource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashDraugrBowTransform.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashDraugrBowTransform.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashOdinStatueSkeleton.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashOdinStatueSkeleton.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashRubySource.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashRubySource.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashRubyTransform.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashRubyTransform.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashSimpleInGame.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashSimpleInGame.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashSimpleKitbashBase.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashSimpleKitbashBase.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashSkeletonMasterCopy.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashSkeletonMasterCopy.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashSpinningWheelExploded.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashSpinningWheelExploded.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashSpinningWheelExplodedNewMats.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashSpinningWheelExplodedNewMats.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashSpinningWheelNew.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashSpinningWheelNew.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/kitbashSpinningWheelWheelPart.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/kitbashSpinningWheelWheelPart.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/minimap_toggles.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/minimap_toggles.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/mock_gameobjects.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/mock_gameobjects.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/modifyEikthyrLocation.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/modifyEikthyrLocation.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/moreRaspberryBushes.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/moreRaspberryBushes.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/pieceStubPlaced.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/pieceStubPlaced.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/renderedIcon.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/renderedIcon.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/test-button.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/test-button.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/test-complete.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/test-complete.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/test-dropdown.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/test-dropdown.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/test-input-filled.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/test-input-filled.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/test-input.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/test-input.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/test-item.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/test-item.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/test-prefab.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/test-prefab.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/test-recipe.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/test-recipe.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/test-skill.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/test-skill.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/text-element.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/text-element.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/undoOutput.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/undoOutput.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/variationRecipe.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/variationRecipe.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/variationResult.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/variationResult.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/variationSelection.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/variationSelection.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/vs-Manage-Nuget.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/vs-Manage-Nuget.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/vs-NugetAddJotunn.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/vs-NugetAddJotunn.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/data/woodpanel.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/data/woodpanel.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/gh-ForkedStub.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/gh-ForkedStub.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-AddNewProjectToSol.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-AddNewProjectToSol.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-CloneForkedStub.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-CloneForkedStub.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-CreateEmptySolution.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-CreateEmptySolution.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-CreateNewProjectTemplate.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-CreateNewProjectTemplate.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-CreateProjFromTemplateEnvironmentPropersError.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-CreateProjFromTemplateEnvironmentPropersError.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-InstallerComponents.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-InstallerComponents.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-ProjectTemplateLocationpng.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-ProjectTemplateLocationpng.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-UserProjectTemplatesLoc.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-UserProjectTemplatesLoc.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-bepinex-assemblies.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-bepinex-assemblies.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-create-proj.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-create-proj.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-solutionReferences.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-solutionReferences.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/getting-started/vs-valheim-assemblies.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/getting-started/vs-valheim-assemblies.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/installation/bepinex.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/installation/bepinex.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/installation/console.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/installation/console.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/installation/downloads.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/installation/downloads.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/installation/plugins.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/installation/plugins.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/AbandonedLogCabin02.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/AbandonedLogCabin02.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/AbandonedLogCabin03.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/AbandonedLogCabin03.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/AbandonedLogCabin04.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/AbandonedLogCabin04.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Bonemass.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Bonemass.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Crypt2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Crypt2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Crypt3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Crypt3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Crypt4.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Crypt4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/DevHouse1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/DevHouse1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/DevSoundTest.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/DevSoundTest.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Dolmen01.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Dolmen01.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Dolmen02.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Dolmen02.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Dolmen03.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Dolmen03.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Dragonqueen.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Dragonqueen.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/DrakeLorestone.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/DrakeLorestone.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/DrakeNest01.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/DrakeNest01.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Eikthyrnir.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Eikthyrnir.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/FireHole.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/FireHole.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/GDKing.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/GDKing.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/GoblinCamp1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/GoblinCamp1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/GoblinKing.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/GoblinKing.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Grave1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Grave1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Greydwarf_camp1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Greydwarf_camp1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Greydwarf_camp2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Greydwarf_camp2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Greydwarf_camp3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Greydwarf_camp3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Hugintest.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Hugintest.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/InfestedTree01.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/InfestedTree01.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Meteorite.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Meteorite.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/MountainCave01.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/MountainCave01.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/MountainCave02.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/MountainCave02.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/MountainGrave01.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/MountainGrave01.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/MountainWell1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/MountainWell1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Pillar1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Pillar1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Pillar2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Pillar2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Ruin1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Ruin1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Ruin2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Ruin2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Ruin3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Ruin3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Runestone_BlackForest.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Runestone_BlackForest.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Runestone_Boars.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Runestone_Boars.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Runestone_Draugr.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Runestone_Draugr.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Runestone_Greydwarfs.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Runestone_Greydwarfs.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Runestone_Meadows.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Runestone_Meadows.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Runestone_Mountains.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Runestone_Mountains.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Runestone_Plains.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Runestone_Plains.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Runestone_Swamps.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Runestone_Swamps.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/ShipSetting01.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/ShipSetting01.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/ShipWreck01.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/ShipWreck01.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/ShipWreck02.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/ShipWreck02.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/ShipWreck03.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/ShipWreck03.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/ShipWreck04.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/ShipWreck04.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StartTemple.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StartTemple.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneCircle.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneCircle.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHenge1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHenge1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHenge2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHenge2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHenge3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHenge3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHenge4.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHenge4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHenge5.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHenge5.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHenge6.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHenge6.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHouse1_heath.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHouse1_heath.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHouse2_heath.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHouse2_heath.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHouse3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHouse3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHouse4.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHouse4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneHouse5_heath.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneHouse5_heath.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTower1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTower1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTower2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTower2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTower3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTower3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTower4.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTower4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTowerRuins03.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTowerRuins03.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTowerRuins04.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTowerRuins04.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTowerRuins05.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTowerRuins05.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTowerRuins07.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTowerRuins07.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTowerRuins08.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTowerRuins08.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTowerRuins09.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTowerRuins09.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/StoneTowerRuins10.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/StoneTowerRuins10.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SunkenCrypt1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SunkenCrypt1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SunkenCrypt2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SunkenCrypt2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SunkenCrypt3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SunkenCrypt3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SunkenCrypt4.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SunkenCrypt4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SwampHut1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SwampHut1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SwampHut2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SwampHut2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SwampHut3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SwampHut3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SwampHut4.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SwampHut4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SwampHut5.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SwampHut5.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SwampRuin1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SwampRuin1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SwampRuin2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SwampRuin2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/SwampWell1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/SwampWell1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/TarPit1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/TarPit1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/TarPit2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/TarPit2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/TarPit3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/TarPit3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/TrollCave.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/TrollCave.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/TrollCave02.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/TrollCave02.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Vendor_BlackForest.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Vendor_BlackForest.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Waymarker01.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Waymarker01.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/Waymarker02.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/Waymarker02.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse10.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse10.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse11.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse11.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse12.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse12.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse13.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse13.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse4.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse5.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse5.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse6.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse6.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse7.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse7.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse8.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse8.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/locations/WoodHouse9.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/locations/WoodHouse9.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Beech1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Beech1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Beech_small1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Beech_small1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Beech_small2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Beech_small2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Birch1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Birch1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Birch1_aut.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Birch1_aut.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Birch2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Birch2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Birch2_aut.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Birch2_aut.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/BlueberryBush.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/BlueberryBush.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Bush01.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Bush01.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Bush01_heath.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Bush01_heath.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Bush02_en.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Bush02_en.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/CloudberryBush.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/CloudberryBush.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/FirTree.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/FirTree.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/FirTree_oldLog.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/FirTree_oldLog.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/FirTree_small.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/FirTree_small.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/FirTree_small_dead.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/FirTree_small_dead.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Flies.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Flies.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/HeathRockPillar.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/HeathRockPillar.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Leviathan.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Leviathan.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/MineRock_Obsidian.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/MineRock_Obsidian.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/MineRock_Tin.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/MineRock_Tin.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Oak1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Oak1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Pickable_Branch.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Pickable_Branch.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Pickable_Dandelion.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Pickable_Dandelion.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Pickable_Flint.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Pickable_Flint.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Pickable_Mushroom.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Pickable_Mushroom.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Pickable_SeedCarrot.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Pickable_SeedCarrot.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Pickable_SeedTurnip.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Pickable_SeedTurnip.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Pickable_Stone.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Pickable_Stone.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Pickable_Thistle.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Pickable_Thistle.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Pinetree_01.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Pinetree_01.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/RaspberryBush.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/RaspberryBush.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Rock_3.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Rock_3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Rock_4.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Rock_4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/Rock_4_plains.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/Rock_4_plains.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/StatueEvil.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/StatueEvil.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/SwampTree1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/SwampTree1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/SwampTree2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/SwampTree2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/SwampTree2_log.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/SwampTree2_log.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/ice1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/ice1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/ice_rock1.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/ice_rock1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/mudpile_beacon.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/mudpile_beacon.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/rock1_mountain.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/rock1_mountain.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/rock2_heath.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/rock2_heath.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/rock2_mountain.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/rock2_mountain.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/rock3_mountain.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/rock3_mountain.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/rock4_coast.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/rock4_coast.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/rock4_copper.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/rock4_copper.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/rock4_forest.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/rock4_forest.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/rock4_heath.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/rock4_heath.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/shrub_2.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/shrub_2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/shrub_2_heath.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/shrub_2_heath.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/silvervein.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/silvervein.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/stubbe.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/stubbe.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/vfx_edge_clouds.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/vfx_edge_clouds.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/prefabs/vfx_swamp_mist.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/prefabs/vfx_swamp_mist.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/utils/NetworkCompatClient-gr-Server.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/utils/NetworkCompatClient-gr-Server.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/utils/NetworkCompatClientMissingModule.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/utils/NetworkCompatClientMissingModule.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/utils/NetworkCompatClientsideAdditional.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/utils/NetworkCompatClientsideAdditional.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/utils/NetworkCompatServer-gr-Client.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/utils/NetworkCompatServer-gr-Client.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/utils/PostBoneReorder.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/utils/PostBoneReorder.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "Documentation/images/utils/PreBoneReorder.png",
+      "output": {
+        "resource": {
+          "relative_path": "Documentation/images/utils/PreBoneReorder.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "DyiYe6KmPT1knT+xPMkGAQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "Documentation/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "t/2UF/0J/Z8Qr+0XolBTaQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/transition/jotunnlib/assets.md",
+      "output": {
+        ".html": {
+          "relative_path": "transition/jotunnlib/assets.html",
+          "hash": "ddO2TEfRaezIZJjorFeJ4g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/transition/jotunnlib/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "transition/jotunnlib/overview.html",
+          "hash": "vp/ooQsn1J9wwiDMKnHtfQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/transition/jotunnlib/prefabs.md",
+      "output": {
+        ".html": {
+          "relative_path": "transition/jotunnlib/prefabs.html",
+          "hash": "yCKOEzoivRznQt3pYkJsww=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/transition/jotunnlib/register-events.md",
+      "output": {
+        ".html": {
+          "relative_path": "transition/jotunnlib/register-events.html",
+          "hash": "HbETFhttPm+fEQU3reV3bg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/transition/jotunnlib/renaming.md",
+      "output": {
+        ".html": {
+          "relative_path": "transition/jotunnlib/renaming.html",
+          "hash": "Uf1hHJILOand15jbkBSGIw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/transition/jotunnlib/vs-project.md",
+      "output": {
+        ".html": {
+          "relative_path": "transition/jotunnlib/vs-project.html",
+          "hash": "f6q5Zr1JHaoVn6R0UvnJ7g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/transition/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "transition/overview.html",
+          "hash": "uZ8vD10l97VbUWFnIT6oiw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/transition/skillinjector/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "transition/skillinjector/overview.html",
+          "hash": "5uuv25LIMppsuCkcbU36GQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "Documentation/transition/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "transition/toc.html",
+          "hash": "Yd8Yk12cCIEv8tBRF2WqTA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/transition/valheimlib/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "transition/valheimlib/overview.html",
+          "hash": "6KW3pRpzzVLPZVUZWW+lrw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/transition/valheimlib/vs-project.md",
+      "output": {
+        ".html": {
+          "relative_path": "transition/valheimlib/vs-project.html",
+          "hash": "jGvJ4cjDboHhml5ERTyMkw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/asset-creation.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/asset-creation.html",
+          "hash": "YT2TjyhFGqlGxFEiEQyHtw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/asset-loading.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/asset-loading.html",
+          "hash": "gOhOhljbpYGNIoy8CsylYA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/asset-mocking.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/asset-mocking.html",
+          "hash": "ZoMesQ4vYwr1oa6pcfDabg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/bonereorder.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/bonereorder.html",
+          "hash": "YU+gSB4SZ6ntiG3jDx3jgg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/config.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/config.html",
+          "hash": "wLmBFfJerMlkzJCxROwNcg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/console-commands.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/console-commands.html",
+          "hash": "mmK6MJPXXs5Ldt+Ux1cMIQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/creatures.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/creatures.html",
+          "hash": "XgyXIclPZ7X4SS+0O4DYGw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/gui.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/gui.html",
+          "hash": "bWhu+OuIaKECHNoHskx5Hg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/inputs.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/inputs.html",
+          "hash": "mad3k8Q452p/NA22MLvWeg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/item-conversions.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/item-conversions.html",
+          "hash": "H9UIQYb2Ad09plyod6ttZQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/item-variants.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/item-variants.html",
+          "hash": "3oWIXdrtaE1uJETOXACSGw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/items.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/items.html",
+          "hash": "/bbQvFb7Iljr5frfxWY09g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/kitbash.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/kitbash.html",
+          "hash": "hcyuaROVDSwlSiw7GuXVoA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/localization.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/localization.html",
+          "hash": "8qEB6OniKsRBR0YNOHdbtQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/map.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/map.html",
+          "hash": "kRrXV43C7gcj3uZ3KgqPNQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/networkcompatibility.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/networkcompatibility.html",
+          "hash": "oCtFCIcJVuO0m+H3jqqrvw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/overview.html",
+          "hash": "i29kffNTsNQxKeiV9Pqwpg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/pieces.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/pieces.html",
+          "hash": "LcPY/v1T0st+CcqCq2AzIQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/recipes.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/recipes.html",
+          "hash": "mzc1aRT3u6DHBMNa5kbE0w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/renderqueue.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/renderqueue.html",
+          "hash": "kzsso6zVYqeojFx0hLzmjQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/rpcs.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/rpcs.html",
+          "hash": "RglAPwaGD9TaH82pVUGU4w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/skills.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/skills.html",
+          "hash": "LXlOQ2TXpiVd+w32aWZeyQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/status-effects.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/status-effects.html",
+          "hash": "hJVzH4SpsUbMAB9b5pLhOA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "Documentation/tutorials/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/toc.html",
+          "hash": "WKA6zp6S64gmfcLO6TlGbA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/undoqueue.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/undoqueue.html",
+          "hash": "cMg/KR1jKGtpDaL/aQ1/OA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Documentation/tutorials/zones.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/zones.html",
+          "hash": "6mH/VXGmUAx+dHqa6gPmfA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": true,
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 98,
+          "skipped_file_count": 98
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 130,
+          "skipped_file_count": 75
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": true,
+        "details": "Can support incremental post processing.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

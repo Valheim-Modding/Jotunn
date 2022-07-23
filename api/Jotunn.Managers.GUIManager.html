@@ -1,0 +1,2230 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class GUIManager
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class GUIManager
+   ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Jotunn.Managers.GUIManager">
+  
+  
+  <h1 id="Jotunn_Managers_GUIManager" data-uid="Jotunn.Managers.GUIManager" class="text-break">Class GUIManager
+  </h1>
+  <div class="markdown level0 summary">
+Manager for handling anything GUI related. Provides Valheim style 
+GUI elements as well as an anchor for custom GUI prefabs.
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">GUIManager</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Jotunn.Managers.html">Jotunn.Managers</a></h6>
+  <h6><strong>Assembly</strong>: Jotunn.dll</h6>
+  <h5 id="Jotunn_Managers_GUIManager_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class GUIManager : IManager</code></pre>
+  </div>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_UILayer.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.UILayer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L78">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_GUIManager_UILayer" data-uid="Jotunn.Managers.GUIManager.UILayer">UILayer</h4>
+  <div class="markdown level1 summary">
+Unity layer constant for UI objects.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int UILayer = 5</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ValheimButtonColorBlock.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ValheimButtonColorBlock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L116">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_GUIManager_ValheimButtonColorBlock" data-uid="Jotunn.Managers.GUIManager.ValheimButtonColorBlock">ValheimButtonColorBlock</h4>
+  <div class="markdown level1 summary">
+Button color block in Valheim style
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColorBlock ValheimButtonColorBlock</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ColorBlock</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ValheimControlResources.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ValheimControlResources%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L140">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_GUIManager_ValheimControlResources" data-uid="Jotunn.Managers.GUIManager.ValheimControlResources">ValheimControlResources</h4>
+  <div class="markdown level1 summary">
+<see cref="!:DefaultControls.Resources"></see> with default Valheim assets.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DefaultControls.Resources ValheimControlResources</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DefaultControls.Resources</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ValheimOrange.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ValheimOrange%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L83">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_GUIManager_ValheimOrange" data-uid="Jotunn.Managers.GUIManager.ValheimOrange">ValheimOrange</h4>
+  <div class="markdown level1 summary">
+The default Valheim orange color.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Color ValheimOrange</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Color</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ValheimScrollbarHandleColorBlock.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ValheimScrollbarHandleColorBlock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L88">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_GUIManager_ValheimScrollbarHandleColorBlock" data-uid="Jotunn.Managers.GUIManager.ValheimScrollbarHandleColorBlock">ValheimScrollbarHandleColorBlock</h4>
+  <div class="markdown level1 summary">
+Scrollbar handle color block in default Valheim orange.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColorBlock ValheimScrollbarHandleColorBlock</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ColorBlock</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ValheimToggleColorBlock.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ValheimToggleColorBlock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L102">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_GUIManager_ValheimToggleColorBlock" data-uid="Jotunn.Managers.GUIManager.ValheimToggleColorBlock">ValheimToggleColorBlock</h4>
+  <div class="markdown level1 summary">
+Toggle color block in Valheim style.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColorBlock ValheimToggleColorBlock</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ColorBlock</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_AveriaSerif.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.AveriaSerif%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L130">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_AveriaSerif_" data-uid="Jotunn.Managers.GUIManager.AveriaSerif*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_AveriaSerif" data-uid="Jotunn.Managers.GUIManager.AveriaSerif">AveriaSerif</h4>
+  <div class="markdown level1 summary">
+Valheim standard font normal faced.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Font AveriaSerif { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Font</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_AveriaSerifBold.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.AveriaSerifBold%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L135">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_AveriaSerifBold_" data-uid="Jotunn.Managers.GUIManager.AveriaSerifBold*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_AveriaSerifBold" data-uid="Jotunn.Managers.GUIManager.AveriaSerifBold">AveriaSerifBold</h4>
+  <div class="markdown level1 summary">
+Valheims standard font bold faced.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Font AveriaSerifBold { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Font</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CustomGUIBack.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CustomGUIBack%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L73">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CustomGUIBack_" data-uid="Jotunn.Managers.GUIManager.CustomGUIBack*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CustomGUIBack" data-uid="Jotunn.Managers.GUIManager.CustomGUIBack">CustomGUIBack</h4>
+  <div class="markdown level1 summary">
+GUI container behind Valheim&apos;s GUI elements with automatic scaling for
+high res displays and pixel correction.
+Gets rebuild at every scene change so make sure to add your custom
+GUI prefabs again on each scene change.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static GameObject CustomGUIBack { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CustomGUIFront.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CustomGUIFront%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L65">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CustomGUIFront_" data-uid="Jotunn.Managers.GUIManager.CustomGUIFront*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CustomGUIFront" data-uid="Jotunn.Managers.GUIManager.CustomGUIFront">CustomGUIFront</h4>
+  <div class="markdown level1 summary">
+GUI container in front of Valheim&apos;s GUI elements with automatic scaling for
+high res displays and pixel correction.
+Gets rebuild at every scene change so make sure to add your custom
+GUI prefabs again on each scene change.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static GameObject CustomGUIFront { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_Instance.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.Instance%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L29">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_Instance_" data-uid="Jotunn.Managers.GUIManager.Instance*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_Instance" data-uid="Jotunn.Managers.GUIManager.Instance">Instance</h4>
+  <div class="markdown level1 summary">
+Singleton instance
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static GUIManager Instance { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Jotunn.Managers.GUIManager.html">GUIManager</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_PixelFix.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.PixelFix%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L49">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_PixelFix_" data-uid="Jotunn.Managers.GUIManager.PixelFix*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_PixelFix" data-uid="Jotunn.Managers.GUIManager.PixelFix">PixelFix</h4>
+  <div class="markdown level1 summary">
+GUI container with automatic scaling for high res displays.
+Gets rebuild at every scene change so make sure to add your custom
+GUI prefabs again on each scene change.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use CustomGUIFront or CustomGUIBack&quot;)]
+public static GameObject PixelFix { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_AddKeyHint_Jotunn_Configs_KeyHintConfig_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.AddKeyHint(Jotunn.Configs.KeyHintConfig)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L493">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_AddKeyHint_" data-uid="Jotunn.Managers.GUIManager.AddKeyHint*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_AddKeyHint_Jotunn_Configs_KeyHintConfig_" data-uid="Jotunn.Managers.GUIManager.AddKeyHint(Jotunn.Configs.KeyHintConfig)">AddKeyHint(KeyHintConfig)</h4>
+  <div class="markdown level1 summary">
+Add a <a class="xref" href="Jotunn.Configs.KeyHintConfig.html">KeyHintConfig</a> to the manager.<br>
+Checks if the custom key hint is unique (i.e. the first one registered for an item).<br>
+Custom status effects are displayed in the game instead of the default 
+KeyHints for equipped tools or weapons they are registered for.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use KeyHintManager.AddKeyHint instead&quot;)]
+public bool AddKeyHint(KeyHintConfig hintConfig)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Jotunn.Configs.KeyHintConfig.html">KeyHintConfig</a></td>
+        <td><span class="parametername">hintConfig</span></td>
+        <td>The custom key hint config to add.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td>true if the custom key hint config was added to the manager.</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyButtonStyle_UnityEngine_UI_Button_System_Int32_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyButtonStyle(UnityEngine.UI.Button%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1243">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyButtonStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyButtonStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyButtonStyle_UnityEngine_UI_Button_System_Int32_" data-uid="Jotunn.Managers.GUIManager.ApplyButtonStyle(UnityEngine.UI.Button,System.Int32)">ApplyButtonStyle(UnityEngine.UI.Button, Int32)</h4>
+  <div class="markdown level1 summary">
+Apply valheim style to a <see cref="!:UnityEngine.UI.Button"></see> Component
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplyButtonStyle(UnityEngine.UI.Button button, int fontSize = 16)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">UnityEngine.UI.Button</span></td>
+        <td><span class="parametername">button</span></td>
+        <td>Component to apply the style to</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">fontSize</span></td>
+        <td>Optional font size, defaults to 16</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyDropdownStyle_Dropdown_System_Int32_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyDropdownStyle(Dropdown%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1350">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyDropdownStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyDropdownStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyDropdownStyle_Dropdown_System_Int32_" data-uid="Jotunn.Managers.GUIManager.ApplyDropdownStyle(Dropdown,System.Int32)">ApplyDropdownStyle(Dropdown, Int32)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to a <see cref="!:Dropdown"></see> component.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplyDropdownStyle(Dropdown dropdown, int fontSize = 16)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Dropdown</span></td>
+        <td><span class="parametername">dropdown</span></td>
+        <td>Component to apply the style to</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">fontSize</span></td>
+        <td>Optional font size, defaults to 16</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyInputFieldStyle_InputField_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyInputFieldStyle(InputField)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1285">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyInputFieldStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyInputFieldStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyInputFieldStyle_InputField_" data-uid="Jotunn.Managers.GUIManager.ApplyInputFieldStyle(InputField)">ApplyInputFieldStyle(InputField)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to an <see cref="!:InputField"></see> Component.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Only here for backward compat&quot;)]
+public void ApplyInputFieldStyle(InputField field)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">InputField</span></td>
+        <td><span class="parametername">field</span></td>
+        <td>Component to apply the style to</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyInputFieldStyle_InputField_System_Int32_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyInputFieldStyle(InputField%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1296">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyInputFieldStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyInputFieldStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyInputFieldStyle_InputField_System_Int32_" data-uid="Jotunn.Managers.GUIManager.ApplyInputFieldStyle(InputField,System.Int32)">ApplyInputFieldStyle(InputField, Int32)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to an <see cref="!:InputField"></see> Component.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplyInputFieldStyle(InputField field, int fontSize = 16)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">InputField</span></td>
+        <td><span class="parametername">field</span></td>
+        <td>Component to apply the style to</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">fontSize</span></td>
+        <td>Optional font size, defaults to 16</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyScrollbarStyle_Scrollbar_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyScrollbarStyle(Scrollbar)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1451">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyScrollbarStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyScrollbarStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyScrollbarStyle_Scrollbar_" data-uid="Jotunn.Managers.GUIManager.ApplyScrollbarStyle(Scrollbar)">ApplyScrollbarStyle(Scrollbar)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to a <see cref="!:Scrollbar"></see> component.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplyScrollbarStyle(Scrollbar scrollbar)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Scrollbar</span></td>
+        <td><span class="parametername">scrollbar</span></td>
+        <td>Component to apply the style to</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyScrollRectStyle_ScrollRect_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyScrollRectStyle(ScrollRect)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1426">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyScrollRectStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyScrollRectStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyScrollRectStyle_ScrollRect_" data-uid="Jotunn.Managers.GUIManager.ApplyScrollRectStyle(ScrollRect)">ApplyScrollRectStyle(ScrollRect)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to a <see cref="!:ScrollRect"></see> component.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplyScrollRectStyle(ScrollRect scrollRect)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ScrollRect</span></td>
+        <td><span class="parametername">scrollRect</span></td>
+        <td>Component to apply the style to</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplySliderStyle_Slider_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplySliderStyle(Slider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1487">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplySliderStyle_" data-uid="Jotunn.Managers.GUIManager.ApplySliderStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplySliderStyle_Slider_" data-uid="Jotunn.Managers.GUIManager.ApplySliderStyle(Slider)">ApplySliderStyle(Slider)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to a <see cref="!:Slider"></see> component.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplySliderStyle(Slider slider)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Slider</span></td>
+        <td><span class="parametername">slider</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplySliderStyle_Slider_Vector2_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplySliderStyle(Slider%2CVector2)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1497">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplySliderStyle_" data-uid="Jotunn.Managers.GUIManager.ApplySliderStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplySliderStyle_Slider_Vector2_" data-uid="Jotunn.Managers.GUIManager.ApplySliderStyle(Slider,Vector2)">ApplySliderStyle(Slider, Vector2)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to a <see cref="!:Slider"></see> component.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplySliderStyle(Slider slider, Vector2 handleSize)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Slider</span></td>
+        <td><span class="parametername">slider</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">handleSize</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyTextStyle_Text_Color_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyTextStyle(Text%2CColor%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1222">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyTextStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyTextStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyTextStyle_Text_Color_System_Int32_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.ApplyTextStyle(Text,Color,System.Int32,System.Boolean)">ApplyTextStyle(Text, Color, Int32, Boolean)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to a <see cref="!:Text"></see> Component.
+Uses <pre><code>GUIManager.Instance.AveriaSerifBold</code></pre> by default
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplyTextStyle(Text text, Color color, int fontSize = 16, bool createOutline = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Text</span></td>
+        <td><span class="parametername">text</span></td>
+        <td>Target component</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Color</span></td>
+        <td><span class="parametername">color</span></td>
+        <td>Custom color or <pre><code>GUIManager.Instance.ValheimOrange</code></pre></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">fontSize</span></td>
+        <td>Optional font size, defaults to 16</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">createOutline</span></td>
+        <td>creates an <see cref="!:Outline"></see> component when true</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyTextStyle_Text_Font_Color_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyTextStyle(Text%2CFont%2CColor%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1201">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyTextStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyTextStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyTextStyle_Text_Font_Color_System_Int32_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.ApplyTextStyle(Text,Font,Color,System.Int32,System.Boolean)">ApplyTextStyle(Text, Font, Color, Int32, Boolean)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to a <see cref="!:Text"></see> Component
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplyTextStyle(Text text, Font font, Color color, int fontSize = 16, bool createOutline = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Text</span></td>
+        <td><span class="parametername">text</span></td>
+        <td>Target component</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Font</span></td>
+        <td><span class="parametername">font</span></td>
+        <td>Own font or <pre><code>GUIManager.Instance.AveriaSerifBold</code></pre>/<pre><code>GUIManager.Instance.AveriaSerif</code></pre></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Color</span></td>
+        <td><span class="parametername">color</span></td>
+        <td>Custom color or <pre><code>GUIManager.Instance.ValheimOrange</code></pre></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">fontSize</span></td>
+        <td>Optional font size, defaults to 16</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">createOutline</span></td>
+        <td>creates an <see cref="!:Outline"></see> component when true</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyTextStyle_Text_System_Int32_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyTextStyle(Text%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1233">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyTextStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyTextStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyTextStyle_Text_System_Int32_" data-uid="Jotunn.Managers.GUIManager.ApplyTextStyle(Text,System.Int32)">ApplyTextStyle(Text, Int32)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to a <see cref="!:Text"></see> Component.
+Uses <pre><code>GUIManager.Instance.AveriaSerifBold</code></pre>, <pre><code>Color.white</code></pre> and creates an outline by default
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplyTextStyle(Text text, int fontSize = 16)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Text</span></td>
+        <td><span class="parametername">text</span></td>
+        <td>Target component</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">fontSize</span></td>
+        <td>Optional font size, defaults to 16</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyToogleStyle_UnityEngine_UI_Toggle_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyToogleStyle(UnityEngine.UI.Toggle)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1325">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyToogleStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyToogleStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyToogleStyle_UnityEngine_UI_Toggle_" data-uid="Jotunn.Managers.GUIManager.ApplyToogleStyle(UnityEngine.UI.Toggle)">ApplyToogleStyle(UnityEngine.UI.Toggle)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to a <see cref="!:UnityEngine.UI.Toggle"></see> component.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplyToogleStyle(UnityEngine.UI.Toggle toggle)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">UnityEngine.UI.Toggle</span></td>
+        <td><span class="parametername">toggle</span></td>
+        <td>Component to apply the style to</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_ApplyWoodpanelStyle_Transform_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.ApplyWoodpanelStyle(Transform)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1178">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_ApplyWoodpanelStyle_" data-uid="Jotunn.Managers.GUIManager.ApplyWoodpanelStyle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_ApplyWoodpanelStyle_Transform_" data-uid="Jotunn.Managers.GUIManager.ApplyWoodpanelStyle(Transform)">ApplyWoodpanelStyle(Transform)</h4>
+  <div class="markdown level1 summary">
+Apply Valheim style to a woodpanel.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ApplyWoodpanelStyle(Transform woodpanel)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">woodpanel</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_BlockInput_System_Boolean_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.BlockInput(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L185">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_BlockInput_" data-uid="Jotunn.Managers.GUIManager.BlockInput*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_BlockInput_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.BlockInput(System.Boolean)">BlockInput(Boolean)</h4>
+  <div class="markdown level1 summary">
+Block all input except GUI
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void BlockInput(bool state)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">state</span></td>
+        <td>Indicator if the input should be blocked or released</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateButton_System_String_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateButton(System.String%2CTransform%2CVector2%2CVector2%2CVector2%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L968">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateButton_" data-uid="Jotunn.Managers.GUIManager.CreateButton*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateButton_System_String_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateButton(System.String,Transform,Vector2,Vector2,Vector2,System.Single,System.Single)">CreateButton(String, Transform, Vector2, Vector2, Vector2, Single, Single)</h4>
+  <div class="markdown level1 summary">
+Create a new button (Valheim style).
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GameObject CreateButton(string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0F, float height = 0F)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">text</span></td>
+        <td>Text to display on the button</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td>Parent transform</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMin</span></td>
+        <td>Min anchor</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMax</span></td>
+        <td>Max anchor</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">position</span></td>
+        <td>Position</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">width</span></td>
+        <td>Set width if > 0</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">height</span></td>
+        <td>Set height if > 0</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td>Button GameObject in Valheim style</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateColorPicker_Vector2_Vector2_Vector2_Color_System_String_Jotunn_GUI_ColorPicker_ColorEvent_Jotunn_GUI_ColorPicker_ColorEvent_System_Boolean_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateColorPicker(Vector2%2CVector2%2CVector2%2CColor%2CSystem.String%2CJotunn.GUI.ColorPicker.ColorEvent%2CJotunn.GUI.ColorPicker.ColorEvent%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L551">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateColorPicker_" data-uid="Jotunn.Managers.GUIManager.CreateColorPicker*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateColorPicker_Vector2_Vector2_Vector2_Color_System_String_Jotunn_GUI_ColorPicker_ColorEvent_Jotunn_GUI_ColorPicker_ColorEvent_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.CreateColorPicker(Vector2,Vector2,Vector2,Color,System.String,Jotunn.GUI.ColorPicker.ColorEvent,Jotunn.GUI.ColorPicker.ColorEvent,System.Boolean)">CreateColorPicker(Vector2, Vector2, Vector2, Color, String, ColorPicker.ColorEvent, ColorPicker.ColorEvent, Boolean)</h4>
+  <div class="markdown level1 summary">
+Creates and displays a Valheim style ColorPicker
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void CreateColorPicker(Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Color original, string message, ColorPicker.ColorEvent onColorChanged, ColorPicker.ColorEvent onColorSelected, bool useAlpha = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMin</span></td>
+        <td>Min anchor on first instantiation</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMax</span></td>
+        <td>Max anchor on first instantiation</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">position</span></td>
+        <td>Position on first instantiation</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Color</span></td>
+        <td><span class="parametername">original</span></td>
+        <td>Color before editing</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">message</span></td>
+        <td>Display message</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Jotunn.GUI.ColorPicker.ColorEvent.html">ColorPicker.ColorEvent</a></td>
+        <td><span class="parametername">onColorChanged</span></td>
+        <td>Event that gets called when the color gets modified</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Jotunn.GUI.ColorPicker.ColorEvent.html">ColorPicker.ColorEvent</a></td>
+        <td><span class="parametername">onColorSelected</span></td>
+        <td>Event that gets called when one of the buttons done or cancel get pressed</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">useAlpha</span></td>
+        <td>When set to false the colors used don&apos;t have an alpha channel</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateDropDown_Transform_Vector2_Vector2_Vector2_System_Int32_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateDropDown(Transform%2CVector2%2CVector2%2CVector2%2CSystem.Int32%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1091">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateDropDown_" data-uid="Jotunn.Managers.GUIManager.CreateDropDown*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateDropDown_Transform_Vector2_Vector2_Vector2_System_Int32_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateDropDown(Transform,Vector2,Vector2,Vector2,System.Int32,System.Single,System.Single)">CreateDropDown(Transform, Vector2, Vector2, Vector2, Int32, Single, Single)</h4>
+  <div class="markdown level1 summary">
+Create dropdown field
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GameObject CreateDropDown(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, int fontSize = 16, float width = 0F, float height = 0F)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td>Parent transform</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMin</span></td>
+        <td>Min anchor</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMax</span></td>
+        <td>Max anchor</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">position</span></td>
+        <td>Position</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">fontSize</span></td>
+        <td>Optional font size, defaults to 16</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">width</span></td>
+        <td>Set width if > 0</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">height</span></td>
+        <td>Set height if > 0</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateGradientPicker_Vector2_Vector2_Vector2_Gradient_System_String_Jotunn_GUI_GradientPicker_GradientEvent_Jotunn_GUI_GradientPicker_GradientEvent_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateGradientPicker(Vector2%2CVector2%2CVector2%2CGradient%2CSystem.String%2CJotunn.GUI.GradientPicker.GradientEvent%2CJotunn.GUI.GradientPicker.GradientEvent)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L596">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateGradientPicker_" data-uid="Jotunn.Managers.GUIManager.CreateGradientPicker*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateGradientPicker_Vector2_Vector2_Vector2_Gradient_System_String_Jotunn_GUI_GradientPicker_GradientEvent_Jotunn_GUI_GradientPicker_GradientEvent_" data-uid="Jotunn.Managers.GUIManager.CreateGradientPicker(Vector2,Vector2,Vector2,Gradient,System.String,Jotunn.GUI.GradientPicker.GradientEvent,Jotunn.GUI.GradientPicker.GradientEvent)">CreateGradientPicker(Vector2, Vector2, Vector2, Gradient, String, GradientPicker.GradientEvent, GradientPicker.GradientEvent)</h4>
+  <div class="markdown level1 summary">
+Creates and displays a Valheim style GradientPicker
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void CreateGradientPicker(Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Gradient original, string message, GradientPicker.GradientEvent onGradientChanged, GradientPicker.GradientEvent onGradientSelected)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMin</span></td>
+        <td>Min anchor on first instantiation</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMax</span></td>
+        <td>Max anchor on first instantiation</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">position</span></td>
+        <td>Position on first instantiation</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Gradient</span></td>
+        <td><span class="parametername">original</span></td>
+        <td>Color before editing</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">message</span></td>
+        <td>Display message</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Jotunn.GUI.GradientPicker.GradientEvent.html">GradientPicker.GradientEvent</a></td>
+        <td><span class="parametername">onGradientChanged</span></td>
+        <td>Event that gets called when the gradient gets modified</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Jotunn.GUI.GradientPicker.GradientEvent.html">GradientPicker.GradientEvent</a></td>
+        <td><span class="parametername">onGradientSelected</span></td>
+        <td>Event that gets called when one of the buttons done or cancel gets pressed</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateInputField_Transform_Vector2_Vector2_Vector2_InputField_ContentType_System_String_System_Int32_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateInputField(Transform%2CVector2%2CVector2%2CVector2%2CInputField.ContentType%2CSystem.String%2CSystem.Int32%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1015">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateInputField_" data-uid="Jotunn.Managers.GUIManager.CreateInputField*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateInputField_Transform_Vector2_Vector2_Vector2_InputField_ContentType_System_String_System_Int32_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateInputField(Transform,Vector2,Vector2,Vector2,InputField.ContentType,System.String,System.Int32,System.Single,System.Single)">CreateInputField(Transform, Vector2, Vector2, Vector2, InputField.ContentType, String, Int32, Single, Single)</h4>
+  <div class="markdown level1 summary">
+Create a new InputField (Valheim style).
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GameObject CreateInputField(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, InputField.ContentType contentType = null, string placeholderText = null, int fontSize = 16, float width = 0F, float height = 0F)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td>Parent transform</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMin</span></td>
+        <td>Min anchor</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMax</span></td>
+        <td>Max anchor</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">position</span></td>
+        <td>Position</td>
+      </tr>
+      <tr>
+        <td><span class="xref">InputField.ContentType</span></td>
+        <td><span class="parametername">contentType</span></td>
+        <td>Content type for the input field</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">placeholderText</span></td>
+        <td>Text to display as a placeholder (can be null)</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">fontSize</span></td>
+        <td>Optional font size, defaults to 16</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">width</span></td>
+        <td>Set width if > 0</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">height</span></td>
+        <td>Set height if > 0</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td>Input field GameObject in Valheim style</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateKeyBindField_System_String_Transform_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateKeyBindField(System.String%2CTransform%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1140">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateKeyBindField_" data-uid="Jotunn.Managers.GUIManager.CreateKeyBindField*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateKeyBindField_System_String_Transform_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateKeyBindField(System.String,Transform,System.Single,System.Single)">CreateKeyBindField(String, Transform, Single, Single)</h4>
+  <div class="markdown level1 summary">
+Create key binding field
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GameObject CreateKeyBindField(string text, Transform parent, float width, float height)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">text</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">width</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">height</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateScrollView_Transform_System_Boolean_System_Boolean_System_Single_System_Single_ColorBlock_Color_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateScrollView(Transform%2CSystem.Boolean%2CSystem.Boolean%2CSystem.Single%2CSystem.Single%2CColorBlock%2CColor%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L730">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateScrollView_" data-uid="Jotunn.Managers.GUIManager.CreateScrollView*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateScrollView_Transform_System_Boolean_System_Boolean_System_Single_System_Single_ColorBlock_Color_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateScrollView(Transform,System.Boolean,System.Boolean,System.Single,System.Single,ColorBlock,Color,System.Single,System.Single)">CreateScrollView(Transform, Boolean, Boolean, Single, Single, ColorBlock, Color, Single, Single)</h4>
+  <div class="markdown level1 summary">
+Create a complete scroll view
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GameObject CreateScrollView(Transform parent, bool showHorizontalScrollbar, bool showVerticalScrollbar, float handleSize, float handleDistanceToBorder, ColorBlock handleColors, Color slidingAreaBackgroundColor, float width, float height)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td>parent transform</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">showHorizontalScrollbar</span></td>
+        <td>show horizontal scrollbar</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">showVerticalScrollbar</span></td>
+        <td>show vertical scrollbar</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">handleSize</span></td>
+        <td>size of the handle</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">handleDistanceToBorder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">ColorBlock</span></td>
+        <td><span class="parametername">handleColors</span></td>
+        <td>Colorblock for the handle</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Color</span></td>
+        <td><span class="parametername">slidingAreaBackgroundColor</span></td>
+        <td>Background color for the sliding area</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">width</span></td>
+        <td>rect width</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">height</span></td>
+        <td>rect height</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateText_System_String_Transform_Vector2_Vector2_Vector2_Font_System_Int32_Color_System_Boolean_Color_System_Single_System_Single_System_Boolean_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateText(System.String%2CTransform%2CVector2%2CVector2%2CVector2%2CFont%2CSystem.Int32%2CColor%2CSystem.Boolean%2CColor%2CSystem.Single%2CSystem.Single%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L921">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateText_" data-uid="Jotunn.Managers.GUIManager.CreateText*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateText_System_String_Transform_Vector2_Vector2_Vector2_Font_System_Int32_Color_System_Boolean_Color_System_Single_System_Single_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.CreateText(System.String,Transform,Vector2,Vector2,Vector2,Font,System.Int32,Color,System.Boolean,Color,System.Single,System.Single,System.Boolean)">CreateText(String, Transform, Vector2, Vector2, Vector2, Font, Int32, Color, Boolean, Color, Single, Single, Boolean)</h4>
+  <div class="markdown level1 summary">
+Create a <see cref="!:GameObject"></see> with a Text (and optional Outline and ContentSizeFitter) component
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GameObject CreateText(string text, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Font font, int fontSize, Color color, bool outline, Color outlineColor, float width, float height, bool addContentSizeFitter)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">text</span></td>
+        <td>Text to show</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td>Parent transform</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMin</span></td>
+        <td>Anchor min</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMax</span></td>
+        <td>Anchor max</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">position</span></td>
+        <td>Anchored position</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Font</span></td>
+        <td><span class="parametername">font</span></td>
+        <td>Font</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">fontSize</span></td>
+        <td>Font size</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Color</span></td>
+        <td><span class="parametername">color</span></td>
+        <td>Font color</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">outline</span></td>
+        <td>Add outline component</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Color</span></td>
+        <td><span class="parametername">outlineColor</span></td>
+        <td>Outline color</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">width</span></td>
+        <td>Width</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">height</span></td>
+        <td>Height</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">addContentSizeFitter</span></td>
+        <td>Add ContentSizeFitter</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td>A text <see cref="!:GameObject"></see></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateToggle_Transform_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateToggle(Transform%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L1065">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateToggle_" data-uid="Jotunn.Managers.GUIManager.CreateToggle*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateToggle_Transform_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateToggle(Transform,System.Single,System.Single)">CreateToggle(Transform, Single, Single)</h4>
+  <div class="markdown level1 summary">
+Create toggle field
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GameObject CreateToggle(Transform parent, float width, float height)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td>Parent transform</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">width</span></td>
+        <td>Set width</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">height</span></td>
+        <td>Set height</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateWoodpanel_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateWoodpanel(Transform%2CVector2%2CVector2%2CVector2%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L656">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateWoodpanel_" data-uid="Jotunn.Managers.GUIManager.CreateWoodpanel*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateWoodpanel_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateWoodpanel(Transform,Vector2,Vector2,Vector2,System.Single,System.Single)">CreateWoodpanel(Transform, Vector2, Vector2, Vector2, Single, Single)</h4>
+  <div class="markdown level1 summary">
+Creates a Valheim style woodpanel which is draggable per default
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GameObject CreateWoodpanel(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0F, float height = 0F)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td>Parent <see cref="!:Transform"></see></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMin</span></td>
+        <td>Minimal anchor</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMax</span></td>
+        <td>Maximal anchor</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">position</span></td>
+        <td>Anchored position</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">width</span></td>
+        <td>Optional width</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">height</span></td>
+        <td>Optional height</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td>A <see cref="!:GameObject"></see> as a Valheim style woodpanel</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_CreateWoodpanel_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_System_Boolean_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.CreateWoodpanel(Transform%2CVector2%2CVector2%2CVector2%2CSystem.Single%2CSystem.Single%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L672">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_CreateWoodpanel_" data-uid="Jotunn.Managers.GUIManager.CreateWoodpanel*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_CreateWoodpanel_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.CreateWoodpanel(Transform,Vector2,Vector2,Vector2,System.Single,System.Single,System.Boolean)">CreateWoodpanel(Transform, Vector2, Vector2, Vector2, Single, Single, Boolean)</h4>
+  <div class="markdown level1 summary">
+Creates a Valheim style woodpanel, can optionally be draggable
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public GameObject CreateWoodpanel(Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 position, float width = 0F, float height = 0F, bool draggable = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Transform</span></td>
+        <td><span class="parametername">parent</span></td>
+        <td>Parent <see cref="!:Transform"></see></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMin</span></td>
+        <td>Minimal anchor</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">anchorMax</span></td>
+        <td>Maximal anchor</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Vector2</span></td>
+        <td><span class="parametername">position</span></td>
+        <td>Anchored position</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">width</span></td>
+        <td>Optional width</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td><span class="parametername">height</span></td>
+        <td>Optional height</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">draggable</span></td>
+        <td>Optional flag if the panel should be draggable (default true)</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">GameObject</span></td>
+        <td>A <see cref="!:GameObject"></see> as a Valheim style woodpanel</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_GetSprite_System_String_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.GetSprite(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L514">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_GetSprite_" data-uid="Jotunn.Managers.GUIManager.GetSprite*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_GetSprite_System_String_" data-uid="Jotunn.Managers.GUIManager.GetSprite(System.String)">GetSprite(String)</h4>
+  <div class="markdown level1 summary">
+Get a sprite by name.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Sprite GetSprite(string spriteName)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">spriteName</span></td>
+        <td>The sprite name</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Sprite</span></td>
+        <td>The sprite with given name</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_Init.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.Init%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L266">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_Init_" data-uid="Jotunn.Managers.GUIManager.Init*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_Init" data-uid="Jotunn.Managers.GUIManager.Init">Init()</h4>
+  <div class="markdown level1 summary">
+Initialize the manager
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Init()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_IsHeadless.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.IsHeadless%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L166">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_IsHeadless_" data-uid="Jotunn.Managers.GUIManager.IsHeadless*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_IsHeadless" data-uid="Jotunn.Managers.GUIManager.IsHeadless">IsHeadless()</h4>
+  <div class="markdown level1 summary">
+Detect headless mode (aka dedicated server)
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool IsHeadless()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_RemoveKeyHint_Jotunn_Configs_KeyHintConfig_.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.RemoveKeyHint(Jotunn.Configs.KeyHintConfig)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L503">View Source</a>
+  </span>
+  <a id="Jotunn_Managers_GUIManager_RemoveKeyHint_" data-uid="Jotunn.Managers.GUIManager.RemoveKeyHint*"></a>
+  <h4 id="Jotunn_Managers_GUIManager_RemoveKeyHint_Jotunn_Configs_KeyHintConfig_" data-uid="Jotunn.Managers.GUIManager.RemoveKeyHint(Jotunn.Configs.KeyHintConfig)">RemoveKeyHint(KeyHintConfig)</h4>
+  <div class="markdown level1 summary">
+Removes a <a class="xref" href="Jotunn.Configs.KeyHintConfig.html">KeyHintConfig</a> from the game.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use KeyHintManager.RemoveKeyHint instead&quot;)]
+public void RemoveKeyHint(KeyHintConfig hintConfig)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Jotunn.Configs.KeyHintConfig.html">KeyHintConfig</a></td>
+        <td><span class="parametername">hintConfig</span></td>
+        <td>The custom key hint config to add.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="events">Events
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_OnCustomGUIAvailable.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.OnCustomGUIAvailable%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L57">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_GUIManager_OnCustomGUIAvailable" data-uid="Jotunn.Managers.GUIManager.OnCustomGUIAvailable">OnCustomGUIAvailable</h4>
+  <div class="markdown level1 summary">
+Event that gets fired every time the Unity scene changed and new CustomGUI 
+objects were created. Subscribe to this event to create your custom GUI objects
+and add them as a child to either <a class="xref" href="Jotunn.Managers.GUIManager.html#Jotunn_Managers_GUIManager_CustomGUIFront">CustomGUIFront</a> or <a class="xref" href="Jotunn.Managers.GUIManager.html#Jotunn_Managers_GUIManager_CustomGUIBack">CustomGUIBack</a>.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static event Action OnCustomGUIAvailable</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Action</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager_OnPixelFixCreated.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager.OnPixelFixCreated%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L42">View Source</a>
+  </span>
+  <h4 id="Jotunn_Managers_GUIManager_OnPixelFixCreated" data-uid="Jotunn.Managers.GUIManager.OnPixelFixCreated">OnPixelFixCreated</h4>
+  <div class="markdown level1 summary">
+Event that gets fired every time the Unity scene changed and a new PixelFix
+object was created. Subscribe to this event to create your custom GUI objects
+and add them as a child to the <a class="xref" href="Jotunn.Managers.GUIManager.html#Jotunn_Managers_GUIManager_PixelFix">PixelFix</a>.
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use OnCustomGUIAvailable&quot;)]
+public static event Action OnPixelFixCreated</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Action</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="Jotunn.PrefabExtension.html#Jotunn_PrefabExtension_FixReferences_System_Object_">PrefabExtension.FixReferences(Object)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/new/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/apiSpec/new?filename=Jotunn_Managers_GUIManager.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Managers/GUIManager.cs/#L23" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              
+              <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

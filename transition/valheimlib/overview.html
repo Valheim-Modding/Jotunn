@@ -1,0 +1,263 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Transitioning from ValheimLib </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Transitioning from ValheimLib ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="transitioning-from-valheimlib">Transitioning from ValheimLib</h1>
+
+<p>This walkthrough requires previous steps from the <a href="../../guides/quickstart.html">Quick Start</a> before proceeding.</p>
+<p>Once your Jotunn dependencies have been resolved, its time that we start stripping out ValheimLib. First, we remove the VL binary from our dependencies, and then removing the <code>using</code> namespaces.</p>
+<pre><code class="lang-cs">//using ValheimLib;
+//using ValheimLib.ODB;
+using Jotunn;
+using Jotunn.Entities;
+using Jotunn.Managers;
+</code></pre><h3 id="code-refactor">Code Refactor</h3>
+<p>Now, we can begin to refactor our code. Primarily, VL is used to fix references to vanilla assets at runtime, and therefore we will quickly run through Cinnabun&#39;s backpack example to use as a conversion base, describing the process as we go.</p>
+<p>Starting asset code:</p>
+<pre><code class="lang-cs">using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
+using System.Resources;
+using UnityEngine;
+//using ValheimLib;
+//using ValheimLib.ODB;
+using Jotunn;
+using Jotunn.Entities;
+using Resources = Backpack.Properties.Resources;
+using Jotunn.Managers;
+
+namespace Backpack
+{
+    public class ModAssets
+    {
+        private static ModAssets instance;
+        public static ModAssets Instance
+        {
+            get
+            {
+                if (instance == null) instance = new ModAssets();
+                return instance;
+            }
+
+        }
+
+        private GameObject IronBackpackPrefab;
+
+        private GameObject SilverBackpackPrefab;
+
+        ModAssets()
+        {
+
+        }
+
+
+        public void Init()
+        {
+            var ab = AssetBundle.LoadFromMemory(Properties.Resources.eviesbackpacks);
+            IronBackpackPrefab = InitPrefab(ab,
+                &quot;Assets/Evie/CapeIronBackpack.prefab&quot;);
+            LoadCraftedItem(IronBackpackPrefab, new List&lt;Piece.Requirement&gt;
+            {
+                MockRequirement.Create(&quot;LeatherScraps&quot;, 10),
+                MockRequirement.Create(&quot;DeerHide&quot;, 2),
+                MockRequirement.Create(&quot;Iron&quot;, 4),
+            });
+            SilverBackpackPrefab = InitPrefab(ab, 
+                &quot;Assets/Evie/CapeSilverBackpack.prefab&quot;);
+            LoadCraftedItem(SilverBackpackPrefab, new List&lt;Piece.Requirement&gt;
+            {
+                MockRequirement.Create(&quot;LeatherScraps&quot;, 5),
+                MockRequirement.Create(&quot;DeerHide&quot;, 10),
+                MockRequirement.Create(&quot;Silver&quot;, 4),
+            });
+            InitLocalisation();
+        }
+
+        private GameObject InitPrefab(AssetBundle ab, string loc)
+        {
+            var prefab = ab.LoadAsset&lt;GameObject&gt;(loc);
+            if(!prefab) Main.log.LogWarning($&quot;Failed to load prefab: {loc}&quot;);
+            return prefab;
+        }
+
+        private void LoadCraftedItem(GameObject prefab, List&lt;Piece.Requirement&gt; ingredients, string craftingStation = &quot;piece_workbench&quot;)
+        {
+            if(prefab) 
+            {
+                var CI = new CustomItem(prefab, true);
+                var recipe = ScriptableObject.CreateInstance&lt;Recipe&gt;();
+                recipe.m_item = prefab.GetComponent&lt;ItemDrop&gt;();
+                recipe.m_craftingStation = Mock&lt;CraftingStation&gt;.Create(craftingStation);
+                recipe.m_resources = ingredients.ToArray();
+                var CR = new CustomRecipe(recipe, true, true);
+                ObjectDBHelper.Add(CI);
+                ObjectDBHelper.Add(CR);
+                Main.log.LogDebug($&quot;Successfully loaded new CraftedItem {prefab.name} for {craftingStation}.&quot;);
+            }
+        }
+
+        private static void InitLocalisation()
+        {
+            ResourceSet resourceSet =   Resources.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+            foreach (DictionaryEntry token in resourceSet)
+            {
+                if (token.Key.ToString().StartsWith(&quot;$&quot;))
+                {
+                    Language.AddToken(token.Key.ToString(), token.Value.ToString(), false);
+                    Main.log.LogDebug($&quot;Added language token for {token.Key}:{token.Value}&quot;);
+                }
+            }
+        }
+    }
+}
+</code></pre><h4 id="items-and-recipes">Items and Recipes</h4>
+<p>Items and recipes have experienced some changes, however for the most part the entity namespaces are unchanged. <code>CustomItem</code>, <code>CustomPiece</code>, and <code>CustomRecipe</code> are now accessible through the <code>Jotunn.Entities</code> namespace.
+Simply by referencing the entities namespace, we have likely resolved the majority of any errors left from conversion.</p>
+<p>Now, one of the errors produced now that we lack the ValheimLib dependency, is <code>The name &#39;ObjectDBHelper&#39; does not exist in the current context</code>. Instead of using the ObjectDBHelper interface in ValheimLib, Jotunn has now consolidated item and recipe collection related functions to the <code>ItemManager</code> namespace, that is accessed through its <code>Instance</code> property; however we will still use the valheim entity abstractions in order to facilitate fixing of references at runtime. In order to implement these changes, we must change lines 78,79 from:</p>
+<pre><code class="lang-cs">ObjectDBHelper.Add(CI);
+ObjectDBHelper.Add(CR);
+</code></pre><p>to:</p>
+<pre><code class="lang-cs">ItemManager.Instance.AddItem(CI);
+ItemManager.Instance.AddRecipe(CR);
+</code></pre><h4 id="localizations">Localizations</h4>
+<p>Localizations are another easy one. In the method above, we can see an implementation where the developer was using embedded resources to store language tokens instead of using the json parser. While the file parse needs no specific transition guide as it remains unchanged, adding language tokens manually has again moved to a different namespace.</p>
+<p>We will modify line 92 from:</p>
+<pre><code class="lang-cs">Language.AddToken(token.Key.ToString(), token.Value.ToString(), false);
+</code></pre><p>to:</p>
+<pre><code class="lang-cs">LocalizationManager.Instance.AddToken(token.Key.ToString(), token.Value.ToString(), false);
+</code></pre><p>Done! Now all thats left is to ensure that copy: <code>SolutionDir\packages\JotunnLib\lib\net462\Jotunn.dll</code> to our <code>Valheim_Install\BepInEx\plugins\</code> directory, if you do not already have one there.</p>
+<p>Our plugin should now build, run, and load our assets ingame as would normally be expected. Transition complete!</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/3b2d96b0edf3b3dcd997a8c17b20b9204f365fcd/JotunnLib/Documentation/transition/valheimlib/overview.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              
+              <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
