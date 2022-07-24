@@ -401,17 +401,9 @@ namespace Jotunn.Managers
             /// <returns></returns>
             public static Object GetPrefab(Type type, string name)
             {
-                if (dictionaryCache.TryGetValue(type, out var map))
+                if (GetCachedMap(type).TryGetValue(name, out var unityObject))
                 {
-                    if (map.TryGetValue(name, out var unityObject))
-                    {
-                        return unityObject;
-                    }
-                }
-                else
-                {
-                    InitCache(type);
-                    return GetPrefab(type, name);
+                    return unityObject;
                 }
 
                 return null;
@@ -435,12 +427,7 @@ namespace Jotunn.Managers
             /// <returns></returns>
             public static Dictionary<string, Object> GetPrefabs(Type type)
             {
-                if (dictionaryCache.TryGetValue(type, out var map))
-                {
-                    return map;
-                }
-                InitCache(type);
-                return GetPrefabs(type);
+                return GetCachedMap(type);
             }
 
             private static Transform GetParent(Object obj)
@@ -481,9 +468,19 @@ namespace Jotunn.Managers
                 return unityObject;
             }
 
-            private static void InitCache(Type type, Dictionary<string, Object> map = null)
+            private static Dictionary<string, Object> GetCachedMap(Type type)
             {
-                map ??= new Dictionary<string, Object>();
+                if (dictionaryCache.TryGetValue(type, out var map))
+                {
+                    return map;
+                }
+                return InitCache(type);
+            }
+
+            private static Dictionary<string, Object> InitCache(Type type)
+            {
+                Dictionary<string, Object> map = new Dictionary<string, Object>();
+
                 foreach (var unityObject in Resources.FindObjectsOfTypeAll(type))
                 {
                     string name = unityObject.name;
@@ -491,6 +488,7 @@ namespace Jotunn.Managers
                 }
 
                 dictionaryCache[type] = map;
+                return map;
             }
 
             internal static void ClearCache()
