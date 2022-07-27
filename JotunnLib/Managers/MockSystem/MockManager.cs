@@ -343,16 +343,16 @@ namespace Jotunn.Managers
                 }
             }
 
-            Shader usedShader = material.shader;
-
-            if (usedShader)
-            {
-                Shader realShader = Shader.Find(usedShader.name) ?? PrefabManager.Cache.GetPrefab<Shader>(usedShader.name);
-                if (realShader && realShader != usedShader)
-                {
-                    material.shader = realShader;
-                }
-            }
+            // Shader usedShader = material.shader;
+            //
+            // if (usedShader)
+            // {
+            //     Shader realShader = Shader.Find(usedShader.name) ?? PrefabManager.Cache.GetPrefab<Shader>(usedShader.name);
+            //     if (realShader && realShader != usedShader)
+            //     {
+            //         material.shader = realShader;
+            //     }
+            // }
         }
     }
 }

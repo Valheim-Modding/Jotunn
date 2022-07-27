@@ -1,4 +1,8 @@
-# Changelog
+﻿# Changelog
+
+## Version 2.7.5
+* Disabled mock shader resolve, seems to be causing problems and needs to be investigated more
+
 ## Version 2.7.4
 * Changed that non-resolvable mock textures on a material only print a warning instead of skipping the whole prefab
 * Fixed mock system did not resolve some arrays correctly
