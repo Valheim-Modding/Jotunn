@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.7.6
+* Added Hint to ButtonConfig, overrides translated HintToken
+
 ## Version 2.7.5
 * Disabled mock shader resolve, seems to be causing problems and needs to be investigated more
 

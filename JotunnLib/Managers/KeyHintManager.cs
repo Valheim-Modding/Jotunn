@@ -285,7 +285,7 @@ namespace Jotunn.Managers
                 {
                     key = LocalizationManager.Instance.TryTranslate(key);
                 }
-                string hint = LocalizationManager.Instance.TryTranslate(buttonConfig.HintToken);
+                string hint = buttonConfig.Hint ?? LocalizationManager.Instance.TryTranslate(buttonConfig.HintToken);
 
                 if (string.IsNullOrEmpty(buttonConfig.Axis) || !buttonConfig.Axis.Equals("Mouse ScrollWheel"))
                 {
