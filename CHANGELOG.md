@@ -2,6 +2,7 @@
 
 ## Version 2.7.6
 * Added fixed Hint to ButtonConfig, overrides translated HintToken
+* Fixed source mod of new prefabs in custom locations is now set to the corresponding mod instead of Jotunn
 
 ## Version 2.7.5
 * Disabled mock shader resolve, seems to be causing problems and needs to be investigated more

@@ -296,13 +296,14 @@ namespace Jotunn.Managers
 
                         foreach (var znet in zoneLocation.m_netViews)
                         {
-                            if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(znet.GetPrefabName().GetStableHashCode()))
+                            string prefabName = znet.GetPrefabName();
+                            if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
                             {
-                                var prefab = Object.Instantiate(znet.gameObject,
-                                    PrefabManager.Instance.PrefabContainer.transform);
-                                prefab.name = znet.GetPrefabName();
-                                PrefabManager.Instance.AddPrefab(prefab);
-                                PrefabManager.Instance.RegisterToZNetScene(prefab);
+                                var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
+                                prefab.name = prefabName;
+                                CustomPrefab customPrefab = new CustomPrefab(prefab, customLocation.SourceMod);
+                                PrefabManager.Instance.AddPrefab(customPrefab);
+                                PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
                             }
                         }
 
@@ -310,13 +311,14 @@ namespace Jotunn.Managers
 
                         foreach (var znet in zoneLocation.m_randomSpawns.SelectMany(x => x.m_childNetViews))
                         {
-                            if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(znet.GetPrefabName().GetStableHashCode()))
+                            string prefabName = znet.GetPrefabName();
+                            if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
                             {
-                                var prefab = Object.Instantiate(znet.gameObject,
-                                    PrefabManager.Instance.PrefabContainer.transform);
-                                prefab.name = znet.GetPrefabName();
-                                PrefabManager.Instance.AddPrefab(prefab);
-                                PrefabManager.Instance.RegisterToZNetScene(prefab);
+                                var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
+                                prefab.name = prefabName;
+                                CustomPrefab customPrefab = new CustomPrefab(prefab, customLocation.SourceMod);
+                                PrefabManager.Instance.AddPrefab(customPrefab);
+                                PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
                             }
                         }
 
