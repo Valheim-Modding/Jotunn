@@ -129,6 +129,11 @@ namespace Jotunn.Configs
         ///     Interval in which the check timer for the repeat delay is decremented.
         /// </summary>
         public float RepeatInterval { get; set; } = 0.0f;
+        
+        /// <summary>
+        ///     Key hint text, overrides HintToken when set
+        /// </summary>
+        public string Hint { get; set; } = null;
 
         /// <summary>
         ///     Token for translating the key hint text.
