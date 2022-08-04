@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.7.7
+* Fixed GUIManager.BlockInput also blocking Escape from opening the menu in-game
+
 ## Version 2.7.6
 * Added fixed Hint to ButtonConfig, overrides translated HintToken
 * Fixed source mod of new prefabs in custom locations is now set to the corresponding mod instead of Jotunn

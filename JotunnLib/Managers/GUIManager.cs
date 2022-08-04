@@ -259,6 +259,14 @@ namespace Jotunn.Managers
                 __result = true;
             }
         }
+        
+        private static void InventoryGui_IsVisible(ref bool __result)
+        {
+            if (InputBlocked)
+            {
+                __result = true;
+            }
+        }
 
         /// <summary>
         ///     Initialize the manager
@@ -288,6 +296,9 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible)), HarmonyPostfix]
             private static void Menu_IsVisible(ref bool __result) => GUIManager.Menu_IsVisible(ref __result);
+            
+            [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.IsVisible)), HarmonyPostfix]
+            private static void InventoryGui_IsVisible(ref bool __result) => GUIManager.InventoryGui_IsVisible(ref __result);
 
             [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui)), HarmonyPostfix]
             private static void FejdStartup_SetupGui(FejdStartup __instance) => Instance.FejdStartup_SetupGui(__instance);
