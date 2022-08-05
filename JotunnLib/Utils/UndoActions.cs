@@ -137,7 +137,10 @@ namespace Jotunn.Utils
         /// </summary>
         public class UndoCreate : UndoManager.IUndoAction
         {
-            private ZDO[] Data;
+            /// <summary>
+            ///     Current ZDO data of this action.
+            /// </summary>
+            public ZDO[] Data;
 
             /// <summary>
             ///     Create new undo data for ZDO creation operations. Clones all ZDO data to prevent NREs.
@@ -156,7 +159,7 @@ namespace Jotunn.Utils
             /// <summary>
             ///     Remove stored ZDOs again.
             /// </summary>
-            public void Undo()
+            public virtual void Undo()
             {
                 Data = UndoHelper.Remove(Data);
             }
@@ -169,7 +172,7 @@ namespace Jotunn.Utils
             /// <summary>
             ///     Recreate stored ZDOs again.
             /// </summary>
-            public void Redo()
+            public virtual void Redo()
             {
                 Data = UndoHelper.Place(Data);
             }
@@ -185,7 +188,10 @@ namespace Jotunn.Utils
         /// </summary>
         public class UndoRemove : UndoManager.IUndoAction
         {
-            private ZDO[] Data;
+            /// <summary>
+            ///     Current ZDO data of this action.
+            /// </summary>
+            public ZDO[] Data;
             
             /// <summary>
             ///     Create new undo data for ZDO removal operations. Clones all ZDO data to prevent NREs.
@@ -204,7 +210,7 @@ namespace Jotunn.Utils
             /// <summary>
             ///     Recreate stored ZDOs again.
             /// </summary>
-            public void Undo()
+            public virtual void Undo()
             {
                 Data = UndoHelper.Place(Data);
             }
@@ -217,7 +223,7 @@ namespace Jotunn.Utils
             /// <summary>
             ///     Remove stored ZDOs again.
             /// </summary>
-            public void Redo()
+            public virtual void Redo()
             {
                 Data = UndoHelper.Remove(Data);
             }
@@ -318,7 +324,7 @@ namespace Jotunn.Utils
             /// <summary>
             ///     Sets terrain data to the stored values of the "before" state.
             /// </summary>
-            public void Undo()
+            public virtual void Undo()
             {
                 UndoHelper.ApplyData(Before, Position, Radius);
             }
@@ -331,7 +337,7 @@ namespace Jotunn.Utils
             /// <summary>
             ///     Sets terrain data to the stored values of the "after" state.
             /// </summary>
-            public void Redo()
+            public virtual void Redo()
             {
                 UndoHelper.ApplyData(After, Position, Radius);
             }
