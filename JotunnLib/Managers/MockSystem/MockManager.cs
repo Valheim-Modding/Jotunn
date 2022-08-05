@@ -112,7 +112,6 @@ namespace Jotunn.Managers
             return (T)GetRealPrefabFromMock(unityObject, typeof(T));
         }
 
-#pragma warning disable CS0618
         /// <summary>
         ///     Will try to find the real vanilla prefab from the given mock
         /// </summary>
@@ -127,13 +126,8 @@ namespace Jotunn.Managers
             }
 
             var unityObjectName = unityObject.name;
-            var isVLMock = unityObjectName.StartsWith(MockPrefix, StringComparison.Ordinal);
-            var isJVLMock = unityObjectName.StartsWith(JVLMockPrefix, StringComparison.Ordinal);
-            if (isVLMock || isJVLMock)
+            if (IsMockName(unityObjectName, out unityObjectName))
             {
-                if (isVLMock) unityObjectName = unityObjectName.Substring(MockPrefix.Length);
-                if (isJVLMock) unityObjectName = unityObjectName.Substring(JVLMockPrefix.Length);
-
                 // Cut off the suffix in the name to correctly query the original material
                 if (unityObject is Material)
                 {
@@ -161,7 +155,6 @@ namespace Jotunn.Managers
 
             return null;
         }
-#pragma warning restore CS0618
 
         // Thanks for not using the Resources folder IronGate
         // There is probably some oddities in there
@@ -183,6 +176,26 @@ namespace Jotunn.Managers
             {
                 FixMemberReferences(member, objectToFix, depth);
             }
+        }
+
+        private static bool IsMockName(string name, out string cleanedName)
+        {
+            if (name.StartsWith(JVLMockPrefix, StringComparison.Ordinal))
+            {
+                cleanedName = name.Substring(JVLMockPrefix.Length);
+                return true;
+            }
+
+#pragma warning disable CS0618
+            if (name.StartsWith(MockPrefix, StringComparison.Ordinal))
+            {
+                cleanedName = name.Substring(MockPrefix.Length);
+                return true;
+            }
+#pragma warning restore CS0618
+
+            cleanedName = name;
+            return false;
         }
 
         private static void FixMemberReferences(MemberBase member, object objectToFix, int depth)
@@ -343,16 +356,17 @@ namespace Jotunn.Managers
                 }
             }
 
-            // Shader usedShader = material.shader;
-            //
-            // if (usedShader)
-            // {
-            //     Shader realShader = Shader.Find(usedShader.name) ?? PrefabManager.Cache.GetPrefab<Shader>(usedShader.name);
-            //     if (realShader && realShader != usedShader)
-            //     {
-            //         material.shader = realShader;
-            //     }
-            // }
+            Shader usedShader = material.shader;
+
+            if (usedShader && IsMockName(usedShader.name, out string cleanedShaderName))
+            {
+                Shader realShader = Shader.Find(cleanedShaderName);
+
+                if (realShader)
+                {
+                    material.shader = realShader;
+                }
+            }
         }
     }
 }
