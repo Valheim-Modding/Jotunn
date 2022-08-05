@@ -47,3 +47,12 @@ private void AddMockedItems()
 > You don't need to copy vanilla prefabs in order to use mocked references. You can facilitate the system using you own prefabs, too. Just make sure to create a custom entity using that prefab (CustomPrefab, CustomItem, etc) and set the fixReference parameter to true.
 
 If you have been following the Unity Asset Creation guide, you can return back to where you [left off](asset-creation.md#assetbundle).
+
+## Shader Mocking
+The only special case is shader mocking for custom materials.
+The asset name isn't their object name, which means that renaming it will not result in a valid mock.
+
+Instead, create a new stump shader or use the dummy shader from AssetRipper and change the first line to contain the `JVLmock_` prefix.
+Now you can use this shader as normally on your materials and Jötunn will resolve the right Shader for you.
+
+![mocks assigned](../images/data/shader_mock_edit.png)
