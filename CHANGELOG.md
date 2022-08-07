@@ -3,6 +3,7 @@
 ## Version 2.7.7
 * Fixed GUIManager.BlockInput also blocking Escape from opening the menu in-game
 * Fixed Shader mocking and enabled it again. Shaders are a bit special and only those that are correctly marked as mocks are resolved, please see https://valheim-modding.github.io/Jotunn/tutorials/asset-mocking.html#shader-mocking
+* Fixed disabling a piece inside a PieceConfig was not working
 
 ## Version 2.7.6
 * Added fixed Hint to ButtonConfig, overrides translated HintToken

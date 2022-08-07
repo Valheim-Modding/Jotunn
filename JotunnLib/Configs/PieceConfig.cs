@@ -80,7 +80,7 @@ namespace Jotunn.Configs
                 return;
             }
 
-            piece.enabled = Enabled;
+            piece.m_enabled = Enabled;
             piece.m_allowedInDungeons = AllowedInDungeons;
             
             // Set name if given
