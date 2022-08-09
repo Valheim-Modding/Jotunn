@@ -6,7 +6,7 @@ New Assets can be created with Unity and imported into Valheim using Jötunn. In
 
 Creation Tools
 * [Visual Studio](https://visualstudio.microsoft.com/de/downloads/) - editor for our plugin code
-* [Unity 2019.4.31](https://unity3d.com/unity/whats-new/2019.4.31) - Game engine that Valheim runs in
+* [Unity 2020.3.33](https://unity3d.com/unity/whats-new/2020.3.33) - Game engine that Valheim runs in
 * [AssetRipper](https://github.com/ds5678/AssetRipper/releases) - tool to rip assets and scripts from the release version of the game
 
 Game Mods (install these into your game as our mod has dependencies on them)
@@ -23,7 +23,7 @@ To add an item to the game, a mod maker will have to:
 
 ## Unity Editor Setup
 
-Valheim uses Unity Version **2019.4.31**
+Valheim uses Unity Version **2020.3.33**
 
 If you don't have Unity already installed, download [UnityHub](https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe) from their website or install it with the Visual Studio Installer via `Individual Components` -> `Visual Studio Tools for Unity`. You will need an Unity account to register your PC and get a free licence. [Create the account](https://id.unity.com/account/new), login with it in UnityHub and get your licence via `Settings` -> `Licence Management`.
 
@@ -31,27 +31,13 @@ We will want to have two instances of the Unity Editor running, working in two d
 
 ### Ripped Game Project
 
-Create a ripped copy of the original game project by using [AssetRipper](https://github.com/ds5678/AssetRipper/releases). You can find [step-by-step instructions](https://github.com/Valheim-Modding/Wiki/wiki/Valheim-Unity-Project-Guide) on the Valheim-Modding Wiki. After ripping and cleaning the project you can open this as a reference on the vanilla prefabs or to copy parts of the assets you want to use to your mod stub project.
-
-We also need to inform Unity that the exported scripts are actually the assembly files. To do this you will need to create an assembly definition in each of your scripts folder. You do this by right clicking in the empty space at the bottom of Unity, Then select Create \> Assembly Definition.
-
-![Asset asmrefs](../images/data/assetAsmrefs.png)
-
-It is very important you name your assembly definition the same as the folder title (so if it is assembly_googleanalytics as shown you would need to name your assembly definition file).
-
-After you have gone through these folders and created an assembly definition for each folder you must link the one made for assembly_valheim to its counterparts. You do this by highlighting the assembly definition you have just created in your Scripts/assembly_valheim folder. On the right hand side of Unity you will notice the inspector. You will notice there is a slot that says “Assembly Definition References”. You need to fill this out in order to let Unity know that all these scripts tie together. It should look like this when done:
-
-![Valheim asmref](../images/data/assetAsmvalheim.png)
-
-Do the same in the assembly_guiutils assembly definition, referencing assembly_utils:
-
-![guiutils asmref](../images/data/assetAsmguiutils.png)
+Create a ripped copy of the original game project by using [AssetRipper](https://github.com/ds5678/AssetRipper/releases). You can find [step-by-step instructions](https://github.com/Valheim-Modding/Wiki/wiki/Valheim-Unity-Project-Guide) on the Valheim-Modding Wiki. After ripping the project you can open this as a reference on the vanilla prefabs or to copy parts of the assets you want to use to your mod stub project.
 
 ### Mod Stub Project
 
 Jötunn provides you with a barebone project stub which also includes a Unity project. You can get [that project in its entirety](https://github.com/Valheim-Modding/JotunnModStub) from our github. If you don't have already setup your dev environment, see our [Step-by-Step guide](../guides/guide.md) on how to do that.
 
-Before opening the Unity project, copy the entire content of the `Scripts` folder from your ripped Valheim project at `<RippedValheimProject>\Assets\Scripts` into your stub project's `<JotunnModStub>\JotunnModUnity\Assets\VanillaScripts` folder (create that if necessary). This enables us to exchange prefabs between the two projects without losing the references to the added Components. 
+Before opening the Unity project, copy the entire content of the `MonoScript` folder from your ripped Valheim project at `<RippedValheimProject>\Assets\MonoScript` into your stub project's `<JotunnModStub>\JotunnModUnity\Assets\VanillaScripts` folder (create that if necessary). This enables us to exchange prefabs between the two projects without losing the references to the added Components. 
 
  **Copy the folders to the new project directly via the filesystem - don't import the scripts via Unity**.
 
