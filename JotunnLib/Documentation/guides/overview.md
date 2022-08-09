@@ -4,8 +4,6 @@
 
 ### [Developer's Quickstart](quickstart.md) - For experienced user integrations, with basic setup instructions.
 
-### [Transition Documentation](../transition/jotunnlib/overview.md) - For users who are transitioning, with guidance.
-
 ### [Manual Installation Guide](installation.md) - For users who require manual setup instructions, but cannot use other methods.
 
 # Features
