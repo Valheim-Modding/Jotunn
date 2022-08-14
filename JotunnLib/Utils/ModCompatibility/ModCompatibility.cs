@@ -47,13 +47,13 @@ namespace Jotunn.Utils
         }
 
         // Show mod compatibility error message when needed
-        [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.ShowConnectError)), HarmonyPostfix, HarmonyPriority(Priority.First)]
+        [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.ShowConnectError)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
         private static void FejdStartup_ShowConnectError(FejdStartup __instance)
         {
             if (LastServerVersion != null && ZNet.m_connectionStatus == ZNet.ConnectionStatus.ErrorVersion)
             {
-                ShowModCompatibilityErrorMessage();
-                __instance.m_connectionFailedPanel.SetActive(false);
+                string failedConnectionText = __instance.m_connectionFailedError.text;
+                ShowModCompatibilityErrorMessage(failedConnectionText);
             }
         }
 
@@ -229,14 +229,13 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Create and show mod compatibility error message
         /// </summary>
-        private static void ShowModCompatibilityErrorMessage()
+        private static void ShowModCompatibilityErrorMessage(string failedConnectionText)
         {
             var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.CustomGUIFront.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0f, 0f), 700, 500);
             panel.SetActive(true);
             var remote = new ModuleVersionData(LastServerVersion);
             var local = new ModuleVersionData(GetEnforcableMods().ToList());
-
 
             var scroll = GUIManager.Instance.CreateScrollView(
                 panel.transform, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
@@ -246,6 +245,17 @@ namespace Jotunn.Utils
 
             var tf = scrolltf.Find("Scroll View/Viewport/Content") as RectTransform;
 
+            // Show failed connection string
+            GUIManager.Instance.CreateText(
+                "Failed connection:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
+                new Color(0, 0, 0, 1), 600f, 40f, false);
+            GUIManager.Instance.CreateText(
+                failedConnectionText + Environment.NewLine, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
+                new Color(0, 0, 0, 1), 600f, 40f, false);
+
+            // list remote versions
             GUIManager.Instance.CreateText(
                 "Remote version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
@@ -254,6 +264,8 @@ namespace Jotunn.Utils
                 remote.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
                 new Color(0, 0, 0, 1), 600f, 40f, false);
+
+            // list local versions
             GUIManager.Instance.CreateText(
                 "Local version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
