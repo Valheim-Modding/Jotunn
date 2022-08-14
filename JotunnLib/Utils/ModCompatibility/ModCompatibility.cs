@@ -231,15 +231,16 @@ namespace Jotunn.Utils
         /// </summary>
         private static void ShowModCompatibilityErrorMessage(string failedConnectionText)
         {
+            const int panelWidth = 900;
             var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.CustomGUIFront.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0f, 0f), 700, 500);
+                new Vector2(0f, 0f), panelWidth, 500);
             panel.SetActive(true);
             var remote = new ModuleVersionData(LastServerVersion);
             var local = new ModuleVersionData(GetEnforcableMods().ToList());
 
             var scroll = GUIManager.Instance.CreateScrollView(
                 panel.transform, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
-                new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f), 650f, 400f);
+                new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f), panelWidth - 50f, 400f);
             var scrolltf = scroll.GetComponent<RectTransform>();
             scrolltf.anchoredPosition = new Vector2(scrolltf.anchoredPosition.x, scrolltf.anchoredPosition.y + 15f);
 
@@ -249,38 +250,38 @@ namespace Jotunn.Utils
             GUIManager.Instance.CreateText(
                 "Failed connection:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
-                new Color(0, 0, 0, 1), 600f, 40f, false);
+                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
             GUIManager.Instance.CreateText(
                 failedConnectionText + Environment.NewLine, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
-                new Color(0, 0, 0, 1), 600f, 40f, false);
+                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
 
             // list remote versions
             GUIManager.Instance.CreateText(
                 "Remote version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
-                new Color(0, 0, 0, 1), 600f, 40f, false);
+                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
             GUIManager.Instance.CreateText(
                 remote.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
-                new Color(0, 0, 0, 1), 600f, 40f, false);
+                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
 
             // list local versions
             GUIManager.Instance.CreateText(
                 "Local version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
-                new Color(0, 0, 0, 1), 600f, 40f, false);
+                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
             GUIManager.Instance.CreateText(
                 local.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
-                new Color(0, 0, 0, 1), 600f, 40f, false);
+                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
 
             foreach (var part in CreateErrorMessage(remote, local))
             {
                 GUIManager.Instance.CreateText(
                     part.Item2, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                     GUIManager.Instance.AveriaSerifBold, 19, part.Item1, true,
-                    new Color(0, 0, 0, 1), 600f, 40f, false);
+                    new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
             }
 
             scroll.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
@@ -457,10 +458,9 @@ namespace Jotunn.Utils
             {
                 if (serverData.Modules.All(x => x.name != clientModule.name))
                 {
-                    yield return new Tuple<Color, string>(Color.red, "Additional mod detected:");
-                    yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
-                        $"Mod {clientModule.name} v{clientModule.version} is not installed on the server.");
-                    yield return new Tuple<Color, string>(Color.white, "Please consider uninstalling this mod." + Environment.NewLine);
+                    yield return new Tuple<Color, string>(Color.red, "Additional mod loaded:");
+                    yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, $"Mod {clientModule.name} v{clientModule.version} was not loaded or is not installed on the server.");
+                    yield return new Tuple<Color, string>(Color.white, "Please contact your server admin or uninstall this mod." + Environment.NewLine);
                     continue;
                 }
 
