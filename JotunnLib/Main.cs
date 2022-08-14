@@ -71,7 +71,6 @@ namespace Jotunn
                 KitbashManager.Instance,
                 GUIManager.Instance,
                 KeyHintManager.Instance,
-                //SaveManager.Instance,  // Temporarely disabled, causes FPS issues in the current implementation
                 NetworkManager.Instance,
                 SynchronizationManager.Instance,
                 RenderManager.Instance,
