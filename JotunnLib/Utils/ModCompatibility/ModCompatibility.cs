@@ -54,6 +54,7 @@ namespace Jotunn.Utils
             {
                 string failedConnectionText = __instance.m_connectionFailedError.text;
                 ShowModCompatibilityErrorMessage(failedConnectionText);
+                __instance.m_connectionFailedPanel.SetActive(false);
             }
         }
 
