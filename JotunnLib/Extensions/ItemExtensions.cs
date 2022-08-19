@@ -1,4 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn
@@ -49,6 +55,19 @@ namespace Jotunn
         /// <param name="self"></param>
         /// <returns></returns>
         public static string TokenName(this ItemDrop self) => self.m_itemData.m_shared.m_name;
+    }
+
+    /// <summary>
+    ///     Extends ItemData with a TokenName.
+    /// </summary>
+    public static class ItemDataExtension
+    {
+        /// <summary>
+        ///     m_shared.m_name
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static string TokenName(this ItemDrop.ItemData self) => self.m_shared.m_name;
     }
 
     /// <summary>
