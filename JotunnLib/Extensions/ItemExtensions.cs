@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn
@@ -31,6 +25,10 @@ namespace Jotunn
                 if (string.IsNullOrEmpty(name))
                 {
                     throw new Exception($"GameObject must have a name !");
+                }
+                if (self.GetComponent<ZNetView>() && self.name.IndexOfAny(new[] { ')', ' ' }) > 0)
+                {
+                    throw new Exception($"GameObject name must not contain parenthesis or spaces!");
                 }
 
                 return true;
