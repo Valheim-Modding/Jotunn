@@ -42,6 +42,7 @@ namespace Jotunn.Managers
         /// </summary>
         internal GameObject MockPrefabContainer;
 
+        private Dictionary<string, GameObject> mockedPrefabs = new Dictionary<string, GameObject>();
         private static HashSet<Material> fixedMaterials = new HashSet<Material>();
 
         /// <summary>
@@ -63,15 +64,15 @@ namespace Jotunn.Managers
         {
             string name = JVLMockPrefix + prefabName;
 
-            Transform transform = MockPrefabContainer.transform.Find(name);
-            if (transform != null)
+            if (mockedPrefabs.TryGetValue(name, out GameObject mock) && mock)
             {
-                return transform.gameObject;
+                return mock;
             }
 
             GameObject g = new GameObject(name);
             g.transform.parent = MockPrefabContainer.transform;
             g.SetActive(false);
+            mockedPrefabs.Add(name, g);
 
             return g;
         }
@@ -88,16 +89,13 @@ namespace Jotunn.Managers
             string name = g.name;
 
             T mock = g.GetOrAddComponent<T>();
-            if (mock == null)
+            if (!mock)
             {
                 Logger.LogWarning($"Could not create mock for prefab {prefabName} of type {typeof(T)}");
                 return null;
             }
 
             mock.name = name;
-
-            Logger.LogDebug($"Mock {name} created");
-
             return mock;
         }
 
