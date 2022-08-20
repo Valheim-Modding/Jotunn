@@ -93,9 +93,9 @@ namespace Jotunn.Utils
         {
             int hash = name.GetStableHashCode();
 
-            if (PrefabManager.Instance.Prefabs.ContainsKey(hash))
+            if (PrefabManager.Instance.Prefabs.TryGetValue(name, out var customPrefab))
             {
-                return PrefabManager.Instance.Prefabs[hash];
+                return customPrefab;
             }
 
             foreach (var prefab in Prefabs)

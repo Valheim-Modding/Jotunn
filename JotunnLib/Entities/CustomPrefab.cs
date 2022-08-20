@@ -83,7 +83,7 @@ namespace Jotunn.Entities
         /// <returns>true if the prefab is added as a custom prefab to the <see cref="PrefabManager"/>.</returns>
         public static bool IsCustomPrefab(string prefabName)
         {
-            return PrefabManager.Instance.Prefabs.ContainsKey(prefabName.GetStableHashCode());
+            return PrefabManager.Instance.Prefabs.ContainsKey(prefabName);
         }
 
         /// <inheritdoc/>

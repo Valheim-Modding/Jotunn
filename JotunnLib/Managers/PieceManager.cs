@@ -758,9 +758,10 @@ namespace Jotunn.Managers
                 return;
             }
 
-            int hash = prefab.name.GetStableHashCode();
+            var name = prefab.name;
+            var hash = name.GetStableHashCode();
 
-            if (!PrefabManager.Instance.Prefabs.ContainsKey(hash))
+            if (!PrefabManager.Instance.Prefabs.ContainsKey(name))
             {
                 PrefabManager.Instance.AddPrefab(prefab);
             }

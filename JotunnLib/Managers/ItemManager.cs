@@ -410,14 +410,16 @@ namespace Jotunn.Managers
                 throw new Exception($"Prefab {prefab.name} has no ItemDrop component attached");
             }
 
-            var hash = prefab.name.GetStableHashCode();
+            var name = prefab.name;
+            var hash = name.GetStableHashCode();
+
             if (objectDB.m_itemByHash.ContainsKey(hash))
             {
                 Logger.LogDebug($"Already added item {prefab.name}");
             }
             else
             {
-                if (!PrefabManager.Instance.Prefabs.ContainsKey(hash))
+                if (!PrefabManager.Instance.Prefabs.ContainsKey(name))
                 {
                     PrefabManager.Instance.AddPrefab(prefab);
                 }
