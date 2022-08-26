@@ -113,7 +113,7 @@ namespace Jotunn.Configs
         ///         1: forest edge<br/>
         ///         1 - infinity: outside the forest
         /// </summary>
-        public float ForestTresholdMin { get; set; }
+        public float ForestThresholdMin { get; set; }
 
         /// <summary>
         ///     Maximum value of the forest fractal:<br/>
@@ -137,12 +137,12 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Minimum value of the noise map that is needed to place the clutter.
         /// </summary>
-        public float FractalTresholdMin { get; set; } = 0.5f;
+        public float FractalThresholdMin { get; set; } = 0.5f;
 
         /// <summary>
         ///     Maximum value of the noise map to place the clutter.
         /// </summary>
-        public float FractalTresholdMax { get; set; } = 1f;
+        public float FractalThresholdMax { get; set; } = 1f;
 
         /// <summary>
         ///     Create a new <see cref="ClutterConfig"/>
@@ -173,12 +173,12 @@ namespace Jotunn.Configs
             MinOceanDepth = clutter.m_minOceanDepth;
             MaxOceanDepth = clutter.m_maxOceanDepth;
             InForest = clutter.m_inForest;
-            ForestTresholdMin = clutter.m_forestTresholdMin;
+            ForestThresholdMin = clutter.m_forestTresholdMin;
             ForestTresholdMax = clutter.m_forestTresholdMax;
             FractalScale = clutter.m_fractalScale;
             FractalOffset = clutter.m_fractalOffset;
-            FractalTresholdMin = clutter.m_fractalTresholdMin;
-            FractalTresholdMax = clutter.m_fractalTresholdMax;
+            FractalThresholdMin = clutter.m_fractalTresholdMin;
+            FractalThresholdMax = clutter.m_fractalTresholdMax;
         }
 
         internal ClutterSystem.Clutter ToClutter()
@@ -202,12 +202,12 @@ namespace Jotunn.Configs
                 m_minOceanDepth = OceanDepthCheck ? MinOceanDepth : 0,
                 m_maxOceanDepth = OceanDepthCheck ? MaxOceanDepth : 0,
                 m_inForest = InForest,
-                m_forestTresholdMin = ForestTresholdMin,
+                m_forestTresholdMin = ForestThresholdMin,
                 m_forestTresholdMax = ForestTresholdMax,
                 m_fractalScale = FractalScale,
                 m_fractalOffset = FractalOffset,
-                m_fractalTresholdMin = FractalTresholdMin,
-                m_fractalTresholdMax = FractalTresholdMax,
+                m_fractalTresholdMin = FractalThresholdMin,
+                m_fractalTresholdMax = FractalThresholdMax,
             };
         }
     }
