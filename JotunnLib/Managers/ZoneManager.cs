@@ -40,8 +40,9 @@ namespace Jotunn.Managers
         /// </summary>
         internal GameObject LocationContainer;
 
-        internal readonly Dictionary<string, CustomLocation> Locations = new Dictionary<string, CustomLocation>();
-        internal readonly Dictionary<string, CustomVegetation> Vegetations = new Dictionary<string, CustomVegetation>();
+        internal Dictionary<string, CustomLocation> Locations { get; } = new Dictionary<string, CustomLocation>();
+        internal Dictionary<string, CustomVegetation> Vegetations { get; } = new Dictionary<string, CustomVegetation>();
+        internal HashSet<CustomClutter> Clutter { get; } = new HashSet<CustomClutter>();
 
         /// <summary>
         ///     Initialize the manager
@@ -59,6 +60,9 @@ namespace Jotunn.Managers
         {
             [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations)), HarmonyPostfix]
             private static void ZoneSystem_SetupLocations(ZoneSystem __instance) => Instance.ZoneSystem_SetupLocations(__instance);
+
+            [HarmonyPatch(typeof(ClutterSystem), nameof(ClutterSystem.Awake)), HarmonyPostfix]
+            private static void ClutterSystem_Awake(ClutterSystem __instance) => Instance.ClutterSystem_Awake(__instance);
         }
 
         /// <summary>
@@ -252,6 +256,56 @@ namespace Jotunn.Managers
             return ZoneSystem.instance.m_vegetation
                 .DefaultIfEmpty(null)
                 .FirstOrDefault(zv => zv.m_prefab && zv.m_prefab.name == name);
+        }
+
+        /// <summary>
+        ///     Register a CustomClutter to be added to the ClutterSystem
+        /// </summary>
+        /// <param name="customClutter"></param>
+        /// <returns></returns>
+        public bool AddCustomClutter(CustomClutter customClutter)
+        {
+            Clutter.Add(customClutter);
+            return true;
+        }
+
+        private void ClutterSystem_Awake(ClutterSystem instance)
+        {
+            if (Clutter.Count > 0)
+            {
+                Logger.LogInfo($"Injecting {Clutter.Count} custom clutter");
+                List<CustomClutter> toDelete = new List<CustomClutter>();
+
+                foreach (var customClutter in Clutter)
+                {
+                    try
+                    {
+                        // Fix references if needed
+                        if (customClutter.FixReference)
+                        {
+                            customClutter.Prefab.FixReferences(true);
+                            customClutter.FixReference = false;
+                        }
+
+                        instance.m_clutter.Add(customClutter.Clutter);
+                    }
+                    catch (MockResolveException ex)
+                    {
+                        Logger.LogWarning(customClutter?.SourceMod, $"Skipping clutter {customClutter}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
+                        toDelete.Add(customClutter);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning(customClutter?.SourceMod, $"Exception caught while adding clutter: {ex}");
+                        toDelete.Add(customClutter);
+                    }
+                }
+
+                foreach (var name in toDelete)
+                {
+                    Clutter.Remove(name);
+                }
+            }
         }
 
         private void ZoneSystem_SetupLocations(ZoneSystem self)
