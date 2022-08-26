@@ -197,11 +197,13 @@ namespace Jotunn.Managers
                 return customLocation.ZoneLocation;
             }
 
-            if (ZoneSystem.instance &&
-                ZoneSystem.instance.m_locationsByHash.TryGetValue(name.GetStableHashCode(), out ZoneLocation location))
+            int hash = name.GetStableHashCode();
+
+            if (ZoneSystem.instance && ZoneSystem.instance.m_locationsByHash.TryGetValue(hash, out ZoneLocation location))
             {
                 return location;
             }
+
             return null;
         }
 
@@ -233,6 +235,7 @@ namespace Jotunn.Managers
             {
                 return false;
             }
+
             Vegetations.Add(customVegetation.Name, customVegetation);
             return true;
         }
@@ -253,6 +256,7 @@ namespace Jotunn.Managers
             {
                 return customVegetation.Vegetation;
             }
+
             return ZoneSystem.instance.m_vegetation
                 .DefaultIfEmpty(null)
                 .FirstOrDefault(zv => zv.m_prefab && zv.m_prefab.name == name);
