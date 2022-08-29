@@ -42,7 +42,7 @@ namespace Jotunn.Managers
 
         internal Dictionary<string, CustomLocation> Locations { get; } = new Dictionary<string, CustomLocation>();
         internal Dictionary<string, CustomVegetation> Vegetations { get; } = new Dictionary<string, CustomVegetation>();
-        internal HashSet<CustomClutter> Clutter { get; } = new HashSet<CustomClutter>();
+        internal Dictionary<string, CustomClutter> Clutter { get; } = new Dictionary<string, CustomClutter>();
 
         /// <summary>
         ///     Initialize the manager
@@ -77,6 +77,7 @@ namespace Jotunn.Managers
             {
                 result |= biome;
             }
+
             return result;
         }
 
@@ -97,6 +98,7 @@ namespace Jotunn.Managers
 
                 biomes.Add(area);
             }
+
             return biomes;
         }
 #pragma warning restore S3265 // Non-flags enums should not be used in bitwise operations
@@ -269,8 +271,40 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public bool AddCustomClutter(CustomClutter customClutter)
         {
-            Clutter.Add(customClutter);
+            if (Clutter.ContainsKey(customClutter.Name))
+            {
+                return false;
+            }
+
+            Clutter.Add(customClutter.Name, customClutter);
             return true;
+        }
+
+        /// <summary>
+        ///     Get a Clutter by its name.<br /><br />
+        ///     Search hierarchy:
+        ///     <list type="number">
+        ///         <item>Custom Clutter with the exact name</item>
+        ///         <item>Vanilla Clutter with the exact name from <see cref="ClutterSystem"/></item>
+        ///     </list>
+        /// </summary>
+        /// <param name="name">Name of the Clutter to search for.</param>
+        /// <returns>The existing Clutter, or null if none exists with given name</returns>
+        public ClutterSystem.Clutter GetClutter(string name)
+        {
+            if (Clutter.TryGetValue(name, out CustomClutter customClutter))
+            {
+                return customClutter.Clutter;
+            }
+
+            if (!ClutterSystem.instance)
+            {
+                return null;
+            }
+
+            return ClutterSystem.instance.m_clutter
+                .DefaultIfEmpty(null)
+                .FirstOrDefault(zv => zv?.m_name == name);
         }
 
         private void ClutterSystem_Awake(ClutterSystem instance)
@@ -278,9 +312,9 @@ namespace Jotunn.Managers
             if (Clutter.Count > 0)
             {
                 Logger.LogInfo($"Injecting {Clutter.Count} custom clutter");
-                List<CustomClutter> toDelete = new List<CustomClutter>();
+                List<string> toDelete = new List<string>();
 
-                foreach (var customClutter in Clutter)
+                foreach (var customClutter in Clutter.Values)
                 {
                     try
                     {
@@ -296,12 +330,12 @@ namespace Jotunn.Managers
                     catch (MockResolveException ex)
                     {
                         Logger.LogWarning(customClutter?.SourceMod, $"Skipping clutter {customClutter}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
-                        toDelete.Add(customClutter);
+                        toDelete.Add(customClutter.Name);
                     }
                     catch (Exception ex)
                     {
                         Logger.LogWarning(customClutter?.SourceMod, $"Exception caught while adding clutter: {ex}");
-                        toDelete.Add(customClutter);
+                        toDelete.Add(customClutter.Name);
                     }
                 }
 
