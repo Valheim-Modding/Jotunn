@@ -1,6 +1,7 @@
 ﻿# Changelog
 ## Version 2.7.8
-* Improved mod compatibility window, the disconnect reason is shown inside the Jotunn window.
+* Improved mod compatibility window, the disconnect reason is shown inside the Jotunn window
+* Fixed mocking of some textures loaded by the game after vanilla prefabs are available
 
 ## Version 2.7.7
 * Fixed GUIManager.BlockInput also blocking Escape from opening the menu in-game
