@@ -60,12 +60,12 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Minimum terrain height this clutter will be placed on.
         /// </summary>
-        public float MinAlt { get; set; }
+        public float MinAltitude { get; set; }
 
         /// <summary>
         ///     Maximum terrain height this clutter will be placed on.
         /// </summary>
-        public float MaxAlt { get; set; } = 1000f;
+        public float MaxAltitude { get; set; } = 1000f;
 
         /// <summary>
         ///     Whether the y position will always be at water level.
@@ -121,7 +121,7 @@ namespace Jotunn.Configs
         ///         1: forest edge<br/>
         ///         1 - infinity: outside the forest
         /// </summary>
-        public float ForestTresholdMax { get; set; } = 1f;
+        public float ForestThresholdMax { get; set; } = 1f;
 
         /// <summary>
         ///     Size of a noise map used to determine if the clutter should be placed.
@@ -164,8 +164,8 @@ namespace Jotunn.Configs
             ScaleMin = clutter.m_scaleMin;
             ScaleMax = clutter.m_scaleMax;
             MaxTilt = clutter.m_maxTilt;
-            MinAlt = clutter.m_minAlt;
-            MaxAlt = clutter.m_maxAlt;
+            MinAltitude = clutter.m_minAlt;
+            MaxAltitude = clutter.m_maxAlt;
             SnapToWater = clutter.m_snapToWater;
             RandomOffset = clutter.m_randomOffset;
             TerrainTilt = clutter.m_terrainTilt;
@@ -174,7 +174,7 @@ namespace Jotunn.Configs
             MaxOceanDepth = clutter.m_maxOceanDepth;
             InForest = clutter.m_inForest;
             ForestThresholdMin = clutter.m_forestTresholdMin;
-            ForestTresholdMax = clutter.m_forestTresholdMax;
+            ForestThresholdMax = clutter.m_forestTresholdMax;
             FractalScale = clutter.m_fractalScale;
             FractalOffset = clutter.m_fractalOffset;
             FractalThresholdMin = clutter.m_fractalTresholdMin;
@@ -194,8 +194,8 @@ namespace Jotunn.Configs
                 m_scaleMin = ScaleMin,
                 m_scaleMax = ScaleMax,
                 m_maxTilt = MaxTilt,
-                m_minAlt = MinAlt,
-                m_maxAlt = MaxAlt,
+                m_minAlt = MinAltitude,
+                m_maxAlt = MaxAltitude,
                 m_snapToWater = SnapToWater,
                 m_randomOffset = RandomOffset,
                 m_terrainTilt = TerrainTilt,
@@ -203,7 +203,7 @@ namespace Jotunn.Configs
                 m_maxOceanDepth = OceanDepthCheck ? MaxOceanDepth : 0,
                 m_inForest = InForest,
                 m_forestTresholdMin = ForestThresholdMin,
-                m_forestTresholdMax = ForestTresholdMax,
+                m_forestTresholdMax = ForestThresholdMax,
                 m_fractalScale = FractalScale,
                 m_fractalOffset = FractalOffset,
                 m_fractalTresholdMin = FractalThresholdMin,
