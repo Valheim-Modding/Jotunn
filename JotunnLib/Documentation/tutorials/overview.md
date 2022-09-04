@@ -34,7 +34,7 @@ Each section will have examples showing how this is done. All of the examples sh
 * [Recipes](recipes.md): Add requirements for items and tie them to crafting stations.
 * [Status Effects](status-effects.md): Add custom Status Effects.
 * [Skills](skills.md): Add custom trainable Skills.
-* [Zones / Locations / Vegetation](zones.md): Add to or change Valheim's world generation using your custom assets.
+* [Zones / Locations / Vegetation / Clutter](zones.md): Add to or change Valheim's world generation using your custom assets.
 
 ### Utilities
 
