@@ -44,6 +44,8 @@ namespace Jotunn.Managers
 
         private Dictionary<string, GameObject> mockedPrefabs = new Dictionary<string, GameObject>();
         private static HashSet<Material> fixedMaterials = new HashSet<Material>();
+        private static HashSet<Material> queuedToFixMaterials = new HashSet<Material>();
+        private static bool canFixMaterials;
 
         /// <summary>
         ///     Creates the container and registers all hooks
@@ -53,6 +55,9 @@ namespace Jotunn.Managers
             MockPrefabContainer = new GameObject("MockPrefabs");
             MockPrefabContainer.transform.parent = Main.RootObject.transform;
             MockPrefabContainer.SetActive(false);
+
+            // use a later event to fix materials as more textures have loaded by then
+            ZoneManager.OnVanillaLocationsAvailable += FixQueuedMaterials;
         }
 
         /// <summary>
@@ -148,7 +153,7 @@ namespace Jotunn.Managers
 
             if (unityObject is Material material)
             {
-                FixMaterial(material);
+                TryFixMaterial(material);
             }
 
             return null;
@@ -315,6 +320,36 @@ namespace Jotunn.Managers
                 }
 
                 drops[i] = drop;
+            }
+        }
+
+        private static void TryFixMaterial(Material material)
+        {
+            if (!material || fixedMaterials.Contains(material) || queuedToFixMaterials.Contains(material))
+            {
+                return;
+            }
+
+            if (canFixMaterials)
+            {
+                FixMaterial(material);
+            }
+            else
+            {
+                queuedToFixMaterials.Add(material);
+            }
+        }
+
+        private static void FixQueuedMaterials()
+        {
+            // if the cache is already initialized, some later loaded textures are not found
+            PrefabManager.Cache.ClearCache<Texture>();
+            canFixMaterials = true;
+
+            foreach (var material in new HashSet<Material>(queuedToFixMaterials))
+            {
+                queuedToFixMaterials.Remove(material);
+                FixMaterial(material);
             }
         }
 

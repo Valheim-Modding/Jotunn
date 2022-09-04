@@ -493,6 +493,11 @@ namespace Jotunn.Managers
             {
                 dictionaryCache.Clear();
             }
+
+            internal static void ClearCache<T>()
+            {
+                dictionaryCache.Remove(typeof(T));
+            }
         }
     }
 }
