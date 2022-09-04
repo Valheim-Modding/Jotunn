@@ -474,6 +474,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AssetsEmbedded\pieces" />
+    <EmbeddedResource Include="AssetsEmbedded\clutterbundle" />
     <Content Include="Assets\test_tex.jpg" />
     <Content Include="Assets\reee.png" />
     <Content Include="Assets\test_var1.png" />

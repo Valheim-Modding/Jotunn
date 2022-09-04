@@ -37,6 +37,7 @@ namespace TestMod
         private AssetBundle BlueprintRuneBundle;
         private AssetBundle TestAssets;
         private AssetBundle Steelingot;
+        private AssetBundle ClutterAssetBundle;
 
         private System.Version CurrentVersion;
 
@@ -96,6 +97,7 @@ namespace TestMod
             AddPieceCategories();
             AddInvalidEntities();
             AddConePiece();
+            AddCustomClutter();
 
             // Add custom items cloned from vanilla items
             PrefabManager.OnVanillaPrefabsAvailable += AddClonedItems;
@@ -603,6 +605,7 @@ namespace TestMod
 
             // Load Steel ingot from streamed resource
             Steelingot = AssetUtils.LoadAssetBundleFromResources("steel");
+            ClutterAssetBundle = AssetUtils.LoadAssetBundleFromResources("clutterbundle");
 
             // Embedded Resources
             Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
@@ -971,6 +974,13 @@ namespace TestMod
 
             // You want that to run only once, Jotunn has the piece cached for the game session
             PrefabManager.OnVanillaPrefabsAvailable -= CreateDeerRugPiece;
+        }
+
+        private void AddCustomClutter()
+        {
+            ClutterConfig stone = new ClutterConfig();
+            stone.Amount = 5;
+            ZoneManager.Instance.AddCustomClutter(new CustomClutter(ClutterAssetBundle, "TestStone", false, stone));
         }
 
         // Adds Kitbashed pieces
