@@ -188,10 +188,10 @@ namespace Jotunn.Managers
                     return;
                 }
 
-                Logger.LogInfo($"Sending initial data to peer #{peer.m_uid}");
-
                 IEnumerator SynchronizeInitialData()
                 {
+                    Logger.LogInfo($"Sending initial data to peer #{peer.m_uid}");
+
                     var result = ZNet.instance.m_adminList.Contains(peer.m_socket.GetHostName());
                     Logger.LogDebug($"Admin status: {(result ? "Admin" : "No Admin")}");
                     var adminPkg = new ZPackage();
@@ -815,17 +815,34 @@ namespace Jotunn.Managers
 
             public void Send(ZPackage pkg)
             {
-                pkg.SetPos(0);
-                int methodHash = pkg.ReadInt();
+                int methodHash = GetMethodHash(pkg);
 
                 if ((methodHash == "PeerInfo".GetStableHashCode() || methodHash == "RoutedRPC".GetStableHashCode()) && !finished)
                 {
-                    Package.Add(new ZPackage(pkg.GetArray())); // the original ZPackage gets reused, create a new one
+                    // the original ZPackage gets reused, create a new one
+                    Package.Add(CopyZPackage(pkg));
                 }
                 else
                 {
                     Original.Send(pkg);
                 }
+            }
+
+            private static int GetMethodHash(ZPackage pkg)
+            {
+                int originalPos = pkg.GetPos();
+                pkg.SetPos(0);
+                int methodHash = pkg.ReadInt();
+                pkg.SetPos(originalPos);
+
+                return methodHash;
+            }
+
+            private static ZPackage CopyZPackage(ZPackage pkg)
+            {
+                ZPackage copy = new ZPackage(pkg.GetArray());
+                copy.SetPos(pkg.GetPos());
+                return copy;
             }
         }
     }

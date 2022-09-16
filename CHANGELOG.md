@@ -1,4 +1,7 @@
 ﻿# Changelog
+## Version 2.7.9
+* Fixed connection issues with the upcoming cross play update
+
 ## Version 2.7.8
 * Added custom clutter, check out the tutorial at https://valheim-modding.github.io/Jotunn/tutorials/zones.html#adding-clutter
 * Improved mod compatibility window, the disconnect reason is shown inside the Jotunn window
