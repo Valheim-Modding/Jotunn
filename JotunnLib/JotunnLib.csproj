@@ -41,6 +41,11 @@
     <None Remove="Unity\Temp\**" />
     <None Remove="Unity\Build\**" />
   </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)'!='Debug'">
+    <Compile Remove="DebugUtils\**" />
+    <EmbeddedResource Remove="DebugUtils\**" />
+    <None Remove="DebugUtils\**" />
+  </ItemGroup>
   <ItemGroup>
     <None Remove="Unity\AssetBundles\AssetBundles*" />
   </ItemGroup>
