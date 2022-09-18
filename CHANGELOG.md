@@ -1,5 +1,7 @@
 ﻿# Changelog
 ## Version 2.7.9
+* Added ZoneManager.OnVanillaClutterAvailable event
+* Added CustomClutter to ModRegistry
 * Fixed connection issues with the upcoming cross play update
 
 ## Version 2.7.8
