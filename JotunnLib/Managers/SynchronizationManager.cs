@@ -72,8 +72,7 @@ namespace Jotunn.Managers
 
             // Find Configuration manager plugin and add to DisplayingWindowChanged event
             const string configManagerGuid = "com.bepis.bepinex.configurationmanager";
-            if (Chainloader.PluginInfos.TryGetValue(configManagerGuid, out var configManagerInfo) &&
-                configManagerInfo.Instance)
+            if (Chainloader.PluginInfos.TryGetValue(configManagerGuid, out var configManagerInfo) && configManagerInfo.Instance)
             {
                 ConfigurationManager = configManagerInfo.Instance;
 
@@ -786,7 +785,7 @@ namespace Jotunn.Managers
         ///     the finished member is set to true. All other packages get sent. This will
         ///     stop the client from completing the login handshake with the server until ready.
         /// </summary>
-        private class PeerInfoBlockingSocket : ISocket
+        internal class PeerInfoBlockingSocket : ISocket
         {
             public volatile bool finished = false;
             public readonly List<ZPackage> Package = new List<ZPackage>();
@@ -828,7 +827,7 @@ namespace Jotunn.Managers
                 }
             }
 
-            private static int GetMethodHash(ZPackage pkg)
+            internal static int GetMethodHash(ZPackage pkg)
             {
                 int originalPos = pkg.GetPos();
                 pkg.SetPos(0);
@@ -838,7 +837,7 @@ namespace Jotunn.Managers
                 return methodHash;
             }
 
-            private static ZPackage CopyZPackage(ZPackage pkg)
+            internal static ZPackage CopyZPackage(ZPackage pkg)
             {
                 ZPackage copy = new ZPackage(pkg.GetArray());
                 copy.SetPos(pkg.GetPos());

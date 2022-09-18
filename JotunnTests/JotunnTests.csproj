@@ -354,6 +354,7 @@
     <Compile Include="CompatibilityLevelTest.cs" />
     <Compile Include="CompatibilityZPackageTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SynchronizationManagerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JotunnLib\JotunnLib.csproj">
