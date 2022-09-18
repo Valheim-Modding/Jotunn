@@ -36,6 +36,13 @@ namespace Jotunn.Managers
         public static event Action OnVanillaLocationsAvailable;
 
         /// <summary>
+        ///     Event that gets fired after the vanilla clutter is in memory and available obtain.
+        ///     Your code will execute every time before a new <see cref="ClutterSystem"/> is instantiated.
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
+        public static event Action OnVanillaClutterAvailable;
+
+        /// <summary>
         ///     Container for custom locations in the DontDestroyOnLoad scene.
         /// </summary>
         internal GameObject LocationContainer;
@@ -309,6 +316,8 @@ namespace Jotunn.Managers
 
         private void ClutterSystem_Awake(ClutterSystem instance)
         {
+            InvokeOnVanillaClutterAvailable();
+
             if (Clutter.Count > 0)
             {
                 Logger.LogInfo($"Injecting {Clutter.Count} custom clutter");
@@ -483,6 +492,14 @@ namespace Jotunn.Managers
         private static void InvokeOnVanillaLocationsAvailable()
         {
             OnVanillaLocationsAvailable?.SafeInvoke();
+        }
+
+        /// <summary>
+        ///     Safely invoke OnVanillaClutterAvailable
+        /// </summary>
+        private static void InvokeOnVanillaClutterAvailable()
+        {
+            OnVanillaClutterAvailable?.SafeInvoke();
         }
     }
 }

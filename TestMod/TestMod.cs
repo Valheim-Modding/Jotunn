@@ -118,6 +118,7 @@ namespace TestMod
             PrefabManager.OnVanillaPrefabsAvailable += AddCustomLocationsAndVegetation;
             ZoneManager.OnVanillaLocationsAvailable += AddClonedVanillaLocationsAndVegetations;
             ZoneManager.OnVanillaLocationsAvailable += ModifyVanillaLocationsAndVegetation;
+            ZoneManager.OnVanillaClutterAvailable += ModifyVanillaClutter;
 
             // Create custom creatures and spawns
             AddCustomCreaturesAndSpawns();
@@ -981,6 +982,12 @@ namespace TestMod
             ClutterConfig stone = new ClutterConfig();
             stone.Amount = 5;
             ZoneManager.Instance.AddCustomClutter(new CustomClutter(ClutterAssetBundle, "TestStone", false, stone));
+        }
+
+        private void ModifyVanillaClutter()
+        {
+            ClutterSystem.Clutter groundcover = ZoneManager.Instance.GetClutter("forest groundcover short brown");
+            groundcover.m_amount = 20;
         }
 
         // Adds Kitbashed pieces
