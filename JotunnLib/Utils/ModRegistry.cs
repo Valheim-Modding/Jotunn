@@ -38,80 +38,80 @@ namespace Jotunn.Utils
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomPrefab"/> from a specific mod</returns>
         public static IEnumerable<CustomPrefab> GetPrefabs(string modGuid) =>
             PrefabManager.Instance.Prefabs.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomItem">CustomItems</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomItem"/> from all loaded mods</returns>
-        public static IEnumerable<CustomItem> GetItems() => 
+        public static IEnumerable<CustomItem> GetItems() =>
             ItemManager.Instance.Items;
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomItem">CustomItems</see> of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomItem"/> from a specific mod</returns>
-        public static IEnumerable<CustomItem> GetItems(string modGuid) => 
+        public static IEnumerable<CustomItem> GetItems(string modGuid) =>
             ItemManager.Instance.Items.Where(x => x.SourceMod.GUID.Equals(modGuid));
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomRecipe">CustomRecipes</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomRecipe"/> from all loaded mods</returns>
-        public static IEnumerable<CustomRecipe> GetRecipes() => 
+        public static IEnumerable<CustomRecipe> GetRecipes() =>
             ItemManager.Instance.Recipes;
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomRecipe">CustomRecipes</see> of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomRecipe"/> from a specific mod</returns>
-        public static IEnumerable<CustomRecipe> GetRecipes(string modGuid) => 
+        public static IEnumerable<CustomRecipe> GetRecipes(string modGuid) =>
             ItemManager.Instance.Recipes.Where(x => x.SourceMod.GUID.Equals(modGuid));
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomItemConversion">CustomItemConversions</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomItemConversion"/> from all loaded mods</returns>
-        public static IEnumerable<CustomItemConversion> GetItemConversions() => 
+        public static IEnumerable<CustomItemConversion> GetItemConversions() =>
             ItemManager.Instance.ItemConversions;
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomItemConversion">CustomItemConversions</see> of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomItemConversion"/> from a specific mod</returns>
-        public static IEnumerable<CustomItemConversion> GetItemConversions(string modGuid) => 
+        public static IEnumerable<CustomItemConversion> GetItemConversions(string modGuid) =>
             ItemManager.Instance.ItemConversions.Where(x => x.SourceMod.GUID.Equals(modGuid));
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomStatusEffect">CustomStatusEffects</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomStatusEffect"/> from all loaded mods</returns>
-        public static IEnumerable<CustomStatusEffect> GetStatusEffects() => 
+        public static IEnumerable<CustomStatusEffect> GetStatusEffects() =>
             ItemManager.Instance.StatusEffects;
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomStatusEffect">CustomStatusEffects</see> of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomStatusEffect"/> from a specific mod</returns>
-        public static IEnumerable<CustomStatusEffect> GetStatusEffects(string modGuid) => 
+        public static IEnumerable<CustomStatusEffect> GetStatusEffects(string modGuid) =>
             ItemManager.Instance.StatusEffects.Where(x => x.SourceMod.GUID.Equals(modGuid));
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomPieceTable">CustomPieceTables</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomPieceTable"/> from all loaded mods</returns>
-        public static IEnumerable<CustomPieceTable> GetPieceTables() => 
+        public static IEnumerable<CustomPieceTable> GetPieceTables() =>
             PieceManager.Instance.PieceTables.AsReadOnly();
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomPieceTable">CustomPieceTables</see> of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomPieceTable"/> from a specific mod</returns>
-        public static IEnumerable<CustomPieceTable> GetPieceTables(string modGuid) => 
+        public static IEnumerable<CustomPieceTable> GetPieceTables(string modGuid) =>
             PieceManager.Instance.PieceTables.Where(x => x.SourceMod.GUID.Equals(modGuid));
 
         /// <summary>
@@ -133,69 +133,69 @@ namespace Jotunn.Utils
         ///     Get all added <see cref="CustomLocation">CustomLocations</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomLocation"/> from all loaded mods</returns>
-        public static IEnumerable<CustomLocation> GetLocations() => 
+        public static IEnumerable<CustomLocation> GetLocations() =>
             ZoneManager.Instance.Locations.Values;
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomLocation">CustomLocations</see> of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomLocation"/> from a specific mod</returns>
-        public static IEnumerable<CustomLocation> GetLocations(string modGuid) => 
+        public static IEnumerable<CustomLocation> GetLocations(string modGuid) =>
             ZoneManager.Instance.Locations.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomVegetation">CustomVegetations</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomVegetation"/> from all loaded mods</returns>
-        public static IEnumerable<CustomVegetation> GetVegetation() => 
+        public static IEnumerable<CustomVegetation> GetVegetation() =>
             ZoneManager.Instance.Vegetations.Values;
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomVegetation">CustomVegetations</see> of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomVegetation"/> from a specific mod</returns>
-        public static IEnumerable<CustomVegetation> GetVegetation(string modGuid) => 
+        public static IEnumerable<CustomVegetation> GetVegetation(string modGuid) =>
             ZoneManager.Instance.Vegetations.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomCreature">CustomCreatures</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomCreature"/> from all loaded mods</returns>
-        public static IEnumerable<CustomCreature> GetCreatures() => 
+        public static IEnumerable<CustomCreature> GetCreatures() =>
             CreatureManager.Instance.Creatures;
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomCreature">CustomCreatures</see> of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomCreature"/> from a specific mod</returns>
-        public static IEnumerable<CustomCreature> GetCreatures(string modGuid) => 
+        public static IEnumerable<CustomCreature> GetCreatures(string modGuid) =>
             CreatureManager.Instance.Creatures.Where(x => x.SourceMod.GUID.Equals(modGuid));
 
         /// <summary>
         ///     Get all added <see cref="ConsoleCommand">ConsoleCommands</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="ConsoleCommand"/> from all loaded mods</returns>
-        public static IEnumerable<ConsoleCommand> GetCommands() => 
+        public static IEnumerable<ConsoleCommand> GetCommands() =>
             CommandManager.Instance.CustomCommands;
-        
+
         /// <summary>
         ///     Get all added <see cref="ConsoleCommand">ConsoleCommands</see> of a mod by GUID
         /// </summary>
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="ConsoleCommand"/> from a specific mod</returns>
-        public static IEnumerable<ConsoleCommand> GetCommands(string modGuid) => 
+        public static IEnumerable<ConsoleCommand> GetCommands(string modGuid) =>
             CommandManager.Instance.CustomCommands.Where(x => x.SourceMod.GUID.Equals(modGuid));
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomLocalization">CustomLocalizations</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomLocalization"/> from all loaded mods</returns>
-        public static IEnumerable<CustomLocalization> GetTranslations() => 
+        public static IEnumerable<CustomLocalization> GetTranslations() =>
             LocalizationManager.Instance.Localizations.AsReadOnly();
-        
+
         /// <summary>
         ///     Get all added <see cref="CustomLocalization">CustomLocalizations</see> of a mod by GUID
         /// </summary>
@@ -258,17 +258,17 @@ namespace Jotunn.Utils
             ///     Custom pieces added by that mod
             /// </summary>
             public IEnumerable<CustomPiece> Pieces => GetPieces(GUID);
-            
+
             /// <summary>
             ///     Custom locations added by that mod
             /// </summary>
             public IEnumerable<CustomLocation> Locations => GetLocations(GUID);
-            
+
             /// <summary>
             ///     Custom Vegetation added by that mod
             /// </summary>
             public IEnumerable<CustomVegetation> Vegetation => GetVegetation(GUID);
-            
+
             /// <summary>
             ///     Custom Creatures added by that mod
             /// </summary>
