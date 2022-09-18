@@ -160,6 +160,14 @@ namespace Jotunn.Utils
             ZoneManager.Instance.Vegetations.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
 
         /// <summary>
+        ///     Get all added <see cref="CustomClutter">CustomClutter</see> of a mod by GUID
+        /// </summary>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomClutter"/> from a specific mod</returns>
+        public static IEnumerable<CustomClutter> GetClutter(string modGuid) =>
+            ZoneManager.Instance.Clutter.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
+
+        /// <summary>
         ///     Get all added <see cref="CustomCreature">CustomCreatures</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomCreature"/> from all loaded mods</returns>
@@ -268,6 +276,11 @@ namespace Jotunn.Utils
             ///     Custom Vegetation added by that mod
             /// </summary>
             public IEnumerable<CustomVegetation> Vegetation => GetVegetation(GUID);
+
+            /// <summary>
+            ///     Custom Clutter added by that mod
+            /// </summary>
+            public IEnumerable<CustomClutter> Clutter => GetClutter(GUID);
 
             /// <summary>
             ///     Custom Creatures added by that mod
