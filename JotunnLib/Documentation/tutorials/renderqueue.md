@@ -50,3 +50,40 @@ Note that all texts are tokenized and translated ingame. The translations are al
 The resulting item with the rendered icon in game:
 
 ![item with rendered icon](../images/data/renderedIcon.png)
+
+## Caching Icons
+Generating icons takes only a short amount of time (a few milliseconds) but when you have a lot of items, it can add up.
+To prevent rendering the images every time, they can be cached and reused at the next game start.
+
+The simplest way to use caching is to enable the `UseCache` property of the [RenderRequest](xref:Jotunn.Managers.RenderManager.RenderRequest).
+The generated sprites will be written to an image file and loaded from the file system instead of being re-rendered again.
+The GameObject name will be used to determine the file name.
+```cs
+private void RenderIcons() {
+    GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
+
+    RenderManager.RenderRequest request = new RenderManager.RenderRequest(beech);
+    request.Rotation = RenderManager.IsometricRotation;
+    request.UseCache = true;
+
+    Sprite icon = RenderManager.Instance.Render(request);
+}
+```
+
+This assumes that the GameObject is vanilla and thus generates a new icon when the vanilla version changes.
+To have finer control over this, you can provide your mod metadata so it will generate a new icon when your mod version changes.
+
+Note that this has to be executed inside your mod's BaseUnityPlugin class, otherwise you will need a reference to your `Info.Metadata`.
+
+```cs
+private void RenderIcons() {
+    GameObject beech = PrefabManager.Instance.GetPrefab("Beech1");
+
+    RenderManager.RenderRequest request = new RenderManager.RenderRequest(beech);
+    request.Rotation = RenderManager.IsometricRotation;
+    request.UseCache = true;
+    request.TargetPlugin = Info.Metadata;
+
+    Sprite icon = RenderManager.Instance.Render(request);
+}
+```
