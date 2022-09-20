@@ -191,7 +191,9 @@ namespace Jotunn.Managers
                 {
                     Logger.LogInfo($"Sending initial data to peer #{peer.m_uid}");
 
-                    var result = ZNet.instance.m_adminList.Contains(peer.m_socket.GetHostName());
+                    var id = peer.m_socket.GetHostName();
+                    var result =
+                        !string.IsNullOrEmpty(ZNet.instance.m_adminList.m_list.FirstOrDefault(x => id.EndsWith(x)));
                     Logger.LogDebug($"Admin status: {(result ? "Admin" : "No Admin")}");
                     var adminPkg = new ZPackage();
                     adminPkg.Write(result);
@@ -276,7 +278,7 @@ namespace Jotunn.Managers
                 foreach (var entry in CachedAdminStates.Keys.ToList())
                 {
                     // Admin state removed
-                    if (!adminListCopy.Contains(entry))
+                    if (!adminListCopy.Contains(entry)) 
                     {
                         // If cached state is true
                         if (CachedAdminStates[entry])
@@ -298,7 +300,7 @@ namespace Jotunn.Managers
         /// <param name="admin">Admin state to send to the client</param>
         private void SendAdminStateToClient(string entry, bool admin)
         {
-            var clientId = ZNet.instance.m_peers.FirstOrDefault(x => x.m_socket.GetHostName() == entry)?.m_uid;
+            var clientId = ZNet.instance.m_peers.FirstOrDefault(x => x.m_socket.GetHostName().EndsWith(entry))?.m_uid;
             if (clientId != null)
             {
                 Logger.LogInfo($"Sending admin status to {entry}/{clientId} ({(admin ? "is admin" : "is no admin")})");
@@ -307,7 +309,7 @@ namespace Jotunn.Managers
                 AdminRPC.SendPackage(clientId.Value, pkg);
             }
         }
-
+        
         private IEnumerator AdminRPC_OnClientReceive(long sender, ZPackage package)
         {
             bool isAdmin = package.ReadBool();
@@ -673,7 +675,9 @@ namespace Jotunn.Managers
         private IEnumerator ConfigRPC_OnServerReceive(long sender, ZPackage package)
         {
             // Is sender admin?
-            if (ZNet.instance.m_adminList.Contains(ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName()))
+            var id = ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName();
+            if (!string.IsNullOrEmpty(id) &&
+                !string.IsNullOrEmpty(ZNet.instance.m_adminList.m_list.FirstOrDefault(x => id.EndsWith(x))))
             {
                 Logger.LogInfo($"Received configuration data from client {sender}");
 
