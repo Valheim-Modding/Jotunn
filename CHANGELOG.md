@@ -3,6 +3,7 @@
 * Added ZoneManager.OnVanillaClutterAvailable event
 * Added CustomClutter to ModRegistry
 * Fixed connection issues with the upcoming cross play update
+* Fixed admin checks for the upcoming cross play update
 
 ## Version 2.7.8
 * Added custom clutter, check out the tutorial at https://valheim-modding.github.io/Jotunn/tutorials/zones.html#adding-clutter
