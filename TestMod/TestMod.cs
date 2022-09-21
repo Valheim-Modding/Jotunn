@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
@@ -148,6 +149,17 @@ namespace TestMod
             // Get current version for the mod compatibility test
             CurrentVersion = new System.Version(Info.Metadata.Version.ToString());
             SetVersion();
+
+            // lulzthing for the win!
+            CreatureManager.OnVanillaCreaturesAvailable += () =>
+            {
+                var fab = PrefabManager.Instance.GetPrefab("piece_lel");
+                ZNetView.m_forceDisableInit = true;
+                var inst = Instantiate(fab, FejdStartup.instance.m_characterPreviewPoint.position, FejdStartup.instance.m_characterPreviewPoint.rotation);
+                ZNetView.m_forceDisableInit = false;
+                inst.transform.localPosition += new Vector3(-1.5f, 0.6f, -5f);
+                inst.transform.rotation = Quaternion.Euler(0f, 350f, 0f);
+            };
         }
 
         // Called every frame
