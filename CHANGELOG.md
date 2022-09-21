@@ -2,6 +2,7 @@
 ## Version 2.7.9
 * Added ZoneManager.OnVanillaClutterAvailable event
 * Added CustomClutter to ModRegistry
+* Fixed mocked material textures/shaders where not directly fixed after they were injected. Properties that are not available at this time are still delayed
 * Fixed connection issues with the upcoming cross play update
 * Fixed admin checks for the upcoming cross play update
 

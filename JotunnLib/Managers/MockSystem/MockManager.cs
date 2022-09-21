@@ -45,7 +45,7 @@ namespace Jotunn.Managers
         private Dictionary<string, GameObject> mockedPrefabs = new Dictionary<string, GameObject>();
         private static HashSet<Material> fixedMaterials = new HashSet<Material>();
         private static HashSet<Material> queuedToFixMaterials = new HashSet<Material>();
-        private static bool canFixMaterials;
+        private static bool allVanillaObjectsAvailable;
 
         /// <summary>
         ///     Creates the container and registers all hooks
@@ -330,21 +330,14 @@ namespace Jotunn.Managers
                 return;
             }
 
-            if (canFixMaterials)
-            {
-                FixMaterial(material);
-            }
-            else
-            {
-                queuedToFixMaterials.Add(material);
-            }
+            FixMaterial(material);
         }
 
         private static void FixQueuedMaterials()
         {
             // if the cache is already initialized, some later loaded textures are not found
             PrefabManager.Cache.ClearCache<Texture>();
-            canFixMaterials = true;
+            allVanillaObjectsAvailable = true;
 
             foreach (var material in new HashSet<Material>(queuedToFixMaterials))
             {
@@ -360,7 +353,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            fixedMaterials.Add(material);
+            bool everythingFixed = true;
 
             foreach (int prop in material.GetTexturePropertyNameIDs())
             {
@@ -379,7 +372,12 @@ namespace Jotunn.Managers
                 }
                 catch (MockResolveException ex)
                 {
-                    Logger.LogWarning(ex.Message);
+                    if (allVanillaObjectsAvailable)
+                    {
+                        Logger.LogWarning(ex.Message);
+                    }
+
+                    everythingFixed = false;
                     continue;
                 }
 
@@ -399,6 +397,25 @@ namespace Jotunn.Managers
                 {
                     material.shader = realShader;
                 }
+                else
+                {
+                    if (allVanillaObjectsAvailable)
+                    {
+                        Logger.LogWarning($"Could not find shader {usedShader.name}");
+                    }
+
+                    everythingFixed = false;
+                }
+            }
+
+            if (everythingFixed && !fixedMaterials.Contains(material))
+            {
+                fixedMaterials.Add(material);
+            }
+
+            if (!everythingFixed && !queuedToFixMaterials.Contains(material))
+            {
+                queuedToFixMaterials.Add(material);
             }
         }
     }
