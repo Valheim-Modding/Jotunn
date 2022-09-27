@@ -53,7 +53,7 @@ namespace JotunnDoc
 
         public void AddTableHeader(params string[] columns)
         {
-            StringBuilder text = new StringBuilder("|");
+            StringBuilder text = new StringBuilder("\n|");
 
             foreach (string col in columns)
             {
