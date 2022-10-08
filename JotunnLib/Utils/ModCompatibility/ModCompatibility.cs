@@ -65,8 +65,7 @@ namespace Jotunn.Utils
             if (ZNet.instance.IsClientInstance())
             {
                 // If there was no server version response, Jötunn is not installed. Cancel if we have mandatory mods
-                if (LastServerVersion == null &&
-                    GetEnforcableMods().Any(x => x.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || x.compatibilityLevel == CompatibilityLevel.ServerMustHaveMod))
+                if (LastServerVersion == null && GetEnforcableMods().Any(x => x.IsNeededOnServer()))
                 {
                     Logger.LogWarning("Jötunn is not installed on the server. Client has mandatory mods. Cancelling connection");
                     rpc.Invoke("Disconnect");
@@ -89,7 +88,7 @@ namespace Jotunn.Utils
                 if (!ClientVersions.ContainsKey(rpc.GetSocket().GetEndPointString()))
                 {
                     // Check mods, if there are some installed on the server which need also to be on the client
-                    if (GetEnforcableMods().Any(x => x.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || x.compatibilityLevel == CompatibilityLevel.ClientMustHaveMod))
+                    if (GetEnforcableMods().Any(x => x.IsNeededOnClient()))
                     {
                         // There is a mod, which needs to be client side too
                         // Lets disconnect the vanilla client with Incompatible Version message
@@ -161,7 +160,7 @@ namespace Jotunn.Utils
             }
 
             // Check server enforced mods
-            foreach (var serverModule in serverData.Modules.Where(x => x.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || x.compatibilityLevel == CompatibilityLevel.ClientMustHaveMod))
+            foreach (var serverModule in serverData.Modules.Where(x => x.IsNeededOnClient()))
             {
                 if (!clientData.Modules.Any(x => x.name == serverModule.name && x.compatibilityLevel == serverModule.compatibilityLevel))
                 {
@@ -170,7 +169,7 @@ namespace Jotunn.Utils
             }
 
             // Check client enforced mods
-            foreach (var clientModule in clientData.Modules.Where(x => x.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || x.compatibilityLevel == CompatibilityLevel.ServerMustHaveMod))
+            foreach (var clientModule in clientData.Modules.Where(x => x.IsNeededOnServer()))
             {
                 if (!serverData.Modules.Any(x => x.name == clientModule.name && x.compatibilityLevel == clientModule.compatibilityLevel))
                 {
@@ -181,12 +180,10 @@ namespace Jotunn.Utils
             // Compare modules
             foreach (var serverModule in serverData.Modules)
             {
-#pragma warning disable CS0618 // Type or member is obsolete
-                if (serverModule.compatibilityLevel == CompatibilityLevel.NoNeedForSync || serverModule.compatibilityLevel == CompatibilityLevel.NotEnforced)
+                if (!serverModule.IsEnforced())
                 {
                     continue;
                 }
-#pragma warning restore CS0618 // Type or member is obsolete
 
                 var clientModule = clientData.Modules.FirstOrDefault(x => x.name == serverModule.name);
 
@@ -344,7 +341,7 @@ namespace Jotunn.Utils
             foreach (var serverModule in serverData.Modules)
             {
                 // Check first for missing modules on the client side
-                if (serverModule.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || serverModule.compatibilityLevel == CompatibilityLevel.ClientMustHaveMod)
+                if (serverModule.IsNeededOnClient())
                 {
                     if (clientData.Modules.All(x => x.name != serverModule.name))
                     {
@@ -366,12 +363,10 @@ namespace Jotunn.Utils
                 // Then all version checks
                 var clientModule = clientData.Modules.FirstOrDefault(x => x.name == serverModule.name);
 
-#pragma warning disable CS0618 // Type or member is obsolete
-                if (clientModule == null && (serverModule.compatibilityLevel == CompatibilityLevel.NotEnforced || serverModule.compatibilityLevel == CompatibilityLevel.NoNeedForSync))
+                if (clientModule == null && !serverModule.IsEnforced())
                 {
                     continue;
                 }
-#pragma warning restore CS0618 // Type or member is obsolete
 
 #pragma warning disable CS0618 // Type or member is obsolete
                 if (clientModule == null &&
@@ -455,7 +450,7 @@ namespace Jotunn.Utils
             }
 
             // Now lets find additional modules with NetworkCompatibility attribute in the client's list
-            foreach (var clientModule in clientData.Modules.Where(x => x.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || x.compatibilityLevel == CompatibilityLevel.ServerMustHaveMod))
+            foreach (var clientModule in clientData.Modules.Where(x => x.IsNeededOnServer()))
             {
                 if (serverData.Modules.All(x => x.name != clientModule.name))
                 {

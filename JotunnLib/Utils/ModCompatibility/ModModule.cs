@@ -47,5 +47,22 @@ namespace Jotunn.Utils
         {
             return $"{version.Major}.{version.Minor}.{version.Build}";
         }
+
+        public bool IsNeededOnServer()
+        {
+            return compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || compatibilityLevel == CompatibilityLevel.ServerMustHaveMod;
+        }
+
+        public bool IsNeededOnClient()
+        {
+            return compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || compatibilityLevel == CompatibilityLevel.ClientMustHaveMod;
+        }
+
+        public bool IsEnforced()
+        {
+#pragma warning disable CS0618 // Type or member is obsolete
+            return !(compatibilityLevel == CompatibilityLevel.NotEnforced || compatibilityLevel == CompatibilityLevel.NoNeedForSync);
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
     }
 }

@@ -16,8 +16,8 @@ namespace Jotunn.Utils
         private static System.Version v_2_2_0 = new System.Version(2, 2, 0);
         private static System.Version v_2_2_2 = new System.Version(2, 2, 2);
 
-        ModuleVersionData clientVersionData;
-        ModuleVersionData serverVersionData;
+        private ModuleVersionData clientVersionData;
+        private ModuleVersionData serverVersionData;
 
         public CompatibilityLevelTest()
         {
@@ -31,24 +31,42 @@ namespace Jotunn.Utils
             Assert.True(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData));
         }
 
-        [Fact]
-        public void ClientHasModButServerDoesNot()
+        [Theory]
+        [InlineData(CompatibilityLevel.EveryoneMustHaveMod, false)]
+        [InlineData(CompatibilityLevel.ServerMustHaveMod, false)]
+        [InlineData(CompatibilityLevel.ClientMustHaveMod, true)]
+        [InlineData(CompatibilityLevel.VersionCheckOnly, true)]
+        [InlineData(CompatibilityLevel.NotEnforced, true)]
+#pragma warning disable CS0618 // Type or member is obsolete
+        [InlineData(CompatibilityLevel.NoNeedForSync, true)]
+        [InlineData(CompatibilityLevel.OnlySyncWhenInstalled, true)]
+#pragma warning restore CS0618 // Type or member is obsolete
+        public void ClientHasMod_ServerDoesNot(CompatibilityLevel compatibilityLevel, bool expected)
         {
             clientVersionData.Modules = new List<ModModule>
             {
-                new ModModule("TestMod", v_1_0_0, CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)
+                new ModModule("TestMod", v_1_0_0, compatibilityLevel, VersionStrictness.Minor)
             };
-            Assert.False(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData));
+            Assert.Equal(expected, ModCompatibility.CompareVersionData(serverVersionData, clientVersionData));
         }
 
-        [Fact]
-        public void ServerHasModButClientDoesntNeedIt()
+        [Theory]
+        [InlineData(CompatibilityLevel.EveryoneMustHaveMod, false)]
+        [InlineData(CompatibilityLevel.ServerMustHaveMod, true)]
+        [InlineData(CompatibilityLevel.ClientMustHaveMod, false)]
+        [InlineData(CompatibilityLevel.VersionCheckOnly, true)]
+        [InlineData(CompatibilityLevel.NotEnforced, true)]
+#pragma warning disable CS0618 // Type or member is obsolete
+        [InlineData(CompatibilityLevel.NoNeedForSync, true)]
+        [InlineData(CompatibilityLevel.OnlySyncWhenInstalled, true)]
+#pragma warning restore CS0618 // Type or member is obsolete
+        public void ServerHasMod_ClientDoesNot(CompatibilityLevel compatibilityLevel, bool expected)
         {
             serverVersionData.Modules = new List<ModModule>
             {
-                new ModModule("TestMod", v_1_0_0, CompatibilityLevel.ServerMustHaveMod, VersionStrictness.Minor)
+                new ModModule("TestMod", v_1_0_0, compatibilityLevel, VersionStrictness.Minor)
             };
-            Assert.True(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData));
+            Assert.Equal(expected, ModCompatibility.CompareVersionData(serverVersionData, clientVersionData));
         }
 
         [Fact]
