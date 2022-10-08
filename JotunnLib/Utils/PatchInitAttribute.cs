@@ -6,6 +6,7 @@ namespace Jotunn.Utils
     ///     Priority attribute for PatchInitalizer.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
+    [Obsolete("Use Harmony patches or your Start method instead")]
     public class PatchInitAttribute : Attribute
     {
         /// <summary>

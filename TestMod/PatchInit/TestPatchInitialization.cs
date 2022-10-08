@@ -7,7 +7,9 @@ namespace TestMod.PatchInit
         private static bool test1run = false;
         private static bool test2run = false;
 
+#pragma warning disable CS0618 // Type or member is obsolete
         [PatchInit(16)]
+#pragma warning restore CS0618 // Type or member is obsolete
         public static void Test1()
         {
             test1run = true;
@@ -19,10 +21,11 @@ namespace TestMod.PatchInit
             {
                 Jotunn.Logger.LogInfo("Test1 passed");
             }
-
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         [PatchInit(15)]
+#pragma warning restore CS0618 // Type or member is obsolete
         public static void Test2()
         {
             test2run = true;
@@ -35,6 +38,5 @@ namespace TestMod.PatchInit
                 Jotunn.Logger.LogInfo("Test2 passed");
             }
         }
-
     }
 }
