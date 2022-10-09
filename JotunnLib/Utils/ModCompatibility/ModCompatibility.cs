@@ -160,21 +160,13 @@ namespace Jotunn.Utils
             }
 
             // Check server enforced mods
-            foreach (var serverModule in serverData.Modules.Where(x => x.IsNeededOnClient()))
-            {
-                if (!clientData.Modules.Any(x => x.name == serverModule.name && x.compatibilityLevel == serverModule.compatibilityLevel))
-                {
-                    return false;
-                }
+            if (serverData.Modules.Any(serverModule => serverModule.IsNeededOnClient() && !clientData.HasModule(serverModule.name))) {
+                return false;
             }
 
             // Check client enforced mods
-            foreach (var clientModule in clientData.Modules.Where(x => x.IsNeededOnServer()))
-            {
-                if (!serverData.Modules.Any(x => x.name == clientModule.name && x.compatibilityLevel == clientModule.compatibilityLevel))
-                {
-                    return false;
-                }
+            if (clientData.Modules.Any(clientModule => clientModule.IsNeededOnServer() && !serverData.HasModule(clientModule.name))) {
+                return false;
             }
 
             // Compare modules
@@ -185,17 +177,12 @@ namespace Jotunn.Utils
                     continue;
                 }
 
-                var clientModule = clientData.Modules.FirstOrDefault(x => x.name == serverModule.name);
+                var clientModule = clientData.FindModule(serverModule.name);
 
-#pragma warning disable CS0618 // Type or member is obsolete
-                if (clientModule == null &&
-                    (serverModule.compatibilityLevel == CompatibilityLevel.OnlySyncWhenInstalled ||
-                     serverModule.compatibilityLevel == CompatibilityLevel.VersionCheckOnly ||
-                     serverModule.compatibilityLevel == CompatibilityLevel.ServerMustHaveMod))
+                if (clientModule == null && serverModule.OnlyVersionCheck() || !serverModule.IsNeededOnClient())
                 {
                     continue;
                 }
-#pragma warning restore CS0618 // Type or member is obsolete
 
                 if (clientModule == null)
                 {
@@ -361,22 +348,17 @@ namespace Jotunn.Utils
                 }
 
                 // Then all version checks
-                var clientModule = clientData.Modules.FirstOrDefault(x => x.name == serverModule.name);
+                var clientModule = clientData.FindModule(serverModule.name);
 
                 if (clientModule == null && !serverModule.IsEnforced())
                 {
                     continue;
                 }
 
-#pragma warning disable CS0618 // Type or member is obsolete
-                if (clientModule == null &&
-                    (serverModule.compatibilityLevel == CompatibilityLevel.OnlySyncWhenInstalled ||
-                     serverModule.compatibilityLevel == CompatibilityLevel.VersionCheckOnly ||
-                     serverModule.compatibilityLevel == CompatibilityLevel.ServerMustHaveMod))
+                if (clientModule == null && serverModule.OnlyVersionCheck() || !serverModule.IsNeededOnClient())
                 {
                     continue;
                 }
-#pragma warning restore CS0618 // Type or member is obsolete
 
                 // Major
                 if (serverModule.versionStrictness >= VersionStrictness.Major || clientModule.versionStrictness >= VersionStrictness.Major)

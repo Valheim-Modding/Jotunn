@@ -48,20 +48,43 @@ namespace Jotunn.Utils
             return $"{version.Major}.{version.Minor}.{version.Build}";
         }
 
+        /// <summary>
+        ///     Module must at least be loaded on the server
+        /// </summary>
+        /// <returns></returns>
         public bool IsNeededOnServer()
         {
             return compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || compatibilityLevel == CompatibilityLevel.ServerMustHaveMod;
         }
 
+        /// <summary>
+        ///     Module must at least be loaded on the client
+        /// </summary>
+        /// <returns></returns>
         public bool IsNeededOnClient()
         {
             return compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || compatibilityLevel == CompatibilityLevel.ClientMustHaveMod;
         }
 
+        /// <summary>
+        ///    Module is enforced by the server or client
+        /// </summary>
+        /// <returns></returns>
         public bool IsEnforced()
         {
 #pragma warning disable CS0618 // Type or member is obsolete
             return !(compatibilityLevel == CompatibilityLevel.NotEnforced || compatibilityLevel == CompatibilityLevel.NoNeedForSync);
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
+
+        /// <summary>
+        ///     Module is not enforced, only version check if both client and server have it
+        /// </summary>
+        /// <returns></returns>
+        public bool OnlyVersionCheck()
+        {
+#pragma warning disable CS0618 // Type or member is obsolete
+            return compatibilityLevel == CompatibilityLevel.OnlySyncWhenInstalled || compatibilityLevel == CompatibilityLevel.VersionCheckOnly;
 #pragma warning restore CS0618 // Type or member is obsolete
         }
     }
