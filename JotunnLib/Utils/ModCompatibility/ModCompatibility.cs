@@ -189,20 +189,12 @@ namespace Jotunn.Utils
                     return false;
                 }
 
-                if (serverModule.version.Major != clientModule.version.Major &&
-                    (serverModule.versionStrictness >= VersionStrictness.Major || clientModule.versionStrictness >= VersionStrictness.Major))
+                if (ModModule.IsLowerVersion(serverModule, clientModule, serverModule.versionStrictness))
                 {
                     return false;
                 }
 
-                if (serverModule.version.Minor != clientModule.version.Minor &&
-                    (serverModule.versionStrictness >= VersionStrictness.Minor || clientModule.versionStrictness >= VersionStrictness.Minor))
-                {
-                    return false;
-                }
-
-                if (serverModule.version.Build != clientModule.version.Build &&
-                    (serverModule.versionStrictness >= VersionStrictness.Patch || clientModule.versionStrictness >= VersionStrictness.Patch))
+                if (ModModule.IsLowerVersion(clientModule, serverModule, serverModule.versionStrictness))
                 {
                     return false;
                 }
@@ -327,106 +319,40 @@ namespace Jotunn.Utils
             // And then each module
             foreach (var serverModule in serverData.Modules)
             {
-                // Check first for missing modules on the client side
-                if (serverModule.IsNeededOnClient())
+                if (!serverModule.IsEnforced())
                 {
-                    if (clientData.Modules.All(x => x.name != serverModule.name))
-                    {
-                        // client is missing needed module
-                        yield return new Tuple<Color, string>(Color.red, "Missing mod:");
-                        yield return new Tuple<Color, string>(Color.white, $"Please install mod {serverModule.name} v{serverModule.version}" + Environment.NewLine);
-                        continue;
-                    }
+                    continue;
+                }
 
-                    if (!clientData.Modules.Any(x => x.name == serverModule.name && x.compatibilityLevel == serverModule.compatibilityLevel))
-                    {
-                        // module is there but mod compat level is lower
-                        yield return new Tuple<Color, string>(Color.red, "Compatibility level mismatch:");
-                        yield return new Tuple<Color, string>(Color.white, $"Please update mod {serverModule.name} version v{serverModule.version}." + Environment.NewLine);
-                        continue;
-                    }
+                // Check first for missing modules on the client side
+                if (serverModule.IsNeededOnClient() && !clientData.HasModule(serverModule.name))
+                {
+                    yield return new Tuple<Color, string>(Color.red, "Missing mod:");
+                    yield return new Tuple<Color, string>(Color.white, $"Please install mod {serverModule.name} v{serverModule.version}" + Environment.NewLine);
+                    continue;
                 }
 
                 // Then all version checks
                 var clientModule = clientData.FindModule(serverModule.name);
 
-                if (clientModule == null && !serverModule.IsEnforced())
+                if (clientModule == null)
                 {
                     continue;
                 }
 
-                if (clientModule == null && serverModule.OnlyVersionCheck() || !serverModule.IsNeededOnClient())
+                if (ModModule.IsLowerVersion(serverModule, clientModule, serverModule.versionStrictness))
                 {
-                    continue;
+                    foreach (var messageLine in ClientVersionLowerMessage(serverModule))
+                    {
+                        yield return messageLine;
+                    }
                 }
 
-                // Major
-                if (serverModule.versionStrictness >= VersionStrictness.Major || clientModule.versionStrictness >= VersionStrictness.Major)
+                if (ModModule.IsLowerVersion(clientModule, serverModule, serverModule.versionStrictness))
                 {
-                    if (serverModule.version.Major > clientModule.version.Major)
+                    foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
                     {
-                        foreach (var messageLine in ClientVersionLowerMessage(serverModule))
-                        {
-                            yield return messageLine;
-                        }
-
-                        continue;
-                    }
-
-                    if (serverModule.version.Major < clientModule.version.Major)
-                    {
-                        foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
-                        {
-                            yield return messageLine;
-                        }
-
-                        continue;
-                    }
-
-                    // Minor
-                    if (serverModule.versionStrictness >= VersionStrictness.Minor || clientModule.versionStrictness >= VersionStrictness.Minor)
-                    {
-                        if (serverModule.version.Minor > clientModule.version.Minor)
-                        {
-                            foreach (var messageLine in ClientVersionLowerMessage(serverModule))
-                            {
-                                yield return messageLine;
-                            }
-
-                            continue;
-                        }
-
-                        if (serverModule.version.Minor < clientModule.version.Minor)
-                        {
-                            foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
-                            {
-                                yield return messageLine;
-                            }
-
-                            continue;
-                        }
-                    }
-
-                    // Patch
-                    if (serverModule.versionStrictness >= VersionStrictness.Patch || clientModule.versionStrictness >= VersionStrictness.Patch)
-                    {
-                        if (serverModule.version.Build > clientModule.version.Build)
-                        {
-                            foreach (var messageLine in ClientVersionLowerMessage(serverModule))
-                            {
-                                yield return messageLine;
-                            }
-
-                            continue;
-                        }
-
-                        if (serverModule.version.Build < clientModule.version.Build)
-                        {
-                            foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
-                            {
-                                yield return messageLine;
-                            }
-                        }
+                        yield return messageLine;
                     }
                 }
             }
@@ -439,13 +365,6 @@ namespace Jotunn.Utils
                     yield return new Tuple<Color, string>(Color.red, "Additional mod loaded:");
                     yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, $"Mod {clientModule.name} v{clientModule.version} was not loaded or is not installed on the server.");
                     yield return new Tuple<Color, string>(Color.white, "Please contact your server admin or uninstall this mod." + Environment.NewLine);
-                    continue;
-                }
-
-                if (!serverData.Modules.Any(x => x.name == clientModule.name && x.compatibilityLevel == clientModule.compatibilityLevel))
-                {
-                    yield return new Tuple<Color, string>(Color.red, "Compatibility level mismatch:");
-                    yield return new Tuple<Color, string>(Color.white, $"Please update mod {clientModule.name} version v{clientModule.version} on the server." + Environment.NewLine);
                     continue;
                 }
             }

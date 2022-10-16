@@ -87,5 +87,32 @@ namespace Jotunn.Utils
             return compatibilityLevel == CompatibilityLevel.OnlySyncWhenInstalled || compatibilityLevel == CompatibilityLevel.VersionCheckOnly;
 #pragma warning restore CS0618 // Type or member is obsolete
         }
+
+        /// <summary>
+        ///     Checks if the compare module has a lower version then the other base module
+        /// </summary>
+        /// <param name="baseModule"></param>
+        /// <param name="compareModule"></param>
+        /// <param name="strictness"></param>
+        /// <returns></returns>
+        public static bool IsLowerVersion(ModModule baseModule, ModModule compareModule, VersionStrictness strictness)
+        {
+            if (strictness >= VersionStrictness.Major && compareModule.version.Major < baseModule.version.Major)
+            {
+                return true;
+            }
+
+            if (strictness >= VersionStrictness.Minor && compareModule.version.Minor < baseModule.version.Minor)
+            {
+                return true;
+            }
+
+            if (strictness >= VersionStrictness.Patch && compareModule.version.Build < baseModule.version.Build)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }
