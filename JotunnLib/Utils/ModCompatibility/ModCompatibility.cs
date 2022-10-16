@@ -229,7 +229,7 @@ namespace Jotunn.Utils
                 GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
                 new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
             GUIManager.Instance.CreateText(
-                failedConnectionText + Environment.NewLine, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                failedConnectionText.Trim() + Environment.NewLine, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
                 GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
                 new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
 
