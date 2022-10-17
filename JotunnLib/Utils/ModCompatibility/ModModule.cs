@@ -67,13 +67,13 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
-        ///    Module is enforced by the server or client
+        ///    Module is not enforced by the server or client
         /// </summary>
         /// <returns></returns>
-        public bool IsEnforced()
+        public bool IsNotEnforced()
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            return !(compatibilityLevel == CompatibilityLevel.NotEnforced || compatibilityLevel == CompatibilityLevel.NoNeedForSync);
+            return compatibilityLevel == CompatibilityLevel.NotEnforced || compatibilityLevel == CompatibilityLevel.NoNeedForSync;
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 

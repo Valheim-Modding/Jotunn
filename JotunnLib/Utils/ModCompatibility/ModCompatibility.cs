@@ -172,7 +172,7 @@ namespace Jotunn.Utils
             // Compare modules
             foreach (var serverModule in serverData.Modules)
             {
-                if (!serverModule.IsEnforced())
+                if (serverModule.IsNotEnforced())
                 {
                     continue;
                 }
@@ -319,7 +319,7 @@ namespace Jotunn.Utils
             // And then each module
             foreach (var serverModule in serverData.Modules)
             {
-                if (!serverModule.IsEnforced())
+                if (serverModule.IsNotEnforced())
                 {
                     continue;
                 }
