@@ -256,8 +256,8 @@ namespace Jotunn.Utils
             foreach (var part in CreateErrorMessage(remote, local))
             {
                 GUIManager.Instance.CreateText(
-                    part.Item2, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                    GUIManager.Instance.AveriaSerifBold, 19, part.Item1, true,
+                    part, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+                    GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
                     new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
             }
 
@@ -288,31 +288,30 @@ namespace Jotunn.Utils
         /// <param name="serverData">server data</param>
         /// <param name="clientData">client data</param>
         /// <returns></returns>
-        private static IEnumerable<Tuple<Color, string>> CreateErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        private static IEnumerable<string> CreateErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
             // Check Valheim version first
             if (serverData.ValheimVersion != clientData.ValheimVersion)
             {
-                yield return new Tuple<Color, string>(Color.red, "Valheim version error:");
+                yield return ColoredText(Color.red, "Valheim version error:", false);
                 if (serverData.ValheimVersion > clientData.ValheimVersion)
                 {
-                    yield return new Tuple<Color, string>(Color.white, $"Please update your client to version {serverData.ValheimVersion}");
+                    yield return ColoredText(Color.white, $"Please update your client to version {serverData.ValheimVersion}", true);
                 }
 
                 if (serverData.ValheimVersion < clientData.ValheimVersion)
                 {
-                    yield return new Tuple<Color, string>(Color.white,
-                        $"The server you tried to connect runs {serverData.ValheimVersion}, which is lower than your version ({clientData.ValheimVersion})");
-                    yield return new Tuple<Color, string>(Color.white, "Please contact the server admin for a server update." + Environment.NewLine);
+                    yield return ColoredText(Color.white, $"The server you tried to connect runs {serverData.ValheimVersion}, which is lower than your version ({clientData.ValheimVersion})", false);
+                    yield return ColoredText(Color.white, $"Please contact the server admin for a server update.", true);
                 }
             }
             else
             {
                 if (!string.IsNullOrEmpty(serverData.VersionString) && serverData.VersionString != clientData.VersionString)
                 {
-                    yield return new Tuple<Color, string>(Color.red, "Valheim modded version string mismatch:");
-                    yield return new Tuple<Color, string>(Color.white, $"Local: {clientData.VersionString}");
-                    yield return new Tuple<Color, string>(Color.white, $"Remote: {serverData.VersionString}{Environment.NewLine}");
+                    yield return ColoredText(Color.red, "Valheim modded version string mismatch:", false);
+                    yield return ColoredText(Color.white, $"Local: {clientData.VersionString}", false);
+                    yield return ColoredText(Color.white, $"Remote: {serverData.VersionString}", true);
                 }
             }
 
@@ -327,8 +326,8 @@ namespace Jotunn.Utils
                 // Check first for missing modules on the client side
                 if (serverModule.IsNeededOnClient() && !clientData.HasModule(serverModule.name))
                 {
-                    yield return new Tuple<Color, string>(Color.red, "Missing mod:");
-                    yield return new Tuple<Color, string>(Color.white, $"Please install mod {serverModule.name} v{serverModule.version}" + Environment.NewLine);
+                    yield return ColoredText(Color.red, "Missing mod:", false);
+                    yield return ColoredText(Color.white, $"Please install mod {serverModule.name} v{serverModule.version}", true);
                     continue;
                 }
 
@@ -342,18 +341,12 @@ namespace Jotunn.Utils
 
                 if (ModModule.IsLowerVersion(serverModule, clientModule, serverModule.versionStrictness))
                 {
-                    foreach (var messageLine in ClientVersionLowerMessage(serverModule))
-                    {
-                        yield return messageLine;
-                    }
+                    yield return ClientVersionLowerMessage(serverModule);
                 }
 
                 if (ModModule.IsLowerVersion(clientModule, serverModule, serverModule.versionStrictness))
                 {
-                    foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
-                    {
-                        yield return messageLine;
-                    }
+                    yield return ServerVersionLowerMessage(serverModule, clientModule);
                 }
             }
 
@@ -362,9 +355,9 @@ namespace Jotunn.Utils
             {
                 if (serverData.Modules.All(x => x.name != clientModule.name))
                 {
-                    yield return new Tuple<Color, string>(Color.red, "Additional mod loaded:");
-                    yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, $"Mod {clientModule.name} v{clientModule.version} was not loaded or is not installed on the server.");
-                    yield return new Tuple<Color, string>(Color.white, "Please contact your server admin or uninstall this mod." + Environment.NewLine);
+                    yield return ColoredText(Color.red, "Additional mod loaded:", false);
+                    yield return ColoredText(GUIManager.Instance.ValheimOrange, $"Mod {clientModule.name} v{clientModule.version} was not loaded or is not installed on the server.", false);
+                    yield return ColoredText(Color.white, $"Please contact your server admin or uninstall this mod", true);
                     continue;
                 }
             }
@@ -375,10 +368,10 @@ namespace Jotunn.Utils
         /// </summary>
         /// <param name="module">Module version data</param>
         /// <returns></returns>
-        private static IEnumerable<Tuple<Color, string>> ClientVersionLowerMessage(ModModule module)
+        private static string ClientVersionLowerMessage(ModModule module)
         {
-            yield return new Tuple<Color, string>(Color.red, "Mod update needed:");
-            yield return new Tuple<Color, string>(Color.white, $"Please update mod {module.name} to version v{module.GetVersionString()}." + Environment.NewLine);
+            return ColoredText(Color.red, "Mod update needed:", true) +
+                   ColoredText(Color.white, $"Please update mod {module.name} to version v{module.GetVersionString()}", true);
         }
 
         /// <summary>
@@ -387,14 +380,12 @@ namespace Jotunn.Utils
         /// <param name="module">server module data</param>
         /// <param name="clientModule">client module data</param>
         /// <returns></returns>
-        private static IEnumerable<Tuple<Color, string>> ServerVersionLowerMessage(ModModule module, ModModule clientModule)
+        private static string ServerVersionLowerMessage(ModModule module, ModModule clientModule)
         {
-            yield return new Tuple<Color, string>(Color.red, "Module version mismatch:");
-            yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, $"Server has mod {module.name} v{module.GetVersionString()} installed.");
-            yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
-                $"You have a higher version (v{clientModule.GetVersionString()}) of this mod installed.");
-            yield return new Tuple<Color, string>(Color.white,
-                "Please contact the server admin to update or downgrade the mod on your client." + Environment.NewLine);
+            return ColoredText(Color.red, "Module version mismatch:", true) +
+                   ColoredText(GUIManager.Instance.ValheimOrange, $"Server has mod {module.name} v{module.GetVersionString()} installed.", true) +
+                   ColoredText(GUIManager.Instance.ValheimOrange, $"You have a higher version (v{clientModule.GetVersionString()}) of this mod installed.", true) +
+                   ColoredText(Color.white, $"Please contact the server admin to update or downgrade the mod on your client", true);
         }
 
         /// <summary>
@@ -414,6 +405,11 @@ namespace Jotunn.Utils
                     yield return new ModModule(plugin.Value.Info.Metadata, networkCompatibilityAttribute);
                 }
             }
+        }
+
+        private static string ColoredText(Color color, string inner, bool insertNewLine)
+        {
+            return $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{inner}</color>" + (insertNewLine ? Environment.NewLine : string.Empty);
         }
     }
 }
