@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -53,7 +54,7 @@ namespace Jotunn.Utils
             if (LastServerVersion != null && ZNet.m_connectionStatus == ZNet.ConnectionStatus.ErrorVersion)
             {
                 string failedConnectionText = __instance.m_connectionFailedError.text;
-                ShowModCompatibilityErrorMessage(failedConnectionText);
+                __instance.StartCoroutine(ShowModCompatibilityErrorMessage(failedConnectionText));
                 __instance.m_connectionFailedPanel.SetActive(false);
             }
         }
@@ -160,12 +161,14 @@ namespace Jotunn.Utils
             }
 
             // Check server enforced mods
-            if (serverData.Modules.Any(serverModule => serverModule.IsNeededOnClient() && !clientData.HasModule(serverModule.name))) {
+            if (serverData.Modules.Any(serverModule => serverModule.IsNeededOnClient() && !clientData.HasModule(serverModule.name)))
+            {
                 return false;
             }
 
             // Check client enforced mods
-            if (clientData.Modules.Any(clientModule => clientModule.IsNeededOnServer() && !serverData.HasModule(clientModule.name))) {
+            if (clientData.Modules.Any(clientModule => clientModule.IsNeededOnServer() && !serverData.HasModule(clientModule.name)))
+            {
                 return false;
             }
 
@@ -203,80 +206,64 @@ namespace Jotunn.Utils
             return true;
         }
 
+        private static CompatibilityWindow LoadCompatWindow()
+        {
+            AssetBundle jotunnBundle = AssetUtils.LoadAssetBundleFromResources("modcompat", typeof(Main).Assembly);
+            var compatWindowGameObject = Object.Instantiate(jotunnBundle.LoadAsset<GameObject>("CompatibilityWindow"), GUIManager.CustomGUIFront.transform);
+            jotunnBundle.Unload(false);
+
+            var compatWindow = compatWindowGameObject.GetComponent<CompatibilityWindow>();
+            var compatWindowRect = ((RectTransform)compatWindow.transform);
+
+            foreach (var text in compatWindow.GetComponentsInChildren<Text>())
+            {
+                GUIManager.Instance.ApplyTextStyle(text, 18);
+            }
+
+            GUIManager.Instance.ApplyWoodpanelStyle(compatWindow.transform);
+            GUIManager.Instance.ApplyScrollRectStyle(compatWindow.scrollRect);
+            GUIManager.Instance.ApplyButtonStyle(compatWindow.continueButton);
+
+            compatWindowRect.anchoredPosition = new Vector2(25, 0);
+            compatWindow.gameObject.SetWidth(900);
+            compatWindow.gameObject.SetHeight(500);
+
+            return compatWindow;
+        }
+
         /// <summary>
         ///     Create and show mod compatibility error message
         /// </summary>
-        private static void ShowModCompatibilityErrorMessage(string failedConnectionText)
+        private static IEnumerator ShowModCompatibilityErrorMessage(string failedConnectionText)
         {
-            const int panelWidth = 900;
-            var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.CustomGUIFront.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0f, 0f), panelWidth, 500);
-            panel.SetActive(true);
+            var compatWindow = LoadCompatWindow();
             var remote = new ModuleVersionData(LastServerVersion);
             var local = new ModuleVersionData(GetEnforcableMods().ToList());
 
-            var scroll = GUIManager.Instance.CreateScrollView(
-                panel.transform, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
-                new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f), panelWidth - 50f, 400f);
-            var scrolltf = scroll.GetComponent<RectTransform>();
-            scrolltf.anchoredPosition = new Vector2(scrolltf.anchoredPosition.x, scrolltf.anchoredPosition.y + 15f);
-
-            var tf = scrolltf.Find("Scroll View/Viewport/Content") as RectTransform;
-
-            // Show failed connection string
-            GUIManager.Instance.CreateText(
-                "Failed connection:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-            GUIManager.Instance.CreateText(
-                failedConnectionText.Trim() + Environment.NewLine, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-
-            // list remote versions
-            GUIManager.Instance.CreateText(
-                "Remote version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-            GUIManager.Instance.CreateText(
-                remote.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-
-            // list local versions
-            GUIManager.Instance.CreateText(
-                "Local version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-            GUIManager.Instance.CreateText(
-                local.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-
+            StringBuilder sb = new StringBuilder();
             foreach (var part in CreateErrorMessage(remote, local))
             {
-                GUIManager.Instance.CreateText(
-                    part, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                    GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
-                    new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
+                sb.Append(part);
+                sb.Append(Environment.NewLine);
             }
 
-            scroll.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
+            compatWindow.failedConnection.text = ColoredText(GUIManager.Instance.ValheimOrange, "Failed connection:", true) +
+                                                 failedConnectionText.Trim();
+            compatWindow.localVersion.text = ColoredText(GUIManager.Instance.ValheimOrange, "Local Version:", true) +
+                                             local.ToString(false).Trim();
+            compatWindow.remoteVersion.text = ColoredText(GUIManager.Instance.ValheimOrange, "Remote Version:", true) +
+                                              remote.ToString(false).Trim();
+            compatWindow.errorMessages.text = sb.ToString().Trim();
 
-            scroll.SetActive(true);
+            // Unity needs a frame to correctly calculate the preferred height. The components need to be active so we scale them down to 0
+            // Their LayoutRebuilder.ForceRebuildLayoutImmediate does not take wrapped text into account
+            compatWindow.transform.localScale = Vector3.zero;
+            yield return null;
+            compatWindow.transform.localScale = Vector3.one;
 
-            var button = GUIManager.Instance.CreateButton("OK", panel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -215f),
-                100f, 40f);
-
-            // Special condition, coming from ingame back into main scene
-            button.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
-            button.SetActive(true);
-
-            button.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                panel.SetActive(false);
-                Object.Destroy(panel);
-            });
+            compatWindow.UpdateTextPositions();
+            compatWindow.continueButton.onClick.AddListener(() => Object.Destroy(compatWindow.gameObject));
+            compatWindow.scrollRect.verticalNormalizedPosition = 1f;
 
             // Reset the last server version
             LastServerVersion = null;

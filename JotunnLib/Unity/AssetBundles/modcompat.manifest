@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2621490022
+CRC: 2384267756
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 67aa732a807a50e034ba3dbb3383786e
+    Hash: d38b6cf83700b8573221e404f0520b83
   TypeTreeHash:
     serializedVersion: 2
-    Hash: c609c18fe8fb9b812aba1113244d85c0
+    Hash: 1de4bb6ca98ab97903b5d9e39248eb7c
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -18,21 +18,19 @@ ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 24fab2dacfbc05348a64aa98107b05e4, type: 3}
+  Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: c18e41860008ad44b88ba01f50cc4117, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -45,13 +43,7 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.CoreModule
-  ClassName: UnityEngine.Events.ArgumentCache
-- AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.Events.PersistentCallGroup
-- AssemblyName: UnityEngine.CoreModule
-  ClassName: UnityEngine.Events.PersistentListenerMode
-- AssemblyName: UnityEngine.CoreModule
-  ClassName: UnityEngine.RectOffset
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.AnimationTriggers
 - AssemblyName: UnityEngine.UI
@@ -65,17 +57,11 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.Navigation
 - AssemblyName: UnityEngine.UI
-  ClassName: UnityEngine.UI.SpriteState
+  ClassName: UnityEngine.UI.ScrollRect/ScrollRectEvent
 - AssemblyName: UnityEngine.UI
-  ClassName: UnityEngine.UI.Toggle/ToggleEvent
+  ClassName: UnityEngine.UI.Scrollbar/ScrollEvent
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.SpriteState
 Assets:
-- Assets/Resources/MinimapComposeOverlay.shader
-- Assets/Resources/MinimapComposeMainR.shader
-- Assets/Textures/CircleMask.png
-- Assets/Prefabs/MinimapOverlayPanel.prefab
-- Assets/Textures/2048x2048_clear.png
-- Assets/Resources/MinimapComposeForest.shader
-- Assets/Resources/MinimapComposeHeight.shader
-- Assets/Resources/MinimapComposeFog.shader
-- Assets/Resources/MinimapComposeMain.shader
+- Assets/Prefabs/CompatibilityWindow.prefab
 Dependencies: []
