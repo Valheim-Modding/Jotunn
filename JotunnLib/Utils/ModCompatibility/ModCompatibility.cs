@@ -155,21 +155,32 @@ namespace Jotunn.Utils
                 return true;
             }
 
+            bool result = true;
+
             if (!Equals(serverData.ValheimVersion, clientData.ValheimVersion))
             {
-                return false;
+                Logger.LogWarning($"Version incompatibility: Server {serverData.ValheimVersion}, Client {clientData.ValheimVersion}");
+                result = false;
             }
 
             // Check server enforced mods
-            if (serverData.Modules.Any(serverModule => serverModule.IsNeededOnClient() && !clientData.HasModule(serverModule.name)))
+            foreach (var serverModule in serverData.Modules)
             {
-                return false;
+                if (serverModule.IsNeededOnClient() && !clientData.HasModule(serverModule.name))
+                {
+                    Logger.LogWarning($"Missing mod on client: {serverModule.name}");
+                    result = false;
+                }
             }
 
             // Check client enforced mods
-            if (clientData.Modules.Any(clientModule => clientModule.IsNeededOnServer() && !serverData.HasModule(clientModule.name)))
+            foreach (var clientModule in clientData.Modules)
             {
-                return false;
+                if (clientModule.IsNeededOnServer() && !serverData.HasModule(clientModule.name))
+                {
+                    Logger.LogWarning($"Client loaded additional mod: {clientModule.name}");
+                    result = false;
+                }
             }
 
             // Compare modules
@@ -182,28 +193,25 @@ namespace Jotunn.Utils
 
                 var clientModule = clientData.FindModule(serverModule.name);
 
-                if (clientModule == null && serverModule.OnlyVersionCheck() || !serverModule.IsNeededOnClient())
+                if (clientModule == null)
                 {
                     continue;
                 }
 
-                if (clientModule == null)
-                {
-                    return false;
-                }
-
                 if (ModModule.IsLowerVersion(serverModule, clientModule, serverModule.versionStrictness))
                 {
-                    return false;
+                    Logger.LogWarning($"Mod version mismatch {serverModule.name}: Server {serverModule.version}, Client {clientModule.version}");
+                    result = false;
                 }
 
                 if (ModModule.IsLowerVersion(clientModule, serverModule, serverModule.versionStrictness))
                 {
-                    return false;
+                    Logger.LogWarning($"Mod version mismatch {serverModule.name}: Server {serverModule.version}, Client {clientModule.version}");
+                    result = false;
                 }
             }
 
-            return true;
+            return result;
         }
 
         private static CompatibilityWindow LoadCompatWindow()
