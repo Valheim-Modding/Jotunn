@@ -164,51 +164,25 @@ namespace Jotunn.Utils
             }
 
             // Check server enforced mods
-            foreach (var serverModule in serverData.Modules)
+            foreach (var serverModule in FindNotInstalledMods(serverData, clientData))
             {
-                if (serverModule.IsNeededOnClient() && !clientData.HasModule(serverModule.name))
-                {
-                    Logger.LogWarning($"Missing mod on client: {serverModule.name}");
-                    result = false;
-                }
+                Logger.LogWarning($"Missing mod on client: {serverModule.name}");
+                result = false;
             }
 
             // Check client enforced mods
-            foreach (var clientModule in clientData.Modules)
+            foreach (var clientModule in FindAdditionalMods(serverData, clientData))
             {
-                if (clientModule.IsNeededOnServer() && !serverData.HasModule(clientModule.name))
-                {
-                    Logger.LogWarning($"Client loaded additional mod: {clientModule.name}");
-                    result = false;
-                }
+                Logger.LogWarning($"Client loaded additional mod: {clientModule.name}");
+                result = false;
             }
 
-            // Compare modules
-            foreach (var serverModule in serverData.Modules)
+            // Check versions
+            foreach (var serverModule in FindLowerVersionMods(serverData, clientData).Union(FindHigherVersionMods(serverData, clientData)))
             {
-                if (serverModule.IsNotEnforced())
-                {
-                    continue;
-                }
-
                 var clientModule = clientData.FindModule(serverModule.name);
-
-                if (clientModule == null)
-                {
-                    continue;
-                }
-
-                if (ModModule.IsLowerVersion(serverModule, clientModule, serverModule.versionStrictness))
-                {
-                    Logger.LogWarning($"Mod version mismatch {serverModule.name}: Server {serverModule.version}, Client {clientModule.version}");
-                    result = false;
-                }
-
-                if (ModModule.IsLowerVersion(clientModule, serverModule, serverModule.versionStrictness))
-                {
-                    Logger.LogWarning($"Mod version mismatch {serverModule.name}: Server {serverModule.version}, Client {clientModule.version}");
-                    result = false;
-                }
+                Logger.LogWarning($"Mod version mismatch {serverModule.name}: Server {serverModule.version}, Client {clientModule.version}");
+                result = false;
             }
 
             return result;
@@ -248,6 +222,9 @@ namespace Jotunn.Utils
             var remote = new ModuleVersionData(LastServerVersion);
             var local = new ModuleVersionData(GetEnforcableMods().ToList());
 
+            // print issues to console
+            CompareVersionData(remote, local);
+
             compatWindow.failedConnection.text = ColoredText(GUIManager.Instance.ValheimOrange, "Failed connection:", true) +
                                                  failedConnectionText.Trim();
             compatWindow.localVersion.text = ColoredText(GUIManager.Instance.ValheimOrange, "Local Version (your game):", true) +
@@ -281,8 +258,8 @@ namespace Jotunn.Utils
             return CreateVanillaVersionErrorMessage(serverData, clientData) +
                    CreateVersionStringErrorMessage(serverData, clientData) +
                    CreateNotInstalledErrorMessage(serverData, clientData) +
-                   CreateNotLowerVersionErrorMessage(serverData, clientData) +
-                   CreateNotHigherVersionErrorMessage(serverData, clientData) +
+                   CreateLowerVersionErrorMessage(serverData, clientData) +
+                   CreateHigherVersionErrorMessage(serverData, clientData) +
                    CreateAdditionalModsErrorMessage(serverData, clientData);
         }
 
@@ -323,32 +300,21 @@ namespace Jotunn.Utils
 
         private static string CreateNotInstalledErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            List<ModModule> matchingServerMods = FindMods(serverData, clientData, (serverModule, clientModule) =>
-            {
-                return serverModule.IsNeededOnClient() && clientModule == null;
-            }).ToList();
+            List<ModModule> matchingServerMods = FindNotInstalledMods(serverData, clientData);
 
             if (matchingServerMods.Count == 0)
             {
                 return string.Empty;
             }
 
-            string result = ColoredText(Color.red, "Missing mods:", true);
-
-            foreach (ModModule serverModule in matchingServerMods)
-            {
-                result += ColoredText(Color.white, $"Please install mod {serverModule.name} {serverModule.version}", true);
-            }
-
-            return result + Environment.NewLine;
+            return ColoredText(Color.red, "Missing mods:", true) +
+                   matchingServerMods.Aggregate("", (current, serverModule) => current + ColoredText(Color.white, $"Please install mod {serverModule.name} {serverModule.version}", true)) +
+                   Environment.NewLine;
         }
 
-        private static string CreateNotLowerVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        private static string CreateLowerVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            List<ModModule> matchingServerMods = FindMods(serverData, clientData, (serverModule, clientModule) =>
-            {
-                return clientModule != null && ModModule.IsLowerVersion(serverModule, clientModule, serverModule.versionStrictness);
-            }).ToList();
+            List<ModModule> matchingServerMods = FindLowerVersionMods(serverData, clientData);
 
             if (matchingServerMods.Count == 0)
             {
@@ -360,12 +326,9 @@ namespace Jotunn.Utils
                    Environment.NewLine;
         }
 
-        private static string CreateNotHigherVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        private static string CreateHigherVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            List<ModModule> matchingServerMods = FindMods(serverData, clientData, (serverModule, clientModule) =>
-            {
-                return clientModule != null && ModModule.IsLowerVersion(clientModule, serverModule, serverModule.versionStrictness);
-            }).ToList();
+            List<ModModule> matchingServerMods = FindHigherVersionMods(serverData, clientData);
 
             if (matchingServerMods.Count == 0)
             {
@@ -379,10 +342,7 @@ namespace Jotunn.Utils
 
         private static string CreateAdditionalModsErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            List<ModModule> matchingClientMods = FindMods(clientData, serverData, (clientModule, serverModule) =>
-            {
-                return clientModule.IsNeededOnServer() && serverModule == null;
-            }).ToList();
+            List<ModModule> matchingClientMods = FindAdditionalMods(serverData, clientData);
 
             if (matchingClientMods.Count == 0)
             {
@@ -393,6 +353,38 @@ namespace Jotunn.Utils
                    ColoredText(Color.white, $"Please contact your server admin or uninstall those mods", true) +
                    matchingClientMods.Aggregate("", (current, clientModule) => current + ColoredText(Color.white, $"{clientModule.name} {clientModule.version} was not loaded on the server", true)) +
                    Environment.NewLine;
+        }
+
+        private static List<ModModule> FindNotInstalledMods(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            return FindMods(serverData, clientData, (serverModule, clientModule) =>
+            {
+                return serverModule.IsNeededOnClient() && clientModule == null;
+            }).ToList();
+        }
+
+        private static List<ModModule> FindAdditionalMods(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            return FindMods(serverData, clientData, (clientModule, serverModule) =>
+            {
+                return clientModule.IsNeededOnServer() && serverModule == null;
+            }).ToList();
+        }
+
+        private static List<ModModule> FindLowerVersionMods(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            return FindMods(serverData, clientData, (serverModule, clientModule) =>
+            {
+                return clientModule != null && ModModule.IsLowerVersion(serverModule, clientModule, serverModule.versionStrictness);
+            }).ToList();
+        }
+
+        private static List<ModModule> FindHigherVersionMods(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            return FindMods(serverData, clientData, (serverModule, clientModule) =>
+            {
+                return clientModule != null && ModModule.IsLowerVersion(clientModule, serverModule, serverModule.versionStrictness);
+            }).ToList();
         }
 
         private static IEnumerable<ModModule> FindMods(ModuleVersionData baseModules, ModuleVersionData additionalModules, Func<ModModule, ModModule, bool> predicate)
