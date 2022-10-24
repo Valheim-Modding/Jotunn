@@ -240,20 +240,13 @@ namespace Jotunn.Utils
             var remote = new ModuleVersionData(LastServerVersion);
             var local = new ModuleVersionData(GetEnforcableMods().ToList());
 
-            StringBuilder sb = new StringBuilder();
-            foreach (var part in CreateErrorMessage(remote, local))
-            {
-                sb.Append(part);
-                sb.Append(Environment.NewLine);
-            }
-
             compatWindow.failedConnection.text = ColoredText(GUIManager.Instance.ValheimOrange, "Failed connection:", true) +
                                                  failedConnectionText.Trim();
-            compatWindow.localVersion.text = ColoredText(GUIManager.Instance.ValheimOrange, "Local Version:", true) +
+            compatWindow.localVersion.text = ColoredText(GUIManager.Instance.ValheimOrange, "Local Version (your game):", true) +
                                              local.ToString(false).Trim();
-            compatWindow.remoteVersion.text = ColoredText(GUIManager.Instance.ValheimOrange, "Remote Version:", true) +
+            compatWindow.remoteVersion.text = ColoredText(GUIManager.Instance.ValheimOrange, "Remote Version (the server):", true) +
                                               remote.ToString(false).Trim();
-            compatWindow.errorMessages.text = sb.ToString().Trim();
+            compatWindow.errorMessages.text = CreateErrorMessage(remote, local).Trim();
 
             // Unity needs a frame to correctly calculate the preferred height. The components need to be active so we scale them down to 0
             // Their LayoutRebuilder.ForceRebuildLayoutImmediate does not take wrapped text into account
@@ -275,104 +268,136 @@ namespace Jotunn.Utils
         /// <param name="serverData">server data</param>
         /// <param name="clientData">client data</param>
         /// <returns></returns>
-        private static IEnumerable<string> CreateErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        private static string CreateErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            // Check Valheim version first
-            if (serverData.ValheimVersion != clientData.ValheimVersion)
-            {
-                yield return ColoredText(Color.red, "Valheim version error:", false);
-                if (serverData.ValheimVersion > clientData.ValheimVersion)
-                {
-                    yield return ColoredText(Color.white, $"Please update your client to version {serverData.ValheimVersion}", true);
-                }
-
-                if (serverData.ValheimVersion < clientData.ValheimVersion)
-                {
-                    yield return ColoredText(Color.white, $"The server you tried to connect runs {serverData.ValheimVersion}, which is lower than your version ({clientData.ValheimVersion})", false);
-                    yield return ColoredText(Color.white, $"Please contact the server admin for a server update.", true);
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(serverData.VersionString) && serverData.VersionString != clientData.VersionString)
-                {
-                    yield return ColoredText(Color.red, "Valheim modded version string mismatch:", false);
-                    yield return ColoredText(Color.white, $"Local: {clientData.VersionString}", false);
-                    yield return ColoredText(Color.white, $"Remote: {serverData.VersionString}", true);
-                }
-            }
-
-            // And then each module
-            foreach (var serverModule in serverData.Modules)
-            {
-                if (serverModule.IsNotEnforced())
-                {
-                    continue;
-                }
-
-                // Check first for missing modules on the client side
-                if (serverModule.IsNeededOnClient() && !clientData.HasModule(serverModule.name))
-                {
-                    yield return ColoredText(Color.red, "Missing mod:", false);
-                    yield return ColoredText(Color.white, $"Please install mod {serverModule.name} v{serverModule.version}", true);
-                    continue;
-                }
-
-                // Then all version checks
-                var clientModule = clientData.FindModule(serverModule.name);
-
-                if (clientModule == null)
-                {
-                    continue;
-                }
-
-                if (ModModule.IsLowerVersion(serverModule, clientModule, serverModule.versionStrictness))
-                {
-                    yield return ClientVersionLowerMessage(serverModule);
-                }
-
-                if (ModModule.IsLowerVersion(clientModule, serverModule, serverModule.versionStrictness))
-                {
-                    yield return ServerVersionLowerMessage(serverModule, clientModule);
-                }
-            }
-
-            // Now lets find additional modules with NetworkCompatibility attribute in the client's list
-            foreach (var clientModule in clientData.Modules.Where(x => x.IsNeededOnServer()))
-            {
-                if (serverData.Modules.All(x => x.name != clientModule.name))
-                {
-                    yield return ColoredText(Color.red, "Additional mod loaded:", false);
-                    yield return ColoredText(GUIManager.Instance.ValheimOrange, $"Mod {clientModule.name} v{clientModule.version} was not loaded or is not installed on the server.", false);
-                    yield return ColoredText(Color.white, $"Please contact your server admin or uninstall this mod", true);
-                    continue;
-                }
-            }
+            return CreateVanillaVersionErrorMessage(serverData, clientData) +
+                   CreateVersionStringErrorMessage(serverData, clientData) +
+                   CreateNotInstalledErrorMessage(serverData, clientData) +
+                   CreateNotLowerVersionErrorMessage(serverData, clientData) +
+                   CreateNotHigherVersionErrorMessage(serverData, clientData) +
+                   CreateAdditionalModsErrorMessage(serverData, clientData);
         }
 
-        /// <summary>
-        ///     Generate message for client's mod version lower than server's version
-        /// </summary>
-        /// <param name="module">Module version data</param>
-        /// <returns></returns>
-        private static string ClientVersionLowerMessage(ModModule module)
+        private static string CreateVanillaVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            return ColoredText(Color.red, "Mod update needed:", true) +
-                   ColoredText(Color.white, $"Please update mod {module.name} to version v{module.GetVersionString()}", true);
+            if (serverData.ValheimVersion > clientData.ValheimVersion)
+            {
+                return ColoredText(Color.red, "Valheim version error:", true) +
+                       ColoredText(Color.white, $"The server runs Valheim {serverData.ValheimVersion}, while your client runs Valheim {clientData.ValheimVersion}", true) +
+                       ColoredText(Color.white, $"Please update your game to version {serverData.ValheimVersion} or contact your server admin", true) +
+                       Environment.NewLine;
+            }
+
+            if (serverData.ValheimVersion < clientData.ValheimVersion)
+            {
+                return ColoredText(Color.red, "Valheim version error:", true) +
+                       ColoredText(Color.white, $"The server runs {serverData.ValheimVersion}, while your client runs {clientData.ValheimVersion}", true) +
+                       ColoredText(Color.white, $"Please downgrade your game to version {serverData.ValheimVersion} or contact your server admin", true) +
+                       Environment.NewLine;
+            }
+
+            return string.Empty;
         }
 
-        /// <summary>
-        ///     Generate message for server's mod version lower than client's version
-        /// </summary>
-        /// <param name="module">server module data</param>
-        /// <param name="clientModule">client module data</param>
-        /// <returns></returns>
-        private static string ServerVersionLowerMessage(ModModule module, ModModule clientModule)
+        private static string CreateVersionStringErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            return ColoredText(Color.red, "Module version mismatch:", true) +
-                   ColoredText(GUIManager.Instance.ValheimOrange, $"Server has mod {module.name} v{module.GetVersionString()} installed.", true) +
-                   ColoredText(GUIManager.Instance.ValheimOrange, $"You have a higher version (v{clientModule.GetVersionString()}) of this mod installed.", true) +
-                   ColoredText(Color.white, $"Please contact the server admin to update or downgrade the mod on your client", true);
+            if (serverData.ValheimVersion == clientData.ValheimVersion && !string.IsNullOrEmpty(serverData.VersionString) && serverData.VersionString != clientData.VersionString)
+            {
+                return ColoredText(GUIManager.Instance.ValheimOrange, "Valheim modded version string mismatch:", true) +
+                       ColoredText(Color.white, $"This may indicates that mods are missing. Not all mods change the version string equally or even require to be installed on both server and client. Please check the requirements of the listed mods", true) +
+                       ColoredText(Color.white, $"Local (your game): {clientData.VersionString}", true) +
+                       ColoredText(Color.white, $"Remote (the server): {serverData.VersionString}", true) +
+                       Environment.NewLine;
+            }
+
+            return string.Empty;
+        }
+
+        private static string CreateNotInstalledErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            List<ModModule> matchingServerMods = FindMods(serverData, clientData, (serverModule, clientModule) =>
+            {
+                return serverModule.IsNeededOnClient() && clientModule == null;
+            }).ToList();
+
+            if (matchingServerMods.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            string result = ColoredText(Color.red, "Missing mods:", true);
+
+            foreach (ModModule serverModule in matchingServerMods)
+            {
+                result += ColoredText(Color.white, $"Please install mod {serverModule.name} {serverModule.version}", true);
+            }
+
+            return result + Environment.NewLine;
+        }
+
+        private static string CreateNotLowerVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            List<ModModule> matchingServerMods = FindMods(serverData, clientData, (serverModule, clientModule) =>
+            {
+                return clientModule != null && ModModule.IsLowerVersion(serverModule, clientModule, serverModule.versionStrictness);
+            }).ToList();
+
+            if (matchingServerMods.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return ColoredText(Color.red, "Mod updates needed:", true) +
+                   matchingServerMods.Aggregate("", (current, serverModule) => current + ColoredText(Color.white, $"Please update mod {serverModule.name} to version {serverModule.GetVersionString()}", true)) +
+                   Environment.NewLine;
+        }
+
+        private static string CreateNotHigherVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            List<ModModule> matchingServerMods = FindMods(serverData, clientData, (serverModule, clientModule) =>
+            {
+                return clientModule != null && ModModule.IsLowerVersion(clientModule, serverModule, serverModule.versionStrictness);
+            }).ToList();
+
+            if (matchingServerMods.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return ColoredText(Color.red, "Mod downgrades needed:", true) +
+                   matchingServerMods.Aggregate("", (current, serverModule) => current + ColoredText(Color.white, $"Please downgrade mod {serverModule.name} to version {serverModule.GetVersionString()}", true)) +
+                   Environment.NewLine;
+        }
+
+        private static string CreateAdditionalModsErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            List<ModModule> matchingClientMods = FindMods(clientData, serverData, (clientModule, serverModule) =>
+            {
+                return clientModule.IsNeededOnServer() && serverModule == null;
+            }).ToList();
+
+            if (matchingClientMods.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return ColoredText(Color.red, "Additional mods loaded:", true) +
+                   ColoredText(Color.white, $"Please contact your server admin or uninstall those mods", true) +
+                   matchingClientMods.Aggregate("", (current, clientModule) => current + ColoredText(Color.white, $"{clientModule.name} {clientModule.version} was not loaded on the server", true)) +
+                   Environment.NewLine;
+        }
+
+        private static IEnumerable<ModModule> FindMods(ModuleVersionData baseModules, ModuleVersionData additionalModules, Func<ModModule, ModModule, bool> predicate)
+        {
+            foreach (ModModule baseModule in baseModules.Modules)
+            {
+                ModModule additionalModule = additionalModules.FindModule(baseModule.name);
+
+                if (predicate(baseModule, additionalModule))
+                {
+                    yield return baseModule;
+                }
+            }
         }
 
         /// <summary>
