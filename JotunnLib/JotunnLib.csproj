@@ -42,6 +42,8 @@
     <None Remove="Unity\Build\**" />
     <None Remove="Unity\AssetBundles\modcompat" />
     <EmbeddedResource Include="Unity\AssetBundles\modcompat" />
+    <None Remove="Localization\English.json" />
+    <EmbeddedResource Include="Localization\English.json" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)'!='Debug'">
     <Compile Remove="DebugUtils\**" />

@@ -23,6 +23,12 @@ namespace Jotunn.Utils
 
         private static readonly Dictionary<string, ZPackage> ClientVersions = new Dictionary<string, ZPackage>();
 
+        internal static void Init()
+        {
+            var localization = LocalizationManager.Instance.JotunnLocalization;
+            localization.AddJsonFile("English", AssetUtils.LoadTextFromResources("English.json", typeof(Main).Assembly));
+        }
+
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection)), HarmonyPrefix, HarmonyPriority(Priority.First)]
         private static void ZNet_OnNewConnection(ZNet __instance, ZNetPeer peer)
         {
@@ -190,9 +196,9 @@ namespace Jotunn.Utils
 
         private static CompatibilityWindow LoadCompatWindow()
         {
-            AssetBundle jotunnBundle = AssetUtils.LoadAssetBundleFromResources("modcompat", typeof(Main).Assembly);
-            var compatWindowGameObject = Object.Instantiate(jotunnBundle.LoadAsset<GameObject>("CompatibilityWindow"), GUIManager.CustomGUIFront.transform);
-            jotunnBundle.Unload(false);
+            AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("modcompat", typeof(Main).Assembly);
+            var compatWindowGameObject = Object.Instantiate(bundle.LoadAsset<GameObject>("CompatibilityWindow"), GUIManager.CustomGUIFront.transform);
+            bundle.Unload(false);
 
             var compatWindow = compatWindowGameObject.GetComponent<CompatibilityWindow>();
             var compatWindowRect = ((RectTransform)compatWindow.transform);
@@ -225,11 +231,11 @@ namespace Jotunn.Utils
             // print issues to console
             CompareVersionData(remote, local);
 
-            compatWindow.failedConnection.text = ColoredLine(GUIManager.Instance.ValheimOrange, "Failed connection:") +
+            compatWindow.failedConnection.text = ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_failed_connection") +
                                                  failedConnectionText.Trim();
-            compatWindow.localVersion.text = ColoredLine(GUIManager.Instance.ValheimOrange, "Local Version (your game):") +
+            compatWindow.localVersion.text = ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_local_version") +
                                              local.ToString(false).Trim();
-            compatWindow.remoteVersion.text = ColoredLine(GUIManager.Instance.ValheimOrange, "Remote Version (the server):") +
+            compatWindow.remoteVersion.text = ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_remote_version") +
                                               remote.ToString(false).Trim();
             compatWindow.errorMessages.text = CreateErrorMessage(remote, local).Trim();
 
@@ -256,28 +262,28 @@ namespace Jotunn.Utils
         private static string CreateErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
             return CreateVanillaVersionErrorMessage(serverData, clientData) +
-                   CreateVersionStringErrorMessage(serverData, clientData) +
                    CreateNotInstalledErrorMessage(serverData, clientData) +
                    CreateLowerVersionErrorMessage(serverData, clientData) +
                    CreateHigherVersionErrorMessage(serverData, clientData) +
-                   CreateAdditionalModsErrorMessage(serverData, clientData);
+                   CreateAdditionalModsErrorMessage(serverData, clientData) +
+                   CreateVersionStringErrorMessage(serverData, clientData);
         }
 
         private static string CreateVanillaVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
             if (serverData.ValheimVersion > clientData.ValheimVersion)
             {
-                return ColoredLine(Color.red, "Valheim version error:") +
-                       ColoredLine(Color.white, $"The server runs Valheim {serverData.ValheimVersion}, while your client runs Valheim {clientData.ValheimVersion}") +
-                       ColoredLine(Color.white, $"Please update your game to version {serverData.ValheimVersion} or contact your server admin") +
+                return ColoredLine(Color.red, "$mod_compat_header_valheim_version") +
+                       ColoredLine(Color.white, "$mod_compat_valheim_version_error_description",serverData.ValheimVersion.ToString(), clientData.ValheimVersion.ToString()) +
+                       ColoredLine(Color.white, "$mod_compat_valheim_version_upgrade", serverData.ValheimVersion.ToString()) +
                        Environment.NewLine;
             }
 
             if (serverData.ValheimVersion < clientData.ValheimVersion)
             {
-                return ColoredLine(Color.red, "Valheim version error:") +
-                       ColoredLine(Color.white, $"The server runs {serverData.ValheimVersion}, while your client runs {clientData.ValheimVersion}") +
-                       ColoredLine(Color.white, $"Please downgrade your game to version {serverData.ValheimVersion} or contact your server admin") +
+                return ColoredLine(Color.red, "$mod_compat_header_valheim_version") +
+                       ColoredLine(Color.white, "$mod_compat_valheim_version_error_description", $"{serverData.ValheimVersion}", $"{clientData.ValheimVersion}") +
+                       ColoredLine(Color.white, "$mod_compat_valheim_version_downgrade") +
                        Environment.NewLine;
             }
 
@@ -288,10 +294,10 @@ namespace Jotunn.Utils
         {
             if (serverData.ValheimVersion == clientData.ValheimVersion && !string.IsNullOrEmpty(serverData.VersionString) && serverData.VersionString != clientData.VersionString)
             {
-                return ColoredLine(GUIManager.Instance.ValheimOrange, "Valheim modded version string mismatch:") +
-                       ColoredLine(Color.white, $"This may indicates that mods are missing. Not all mods change the version string equally or even require to be installed on both server and client. Please check the requirements of the listed mods") +
-                       ColoredLine(Color.white, $"Local (your game): {clientData.VersionString}") +
-                       ColoredLine(Color.white, $"Remote (the server): {serverData.VersionString}") +
+                return ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_version_string") +
+                       ColoredLine(Color.white, "$mod_compat_version_string_description") +
+                       ColoredLine(Color.white, "$mod_compat_version_strong_local", $"{clientData.VersionString}") +
+                       ColoredLine(Color.white, "$mod_compat_version_strong_remote", $"{serverData.VersionString}") +
                        Environment.NewLine;
             }
 
@@ -307,8 +313,9 @@ namespace Jotunn.Utils
                 return string.Empty;
             }
 
-            return ColoredLine(Color.red, "Missing mods:") +
-                   matchingServerMods.Aggregate("", (current, serverModule) => current + ColoredLine(Color.white, $"Please install mod {serverModule.name} {serverModule.version}")) +
+            return ColoredLine(Color.red, "$mod_compat_header_missing_mods") +
+                   ColoredLine(Color.white, $"$mod_compat_missing_mods_description") +
+                   matchingServerMods.Aggregate("", (current, serverModule) => current + ColoredLine(Color.white, "$mod_compat_missing_mod", $"{serverModule.name}", $"{serverModule.version}")) +
                    Environment.NewLine;
         }
 
@@ -321,8 +328,8 @@ namespace Jotunn.Utils
                 return string.Empty;
             }
 
-            return ColoredLine(Color.red, "Mod updates needed:") +
-                   matchingServerMods.Aggregate("", (current, serverModule) => current + ColoredLine(Color.white, $"Please update mod {serverModule.name} to version {serverModule.GetVersionString()}")) +
+            return ColoredLine(Color.red, "$mod_compat_header_update_needed") +
+                   matchingServerMods.Aggregate("", (current, serverModule) => current + ColoredLine(Color.white, "$mod_compat_mod_update", serverModule.name, serverModule.GetVersionString())) +
                    Environment.NewLine;
         }
 
@@ -335,8 +342,8 @@ namespace Jotunn.Utils
                 return string.Empty;
             }
 
-            return ColoredLine(Color.red, "Mod downgrades needed:") +
-                   matchingServerMods.Aggregate("", (current, serverModule) => current + ColoredLine(Color.white, $"Please downgrade mod {serverModule.name} to version {serverModule.GetVersionString()}")) +
+            return ColoredLine(Color.red, "$mod_compat_header_downgrade_needed") +
+                   matchingServerMods.Aggregate("", (current, serverModule) => current + ColoredLine(Color.white, "$mod_compat_mod_downgrade", serverModule.name, serverModule.GetVersionString())) +
                    Environment.NewLine;
         }
 
@@ -349,9 +356,9 @@ namespace Jotunn.Utils
                 return string.Empty;
             }
 
-            return ColoredLine(Color.red, "Additional mods loaded:") +
-                   ColoredLine(Color.white, $"Please contact your server admin or uninstall those mods") +
-                   matchingClientMods.Aggregate("", (current, clientModule) => current + ColoredLine(Color.white, $"{clientModule.name} {clientModule.version} was not loaded on the server")) +
+            return ColoredLine(Color.red, "$mod_compat_header_additional_mods") +
+                   ColoredLine(Color.white, "$mod_compat_additional_mods_description") +
+                   matchingClientMods.Aggregate("", (current, clientModule) => current + ColoredLine(Color.white, "$mod_compat_additional_mod",clientModule.name,$"{clientModule.version}")) +
                    Environment.NewLine;
         }
 
@@ -419,9 +426,9 @@ namespace Jotunn.Utils
             }
         }
 
-        private static string ColoredLine(Color color, string inner)
+        private static string ColoredLine(Color color, string inner, params string[] words)
         {
-            return $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{inner}</color>{Environment.NewLine}";
+            return $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{Localization.instance.Localize(inner, words)}</color>{Environment.NewLine}";
         }
     }
 }
