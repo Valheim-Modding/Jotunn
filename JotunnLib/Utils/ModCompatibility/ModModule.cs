@@ -97,17 +97,29 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static bool IsLowerVersion(ModModule baseModule, ModModule compareModule, VersionStrictness strictness)
         {
-            if (strictness >= VersionStrictness.Major && compareModule.version.Major < baseModule.version.Major)
+            if (strictness == VersionStrictness.None)
+            {
+                return false;
+            }
+
+            bool majorSmaller = compareModule.version.Major < baseModule.version.Major;
+            bool minorSmaller = compareModule.version.Minor < baseModule.version.Minor;
+            bool patchSmaller = compareModule.version.Build < baseModule.version.Build;
+
+            bool majorEqual = compareModule.version.Major == baseModule.version.Major;
+            bool minorEqual = compareModule.version.Minor == baseModule.version.Minor;
+
+            if (strictness >= VersionStrictness.Major && majorSmaller)
             {
                 return true;
             }
 
-            if (strictness >= VersionStrictness.Minor && compareModule.version.Minor < baseModule.version.Minor)
+            if (strictness >= VersionStrictness.Minor && minorSmaller && (majorSmaller || majorEqual))
             {
                 return true;
             }
 
-            if (strictness >= VersionStrictness.Patch && compareModule.version.Build < baseModule.version.Build)
+            if (strictness >= VersionStrictness.Patch && patchSmaller && (minorSmaller || minorEqual) && (majorSmaller || majorEqual))
             {
                 return true;
             }
