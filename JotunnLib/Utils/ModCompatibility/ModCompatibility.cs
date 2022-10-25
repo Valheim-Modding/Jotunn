@@ -365,7 +365,7 @@ namespace Jotunn.Utils
 
         private static List<ModModule> FindAdditionalMods(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            return FindMods(serverData, clientData, (clientModule, serverModule) =>
+            return FindMods(clientData, serverData, (clientModule, serverModule) =>
             {
                 return clientModule.IsNeededOnServer() && serverModule == null;
             }).ToList();
