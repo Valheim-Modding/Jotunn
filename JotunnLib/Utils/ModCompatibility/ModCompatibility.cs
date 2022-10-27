@@ -213,8 +213,8 @@ namespace Jotunn.Utils
             GUIManager.Instance.ApplyButtonStyle(compatWindow.continueButton);
 
             compatWindowRect.anchoredPosition = new Vector2(25, 0);
-            compatWindow.gameObject.SetWidth(900);
-            compatWindow.gameObject.SetHeight(500);
+            compatWindow.gameObject.SetWidth(1000);
+            compatWindow.gameObject.SetHeight(600);
 
             return compatWindow;
         }
@@ -274,7 +274,7 @@ namespace Jotunn.Utils
             if (serverData.ValheimVersion > clientData.ValheimVersion)
             {
                 return ColoredLine(Color.red, "$mod_compat_header_valheim_version") +
-                       ColoredLine(Color.white, "$mod_compat_valheim_version_error_description",serverData.ValheimVersion.ToString(), clientData.ValheimVersion.ToString()) +
+                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_valheim_version_error_description",$"{serverData.ValheimVersion}", $"{clientData.ValheimVersion}") +
                        ColoredLine(Color.white, "$mod_compat_valheim_version_upgrade", serverData.ValheimVersion.ToString()) +
                        Environment.NewLine;
             }
@@ -282,8 +282,8 @@ namespace Jotunn.Utils
             if (serverData.ValheimVersion < clientData.ValheimVersion)
             {
                 return ColoredLine(Color.red, "$mod_compat_header_valheim_version") +
-                       ColoredLine(Color.white, "$mod_compat_valheim_version_error_description", $"{serverData.ValheimVersion}", $"{clientData.ValheimVersion}") +
-                       ColoredLine(Color.white, "$mod_compat_valheim_version_downgrade") +
+                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_valheim_version_error_description", $"{serverData.ValheimVersion}", $"{clientData.ValheimVersion}") +
+                       ColoredLine(Color.white, "$mod_compat_valheim_version_downgrade", $"{serverData.ValheimVersion}") +
                        Environment.NewLine;
             }
 
@@ -295,7 +295,7 @@ namespace Jotunn.Utils
             if (serverData.ValheimVersion == clientData.ValheimVersion && !string.IsNullOrEmpty(serverData.VersionString) && serverData.VersionString != clientData.VersionString)
             {
                 return ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_version_string") +
-                       ColoredLine(Color.white, "$mod_compat_version_string_description") +
+                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_version_string_description") +
                        ColoredLine(Color.white, "$mod_compat_version_strong_local", $"{clientData.VersionString}") +
                        ColoredLine(Color.white, "$mod_compat_version_strong_remote", $"{serverData.VersionString}") +
                        Environment.NewLine;
@@ -314,7 +314,7 @@ namespace Jotunn.Utils
             }
 
             return ColoredLine(Color.red, "$mod_compat_header_missing_mods") +
-                   ColoredLine(Color.white, $"$mod_compat_missing_mods_description") +
+                   ColoredLine(GUIManager.Instance.ValheimOrange, $"$mod_compat_missing_mods_description") +
                    matchingServerMods.Aggregate("", (current, serverModule) => current + ColoredLine(Color.white, "$mod_compat_missing_mod", $"{serverModule.name}", $"{serverModule.version}")) +
                    Environment.NewLine;
         }
@@ -357,7 +357,7 @@ namespace Jotunn.Utils
             }
 
             return ColoredLine(Color.red, "$mod_compat_header_additional_mods") +
-                   ColoredLine(Color.white, "$mod_compat_additional_mods_description") +
+                   ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_additional_mods_description") +
                    matchingClientMods.Aggregate("", (current, clientModule) => current + ColoredLine(Color.white, "$mod_compat_additional_mod",clientModule.name,$"{clientModule.version}")) +
                    Environment.NewLine;
         }
