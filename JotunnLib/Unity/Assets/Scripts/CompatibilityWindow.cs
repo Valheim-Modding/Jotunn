@@ -12,6 +12,7 @@ internal class CompatibilityWindow : MonoBehaviour
     public Text remoteVersion;
     public Text errorMessages;
     public Button continueButton;
+    public Button logFileButton;
 
     public void UpdateTextPositions()
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using HarmonyLib;
@@ -207,11 +208,13 @@ namespace Jotunn.Utils
             foreach (var text in compatWindow.GetComponentsInChildren<Text>())
             {
                 GUIManager.Instance.ApplyTextStyle(text, 18);
+                text.text = Localization.instance.Localize(text.text);
             }
 
             GUIManager.Instance.ApplyWoodpanelStyle(compatWindow.transform);
             GUIManager.Instance.ApplyScrollRectStyle(compatWindow.scrollRect);
             GUIManager.Instance.ApplyButtonStyle(compatWindow.continueButton);
+            GUIManager.Instance.ApplyButtonStyle(compatWindow.logFileButton);
 
             compatWindowRect.anchoredPosition = new Vector2(25, 0);
             compatWindow.gameObject.SetWidth(1000);
@@ -248,10 +251,16 @@ namespace Jotunn.Utils
 
             compatWindow.UpdateTextPositions();
             compatWindow.continueButton.onClick.AddListener(() => Object.Destroy(compatWindow.gameObject));
+            compatWindow.logFileButton.onClick.AddListener(OpenLogFile);
             compatWindow.scrollRect.verticalNormalizedPosition = 1f;
 
             // Reset the last server version
             LastServerVersion = null;
+        }
+
+        private static void OpenLogFile()
+        {
+            Application.OpenURL(Path.Combine(BepInEx.Paths.BepInExRootPath, "LogOutput.log"));
         }
 
         /// <summary>
