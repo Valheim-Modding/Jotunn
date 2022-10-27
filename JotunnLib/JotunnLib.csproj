@@ -41,6 +41,7 @@
     <None Remove="Unity\Temp\**" />
     <None Remove="Unity\Build\**" />
     <None Remove="Unity\AssetBundles\modcompat" />
+    <EmbeddedResource Include="Localization\German.json" />
     <EmbeddedResource Include="Unity\AssetBundles\modcompat" />
     <None Remove="Localization\English.json" />
     <EmbeddedResource Include="Localization\English.json" />
