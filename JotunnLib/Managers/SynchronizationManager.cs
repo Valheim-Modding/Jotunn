@@ -100,6 +100,10 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPostfix]
             private static void ZNet_RPC_Post_PeerInfo(ZNet __instance, ZRpc rpc, ref PeerInfoBlockingSocket __state) => Instance.ZNet_RPC_Post_PeerInfo(__instance, rpc, ref __state);
 
+            // Hook PlayFab socket to disable compression as a hotfix for connection issues
+            [HarmonyPatch(typeof(ZPlayFabSocket), nameof(ZPlayFabSocket.VersionMatch)), HarmonyPostfix, HarmonyPriority(priority: Priority.Last)]
+            private static void ZPlayFabSocket_VersionMatch(ZPlayFabSocket __instance) => Instance.ZPlayFabSocket_VersionMatch(__instance);
+
             // Hook SyncedList for admin list changes
             [HarmonyPatch(typeof(SyncedList), nameof(SyncedList.Load)), HarmonyPostfix]
             private static void SyncedList_Load(SyncedList __instance) => Instance.SyncedList_Load(__instance);
@@ -217,6 +221,11 @@ namespace Jotunn.Managers
 
                 self.StartCoroutine(SynchronizeInitialData());
             }
+        }
+
+        private void ZPlayFabSocket_VersionMatch(ZPlayFabSocket self)
+        {
+            self.m_useCompression = false;
         }
 
         /// <summary>
@@ -815,12 +824,15 @@ namespace Jotunn.Managers
             public int GetHostPort() => Original.GetHostPort();
             public bool Flush() => Original.Flush();
             public string GetHostName() => Original.GetHostName();
+            public void VersionMatch() => Original.VersionMatch();
 
             public void Send(ZPackage pkg)
             {
                 int methodHash = GetMethodHash(pkg);
 
-                if ((methodHash == "PeerInfo".GetStableHashCode() || methodHash == "RoutedRPC".GetStableHashCode()) && !finished)
+                if (!finished && (methodHash == "PeerInfo".GetStableHashCode() ||
+                                  methodHash == "RoutedRPC".GetStableHashCode() ||
+                                  methodHash == "ZDOData".GetStableHashCode()))
                 {
                     // the original ZPackage gets reused, create a new one
                     Package.Add(CopyZPackage(pkg));
