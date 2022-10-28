@@ -815,6 +815,7 @@ namespace Jotunn.Managers
             public int GetHostPort() => Original.GetHostPort();
             public bool Flush() => Original.Flush();
             public string GetHostName() => Original.GetHostName();
+            public void VersionMatch() => Original.VersionMatch();
 
             public void Send(ZPackage pkg)
             {
