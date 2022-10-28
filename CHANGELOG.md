@@ -1,6 +1,8 @@
 ﻿# Changelog
 
-## Version 2.7.10
+## Version 2.8.0
+* Compatible with patch version 0.211.11
+* Fixed connection issues in Steam multiplayer with the latest Valheim patch. Crossplay (XBox multiplayer) is not working yet due to bigger changes, we are working on solving this issue
 * Marked PatchInit attribute as obsolete
 
 ## Version 2.7.9
