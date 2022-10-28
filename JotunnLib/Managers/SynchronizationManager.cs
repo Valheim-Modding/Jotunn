@@ -830,7 +830,9 @@ namespace Jotunn.Managers
             {
                 int methodHash = GetMethodHash(pkg);
 
-                if ((methodHash == "PeerInfo".GetStableHashCode() || methodHash == "RoutedRPC".GetStableHashCode()) && !finished)
+                if (!finished && (methodHash == "PeerInfo".GetStableHashCode() ||
+                                  methodHash == "RoutedRPC".GetStableHashCode() ||
+                                  methodHash == "ZDOData".GetStableHashCode()))
                 {
                     // the original ZPackage gets reused, create a new one
                     Package.Add(CopyZPackage(pkg));
