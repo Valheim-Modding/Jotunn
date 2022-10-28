@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 2.8.1
+* Implemented hotfix for PlayFab connection issues (disables vanilla compression again, but works for now at least)
+
 ## Version 2.8.0
 * Compatible with patch version 0.211.11
 * Fixed connection issues in Steam multiplayer with the latest Valheim patch. Crossplay (XBox multiplayer) is not working yet due to bigger changes, we are working on solving this issue

@@ -100,7 +100,7 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPostfix]
             private static void ZNet_RPC_Post_PeerInfo(ZNet __instance, ZRpc rpc, ref PeerInfoBlockingSocket __state) => Instance.ZNet_RPC_Post_PeerInfo(__instance, rpc, ref __state);
 
-            
+            // Hook PlayFab socket to disable compression as a hotfix for connection issues
             [HarmonyPatch(typeof(ZPlayFabSocket), nameof(ZPlayFabSocket.VersionMatch)), HarmonyPostfix]
             private static void ZPlayFabSocket_VersionMatch(ZPlayFabSocket __instance) => Instance.ZPlayFabSocket_VersionMatch(__instance);
 
