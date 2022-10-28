@@ -100,6 +100,10 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPostfix]
             private static void ZNet_RPC_Post_PeerInfo(ZNet __instance, ZRpc rpc, ref PeerInfoBlockingSocket __state) => Instance.ZNet_RPC_Post_PeerInfo(__instance, rpc, ref __state);
 
+            
+            [HarmonyPatch(typeof(ZPlayFabSocket), nameof(ZPlayFabSocket.VersionMatch)), HarmonyPostfix]
+            private static void ZPlayFabSocket_VersionMatch(ZPlayFabSocket __instance) => Instance.ZPlayFabSocket_VersionMatch(__instance);
+
             // Hook SyncedList for admin list changes
             [HarmonyPatch(typeof(SyncedList), nameof(SyncedList.Load)), HarmonyPostfix]
             private static void SyncedList_Load(SyncedList __instance) => Instance.SyncedList_Load(__instance);
@@ -217,6 +221,11 @@ namespace Jotunn.Managers
 
                 self.StartCoroutine(SynchronizeInitialData());
             }
+        }
+
+        private void ZPlayFabSocket_VersionMatch(ZPlayFabSocket self)
+        {
+            self.m_useCompression = false;
         }
 
         /// <summary>
