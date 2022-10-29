@@ -67,6 +67,9 @@
     - name: Config / Synchronization
       href: config.md
 
+    - name: Mod Registry & Mod Query
+      href: mod-registry.md
+
     - name: Network Compatibility
       href: networkcompatibility.md
       

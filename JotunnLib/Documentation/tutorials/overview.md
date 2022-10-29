@@ -40,6 +40,7 @@ Each section will have examples showing how this is done. All of the examples sh
 
 * [Bone Reordering](bonereorder.md): Reoder and preserve bone order so player attached objects preserve their position.
 * [Config and Synchronization](config.md): Ensures the synchronization of plugin config files between server and client as well as admin states on dedicated servers.
+* [Mod Registry & Mod Query](mod-registry.md): Access other mod's prefabs without directly referencing them.
 * [Network Compatibility](networkcompatibility.md): Make sure that clients are running compatible versions of the plugin and it's assets.
 * [Rendering](renderqueue.md): Create rendered Sprites from GameObjects with visual components at runtime.
 * [RPCs](rpcs.md): Add Client/Server process communications and transfer data with automatic slicing and compression.
