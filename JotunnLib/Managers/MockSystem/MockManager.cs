@@ -352,7 +352,12 @@ namespace Jotunn.Managers
             }
 
             bool fixedTextures = FixTextures(material);
-            bool fixedShader = FixShader(material);
+            bool fixedShader = true;
+
+            if (!GUIManager.IsHeadless())
+            {
+                fixedShader = FixShader(material);
+            }
 
             if (fixedTextures && fixedShader)
             {

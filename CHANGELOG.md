@@ -1,4 +1,6 @@
 ﻿# Changelog
+## Version 2.8.2
+* Changed that mocked shaders will not be resolved on a headless server because they are not available. This stops unnecessary warnings from being printed
 
 ## Version 2.8.1
 * Implemented hotfix for PlayFab connection issues (disables vanilla compression again, but works for now at least)
