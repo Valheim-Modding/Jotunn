@@ -77,7 +77,7 @@ namespace Jotunn.Managers
             GameObject g = new GameObject(name);
             g.transform.parent = MockPrefabContainer.transform;
             g.SetActive(false);
-            mockedPrefabs.Add(name, g);
+            mockedPrefabs[name] = g;
 
             return g;
         }
@@ -159,8 +159,6 @@ namespace Jotunn.Managers
             return null;
         }
 
-        // Thanks for not using the Resources folder IronGate
-        // There is probably some oddities in there
         internal static void FixReferences(object objectToFix, int depth)
         {
             // This is totally arbitrary.
@@ -353,6 +351,26 @@ namespace Jotunn.Managers
                 return;
             }
 
+            bool fixedTextures = FixTextures(material);
+            bool fixedShader = FixShader(material);
+
+            if (fixedTextures && fixedShader)
+            {
+                fixedMaterials.Add(material);
+            }
+            else
+            {
+                queuedToFixMaterials.Add(material);
+            }
+        }
+
+        /// <summary>
+        ///     Replaces all mock Textures with the real Texture
+        /// </summary>
+        /// <param name="material"></param>
+        /// <returns>true if no mocks were found or all mock could be resolved</returns>
+        private static bool FixTextures(Material material)
+        {
             bool everythingFixed = true;
 
             foreach (int prop in material.GetTexturePropertyNameIDs())
@@ -387,36 +405,40 @@ namespace Jotunn.Managers
                 }
             }
 
+            return everythingFixed;
+        }
+
+        /// <summary>
+        ///     Replaces a potential mock Shader with the real Shader
+        /// </summary>
+        /// <param name="material"></param>
+        /// <returns>true if no mock was found or the mock could be resolved</returns>
+        private static bool FixShader(Material material)
+        {
             Shader usedShader = material.shader;
 
-            if (usedShader && IsMockName(usedShader.name, out string cleanedShaderName))
+            if (!usedShader || !IsMockName(usedShader.name, out string cleanedShaderName))
             {
-                Shader realShader = Shader.Find(cleanedShaderName);
+                return true;
+            }
 
-                if (realShader)
+            Shader realShader = Shader.Find(cleanedShaderName);
+
+            if (realShader)
+            {
+                material.shader = realShader;
+            }
+            else
+            {
+                if (allVanillaObjectsAvailable)
                 {
-                    material.shader = realShader;
+                    Logger.LogWarning($"Could not find shader {usedShader.name}");
                 }
-                else
-                {
-                    if (allVanillaObjectsAvailable)
-                    {
-                        Logger.LogWarning($"Could not find shader {usedShader.name}");
-                    }
 
-                    everythingFixed = false;
-                }
+                return false;
             }
 
-            if (everythingFixed && !fixedMaterials.Contains(material))
-            {
-                fixedMaterials.Add(material);
-            }
-
-            if (!everythingFixed && !queuedToFixMaterials.Contains(material))
-            {
-                queuedToFixMaterials.Add(material);
-            }
+            return true;
         }
     }
 }
