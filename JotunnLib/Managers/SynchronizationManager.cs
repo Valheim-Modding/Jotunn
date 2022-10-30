@@ -100,10 +100,6 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPostfix]
             private static void ZNet_RPC_Post_PeerInfo(ZNet __instance, ZRpc rpc, ref PeerInfoBlockingSocket __state) => Instance.ZNet_RPC_Post_PeerInfo(__instance, rpc, ref __state);
 
-            // Hook PlayFab socket to disable compression as a hotfix for connection issues
-            [HarmonyPatch(typeof(ZPlayFabSocket), nameof(ZPlayFabSocket.VersionMatch)), HarmonyPostfix, HarmonyPriority(priority: Priority.Last)]
-            private static void ZPlayFabSocket_VersionMatch(ZPlayFabSocket __instance) => Instance.ZPlayFabSocket_VersionMatch(__instance);
-
             // Hook SyncedList for admin list changes
             [HarmonyPatch(typeof(SyncedList), nameof(SyncedList.Load)), HarmonyPostfix]
             private static void SyncedList_Load(SyncedList __instance) => Instance.SyncedList_Load(__instance);
@@ -171,6 +167,12 @@ namespace Jotunn.Managers
             {
                 bufferingSocket = new PeerInfoBlockingSocket(rpc.GetSocket());
                 rpc.m_socket = bufferingSocket;
+
+                ZNetPeer peer = self.GetPeer(rpc);
+                if (ZNet.m_onlineBackend != OnlineBackendType.Steamworks && peer != null)
+                {
+                    peer.m_socket = bufferingSocket;
+                }
             }
 
             __state = bufferingSocket;
@@ -209,23 +211,29 @@ namespace Jotunn.Managers
                     if (peer.m_rpc.GetSocket() is PeerInfoBlockingSocket currentSocket)
                     {
                         peer.m_rpc.m_socket = currentSocket.Original;
+                        peer.m_socket = currentSocket.Original;
                     }
 
                     bufferingSocket.finished = true;
 
-                    foreach (ZPackage package in bufferingSocket.Package)
+                    for (var i = 0; i < bufferingSocket.Package.Count; i++)
                     {
+                        if (i == bufferingSocket.versionMatchPackageIndex)
+                        {
+                            bufferingSocket.Original.VersionMatch();
+                        }
+                        var package = bufferingSocket.Package[i];
                         bufferingSocket.Original.Send(package);
+                    }
+
+                    if (bufferingSocket.Package.Count == bufferingSocket.versionMatchPackageIndex)
+                    {
+                        bufferingSocket.Original.VersionMatch();
                     }
                 }
 
                 self.StartCoroutine(SynchronizeInitialData());
             }
-        }
-
-        private void ZPlayFabSocket_VersionMatch(ZPlayFabSocket self)
-        {
-            self.m_useCompression = false;
         }
 
         /// <summary>
@@ -801,6 +809,7 @@ namespace Jotunn.Managers
         internal class PeerInfoBlockingSocket : ISocket
         {
             public volatile bool finished = false;
+            public volatile int versionMatchPackageIndex = -1;
             public readonly List<ZPackage> Package = new List<ZPackage>();
             public readonly ISocket Original;
 
@@ -824,7 +833,18 @@ namespace Jotunn.Managers
             public int GetHostPort() => Original.GetHostPort();
             public bool Flush() => Original.Flush();
             public string GetHostName() => Original.GetHostName();
-            public void VersionMatch() => Original.VersionMatch();
+
+            public void VersionMatch()
+            {
+                if (finished)
+                {
+                    Original.VersionMatch();
+                }
+                else
+                {
+                    versionMatchPackageIndex = Package.Count;
+                }
+            }
 
             public void Send(ZPackage pkg)
             {
