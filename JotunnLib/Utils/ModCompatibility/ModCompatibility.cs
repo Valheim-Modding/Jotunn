@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using HarmonyLib;
@@ -21,6 +23,13 @@ namespace Jotunn.Utils
         private static ZPackage LastServerVersion;
 
         private static readonly Dictionary<string, ZPackage> ClientVersions = new Dictionary<string, ZPackage>();
+
+        internal static void Init()
+        {
+            var localization = LocalizationManager.Instance.JotunnLocalization;
+            localization.AddJsonFile("English", AssetUtils.LoadTextFromResources("English.json", typeof(Main).Assembly));
+            localization.AddJsonFile("German", AssetUtils.LoadTextFromResources("German.json", typeof(Main).Assembly));
+        }
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection)), HarmonyPrefix, HarmonyPriority(Priority.First)]
         private static void ZNet_OnNewConnection(ZNet __instance, ZNetPeer peer)
@@ -53,7 +62,7 @@ namespace Jotunn.Utils
             if (LastServerVersion != null && ZNet.m_connectionStatus == ZNet.ConnectionStatus.ErrorVersion)
             {
                 string failedConnectionText = __instance.m_connectionFailedError.text;
-                ShowModCompatibilityErrorMessage(failedConnectionText);
+                __instance.StartCoroutine(ShowModCompatibilityErrorMessage(failedConnectionText));
                 __instance.m_connectionFailedPanel.SetActive(false);
             }
         }
@@ -65,10 +74,11 @@ namespace Jotunn.Utils
             if (ZNet.instance.IsClientInstance())
             {
                 // If there was no server version response, Jötunn is not installed. Cancel if we have mandatory mods
-                if (LastServerVersion == null &&
-                    GetEnforcableMods().Any(x => x.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || x.compatibilityLevel == CompatibilityLevel.ServerMustHaveMod))
+                if (LastServerVersion == null && GetEnforcableMods().Any(x => x.IsNeededOnServer()))
                 {
-                    Logger.LogWarning("Jötunn is not installed on the server. Client has mandatory mods. Cancelling connection");
+                    string missingMods = string.Join(Environment.NewLine, GetEnforcableMods().Where(x => x.IsNeededOnServer()).Select(x => x.name));
+                    Logger.LogWarning("Jötunn is not installed on the server. Client has mandatory mods, cancelling connection. " +
+                                      "Mods that need to be installed on the server:" + Environment.NewLine + missingMods);
                     rpc.Invoke("Disconnect");
                     LastServerVersion = new ModuleVersionData(new List<ModModule>()).ToZPackage();
                     ZNet.m_connectionStatus = ZNet.ConnectionStatus.ErrorVersion;
@@ -89,13 +99,14 @@ namespace Jotunn.Utils
                 if (!ClientVersions.ContainsKey(rpc.GetSocket().GetEndPointString()))
                 {
                     // Check mods, if there are some installed on the server which need also to be on the client
-                    if (GetEnforcableMods().Any(x => x.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || x.compatibilityLevel == CompatibilityLevel.ClientMustHaveMod))
+                    if (GetEnforcableMods().Any(x => x.IsNeededOnClient()))
                     {
                         // There is a mod, which needs to be client side too
                         // Lets disconnect the vanilla client with Incompatible Version message
 
-                        Logger.LogWarning("Disconnecting vanilla client with incompatible version message. " +
-                                          "There are mods that need to be installed on the client");
+                        string missingMods = string.Join(Environment.NewLine, GetEnforcableMods().Where(x => x.IsNeededOnClient()).Select(x => x.name));
+                        Logger.LogWarning("Jötunn is not installed on the client. Server has mandatory mods, cancelling connection. " +
+                                          "Mods that need to be installed on the client:" + Environment.NewLine + missingMods);
                         rpc.Invoke("Error", (int)ZNet.ConnectionStatus.ErrorVersion);
                         return false;
                     }
@@ -155,155 +166,104 @@ namespace Jotunn.Utils
                 return true;
             }
 
+            bool result = true;
+
             if (!Equals(serverData.ValheimVersion, clientData.ValheimVersion))
             {
-                return false;
+                Logger.LogWarning($"Version incompatibility: Server {serverData.ValheimVersion}, Client {clientData.ValheimVersion}");
+                result = false;
             }
 
             // Check server enforced mods
-            foreach (var serverModule in serverData.Modules.Where(x => x.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || x.compatibilityLevel == CompatibilityLevel.ClientMustHaveMod))
+            foreach (var serverModule in FindNotInstalledMods(serverData, clientData))
             {
-                if (!clientData.Modules.Any(x => x.name == serverModule.name && x.compatibilityLevel == serverModule.compatibilityLevel))
-                {
-                    return false;
-                }
+                Logger.LogWarning($"Missing mod on client: {serverModule.name}");
+                result = false;
             }
 
             // Check client enforced mods
-            foreach (var clientModule in clientData.Modules.Where(x => x.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || x.compatibilityLevel == CompatibilityLevel.ServerMustHaveMod))
+            foreach (var clientModule in FindAdditionalMods(serverData, clientData))
             {
-                if (!serverData.Modules.Any(x => x.name == clientModule.name && x.compatibilityLevel == clientModule.compatibilityLevel))
-                {
-                    return false;
-                }
+                Logger.LogWarning($"Client loaded additional mod: {clientModule.name}");
+                result = false;
             }
 
-            // Compare modules
-            foreach (var serverModule in serverData.Modules)
+            // Check versions
+            foreach (var serverModule in FindLowerVersionMods(serverData, clientData).Union(FindHigherVersionMods(serverData, clientData)))
             {
-#pragma warning disable CS0618 // Type or member is obsolete
-                if (serverModule.compatibilityLevel == CompatibilityLevel.NoNeedForSync || serverModule.compatibilityLevel == CompatibilityLevel.NotEnforced)
-                {
-                    continue;
-                }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-                var clientModule = clientData.Modules.FirstOrDefault(x => x.name == serverModule.name);
-
-#pragma warning disable CS0618 // Type or member is obsolete
-                if (clientModule == null &&
-                    (serverModule.compatibilityLevel == CompatibilityLevel.OnlySyncWhenInstalled ||
-                     serverModule.compatibilityLevel == CompatibilityLevel.VersionCheckOnly ||
-                     serverModule.compatibilityLevel == CompatibilityLevel.ServerMustHaveMod))
-                {
-                    continue;
-                }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-                if (clientModule == null)
-                {
-                    return false;
-                }
-
-                if (serverModule.version.Major != clientModule.version.Major &&
-                    (serverModule.versionStrictness >= VersionStrictness.Major || clientModule.versionStrictness >= VersionStrictness.Major))
-                {
-                    return false;
-                }
-
-                if (serverModule.version.Minor != clientModule.version.Minor &&
-                    (serverModule.versionStrictness >= VersionStrictness.Minor || clientModule.versionStrictness >= VersionStrictness.Minor))
-                {
-                    return false;
-                }
-
-                if (serverModule.version.Build != clientModule.version.Build &&
-                    (serverModule.versionStrictness >= VersionStrictness.Patch || clientModule.versionStrictness >= VersionStrictness.Patch))
-                {
-                    return false;
-                }
+                var clientModule = clientData.FindModule(serverModule.name);
+                Logger.LogWarning($"Mod version mismatch {serverModule.name}: Server {serverModule.version}, Client {clientModule.version}");
+                result = false;
             }
 
-            return true;
+            return result;
+        }
+
+        private static CompatibilityWindow LoadCompatWindow()
+        {
+            AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("modcompat", typeof(Main).Assembly);
+            var compatWindowGameObject = Object.Instantiate(bundle.LoadAsset<GameObject>("CompatibilityWindow"), GUIManager.CustomGUIFront.transform);
+            bundle.Unload(false);
+
+            var compatWindow = compatWindowGameObject.GetComponent<CompatibilityWindow>();
+            var compatWindowRect = ((RectTransform)compatWindow.transform);
+
+            foreach (var text in compatWindow.GetComponentsInChildren<Text>())
+            {
+                GUIManager.Instance.ApplyTextStyle(text, 18);
+                text.text = Localization.instance.Localize(text.text);
+            }
+
+            GUIManager.Instance.ApplyWoodpanelStyle(compatWindow.transform);
+            GUIManager.Instance.ApplyScrollRectStyle(compatWindow.scrollRect);
+            GUIManager.Instance.ApplyButtonStyle(compatWindow.continueButton);
+            GUIManager.Instance.ApplyButtonStyle(compatWindow.logFileButton);
+
+            compatWindowRect.anchoredPosition = new Vector2(25, 0);
+            compatWindow.gameObject.SetWidth(1000);
+            compatWindow.gameObject.SetHeight(600);
+
+            return compatWindow;
         }
 
         /// <summary>
         ///     Create and show mod compatibility error message
         /// </summary>
-        private static void ShowModCompatibilityErrorMessage(string failedConnectionText)
+        private static IEnumerator ShowModCompatibilityErrorMessage(string failedConnectionText)
         {
-            const int panelWidth = 900;
-            var panel = GUIManager.Instance.CreateWoodpanel(GUIManager.CustomGUIFront.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0f, 0f), panelWidth, 500);
-            panel.SetActive(true);
+            var compatWindow = LoadCompatWindow();
             var remote = new ModuleVersionData(LastServerVersion);
             var local = new ModuleVersionData(GetEnforcableMods().ToList());
 
-            var scroll = GUIManager.Instance.CreateScrollView(
-                panel.transform, false, true, 8f, 10f, GUIManager.Instance.ValheimScrollbarHandleColorBlock,
-                new Color(0.1568628f, 0.1019608f, 0.0627451f, 1f), panelWidth - 50f, 400f);
-            var scrolltf = scroll.GetComponent<RectTransform>();
-            scrolltf.anchoredPosition = new Vector2(scrolltf.anchoredPosition.x, scrolltf.anchoredPosition.y + 15f);
+            // print issues to console
+            CompareVersionData(remote, local);
 
-            var tf = scrolltf.Find("Scroll View/Viewport/Content") as RectTransform;
+            compatWindow.failedConnection.text = ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_failed_connection") +
+                                                 failedConnectionText.Trim();
+            compatWindow.localVersion.text = ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_local_version") +
+                                             local.ToString(false).Trim();
+            compatWindow.remoteVersion.text = ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_remote_version") +
+                                              remote.ToString(false).Trim();
+            compatWindow.errorMessages.text = CreateErrorMessage(remote, local).Trim();
 
-            // Show failed connection string
-            GUIManager.Instance.CreateText(
-                "Failed connection:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-            GUIManager.Instance.CreateText(
-                failedConnectionText + Environment.NewLine, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
+            // Unity needs a frame to correctly calculate the preferred height. The components need to be active so we scale them down to 0
+            // Their LayoutRebuilder.ForceRebuildLayoutImmediate does not take wrapped text into account
+            compatWindow.transform.localScale = Vector3.zero;
+            yield return null;
+            compatWindow.transform.localScale = Vector3.one;
 
-            // list remote versions
-            GUIManager.Instance.CreateText(
-                "Remote version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-            GUIManager.Instance.CreateText(
-                remote.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-
-            // list local versions
-            GUIManager.Instance.CreateText(
-                "Local version:", tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, GUIManager.Instance.ValheimOrange, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-            GUIManager.Instance.CreateText(
-                local.ToString(false), tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                GUIManager.Instance.AveriaSerifBold, 19, Color.white, true,
-                new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-
-            foreach (var part in CreateErrorMessage(remote, local))
-            {
-                GUIManager.Instance.CreateText(
-                    part.Item2, tf, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
-                    GUIManager.Instance.AveriaSerifBold, 19, part.Item1, true,
-                    new Color(0, 0, 0, 1), panelWidth - 100f, 40f, false);
-            }
-
-            scroll.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
-
-            scroll.SetActive(true);
-
-            var button = GUIManager.Instance.CreateButton("OK", panel.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -215f),
-                100f, 40f);
-
-            // Special condition, coming from ingame back into main scene
-            button.GetComponent<Image>().pixelsPerUnitMultiplier = 2f;
-            button.SetActive(true);
-
-            button.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                panel.SetActive(false);
-                Object.Destroy(panel);
-            });
+            compatWindow.UpdateTextPositions();
+            compatWindow.continueButton.onClick.AddListener(() => Object.Destroy(compatWindow.gameObject));
+            compatWindow.logFileButton.onClick.AddListener(OpenLogFile);
+            compatWindow.scrollRect.verticalNormalizedPosition = 1f;
 
             // Reset the last server version
             LastServerVersion = null;
+        }
+
+        private static void OpenLogFile()
+        {
+            Application.OpenURL(Path.Combine(BepInEx.Paths.BepInExRootPath, "LogOutput.log"));
         }
 
         /// <summary>
@@ -312,193 +272,152 @@ namespace Jotunn.Utils
         /// <param name="serverData">server data</param>
         /// <param name="clientData">client data</param>
         /// <returns></returns>
-        private static IEnumerable<Tuple<Color, string>> CreateErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        private static string CreateErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            // Check Valheim version first
-            if (serverData.ValheimVersion != clientData.ValheimVersion)
-            {
-                yield return new Tuple<Color, string>(Color.red, "Valheim version error:");
-                if (serverData.ValheimVersion > clientData.ValheimVersion)
-                {
-                    yield return new Tuple<Color, string>(Color.white, $"Please update your client to version {serverData.ValheimVersion}");
-                }
-
-                if (serverData.ValheimVersion < clientData.ValheimVersion)
-                {
-                    yield return new Tuple<Color, string>(Color.white,
-                        $"The server you tried to connect runs {serverData.ValheimVersion}, which is lower than your version ({clientData.ValheimVersion})");
-                    yield return new Tuple<Color, string>(Color.white, "Please contact the server admin for a server update." + Environment.NewLine);
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(serverData.VersionString) && serverData.VersionString != clientData.VersionString)
-                {
-                    yield return new Tuple<Color, string>(Color.red, "Valheim modded version string mismatch:");
-                    yield return new Tuple<Color, string>(Color.white, $"Local: {clientData.VersionString}");
-                    yield return new Tuple<Color, string>(Color.white, $"Remote: {serverData.VersionString}{Environment.NewLine}");
-                }
-            }
-
-            // And then each module
-            foreach (var serverModule in serverData.Modules)
-            {
-                // Check first for missing modules on the client side
-                if (serverModule.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || serverModule.compatibilityLevel == CompatibilityLevel.ClientMustHaveMod)
-                {
-                    if (clientData.Modules.All(x => x.name != serverModule.name))
-                    {
-                        // client is missing needed module
-                        yield return new Tuple<Color, string>(Color.red, "Missing mod:");
-                        yield return new Tuple<Color, string>(Color.white, $"Please install mod {serverModule.name} v{serverModule.version}" + Environment.NewLine);
-                        continue;
-                    }
-
-                    if (!clientData.Modules.Any(x => x.name == serverModule.name && x.compatibilityLevel == serverModule.compatibilityLevel))
-                    {
-                        // module is there but mod compat level is lower
-                        yield return new Tuple<Color, string>(Color.red, "Compatibility level mismatch:");
-                        yield return new Tuple<Color, string>(Color.white, $"Please update mod {serverModule.name} version v{serverModule.version}." + Environment.NewLine);
-                        continue;
-                    }
-                }
-
-                // Then all version checks
-                var clientModule = clientData.Modules.FirstOrDefault(x => x.name == serverModule.name);
-
-#pragma warning disable CS0618 // Type or member is obsolete
-                if (clientModule == null && (serverModule.compatibilityLevel == CompatibilityLevel.NotEnforced || serverModule.compatibilityLevel == CompatibilityLevel.NoNeedForSync))
-                {
-                    continue;
-                }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-#pragma warning disable CS0618 // Type or member is obsolete
-                if (clientModule == null &&
-                    (serverModule.compatibilityLevel == CompatibilityLevel.OnlySyncWhenInstalled ||
-                     serverModule.compatibilityLevel == CompatibilityLevel.VersionCheckOnly ||
-                     serverModule.compatibilityLevel == CompatibilityLevel.ServerMustHaveMod))
-                {
-                    continue;
-                }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-                // Major
-                if (serverModule.versionStrictness >= VersionStrictness.Major || clientModule.versionStrictness >= VersionStrictness.Major)
-                {
-                    if (serverModule.version.Major > clientModule.version.Major)
-                    {
-                        foreach (var messageLine in ClientVersionLowerMessage(serverModule))
-                        {
-                            yield return messageLine;
-                        }
-
-                        continue;
-                    }
-
-                    if (serverModule.version.Major < clientModule.version.Major)
-                    {
-                        foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
-                        {
-                            yield return messageLine;
-                        }
-
-                        continue;
-                    }
-
-                    // Minor
-                    if (serverModule.versionStrictness >= VersionStrictness.Minor || clientModule.versionStrictness >= VersionStrictness.Minor)
-                    {
-                        if (serverModule.version.Minor > clientModule.version.Minor)
-                        {
-                            foreach (var messageLine in ClientVersionLowerMessage(serverModule))
-                            {
-                                yield return messageLine;
-                            }
-
-                            continue;
-                        }
-
-                        if (serverModule.version.Minor < clientModule.version.Minor)
-                        {
-                            foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
-                            {
-                                yield return messageLine;
-                            }
-
-                            continue;
-                        }
-                    }
-
-                    // Patch
-                    if (serverModule.versionStrictness >= VersionStrictness.Patch || clientModule.versionStrictness >= VersionStrictness.Patch)
-                    {
-                        if (serverModule.version.Build > clientModule.version.Build)
-                        {
-                            foreach (var messageLine in ClientVersionLowerMessage(serverModule))
-                            {
-                                yield return messageLine;
-                            }
-
-                            continue;
-                        }
-
-                        if (serverModule.version.Build < clientModule.version.Build)
-                        {
-                            foreach (var messageLine in ServerVersionLowerMessage(serverModule, clientModule))
-                            {
-                                yield return messageLine;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Now lets find additional modules with NetworkCompatibility attribute in the client's list
-            foreach (var clientModule in clientData.Modules.Where(x => x.compatibilityLevel == CompatibilityLevel.EveryoneMustHaveMod || x.compatibilityLevel == CompatibilityLevel.ServerMustHaveMod))
-            {
-                if (serverData.Modules.All(x => x.name != clientModule.name))
-                {
-                    yield return new Tuple<Color, string>(Color.red, "Additional mod loaded:");
-                    yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, $"Mod {clientModule.name} v{clientModule.version} was not loaded or is not installed on the server.");
-                    yield return new Tuple<Color, string>(Color.white, "Please contact your server admin or uninstall this mod." + Environment.NewLine);
-                    continue;
-                }
-
-                if (!serverData.Modules.Any(x => x.name == clientModule.name && x.compatibilityLevel == clientModule.compatibilityLevel))
-                {
-                    yield return new Tuple<Color, string>(Color.red, "Compatibility level mismatch:");
-                    yield return new Tuple<Color, string>(Color.white, $"Please update mod {clientModule.name} version v{clientModule.version} on the server." + Environment.NewLine);
-                    continue;
-                }
-            }
+            return CreateVanillaVersionErrorMessage(serverData, clientData) +
+                   CreateNotInstalledErrorMessage(serverData, clientData) +
+                   CreateLowerVersionErrorMessage(serverData, clientData) +
+                   CreateHigherVersionErrorMessage(serverData, clientData) +
+                   CreateAdditionalModsErrorMessage(serverData, clientData) +
+                   CreateVersionStringErrorMessage(serverData, clientData);
         }
 
-        /// <summary>
-        ///     Generate message for client's mod version lower than server's version
-        /// </summary>
-        /// <param name="module">Module version data</param>
-        /// <returns></returns>
-        private static IEnumerable<Tuple<Color, string>> ClientVersionLowerMessage(ModModule module)
+        private static string CreateVanillaVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            yield return new Tuple<Color, string>(Color.red, "Mod update needed:");
-            yield return new Tuple<Color, string>(Color.white, $"Please update mod {module.name} to version v{module.GetVersionString()}." + Environment.NewLine);
+            if (serverData.ValheimVersion > clientData.ValheimVersion)
+            {
+                return ColoredLine(Color.red, "$mod_compat_header_valheim_version") +
+                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_valheim_version_error_description", $"{serverData.ValheimVersion}", $"{clientData.ValheimVersion}") +
+                       ColoredLine(Color.white, "$mod_compat_valheim_version_upgrade", serverData.ValheimVersion.ToString()) +
+                       Environment.NewLine;
+            }
+
+            if (serverData.ValheimVersion < clientData.ValheimVersion)
+            {
+                return ColoredLine(Color.red, "$mod_compat_header_valheim_version") +
+                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_valheim_version_error_description", $"{serverData.ValheimVersion}", $"{clientData.ValheimVersion}") +
+                       ColoredLine(Color.white, "$mod_compat_valheim_version_downgrade", $"{serverData.ValheimVersion}") +
+                       Environment.NewLine;
+            }
+
+            return string.Empty;
         }
 
-        /// <summary>
-        ///     Generate message for server's mod version lower than client's version
-        /// </summary>
-        /// <param name="module">server module data</param>
-        /// <param name="clientModule">client module data</param>
-        /// <returns></returns>
-        private static IEnumerable<Tuple<Color, string>> ServerVersionLowerMessage(ModModule module, ModModule clientModule)
+        private static string CreateVersionStringErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            yield return new Tuple<Color, string>(Color.red, "Module version mismatch:");
-            yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange, $"Server has mod {module.name} v{module.GetVersionString()} installed.");
-            yield return new Tuple<Color, string>(GUIManager.Instance.ValheimOrange,
-                $"You have a higher version (v{clientModule.GetVersionString()}) of this mod installed.");
-            yield return new Tuple<Color, string>(Color.white,
-                "Please contact the server admin to update or downgrade the mod on your client." + Environment.NewLine);
+            if (serverData.ValheimVersion == clientData.ValheimVersion && !string.IsNullOrEmpty(serverData.VersionString) && serverData.VersionString != clientData.VersionString)
+            {
+                return ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_version_string") +
+                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_version_string_description") +
+                       ColoredLine(Color.white, "$mod_compat_version_strong_local", $"{clientData.VersionString}") +
+                       ColoredLine(Color.white, "$mod_compat_version_strong_remote", $"{serverData.VersionString}") +
+                       Environment.NewLine;
+            }
+
+            return string.Empty;
+        }
+
+        private static string CreateNotInstalledErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            List<ModModule> matchingServerMods = FindNotInstalledMods(serverData, clientData);
+
+            if (matchingServerMods.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return ColoredLine(Color.red, "$mod_compat_header_missing_mods") +
+                   ColoredLine(GUIManager.Instance.ValheimOrange, $"$mod_compat_missing_mods_description") +
+                   string.Join("", matchingServerMods.Select(serverModule => ColoredLine(Color.white, "$mod_compat_missing_mod", $"{serverModule.name}", $"{serverModule.version}"))) +
+                   Environment.NewLine;
+        }
+
+        private static string CreateLowerVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            List<ModModule> matchingServerMods = FindLowerVersionMods(serverData, clientData);
+
+            if (matchingServerMods.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return ColoredLine(Color.red, "$mod_compat_header_update_needed") +
+                   string.Join("", matchingServerMods.Select((serverModule) => ColoredLine(Color.white, "$mod_compat_mod_update", serverModule.name, serverModule.GetVersionString()))) +
+                   Environment.NewLine;
+        }
+
+        private static string CreateHigherVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            List<ModModule> matchingServerMods = FindHigherVersionMods(serverData, clientData);
+
+            if (matchingServerMods.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return ColoredLine(Color.red, "$mod_compat_header_downgrade_needed") +
+                   string.Join("", matchingServerMods.Select(serverModule => ColoredLine(Color.white, "$mod_compat_mod_downgrade", serverModule.name, serverModule.GetVersionString()))) +
+                   Environment.NewLine;
+        }
+
+        private static string CreateAdditionalModsErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            List<ModModule> matchingClientMods = FindAdditionalMods(serverData, clientData);
+
+            if (matchingClientMods.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return ColoredLine(Color.red, "$mod_compat_header_additional_mods") +
+                   ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_additional_mods_description") +
+                   string.Join("", matchingClientMods.Select(clientModule => ColoredLine(Color.white, "$mod_compat_additional_mod", clientModule.name, $"{clientModule.version}"))) +
+                   Environment.NewLine;
+        }
+
+        private static List<ModModule> FindNotInstalledMods(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            return FindMods(serverData, clientData, (serverModule, clientModule) =>
+            {
+                return serverModule.IsNeededOnClient() && clientModule == null;
+            }).ToList();
+        }
+
+        private static List<ModModule> FindAdditionalMods(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            return FindMods(clientData, serverData, (clientModule, serverModule) =>
+            {
+                return clientModule.IsNeededOnServer() && serverModule == null;
+            }).ToList();
+        }
+
+        private static List<ModModule> FindLowerVersionMods(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            return FindMods(serverData, clientData, (serverModule, clientModule) =>
+            {
+                return clientModule != null && ModModule.IsLowerVersion(serverModule, clientModule, serverModule.versionStrictness);
+            }).ToList();
+        }
+
+        private static List<ModModule> FindHigherVersionMods(ModuleVersionData serverData, ModuleVersionData clientData)
+        {
+            return FindMods(serverData, clientData, (serverModule, clientModule) =>
+            {
+                return clientModule != null && ModModule.IsLowerVersion(clientModule, serverModule, serverModule.versionStrictness);
+            }).ToList();
+        }
+
+        private static IEnumerable<ModModule> FindMods(ModuleVersionData baseModules, ModuleVersionData additionalModules, Func<ModModule, ModModule, bool> predicate)
+        {
+            foreach (ModModule baseModule in baseModules.Modules)
+            {
+                ModModule additionalModule = additionalModules.FindModule(baseModule.name);
+
+                if (predicate(baseModule, additionalModule))
+                {
+                    yield return baseModule;
+                }
+            }
         }
 
         /// <summary>
@@ -518,6 +437,11 @@ namespace Jotunn.Utils
                     yield return new ModModule(plugin.Value.Info.Metadata, networkCompatibilityAttribute);
                 }
             }
+        }
+
+        private static string ColoredLine(Color color, string inner, params string[] words)
+        {
+            return $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{Localization.instance.Localize(inner, words)}</color>{Environment.NewLine}";
         }
     }
 }

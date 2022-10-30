@@ -84,6 +84,7 @@ namespace Jotunn
             }
 
             ModQuery.Init();
+            ModCompatibility.Init();
 
 #if DEBUG
             // Enable helper on DEBUG build

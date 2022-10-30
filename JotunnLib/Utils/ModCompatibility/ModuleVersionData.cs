@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Jotunn.Utils
@@ -145,6 +146,16 @@ namespace Jotunn.Utils
             }
 
             return sb.ToString();
+        }
+
+        public ModModule FindModule(string name)
+        {
+            return Modules.FirstOrDefault(x => x.name == name);
+        }
+
+        public bool HasModule(string name)
+        {
+            return FindModule(name) != null;
         }
     }
 }
