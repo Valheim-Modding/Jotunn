@@ -437,6 +437,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorChanger.cs" />
+    <Compile Include="ConsoleCommands\AdminCheckCommand.cs" />
     <Compile Include="ConsoleCommands\RemoveCategoryTabCommand.cs" />
     <Compile Include="ConsoleCommands\ResetCartographyCommand.cs" />
     <Compile Include="ConsoleCommands\CreateCategoryTabCommand.cs" />

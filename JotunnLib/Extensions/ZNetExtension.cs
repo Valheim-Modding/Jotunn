@@ -75,14 +75,34 @@
         }
 
         /// <summary>
-        ///     Determine if a peer uid is in the admin list on the current <see cref="ZNet"/>
+        ///     Determine if a peer uid is in the admin list on the current <see cref="ZNet"/>. Only works on the server instance
         /// </summary>
         /// <param name="znet"></param>
         /// <param name="uid"></param>
         /// <returns></returns>
         public static bool IsAdmin(this ZNet znet, long uid)
         {
-            return znet.m_adminList.Contains(znet.GetPeer(uid).m_socket.GetHostName());
+            if (!znet)
+            {
+                Logger.LogWarning("IsAdmin check failed: ZNet is null");
+                return false;
+            }
+
+            if (znet.m_adminList == null)
+            {
+                Logger.LogWarning($"IsAdmin check failed: admin list is only available on the server");
+                return false;
+            }
+
+            ZNetPeer peer = znet.GetPeer(uid);
+
+            if (peer == null)
+            {
+                Logger.LogWarning($"IsAdmin check failed: peer not found with id {uid}");
+                return false;
+            }
+
+            return znet.ListContainsId(znet.m_adminList, peer.m_socket.GetHostName());
         }
     }
 }

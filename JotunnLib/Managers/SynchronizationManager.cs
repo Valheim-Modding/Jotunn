@@ -198,11 +198,11 @@ namespace Jotunn.Managers
                     Logger.LogInfo($"Sending initial data to peer #{peer.m_uid}");
 
                     var id = peer.m_socket.GetHostName();
-                    var result =
-                        !string.IsNullOrEmpty(ZNet.instance.m_adminList.m_list.FirstOrDefault(x => id.EndsWith(x)));
-                    Logger.LogDebug($"Admin status: {(result ? "Admin" : "No Admin")}");
+                    var isAdmin = !string.IsNullOrEmpty(id) && ZNet.instance.ListContainsId(ZNet.instance.m_adminList, id);
+                    Logger.LogDebug($"Admin status: {(isAdmin ? "Admin" : "No Admin")}");
+
                     var adminPkg = new ZPackage();
-                    adminPkg.Write(result);
+                    adminPkg.Write(isAdmin);
                     yield return ZNet.instance.StartCoroutine(AdminRPC.SendPackageRoutine(peer.m_uid, adminPkg));
 
                     var pkg = GenerateConfigZPackage(true, GetSyncConfigValues());
@@ -693,8 +693,7 @@ namespace Jotunn.Managers
         {
             // Is sender admin?
             var id = ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName();
-            if (!string.IsNullOrEmpty(id) &&
-                !string.IsNullOrEmpty(ZNet.instance.m_adminList.m_list.FirstOrDefault(x => id.EndsWith(x))))
+            if (!string.IsNullOrEmpty(id) && ZNet.instance.ListContainsId(ZNet.instance.m_adminList, id))
             {
                 Logger.LogInfo($"Received configuration data from client {sender}");
 
