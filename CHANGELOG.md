@@ -1,6 +1,6 @@
 ﻿# Changelog
 ## Version 2.9.0
-* Big compatibility window improvements: internal cleanup, better use of available space, button to open the log file, improved language added german localization
+* Big compatibility window improvements: internal cleanup, better use of available space, button to open the log file, improved language and added german localization
 * Changed that mocked shaders will not be resolved on a headless server because they are not available. This stops unnecessary warnings from being printed
 * Fixed crossplay connection issues properly and removed the hotfix from Jotunn 2.8.1
 * Fixed admin check was false instead of true in some special cases
