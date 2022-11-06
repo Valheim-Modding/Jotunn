@@ -1,4 +1,7 @@
 ﻿# Changelog
+## Version 2.9.1
+* Added Remove and Destroy methods to the ZoneManager
+
 ## Version 2.9.0
 * Big compatibility window improvements: internal cleanup, better use of available space, button to open the log file, improved language and added german localization
 * Changed that mocked shaders will not be resolved on a headless server because they are not available. This stops unnecessary warnings from being printed

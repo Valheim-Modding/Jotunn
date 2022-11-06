@@ -188,7 +188,7 @@ namespace Jotunn.Managers
         {
             return Locations[name];
         }
-
+        
         /// <summary>
         ///     Get a ZoneLocation by its name.<br /><br />
         ///     Search hierarchy:
@@ -215,7 +215,7 @@ namespace Jotunn.Managers
 
             return null;
         }
-
+        
         /// <summary>
         ///     Create a CustomLocation that is a deep copy of the original.<br />
         ///     Changes will not affect the original. The CustomLocation is already registered in the manager.
@@ -232,7 +232,46 @@ namespace Jotunn.Managers
             AddCustomLocation(clonedLocation);
             return clonedLocation;
         }
+        
+        /// <summary>
+        ///     Remove a CustomLocation by its name.<br />
+        ///     Removes the CustomLocation from the manager.
+        ///     Does not remove the location from any current ZoneSystem instance.
+        /// </summary>
+        /// <param name="name">Name of the CustomLocation to search for.</param>
+        public bool RemoveCustomLocation(string name)
+        {
+            return Locations.Remove(name);
+        }
+        
+        /// <summary>
+        ///     Destroy a CustomLocation by its name.<br />
+        ///     Removes the CustomLocation from the manager and from the <see cref="ZoneSystem"/> if instantiated.
+        /// </summary>
+        /// <param name="name">Name of the CustomLocation to search for.</param>
+        public bool DestroyCustomLocation(string name)
+        {
+            if (!Locations.TryGetValue(name, out CustomLocation customLocation))
+            {
+                return false;
+            }
 
+            int hash = name.GetStableHashCode();
+
+            if (ZoneSystem.instance && ZoneSystem.instance.m_locationsByHash.TryGetValue(hash, out ZoneLocation location))
+            {
+                ZoneSystem.instance.m_locationsByHash.Remove(hash);
+                ZoneSystem.instance.m_locations.Remove(location);
+            }
+
+            if (customLocation.Prefab)
+            {
+                Object.Destroy(customLocation.Prefab);
+            }
+
+            return true;
+        }
+        
         /// <summary>
         ///     Register a CustomVegetation to be added to the ZoneSystem
         /// </summary>
@@ -269,6 +308,16 @@ namespace Jotunn.Managers
             return ZoneSystem.instance.m_vegetation
                 .DefaultIfEmpty(null)
                 .FirstOrDefault(zv => zv.m_prefab && zv.m_prefab.name == name);
+        }
+        
+        /// <summary>
+        ///     Remove a CustomVegetation from this manager by its name.<br />
+        ///     Does not remove it from any current ZoneSystem instance.
+        /// </summary>
+        /// <param name="name">Name of the CustomVegetation to search for.</param>
+        public bool RemoveCustomVegetation(string name)
+        {
+            return Vegetations.Remove(name);
         }
 
         /// <summary>
@@ -312,6 +361,16 @@ namespace Jotunn.Managers
             return ClutterSystem.instance.m_clutter
                 .DefaultIfEmpty(null)
                 .FirstOrDefault(zv => zv?.m_name == name);
+        }
+        
+        /// <summary>
+        ///     Remove a CustomClutter from this manager by its name.<br />
+        ///     Does not remove it from any current ClutterSystem instance.
+        /// </summary>
+        /// <param name="name">Name of the CustomClutter to search for.</param>
+        public bool RemoveCustomClutter(string name)
+        {
+            return Clutter.Remove(name);
         }
 
         private void ClutterSystem_Awake(ClutterSystem instance)
