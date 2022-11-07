@@ -202,7 +202,7 @@ namespace Jotunn.Utils
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomLocalization"/> from all loaded mods</returns>
         public static IEnumerable<CustomLocalization> GetTranslations() =>
-            LocalizationManager.Instance.Localizations.AsReadOnly();
+            LocalizationManager.Instance.Localizations.Values;
 
         /// <summary>
         ///     Get all added <see cref="CustomLocalization">CustomLocalizations</see> of a mod by GUID
@@ -210,7 +210,7 @@ namespace Jotunn.Utils
         /// <param name="modGuid">GUID of the mod</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomLocalization"/> from a specific mod</returns>
         public static IEnumerable<CustomLocalization> GetTranslations(string modGuid) =>
-            LocalizationManager.Instance.Localizations.Where(x => x.SourceMod.GUID.Equals(modGuid));
+            LocalizationManager.Instance.Localizations.Values.Where(x => x.SourceMod.GUID.Equals(modGuid));
 
         /// <summary>
         ///     Model class holding metadata of Jötunn mods.

@@ -20,7 +20,7 @@ namespace Jotunn.Managers
         /// <summary> 
         ///     List where all data is collected.
         /// </summary>
-        internal readonly List<CustomLocalization> Localizations = new List<CustomLocalization>();
+        internal readonly Dictionary<string, CustomLocalization> Localizations = new Dictionary<string, CustomLocalization>();
         
         /// <summary> 
         ///     Your token must start with this character.
@@ -167,7 +167,7 @@ namespace Jotunn.Managers
                 AddLocalization(JotunnLocalization);
 
                 // Add in localized languages that do not yet exist
-                foreach (var ct in Localizations)
+                foreach (var ct in Localizations.Values)
                 {
                     foreach (var language in ct.GetLanguages())
                     {
@@ -190,7 +190,7 @@ namespace Jotunn.Managers
             
             try
             {
-                foreach (var ct in Localizations)
+                foreach (var ct in Localizations.Values)
                 {
                     var langDic = ct.GetTranslations(language);
                     if (langDic == null)
@@ -282,13 +282,13 @@ namespace Jotunn.Managers
         /// <returns>true if the custom localization was added to the manager.</returns>
         public bool AddLocalization(CustomLocalization customLocalization)
         {
-            if (Localizations.Any(x => x.SourceMod == customLocalization.SourceMod))
+            if (Localizations.ContainsKey(customLocalization.SourceMod.GUID))
             {
-                Logger.LogWarning($"{customLocalization} already added");
+                Logger.LogWarning(customLocalization.SourceMod, $"{customLocalization} already added");
                 return false;
             }
 
-            Localizations.Add(customLocalization);
+            Localizations.Add(customLocalization.SourceMod.GUID, customLocalization);
 
             return true;
         }
@@ -310,21 +310,19 @@ namespace Jotunn.Managers
         /// <returns>Existing or newly created <see cref="CustomLocalization"/>.</returns>
         internal CustomLocalization GetLocalization(BepInPlugin sourceMod)
         {
-            var ret = Localizations.FirstOrDefault(ctx => ctx.SourceMod == sourceMod);
-
-            if (ret != null)
+            if (Localizations.TryGetValue(sourceMod.GUID, out CustomLocalization localization))
             {
-                return ret;
+                return localization;
             }
 
-            if (sourceMod == Main.Instance.Info.Metadata)
+            if (sourceMod.GUID == Main.Instance.Info.Metadata.GUID)
             {
                 return JotunnLocalization;
             }
 
-            ret = new CustomLocalization(sourceMod);
-            Localizations.Add(ret);
-            return ret;
+            localization = new CustomLocalization(sourceMod);
+            Localizations.Add(sourceMod.GUID, localization);
+            return localization;
         }
 
         /// <summary>
@@ -336,7 +334,7 @@ namespace Jotunn.Managers
         {
             var cleanedWord = word.TrimStart(TokenFirstChar);
 
-            foreach (var ct in Localizations)
+            foreach (var ct in Localizations.Values)
             {
                 var translation = ct.TryTranslate(word);
                 if (translation != null && translation[0] != '[')
