@@ -17,53 +17,53 @@ namespace Jotunn.Managers
     /// </summary>
     public class LocalizationManager : IManager
     {
-        /// <summary> 
+        /// <summary>
         ///     List where all data is collected.
         /// </summary>
         internal readonly Dictionary<string, CustomLocalization> Localizations = new Dictionary<string, CustomLocalization>();
-        
-        /// <summary> 
+
+        /// <summary>
         ///     Your token must start with this character.
         /// </summary>
         public const char TokenFirstChar = '$';
 
-        /// <summary> 
+        /// <summary>
         ///     Default language of the game.
         /// </summary>
         public const string DefaultLanguage = "English";
 
-        /// <summary> 
+        /// <summary>
         ///     Name of the folder that will hold the custom .json translations files.
         /// </summary>
         public const string TranslationsFolderName = "Translations";
 
-        /// <summary> 
+        /// <summary>
         ///     Name of the community translation files that will be the first custom languages files loaded before any others.
         /// </summary>
         public const string CommunityTranslationFileName = "community_translation.json";
 
-        /// <summary> 
+        /// <summary>
         ///     String of chars not allowed in a token string.
         /// </summary>
         internal const string ForbiddenChars = " (){}[]+-!?/\\\\&%,.:-=<>\n";
 
-        /// <summary> 
+        /// <summary>
         ///     Array of chars not allowed in a token string.
         /// </summary>
         internal static readonly char[] ForbiddenCharsArr = ForbiddenChars.ToCharArray();
 
-        /// <summary> 
+        /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
         public static LocalizationManager Instance => _instance ??= new LocalizationManager();
         private static LocalizationManager _instance;
-        
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>
         private LocalizationManager() {}
 
-        /// <summary> 
+        /// <summary>
         ///     Localizations for internal use.
         /// </summary>
         internal CustomLocalization JotunnLocalization = new CustomLocalization(Main.Instance.Info.Metadata);
@@ -76,14 +76,14 @@ namespace Jotunn.Managers
         /// </summary>
         public static event Action OnLocalizationAdded;
 
-        /// <summary> 
+        /// <summary>
         ///     Call into unity's DoQuoteLineSplit.
         /// </summary>
         internal static Func<StringReader, List<List<string>>> DoQuoteLineSplit;
 
         private static bool applyLocalization;
 
-        /// <summary> 
+        /// <summary>
         ///     Initialize localization manager.
         /// </summary>
         public void Init()
@@ -187,7 +187,7 @@ namespace Jotunn.Managers
         private void Localization_SetupLanguage(Localization self, string language)
         {
             Logger.LogInfo($"Adding tokens for language '{language}'");
-            
+
             try
             {
                 foreach (var ct in Localizations.Values)
@@ -289,7 +289,6 @@ namespace Jotunn.Managers
             }
 
             Localizations.Add(customLocalization.SourceMod.GUID, customLocalization);
-
             return true;
         }
 
@@ -302,7 +301,7 @@ namespace Jotunn.Managers
         {
             return GetLocalization(BepInExUtils.GetSourceModMetadata());
         }
-        
+
         /// <summary>
         ///     Get the CustomLocalization for a given mod.
         ///     Creates a new <see cref="CustomLocalization"/> if no localization was added before.
@@ -342,11 +341,11 @@ namespace Jotunn.Managers
                     return translation;
                 }
             }
-            
+
             return Localization.instance.Translate(cleanedWord);
         }
 
-        #region Obsolete
+#region Obsolete
 
         /// <summary> 
         ///     Registers a new Localization for a language.
@@ -412,6 +411,6 @@ namespace Jotunn.Managers
         public void AddLanguageFile(string fileContent)
             => GetLocalization().AddLanguageFile(fileContent);
 
-        #endregion
+#endregion
     }
 }
