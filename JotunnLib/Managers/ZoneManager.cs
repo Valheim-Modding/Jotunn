@@ -269,7 +269,7 @@ namespace Jotunn.Managers
                 Object.Destroy(customLocation.Prefab);
             }
 
-            return true;
+            return Locations.Remove(name);
         }
         
         /// <summary>
