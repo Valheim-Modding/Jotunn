@@ -97,6 +97,8 @@ namespace Jotunn.Managers
                     typeof(Localization).GetMethod(
                         nameof(Localization.DoQuoteLineSplit),
                         ReflectionHelper.AllBindingFlags));
+
+            AddLocalization(JotunnLocalization);
         }
 
         private static class Patches
@@ -162,9 +164,6 @@ namespace Jotunn.Managers
             try
             {
                 AutomaticLocalizationLoading();
-            
-                // Add Jötunn's default localization at the end of the list
-                AddLocalization(JotunnLocalization);
 
                 // Add in localized languages that do not yet exist
                 foreach (var ct in Localizations.Values)
@@ -314,11 +313,6 @@ namespace Jotunn.Managers
                 return localization;
             }
 
-            if (sourceMod.GUID == Main.Instance.Info.Metadata.GUID)
-            {
-                return JotunnLocalization;
-            }
-
             localization = new CustomLocalization(sourceMod);
             Localizations.Add(sourceMod.GUID, localization);
             return localization;
@@ -332,17 +326,37 @@ namespace Jotunn.Managers
         public string TryTranslate(string word)
         {
             var cleanedWord = word.TrimStart(TokenFirstChar);
+            string translation;
 
-            foreach (var ct in Localizations.Values)
+            foreach (var localization in Localizations.Values)
             {
-                var translation = ct.TryTranslate(word);
-                if (translation != null && translation[0] != '[')
+                // skip the Jotunn localization to allow other modded translations first
+                if (localization == JotunnLocalization)
+                {
+                    continue;
+                }
+
+                translation = localization.TryTranslate(word);
+                if (IsValidTranslation(translation))
                 {
                     return translation;
                 }
             }
 
+            // now search within the Jotunn localization explicitly
+            translation = JotunnLocalization.TryTranslate(word);
+            if (IsValidTranslation(translation))
+            {
+                return translation;
+            }
+
+            // fallback to vanilla localization if nothing found
             return Localization.instance.Translate(cleanedWord);
+        }
+
+        private static bool IsValidTranslation(string translation)
+        {
+            return !string.IsNullOrEmpty(translation) && translation[0] != '[';
         }
 
 #region Obsolete
