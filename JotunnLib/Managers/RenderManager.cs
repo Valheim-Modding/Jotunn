@@ -20,6 +20,7 @@ namespace Jotunn.Managers
         public static readonly Quaternion IsometricRotation = Quaternion.Euler(23, 51, 25.8f);
 
         private static RenderManager _instance;
+        private Sprite EmptySprite { get; } = Sprite.Create(Texture2D.whiteTexture, Rect.zero, Vector2.one);
 
         /// <summary>
         ///     Singleton instance
@@ -58,7 +59,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="target">GameObject to render</param>
         /// <param name="callback">Callback for the generated <see cref="Sprite"/></param>
-        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
+        /// <returns>If no active visual component is attached to the target or any child, this method invokes the callback with null immediately and returns false.</returns>
         [Obsolete("Use Render instead")]
         public bool EnqueueRender(GameObject target, Action<Sprite> callback)
         {
@@ -70,7 +71,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="renderRequest"></param>
         /// <param name="callback">Callback for the generated <see cref="Sprite"/></param>
-        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method invokes the callback with null immediately and returns false.</returns>
+        /// <returns>If no active visual component is attached to the target or any child, this method invokes the callback with null immediately and returns false.</returns>
         [Obsolete("Use Render instead")]
         public bool EnqueueRender(RenderRequest renderRequest, Action<Sprite> callback)
         {
@@ -120,7 +121,7 @@ namespace Jotunn.Managers
         ///     Create a <see cref="Sprite"/> of the <paramref name="target"/>
         /// </summary>
         /// <param name="target">Can be a prefab or any existing GameObject in the world</param>
-        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
+        /// <returns>If no active visual component is attached to the target or any child, this method returns null.</returns>
         public Sprite Render(GameObject target)
         {
             return Render(new RenderRequest(target));
@@ -131,7 +132,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="target">Can be a prefab or any existing GameObject in the world</param>
         /// <param name="rotation">Rotation while rendering of the GameObject. See <code>RenderManager.IsometricRotation</code> for example/></param>
-        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
+        /// <returns>If no active visual component is attached to the target or any child, this method returns null.</returns>
         public Sprite Render(GameObject target, Quaternion rotation)
         {
             return Render(new RenderRequest(target) { Rotation = rotation });
@@ -141,7 +142,7 @@ namespace Jotunn.Managers
         ///     Create a <see cref="Sprite"/> from a <see cref="RenderRequest"/>/>
         /// </summary>
         /// <param name="renderRequest"></param>
-        /// <returns>If this is called on a headless server or when there is no active visual Mesh attached to the target, this method returns null.</returns>
+        /// <returns>If no active visual component is attached to the target or any child, this method returns null.</returns>
         public Sprite Render(RenderRequest renderRequest)
         {
             if (!renderRequest.Target)
@@ -149,14 +150,14 @@ namespace Jotunn.Managers
                 throw new ArgumentException("Target is required");
             }
 
-            if (GUIManager.IsHeadless())
+            if (!renderRequest.Target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
             {
                 return null;
             }
 
-            if (!renderRequest.Target.GetComponentsInChildren<Component>(false).Any(IsVisualComponent))
+            if (GUIManager.IsHeadless())
             {
-                return null;
+                return EmptySprite;
             }
 
             if (renderRequest.UseCache && ContainsIconCache(renderRequest.Target, renderRequest.TargetPlugin, out Sprite icon))
