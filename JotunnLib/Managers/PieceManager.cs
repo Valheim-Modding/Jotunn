@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers.MockSystem;
+using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -704,7 +706,7 @@ namespace Jotunn.Managers
                     }
 
                     // Assign the piece to the actual PieceTable if not already in there
-                    RegisterPieceInPieceTable(customPiece.PiecePrefab, customPiece.PieceTable);
+                    RegisterPieceInPieceTable(customPiece.PiecePrefab, customPiece.PieceTable, null, customPiece.SourceMod);
                 }
                 catch (MockResolveException ex)
                 {
@@ -738,7 +740,13 @@ namespace Jotunn.Managers
         /// <param name="prefab"><see cref="GameObject"/> with a <see cref="Piece"/> component to add to the table</param>
         /// <param name="pieceTable">Prefab or item name of the PieceTable</param>
         /// <param name="category">Optional category string, does not create new custom categories</param>
-        public void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category = null)
+        public void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category = null) =>
+            RegisterPieceInPieceTable(prefab, pieceTable, category, BepInExUtils.GetSourceModMetadata());
+        
+        /// <summary>
+        ///     Internal method for adding a prefab to a piece table.
+        /// </summary>
+        private void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category, BepInPlugin sourceMod)
         {
             var piece = prefab.GetComponent<Piece>();
             if (piece == null)
@@ -763,7 +771,7 @@ namespace Jotunn.Managers
 
             if (!PrefabManager.Instance.Prefabs.ContainsKey(name))
             {
-                PrefabManager.Instance.AddPrefab(prefab);
+                PrefabManager.Instance.AddPrefab(prefab, sourceMod);
             }
 
             if (ZNetScene.instance != null && !ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))

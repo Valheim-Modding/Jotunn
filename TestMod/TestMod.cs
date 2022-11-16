@@ -362,6 +362,23 @@ namespace TestMod
                         viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                         GUIManager.Instance.AveriaSerifBold, 30, GUIManager.Instance.ValheimOrange,
                         true, Color.black, 650f, 40f, false);
+                    
+                    if (mod.Prefabs.Any())
+                    {
+                        // Prefabs title
+                        GUIManager.Instance.CreateText("Prefabs:",
+                            viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                            GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
+                            true, Color.black, 650f, 30f, false);
+
+                        foreach (var prefab in mod.Prefabs)
+                        {
+                            GUIManager.Instance.CreateText($"{prefab}",
+                                viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
+                                GUIManager.Instance.AveriaSerifBold, 16, Color.white,
+                                true, Color.black, 650f, 30f, false);
+                        }
+                    }
 
                     if (mod.Pieces.Any())
                     {
@@ -391,7 +408,7 @@ namespace TestMod
 
                         foreach (var item in mod.Items)
                         {
-                            // Piece name
+                            // Item name
                             GUIManager.Instance.CreateText($"{item}",
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                                 GUIManager.Instance.AveriaSerifBold, 16, Color.white,
@@ -414,28 +431,6 @@ namespace TestMod
                                 viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
                                 GUIManager.Instance.AveriaSerifBold, 16, Color.white,
                                 true, Color.black, 650f, 30f, false);
-                        }
-                    }
-
-                    if (mod.Translations.Any())
-                    {
-                        // Translations title
-                        GUIManager.Instance.CreateText("Translations:",
-                            viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                            GUIManager.Instance.AveriaSerifBold, 20, GUIManager.Instance.ValheimOrange,
-                            true, Color.black, 650f, 30f, false);
-
-                        foreach (var translation in mod.Translations)
-                        {
-                            foreach (var tokenvalue in translation.GetTranslations(
-                                PlayerPrefs.GetString("language", "English")))
-                            {
-                                // Token - Value
-                                GUIManager.Instance.CreateText($"{tokenvalue.Key}: {tokenvalue.Value}",
-                                    viewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f),
-                                    GUIManager.Instance.AveriaSerifBold, 16, Color.white,
-                                    true, Color.black, 650f, 30f, false);
-                            }
                         }
                     }
                 }

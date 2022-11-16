@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -363,7 +364,7 @@ namespace Jotunn.Managers
                             itemDrop.m_itemData.m_dropPrefab = customItem.ItemPrefab;
                         }
 
-                        RegisterItemInObjectDB(objectDB, customItem.ItemPrefab);
+                        RegisterItemInObjectDB(objectDB, customItem.ItemPrefab, customItem.SourceMod);
                     }
                     catch (MockResolveException ex)
                     {
@@ -395,14 +396,15 @@ namespace Jotunn.Managers
         ///     No mock references are fixed.
         /// </summary>
         /// <param name="prefab"><see cref="GameObject"/> with an <see cref="ItemDrop"/> component to add to the <see cref="ObjectDB"/></param>
-        public void RegisterItemInObjectDB(GameObject prefab) => RegisterItemInObjectDB(ObjectDB.instance, prefab);
+        public void RegisterItemInObjectDB(GameObject prefab) => RegisterItemInObjectDB(ObjectDB.instance, prefab, BepInExUtils.GetSourceModMetadata());
 
         /// <summary>
         ///     Internal method for adding a prefab to a specific ObjectDB.
         /// </summary>
         /// <param name="objectDB"><see cref="ObjectDB"/> the prefab should be added to</param>
         /// <param name="prefab"><see cref="GameObject"/> with an <see cref="ItemDrop"/> component to add</param>
-        private void RegisterItemInObjectDB(ObjectDB objectDB, GameObject prefab)
+        /// <param name="sourceMod"><see cref="BepInPlugin"/> which created the prefab</param>
+        private void RegisterItemInObjectDB(ObjectDB objectDB, GameObject prefab, BepInPlugin sourceMod)
         {
             var itemDrop = prefab.GetComponent<ItemDrop>();
             if (itemDrop == null)
@@ -421,7 +423,7 @@ namespace Jotunn.Managers
             {
                 if (!PrefabManager.Instance.Prefabs.ContainsKey(name))
                 {
-                    PrefabManager.Instance.AddPrefab(prefab);
+                    PrefabManager.Instance.AddPrefab(prefab, sourceMod);
                 }
                 if (ZNetScene.instance != null && !ZNetScene.instance.m_namedPrefabs.ContainsKey(hash))
                 {
