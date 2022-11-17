@@ -1,8 +1,9 @@
 ﻿# Changelog
-## Version 2.9.1
+## Version 2.10.0
 * Added Remove and Destroy methods to the ZoneManager
+* Added method to inject a ZoneLocation at runtime to the ZoneManager
 * Fixed RenderManager inconsistency between a headless server and normal client. Instead of always returning null, an empty sprite is returned on headless when it should have been rendered
-* Fixed Jotunn's localisation was tried to be inserted more then once
+* Fixed trying to insert Jötunn's localisation multiple times
 
 ## Version 2.9.0
 * Big compatibility window improvements: internal cleanup, better use of available space, button to open the log file, improved language and added german localization

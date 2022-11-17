@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers.MockSystem;
+using Jotunn.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using ZoneLocation = ZoneSystem.ZoneLocation;
@@ -450,42 +452,8 @@ namespace Jotunn.Managers
                         }
 
                         var zoneLocation = customLocation.ZoneLocation;
-                        self.m_locations.Add(zoneLocation);
 
-                        ZoneSystem.PrepareNetViews(zoneLocation.m_prefab, zoneLocation.m_netViews);
-
-                        foreach (var znet in zoneLocation.m_netViews)
-                        {
-                            string prefabName = znet.GetPrefabName();
-                            if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
-                            {
-                                var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
-                                prefab.name = prefabName;
-                                CustomPrefab customPrefab = new CustomPrefab(prefab, customLocation.SourceMod);
-                                PrefabManager.Instance.AddPrefab(customPrefab);
-                                PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
-                            }
-                        }
-
-                        ZoneSystem.PrepareRandomSpawns(zoneLocation.m_prefab, zoneLocation.m_randomSpawns);
-
-                        foreach (var znet in zoneLocation.m_randomSpawns.SelectMany(x => x.m_childNetViews))
-                        {
-                            string prefabName = znet.GetPrefabName();
-                            if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
-                            {
-                                var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
-                                prefab.name = prefabName;
-                                CustomPrefab customPrefab = new CustomPrefab(prefab, customLocation.SourceMod);
-                                PrefabManager.Instance.AddPrefab(customPrefab);
-                                PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
-                            }
-                        }
-
-                        if (!self.m_locationsByHash.ContainsKey(zoneLocation.m_hash))
-                        {
-                            self.m_locationsByHash.Add(zoneLocation.m_hash, zoneLocation);
-                        }
+                        RegisterLocationInZoneSystem(self, zoneLocation, customLocation.SourceMod);
                     }
                     catch (MockResolveException ex)
                     {
@@ -542,6 +510,61 @@ namespace Jotunn.Managers
                 {
                     Vegetations.Remove(name);
                 }
+            }
+        }
+
+        /// <summary>
+        ///     Register a single ZoneLocaton in the current ZoneSystem.
+        ///     Also adds the location prefabs to the <see cref="PrefabManager"/> and <see cref="ZNetScene"/> if necessary.<br />
+        ///     No mock references are fixed.
+        /// </summary>
+        /// <param name="zoneLocation"><see cref="ZoneLocation"/> to add to the <see cref="ZoneSystem"/></param>
+        public void RegisterLocationInZoneSystem(ZoneLocation zoneLocation) =>
+            RegisterLocationInZoneSystem(ZoneSystem.instance, zoneLocation, BepInExUtils.GetSourceModMetadata());
+        
+        /// <summary>
+        ///     Internal method for adding a ZoneLocation to a specific ZoneSystem.
+        /// </summary>
+        /// <param name="zoneSystem"><see cref="ZoneSystem"/> the location should be added to</param>
+        /// <param name="zoneLocation"><see cref="ZoneLocation"/> to add</param>
+        /// <param name="sourceMod"><see cref="BepInPlugin"/> which created the location</param>
+        private void RegisterLocationInZoneSystem(ZoneSystem zoneSystem, ZoneLocation zoneLocation, BepInPlugin sourceMod)
+        {
+            zoneSystem.m_locations.Add(zoneLocation);
+
+            ZoneSystem.PrepareNetViews(zoneLocation.m_prefab, zoneLocation.m_netViews);
+
+            foreach (var znet in zoneLocation.m_netViews)
+            {
+                string prefabName = znet.GetPrefabName();
+                if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
+                {
+                    var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
+                    prefab.name = prefabName;
+                    CustomPrefab customPrefab = new CustomPrefab(prefab, sourceMod);
+                    PrefabManager.Instance.AddPrefab(customPrefab);
+                    PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
+                }
+            }
+
+            ZoneSystem.PrepareRandomSpawns(zoneLocation.m_prefab, zoneLocation.m_randomSpawns);
+
+            foreach (var znet in zoneLocation.m_randomSpawns.SelectMany(x => x.m_childNetViews))
+            {
+                string prefabName = znet.GetPrefabName();
+                if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
+                {
+                    var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
+                    prefab.name = prefabName;
+                    CustomPrefab customPrefab = new CustomPrefab(prefab, sourceMod);
+                    PrefabManager.Instance.AddPrefab(customPrefab);
+                    PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
+                }
+            }
+
+            if (!zoneSystem.m_locationsByHash.ContainsKey(zoneLocation.m_hash))
+            {
+                zoneSystem.m_locationsByHash.Add(zoneLocation.m_hash, zoneLocation);
             }
         }
 
