@@ -67,13 +67,13 @@ namespace Jotunn.Managers
         private static class Patches
         {
             [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix]
-            private static void RegisterAllToZNetScene(ZNetScene __instance) => Instance.RegisterAllToZNetScene(__instance);
+            private static void RegisterAllToZNetScene() => Instance.RegisterAllToZNetScene();
 
             [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPrefix, HarmonyPriority(Priority.Last)]
-            private static void InvokeOnVanillaObjectsAvailable(ObjectDB __instance, ObjectDB other) => Instance.InvokeOnVanillaObjectsAvailable(__instance, other);
+            private static void InvokeOnVanillaObjectsAvailable() => Instance.InvokeOnVanillaObjectsAvailable();
 
             [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
-            private static void InvokeOnPrefabsRegistered(ZNetScene __instance) => Instance.InvokeOnPrefabsRegistered(__instance);
+            private static void InvokeOnPrefabsRegistered() => Instance.InvokeOnPrefabsRegistered();
         }
 
         /// <summary>
@@ -292,7 +292,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Register all custom prefabs to m_prefabs/m_namedPrefabs in <see cref="ZNetScene" />.
         /// </summary>
-        private void RegisterAllToZNetScene(ZNetScene self)
+        private void RegisterAllToZNetScene()
         {
             if (Prefabs.Any())
             {
@@ -373,12 +373,12 @@ namespace Jotunn.Managers
         ///     Safely invoke the <see cref="OnVanillaPrefabsAvailable"/> event
         /// </summary>
         /// 
-        private void InvokeOnVanillaObjectsAvailable(ObjectDB self, ObjectDB other)
+        private void InvokeOnVanillaObjectsAvailable()
         {
             OnVanillaPrefabsAvailable?.SafeInvoke();
         }
 
-        private void InvokeOnPrefabsRegistered(ZNetScene self)
+        private void InvokeOnPrefabsRegistered()
         {
             OnPrefabsRegistered?.SafeInvoke();
         }
