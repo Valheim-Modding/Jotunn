@@ -22,6 +22,7 @@ namespace Jotunn.Managers
         private CustomRPC AdminRPC;
 
         private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
+        private readonly Dictionary<string, ConfigFile> CustomConfigs = new Dictionary<string, ConfigFile>();
         private List<Tuple<string, string, string, string>> CachedConfigValues = new List<Tuple<string, string, string, string>>();
         private BaseUnityPlugin ConfigurationManager;
         private bool ConfigurationManagerWindowShown;
@@ -88,6 +89,23 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Registers a non default config file to be synchronized with all clients.<br />
+        ///     The file path must be saved under the executing BepInEx config folder, see <see cref="BepInEx.Paths.ConfigPath" />.
+        ///     This guarantees the same relative path for all clients.
+        /// </summary>
+        /// <param name="customFile"></param>
+        public void RegisterCustomConfig(ConfigFile customFile)
+        {
+            if (!customFile.ConfigFilePath.StartsWith(BepInEx.Paths.ConfigPath))
+            {
+                throw new ArgumentException("Config file must be saved under the BepInEx config folder");
+            }
+
+            string identifier = GetFileIdentifier(customFile);
+            CustomConfigs.Add(identifier, customFile);
+        }
+
         private static class Patches
         {
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.Awake)), HarmonyPostfix]
@@ -113,7 +131,7 @@ namespace Jotunn.Managers
 
             // Hook Fejd for ConfigReloaded event subscription
             [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake)), HarmonyPrefix]
-            private static void FejdStartup_Awake(FejdStartup __instance) => Instance.FejdStartup_Awake(__instance);
+            private static void FejdStartup_Awake() => Instance.FejdStartup_Awake();
         }
 
         /// <summary>
@@ -356,18 +374,60 @@ namespace Jotunn.Managers
             OnAdminStatusChanged?.SafeInvoke();
         }
 
+        private IEnumerable<ConfigFile> GetConfigFiles()
+        {
+            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
+
+            foreach (var plugin in loadedPlugins.Values)
+            {
+                yield return plugin.Config;
+            }
+
+            foreach (var customConfigFile in CustomConfigs.Values)
+            {
+                yield return customConfigFile;
+            }
+        }
+
+        private static string GetFileIdentifier(ConfigFile config)
+        {
+            return config.ConfigFilePath.Replace(BepInEx.Paths.ConfigPath, "").Replace("\\", "/").Trim('/');
+        }
+
+        private ConfigFile GetConfigFile(string identifier)
+        {
+            if (CustomConfigs.TryGetValue(identifier, out var config))
+            {
+                return config;
+            }
+
+            string modGuid = identifier;
+
+            if (identifier.EndsWith(".cfg"))
+            {
+                modGuid = identifier.Substring(0, identifier.Length - 4);
+            }
+
+            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
+
+            if (loadedPlugins.TryGetValue(modGuid, out var plugin))
+            {
+                return plugin.Config;
+            }
+
+            return null;
+        }
+
         /// <summary>
         ///     Unlock configuration entries.
         /// </summary>
         private void UnlockConfigurationEntries()
         {
-            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
-
-            foreach (var plugin in loadedPlugins)
+            foreach (var config in GetConfigFiles())
             {
-                foreach (var configDefinition in plugin.Value.Config.Keys)
+                foreach (var configDefinition in config.Keys)
                 {
-                    var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
+                    var configEntry = config[configDefinition.Section, configDefinition.Key];
                     var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
                         .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
                     if (configAttribute != null)
@@ -383,13 +443,11 @@ namespace Jotunn.Managers
         /// </summary>
         private void LockConfigurationEntries()
         {
-            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
-
-            foreach (var plugin in loadedPlugins)
+            foreach (var config in GetConfigFiles())
             {
-                foreach (var configDefinition in plugin.Value.Config.Keys)
+                foreach (var configDefinition in config.Keys)
                 {
-                    var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
+                    var configEntry = config[configDefinition.Section, configDefinition.Key];
                     var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
                         .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
                     if (configAttribute != null)
@@ -431,11 +489,9 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Initial cache the config values of dependent plugins and register ourself to config change events
         /// </summary>
-        /// <param name="self"></param>
-        private void FejdStartup_Awake(FejdStartup self)
+        private void FejdStartup_Awake()
         {
-            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
-            foreach (var config in loadedPlugins.Where(x => x.Value.Config != null).Select(x => x.Value.Config))
+            foreach (var config in GetConfigFiles())
             {
                 config.ConfigReloaded += Config_ConfigReloaded;
             }
@@ -503,24 +559,25 @@ namespace Jotunn.Managers
         private List<Tuple<string, string, string, string>> GetSyncConfigValues()
         {
             Logger.LogDebug("Gathering config values");
-            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
 
-            var values = new List<Tuple<string, string, string, string>>();
-            foreach (var plugin in loadedPlugins)
+            var entries = new List<Tuple<string, string, string, string>>();
+            foreach (var config in GetConfigFiles())
             {
-                foreach (var cd in plugin.Value.Config.Keys)
+                string configIdentifier = GetFileIdentifier(config);
+
+                foreach (var cd in config.Keys)
                 {
-                    var cx = plugin.Value.Config[cd.Section, cd.Key];
+                    var cx = config[cd.Section, cd.Key];
                     if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes { IsAdminOnly: true }))
                     {
-                        var value = new Tuple<string, string, string, string>(
-                            plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
-                        values.Add(value);
+                        var value = TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType);
+                        var entry = new Tuple<string, string, string, string>(configIdentifier, cd.Section, cd.Key, value);
+                        entries.Add(entry);
                     }
                 }
             }
 
-            return values;
+            return entries;
         }
 
         /// <summary>
@@ -529,20 +586,19 @@ namespace Jotunn.Managers
         internal void SynchronizeChangedConfig()
         {
             // Lets compare and send to server, if applicable
-            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
-
             var valuesToSend = new List<Tuple<string, string, string, string>>();
-            foreach (var plugin in loadedPlugins)
+            foreach (var config in GetConfigFiles())
             {
-                foreach (var cd in plugin.Value.Config.Keys)
+                string configIdentifier = GetFileIdentifier(config);
+
+                foreach (var cd in config.Keys)
                 {
-                    var cx = plugin.Value.Config[cd.Section, cd.Key];
-                    if (cx.Description.Tags.Any(x =>
-                        x is ConfigurationManagerAttributes { IsAdminOnly: true, IsUnlocked: true }))
+                    var cx = config[cd.Section, cd.Key];
+                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes { IsAdminOnly: true, IsUnlocked: true }))
                     {
-                        var value = new Tuple<string, string, string, string>(
-                            plugin.Value.Info.Metadata.GUID, cd.Section, cd.Key, TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType));
-                        valuesToSend.Add(value);
+                        var value = TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType);
+                        var entry = new Tuple<string, string, string, string>(configIdentifier, cd.Section, cd.Key, value);
+                        valuesToSend.Add(entry);
                     }
 
                     // Set buttons if changed
@@ -632,13 +688,11 @@ namespace Jotunn.Managers
         /// </summary>
         private void InitAdminConfigs()
         {
-            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
-
-            foreach (var plugin in loadedPlugins)
+            foreach (var config in GetConfigFiles())
             {
-                foreach (var configDefinition in plugin.Value.Config.Keys)
+                foreach (var configDefinition in config.Keys)
                 {
-                    var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
+                    var configEntry = config[configDefinition.Section, configDefinition.Key];
                     var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
                         .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
                     if (configAttribute != null && configEntry.BoxedValue != null)
@@ -654,13 +708,11 @@ namespace Jotunn.Managers
         /// </summary>
         private void ResetAdminConfigs()
         {
-            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
-
-            foreach (var plugin in loadedPlugins)
+            foreach (var config in GetConfigFiles())
             {
-                foreach (var configDefinition in plugin.Value.Config.Keys)
+                foreach (var configDefinition in config.Keys)
                 {
-                    var configEntry = plugin.Value.Config[configDefinition.Section, configDefinition.Key];
+                    var configEntry = config[configDefinition.Section, configDefinition.Key];
                     var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
                         .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
                     if (configAttribute != null && configAttribute.LocalValue != null)
@@ -734,21 +786,23 @@ namespace Jotunn.Managers
             var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
             while (numberOfEntries > 0)
             {
-                var modguid = configPkg.ReadString();
+                var configIdentifier = configPkg.ReadString();
                 var section = configPkg.ReadString();
                 var key = configPkg.ReadString();
                 var serializedValue = configPkg.ReadString();
 
-                Logger.LogDebug($"Received {modguid} {section} {key} {serializedValue}");
+                Logger.LogDebug($"Received {configIdentifier} {section} {key} {serializedValue}");
 
-                if (loadedPlugins.ContainsKey(modguid))
+                ConfigFile config = GetConfigFile(configIdentifier);
+
+                if (config != null)
                 {
-                    if (loadedPlugins[modguid].Config.Keys.Contains(new ConfigDefinition(section, key)))
+                    if (config.Keys.Contains(new ConfigDefinition(section, key)))
                     {
-                        var entry = loadedPlugins[modguid].Config[section, key];
+                        var entry = config[section, key];
                         if (entry.IsSyncable())
                         {
-                            Logger.LogDebug($"Setting config value {modguid}.{section}.{key} to {serializedValue}");
+                            Logger.LogDebug($"Setting config value {configIdentifier}.{section}.{key} to {serializedValue}");
                             entry.BoxedValue = TomlTypeConverter.ConvertToValue(serializedValue, entry.SettingType);
 
                             // Set buttons after receive
@@ -756,17 +810,17 @@ namespace Jotunn.Managers
                         }
                         else
                         {
-                            Logger.LogWarning($"Setting for GUID: {modguid}, Section {section}, Key {key} is not syncable");
+                            Logger.LogWarning($"Setting for Identifier: {configIdentifier}, Section {section}, Key {key} is not syncable");
                         }
                     }
                     else
                     {
-                        Logger.LogWarning($"Did not find Value for GUID: {modguid}, Section {section}, Key {key}");
+                        Logger.LogWarning($"Did not find Value for Identifier: {configIdentifier}, Section {section}, Key {key}");
                     }
                 }
                 else
                 {
-                    Logger.LogWarning($"No plugin with GUID {modguid} is loaded");
+                    Logger.LogWarning($"No config file with Identifier {configIdentifier} is loaded");
                 }
 
                 numberOfEntries--;
