@@ -169,7 +169,15 @@ namespace Jotunn.Utils
                 }
 
                 PatchedMethods.Add(patch.PatchMethod);
-                Main.Harmony.Patch(patch.PatchMethod, PrePatch, PostPatch);
+
+                try
+                {
+                    Main.Harmony.Patch(patch.PatchMethod, PrePatch, PostPatch);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Failed to patch {patch.PatchMethod} from {patch.owner}: {e}");
+                }
             }
         }
 
