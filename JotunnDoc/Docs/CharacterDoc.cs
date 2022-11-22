@@ -65,8 +65,7 @@ namespace JotunnDoc.Docs
                 damagemods += $"<li>Lightning: {mods.m_lightning}</li>";
                 damagemods += $"<li>Poison: {mods.m_poison}</li>";
                 damagemods += $"<li>Spirit: {mods.m_spirit}</li>";
-
-                components += "/<ul>";
+                damagemods += "/<ul>";
 
                 AddTableRow(
                     name,
