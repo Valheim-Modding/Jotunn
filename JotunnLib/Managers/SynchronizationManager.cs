@@ -20,7 +20,7 @@ namespace Jotunn.Managers
     {
         private CustomRPC ConfigRPC;
         private CustomRPC AdminRPC;
-        private List<CustomRPC> CustomRPCs = new List<CustomRPC>();
+        private List<Tuple<CustomRPC, Func<ZNetPeer, ZPackage>>> InitialSync = new List<Tuple<CustomRPC, Func<ZNetPeer,ZPackage>>>();
 
         private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
         private readonly Dictionary<string, ConfigFile> CustomConfigs = new Dictionary<string, ConfigFile>();
@@ -88,6 +88,19 @@ namespace Jotunn.Managers
                     eventinfo.AddEventHandler(ConfigurationManager, converted);
                 }
             }
+
+            AddInitalSynchronization(AdminRPC, peer =>
+            {
+                var id = peer.m_socket.GetHostName();
+                var isAdmin = !string.IsNullOrEmpty(id) && ZNet.instance.ListContainsId(ZNet.instance.m_adminList, id);
+                Logger.LogDebug($"Admin status: {(isAdmin ? "Admin" : "No Admin")}");
+
+                var adminPkg = new ZPackage();
+                adminPkg.Write(isAdmin);
+                return adminPkg;
+            });
+
+            AddInitalSynchronization(ConfigRPC, peer => GenerateConfigZPackage(true, GetSyncConfigValues()));
         }
 
         /// <summary>
@@ -107,14 +120,9 @@ namespace Jotunn.Managers
             CustomConfigs.Add(identifier, customFile);
         }
 
-        public void RegisterCustomRPC(CustomRPC rpc)
+        public void AddInitalSynchronization(CustomRPC rpc, Func<ZNetPeer, ZPackage> packageGenerator)
         {
-            if (CustomRPCs.Contains(rpc))
-            {
-                Logger.LogWarning($"Custom RPC {rpc} already registered");
-                return;
-            }
-            CustomRPCs.Add(rpc);
+            InitialSync.Add(new Tuple<CustomRPC, Func<ZNetPeer, ZPackage>>(rpc, packageGenerator));
         }
 
         private static class Patches
@@ -226,22 +234,13 @@ namespace Jotunn.Managers
                 {
                     Logger.LogInfo($"Sending initial data to peer #{peer.m_uid}");
 
-                    var id = peer.m_socket.GetHostName();
-                    var isAdmin = !string.IsNullOrEmpty(id) && ZNet.instance.ListContainsId(ZNet.instance.m_adminList, id);
-                    Logger.LogDebug($"Admin status: {(isAdmin ? "Admin" : "No Admin")}");
-
-                    var adminPkg = new ZPackage();
-                    adminPkg.Write(isAdmin);
-                    yield return ZNet.instance.StartCoroutine(AdminRPC.SendPackageRoutine(peer.m_uid, adminPkg));
-
-                    var pkg = GenerateConfigZPackage(true, GetSyncConfigValues());
-                    yield return ZNet.instance.StartCoroutine(ConfigRPC.SendPackageRoutine(peer.m_uid, pkg));
-
-                    foreach (var rpc in CustomRPCs)
+                    // ReSharper disable once UseDeconstruction
+                    foreach (var tuple in InitialSync)
                     {
-                        Logger.LogDebug($"Calling custom RPC {rpc}");
-                        ZPackage initPkg = new ZPackage(new[] { (byte)1 });
-                        yield return rpc.OnServerReceive(peer.m_uid, initPkg);
+                        var targetRPC = tuple.Item1;
+                        var packageGenerator = tuple.Item2;
+                        Logger.LogDebug($"Calling custom RPC {targetRPC}");
+                        yield return ZNet.instance.StartCoroutine(targetRPC.SendPackageRoutine(peer.m_uid, packageGenerator(peer)));
                     }
 
                     if (peer.m_rpc.GetSocket() is PeerInfoBlockingSocket currentSocket)
