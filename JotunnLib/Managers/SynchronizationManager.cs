@@ -100,7 +100,7 @@ namespace Jotunn.Managers
                 return adminPkg;
             });
 
-            AddInitalSynchronization(ConfigRPC, peer => GenerateConfigZPackage(true, GetSyncConfigValues()));
+            AddInitalSynchronization(ConfigRPC, () => GenerateConfigZPackage(true, GetSyncConfigValues()));
         }
 
         /// <summary>
@@ -123,6 +123,11 @@ namespace Jotunn.Managers
         public void AddInitalSynchronization(CustomRPC rpc, Func<ZNetPeer, ZPackage> packageGenerator)
         {
             InitialSync.Add(new Tuple<CustomRPC, Func<ZNetPeer, ZPackage>>(rpc, packageGenerator));
+        }
+
+        public void AddInitalSynchronization(CustomRPC rpc, Func<ZPackage> packageGenerator)
+        {
+            AddInitalSynchronization(rpc, peer => packageGenerator());
         }
 
         private static class Patches
