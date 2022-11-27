@@ -20,6 +20,7 @@ namespace Jotunn.Managers
     {
         private CustomRPC ConfigRPC;
         private CustomRPC AdminRPC;
+        private List<CustomRPC> CustomRPCs = new List<CustomRPC>();
 
         private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
         private readonly Dictionary<string, ConfigFile> CustomConfigs = new Dictionary<string, ConfigFile>();
@@ -104,6 +105,16 @@ namespace Jotunn.Managers
 
             string identifier = GetFileIdentifier(customFile);
             CustomConfigs.Add(identifier, customFile);
+        }
+
+        public void RegisterCustomRPC(CustomRPC rpc)
+        {
+            if (CustomRPCs.Contains(rpc))
+            {
+                Logger.LogWarning($"Custom RPC {rpc} already registered");
+                return;
+            }
+            CustomRPCs.Add(rpc);
         }
 
         private static class Patches
@@ -226,6 +237,13 @@ namespace Jotunn.Managers
                     var pkg = GenerateConfigZPackage(true, GetSyncConfigValues());
                     yield return ZNet.instance.StartCoroutine(ConfigRPC.SendPackageRoutine(peer.m_uid, pkg));
 
+                    foreach (var rpc in CustomRPCs)
+                    {
+                        Logger.LogDebug($"Calling custom RPC {rpc}");
+                        ZPackage initPkg = new ZPackage(new[] { (byte)1 });
+                        yield return rpc.OnServerReceive(peer.m_uid, initPkg);
+                    }
+
                     if (peer.m_rpc.GetSocket() is PeerInfoBlockingSocket currentSocket)
                     {
                         peer.m_rpc.m_socket = currentSocket.Original;
@@ -313,7 +331,7 @@ namespace Jotunn.Managers
                 foreach (var entry in CachedAdminStates.Keys.ToList())
                 {
                     // Admin state removed
-                    if (!adminListCopy.Contains(entry)) 
+                    if (!adminListCopy.Contains(entry))
                     {
                         // If cached state is true
                         if (CachedAdminStates[entry])
@@ -344,7 +362,7 @@ namespace Jotunn.Managers
                 AdminRPC.SendPackage(clientId.Value, pkg);
             }
         }
-        
+
         private IEnumerator AdminRPC_OnClientReceive(long sender, ZPackage package)
         {
             bool isAdmin = package.ReadBool();
