@@ -148,9 +148,6 @@ namespace Jotunn.Configs
             BiomeArea = zoneLocation.m_biomeArea;
             Priotized = zoneLocation.m_prioritized;
             Quantity = zoneLocation.m_quantity;
-#pragma warning disable CS0618 // Type or member is obsolete
-            ChanceToSpawn = zoneLocation.m_chanceToSpawn;
-#pragma warning restore CS0618 // Type or member is obsolete
             ExteriorRadius = zoneLocation.m_exteriorRadius;
             ForestTresholdMin = zoneLocation.m_forestTresholdMin;
             ForestTrasholdMax = zoneLocation.m_forestTresholdMax;
@@ -186,9 +183,6 @@ namespace Jotunn.Configs
                 m_biomeArea = BiomeArea,
                 m_quantity = Quantity,
                 m_prioritized = Priotized,
-#pragma warning disable CS0618 // Type or member is obsolete
-                m_chanceToSpawn = ChanceToSpawn,
-#pragma warning restore CS0618 // Type or member is obsolete
                 m_exteriorRadius = ExteriorRadius,
                 m_centerFirst = CenterFirst,
                 m_forestTresholdMin = ForestTresholdMin,
