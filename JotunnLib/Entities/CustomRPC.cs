@@ -397,5 +397,11 @@ namespace Jotunn.Entities
                 --ProcessingCount;
             }
         }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return ID;
+        }
     }
 }
