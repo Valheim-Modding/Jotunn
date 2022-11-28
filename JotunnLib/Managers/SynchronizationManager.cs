@@ -120,11 +120,23 @@ namespace Jotunn.Managers
             CustomConfigs.Add(identifier, customFile);
         }
 
+        /// <summary>
+        ///     Add a <see cref="CustomRPC"/> and a method for generating a <see cref="ZPackage"/> to the manager.<br />
+        ///     The RPC will be initiated on the server side after login to sync arbitrary data to the connecting client.
+        /// </summary>
+        /// <param name="rpc">RPC to be called</param>
+        /// <param name="packageGenerator">Method generating the ZPackage payload, takes the client peer as its argument</param>
         public void AddInitalSynchronization(CustomRPC rpc, Func<ZNetPeer, ZPackage> packageGenerator)
         {
             InitialSync.Add(new Tuple<CustomRPC, Func<ZNetPeer, ZPackage>>(rpc, packageGenerator));
         }
 
+        /// <summary>
+        ///     Add a <see cref="CustomRPC"/> and a method for generating a <see cref="ZPackage"/> to the manager.<br />
+        ///     The RPC will be initiated on the server side after login to sync arbitrary data to the connecting client.
+        /// </summary>
+        /// <param name="rpc">RPC to be called</param>
+        /// <param name="packageGenerator">Method generating the ZPackage payload</param>
         public void AddInitalSynchronization(CustomRPC rpc, Func<ZPackage> packageGenerator)
         {
             AddInitalSynchronization(rpc, peer => packageGenerator());
@@ -244,8 +256,12 @@ namespace Jotunn.Managers
                     {
                         var targetRPC = tuple.Item1;
                         var packageGenerator = tuple.Item2;
-                        Logger.LogDebug($"Calling custom RPC {targetRPC}");
-                        yield return ZNet.instance.StartCoroutine(targetRPC.SendPackageRoutine(peer.m_uid, packageGenerator(peer)));
+                        var package = packageGenerator(peer);
+                        if (package != null && package.Size() > 0)
+                        {
+                            Logger.LogDebug($"Calling custom RPC {targetRPC}");
+                            yield return ZNet.instance.StartCoroutine(targetRPC.SendPackageRoutine(peer.m_uid, package));
+                        }
                     }
 
                     if (peer.m_rpc.GetSocket() is PeerInfoBlockingSocket currentSocket)
