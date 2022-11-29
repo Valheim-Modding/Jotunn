@@ -104,19 +104,35 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Registers a non default config file to be synchronized with all clients.<br />
+        ///     Registers a non default config file for possible synchronisation with all clients.
+        ///     Entries still need the IsAdminOnly attribute in order to be synchronized.<br />
         ///     The file path must be saved under the executing BepInEx config folder, see <see cref="BepInEx.Paths.ConfigPath" />.
         ///     This guarantees the same relative path for all clients.
         /// </summary>
-        /// <param name="customFile"></param>
+        /// <param name="customFile">the file to synchronize</param>
+        /// <exception cref="T:System.ArgumentException">The config file is not saved under the BepInEx config folder</exception>
+        /// <exception cref="T:System.ArgumentException">The config file is already registered</exception>
+        /// <exception cref="T:System.ArgumentException">The config file is a default mod config and is already implicitly synchronized</exception>
         public void RegisterCustomConfig(ConfigFile customFile)
         {
             if (!customFile.ConfigFilePath.StartsWith(BepInEx.Paths.ConfigPath))
             {
-                throw new ArgumentException("Config file must be saved under the BepInEx config folder");
+                throw new ArgumentException($"Config file must be saved under the BepInEx config folder. {customFile.ConfigFilePath}");
             }
 
             string identifier = GetFileIdentifier(customFile);
+
+            if (IsDefaultModConfig(identifier, out string modGUID))
+            {
+                throw new ArgumentException($"Config file must not be a default mod config: {modGUID}. It is already synchronized");
+            }
+
+            if (CustomConfigs.ContainsKey(identifier))
+            {
+                throw new ArgumentException($"Config file already registered. {customFile.ConfigFilePath}");
+            }
+
+            Logger.LogDebug($"Registering custom config file {identifier}");
             CustomConfigs.Add(identifier, customFile);
         }
 
@@ -439,21 +455,27 @@ namespace Jotunn.Managers
                 return config;
             }
 
-            string modGuid = identifier;
-
-            if (identifier.EndsWith(".cfg"))
-            {
-                modGuid = identifier.Substring(0, identifier.Length - 4);
-            }
-
             var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
 
-            if (loadedPlugins.TryGetValue(modGuid, out var plugin))
+            if (IsDefaultModConfig(identifier, out string modGUID) && loadedPlugins.TryGetValue(modGUID, out var plugin))
             {
                 return plugin.Config;
             }
 
             return null;
+        }
+
+        private static bool IsDefaultModConfig(string identifier, out string modGUID)
+        {
+            if (identifier.EndsWith(".cfg"))
+            {
+                modGUID = identifier.Substring(0, identifier.Length - 4);
+                // must access Chainloader directly because the mod list may only be partially initialized
+                return Chainloader.PluginInfos.ContainsKey(modGUID);
+            }
+
+            modGUID = string.Empty;
+            return false;
         }
 
         /// <summary>
@@ -821,7 +843,6 @@ namespace Jotunn.Managers
                 return;
             }
 
-            var loadedPlugins = BepInExUtils.GetDependentPlugins(true);
             while (numberOfEntries > 0)
             {
                 var configIdentifier = configPkg.ReadString();
