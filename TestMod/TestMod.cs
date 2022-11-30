@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -17,6 +18,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
+using Paths = BepInEx.Paths;
 using Random = System.Random;
 
 namespace TestMod
@@ -65,6 +67,10 @@ namespace TestMod
 
         private CustomLocalization Localization;
 
+        private static ConfigFile customConfig;
+        private static ConfigEntry<int> serverValueCustomConfig;
+        private static ConfigEntry<int> clientValueCustomConfig;
+
         private static Harmony harmony;
 
         // Load, create and init your custom mod stuff
@@ -82,6 +88,7 @@ namespace TestMod
 
             // Create stuff
             CreateConfigValues();
+            CreateCustomConfig();
             LoadAssets();
             AddInputs();
             AddLocalizations();
@@ -585,6 +592,101 @@ namespace TestMod
                 new ConfigDescription("Key to unleash evil with the Evil Sword"));
             EvilSwordGamepadConfig = Config.Bind(JotunnTestModConfigSection, "EvilSwordSpecialAttackGamepad", InputManager.GamepadButton.ButtonSouth,
                 new ConfigDescription("Button to unleash evil with the Evil Sword"));
+        }
+
+        private void CreateCustomConfig()
+        {
+            customConfig = new ConfigFile(Path.Combine(Paths.ConfigPath, "abc/testmod_custom_config.cfg"), true);
+            SynchronizationManager.Instance.RegisterCustomConfig(customConfig);
+
+            ConfigurationManagerAttributes adminOnly = new ConfigurationManagerAttributes
+            {
+                IsAdminOnly = true
+            };
+
+            serverValueCustomConfig = customConfig.Bind("Section", "CustomServerValue", 42, new ConfigDescription("Server side value", null, adminOnly));
+            clientValueCustomConfig = customConfig.Bind("Section", "CustomClientValue", 42, new ConfigDescription("Client side value"));
+
+            CommandManager.Instance.AddConsoleCommand(new GetCustomConfigCommand());
+            CommandManager.Instance.AddConsoleCommand(new SetCustomConfigCommand());
+        }
+
+        private class GetCustomConfigCommand : ConsoleCommand
+        {
+            public override string Name => "get_custom_config";
+
+            public override string Help => "Get a config value";
+
+            public override List<string> CommandOptionList()
+            {
+                return new List<string> { "server", "client" };
+            }
+
+            public override void Run(string[] args)
+            {
+                if (args.Length != 1)
+                {
+                    Console.instance.Print("Invalid argument count");
+                    return;
+                }
+
+                switch (args[0]) {
+                    case "server":
+                        Console.instance.Print($"Server value: {serverValueCustomConfig.Value}");
+                        break;
+                    case "client":
+                        Console.instance.Print($"Client value: {clientValueCustomConfig.Value}");
+                        break;
+                    default:
+                        Console.instance.Print("Invalid option");
+                        break;
+                }
+            }
+        }
+
+        private class SetCustomConfigCommand : ConsoleCommand
+        {
+            public override string Name => "set_custom_config";
+
+            public override string Help => "Set a config value";
+
+            public override List<string> CommandOptionList()
+            {
+                return new List<string>
+                {
+                    "server", "client"
+                };
+            }
+
+            public override void Run(string[] args)
+            {
+                if (args.Length != 2)
+                {
+                    Console.instance.Print("Invalid argument count");
+                    return;
+                }
+
+                if (!int.TryParse(args[1], out int value))
+                {
+                    Console.instance.Print("Invalid value, must be integer");
+                    return;
+                }
+
+                switch (args[0])
+                {
+                    case "server":
+                        serverValueCustomConfig.Value = value;
+                        customConfig.Reload();
+                        break;
+                    case "client":
+                        clientValueCustomConfig.Value = value;
+                        customConfig.Reload();
+                        break;
+                    default:
+                        Console.instance.Print("Invalid option");
+                        break;
+                }
+            }
         }
 
         // React on changed settings

@@ -3,7 +3,7 @@
 # [1. Development Environment](#tab/tabid-1)
 # Development Environment
 
-* We begin with installing [Visual Studio 2019](https://visualstudio.microsoft.com/) as our IDE. Download the installer and run it on your Computer.
+* We begin with installing [Visual Studio](https://visualstudio.microsoft.com/de/downloads/) as our IDE. Download the installer and run it on your Computer.
 
 * Inside the visual studio installer, ensure that `.NET Desktop Development` and `.NET Core Cross-Platform Development` are installed, then click on the `Individual Components` tab and select `.NET Framework 4.6.2`:<br />
 ![Components](../images/getting-started/vs-InstallerComponents.png)
@@ -33,16 +33,6 @@
 ## Optional: Use the renaming script
 
 Inside your solution folder is a PowerShell script called `RenameSolution.ps1`. Right-click on it and select 'Run with Powershell' from the context menu. Follow the on-screen instructions to customise your project automatically.
-
-## Optional: Use or create a project template
-
-* You can grab the [pre built VS Project Template](https://github.com/Valheim-Modding/JotunnModStub/raw/master/JotunnModStub.zip) which you can use to add new projects to your current solution, based on the mod stub boilerplate. Or create your own Template file using `Project` -> `Export Template`.
-
-* Place the project template into your<br />
-![VS Project Template Location](../images/getting-started/vs-ProjectTemplateLocationpng.png)
-
-* Restart visual studio. You can now create a new project using the imported templated. Right click your solution, add, new project, then scroll to the bottom where you will find the template:<br />
-![Create new project template](../images/getting-started/vs-CreateNewProjectTemplate.png)
 
 # [3. PreBuild Automations](#tab/tabid-3)
 # PreBuild Automations
@@ -86,9 +76,8 @@ Jötunn can automatically create the publicised assemblies for you. To use this 
 ## Manual setup
 
 If you decide to disable the prebuild, you will need to:
-- Publicized assemblies are manually generated with [AssemblyPublicizer](https://github.com/CabbageCrow/AssemblyPublicizer). Please follow the instructions found on GitHub using the Valheim assembly DLLs found under `Valheim/valheim_Data/Managed`.
-- Build the stub, make sure it compiles and automates the postbuild tasks, producing compiled binaries in your plugin directory `BepInEx/plugins/yourtestmod/` folder and also generated a `yourtestmod.dll.mdb` monodebug symbols file.
-- You may now proceed to one of the [Tutorials](../tutorials/overview.md)
+* Publicized assemblies are manually generated with [AssemblyPublicizer](https://github.com/CabbageCrow/AssemblyPublicizer). Please follow the instructions found on GitHub using the Valheim assembly DLLs found under `Valheim/valheim_Data/Managed`.
+* Reference those publicized assemblies and any of the Unity assemblies you want to use (at the very least `UnityEngine.dll`) from the `unstripped_corlibs` folder in your mod project.
 
 # [4. PostBuild Automations](#tab/tabid-4)
 # PostBuild Automations
@@ -97,12 +86,12 @@ Included in the ModStub and ModExample repos is a PowerShell script `publish.ps1
 
 ## Building Debug
 
-* The compiled dll file for this project is copied to `<ValheimDir>\BepInEx\plugins`.
-* A .mdb file is generated for the compiled project dll and copied to `<ValheimDir>\BepInEx\plugins`.
+* The compiled dll file for this project is copied to `<ValheimDir>\BepInEx\plugins` or the path you configured in your `Environment.props` file.
+* A .mdb file is generated for the compiled project dll and copied to `<ValheimDir>\BepInEx\plugins` or the path you configured in your `Environment.props` file.
 
 ## Building Release
 
-* The README.md in `SolutionDir/ProjectDir/package/README.md` is copied to `SolutionDir/ProjectDir/README.md` so that it is present and readable in single-solution-multi-project githubs to give an overview of the project.
+* The README.md in `SolutionDir/ProjectDir/README.md` is copied to `SolutionDir/ProjectDir/package/README.md` for packaging.
 * The compiled binary is placed inside of `SolutionDir/ProjectDir/package/plugins`
 * The contents of `SolutionDir/ProjectDir/package/*` is archived into a zip, ready for thunderstore upload.
 

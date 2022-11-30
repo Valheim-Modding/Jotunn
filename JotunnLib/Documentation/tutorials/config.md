@@ -140,6 +140,21 @@ SynchronizationManager.OnAdminStatusChanged += () =>
 };
 ```
 
+## Custom config files
+
+Only the default configuration file of a mod is synchronized by default.
+To include a custom config file, it must be added to the SynchronizationManager as it cannot be detected automatically.
+The file must be located inside the `BepInEx/config` folder to guarantee the same relative path for all clients.
+This alone does not synchronize the entries, the `IsAdminOnly` attribute is still needed.
+
+```cs
+ConfigFile customConfig = new ConfigFile(Path.Combine(Paths.ConfigPath, "path/custom_config.cfg"), true);
+SynchronizationManager.Instance.RegisterCustomConfig(customConfig);
+```
+
+Now `customConfig` can be used like `Config` in the previous examples.
+Note that `customConfig.Reload()` may be called to initiate a config sync if entries are set directly.
+
 ## Translating the menu entry
 
 You can provide localized versions of the menu entry string. Please see our [localization tutorial](localization.md#localizable-content-in-jötunn) on how to do this.
