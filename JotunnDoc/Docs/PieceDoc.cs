@@ -35,7 +35,7 @@ namespace JotunnDoc.Docs
 
             foreach (var pair in pieceTables)
             {
-                AddHeader(1, pair.Key);
+                AddHeader(2, pair.Key);
                 AddTableHeader("Piece", "Token", "Name", "Description", "Resources required");
 
                 foreach (GameObject obj in pair.Value.m_pieces.Where(x => PieceManager.Instance.GetPiece(x.name) == null))
