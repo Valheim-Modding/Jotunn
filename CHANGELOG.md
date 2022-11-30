@@ -5,6 +5,8 @@
 * Added method to inject a ZoneLocation at runtime to the ZoneManager
 * Added missing GetClutter without mod guid to ModQuery and cleanup code
 * Added catching of patch errors with the ModQuery to log a clean error on the console and avoid unrelated errors
+* Added AddInitialSynchronization to SynchronizationManager, this allows sending arbitrary data to the connecting client and making sure it will be received before the client's connection is fully established
+* Added registration of custom ConfigFiles to SynchronizationManager
 * Fixed RenderManager inconsistency between a headless server and normal client. Instead of always returning null, an empty sprite is returned on headless when it should have been rendered
 * Fixed trying to insert Jötunn's localisation multiple times
 

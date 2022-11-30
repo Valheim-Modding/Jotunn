@@ -139,6 +139,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Add a <see cref="CustomRPC"/> and a method for generating a <see cref="ZPackage"/> to the manager.<br />
         ///     The RPC will be initiated on the server side after login to sync arbitrary data to the connecting client.
+        ///     The package is guaranteed to be received before the client's connection is fully established and the player loads into the world.
         /// </summary>
         /// <param name="rpc">RPC to be called</param>
         /// <param name="packageGenerator">Method generating the ZPackage payload, takes the client peer as its argument</param>
@@ -150,6 +151,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Add a <see cref="CustomRPC"/> and a method for generating a <see cref="ZPackage"/> to the manager.<br />
         ///     The RPC will be initiated on the server side after login to sync arbitrary data to the connecting client.
+        ///     The package is guaranteed to be received before the client's connection is fully established and the player loads into the world.
         /// </summary>
         /// <param name="rpc">RPC to be called</param>
         /// <param name="packageGenerator">Method generating the ZPackage payload</param>
