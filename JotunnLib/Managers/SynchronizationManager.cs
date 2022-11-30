@@ -214,8 +214,8 @@ namespace Jotunn.Managers
                 {
                     while (true)
                     {
-                        yield return new WaitForSeconds(10);
-                        self.m_adminList?.GetList();
+                        yield return new WaitForSeconds(5);
+                        self.m_adminList?.CheckLoad();
                     }
                 }
                 self.StartCoroutine(watchdog());
@@ -804,8 +804,7 @@ namespace Jotunn.Managers
         private IEnumerator ConfigRPC_OnServerReceive(long sender, ZPackage package)
         {
             // Is sender admin?
-            var id = ZNet.instance.GetPeer(sender)?.m_socket?.GetHostName();
-            if (!string.IsNullOrEmpty(id) && ZNet.instance.ListContainsId(ZNet.instance.m_adminList, id))
+            if (ZNet.instance.IsAdmin(sender))
             {
                 Logger.LogInfo($"Received configuration data from client {sender}");
 

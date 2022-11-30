@@ -102,7 +102,8 @@
                 return false;
             }
 
-            return znet.ListContainsId(znet.m_adminList, peer.m_socket.GetHostName());
+            string hostname = peer.m_socket.GetHostName();
+            return !string.IsNullOrEmpty(hostname) && znet.ListContainsId(znet.m_adminList, hostname);
         }
     }
 }
