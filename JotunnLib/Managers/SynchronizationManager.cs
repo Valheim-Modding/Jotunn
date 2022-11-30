@@ -89,7 +89,7 @@ namespace Jotunn.Managers
                 }
             }
 
-            AddInitalSynchronization(AdminRPC, peer =>
+            AddInitialSynchronization(AdminRPC, peer =>
             {
                 var id = peer.m_socket.GetHostName();
                 var isAdmin = !string.IsNullOrEmpty(id) && ZNet.instance.ListContainsId(ZNet.instance.m_adminList, id);
@@ -100,7 +100,7 @@ namespace Jotunn.Managers
                 return adminPkg;
             });
 
-            AddInitalSynchronization(ConfigRPC, () => GenerateConfigZPackage(true, GetSyncConfigValues()));
+            AddInitialSynchronization(ConfigRPC, () => GenerateConfigZPackage(true, GetSyncConfigValues()));
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="rpc">RPC to be called</param>
         /// <param name="packageGenerator">Method generating the ZPackage payload, takes the client peer as its argument</param>
-        public void AddInitalSynchronization(CustomRPC rpc, Func<ZNetPeer, ZPackage> packageGenerator)
+        public void AddInitialSynchronization(CustomRPC rpc, Func<ZNetPeer, ZPackage> packageGenerator)
         {
             InitialSync.Add(new Tuple<CustomRPC, Func<ZNetPeer, ZPackage>>(rpc, packageGenerator));
         }
@@ -153,9 +153,9 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="rpc">RPC to be called</param>
         /// <param name="packageGenerator">Method generating the ZPackage payload</param>
-        public void AddInitalSynchronization(CustomRPC rpc, Func<ZPackage> packageGenerator)
+        public void AddInitialSynchronization(CustomRPC rpc, Func<ZPackage> packageGenerator)
         {
-            AddInitalSynchronization(rpc, peer => packageGenerator());
+            AddInitialSynchronization(rpc, peer => packageGenerator());
         }
 
         private static class Patches
