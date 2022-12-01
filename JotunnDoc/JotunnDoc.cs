@@ -38,7 +38,8 @@ namespace JotunnDoc
                 new ShaderDoc(),
                 new SpriteDoc(),
                 new StatusEffectDoc(),
-                new VegetationDoc()
+                new VegetationDoc(),
+                new EventDoc(),
             };
 
             Debug.Log("Initialized JotunnDoc");

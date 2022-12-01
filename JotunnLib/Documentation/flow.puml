@@ -4,6 +4,7 @@
 hide footbox
 
 participant Valheim
+participant BepInEx
 
 box JotunnMods
     collections JotunnMod
@@ -11,12 +12,13 @@ end box
 
 box Jotunn
     participant LocalizationManager
+    participant CreatureManager
     participant PrefabManager
-    participant ItemManager
     participant PieceManager
-    participant GUIManager
+    participant ItemManager
     participant ZoneManager
-    participant MapOverlayManager
+    participant GUIManager
+    participant MinimapManager
 end box
 
 group For each mod
@@ -26,16 +28,21 @@ end group
 
 == Main Menu Scene ==
 
+Valheim -> Valheim++: ClutterSystem.Awake
+    hnote over ZoneManager: OnVanillaClutterAvailable
+deactivate Valheim
+
+Valheim -> Valheim++: FejdStartup.SetupGui
+    hnote over LocalizationManager: OnLocalizationAdded
+deactivate Valheim
+
 Valheim -> Valheim++: SceneManager.sceneLoaded
     hnote over GUIManager: OnPixelFixCreated
     hnote over GUIManager: OnCustomGUIAvailable
 deactivate Valheim
 
-Valheim -> Valheim++: SetupGUI
-    hnote over LocalizationManager: OnLocalizationAdded
-deactivate Valheim
-
 Valheim -> Valheim++: ObjectDB.CopyOtherDB
+    hnote over CreatureManager : OnVanillaCreaturesAvailable
     hnote over PrefabManager: OnVanillaPrefabsAvailable 
     hnote over ItemManager #salmon: OnVanillaItemsAvailable  
     hnote over ItemManager #salmon: OnKitbashItemsAvailable
@@ -48,13 +55,18 @@ note over Valheim #lightblue: Main menu interactable
 == Game Scene  ==
 
 Valheim -> Valheim ++: ZNetScene.Awake
+    hnote over CreatureManager: OnCreaturesRegistered
     hnote over PrefabManager: OnPrefabsRegistered
 deactivate Valheim
 
 Valheim -> Valheim++ : ObjectDB.Awake
-    hnote over ItemManager: OnItemsRegistered
     hnote over PieceManager: OnPiecesRegistered
+    hnote over ItemManager: OnItemsRegistered
 deactivate Valheim 
+
+Valheim -> Valheim++: ClutterSystem.Awake
+    hnote over ZoneManager: OnVanillaClutterAvailable
+deactivate Valheim
 
 Valheim -> Valheim++: SceneManager.sceneLoaded
     hnote over GUIManager: OnPixelFixCreated
@@ -66,11 +78,11 @@ Valheim -> Valheim ++: ZoneSystem.SetupLocations
 deactivate Valheim
 
 Valheim -> Valheim ++: Minimap.Awake
-    hnote over MapOverlayManager: OnVanillaMapAvailable
+    hnote over MinimapManager: OnVanillaMapAvailable
 deactivate Valheim
 
 Valheim -> Valheim ++: Minimap.LoadMapData
-    hnote over MapOverlayManager: OnVanillaMapDataLoaded
+    hnote over MinimapManager: OnVanillaMapDataLoaded
 deactivate Valheim
  
 note over Valheim #lightblue: Game interactable
