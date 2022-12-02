@@ -45,3 +45,7 @@ Each section will have examples showing how this is done. All of the examples sh
 * [Rendering](renderqueue.md): Create rendered Sprites from GameObjects with visual components at runtime.
 * [RPCs](rpcs.md): Add Client/Server process communications and transfer data with automatic slicing and compression.
 * [JSON](https://github.com/mhallin/SimpleJSON.NET): JVL integrates the MIT licensed SimpleJSON, accessible via its namespace.
+
+### Additional Resources
+
+* [Jötunn Events](events.md): Subscribe to Jötunn events to execute code at the right time without having to create own patches.

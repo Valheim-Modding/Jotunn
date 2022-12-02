@@ -81,4 +81,8 @@
 
     - name: Undo/Redo Queue
       href: undoqueue.md
-  
+
+- name: Additional Resources
+  items:
+    - name: Jötunn Events
+      href: events.md
