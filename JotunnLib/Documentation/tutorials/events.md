@@ -13,14 +13,14 @@ For this, created a named method, subscribe in your Awake and unsubscribe inside
 
 ```cs
 void Awake() {
-    PrefabManager.OnPrefabsRegistered += PrefabsAvailable;
+    PrefabManager.OnVanillaPrefabsAvailable += PrefabsAvailable;
 }
 
 void PrefabsAvailable() {
     // do stuff
 
     // unsubscribe to only execute once
-    PrefabManager.OnPrefabsRegistered -= PrefabsAvailable;
+    PrefabManager.OnVanillaPrefabsAvailable -= PrefabsAvailable;
 }
 ```
 
