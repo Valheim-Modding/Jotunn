@@ -37,9 +37,11 @@ pieceConfig.PieceTable = "Hammer";
 
 | GameObject Name      | Localized Name |
 |----------------------|----------------|
+| blackforge           | Black forge    |
 | forge                | Forge          |
 | piece_artisanstation | Artisan table  |
 | piece_cauldron       | Cauldron       |
+| piece_magetable      | Galdr table    |
 | piece_stonecutter    | Stonecutter    |
 | piece_workbench      | Workbench      |
 

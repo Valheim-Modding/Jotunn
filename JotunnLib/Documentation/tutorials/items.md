@@ -9,6 +9,25 @@ The code snippets are taken from our [example mod](https://github.com/Valheim-Mo
 > [!NOTE]
 > You **must** only use names of existing prefabs. This can be prefabs you created, that have already been registered by another mod, or that already exist in the game.
 
+## Vanilla Crafting Stations
+
+| GameObject Name      | Localized Name |
+|----------------------|----------------|
+| blackforge           | Black forge    |
+| forge                | Forge          |
+| piece_artisanstation | Artisan table  |
+| piece_cauldron       | Cauldron       |
+| piece_magetable      | Galdr table    |
+| piece_stonecutter    | Stonecutter    |
+| piece_workbench      | Workbench      |
+
+To set what crafting station is needed to craft your item, the GameObject name has to be used.
+This works with custom crafting stations as well.
+```cs
+ItemConfig itemConfig = new ItemConfig();
+itemConfig.CraftingStation = "piece_workbench";
+```
+
 ## Cloning existing prefabs
 
 In this example, we will clone a resource and a weapon which the user may equip.
