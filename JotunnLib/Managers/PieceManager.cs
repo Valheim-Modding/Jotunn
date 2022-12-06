@@ -153,7 +153,7 @@ namespace Jotunn.Managers
             private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
 
             [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), HarmonyPostfix]
-            public static void PieceTable_UpdateAvailable_Postfix(PieceTable __instance) => Instance.AddPieceWithAllCategoryToAvailablePieces(__instance);
+            public static void PieceTable_UpdateAvailable_Postfix(PieceTable __instance) => Instance.ReorderAllCategoryPieces(__instance);
         }
 
         /// <summary>
@@ -827,33 +827,21 @@ namespace Jotunn.Managers
             }
         }
 
-        private void AddPieceWithAllCategoryToAvailablePieces(PieceTable pieceTable)
+        private void ReorderAllCategoryPieces(PieceTable pieceTable)
         {
-            // pieces with All category are always available at the first category
-            List<Piece> firstCategory = pieceTable.m_availablePieces.FirstOrDefault();
-
-            if (firstCategory == null)
-            {
-                return;
-            }
-
-            List<Piece> piecesWithAllCategory = firstCategory.FindAll(i => i.m_category == Piece.PieceCategory.All);
+            List<Piece> pieces = pieceTable.m_pieces.Select(i => i.GetComponent<Piece>()).ToList();
+            List<Piece> piecesWithAllCategory = pieces.FindAll(i => i && i.m_category == Piece.PieceCategory.All);
 
             for (int i = 0; i < (int)PieceCategoryMax; i++)
             {
-                int index = 0;
+                int listPosition = 0;
 
                 foreach (var piece in piecesWithAllCategory)
                 {
                     // m_availablePieces are already populated. Add pieces at the beginning of the list, to replicate vanilla behaviour
-
-                    if (pieceTable.m_availablePieces[i].Contains(piece))
-                    {
-                        pieceTable.m_availablePieces[i].Remove(piece);
-                    }
-
-                    pieceTable.m_availablePieces[i].Insert(Mathf.Min(index, pieceTable.m_availablePieces.Count), piece);
-                    index++;
+                    pieceTable.m_availablePieces[i].Remove(piece);
+                    pieceTable.m_availablePieces[i].Insert(Mathf.Min(listPosition, pieceTable.m_availablePieces.Count), piece);
+                    listPosition++;
                 }
             }
         }
