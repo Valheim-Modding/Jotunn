@@ -83,10 +83,10 @@ namespace Jotunn.Managers
             private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
 
             [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
-            private static void InvokeOnItemsRegisteredFejd(ObjectDB __instance) => Instance.InvokeOnItemsRegisteredFejd(__instance);
+            private static void InvokeOnItemsRegisteredFejd() => Instance.InvokeOnItemsRegisteredFejd();
 
             [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
-            private static void InvokeOnItemsRegistered(ObjectDB __instance) => Instance.InvokeOnItemsRegistered(__instance);
+            private static void InvokeOnItemsRegistered() => Instance.InvokeOnItemsRegistered();
         }
 
         /// <summary>
@@ -660,7 +660,7 @@ namespace Jotunn.Managers
 #pragma warning restore 612
             InvokeOnKitbashItemsAvailable();
 
-            other.UpdateItemHashes();
+            UpdateItemHashesSafe(other);
             RegisterCustomItems(other);
         }
 
@@ -684,8 +684,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Safely invoke the <see cref="OnItemsRegisteredFejd"/> event late in the detour chain
         /// </summary>
-        /// <param name="self"></param>
-        private void InvokeOnItemsRegisteredFejd(ObjectDB self)
+        private void InvokeOnItemsRegisteredFejd()
         {
             OnItemsRegisteredFejd?.SafeInvoke();
         }
@@ -698,7 +697,7 @@ namespace Jotunn.Managers
         {
             if (SceneManager.GetActiveScene().name == "main")
             {
-                self.UpdateItemHashes();
+                UpdateItemHashesSafe(self);
                 RegisterCustomItems(self);
                 RegisterCustomRecipes(self);
                 RegisterCustomStatusEffects(self);
@@ -709,8 +708,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Safely invoke the <see cref="OnItemsRegistered"/> event
         /// </summary>
-        /// <param name="self"></param>
-        private void InvokeOnItemsRegistered(ObjectDB self)
+        private void InvokeOnItemsRegistered()
         {
             if (SceneManager.GetActiveScene().name == "main")
             {
@@ -734,6 +732,31 @@ namespace Jotunn.Managers
                 {
                     Logger.LogWarning($"Exception caught while reloading player recipes: {ex}");
                 }
+            }
+        }
+
+        private static void UpdateItemHashesSafe(ObjectDB objectDB)
+        {
+            objectDB.m_itemByHash.Clear();
+
+            foreach (GameObject item in objectDB.m_items)
+            {
+                if (!item)
+                {
+                    Logger.LogWarning("Found null item in ObjectDB.m_items");
+                    continue;
+                }
+
+                string name = item.name;
+                int hash = name.GetStableHashCode();
+
+                if (objectDB.m_itemByHash.ContainsKey(hash))
+                {
+                    Logger.LogWarning($"Found duplicate item '{name}' ({hash}) in ObjectDB.m_items");
+                    continue;
+                }
+
+                objectDB.m_itemByHash.Add(hash, item);
             }
         }
     }
