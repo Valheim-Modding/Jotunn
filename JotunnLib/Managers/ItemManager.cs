@@ -752,7 +752,8 @@ namespace Jotunn.Managers
 
                 if (objectDB.m_itemByHash.ContainsKey(hash))
                 {
-                    Logger.LogWarning($"Found duplicate item '{name}' ({hash}) in ObjectDB.m_items");
+                    var mod = ModQuery.GetPrefab(name)?.SourceMod;
+                    Logger.LogWarning(mod, $"Found duplicate item '{name}' ({hash}) in ObjectDB.m_items");
                     continue;
                 }
 
