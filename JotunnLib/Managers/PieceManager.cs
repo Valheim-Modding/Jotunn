@@ -153,7 +153,7 @@ namespace Jotunn.Managers
             private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
 
             [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), HarmonyPostfix]
-            public static void PieceTable_UpdateAvailable_Postfix(PieceTable __instance) => Instance.ReorderAllCategoryPieces(__instance);
+            public static void PieceTable_UpdateAvailable_Postfix(PieceTable __instance) => ReorderAllCategoryPieces(__instance);
         }
 
         /// <summary>
@@ -827,20 +827,20 @@ namespace Jotunn.Managers
             }
         }
 
-        private void ReorderAllCategoryPieces(PieceTable pieceTable)
+        private static void ReorderAllCategoryPieces(PieceTable pieceTable)
         {
             List<Piece> pieces = pieceTable.m_pieces.Select(i => i.GetComponent<Piece>()).ToList();
             List<Piece> piecesWithAllCategory = pieces.FindAll(i => i && i.m_category == Piece.PieceCategory.All);
 
-            for (int i = 0; i < (int)PieceCategoryMax; i++)
+            foreach (List<Piece> availablePieces in pieceTable.m_availablePieces)
             {
                 int listPosition = 0;
 
                 foreach (var piece in piecesWithAllCategory)
                 {
                     // m_availablePieces are already populated. Add pieces at the beginning of the list, to replicate vanilla behaviour
-                    pieceTable.m_availablePieces[i].Remove(piece);
-                    pieceTable.m_availablePieces[i].Insert(Mathf.Min(listPosition, pieceTable.m_availablePieces.Count), piece);
+                    availablePieces.Remove(piece);
+                    availablePieces.Insert(Mathf.Min(listPosition, pieceTable.m_availablePieces.Count), piece);
                     listPosition++;
                 }
             }
