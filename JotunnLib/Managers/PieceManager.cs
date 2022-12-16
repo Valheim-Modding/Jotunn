@@ -604,7 +604,7 @@ namespace Jotunn.Managers
             // Append tabs and their names to the GUI for every custom category not already added
             foreach (var category in PieceCategories)
             {
-                if (!newNames.Contains(category.Key))
+                if (!newTabs.Exists(tab => tab.name == category.Key))
                 {
                     GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], root.transform);
                     newTab.name = category.Key;
@@ -727,6 +727,7 @@ namespace Jotunn.Managers
                 {
                     PrefabManager.Instance.DestroyPrefab(piece.PiecePrefab.name);
                 }
+
                 RemovePiece(piece);
             }
         }
