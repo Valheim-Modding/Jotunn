@@ -170,6 +170,7 @@ namespace Jotunn.Managers
                 Logger.LogWarning(customPieceTable.SourceMod, $"Custom piece {customPieceTable} is not valid");
                 return false;
             }
+
             if (PieceTables.Contains(customPieceTable))
             {
                 Logger.LogWarning(customPieceTable.SourceMod, $"Piece table {customPieceTable} already added");
@@ -290,6 +291,7 @@ namespace Jotunn.Managers
             {
                 PieceTableCategoriesMap.Add(table, new PieceTableCategories());
             }
+
             if (!PieceTableCategoriesMap[table].ContainsKey(name))
             {
                 PieceTableCategoriesMap[table].Add(name, categoryID);
@@ -302,10 +304,12 @@ namespace Jotunn.Managers
                 {
                     CreatePieceTableCategories();
                 }
+
                 if (Hud.instance != null)
                 {
                     CreateCategoryTabs();
                 }
+
                 if (Player.m_localPlayer != null)
                 {
                     UpdatePieceCategories();
@@ -314,7 +318,7 @@ namespace Jotunn.Managers
 
             return categoryID;
         }
-        
+
         /// <summary>
         ///     Get a <see cref="Piece.PieceCategory"/> by name. Translates
         ///     vanilla or custom Piece Categories to their current integer value.
@@ -328,11 +332,12 @@ namespace Jotunn.Managers
             {
                 return (Piece.PieceCategory)Enum.Parse(typeof(Piece.PieceCategory), name);
             }
+
             if (PieceCategories.ContainsKey(name))
             {
                 return PieceCategories[name];
             }
-            
+
             return null;
         }
 
@@ -369,10 +374,12 @@ namespace Jotunn.Managers
                 {
                     CreatePieceTableCategories();
                 }
+
                 if (Hud.instance != null)
                 {
                     CreateCategoryTabs();
                 }
+
                 if (Player.m_localPlayer != null)
                 {
                     UpdatePieceCategories();
@@ -404,6 +411,7 @@ namespace Jotunn.Managers
                 Logger.LogWarning(customPiece.SourceMod, $"Custom piece {customPiece} is not valid");
                 return false;
             }
+
             if (Pieces.ContainsKey(customPiece.PiecePrefab.name))
             {
                 Logger.LogWarning(customPiece.SourceMod, $"Custom piece {customPiece} already added");
@@ -491,6 +499,7 @@ namespace Jotunn.Managers
                     {
                         PieceTableMap.Add(table.name, table);
                     }
+
                     if (!PieceTableNameMap.ContainsKey(item.name))
                     {
                         PieceTableNameMap.Add(item.name, table.name);
@@ -537,6 +546,7 @@ namespace Jotunn.Managers
                                     categories.Add(cat.Key, cat.Value);
                                 }
                             }
+
                             PieceTableCategoriesMap.Remove(tableItemName);
                         }
                     }
@@ -743,7 +753,7 @@ namespace Jotunn.Managers
         /// <param name="category">Optional category string, does not create new custom categories</param>
         public void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category = null) =>
             RegisterPieceInPieceTable(prefab, pieceTable, category, BepInExUtils.GetSourceModMetadata());
-        
+
         /// <summary>
         ///     Internal method for adding a prefab to a piece table.
         /// </summary>
@@ -886,6 +896,7 @@ namespace Jotunn.Managers
 
                     currentActive = this;
                 }
+
                 if (!isActive && currentActive != null && currentActive == this)
                 {
                     // Activate all vanilla tabs
@@ -957,8 +968,7 @@ namespace Jotunn.Managers
                             {
                                 self.m_selectedCategory = 0;
                             }
-                        }
-                        while (!Values.Contains(self.m_selectedCategory));
+                        } while (!Values.Contains(self.m_selectedCategory));
                     }
                 }
 
@@ -980,8 +990,7 @@ namespace Jotunn.Managers
                             {
                                 self.m_selectedCategory = Instance.PieceCategoryMax - 1;
                             }
-                        }
-                        while (!Values.Contains(self.m_selectedCategory));
+                        } while (!Values.Contains(self.m_selectedCategory));
                     }
                 }
 
@@ -1007,6 +1016,7 @@ namespace Jotunn.Managers
                         go.GetComponent<RectTransform>().anchoredPosition += new Vector2(offsetX, 0);
                     }
                 }
+
                 float maxX = tab.GetComponent<RectTransform>().anchoredPosition.x + CalculateTabWidth(tab) + PieceCategorySettings.TabMargin;
                 if (maxX > PieceCategorySettings.HeaderWidth)
                 {
