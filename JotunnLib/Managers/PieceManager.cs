@@ -1020,7 +1020,20 @@ namespace Jotunn.Managers
 
             private static float CalculateTabWidth(GameObject tab)
             {
-                return Mathf.Max(PieceCategorySettings.MinTabSize, PieceCategorySettings.TabSizePerCharacter * (tab.name.Length + 6f));
+                int tabIndex = Array.IndexOf(Hud.instance.m_pieceCategoryTabs, tab);
+                string name;
+
+                if (tabIndex >= 0 && tabIndex < Hud.instance.m_buildCategoryNames.Count)
+                {
+                    name = Hud.instance.m_buildCategoryNames[tabIndex];
+                }
+                else
+                {
+                    Logger.LogWarning($"Could not find build category name for tab {tab.name}");
+                    name = tab.name;
+                }
+
+                return Mathf.Max(PieceCategorySettings.MinTabSize, PieceCategorySettings.TabSizePerCharacter * (name.Length + 6f));
             }
         }
     }
