@@ -1,4 +1,10 @@
 ﻿# Changelog
+## Version 2.10.1
+* Fixed an error when an independent mod adds a prefab twice to ObjectDB. A warning will be logged with the prefab name and hash to help debugging, but vanilla or other mods may still have issues with the double prefab
+* Fixed an error when available pieces in the build hammer where not initialized properly
+* Fixed an error that could occur when a build tab is localized
+* Fixed dynamic build tab width was not working for localized tabs
+
 ## Version 2.10.0
 * Deprecated "ChanceToSpawn" in LocationConfig and made it compatible with version 0.212.6
 * Added Remove and Destroy methods to the ZoneManager
