@@ -265,7 +265,7 @@ namespace Jotunn.Utils
 
         private static void OpenLogFile()
         {
-            Application.OpenURL(Path.Combine(BepInEx.Paths.BepInExRootPath, "LogOutput.log"));
+            Application.OpenURL(BepInEx.Paths.BepInExRootPath);
         }
 
         private static void OpenTroubleshootingPage()
