@@ -1,5 +1,7 @@
 ﻿# Changelog
 ## Version 2.10.1
+* Added [Server Troubleshooting](https://github.com/Valheim-Modding/Wiki/wiki/Server-Troubleshooting) link as a button to the compatibility window
+* Changed "open log file" button to "open log folder" in the compatibility window
 * Fixed an error when an independent mod adds a prefab twice to ObjectDB. A warning will be logged with the prefab name and hash to help debugging, but vanilla or other mods may still have issues with the double prefab
 * Fixed an error when available pieces in the build hammer where not initialized properly
 * Fixed an error that could occur when a build tab is localized
