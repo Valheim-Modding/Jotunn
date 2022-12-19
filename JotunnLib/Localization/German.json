@@ -20,5 +20,6 @@
   "mod_compat_additional_mods_description": "Bitte kontaktiere deinen Server Admin oder deinstalliere die folgenden Mods",
   "mod_compat_missing_mod": "$1 $2 wurde nicht auf deinem Spiel geladen",
   "mod_compat_additional_mod": "$1 $2 wurde nicht auf dem Server geladen",
-  "mod_compat_open_log_file": "Öffne Log Datei"
+  "mod_compat_open_log_file": "Öffne Log Datei",
+  "mod_compat_troubleshooting": "Troubleshooting"
 }

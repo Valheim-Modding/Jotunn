@@ -13,6 +13,7 @@ internal class CompatibilityWindow : MonoBehaviour
     public Text errorMessages;
     public Button continueButton;
     public Button logFileButton;
+    public Button troubleshootingButton;
 
     public void UpdateTextPositions()
     {

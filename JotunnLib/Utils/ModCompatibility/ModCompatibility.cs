@@ -218,6 +218,7 @@ namespace Jotunn.Utils
             GUIManager.Instance.ApplyScrollRectStyle(compatWindow.scrollRect);
             GUIManager.Instance.ApplyButtonStyle(compatWindow.continueButton);
             GUIManager.Instance.ApplyButtonStyle(compatWindow.logFileButton);
+            GUIManager.Instance.ApplyButtonStyle(compatWindow.troubleshootingButton);
 
             compatWindowRect.anchoredPosition = new Vector2(25, 0);
             compatWindow.gameObject.SetWidth(1000);
@@ -255,6 +256,7 @@ namespace Jotunn.Utils
             compatWindow.UpdateTextPositions();
             compatWindow.continueButton.onClick.AddListener(() => Object.Destroy(compatWindow.gameObject));
             compatWindow.logFileButton.onClick.AddListener(OpenLogFile);
+            compatWindow.troubleshootingButton.onClick.AddListener(OpenTroubleshootingPage);
             compatWindow.scrollRect.verticalNormalizedPosition = 1f;
 
             // Reset the last server version
@@ -264,6 +266,11 @@ namespace Jotunn.Utils
         private static void OpenLogFile()
         {
             Application.OpenURL(Path.Combine(BepInEx.Paths.BepInExRootPath, "LogOutput.log"));
+        }
+
+        private static void OpenTroubleshootingPage()
+        {
+            Application.OpenURL("https://github.com/Valheim-Modding/Wiki/wiki/Server-Troubleshooting");
         }
 
         /// <summary>
