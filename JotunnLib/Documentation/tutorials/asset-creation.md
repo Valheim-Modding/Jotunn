@@ -36,7 +36,7 @@ Create a ripped copy of the original game project by using [AssetRipper](https:/
 
 Jötunn provides you with a barebone project stub which also includes a Unity project. You can get [that project in its entirety](https://github.com/Valheim-Modding/JotunnModStub) from our github. If you don't have already setup your dev environment, see our [step-by-step guide](../guides/guide.md) on how to do that.
 
-Before opening the Unity project, copy all files starting with `assembly_` (`.dll` and `.meta)` from your ripped Valheim project at `<RippedValheimProject>\Assets\Plugins` into your stub project's `<JotunnModStub>\JotunnModUnity\Assets\Assemblies` folder (create that if necessary). This enables us to exchange prefabs between the two projects without losing the references to the added Components. 
+Before opening the Unity project, copy all files starting with `assembly_` and `ConnectedStorage.dll`, `PlayFab.dll`, `PlayFabParty.dll` from your ripped Valheim project at `<RippedValheimProject>\AuxiliaryFiles\GameAssemblies` into your stub project's `<JotunnModStub>\JotunnModUnity\Assets\Assemblies` folder (create that if necessary). This enables us to exchange prefabs between the two projects without losing the references to the added Components. 
 
  **Copy the files to the new project directly via the filesystem - don't import the assemblies via Unity**.
 
