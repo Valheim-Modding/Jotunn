@@ -448,6 +448,15 @@ namespace Jotunn.Managers
                     return unityObject;
                 }
 
+                // if a ObjectDB parent exists in the main scene, prefer it over the prefab
+                if (name == "_NetScene" && cached is GameObject cachedGo && unityObject is GameObject newGo)
+                {
+                    if (!cachedGo.activeInHierarchy && newGo.activeInHierarchy)
+                    {
+                        return newGo;
+                    }
+                }
+
                 bool cachedHasParent = GetParent(cached);
                 bool otherHasParent = GetParent(unityObject);
 
