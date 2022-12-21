@@ -102,7 +102,14 @@ namespace Jotunn.Configs
             }
 
             // Assign all needed resources for this piece
-            piece.m_resources = GetRequirements();
+            var requirements = GetRequirements();
+            if (requirements.Length > 0)
+            {
+                if (piece.m_resources.Length > 0)
+                    Logger.LogWarning($"Piece {piece.name} requirements ({piece.m_resources.Length} items) were overriden by PieceConfig ({requirements.Length} items)");
+
+                piece.m_resources = requirements;
+            }
 
             // Assign the CraftingStation for this piece
             if (!string.IsNullOrEmpty(CraftingStation))
