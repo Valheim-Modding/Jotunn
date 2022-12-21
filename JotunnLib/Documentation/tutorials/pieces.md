@@ -105,6 +105,12 @@ And here we have our final results:<br />
 As you can see in the screenshot the name and description are not yet localized.
 To read more about localization/translation head over to the [localization tutorial pages](localization.md).
 
+> NOTE: `PieceConfig` object by default has empty array of requirements and doesn't change original requirements of a piece prefab unless requirements were explicitely added to `PieceConfig` object. So in case you want to remove all requirements from specific piece prefab, you should do it directly, e.g.
+> ```cs
+> var piece = myPrefab.GetComponent<Piece>();
+> piece.m_resources = Array.Empty<Piece.Requirement>();
+> ```
+
 ## Adding custom piece table categories to vanilla tables
 
 With [PieceConfig's](xref:Jotunn.Configs.PieceConfig) it is possible to add your pieces to a vanilla or even custom piece table category.
