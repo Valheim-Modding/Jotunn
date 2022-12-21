@@ -101,11 +101,10 @@ namespace Jotunn.Configs
                 piece.m_icon = Icon;
             }
 
-            // Assign all needed resources for this piece
-            var requirements = GetRequirements();
-            if (requirements.Length > 0)
+            // Assign all needed resources for this piece if provided
+            if (Requirements.Length > 0)
             {
-                piece.m_resources = requirements;
+                piece.m_resources = GetRequirements();
             }
 
             // Assign the CraftingStation for this piece

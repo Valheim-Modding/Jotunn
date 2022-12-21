@@ -105,10 +105,10 @@ And here we have our final results:<br />
 As you can see in the screenshot the name and description are not yet localized.
 To read more about localization/translation head over to the [localization tutorial pages](localization.md).
 
-> NOTE: `PieceConfig` object by default has empty array of requirements and doesn't change original requirements of a piece prefab unless requirements were explicitely added to `PieceConfig` object. So in case you want to remove all requirements from specific piece prefab, you should do it directly, e.g.
+> [!NOTE]
+> A `PieceConfig` has an empty array of requirements by default and doesn't change original requirements of that piece unless requirements were explicitely added to the `PieceConfig` object. So in case you really want to remove all requirements from a specific piece (for example a cloned vanilla piece), you have to do it manually:
 > ```cs
-> var piece = myPrefab.GetComponent<Piece>();
-> piece.m_resources = Array.Empty<Piece.Requirement>();
+> CustomPiece.Piece.m_resources = Array.Empty<Piece.Requirement>();
 > ```
 
 ## Adding custom piece table categories to vanilla tables

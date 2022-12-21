@@ -1,4 +1,7 @@
 ﻿# Changelog
+## Version 2.10.2
+* Changed PieceConfig to not override piece requirements when no custom requirements were provided
+
 ## Version 2.10.1
 * Added [Server Troubleshooting](https://github.com/Valheim-Modding/Wiki/wiki/Server-Troubleshooting) link as a button to the compatibility window
 * Changed "open log file" button to "open log folder" in the compatibility window
