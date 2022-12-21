@@ -106,10 +106,7 @@ As you can see in the screenshot the name and description are not yet localized.
 To read more about localization/translation head over to the [localization tutorial pages](localization.md).
 
 > [!NOTE]
-> A `PieceConfig` has an empty array of requirements by default and doesn't change original requirements of that piece unless requirements were explicitely added to the `PieceConfig` object. So in case you really want to remove all requirements from a specific piece (for example a cloned vanilla piece), you have to do it manually:
-> ```cs
-> CustomPiece.Piece.m_resources = Array.Empty<Piece.Requirement>();
-> ```
+> A `PieceConfig` has an empty array of requirements by default and doesn't change original requirements of that piece unless requirements were explicitely added to the `PieceConfig` object. So in case you really want to remove all requirements from a specific piece (for example a cloned vanilla piece), you have to do it manually: `CustomPiece.Piece.m_resources = Array.Empty<Piece.Requirement>();`
 
 ## Adding custom piece table categories to vanilla tables
 
