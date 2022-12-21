@@ -105,9 +105,6 @@ namespace Jotunn.Configs
             var requirements = GetRequirements();
             if (requirements.Length > 0)
             {
-                if (piece.m_resources.Length > 0)
-                    Logger.LogWarning($"Piece {piece.name} requirements ({piece.m_resources.Length} items) were overriden by PieceConfig ({requirements.Length} items)");
-
                 piece.m_resources = requirements;
             }
 
