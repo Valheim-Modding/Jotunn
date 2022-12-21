@@ -102,7 +102,11 @@ namespace Jotunn.Configs
             }
 
             // Assign all needed resources for this piece
-            piece.m_resources = GetRequirements();
+            var requirements = GetRequirements();
+            if (requirements.Length > 0)
+            {
+                piece.m_resources = requirements;
+            }
 
             // Assign the CraftingStation for this piece
             if (!string.IsNullOrEmpty(CraftingStation))
