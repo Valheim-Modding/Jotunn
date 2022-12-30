@@ -61,14 +61,17 @@ namespace Jotunn.Configs
         /// <returns>The Valheim Piece.Requirement array</returns>
         public Piece.Requirement[] GetRequirements()
         {
-            Piece.Requirement[] reqs = new Piece.Requirement[Requirements.Length];
+            List<Piece.Requirement> reqs = new List<Piece.Requirement>();
 
-            for (int i = 0; i < reqs.Length; i++)
+            foreach (RequirementConfig requirement in Requirements)
             {
-                reqs[i] = Requirements[i].GetRequirement();
+                if (requirement != null && requirement.IsValid())
+                {
+                    reqs.Add(requirement.GetRequirement());
+                }
             }
 
-            return reqs;
+            return reqs.ToArray();
         }
 
         /// <summary>
@@ -134,12 +137,16 @@ namespace Jotunn.Configs
         }
 
         /// <summary>
-        ///     Appends a new <see cref="RequirementConfig"/> to the array of existing ones.
+        ///     Appends a new <see cref="RequirementConfig"/> to the array of existing ones.<br />
+        ///     If the requirement is null or is not valid (has not item name or amount set) nothing will be added.
         /// </summary>
         /// <param name="requirementConfig"></param>
         public void AddRequirement(RequirementConfig requirementConfig)
         {
-            Requirements = Requirements.AddToArray(requirementConfig);
+            if (requirementConfig != null && requirementConfig.IsValid())
+            {
+                Requirements = Requirements.AddToArray(requirementConfig);
+            }
         }
     }
 }

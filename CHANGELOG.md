@@ -1,6 +1,7 @@
 ﻿# Changelog
 ## Version 2.10.2
 * Changed PieceConfig to not override piece requirements when no custom requirements were provided
+* Changed PieceConfig, ItemConfig and RecipeConfig to remove non valid requirements (no item name or amount set)
 * Changed Mocks to not resolve fields and properties marked as `NonSerialized`
 
 ## Version 2.10.1
