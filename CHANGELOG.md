@@ -1,6 +1,7 @@
 ﻿# Changelog
 ## Version 2.10.2
 * Changed PieceConfig to not override piece requirements when no custom requirements were provided
+* Changed Mocks to not resolve fields and properties marked as `NonSerialized`
 
 ## Version 2.10.1
 * Added [Server Troubleshooting](https://github.com/Valheim-Modding/Wiki/wiki/Server-Troubleshooting) link as a button to the compatibility window

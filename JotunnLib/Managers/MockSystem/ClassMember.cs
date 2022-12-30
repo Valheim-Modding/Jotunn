@@ -39,6 +39,11 @@ namespace Jotunn {
                 return;
             }
 
+            if (member.HasCustomAttribute<NonSerializedAttribute>())
+            {
+                return;
+            }
+
             Members.Add(member);
         }
 

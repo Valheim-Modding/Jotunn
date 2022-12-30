@@ -28,5 +28,10 @@ namespace Jotunn {
         {
             fieldInfo.SetValue(obj, value);
         }
+
+        public override bool HasCustomAttribute<T>()
+        {
+            return fieldInfo.GetCustomAttribute<T>() != null;
+        }
     }
 }

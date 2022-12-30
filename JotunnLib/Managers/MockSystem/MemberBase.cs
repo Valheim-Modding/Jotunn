@@ -5,6 +5,7 @@ namespace Jotunn {
     {
         public abstract object GetValue(object obj);
         public abstract void SetValue(object obj, object value);
+        public abstract bool HasCustomAttribute<T>() where T : Attribute;
         public bool HasGetMethod { get; protected set; }
         public Type MemberType { get; protected set; }
         public Type EnumeratedType { get; protected set; }
