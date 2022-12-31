@@ -3,6 +3,8 @@
 * Changed PieceConfig to not override piece requirements when no custom requirements were provided
 * Changed PieceConfig, ItemConfig and RecipeConfig to remove non valid requirements (no item name or amount set)
 * Changed Mocks to not resolve fields and properties marked as `NonSerialized`
+* Improved warning messages with custom localization
+* Fixed warning messages with a source mod where always attributed to Jotunn.Logger instead of the correct calling type
 
 ## Version 2.10.1
 * Added [Server Troubleshooting](https://github.com/Valheim-Modding/Wiki/wiki/Server-Troubleshooting) link as a button to the compatibility window
