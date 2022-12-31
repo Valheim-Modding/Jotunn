@@ -66,23 +66,28 @@ namespace Jotunn
             return ret;
         }
 
-        private static void Log(LogLevel level, object data)
+        private static void Log(LogLevel level, BepInPlugin sourceMod, object data)
         {
+            string prefix = string.Empty;
+
             if (ShowDate)
             {
-                instance.GetLogger().Log(level, $"[{DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo)}] {data}");
+                prefix += $"[{DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo)}] ";
             }
-            else
+
+            if (sourceMod != null)
             {
-                instance.GetLogger().Log(level, data);
+                prefix += $"[{sourceMod.Name}] ";
             }
+
+            instance.GetLogger().Log(level, $"{prefix}{data}");
         }
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Fatal"/> level.
         /// </summary>
         /// <param name="data">Data to log</param>
-        public static void LogFatal(object data) => Log(LogLevel.Fatal, data);
+        public static void LogFatal(object data) => Log(LogLevel.Fatal, null, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Fatal"/> level.
@@ -90,13 +95,13 @@ namespace Jotunn
         /// </summary>
         /// <param name="sourceMod">Known mod that is responsible for this log</param>
         /// <param name="data">Data to log</param>
-        public static void LogFatal(BepInPlugin sourceMod, object data) => LogWithModName(LogLevel.Fatal, sourceMod, data);
+        public static void LogFatal(BepInPlugin sourceMod, object data) => Log(LogLevel.Fatal, sourceMod, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Error"/> level.
         /// </summary>
         /// <param name="data">Data to log</param>
-        public static void LogError(object data) => Log(LogLevel.Error, data);
+        public static void LogError(object data) => Log(LogLevel.Error, null, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Error"/> level.
@@ -104,13 +109,13 @@ namespace Jotunn
         /// </summary>
         /// <param name="sourceMod">Known mod that is responsible for this log</param>
         /// <param name="data">Data to log</param>
-        public static void LogError(BepInPlugin sourceMod, object data) => LogWithModName(LogLevel.Error, sourceMod, data);
+        public static void LogError(BepInPlugin sourceMod, object data) => Log(LogLevel.Error, sourceMod, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Warning"/> level.
         /// </summary>
         /// <param name="data">Data to log</param>
-        public static void LogWarning(object data) => Log(LogLevel.Warning, data);
+        public static void LogWarning(object data) => Log(LogLevel.Warning, null, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Warning"/> level.
@@ -118,13 +123,13 @@ namespace Jotunn
         /// </summary>
         /// <param name="sourceMod">Known mod that is responsible for this log</param>
         /// <param name="data">Data to log</param>
-        public static void LogWarning(BepInPlugin sourceMod, object data) => LogWithModName(LogLevel.Warning, sourceMod, data);
+        public static void LogWarning(BepInPlugin sourceMod, object data) => Log(LogLevel.Warning, sourceMod, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Message"/> level.
         /// </summary>
         /// <param name="data">Data to log</param>
-        public static void LogMessage(object data) => Log(LogLevel.Message, data);
+        public static void LogMessage(object data) => Log(LogLevel.Message, null, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Message"/> level.
@@ -132,13 +137,13 @@ namespace Jotunn
         /// </summary>
         /// <param name="sourceMod">Known mod that is responsible for this log</param>
         /// <param name="data">Data to log</param>
-        public static void LogMessage(BepInPlugin sourceMod, object data) => LogWithModName(LogLevel.Message, sourceMod, data);
+        public static void LogMessage(BepInPlugin sourceMod, object data) => Log(LogLevel.Message, sourceMod, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Info"/> level.
         /// </summary>
         /// <param name="data">Data to log</param>
-        public static void LogInfo(object data) => Log(LogLevel.Info, data);
+        public static void LogInfo(object data) => Log(LogLevel.Info, null, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Info"/> level.
@@ -146,13 +151,13 @@ namespace Jotunn
         /// </summary>
         /// <param name="sourceMod">Known mod that is responsible for this log</param>
         /// <param name="data">Data to log</param>
-        public static void LogInfo(BepInPlugin sourceMod, object data) => LogWithModName(LogLevel.Info, sourceMod, data);
+        public static void LogInfo(BepInPlugin sourceMod, object data) => Log(LogLevel.Info, sourceMod, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Debug"/> level.
         /// </summary>
         /// <param name="data">Data to log</param>
-        public static void LogDebug(object data) => Log(LogLevel.Debug, data);
+        public static void LogDebug(object data) => Log(LogLevel.Debug, null, data);
 
         /// <summary>
         ///     Logs a message with <see cref="BepInEx.Logging.LogLevel.Debug"/> level.
@@ -160,18 +165,6 @@ namespace Jotunn
         /// </summary>
         /// <param name="sourceMod">Known mod that is responsible for this log</param>
         /// <param name="data">Data to log</param>
-        public static void LogDebug(BepInPlugin sourceMod, object data) => LogWithModName(LogLevel.Debug, sourceMod, data);
-
-        private static void LogWithModName(LogLevel level, BepInPlugin sourceMod, object data)
-        {
-            if (sourceMod == null)
-            {
-                Log(level, data);
-            }
-            else
-            {
-                Log(level, $"[{sourceMod.Name}] {data}");
-            }
-        }
+        public static void LogDebug(BepInPlugin sourceMod, object data) => Log(LogLevel.Debug, sourceMod, data);
     }
 }
