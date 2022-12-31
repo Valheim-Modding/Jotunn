@@ -59,7 +59,7 @@ Properties that are set on the material will be used by the resolved shader.
 
 This is a mock for the piece shader as an example:
 
-```shaderlab
+```
 Shader "JVLmock_Custom/Piece" {
 	Properties {
 		_Color ("Color", Vector) = (1,1,1,1)
