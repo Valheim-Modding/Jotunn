@@ -44,7 +44,7 @@ namespace Jotunn.Entities
             }
             if (word.IndexOfAny(LocalizationManager.ForbiddenCharsArr) != -1)
             {
-                Logger.LogWarning($"Token '{word}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'.");
+                Logger.LogWarning(SourceMod, $"Token '{word}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'.");
                 return null;
             }
 
@@ -193,9 +193,15 @@ namespace Jotunn.Entities
                 return;
             }
 
-            if (!SimpleJson.SimpleJson.TryDeserializeObject(fileContent, out var json))
+            IDictionary<string, object> json;
+
+            try
             {
-                Logger.LogWarning($"Error cought while reading JSON localization: Invalid JSON string");
+                json = SimpleJson.SimpleJson.DeserializeObject<IDictionary<string, object>>(fileContent);
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning(SourceMod, $"Could not read {language} JSON localization: {e.Message}");
                 return;
             }
 
@@ -204,7 +210,7 @@ namespace Jotunn.Entities
                 Map.Add(language, new Dictionary<string, string>());
             }
 
-            foreach (var tv in json as IDictionary<string, object>)
+            foreach (var tv in json)
             {
                 var translation = tv.Value as string;
                 var token = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
@@ -213,6 +219,7 @@ namespace Jotunn.Entities
                 {
                     continue;
                 }
+
                 if (!ValidateTranslation(translation))
                 {
                     continue;
@@ -317,7 +324,7 @@ namespace Jotunn.Entities
             }
             if (!char.IsUpper(language[0]))
             {
-                Logger.LogWarning($"Language '{language}' must start with a capital letter");
+                Logger.LogWarning(SourceMod, $"Language '{language}' must start with a capital letter");
                 return false;
             }
             return true;
@@ -331,7 +338,7 @@ namespace Jotunn.Entities
             }
             if (token.IndexOfAny(LocalizationManager.ForbiddenCharsArr) != -1)
             {
-                Logger.LogWarning($"Token '{token}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'.");
+                Logger.LogWarning(SourceMod, $"Token '{token}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'.");
                 return false;
             }
             return true;
