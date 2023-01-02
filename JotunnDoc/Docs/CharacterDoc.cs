@@ -68,8 +68,7 @@ namespace JotunnDoc.Docs
                 damagemods += "</ul>";
 
                 string items = "";
-                var humanoid = obj.GetComponent<Humanoid>();
-                if (humanoid != null)
+                if (obj.TryGetComponent<Humanoid>(out var humanoid))
                 {
                     items += "Default Items:\n";
                     items += CreateList(humanoid.m_defaultItems);
@@ -99,11 +98,12 @@ namespace JotunnDoc.Docs
                 string items = "<ul>";
                 foreach (var item in objects)
                 {
-                    if (item != null)
+                    if (item)
                     {
                         items += $"<li>{item.name}</li>";
                     }
                 }
+
                 items += "</ul>";
                 return items;
             }
