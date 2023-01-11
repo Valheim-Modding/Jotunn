@@ -286,7 +286,8 @@ namespace Jotunn.Utils
                    CreateLowerVersionErrorMessage(serverData, clientData) +
                    CreateHigherVersionErrorMessage(serverData, clientData) +
                    CreateAdditionalModsErrorMessage(serverData, clientData) +
-                   CreateVersionStringErrorMessage(serverData, clientData);
+                   CreateVersionStringErrorMessage(serverData, clientData) +
+                   CreateFurtherStepsMessage();
         }
 
         private static string CreateVanillaVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
@@ -379,6 +380,13 @@ namespace Jotunn.Utils
             return ColoredLine(Color.red, "$mod_compat_header_additional_mods") +
                    ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_additional_mods_description") +
                    string.Join("", matchingClientMods.Select(clientModule => ColoredLine(Color.white, "$mod_compat_additional_mod", clientModule.name, $"{clientModule.version}"))) +
+                   Environment.NewLine;
+        }
+
+        private static string CreateFurtherStepsMessage()
+        {
+            return ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_further_steps") +
+                   ColoredLine(Color.white, "$mod_compat_further_steps_description") +
                    Environment.NewLine;
         }
 
