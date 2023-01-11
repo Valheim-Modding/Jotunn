@@ -96,12 +96,13 @@ if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     Write-Host "Packaging for NexusMods"
     New-Item -Type Directory -Path "$package\Nexusmods" -Force
     $nexus = New-Item -Type Directory -Path "$package\Nexusmods\package"
-    Copy-Item -Path "$TargetPath\$name.dll" -Destination "$nexus\"
-    Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$nexus\"
-    Copy-Item -Path "$TargetPath\$name.xml" -Destination "$nexus\"
-    Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$nexus\"
-    Copy-Item -Path "$ProjectPath\..\README.md" -Destination "$nexus\"
-    Copy-Item -Path "$ProjectPath\..\CHANGELOG.md" -Destination "$nexus\"
+    $nexus.CreateSubdirectory('Jotunn')
+    Copy-Item -Path "$TargetPath\$name.dll" -Destination "$nexus\Jotunn\"
+    Copy-Item -Path "$TargetPath\$name.pdb" -Destination "$nexus\Jotunn\"
+    Copy-Item -Path "$TargetPath\$name.xml" -Destination "$nexus\Jotunn\"
+    Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$nexus\Jotunn\"
+    Copy-Item -Path "$ProjectPath\..\README.md" -Destination "$nexus\Jotunn\"
+    Copy-Item -Path "$ProjectPath\..\CHANGELOG.md" -Destination "$nexus\Jotunn\"
     Remove-Item -Path "$package\Nexusmods\$name-$version.zip" -Force
     Invoke-Expression "& `"$(Get-Location)\libraries\7za.exe`" a `"$package\Nexusmods\$name-$version.zip`" `"$nexus\*`""
     $nexus.Delete($true)
