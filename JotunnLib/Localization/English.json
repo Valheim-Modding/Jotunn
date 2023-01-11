@@ -15,7 +15,7 @@
   "mod_compat_version_string_description": "This may indicate that mods are missing on one side. Not all mods show up equally on both server and client even if they are installed. Please check the requirements of the listed mods",
   "mod_compat_version_strong_local": "Local (this game): $1",
   "mod_compat_version_strong_remote": "Remote (the server): $1",
-  "mod_compat_further_steps_description": "This version check does not apply for all mods. Please check both server and client log files from 'BepInEx/LogOutput.log' for other possible disconnects",
+  "mod_compat_further_steps_description": "This version check only applies for mods using Jötunn. Please check both server and client log files from 'BepInEx/LogOutput.log' for other possible disconnects",
   "mod_compat_mod_update": "Please update $1 to version $2",
   "mod_compat_mod_downgrade": "Please downgrade $1 to version $2",
   "mod_compat_missing_mods_description": "Please install the following mods",
