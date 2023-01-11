@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 ## Version 2.10.3
 * Fixed ServerCharacters from showing up in the compatibility window as it does it's own version check on the modified version string
 * Added explanation for further steps to the compatibility window
