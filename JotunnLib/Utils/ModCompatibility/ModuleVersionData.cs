@@ -29,14 +29,14 @@ namespace Jotunn.Utils
         internal ModuleVersionData(List<ModModule> versionData)
         {
             ValheimVersion = new System.Version(Version.m_major, Version.m_minor, Version.m_patch);
-            VersionString = Version.GetVersionString();
+            VersionString = GetVersionString();
             Modules = new List<ModModule>(versionData);
         }
 
         internal ModuleVersionData(System.Version valheimVersion, List<ModModule> versionData)
         {
             ValheimVersion = valheimVersion;
-            VersionString = Version.GetVersionString();
+            VersionString = GetVersionString();
             Modules = new List<ModModule>(versionData);
         }
 
@@ -156,6 +156,12 @@ namespace Jotunn.Utils
         public bool HasModule(string name)
         {
             return FindModule(name) != null;
+        }
+
+        private static string GetVersionString()
+        {
+            // ServerCharacters replaces the version string on the server but not client and does it's own checks afterwards
+            return Version.GetVersionString().Replace("-ServerCharacters", "");
         }
     }
 }
