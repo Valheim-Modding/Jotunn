@@ -1,4 +1,8 @@
 ﻿# Changelog
+## Version 2.10.3
+* Fixed ServerCharacters from showing up in the compatibility window as it does it's own version check on the modified version string
+* Added explanation for further steps to the compatibility window
+
 ## Version 2.10.2
 * Changed PieceConfig to not override piece requirements when no custom requirements were provided
 * Changed PieceConfig, ItemConfig and RecipeConfig to remove non valid requirements (no item name or amount set)
