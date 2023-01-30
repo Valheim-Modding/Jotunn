@@ -130,7 +130,7 @@ namespace Jotunn.Entities
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"({Type}) {Config.FromItem} -> {Config.ToItem}";
+            return $"{Config.Station} ({Type}): {Config.FromItem} -> {Config.ToItem}";
         }
     }
 }
