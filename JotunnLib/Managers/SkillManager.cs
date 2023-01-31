@@ -46,10 +46,10 @@ namespace Jotunn.Managers
             private static void Skills_GetSkill(Skills __instance, ref Skills.SkillType skillType) => Instance.Skills_GetSkill(__instance, ref skillType);
 
             [HarmonyPatch(typeof(Skills), nameof(Skills.CheatRaiseSkill)), HarmonyPrefix]
-            private static void Skills_CheatRaiseSkill(Skills __instance, string name, float value) => Instance.Skills_CheatRaiseSkill(__instance, name, value);
+            private static bool Skills_CheatRaiseSkill(Skills __instance, string name, float value) => Instance.Skills_CheatRaiseSkill(__instance, name, value);
 
             [HarmonyPatch(typeof(Skills), nameof(Skills.CheatResetSkill)), HarmonyPrefix]
-            private static void Skills_CheatResetSkill(Skills __instance, string name) => Instance.Skills_CheatResetSkill(__instance, name);
+            private static bool Skills_CheatResetSkill(Skills __instance, string name) => Instance.Skills_CheatResetSkill(__instance, name);
 
             [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal)), HarmonyPostfix]
             private static void Terminal_InitTerminal() => Instance.AddSkillsToTerminal();
@@ -186,7 +186,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private void Skills_CheatRaiseSkill(Skills self, string name, float value)
+        private bool Skills_CheatRaiseSkill(Skills self, string name, float value)
         {
             foreach (var config in CustomSkills.Values)
             {
@@ -197,27 +197,32 @@ namespace Jotunn.Managers
 
                     skill.m_level += value;
                     skill.m_level = Mathf.Clamp(skill.m_level, 0f, 100f);
-                    self.m_player.Message(MessageHud.MessageType.TopLeft,
-                        $"Skill increased {localizedName}: {(int)skill.m_level}", 0, skill.m_info.m_icon);
+                    self.m_player.Message(MessageHud.MessageType.TopLeft, $"Skill increased {localizedName}: {(int)skill.m_level}", 0, skill.m_info.m_icon);
+
                     Console.instance.Print($"Skill {localizedName} = {skill.m_level}");
                     Logger.LogDebug($"Raised skill {localizedName} to {skill.m_level}");
 
-                    return;
+                    return false;
                 }
             }
+
+            return true;
         }
 
-        private void Skills_CheatResetSkill(Skills self, string name)
+        private bool Skills_CheatResetSkill(Skills self, string name)
         {
             foreach (var config in CustomSkills.Values)
             {
                 if (config.IsFromName(name))
                 {
                     self.m_player.GetSkills().ResetSkill(config.UID);
+                    Console.instance.Print("Skill " + config.LocalizedName + " reset");
                     Logger.LogDebug($"Reset skill {config.Name}");
-                    return;
+                    return false;
                 }
             }
+
+            return true;
         }
 
         private void AddSkillsToTerminal()
