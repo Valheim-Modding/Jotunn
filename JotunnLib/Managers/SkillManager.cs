@@ -24,6 +24,8 @@ namespace Jotunn.Managers
         /// </summary>
         private SkillManager() { }
 
+        private bool addedSkillsToTerminal = false;
+
         /// <summary>
         ///     Initialize the manager
         /// </summary>
@@ -48,6 +50,9 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(Skills), nameof(Skills.CheatResetSkill)), HarmonyPrefix]
             private static void Skills_CheatResetSkill(Skills __instance, string name) => Instance.Skills_CheatResetSkill(__instance, name);
+
+            [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal)), HarmonyPostfix]
+            private static void Terminal_InitTerminal() => Instance.AddSkillsToTerminal();
         }
 
         internal Dictionary<Skills.SkillType, SkillConfig> CustomSkills = new Dictionary<Skills.SkillType, SkillConfig>();
@@ -158,8 +163,7 @@ namespace Jotunn.Managers
 
                 foreach (var skill in CustomSkills.Values)
                 {
-                    var localizedName = skill.Name.StartsWith("$") ? Localization.instance.Localize(skill.Name) : skill.Name;
-                    Localization.instance.AddWord($"skill_{skill.UID}", localizedName);
+                    Localization.instance.AddWord($"skill_{skill.UID}", skill.LocalizedName);
                     self.m_skills.Add(skill.ToSkillDef());
                     Logger.LogDebug($"Registered skill {skill.Name} | ID: {skill.Identifier}");
                 }
@@ -189,7 +193,7 @@ namespace Jotunn.Managers
                 if (config.IsFromName(name))
                 {
                     Skills.Skill skill = self.GetSkill(config.UID);
-                    var localizedName = config.Name.StartsWith("$") ? Localization.instance.Localize(config.Name) : config.Name;
+                    var localizedName = config.LocalizedName;
 
                     skill.m_level += value;
                     skill.m_level = Mathf.Clamp(skill.m_level, 0f, 100f);
@@ -213,6 +217,38 @@ namespace Jotunn.Managers
                     Logger.LogDebug($"Reset skill {config.Name}");
                     return;
                 }
+            }
+        }
+
+        private void AddSkillsToTerminal()
+        {
+            if (!Terminal.m_terminalInitialized || addedSkillsToTerminal)
+            {
+                return;
+            }
+
+            addedSkillsToTerminal = true;
+
+            AddSkillOptions("raiseskill");
+            AddSkillOptions("resetskill");
+        }
+
+        private void AddSkillOptions(string commandName)
+        {
+            if (Terminal.commands.TryGetValue(commandName, out Terminal.ConsoleCommand command))
+            {
+                Terminal.ConsoleOptionsFetcher fetcher = command.m_tabOptionsFetcher;
+
+                command.m_tabOptionsFetcher = () =>
+                {
+                    List<string> options = fetcher();
+                    options.AddRange(CustomSkills.Values.Select(skill => skill.LocalizedName));
+                    return options;
+                };
+            }
+            else
+            {
+                Logger.LogWarning($"Failed to find {commandName} command");
             }
         }
     }

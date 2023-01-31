@@ -95,8 +95,9 @@ namespace Jotunn.Configs
             }
         }
 
-        private string _identifier;
+        internal string LocalizedName => Name.StartsWith("$") ? Localization.instance.Localize(Name) : Name;
 
+        private string _identifier;
 
         /// <summary>
         ///     Converts the SkillConfig to a printable string.
