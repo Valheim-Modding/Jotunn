@@ -13,11 +13,11 @@ _If you're using a mod installer, you can likely ignore this section._
 For a more in-depth installation guide, please check out the [manual installation guide](https://valheim-modding.github.io/Jotunn/guides/installation.html) in our documentation.  
 However, here is a quick run-down:
 
-1. **Install BepInEx**  
+1. **Install BepInEx:**\
 Download [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/), extract everything inside `BepInEx_Valheim` into your Valheim folder (typically `C:\<PathToYourSteamLibary>\steamapps\common\Valheim`).
 
-2. **Install Jötunn**
-Download from either [Nexus](https://www.nexusmods.com/valheim/mods/1138) / [Thunderstore](https://valheim.thunderstore.io/package/ValheimModding/Jotunn), extract the ZIP, and put the `Jotunn.dll` file inside the `plugins` folder in your Valheim install.
+2. **Install Jötunn:**\
+Download from either [Nexus](https://www.nexusmods.com/valheim/mods/1138) / [Thunderstore](https://valheim.thunderstore.io/package/ValheimModding/Jotunn), extract the ZIP and place all content into `BepInEx/plugins/Jotunn` of your Valheim install.
 
 That's it, launch the game and mod away!
 
