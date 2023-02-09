@@ -1362,7 +1362,10 @@ namespace Jotunn.Managers
         {
             // Move the Dropdown and ScrollRect components to the UILayer
             dropdown.gameObject.layer = UILayer;
-            dropdown.transform.Find("Template").gameObject.layer = UILayer;
+            if (dropdown.template != null)
+            {
+                dropdown.template.gameObject.layer = UILayer;
+            }
 
             // Dropdown
             if (dropdown.captionText)
