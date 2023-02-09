@@ -1360,6 +1360,13 @@ namespace Jotunn.Managers
         /// <param name="fontSize">Optional font size, defaults to 16</param>
         public void ApplyDropdownStyle(Dropdown dropdown, int fontSize = 16)
         {
+            // Move the Dropdown and ScrollRect components to the UILayer
+            dropdown.gameObject.layer = UILayer;
+            if (dropdown.template != null)
+            {
+                dropdown.template.gameObject.layer = UILayer;
+            }
+
             // Dropdown
             if (dropdown.captionText)
             {
