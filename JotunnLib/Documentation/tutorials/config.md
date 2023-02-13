@@ -65,6 +65,8 @@ This allows admins defined in the servers adminlist.txt to change the values on 
 Every client connecting to that server using the same mod will receive the configuration values from the server.
 Local settings will be overriden by the servers values as long as the client is connected to that server.
 
+Changing the configs at runtime will sync the changes to all clients connected to the server.
+
 ## Synced admin status
 
 Upon connection to a server, Jötunn checks the admin status of the connecting player on that server, given that Jötunn is installed on both sides.
@@ -80,20 +82,15 @@ The current admin status of a player can be read from [SynchronizationManager.Pl
 
 ## Additional config attributes
 
-Besides the `IsAdminOnly` attribute, Jötunn provides several additional custom attributes for config entries:
+Besides the `IsAdminOnly` attribute, additional custom attributes are provided.
+See [ConfigurationManagerAttributes](https://github.com/Valheim-Modding/Jotunn/blob/dev/JotunnLib/Utils/ConfigurationManagerAttributes.cs) for a full list.
 
-* EntryColor: Changes the default color of the config key in the settings GUI for that entry.
-* DescriptionColor: Changes the default color of the description text in the settings GUI for that entry.
-* Browsable: When set to `false`, that entry is not accessible through the settings GUI but will be created in the file and also synced, when `IsAdminOnly` is set to `true`.
+* Browsable: When set to `false`, that entry will be created but not accessible through the settings GUI
+* ReadOnly: Only show the value but don't allow editing
 
 ```cs
 private void CreateConfigValues()
 {
-    // Colored text configs
-    Config.Bind("Client config", "ColoredValue", false,
-        new ConfigDescription("Colored key and description text", null,
-        new ConfigurationManagerAttributes { EntryColor = Color.blue, DescriptionColor = Color.yellow }));
-
     // Invisible configs
     Config.Bind("Client config", "InvisibleInt", 150,
         new ConfigDescription("Invisible int, testing browsable=false", null,
