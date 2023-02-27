@@ -225,6 +225,11 @@ namespace Jotunn.Utils
 
             foreach (var prefab in after)
             {
+                if (!prefab)
+                {
+                    continue;
+                }
+
                 if (before.Contains(prefab))
                 {
                     continue;
