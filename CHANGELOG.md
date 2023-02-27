@@ -1,4 +1,8 @@
 # Changelog
+## Version 2.10.5
+* Fixed dropdown created with GUIManager.CreateDropDown was not in the correct UI layer, causing it to be wrongly rendered in VR (thx SpikeHimself)
+* Fixed an error inside the ModQuery if a null prefab is inside ZNetScene or ObjectDB
+
 ## Version 2.10.4
 * Fixed that same item conversions could not be added to different stations
 * Fixed custom skills names were not being added to autocomplete in cheat commands
