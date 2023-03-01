@@ -229,32 +229,29 @@ namespace Jotunn.Managers
             int width = renderObject.Request.Width;
             int height = renderObject.Request.Height;
 
-            RenderTexture oldRenderTexture = RenderTexture.active;
-            Renderer.targetTexture = RenderTexture.GetTemporary(width, height, 32);
-            Renderer.fieldOfView = renderObject.Request.FieldOfView;
-            RenderTexture.active = Renderer.targetTexture;
+            using (new CreateTemporaryRenderTexture(Renderer, width, height))
+            {
+                Renderer.fieldOfView = renderObject.Request.FieldOfView;
 
-            renderObject.Spawn.SetActive(true);
+                renderObject.Spawn.SetActive(true);
 
-            // calculate the Z position of the prefab as it needs to be far away from the camera
-            float maxMeshSize = Mathf.Max(renderObject.Size.x, renderObject.Size.y) + 0.1f;
-            float distance = maxMeshSize / Mathf.Tan(Renderer.fieldOfView * Mathf.Deg2Rad) * renderObject.Request.DistanceMultiplier;
+                // calculate the Z position of the prefab as it needs to be far away from the camera
+                float maxMeshSize = Mathf.Max(renderObject.Size.x, renderObject.Size.y) + 0.1f;
+                float distance = maxMeshSize / Mathf.Tan(Renderer.fieldOfView * Mathf.Deg2Rad) * renderObject.Request.DistanceMultiplier;
 
-            Renderer.transform.position = SpawnPoint + new Vector3(0, 0, distance);
+                Renderer.transform.position = SpawnPoint + new Vector3(0, 0, distance);
 
-            Renderer.Render();
+                Renderer.Render();
 
-            renderObject.Spawn.SetActive(false);
-            Object.Destroy(renderObject.Spawn);
+                renderObject.Spawn.SetActive(false);
+                Object.Destroy(renderObject.Spawn);
 
-            Texture2D previewImage = new Texture2D(width, height, TextureFormat.RGBA32, false);
-            previewImage.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-            previewImage.Apply();
+                Texture2D previewImage = new Texture2D(width, height, TextureFormat.RGBA32, false);
+                previewImage.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+                previewImage.Apply();
 
-            RenderTexture.ReleaseTemporary(Renderer.targetTexture);
-            RenderTexture.active = oldRenderTexture;
-
-            return Sprite.Create(previewImage, new Rect(0, 0, width, height), Vector2.one / 2f);
+                return Sprite.Create(previewImage, new Rect(0, 0, width, height), Vector2.one / 2f);
+            }
         }
 
         private IEnumerator ClearRenderRoutine()
@@ -424,6 +421,34 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Wrapper to create and set a short-lived RenderTexture to a Camera, which is cleaned up afterwards
+        /// </summary>
+        private class CreateTemporaryRenderTexture : IDisposable
+        {
+            private readonly Camera camera;
+            private readonly RenderTexture previousRenderTexture;
+            private readonly RenderTexture temporaryRenderTexture;
+
+            public CreateTemporaryRenderTexture(Camera camera, int textureWidth, int textureHeight)
+            {
+                this.camera = camera;
+                previousRenderTexture = RenderTexture.active;
+                temporaryRenderTexture = RenderTexture.GetTemporary(textureWidth, textureHeight, 32);
+
+                camera.targetTexture = temporaryRenderTexture;
+                RenderTexture.active = temporaryRenderTexture;
+            }
+
+            public void Dispose()
+            {
+                RenderTexture.active = previousRenderTexture;
+                camera.targetTexture = null;
+
+                // release the temporary render texture after it is no longer referenced by anyone
+                RenderTexture.ReleaseTemporary(temporaryRenderTexture);
+            }
+        }
 
         /// <summary>
         ///     Queues a new prefab to be rendered. The resulting <see cref="Sprite"/> will be ready at the next frame. 
