@@ -1,6 +1,7 @@
 # Changelog
 ## Version 2.10.5
 * Fixed dropdown created with GUIManager.CreateDropDown was not in the correct UI layer, causing it to be wrongly rendered in VR (thx SpikeHimself)
+* Fixed calling LocalizationManager/CustomLocalization.TryTranslate() could cause the game localisation to be initialized too early
 * Fixed an error inside the ModQuery if a null prefab is inside ZNetScene or ObjectDB
 * Fixed an error caused by releasing a render texture too early
 

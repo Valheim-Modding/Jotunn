@@ -64,7 +64,13 @@ namespace Jotunn.Entities
                 return translation;
             }
 
-            return Localization.instance.Translate(cleanedWord);
+            // fallback to vanilla localization if nothing found
+            if (Localization.m_instance != null)
+            {
+                return Localization.m_instance.Translate(cleanedWord);
+            }
+
+            return $"[{word}]";
         }
 
         /// <summary> Checks if a translation exists for given language and token. </summary>

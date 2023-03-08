@@ -351,7 +351,12 @@ namespace Jotunn.Managers
             }
 
             // fallback to vanilla localization if nothing found
-            return Localization.instance.Translate(cleanedWord);
+            if (Localization.m_instance != null)
+            {
+                return Localization.m_instance.Translate(cleanedWord);
+            }
+
+            return $"[{word}]";
         }
 
         private static bool IsValidTranslation(string translation)
