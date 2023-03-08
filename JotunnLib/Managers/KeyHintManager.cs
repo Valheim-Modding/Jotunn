@@ -182,10 +182,10 @@ namespace Jotunn.Managers
             // Clone vanilla key hint objects and use it as the base for custom key hints
             var origKey = kb.transform.Find("Place")?.gameObject;
             var origRotate = kb.transform.Find("rotate")?.gameObject;
-            var origButton = gp.transform.Find("BuildMenu")?.gameObject;
-            var origTrigger = gp.transform.Find("Place")?.gameObject;
-            var origShoulder = gp.transform.Find("Remove")?.gameObject;
-            var origStick = gp.transform.Find("rotate")?.gameObject;
+            var origButton = gp.transform.Find("Text - BuildMenu")?.gameObject;
+            var origTrigger = gp.transform.Find("Text - Place")?.gameObject;
+            var origShoulder = gp.transform.Find("Text - Remove")?.gameObject;
+            var origStick = gp.transform.Find("Text - Rotate")?.gameObject;
 
             if (!origKey || !origRotate || !origButton || !origTrigger || !origShoulder || !origStick)
             {
@@ -215,14 +215,14 @@ namespace Jotunn.Managers
 
             BaseStick = Object.Instantiate(origStick);
             BaseStick.name = "JotunnKeyHintBaseStick";
-            Object.DestroyImmediate(BaseStick.transform.Find("Trigger").gameObject);
-            Object.DestroyImmediate(BaseStick.transform.Find("plus").gameObject);
+            //Object.DestroyImmediate(BaseStick.transform.Find("Trigger").gameObject);
+            //Object.DestroyImmediate(BaseStick.transform.Find("plus").gameObject);
             PrefabManager.Instance.AddPrefab(BaseStick);
 
             BaseDPad = Object.Instantiate(BaseTrigger);
             BaseDPad.name = "JotunnKeyHintBaseDPad";
-            BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-            BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().sizeDelta = new Vector2(25f, 25f);
+            //BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            //BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().sizeDelta = new Vector2(25f, 25f);
             PrefabManager.Instance.AddPrefab(BaseDPad);
             
             HasInitBaseGameObjects = true;
@@ -327,25 +327,28 @@ namespace Jotunn.Managers
                         case GamepadButton.DPadRight:
                             var customPadNoRotate = Object.Instantiate(BaseDPad, gp, false);
                             customPadNoRotate.name = buttonConfig.Name;
-                            customPadNoRotate.GetComponentInChildren<Text>().text = buttonString;
-                            customPadNoRotate.transform.Find("Text").gameObject.SetText(hint);
+                            customPadNoRotate.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customPadNoRotate.GetComponentInChildren<Text>().text = buttonString;
+                            //customPadNoRotate.transform.Find("Text").gameObject.SetText(hint);
                             customPadNoRotate.SetActive(true);
                             break;
                         case GamepadButton.DPadUp:
                         case GamepadButton.DPadDown:
                             var customPadRotate = Object.Instantiate(BaseDPad, gp, false);
                             customPadRotate.name = buttonConfig.Name;
-                            customPadRotate.transform.Find("Trigger").GetComponent<RectTransform>().Rotate(new Vector3(0, 0, 1f), 90f);
-                            customPadRotate.GetComponentInChildren<Text>().text = buttonString;
-                            customPadRotate.transform.Find("Text").gameObject.SetText(hint);
+                            customPadRotate.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customPadRotate.transform.Find("Trigger").GetComponent<RectTransform>().Rotate(new Vector3(0, 0, 1f), 90f);
+                            //customPadRotate.GetComponentInChildren<Text>().text = buttonString;
+                            //customPadRotate.transform.Find("Text").gameObject.SetText(hint);
                             customPadRotate.SetActive(true);
                             break;
                         case GamepadButton.StartButton:
                         case GamepadButton.SelectButton:
                             var customPad = Object.Instantiate(BaseKey, gp, false);
                             customPad.name = buttonConfig.Name;
-                            customPad.GetComponentInChildren<Text>().text = buttonString;
-                            customPad.transform.Find("Text").gameObject.SetText(hint);
+                            customPad.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customPad.GetComponentInChildren<Text>().text = buttonString;
+                            //customPad.transform.Find("Text").gameObject.SetText(hint);
                             customPad.SetActive(true);
                             break;
                         case GamepadButton.ButtonNorth:
@@ -354,32 +357,36 @@ namespace Jotunn.Managers
                         case GamepadButton.ButtonEast:
                             var customButton = Object.Instantiate(BaseButton, gp, false);
                             customButton.name = buttonConfig.Name;
-                            customButton.GetComponentInChildren<Text>().text = buttonString;
-                            customButton.transform.Find("Text").gameObject.SetText(hint);
+                            customButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customButton.GetComponentInChildren<Text>().text = buttonString;
+                            //customButton.transform.Find("Text").gameObject.SetText(hint);
                             customButton.SetActive(true);
                             break;
                         case GamepadButton.LeftShoulder:
                         case GamepadButton.RightShoulder:
                             var customShoulder = Object.Instantiate(BaseShoulder, gp, false);
                             customShoulder.name = buttonConfig.Name;
-                            customShoulder.GetComponentInChildren<Text>().text = buttonString;
-                            customShoulder.transform.Find("Text").gameObject.SetText(hint);
+                            customShoulder.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customShoulder.GetComponentInChildren<Text>().text = buttonString;
+                            //customShoulder.transform.Find("Text").gameObject.SetText(hint);
                             customShoulder.SetActive(true);
                             break;
                         case GamepadButton.LeftTrigger:
                         case GamepadButton.RightTrigger:
                             var customTrigger = Object.Instantiate(BaseTrigger, gp, false);
                             customTrigger.name = buttonConfig.Name;
-                            customTrigger.GetComponentInChildren<Text>().text = buttonString;
-                            customTrigger.transform.Find("Text").gameObject.SetText(hint);
+                            customTrigger.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customTrigger.GetComponentInChildren<Text>().text = buttonString;
+                            //customTrigger.transform.Find("Text").gameObject.SetText(hint);
                             customTrigger.SetActive(true);
                             break;
                         case GamepadButton.LeftStickButton:
                         case GamepadButton.RightStickButton:
                             var customStick = Object.Instantiate(BaseStick, gp, false);
                             customStick.name = buttonConfig.Name;
-                            customStick.GetComponentInChildren<Text>().text = buttonString;
-                            customStick.transform.Find("Text").gameObject.SetText(hint);
+                            customStick.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customStick.GetComponentInChildren<Text>().text = buttonString;
+                            //customStick.transform.Find("Text").gameObject.SetText(hint);
                             customStick.SetActive(true);
                             break;
                         default:
