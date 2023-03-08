@@ -81,8 +81,6 @@ namespace Jotunn.Managers
         /// </summary>
         internal static Func<StringReader, List<List<string>>> DoQuoteLineSplit;
 
-        private static bool applyLocalization;
-
         /// <summary>
         ///     Initialize localization manager.
         /// </summary>
@@ -99,57 +97,29 @@ namespace Jotunn.Managers
                         ReflectionHelper.AllBindingFlags));
 
             AddLocalization(JotunnLocalization);
+            AutomaticLocalizationLoading();
         }
 
         private static class Patches
         {
             [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui)), HarmonyPostfix]
-            private static void LoadAndSetupModLanguages() => Instance.LoadAndSetupModLanguages();
+            private static void LoadAndSetupModLanguages() => Instance.LoadAndSetupModLanguages(Localization.instance);
 
             [HarmonyPatch(typeof(Localization), nameof(Localization.LoadLanguages)), HarmonyPostfix]
-            private static void Localization_LoadLanguages(ref List<string> __result)
-            {
-                if (applyLocalization)
-                {
-                    Instance.Localization_LoadLanguages(ref __result);
-                }
-            }
+            private static void Localization_LoadLanguages(ref List<string> __result) => Instance.AddLanguages(ref __result);
 
             [HarmonyPatch(typeof(Localization), nameof(Localization.SetupLanguage)), HarmonyPostfix]
-            private static void Localization_SetupLanguage(Localization __instance, string language)
-            {
-                if (applyLocalization)
-                {
-                    Instance.Localization_SetupLanguage(__instance, language);
-                }
-            }
+            private static void Localization_SetupLanguage(Localization __instance, string language) => Instance.AddTranslations(__instance, language);
         }
 
         // Some mod could have initialized Localization before all mods are loaded.
         // See https://github.com/Valheim-Modding/Jotunn/issues/193
-        private void LoadAndSetupModLanguages()
+        private void LoadAndSetupModLanguages(Localization localization)
         {
-            applyLocalization = true;
-
-            var tmp = new HashSet<string>(Localization.instance.m_languages.ToList());
-            foreach (var language in Localization.instance.LoadLanguages())
-            {
-                tmp.Add(language);
-            }
-
-            Localization.instance.m_languages.Clear();
-            Localization.instance.m_languages.AddRange(tmp);
-
-            Localization.instance.SetupLanguage(DefaultLanguage);
-            string lang = PlayerPrefs.GetString("language", DefaultLanguage);
-            if (lang != DefaultLanguage && !string.IsNullOrEmpty(lang))
-            {
-                Localization.instance.SetupLanguage(lang);
-            }
+            AddLanguages(ref localization.m_languages);
+            AddTranslations(localization, GetPlayerLanguage());
 
             InvokeOnLocalizationAdded();
-
-            applyLocalization = false;
         }
 
         private void InvokeOnLocalizationAdded()
@@ -157,62 +127,53 @@ namespace Jotunn.Managers
             OnLocalizationAdded?.SafeInvoke();
         }
 
-        private void Localization_LoadLanguages(ref List<string> result)
+        private void AddLanguages(ref List<string> result)
         {
-            Logger.LogInfo("Loading custom localizations");
-
-            try
+            // Add in localized languages that do not yet exist
+            foreach (var ct in Localizations.Values)
             {
-                AutomaticLocalizationLoading();
-
-                // Add in localized languages that do not yet exist
-                foreach (var ct in Localizations.Values)
+                foreach (var language in ct.GetLanguages())
                 {
-                    foreach (var language in ct.GetLanguages())
+                    if (!result.Contains(language))
                     {
-                        if (!result.Contains(language))
-                        {
-                            result.Add(language);
-                        }
+                        result.Add(language);
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                Logger.LogWarning($"Exception caught while loading custom localizations: {ex}");
-            }
         }
 
-        private void Localization_SetupLanguage(Localization self, string language)
+        private void AddTranslations(Localization localization, string language)
         {
-            Logger.LogInfo($"Adding tokens for language '{language}'");
-
-            try
+            foreach (var pair in GetAllTranslations(DefaultLanguage))
             {
-                foreach (var ct in Localizations.Values)
-                {
-                    var langDic = ct.GetTranslations(language);
-                    if (langDic == null)
-                    {
-                        continue;
-                    }
-
-                    Logger.LogDebug($"Adding tokens for '{ct}'");
-
-                    foreach (var pair in langDic)
-                    {
-                        Logger.LogDebug($"Added translation: {pair.Key} -> {pair.Value}");
-                        self.AddWord(pair.Key, pair.Value);
-                    }
-                }
+                localization.AddWord(pair.Key, pair.Value);
             }
-            catch (Exception ex)
+
+            if (string.IsNullOrEmpty(language) || language == DefaultLanguage)
             {
-                Logger.LogWarning($"Exception caught while adding custom localizations: {ex}");
+                return;
+            }
+
+            foreach (var pair in GetAllTranslations(language))
+            {
+                localization.AddWord(pair.Key, pair.Value);
             }
         }
 
-        private IEnumerable<FileInfo> GetTranslationFiles(string path, string searchPattern) => GetTranslationFiles(new DirectoryInfo(path), searchPattern);
+        private IEnumerable<KeyValuePair<string, string>> GetAllTranslations(string language)
+        {
+            return Localizations.Values.SelectMany(ct => ct.GetTranslations(language));
+        }
+
+        internal static string GetPlayerLanguage()
+        {
+            return PlayerPrefs.GetString("language", DefaultLanguage);
+        }
+
+        private IEnumerable<FileInfo> GetTranslationFiles(string path, string searchPattern)
+        {
+            return GetTranslationFiles(new DirectoryInfo(path), searchPattern);
+        }
 
         private IEnumerable<FileInfo> GetTranslationFiles(DirectoryInfo pathDirectoryInfo, string searchPattern)
         {
