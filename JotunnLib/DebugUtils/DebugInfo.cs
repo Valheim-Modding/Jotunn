@@ -80,7 +80,7 @@ namespace Jotunn.DebugUtils
         private void CreatePanel(Hud hud)
         {
             Panel =
-                new TwoColumnPanel(hud.m_rootObject.transform, hud.m_hoverName.font, new Color32(0, 0, 0, 96))
+                new TwoColumnPanel(hud.m_rootObject.transform, hud.m_hoverName.font.sourceFontFile, new Color32(0, 0, 0, 96))
                     .SetAnchor(new Vector2(0f, 0f))
                     .SetPosition(Position.Value)
                     .AddPanelRow("Time", out _envTimeValue)

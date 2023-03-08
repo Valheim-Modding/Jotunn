@@ -60,7 +60,7 @@ namespace Jotunn.DebugUtils
         private void CreatePanel(Hud hud)
         {
             _eraserPanel =
-                new TwoColumnPanel(hud.m_crosshair.transform, hud.m_hoverName.font)
+                new TwoColumnPanel(hud.m_crosshair.transform, hud.m_hoverName.font.sourceFontFile)
                     .SetPosition(new Vector2(0, 50))
                     .AddPanelRow(out _eraserLabel, out _eraserValue);
             

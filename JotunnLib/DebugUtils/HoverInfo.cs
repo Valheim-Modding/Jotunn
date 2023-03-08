@@ -106,7 +106,7 @@ namespace Jotunn.DebugUtils
         private void CreatePanels(Hud hud)
         {
             _hoverPiecePanel =
-                new TwoColumnPanel(hud.m_crosshair.transform, hud.m_hoverName.font)
+                new TwoColumnPanel(hud.m_crosshair.transform, hud.m_hoverName.font.sourceFontFile)
                     .SetPosition(_hoverPiecePanelPosition.Value)
                     .AddPanelRow(out _pieceNameTextLabel, out _pieceNameTextValue)
                     .AddPanelRow(out _pieceHealthTextLabel, out _pieceHealthTextValue)
@@ -121,7 +121,7 @@ namespace Jotunn.DebugUtils
             _pieceEulerTextLabel.text = "Euler \u29bf";
 
             _placementGhostPanel =
-                new TwoColumnPanel(hud.m_crosshair.transform, hud.m_hoverName.font)
+                new TwoColumnPanel(hud.m_crosshair.transform, hud.m_hoverName.font.sourceFontFile)
                     .SetPosition(_placementGhostPanelPosition.Value)
                     .AddPanelRow(out _ghostNameTextLabel, out _ghostNameTextValue)
                     .AddPanelRow(out _ghostRotationTextLabel, out _ghostRotationTextValue)

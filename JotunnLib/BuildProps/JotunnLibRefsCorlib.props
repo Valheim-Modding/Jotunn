@@ -60,6 +60,10 @@
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\Mono.Security.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <Private>false</Private>
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>false</Private>
