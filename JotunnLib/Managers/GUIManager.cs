@@ -358,12 +358,12 @@ namespace Jotunn.Managers
                     Font[] fonts = Resources.FindObjectsOfTypeAll<Font>();
                     AveriaSerif = fonts.FirstOrDefault(x => x.name == "AveriaSerifLibre-Regular");
                     AveriaSerifBold = fonts.FirstOrDefault(x => x.name == "AveriaSerifLibre-Bold");
-                    if (AveriaSerifBold == null || AveriaSerif == null)
+                    Norse = fonts.FirstOrDefault(x => x.name == "Norse");
+                    NorseBold = fonts.FirstOrDefault(x => x.name == "Norsebold");
+                    if (AveriaSerifBold == null || AveriaSerif == null || Norse == null || NorseBold == null)
                     {
                         throw new Exception("Fonts not found");
                     }
-                    Norse = fonts.FirstOrDefault(x => x.name == "Norse");
-                    NorseBold = fonts.FirstOrDefault(x => x.name == "Norsebold");
 
                     // DefaultControls.Resources pack
                     AssetBundle jotunnBundle = AssetUtils.LoadAssetBundleFromResources("jotunn", typeof(Main).Assembly);
