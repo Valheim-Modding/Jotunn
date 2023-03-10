@@ -78,9 +78,19 @@ namespace Jotunn.Managers
         public const int UILayer = 5;
 
         /// <summary>
+        ///     The default Valheim beige color.
+        /// </summary>
+        public Color ValheimBeige = new Color(0.8529f, 0.725f, 0.5331f, 1f);
+
+        /// <summary>
         ///     The default Valheim orange color.
         /// </summary>
         public Color ValheimOrange = new Color(1f, 0.631f, 0.235f, 1f);
+
+        /// <summary>
+        ///     The default Valheim yellow color.
+        /// </summary>
+        public Color ValheimYellow = new Color(1f, 0.889f, 0f, 1f);
 
         /// <summary>
         ///     Scrollbar handle color block in default Valheim orange.
@@ -125,14 +135,25 @@ namespace Jotunn.Managers
         };
 
         /// <summary>
-        ///     Valheim standard font normal faced.
+        ///     Valheim's standard font, normal faced.
         /// </summary>
         public Font AveriaSerif { get; private set; }
 
         /// <summary>
-        ///     Valheims standard font bold faced.
+        ///     Valheim's standard font, bold faced.
         /// </summary>
         public Font AveriaSerifBold { get; private set; }
+
+
+        /// <summary>
+        ///     Valheim's rune-like font, normal faced.
+        /// </summary>
+        public Font Norse { get; private set; }
+
+        /// <summary>
+        ///     Valheim's rune-like font, bold faced.
+        /// </summary>
+        public Font NorseBold { get; private set; }
 
         /// <summary>
         ///     <see cref="DefaultControls.Resources"/> with default Valheim assets.
@@ -341,6 +362,8 @@ namespace Jotunn.Managers
                     {
                         throw new Exception("Fonts not found");
                     }
+                    Norse = fonts.FirstOrDefault(x => x.name == "Norse");
+                    NorseBold = fonts.FirstOrDefault(x => x.name == "Norsebold");
 
                     // DefaultControls.Resources pack
                     AssetBundle jotunnBundle = AssetUtils.LoadAssetBundleFromResources("jotunn", typeof(Main).Assembly);
