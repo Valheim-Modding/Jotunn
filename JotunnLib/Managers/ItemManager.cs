@@ -312,6 +312,23 @@ namespace Jotunn.Managers
             return true;
         }
 
+        /// <summary>
+        ///     Remove an item conversion
+        /// </summary>
+        /// <param name="itemConversion">item conversion to remove</param>
+        /// <returns>Whether the removal was successful or not</returns>
+        public bool RemoveItemConversion(CustomItemConversion itemConversion)
+        {
+            if (!ItemConversions.Contains(itemConversion))
+            {
+                Logger.LogWarning($"Could not remove item conversion {itemConversion}: not found");
+                return false;
+            }
+
+            ItemConversions.Remove(itemConversion);
+            return true;
+        }
+
         /*
         /// <summary>
         ///     Adds item conversions defined in a JSON file at given path, relative to BepInEx/plugins
