@@ -1,5 +1,7 @@
 # Changelog
-## Version 2.10.5
+## Version 2.11.0
+* Added Norse fonts and additional colors to the GUIManger (thx SpikeHimself)
+* Added interface to remove a custom item conversion
 * Fixed dropdown created with GUIManager.CreateDropDown was not in the correct UI layer, causing it to be wrongly rendered in VR (thx SpikeHimself)
 * Fixed calling LocalizationManager/CustomLocalization.TryTranslate() could cause the game localisation to be initialized too early
 * Fixed an error inside the ModQuery if a null prefab is inside ZNetScene or ObjectDB
