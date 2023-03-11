@@ -28,8 +28,10 @@ namespace Jotunn.Entities
         /// <summary> Retrieve translations for given language. </summary>
         /// <param name="language"> Language of the translation you want to retrieve. </param>
         public IReadOnlyDictionary<string, string> GetTranslations(in string language)
-            => Map.TryGetValue(language, out var x) ? x : null;
-        
+        {
+            return Map.TryGetValue(language, out var languageMap) ? languageMap : new Dictionary<string, string>();
+        }
+
         /// <summary>
         ///     Retrieve a translation from this custom localization or <see cref="Localization.Translate"/>.
         ///     Searches with the user language with a fallback to English.
@@ -49,7 +51,7 @@ namespace Jotunn.Entities
             }
 
             var cleanedWord = word.TrimStart(LocalizationManager.TokenFirstChar);
-            var playerLang = PlayerPrefs.GetString("language", LocalizationManager.DefaultLanguage);
+            var playerLang = LocalizationManager.GetPlayerLanguage();
 
             if (Map.TryGetValue(playerLang, out var playerDictionary) && 
                 playerDictionary.TryGetValue(cleanedWord, out var playerTranslation))
