@@ -42,9 +42,25 @@ public sealed class ConfigurationManagerAttributes
     }
 
     /// <summary>
+    ///     Should the setting be shown as a percentage (only use with value range settings).
+    /// </summary>
+    public bool? ShowRangeAsPercent;
+
+    /// <summary>
+    ///     Custom setting editor (OnGUI code that replaces the default editor provided by ConfigurationManager).
+    ///     See below for a deeper explanation. Using a custom drawer will cause many of the other fields to do nothing.
+    /// </summary>
+    public Action<BepInEx.Configuration.ConfigEntryBase> CustomDrawer;
+
+    /// <summary>
     ///     Show this setting in the settings screen at all? If false, don't show.
     /// </summary>
     public bool? Browsable;
+
+    /// <summary>
+    ///     Category the setting is under. Null to be directly under the plugin.
+    /// </summary>
+    public string Category;
 
     /// <summary>
     ///     If set, a "Default" button will be shown next to the setting to allow resetting to default.
@@ -55,6 +71,23 @@ public sealed class ConfigurationManagerAttributes
     ///     Force the "Reset" button to not be displayed, even if a valid DefaultValue is available. 
     /// </summary>
     public bool? HideDefaultButton;
+
+    /// <summary>
+    ///     Force the setting name to not be displayed. Should only be used with a <see cref="CustomDrawer"/> to get more space.
+    ///     Can be used together with <see cref="HideDefaultButton"/> to gain even more space.
+    /// </summary>
+    public bool? HideSettingName;
+
+    /// <summary>
+    ///     Optional description shown when hovering over the setting.
+    ///     Not recommended, provide the description when creating the setting instead.
+    /// </summary>
+    public string Description;
+
+    /// <summary>
+    ///     Name of the setting.
+    /// </summary>
+    public string DispName;
 
     /// <summary>
     ///     Order of the setting on the settings list relative to other settings in a category.
@@ -71,6 +104,16 @@ public sealed class ConfigurationManagerAttributes
     ///     If true, don't show the setting by default. User has to turn on showing advanced settings or search for it.
     /// </summary>
     public bool? IsAdvanced;
+
+    /// <summary>
+    ///     Custom converter from setting type to string for the built-in editor textboxes.
+    /// </summary>
+    public System.Func<object, string> ObjToStr;
+
+    /// <summary>
+    ///     Custom converter from string to setting type for the built-in editor textboxes.
+    /// </summary>
+    public System.Func<string, object> StrToObj;
 
     /// <summary>
     ///     Whether a config is only writable by admins and gets overwritten on connecting clients
@@ -139,13 +182,13 @@ public sealed class ConfigurationManagerAttributes
                 case null: break;
 
                 case DisplayNameAttribute da:
-                    //DispName = da.DisplayName;
+                    DispName = da.DisplayName;
                     break;
                 case CategoryAttribute ca:
-                    //Category = ca.Category;
+                    Category = ca.Category;
                     break;
                 case DescriptionAttribute de:
-                    //Description = de.Description;
+                    Description = de.Description;
                     break;
                 case DefaultValueAttribute def:
                     DefaultValue = def.Value;
@@ -157,9 +200,10 @@ public sealed class ConfigurationManagerAttributes
                     Browsable = bro.Browsable;
                     break;
 
-                // case Action<BepInEx.Configuration.ConfigEntryBase> newCustomDraw:
-                // CustomDrawer = _ => newCustomDraw(this);
-                // break;
+                // case Action<SettingEntryBase> newCustomDraw:
+                //     CustomDrawer = _ => newCustomDraw(this);
+                //     break;
+
                 case string str:
                     switch (str)
                     {
@@ -192,7 +236,13 @@ public sealed class ConfigurationManagerAttributes
                             {
                                 var val = propertyPair.other.GetValue(attrib);
                                 if (val != null)
+                                {
+                                    // Handle delegate covariance not working when using reflection by manually converting the delegate
+                                    if (propertyPair.my.PropertyType != propertyPair.other.FieldType && typeof(Delegate).IsAssignableFrom(propertyPair.my.PropertyType))
+                                        val = Delegate.CreateDelegate(propertyPair.my.PropertyType, ((Delegate)val).Target, ((Delegate)val).Method);
+
                                     propertyPair.my.SetValue(this, val, null);
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -200,17 +250,25 @@ public sealed class ConfigurationManagerAttributes
                             }
                         }
 
-                        foreach (var propertyPair in _myFields.Join(otherFields, my => my.Name, other => other.Name, (my, other) => new { my, other }))
+                        // this is not done in the ConfigurationManager, is it even needed?
+                        // https://github.com/BepInEx/BepInEx.ConfigurationManager/blob/master/ConfigurationManager/SettingEntryBase.cs
+                        foreach (var fieldPair in _myFields.Join(otherFields, my => my.Name, other => other.Name, (my, other) => new { my, other }))
                         {
                             try
                             {
-                                var val = propertyPair.other.GetValue(attrib);
+                                var val = fieldPair.other.GetValue(attrib);
                                 if (val != null)
-                                    propertyPair.my.SetValue(this, val);
+                                {
+                                    // Handle delegate covariance not working when using reflection by manually converting the delegate
+                                    if (fieldPair.my.FieldType != fieldPair.other.FieldType && typeof(Delegate).IsAssignableFrom(fieldPair.my.FieldType))
+                                        val = Delegate.CreateDelegate(fieldPair.my.FieldType, ((Delegate)val).Target, ((Delegate)val).Method);
+
+                                    fieldPair.my.SetValue(this, val);
+                                }
                             }
                             catch (Exception ex)
                             {
-                                Jotunn.Logger.LogWarning($"Failed to copy value {propertyPair.my.Name} from provided tag object {attrType.FullName} - " + ex.Message);
+                                Jotunn.Logger.LogWarning($"Failed to copy value {fieldPair.my.Name} from provided tag object {attrType.FullName} - " + ex.Message);
                             }
                         }
 
