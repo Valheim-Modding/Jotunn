@@ -3,6 +3,7 @@
 * Added Norse fonts and additional colors to the GUIManger (thx SpikeHimself)
 * Added interface to remove a custom item conversion
 * Updated ConfigurationManagerAttributes to match BepInEx.ConfigurationManager v17.0
+* Updated the localization injection to be easier and removed the need to load vanilla translations a second time. Because the implementation concept changed, debug logs will no longer be printed
 * Fixed dropdown created with GUIManager.CreateDropDown was not in the correct UI layer, causing it to be wrongly rendered in VR (thx SpikeHimself)
 * Fixed calling LocalizationManager/CustomLocalization.TryTranslate() could cause the game localisation to be initialized too early
 * Fixed an error inside the ModQuery if a null prefab is inside ZNetScene or ObjectDB
