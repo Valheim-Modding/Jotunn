@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 ## Version 2.11.0
 * Added Norse fonts and additional colors to the GUIManger (thx SpikeHimself)
 * Added interface to remove a custom item conversion
