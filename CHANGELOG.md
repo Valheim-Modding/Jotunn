@@ -1,4 +1,7 @@
 # Changelog
+## Version 2.11.1
+* Fixed KeyHints not being correctly destroyed when using inventories with containers
+
 ## Version 2.11.0
 * Added Norse fonts and additional colors to the GUIManger (thx SpikeHimself)
 * Added interface to remove a custom item conversion
