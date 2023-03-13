@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 ## Version 2.11.0
 * Added Norse fonts and additional colors to the GUIManger (thx SpikeHimself)
 * Added interface to remove a custom item conversion
@@ -9,6 +9,8 @@
 * Fixed an error inside the ModQuery if a null prefab is inside ZNetScene or ObjectDB
 * Fixed an error caused by releasing a render texture too early
 * Removed changing the hammer category tab width and removed re-parenting of the tab border for better compatibility
+* Added reference to the BepInExPack 5.4.1902
+* NuGet Package adds a reference to Unity.TextMeshPro
 
 ## Version 2.10.4
 * Fixed that same item conversions could not be added to different stations
