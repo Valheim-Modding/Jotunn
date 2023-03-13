@@ -139,29 +139,9 @@
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Fishlabs.Common">
-      <Private>false</Private>
-      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Fishlabs.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Fishlabs.Core">
-      <Private>false</Private>
-      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Fishlabs.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="PlayFab">
-      <Private>false</Private>
-      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\PlayFab.dll</HintPath>
-    </Reference>
-    <Reference Include="PlayFabParty">
-      <Private>false</Private>
-      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\PlayFabParty.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.InputSystem">
-      <Private>false</Private>
-      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Unity.InputSystem.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <Private>false</Private>
-      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AccessibilityModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.AccessibilityModule.dll</HintPath>
@@ -443,7 +423,6 @@
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.Utils.dll" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsCorlib.props" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsManaged.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\Paths.props" Pack="true" PackagePath="build" />
     <Content Include="$(TargetDir)Jotunn.pdb" Pack="true" PackagePath="lib/$(TargetFramework)" />
     <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png" Pack="true" PackagePath="images" />

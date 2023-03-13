@@ -4,7 +4,6 @@
     <GenerateResourceNeverLockTypeAssemblies>true</GenerateResourceNeverLockTypeAssemblies>
   </PropertyGroup>
   <Import Project="JotunnLibRefsCorlib.props" Condition="Exists('$(VALHEIM_INSTALL)/unstripped_corlib/mscorlib.dll')" />
-  <Import Project="JotunnLibRefsManaged.props" Condition="Exists('$(VALHEIM_INSTALL)/unstripped_managed/mscorlib.dll') And !Exists('$(VALHEIM_INSTALL)/unstripped_corlib/mscorlib.dll')" />
   <UsingTask TaskName="JotunnBuildTask" AssemblyFile="JotunnBuildTask.dll" />
   <Target Name="JotunnBuildTaskRunner" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(VALHEIM_INSTALL)')" >
     <Message Importance="High" Text="Executing Jotunn Prebuild Task"/> 
