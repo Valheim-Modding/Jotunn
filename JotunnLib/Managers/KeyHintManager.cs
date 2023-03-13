@@ -4,7 +4,6 @@ using System.Linq;
 using HarmonyLib;
 using Jotunn.Configs;
 using UnityEngine;
-using UnityEngine.UI;
 using static Jotunn.Managers.InputManager;
 using Object = UnityEngine.Object;
 
@@ -24,7 +23,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private KeyHintManager() {}
+        private KeyHintManager() { }
 
         /// <summary>
         ///     Internal Dictionary holding the references to the custom key hints added to the manager
@@ -155,7 +154,7 @@ namespace Jotunn.Managers
                 KeyHintObjects.Remove(hintConfig.ToString());
             }
         }
-        
+
         /// <summary>
         ///     Instantiate base GameObjects from vanilla KeyHints to use in our custom key hints
         /// </summary>
@@ -165,7 +164,7 @@ namespace Jotunn.Managers
             {
                 return;
             }
-            
+
             var baseKeyHint = self.m_buildHints;
 
             // Get the Transforms of Keyboard and Gamepad
@@ -224,10 +223,10 @@ namespace Jotunn.Managers
             //BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
             //BaseDPad.transform.Find("Trigger").GetComponent<RectTransform>().sizeDelta = new Vector2(25f, 25f);
             PrefabManager.Instance.AddPrefab(BaseDPad);
-            
+
             HasInitBaseGameObjects = true;
         }
-        
+
         /// <summary>
         ///     Extract base key hint elements and create key hint objects.
         /// </summary>
@@ -242,7 +241,7 @@ namespace Jotunn.Managers
             KeyHintContainer = self.transform as RectTransform;
             KeyHintObjects.Clear();
         }
-        
+
         /// <summary>
         ///     Copy vanilla BuildHints object and create a custom one from a KeyHintConfig.
         /// </summary>
@@ -415,11 +414,12 @@ namespace Jotunn.Managers
             bool UseCustomKeyHint()
             {
                 // Guard
-                if (!self.m_keyHintsEnabled || !Player.m_localPlayer || Player.m_localPlayer.IsDead() || Chat.instance.IsChatDialogWindowVisible())
+                if (!self.m_keyHintsEnabled || !Player.m_localPlayer || Player.m_localPlayer.IsDead() ||
+                    Chat.instance.IsChatDialogWindowVisible() || Game.IsPaused() || InventoryGui.instance != null)
                 {
                     return false;
                 }
-                
+
                 // Get the current equipped item name
                 ItemDrop.ItemData item = Player.m_localPlayer.m_rightItem;
                 if (!(item != null && (item.IsWeapon() || item.m_shared?.m_buildPieces != null)))
@@ -449,7 +449,7 @@ namespace Jotunn.Managers
                 {
                     return false;
                 }
-                
+
                 // Try to get the hint object, if the keyhint is "dirty" (i.e. some config backed button changed), destroy the hint object
                 if (KeyHintObjects.TryGetValue(hintConfig.ToString(), out var hintObject) && hintConfig.Dirty)
                 {
@@ -470,7 +470,7 @@ namespace Jotunn.Managers
                         return false;
                     }
                 }
-                
+
                 if (!hintObject.activeSelf)
                 {
                     self.m_buildHints.SetActive(false);
@@ -481,7 +481,7 @@ namespace Jotunn.Managers
 
                 return true;
             }
-            
+
             if (!UseCustomKeyHint())
             {
                 KeyHintObjects.Values.Where(x => x.activeSelf).Do(x => x.SetActive(false));
@@ -490,7 +490,7 @@ namespace Jotunn.Managers
 
             return false;
         }
-        
+
         /// <summary>
         ///     Set any key hint config using buttons without a backing bep config dirty
         /// </summary>
