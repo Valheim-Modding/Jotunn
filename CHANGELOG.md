@@ -8,6 +8,7 @@
 * Fixed calling LocalizationManager/CustomLocalization.TryTranslate() could cause the game localisation to be initialized too early
 * Fixed an error inside the ModQuery if a null prefab is inside ZNetScene or ObjectDB
 * Fixed an error caused by releasing a render texture too early
+* Fixed KeyHints for keyboard, Gamepad hints are still not working a 100%
 * Removed changing the hammer category tab width and removed re-parenting of the tab border for better compatibility
 * Added reference to the BepInExPack 5.4.1902
 * NuGet Package adds a reference to Unity.TextMeshPro
