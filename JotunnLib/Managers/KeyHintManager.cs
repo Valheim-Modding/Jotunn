@@ -415,7 +415,9 @@ namespace Jotunn.Managers
             {
                 // Guard
                 if (!self.m_keyHintsEnabled || !Player.m_localPlayer || Player.m_localPlayer.IsDead() ||
-                    Chat.instance.IsChatDialogWindowVisible() || Game.IsPaused() || InventoryGui.instance != null)
+                    Chat.instance.IsChatDialogWindowVisible() || Game.IsPaused() || InventoryGui.instance != null &&
+                    (InventoryGui.instance.IsSkillsPanelOpen || InventoryGui.instance.IsTrophisPanelOpen ||
+                     InventoryGui.instance.IsTextPanelOpen || InventoryGui.instance.m_animator.GetBool("visible")))
                 {
                     return false;
                 }
@@ -475,6 +477,8 @@ namespace Jotunn.Managers
                 {
                     self.m_buildHints.SetActive(false);
                     self.m_combatHints.SetActive(false);
+                    self.m_inventoryHints.SetActive(false);
+                    self.m_fishingHints.SetActive(false);
                     KeyHintObjects.Values.Where(x => x.activeSelf).Do(x => x.SetActive(false));
                     hintObject.SetActive(true);
                 }
