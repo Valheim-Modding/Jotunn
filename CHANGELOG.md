@@ -8,6 +8,7 @@
 * Fixed calling LocalizationManager/CustomLocalization.TryTranslate() could cause the game localisation to be initialized too early
 * Fixed an error inside the ModQuery if a null prefab is inside ZNetScene or ObjectDB
 * Fixed an error caused by releasing a render texture too early
+* Removed changing the hammer category tab width and removed re-parenting of the tab border for better compatibility
 
 ## Version 2.10.4
 * Fixed that same item conversions could not be added to different stations

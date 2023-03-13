@@ -55,6 +55,7 @@ namespace Jotunn.Managers
             /// <summary>
             ///     Piece table tab header width.
             /// </summary>
+            [Obsolete("This setting is no longer used")]
             public static float HeaderWidth { get; set; } = 700f;
 
             /// <summary>
@@ -597,16 +598,10 @@ namespace Jotunn.Managers
                 return;
             }
 
-            // Get the GUI elements
-            GameObject root = Hud.instance.m_pieceCategoryRoot;
-            if (root.GetComponent<RectMask2D>() == null)
-            {
-                root.AddComponent<RectMask2D>();
-                root.SetWidth(PieceCategorySettings.HeaderWidth);
-
-                Transform border = root.transform.Find("TabBorder");
-                border?.SetParent(root.transform.parent, true);
-            }
+            // Adjust GUI elements to fit new tabs
+            Transform categoryRoot = Hud.instance.m_pieceCategoryRoot.transform;
+            categoryRoot.gameObject.GetOrAddComponent<RectMask2D>();
+            categoryRoot.Find("TabBorder").GetComponent<Image>().maskable = false;
 
             List<string> newNames = new List<string>(Hud.instance.m_buildCategoryNames);
             List<GameObject> newTabs = new List<GameObject>(Hud.instance.m_pieceCategoryTabs);
@@ -616,7 +611,7 @@ namespace Jotunn.Managers
             {
                 if (!newTabs.Exists(tab => tab.name == category.Key))
                 {
-                    GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], root.transform);
+                    GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], categoryRoot);
                     newTab.name = category.Key;
                     UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
                     handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
@@ -1007,6 +1002,9 @@ namespace Jotunn.Managers
                 var tab = Hud.instance.m_pieceCategoryTabs[(int)selectedCategory];
                 lastCategory = selectedCategory;
 
+                GameObject categoryRoot = Hud.instance.m_pieceCategoryRoot;
+                float categoryWidth = categoryRoot.GetWidth();
+
                 float minX = tab.GetComponent<RectTransform>().anchoredPosition.x - PieceCategorySettings.TabMargin;
                 if (minX < 0f)
                 {
@@ -1018,9 +1016,9 @@ namespace Jotunn.Managers
                 }
 
                 float maxX = tab.GetComponent<RectTransform>().anchoredPosition.x + CalculateTabWidth(tab) + PieceCategorySettings.TabMargin;
-                if (maxX > PieceCategorySettings.HeaderWidth)
+                if (maxX > categoryWidth)
                 {
-                    float offsetX = selectedCategory == Values.Max() ? maxX - PieceCategorySettings.HeaderWidth - PieceCategorySettings.TabMargin : maxX - PieceCategorySettings.HeaderWidth;
+                    float offsetX = selectedCategory == Values.Max() ? maxX - categoryWidth - PieceCategorySettings.TabMargin : maxX - categoryWidth;
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
                         go.GetComponent<RectTransform>().anchoredPosition -= new Vector2(offsetX, 0);
