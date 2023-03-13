@@ -478,6 +478,7 @@ namespace Jotunn.Managers
                     self.m_buildHints.SetActive(false);
                     self.m_combatHints.SetActive(false);
                     self.m_inventoryHints.SetActive(false);
+                    self.m_inventoryWithContainerHints.SetActive(false);
                     self.m_fishingHints.SetActive(false);
                     KeyHintObjects.Values.Where(x => x.activeSelf).Do(x => x.SetActive(false));
                     hintObject.SetActive(true);
