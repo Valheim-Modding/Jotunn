@@ -1,10 +1,14 @@
 # Changelog
 ## Version 2.11.1
+* Compatible with Valheim version 0.214.300
 * Fixed KeyHints not being correctly destroyed when using inventories with containers
 
 ## Version 2.11.0
+* Compatible with Valheim version 0.214.2
 * Added Norse fonts and additional colors to the GUIManger (thx SpikeHimself)
 * Added interface to remove a custom item conversion
+* Added reference to the BepInExPack 5.4.2100
+* Added reference to Unity.TextMeshPro in the NuGet package
 * Updated ConfigurationManagerAttributes to match BepInEx.ConfigurationManager v17.0
 * Updated the localization injection to be easier and removed the need to load vanilla translations a second time. Because the implementation concept changed, debug logs will no longer be printed
 * Fixed dropdown created with GUIManager.CreateDropDown was not in the correct UI layer, causing it to be wrongly rendered in VR (thx SpikeHimself)
@@ -13,8 +17,6 @@
 * Fixed an error caused by releasing a render texture too early
 * Fixed KeyHints for keyboard, Gamepad hints are still not working a 100%
 * Removed changing the hammer category tab width and removed re-parenting of the tab border for better compatibility
-* Added reference to the BepInExPack 5.4.2100
-* NuGet Package adds a reference to Unity.TextMeshPro
 
 ## Version 2.10.4
 * Fixed that same item conversions could not be added to different stations
@@ -62,7 +64,7 @@
 * Implemented hotfix for PlayFab connection issues (disables vanilla compression again, but works for now at least)
 
 ## Version 2.8.0
-* Compatible with patch version 0.211.11
+* Compatible with Valheim version 0.211.11
 * Fixed connection issues in Steam multiplayer with the latest Valheim patch. Crossplay (XBox multiplayer) is not working yet due to bigger changes, we are working on solving this issue
 * Marked PatchInit attribute as obsolete
 
@@ -117,7 +119,7 @@
 * Fixed JotunnBuildTask. This has no effect on the actual game but fixes the NuGet package upload, meaning the mod version and NuGet version match again
 
 ## Version 2.6.11
-* Compatible with patch version 0.209.8
+* Compatible with Valheim version 0.209.8
 * Fixed ModQuery has not cleared old prefabs, resulting in null instances
 
 ## Version 2.6.10
@@ -174,7 +176,7 @@
 * Jötunn's PrebuildTask does not generate MMHOOK dlls any more, publicized dlls can still be generated automatically.
 
 ## Version 2.6.0
-* Compatible with patch version 0.207.20
+* Compatible with Valheim version 0.207.20
 * KeyHint performance improvements
 * Fixed custom RPCs not routing to "self"
 * Fixed empty KeyboardShortcut saving (thx Heinermann)
