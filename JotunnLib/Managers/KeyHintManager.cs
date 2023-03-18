@@ -326,7 +326,7 @@ namespace Jotunn.Managers
                         case GamepadButton.DPadRight:
                             var customPadNoRotate = Object.Instantiate(BaseDPad, gp, false);
                             customPadNoRotate.name = buttonConfig.Name;
-                            customPadNoRotate.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customPadNoRotate.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
                             //customPadNoRotate.GetComponentInChildren<Text>().text = buttonString;
                             //customPadNoRotate.transform.Find("Text").gameObject.SetText(hint);
                             customPadNoRotate.SetActive(true);
@@ -335,7 +335,7 @@ namespace Jotunn.Managers
                         case GamepadButton.DPadDown:
                             var customPadRotate = Object.Instantiate(BaseDPad, gp, false);
                             customPadRotate.name = buttonConfig.Name;
-                            customPadRotate.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customPadRotate.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
                             //customPadRotate.transform.Find("Trigger").GetComponent<RectTransform>().Rotate(new Vector3(0, 0, 1f), 90f);
                             //customPadRotate.GetComponentInChildren<Text>().text = buttonString;
                             //customPadRotate.transform.Find("Text").gameObject.SetText(hint);
@@ -345,7 +345,7 @@ namespace Jotunn.Managers
                         case GamepadButton.SelectButton:
                             var customPad = Object.Instantiate(BaseKey, gp, false);
                             customPad.name = buttonConfig.Name;
-                            customPad.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customPad.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
                             //customPad.GetComponentInChildren<Text>().text = buttonString;
                             //customPad.transform.Find("Text").gameObject.SetText(hint);
                             customPad.SetActive(true);
@@ -356,7 +356,7 @@ namespace Jotunn.Managers
                         case GamepadButton.ButtonEast:
                             var customButton = Object.Instantiate(BaseButton, gp, false);
                             customButton.name = buttonConfig.Name;
-                            customButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
                             //customButton.GetComponentInChildren<Text>().text = buttonString;
                             //customButton.transform.Find("Text").gameObject.SetText(hint);
                             customButton.SetActive(true);
@@ -365,7 +365,7 @@ namespace Jotunn.Managers
                         case GamepadButton.RightShoulder:
                             var customShoulder = Object.Instantiate(BaseShoulder, gp, false);
                             customShoulder.name = buttonConfig.Name;
-                            customShoulder.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customShoulder.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
                             //customShoulder.GetComponentInChildren<Text>().text = buttonString;
                             //customShoulder.transform.Find("Text").gameObject.SetText(hint);
                             customShoulder.SetActive(true);
@@ -374,7 +374,7 @@ namespace Jotunn.Managers
                         case GamepadButton.RightTrigger:
                             var customTrigger = Object.Instantiate(BaseTrigger, gp, false);
                             customTrigger.name = buttonConfig.Name;
-                            customTrigger.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customTrigger.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
                             //customTrigger.GetComponentInChildren<Text>().text = buttonString;
                             //customTrigger.transform.Find("Text").gameObject.SetText(hint);
                             customTrigger.SetActive(true);
@@ -383,7 +383,7 @@ namespace Jotunn.Managers
                         case GamepadButton.RightStickButton:
                             var customStick = Object.Instantiate(BaseStick, gp, false);
                             customStick.name = buttonConfig.Name;
-                            customStick.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
+                            //customStick.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = buttonString;
                             //customStick.GetComponentInChildren<Text>().text = buttonString;
                             //customStick.transform.Find("Text").gameObject.SetText(hint);
                             customStick.SetActive(true);
