@@ -168,6 +168,12 @@ namespace Jotunn.Managers
         {
             Items.Remove(item);
 
+            if (ObjectDB.instance && item.ItemPrefab)
+            {
+                ObjectDB.instance.m_items.Remove(item.ItemPrefab);
+                ObjectDB.instance.m_itemByHash.Remove(item.ItemPrefab.name.GetStableHashCode());
+            }
+
             if (item.ItemPrefab)
             {
                 PrefabManager.Instance.RemovePrefab(item.ItemPrefab.name);
@@ -259,8 +265,7 @@ namespace Jotunn.Managers
         {
             Recipes.Remove(recipe);
 
-            if (recipe.Recipe != null && ObjectDB.instance != null &&
-                ObjectDB.instance.m_recipes.Contains(recipe.Recipe))
+            if (ObjectDB.instance && recipe.Recipe)
             {
                 ObjectDB.instance.m_recipes.Remove(recipe.Recipe);
             }
