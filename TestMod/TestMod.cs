@@ -701,24 +701,27 @@ namespace TestMod
         // Load assets
         private void LoadAssets()
         {
-            // Load texture
-            TestTex = AssetUtils.LoadTexture("TestMod/Assets/test_tex.jpg");
+            // patch to the folder where the mod dll is located
+            string modPath = Path.GetDirectoryName(Info.Location);
+
+            // Load texture from filesystem
+            TestTex = AssetUtils.LoadTexture(Path.Combine(modPath, "Assets/test_tex.jpg"));
             TestSprite = Sprite.Create(TestTex, new Rect(0f, 0f, TestTex.width, TestTex.height), Vector2.zero);
 
             // Load asset bundle from filesystem
-            TestAssets = AssetUtils.LoadAssetBundle("TestMod/Assets/jotunnlibtest");
+            TestAssets = AssetUtils.LoadAssetBundle(Path.Combine(modPath, "Assets/jotunnlibtest"));
             Jotunn.Logger.LogInfo(TestAssets);
 
             // Load asset bundle from filesystem
-            BlueprintRuneBundle = AssetUtils.LoadAssetBundle("TestMod/Assets/testblueprints");
+            BlueprintRuneBundle = AssetUtils.LoadAssetBundle(Path.Combine(modPath, "Assets/testblueprints"));
             Jotunn.Logger.LogInfo(BlueprintRuneBundle);
 
-            // Load Steel ingot from streamed resource
+            // Load Steel ingot from embedded resource
             Steelingot = AssetUtils.LoadAssetBundleFromResources("steel");
             ClutterAssetBundle = AssetUtils.LoadAssetBundleFromResources("clutterbundle");
 
             // Embedded Resources
-            Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(",", typeof(TestMod).Assembly.GetManifestResourceNames())}");
+            Jotunn.Logger.LogInfo($"Embedded resources: {string.Join(", ", typeof(TestMod).Assembly.GetManifestResourceNames())}");
         }
 
         // Add custom key bindings
