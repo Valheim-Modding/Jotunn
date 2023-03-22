@@ -49,8 +49,8 @@ We can sync a client configuration with the server by setting the `IsAdminOnly` 
 // Create some sample configuration values to check server sync
 private void CreateConfigValues()
 {
-    ConfigurationManagerAttributes isAdminOnly = new ConfigurationManagerAttributes { IsAdminOnly = true }));
-    AcceptableValueRange floatRange = new AcceptableValueRange<float>(0f, 1000f);
+    ConfigurationManagerAttributes isAdminOnly = new ConfigurationManagerAttributes { IsAdminOnly = true };
+    AcceptableValueRange<float> floatRange = new AcceptableValueRange<float>(0f, 1000f);
 
     // Add server config which gets pushed to all clients connecting and can only be edited by admins
     // In local/single player games the player is always considered the admin
