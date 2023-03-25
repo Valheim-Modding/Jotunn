@@ -156,11 +156,6 @@ public sealed class ConfigurationManagerAttributes
 
     private bool isUnlocked;
 
-    /// <summary>
-    ///     When a config is locked, cache the local value
-    /// </summary>
-    internal object LocalValue { get; set; }
-
     private static readonly PropertyInfo[] _myProperties = typeof(ConfigurationManagerAttributes).GetProperties(BindingFlags.Instance | BindingFlags.Public);
     private static readonly FieldInfo[] _myFields = typeof(ConfigurationManagerAttributes).GetFields(BindingFlags.Instance | BindingFlags.Public);
 

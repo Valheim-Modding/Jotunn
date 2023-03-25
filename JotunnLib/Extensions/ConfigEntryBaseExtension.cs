@@ -103,11 +103,11 @@ namespace Jotunn
         /// <returns></returns>
         internal static object GetLocalValue(this ConfigEntryBase configurationEntry)
         {
-            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
-            if (cma != null)
+            if (SynchronizationManager.Instance.localValues.TryGetValue(configurationEntry, out var localValue))
             {
-                return cma.LocalValue;
+                return localValue;
             }
+
             return null;
         }
 
@@ -119,11 +119,7 @@ namespace Jotunn
         /// <returns></returns>
         internal static void SetLocalValue(this ConfigEntryBase configurationEntry, object value)
         {
-            var cma = configurationEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes) as ConfigurationManagerAttributes;
-            if (cma != null)
-            {
-                cma.LocalValue = value; 
-            }
+            SynchronizationManager.Instance.localValues[configurationEntry] = value;
         }
 
         internal static ConfigurationManagerAttributes GetConfigurationManagerAttributes(this ConfigEntryBase configEntry)

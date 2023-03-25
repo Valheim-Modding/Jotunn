@@ -22,6 +22,8 @@ namespace Jotunn.Managers
         private CustomRPC AdminRPC;
         private List<Tuple<CustomRPC, Func<ZNetPeer, ZPackage>>> InitialSync = new List<Tuple<CustomRPC, Func<ZNetPeer,ZPackage>>>();
 
+        internal readonly Dictionary<ConfigEntryBase, object> localValues = new Dictionary<ConfigEntryBase, object>();
+
         private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
         private readonly Dictionary<string, ConfigFile> CustomConfigs = new Dictionary<string, ConfigFile>();
         private List<Tuple<string, string, string, string>> CachedConfigValues = new List<Tuple<string, string, string, string>>();
@@ -763,7 +765,7 @@ namespace Jotunn.Managers
 
                     if (configAttribute?.IsAdminOnly == true && configEntry.BoxedValue != null)
                     {
-                        configAttribute.LocalValue = configEntry.BoxedValue;
+                        localValues[configEntry] = configEntry.BoxedValue;
                     }
                 }
             }
@@ -774,20 +776,12 @@ namespace Jotunn.Managers
         /// </summary>
         private void ResetAdminConfigs()
         {
-            foreach (var config in GetConfigFiles())
+            foreach (var localValue in localValues)
             {
-                foreach (var configDefinition in config.Keys)
-                {
-                    var configEntry = config[configDefinition.Section, configDefinition.Key];
-                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
-                        .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
-                    if (configAttribute != null && configAttribute.LocalValue != null)
-                    {
-                        configEntry.BoxedValue = configAttribute.LocalValue;
-                        configAttribute.LocalValue = null;
-                    }
-                }
+                localValue.Key.BoxedValue = localValue.Value;
             }
+
+            localValues.Clear();
         }
 
         private const byte INITIAL_CONFIG = 64;
