@@ -1,8 +1,8 @@
 # Changelog
 ## Version 2.11.1
-* Compatible with Valheim version 0.214.300
 * Fixed KeyHints not being correctly destroyed when using inventories with containers
 * Fixed ItemManager.RemoveItem was not removing the item from the active ObjectDB if it already existed
+* Fixed an issue that caused client config values to not reset correctly when a mod used shared ConfigurationManagerAttributes/ConfigDescription with server enforced values
 
 ## Version 2.11.0
 * Compatible with Valheim version 0.214.2
