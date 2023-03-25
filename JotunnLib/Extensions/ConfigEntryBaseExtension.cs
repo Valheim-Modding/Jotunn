@@ -125,5 +125,10 @@ namespace Jotunn
                 cma.LocalValue = value; 
             }
         }
+
+        internal static ConfigurationManagerAttributes GetConfigurationManagerAttributes(this ConfigEntryBase configEntry)
+        {
+            return (ConfigurationManagerAttributes)configEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes);
+        }
     }
 }

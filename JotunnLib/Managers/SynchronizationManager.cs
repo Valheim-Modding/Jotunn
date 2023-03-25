@@ -490,9 +490,9 @@ namespace Jotunn.Managers
                 foreach (var configDefinition in config.Keys)
                 {
                     var configEntry = config[configDefinition.Section, configDefinition.Key];
-                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
-                        .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
-                    if (configAttribute != null)
+                    var configAttribute = configEntry.GetConfigurationManagerAttributes();
+
+                    if (configAttribute?.IsAdminOnly == true)
                     {
                         configAttribute.IsUnlocked = true;
                     }
@@ -510,9 +510,9 @@ namespace Jotunn.Managers
                 foreach (var configDefinition in config.Keys)
                 {
                     var configEntry = config[configDefinition.Section, configDefinition.Key];
-                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
-                        .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
-                    if (configAttribute != null)
+                    var configAttribute = configEntry.GetConfigurationManagerAttributes();
+
+                    if (configAttribute?.IsAdminOnly == true)
                     {
                         configAttribute.IsUnlocked = false;
                     }
@@ -629,8 +629,10 @@ namespace Jotunn.Managers
 
                 foreach (var cd in config.Keys)
                 {
-                    var cx = config[cd.Section, cd.Key];
-                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes { IsAdminOnly: true }))
+                    ConfigEntryBase cx = config[cd.Section, cd.Key];
+                    var configAttribute = cx.GetConfigurationManagerAttributes();
+
+                    if (configAttribute?.IsAdminOnly == true)
                     {
                         var value = TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType);
                         var entry = new Tuple<string, string, string, string>(configIdentifier, cd.Section, cd.Key, value);
@@ -656,7 +658,9 @@ namespace Jotunn.Managers
                 foreach (var cd in config.Keys)
                 {
                     var cx = config[cd.Section, cd.Key];
-                    if (cx.Description.Tags.Any(x => x is ConfigurationManagerAttributes { IsAdminOnly: true, IsUnlocked: true }))
+                    var configAttribute = cx.GetConfigurationManagerAttributes();
+
+                    if (configAttribute?.IsAdminOnly == true)
                     {
                         var value = TomlTypeConverter.ConvertToString(cx.BoxedValue, cx.SettingType);
                         var entry = new Tuple<string, string, string, string>(configIdentifier, cd.Section, cd.Key, value);
@@ -755,9 +759,9 @@ namespace Jotunn.Managers
                 foreach (var configDefinition in config.Keys)
                 {
                     var configEntry = config[configDefinition.Section, configDefinition.Key];
-                    var configAttribute = (ConfigurationManagerAttributes)configEntry.Description.Tags
-                        .FirstOrDefault(x => x is ConfigurationManagerAttributes { IsAdminOnly: true });
-                    if (configAttribute != null && configEntry.BoxedValue != null)
+                    var configAttribute = configEntry.GetConfigurationManagerAttributes();
+
+                    if (configAttribute?.IsAdminOnly == true && configEntry.BoxedValue != null)
                     {
                         configAttribute.LocalValue = configEntry.BoxedValue;
                     }
