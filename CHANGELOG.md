@@ -1,4 +1,7 @@
 # Changelog
+## Version 2.11.2
+* Compatible with Valheim version 0.214.300
+
 ## Version 2.11.1
 * Fixed KeyHints not being correctly destroyed when using inventories with containers
 * Fixed ItemManager.RemoveItem was not removing the item from the active ObjectDB if it already existed
