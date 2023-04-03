@@ -1,4 +1,8 @@
 # Changelog
+
+## Version 2.11.3
+* Slightly improved loading time of big mod packs by caching mod info used when creating custom entities
+
 ## Version 2.11.2
 * Compatible with Valheim version 0.214.300
 

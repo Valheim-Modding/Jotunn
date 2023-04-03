@@ -19,6 +19,7 @@ namespace Jotunn.Utils
 
         private static Dictionary<PluginInfo, string> PluginInfoTypeNameCache { get; } = new Dictionary<PluginInfo, string>();
         private static Dictionary<Assembly, PluginInfo> AssemblyToPluginInfoCache { get; } = new Dictionary<Assembly, PluginInfo>();
+        private static Dictionary<Type, PluginInfo> TypeToPluginInfoCache { get; } = new Dictionary<Type, PluginInfo>();
 
         /// <summary>
         ///     Cache loaded plugins which depend on Jotunn.
@@ -100,11 +101,17 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static PluginInfo GetPluginInfoFromType(Type type)
         {
+            if (TypeToPluginInfoCache.TryGetValue(type, out var pluginInfo))
+            {
+                return pluginInfo;
+            }
+
             foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
             {
                 var typeName = ReflectionHelper.GetPrivateProperty<string>(info, "TypeName");
                 if (typeName.Equals(type.FullName))
                 {
+                    TypeToPluginInfoCache[type] = info;
                     return info;
                 }
             }
@@ -114,12 +121,12 @@ namespace Jotunn.Utils
 
         private static string GetPluginInfoTypeName(PluginInfo info)
         {
-            if (PluginInfoTypeNameCache.ContainsKey(info))
+            if (PluginInfoTypeNameCache.TryGetValue(info, out var typeName))
             {
-                return PluginInfoTypeNameCache[info];
+                return typeName;
             }
 
-            var typeName = ReflectionHelper.GetPrivateProperty<string>(info, "TypeName");
+            typeName = ReflectionHelper.GetPrivateProperty<string>(info, "TypeName");
             PluginInfoTypeNameCache.Add(info, typeName);
             return typeName;
         }
@@ -131,16 +138,16 @@ namespace Jotunn.Utils
         /// <returns></returns>
         public static PluginInfo GetPluginInfoFromAssembly(Assembly assembly)
         {
-            if (AssemblyToPluginInfoCache.ContainsKey(assembly))
+            if (AssemblyToPluginInfoCache.TryGetValue(assembly, out var pluginInfo))
             {
-                return AssemblyToPluginInfoCache[assembly];
+                return pluginInfo;
             }
 
             foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
             {
                 if (assembly.GetType(GetPluginInfoTypeName(info)) != null)
                 {
-                    AssemblyToPluginInfoCache.Add(assembly, info);
+                    AssemblyToPluginInfoCache[assembly] = info;
                     return info;
                 }
             }
