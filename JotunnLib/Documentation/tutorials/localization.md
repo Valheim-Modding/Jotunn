@@ -50,9 +50,9 @@ You can find a list of language names [here](../data/localization/language-list.
 ### Hardcoding localizations
 
 Localizations may also be hardcoded into your plugin.
-This is done by creating your own [CustomLocalization](xref:Jotunn.Entities.CustomLocalization) instance and invoking the [AddLocalization](xref:Jotunn.Entities.CustomLocalization.AddTranslation(System.String@,System.Collections.Generic.Dictionary{System.String,System.String})) method.
-Don't forget to add that CustomLocalization to the [LocalizationManager](xref:Jotunn.Managers.LocalizationManager).
-This can be done right after instantiation, all added content gets also added to the game.
+This is done by getting your own [CustomLocalization](xref:Jotunn.Entities.CustomLocalization) instance via the [GetLocalization](xref:Jotunn.Managers.LocalizationManager.GetLocalization) method.
+A new instance will be created if none exists yet.
+This can be done right inside your mod `Awake` method, all added content gets also added to the game.
 
 ```cs
 // Your mod's custom localization
@@ -60,9 +60,8 @@ private CustomLocalization Localization;
 
 private void AddLocalizations()
 {
-    // Create a custom Localization instance and add it to the Manager
-    Localization = new CustomLocalization();
-    LocalizationManager.Instance.AddLocalization(Localization);
+    // Get your mod translation instance
+    Localization = LocalizationManager.Instance.GetLocalization();
 
     // Add translations for our custom skill
     Localization.AddTranslation("English", new Dictionary<string, string>
@@ -103,6 +102,7 @@ private void AddLocalizations()
     });
 }
 ```
+
 ![Evil Sword Localizations](../images/data/EvilSwordLocalizations.png)
 
 
