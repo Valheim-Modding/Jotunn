@@ -80,7 +80,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Creates the piece table container and registers all hooks.
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             Main.Harmony.PatchAll(typeof(Patches));
         }

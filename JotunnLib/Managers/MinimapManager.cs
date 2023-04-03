@@ -96,7 +96,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Creates the Overlays and registers hooks.
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             // Dont init on a headless server
             if (GUIManager.IsHeadless())

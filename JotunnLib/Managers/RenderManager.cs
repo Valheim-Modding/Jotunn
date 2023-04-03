@@ -45,7 +45,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Initialize the manager
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             if (GUIManager.IsHeadless())
             {

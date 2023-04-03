@@ -40,7 +40,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Initialize console commands that come with Jotunn.
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             AddConsoleCommand(new ClearCommand());
 

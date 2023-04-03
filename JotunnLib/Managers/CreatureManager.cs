@@ -62,7 +62,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Creates the spawner container and registers all hooks.
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             SpawnListContainer = new GameObject("Creatures");
             SpawnListContainer.transform.parent = Main.RootObject.transform;
