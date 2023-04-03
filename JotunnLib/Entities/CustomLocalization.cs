@@ -13,14 +13,23 @@ namespace Jotunn.Entities
         /// <summary> Map that work as [language][token] = translation. </summary>
         internal Dictionary<string, Dictionary<string, string>> Map { get; }
 
-        /// <summary> Default constuctor. </summary>
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        [Obsolete("Use LocalizationManager.Instance.GetLocalization() instead")]
         public CustomLocalization()
-            => Map = new Dictionary<string, Dictionary<string, string>>();
+        {
+            Map = new Dictionary<string, Dictionary<string, string>>();
+        }
 
-        /// <summary> SourceMod hint constuctor. </summary>
+        /// <summary>
+        ///     SourceMod hint constructor.
+        /// </summary>
         /// <param name="sourceMod"> Mod data in the shape of BepInPlugin class. </param>
         public CustomLocalization(BepInPlugin sourceMod) : base(sourceMod)
-            => Map = new Dictionary<string, Dictionary<string, string>>();
+        {
+            Map = new Dictionary<string, Dictionary<string, string>>();
+        }
 
         /// <summary> Retrieve list of languages that have been added. </summary>
         public IEnumerable<string> GetLanguages() => Map.Keys;
