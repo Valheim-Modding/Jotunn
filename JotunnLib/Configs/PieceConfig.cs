@@ -37,7 +37,11 @@ namespace Jotunn.Configs
         /// <summary>
         ///     The name of the piece table where this piece will be added.
         /// </summary>
-        public string PieceTable { get; set; } = string.Empty;
+        public string PieceTable
+        {
+            get => pieceTable;
+            set => pieceTable = PieceTables.GetInternalName(value);
+        }
 
         /// <summary>
         ///     The name of the category this piece will appear on. If categories are disabled on the 
@@ -45,17 +49,29 @@ namespace Jotunn.Configs
         ///     If categories are enabled but the given category can't be found, a new 
         ///     <see cref="Piece.PieceCategory"/> will be added to the table.
         /// </summary>
-        public string Category { get; set; } = string.Empty;
+        public string Category
+        {
+            get => category;
+            set => category = PieceCategories.GetInternalName(value);
+        }
 
         /// <summary>
         ///     The name of the crafting station prefab which needs to be in close proximity to build this piece.
         /// </summary>
-        public string CraftingStation { get; set; } = string.Empty;
+        public string CraftingStation
+        {
+            get => craftingStation;
+            set => craftingStation = CraftingStations.GetInternalName(value);
+        }
 
         /// <summary>
         ///     The name of the crafting station prefab to which this piece will be an upgrade to.
         /// </summary>
-        public string ExtendStation { get; set; } = string.Empty;
+        public string ExtendStation
+        {
+            get => extendStation;
+            set => extendStation = CraftingStations.GetInternalName(value);
+        }
 
         /// <summary>
         ///     Icon which is displayed in the crafting GUI.
@@ -66,6 +82,11 @@ namespace Jotunn.Configs
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
         public RequirementConfig[] Requirements { get; set; } = Array.Empty<RequirementConfig>();
+
+        private string pieceTable = string.Empty;
+        private string category = string.Empty;
+        private string craftingStation = string.Empty;
+        private string extendStation = string.Empty;
 
         /// <summary>
         ///     Apply this configs values to a piece GameObject.
