@@ -35,12 +35,11 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get a <see cref="BepInEx.Configuration.AcceptableValueList{T}"/> of all piece table names.
-        ///     This can be used to create a <see cref="BepInEx.Configuration.ConfigEntry{T}"/> where only valid piece table can be selected.
-        ///     <example>
-        ///         <code>
-        ///             var pieceTableConfig = Config.Bind("Section", "Key", nameof(PieceTables.Hammer), new ConfigDescription("Description", PieceTables.GetAcceptableValueList()));
-        ///         </code>
-        ///     </example>
+        ///     This can be used to create a <see cref="BepInEx.Configuration.ConfigEntry{T}"/> where only valid piece table can be selected.<br/><br/>
+        ///     Example:
+        ///     <code>
+        ///          var pieceTableConfig = Config.Bind("Section", "Key", nameof(PieceTables.Hammer), new ConfigDescription("Description", PieceTables.GetAcceptableValueList()));
+        ///     </code>
         /// </summary>
         /// <returns></returns>
         public static AcceptableValueList<string> GetAcceptableValueList()

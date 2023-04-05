@@ -60,12 +60,11 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get a <see cref="BepInEx.Configuration.AcceptableValueList{T}"/> of all crafting station names.
-        ///     This can be used to create a <see cref="BepInEx.Configuration.ConfigEntry{T}"/> where only valid crafting stations can be selected.
-        ///     <example>
-        ///         <code>
-        ///             var stationConfig = Config.Bind("Section", "Key", nameof(CraftingStations.Workbench), new ConfigDescription("Description", CraftingStations.GetAcceptableValueList()));
-        ///         </code>
-        ///     </example>
+        ///     This can be used to create a <see cref="BepInEx.Configuration.ConfigEntry{T}"/> where only valid crafting stations can be selected.<br/><br/>
+        ///     Example:
+        ///     <code>
+        ///         var stationConfig = Config.Bind("Section", "Key", nameof(CraftingStations.Workbench), new ConfigDescription("Description", CraftingStations.GetAcceptableValueList()));
+        ///     </code>
         /// </summary>
         /// <returns></returns>
         public static AcceptableValueList<string> GetAcceptableValueList()

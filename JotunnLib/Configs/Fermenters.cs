@@ -25,12 +25,11 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get a <see cref="BepInEx.Configuration.AcceptableValueList{T}"/> of all fermenter names.
-        ///     This can be used to create a <see cref="BepInEx.Configuration.ConfigEntry{T}"/> where only valid fermenter can be selected.
-        ///     <example>
-        ///         <code>
-        ///             var fermenterConfig = Config.Bind("Section", "Key", nameof(Fermenters.Fermenter), new ConfigDescription("Description", Fermenters.GetAcceptableValueList()));
-        ///         </code>
-        ///     </example>
+        ///     This can be used to create a <see cref="BepInEx.Configuration.ConfigEntry{T}"/> where only valid fermenter can be selected.<br/><br/>
+        ///     Example:
+        ///     <code>
+        ///         var fermenterConfig = Config.Bind("Section", "Key", nameof(Fermenters.Fermenter), new ConfigDescription("Description", Fermenters.GetAcceptableValueList()));
+        ///     </code>
         /// </summary>
         /// <returns></returns>
         public static AcceptableValueList<string> GetAcceptableValueList()

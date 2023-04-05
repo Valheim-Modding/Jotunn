@@ -55,12 +55,11 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get a <see cref="BepInEx.Configuration.AcceptableValueList{T}"/> of all smelter names.
-        ///     This can be used to create a <see cref="BepInEx.Configuration.ConfigEntry{T}"/> where only valid smelter can be selected.
-        ///     <example>
-        ///         <code>
-        ///             var smelterConfig = Config.Bind("Section", "Key", nameof(Smelters.Smelter), new ConfigDescription("Description", Smelters.GetAcceptableValueList()));
-        ///         </code>
-        ///     </example>
+        ///     This can be used to create a <see cref="BepInEx.Configuration.ConfigEntry{T}"/> where only valid smelter can be selected.<br/><br/>
+        ///     Example:
+        ///     <code>
+        ///         var smelterConfig = Config.Bind("Section", "Key", nameof(Smelters.Smelter), new ConfigDescription("Description", Smelters.GetAcceptableValueList()));
+        ///     </code>
         /// </summary>
         /// <returns></returns>
         public static AcceptableValueList<string> GetAcceptableValueList()

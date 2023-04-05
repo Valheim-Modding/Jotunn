@@ -25,12 +25,11 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get a <see cref="BepInEx.Configuration.AcceptableValueList{T}"/> of all incinerator names.
-        ///     This can be used to create a <see cref="BepInEx.Configuration.ConfigEntry{T}"/> where only valid incinerator can be selected.
-        ///     <example>
-        ///         <code>
-        ///             var incineratorConfig = Config.Bind("Section", "Key", nameof(Incinerators.Incinerator), new ConfigDescription("Description", Incinerators.GetAcceptableValueList()));
-        ///         </code>
-        ///     </example>
+        ///     This can be used to create a <see cref="BepInEx.Configuration.ConfigEntry{T}"/> where only valid incinerator can be selected.<br/><br/>
+        ///     Example:
+        ///     <code>
+        ///         var incineratorConfig = Config.Bind("Section", "Key", nameof(Incinerators.Incinerator), new ConfigDescription("Description", Incinerators.GetAcceptableValueList()));
+        ///     </code>
         /// </summary>
         /// <returns></returns>
         public static AcceptableValueList<string> GetAcceptableValueList()
