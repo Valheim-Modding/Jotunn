@@ -100,6 +100,6 @@ namespace Jotunn.Configs
             { nameof(GaldrTable), GaldrTable },
         };
 
-        private static readonly AcceptableValueList<string> AcceptableValues = new AcceptableValueList<string>(NamesMap.Values.ToArray());
+        private static readonly AcceptableValueList<string> AcceptableValues = new AcceptableValueList<string>(NamesMap.Keys.ToArray());
     }
 }

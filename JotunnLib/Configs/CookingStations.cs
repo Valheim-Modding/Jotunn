@@ -70,6 +70,6 @@ namespace Jotunn.Configs
             { nameof(StoneOven), StoneOven },
         };
 
-        private static readonly AcceptableValueList<string> AcceptableValues = new AcceptableValueList<string>(NamesMap.Values.ToArray());
+        private static readonly AcceptableValueList<string> AcceptableValues = new AcceptableValueList<string>(NamesMap.Keys.ToArray());
     }
 }
