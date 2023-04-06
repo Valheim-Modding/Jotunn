@@ -79,13 +79,6 @@ namespace Jotunn.Utils
         }
 
         [Fact]
-        public void DifferentValheimVersion()
-        {
-            clientVersionData.ValheimVersion = v_2_0_0;
-            Assert.False(ModCompatibility.CompareVersionData(serverVersionData, clientVersionData));
-        }
-
-        [Fact]
         public void ModVersionCompare_MajorStrictness()
         {
             // At least Mayor different

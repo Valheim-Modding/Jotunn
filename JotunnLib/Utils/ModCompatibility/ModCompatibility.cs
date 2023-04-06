@@ -168,12 +168,6 @@ namespace Jotunn.Utils
 
             bool result = true;
 
-            if (!Equals(serverData.ValheimVersion, clientData.ValheimVersion))
-            {
-                Logger.LogWarning($"Version incompatibility: Server {serverData.ValheimVersion}, Client {clientData.ValheimVersion}");
-                result = false;
-            }
-
             // Check server enforced mods
             foreach (var serverModule in FindNotInstalledMods(serverData, clientData))
             {
