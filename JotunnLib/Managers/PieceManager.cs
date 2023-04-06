@@ -1003,12 +1003,18 @@ namespace Jotunn.Managers
                 lastCategory = selectedCategory;
 
                 GameObject categoryRoot = Hud.instance.m_pieceCategoryRoot;
-                float categoryWidth = categoryRoot.GetWidth();
+                float categoryRootWidth = categoryRoot.GetWidth();
 
                 float minX = tab.GetComponent<RectTransform>().anchoredPosition.x - PieceCategorySettings.TabMargin;
                 if (minX < 0f)
                 {
-                    float offsetX = selectedCategory == Values.Min() ? minX * -1 - PieceCategorySettings.TabMargin : minX * -1;
+                    float offsetX = minX * -1;
+
+                    if (selectedCategory == Values.Min())
+                    {
+                        offsetX -= PieceCategorySettings.TabMargin;
+                    }
+
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
                         go.GetComponent<RectTransform>().anchoredPosition += new Vector2(offsetX, 0);
@@ -1016,9 +1022,15 @@ namespace Jotunn.Managers
                 }
 
                 float maxX = tab.GetComponent<RectTransform>().anchoredPosition.x + CalculateTabWidth(tab) + PieceCategorySettings.TabMargin;
-                if (maxX > categoryWidth)
+                if (maxX > categoryRootWidth)
                 {
-                    float offsetX = selectedCategory == Values.Max() ? maxX - categoryWidth - PieceCategorySettings.TabMargin : maxX - categoryWidth;
+                    float offsetX = maxX - categoryRootWidth;
+
+                    if (selectedCategory == Values.Where(i => i != Piece.PieceCategory.All).Max())
+                    {
+                        offsetX -= PieceCategorySettings.TabMargin;
+                    }
+
                     foreach (GameObject go in Hud.instance.m_pieceCategoryTabs)
                     {
                         go.GetComponent<RectTransform>().anchoredPosition -= new Vector2(offsetX, 0);
