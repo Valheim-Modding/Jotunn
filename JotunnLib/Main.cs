@@ -99,7 +99,10 @@ namespace Jotunn
 
         private void Start()
         {
+#pragma warning disable CS0612 // Method is obsolete
             InitializePatches();
+#pragma warning restore CS0612 // Method is obsolete
+
             LocalizationManager.Instance.LoadingAutomaticLocalizations();
         }
 
@@ -112,6 +115,7 @@ namespace Jotunn
         /// <summary>
         ///     Invoke patch initialization methods for all loaded mods.
         /// </summary>
+        [Obsolete]
         private void InitializePatches()
         {
             List<Tuple<MethodInfo, int>> types = new List<Tuple<MethodInfo, int>>();
@@ -137,7 +141,6 @@ namespace Jotunn
                     {
                         try
                         {
-#pragma warning disable CS0618 // Type or member is obsolete
                             // on methods with the PatchInit attribute
                             foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public)
                                 .Where(x => x.GetCustomAttributes(typeof(PatchInitAttribute), false).Length == 1))
@@ -145,7 +148,6 @@ namespace Jotunn
                                 var attribute = method.GetCustomAttributes(typeof(PatchInitAttribute), false).FirstOrDefault() as PatchInitAttribute;
                                 types.Add(new Tuple<MethodInfo, int>(method, attribute.Priority));
                             }
-#pragma warning restore CS0618 // Type or member is obsolete
                         }
                         catch (Exception)
                         { }

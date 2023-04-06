@@ -498,9 +498,9 @@ namespace Jotunn.Managers
             CustomGUIBack.GetComponent<RectTransform>().anchorMin = Vector2.zero;
             CustomGUIBack.GetComponent<RectTransform>().anchorMax = Vector2.one;
 
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0612 // Method is obsolete
             InvokeOnPixelFixCreated();
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0612 // Method is obsolete
 
             InvokeOnCustomGUIAvailable();
         }
