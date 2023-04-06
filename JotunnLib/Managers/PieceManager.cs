@@ -1033,7 +1033,7 @@ namespace Jotunn.Managers
 
                 if (tabIndex >= 0 && tabIndex < Hud.instance.m_buildCategoryNames.Count)
                 {
-                    name = Hud.instance.m_buildCategoryNames[tabIndex];
+                    name = Localization.instance.Localize(Hud.instance.m_buildCategoryNames[tabIndex]);
                 }
                 else
                 {
