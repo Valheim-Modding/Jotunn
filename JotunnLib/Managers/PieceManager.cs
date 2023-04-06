@@ -123,12 +123,12 @@ namespace Jotunn.Managers
                 }
             }
 
-            [HarmonyPatch(typeof(Hud), nameof(Hud.OnLeftClickCategory)), HarmonyPostfix]
-            public static void Hud_OnLeftClickCategory(Hud __instance)
+            [HarmonyPatch(typeof(Player), nameof(Player.SetBuildCategory)), HarmonyPostfix]
+            public static void Player_SetBuildCategory()
             {
                 if (PieceTableCategories.currentActive != null)
                 {
-                    PieceTableCategories.currentActive.Hud_OnLeftClickCategory(__instance);
+                    PieceTableCategories.currentActive.Player_SetBuildCategory();
                 }
             }
 
@@ -601,7 +601,17 @@ namespace Jotunn.Managers
             // Adjust GUI elements to fit new tabs
             Transform categoryRoot = Hud.instance.m_pieceCategoryRoot.transform;
             categoryRoot.gameObject.GetOrAddComponent<RectMask2D>();
-            categoryRoot.Find("TabBorder").GetComponent<Image>().maskable = false;
+
+            Transform tabBorder = categoryRoot.Find("TabBorder");
+
+            if (tabBorder)
+            {
+                tabBorder.GetComponent<Image>().maskable = false;
+            }
+            else
+            {
+                Logger.LogWarning("Could not find TabBorder in m_pieceCategoryRoot");
+            }
 
             List<string> newNames = new List<string>(Hud.instance.m_buildCategoryNames);
             List<GameObject> newTabs = new List<GameObject>(Hud.instance.m_pieceCategoryTabs);
@@ -992,7 +1002,7 @@ namespace Jotunn.Managers
                 PieceCategoryScroll(self.m_selectedCategory);
             }
 
-            public void Hud_OnLeftClickCategory(Hud self)
+            public void Player_SetBuildCategory()
             {
                 PieceCategoryScroll(Player.m_localPlayer.m_buildPieces.m_selectedCategory);
             }
