@@ -3,6 +3,9 @@
 ## Version 2.11.3
 * Compatible with Valheim version 0.214.300 and the upcoming 0.215.1 patch
 * Fixed a client with a different Valheim version will no longer be additionally disconnected by Jötunn. If the player was disconnected, a mismatching Valheim version will still be displayed
+* Fixed custom hammer tabs had the wrong size when being localised
+* Fixed scroll of last custom hammer tab was not correct
+* Fixed a compatibility issue with Auga because of the changed hammer tabs
 * Slightly improved loading time of big mod packs by caching mod info used when creating custom entities
 
 ## Version 2.11.2
