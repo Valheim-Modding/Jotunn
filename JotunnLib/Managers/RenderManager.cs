@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BepInEx;
+using Jotunn.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -220,8 +221,7 @@ namespace Jotunn.Managers
                 return plugin.GUID + "-" + plugin.Version;
             }
 
-            // some mods add a '/' to the version name
-            return Version.CombineVersion(Version.m_major, Version.m_minor, Version.m_patch).Replace("/", "_");
+            return GameVersions.ValheimVersion.ToString();
         }
 
         private Sprite RenderSprite(RenderObject renderObject)

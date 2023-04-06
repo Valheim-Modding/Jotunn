@@ -28,7 +28,7 @@ namespace Jotunn.Utils
         /// <param name="versionData"></param>
         internal ModuleVersionData(List<ModModule> versionData)
         {
-            ValheimVersion = new System.Version(Version.m_major, Version.m_minor, Version.m_patch);
+            ValheimVersion = GameVersions.ValheimVersion;
             VersionString = GetVersionString();
             Modules = new List<ModModule>(versionData);
         }
