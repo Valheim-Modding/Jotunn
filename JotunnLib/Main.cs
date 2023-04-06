@@ -100,6 +100,7 @@ namespace Jotunn
         private void Start()
         {
             InitializePatches();
+            LocalizationManager.Instance.LoadingAutomaticLocalizations();
         }
 
         private void OnApplicationQuit()

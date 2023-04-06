@@ -97,7 +97,6 @@ namespace Jotunn.Managers
                         ReflectionHelper.AllBindingFlags));
 
             AddLocalization(JotunnLocalization);
-            AutomaticLocalizationLoading();
         }
 
         private static class Patches
@@ -187,7 +186,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private void AutomaticLocalizationLoading()
+        internal void LoadingAutomaticLocalizations()
         {
             var jsonFormat = new HashSet<FileInfo>();
             var unityFormat = new HashSet<FileInfo>();
@@ -275,7 +274,7 @@ namespace Jotunn.Managers
             }
 
             localization = new CustomLocalization(sourceMod);
-            Localizations.Add(sourceMod.GUID, localization);
+            AddLocalization(localization);
             return localization;
         }
 
