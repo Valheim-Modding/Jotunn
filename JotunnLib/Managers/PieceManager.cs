@@ -48,6 +48,7 @@ namespace Jotunn.Managers
         private Piece.PieceCategory PieceCategoryMax = Piece.PieceCategory.Max;
 
         private static Dictionary<string, GameObject> customTabs = new Dictionary<string, GameObject>();
+        private static string hiddenCategoryMagic = "(HiddenCategory)";
 
         /// <summary>
         ///     Settings of the hammer UI tab selection.
@@ -621,7 +622,7 @@ namespace Jotunn.Managers
             // Append tabs and their names to the GUI for every custom category not already added
             foreach (var category in PieceCategories)
             {
-                if (!newTabs.Exists(tab => tab.name == category.Key))
+                if (!customTabs.ContainsKey(category.Key))
                 {
                     string name = category.Key;
                     string token = CreateCategoryToken(name);
@@ -950,7 +951,11 @@ namespace Jotunn.Managers
                             continue;
                         }
 
-                        tab.SetActive(Keys.Contains(tab.name));
+                        string name = customTabs.FirstOrDefault(x => x.Value == tab).Key;
+                        bool active = Keys.Contains(name);
+
+                        tab.SetActive(active);
+                        tab.name = active ? name : $"{name} {hiddenCategoryMagic}";
                     }
 
                     // Reorder tabs
