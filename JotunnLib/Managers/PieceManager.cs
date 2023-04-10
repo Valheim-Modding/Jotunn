@@ -944,18 +944,22 @@ namespace Jotunn.Managers
                 if (currentActive != null && currentActive == this)
                 {
                     // Activate all tabs for this categories
-                    foreach (GameObject tab in Hud.instance.m_pieceCategoryTabs)
+                    for (var i = 0; i < Hud.instance.m_pieceCategoryTabs.Length; i++)
                     {
-                        if (!customTabs.Values.Contains(tab))
+                        var tab = Hud.instance.m_pieceCategoryTabs[i];
+
+                        if ((Piece.PieceCategory)i < Piece.PieceCategory.Max)
                         {
-                            continue;
+                            tab.SetActive(Keys.Contains(tab.name));
                         }
+                        else if (customTabs.Values.Contains(tab))
+                        {
+                            string name = customTabs.FirstOrDefault(x => x.Value == tab).Key;
+                            bool active = Keys.Contains(name);
 
-                        string name = customTabs.FirstOrDefault(x => x.Value == tab).Key;
-                        bool active = Keys.Contains(name);
-
-                        tab.SetActive(active);
-                        tab.name = active ? name : $"{name} {hiddenCategoryMagic}";
+                            tab.SetActive(active);
+                            tab.name = active ? name : $"{name} {hiddenCategoryMagic}";
+                        }
                     }
 
                     // Reorder tabs
