@@ -47,6 +47,8 @@ namespace Jotunn.Managers
         internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private Piece.PieceCategory PieceCategoryMax = Piece.PieceCategory.Max;
 
+        private static Dictionary<string, GameObject> customTabs = new Dictionary<string, GameObject>();
+
         /// <summary>
         ///     Settings of the hammer UI tab selection.
         /// </summary>
@@ -621,24 +623,41 @@ namespace Jotunn.Managers
             {
                 if (!newTabs.Exists(tab => tab.name == category.Key))
                 {
-                    GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], categoryRoot);
-                    newTab.name = category.Key;
-                    UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
-                    handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
+                    string name = category.Key;
+                    string token = CreateCategoryToken(name);
+                    GameObject tab = CreateCategoryTab(name);
 
-                    char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
-                    string tokenCategory = string.Concat(category.Key.ToLower().Split(forbiddenCharsArray));
-                    string tokenName = $"jotunn_cat_{tokenCategory}";
-                    LocalizationManager.Instance.JotunnLocalization.AddTranslation(tokenName, category.Key);
-
-                    newNames.Add(LocalizationManager.Instance.TryTranslate(tokenName));
-                    newTabs.Add(newTab);
+                    newNames.Add(LocalizationManager.Instance.TryTranslate(token));
+                    newTabs.Add(tab);
                 }
             }
 
             // Replace the HUD arrays
             Hud.instance.m_buildCategoryNames = newNames.ToList();
             Hud.instance.m_pieceCategoryTabs = newTabs.ToArray();
+        }
+
+        private string CreateCategoryToken(string name)
+        {
+            char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
+            string tokenCategory = string.Concat(name.ToLower().Split(forbiddenCharsArray));
+            string token = $"jotunn_cat_{tokenCategory}";
+
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(token, name);
+            return token;
+        }
+
+        private GameObject CreateCategoryTab(string name)
+        {
+            Transform categoryRoot = Hud.instance.m_pieceCategoryRoot.transform;
+
+            GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], categoryRoot);
+            newTab.name = name;
+            UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
+            handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
+
+            customTabs.Add(name, newTab);
+            return newTab;
         }
 
         /// <summary>
@@ -878,14 +897,9 @@ namespace Jotunn.Managers
                         currentActive.Toggle(false);
                     }
 
-                    // Activate all tabs for this categories
-                    foreach (GameObject tab in Hud.instance.m_pieceCategoryTabs)
-                    {
-                        tab.SetActive(Keys.Contains(tab.name));
-                    }
+                    currentActive = this;
 
-                    // Reorder tabs
-                    ReorderActiveTabs();
+                    ReorderTableTabs();
 
                     // Set last selected category
                     if (lastCategory == Piece.PieceCategory.All)
@@ -898,16 +912,23 @@ namespace Jotunn.Managers
                     {
                         PieceCategoryScroll(lastCategory);
                     }
-
-                    currentActive = this;
                 }
 
                 if (!isActive && currentActive != null && currentActive == this)
                 {
                     // Activate all vanilla tabs
-                    foreach (GameObject tab in Hud.instance.m_pieceCategoryTabs)
+                    for (var i = 0; i < Hud.instance.m_pieceCategoryTabs.Length; i++)
                     {
-                        tab.SetActive(Enum.GetNames(typeof(Piece.PieceCategory)).Contains(tab.name));
+                        var tab = Hud.instance.m_pieceCategoryTabs[i];
+
+                        if ((Piece.PieceCategory)i < Piece.PieceCategory.Max)
+                        {
+                            tab.SetActive(true);
+                        }
+                        else if (customTabs.Values.Contains(tab))
+                        {
+                            tab.SetActive(false);
+                        }
                     }
 
                     // Reorder tabs
@@ -924,6 +945,11 @@ namespace Jotunn.Managers
                     // Activate all tabs for this categories
                     foreach (GameObject tab in Hud.instance.m_pieceCategoryTabs)
                     {
+                        if (!customTabs.Values.Contains(tab))
+                        {
+                            continue;
+                        }
+
                         tab.SetActive(Keys.Contains(tab.name));
                     }
 
