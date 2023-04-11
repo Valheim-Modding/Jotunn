@@ -11,20 +11,7 @@ However, item conversions will be loaded in the order that you call the `AddItem
 
 ## Valheim's builtin conversion system
 
-Valheim has four different types of conversion components, which are used in one or more pieces:
-
-|Component|Piece|
-|----|----|
-|CookingStation|piece_cookingstation|
-|CookingStation|piece_cookingstation_iron|
-|CookingStation|piece_oven|
-|Fermenter|fermenter|
-|Incinerator|incinerator|
-|Smelter|smelter|
-|Smelter|blastfurnace|
-|Smelter|charcoal_kiln|
-|Smelter|windmill|
-|Smelter|piece_spinningwheel|
+Valheim has four different types of conversion components: `CookingStation`, `Fermenter`, `Incinerator` and `Smelter`.
 
 Each of these components can do a conversion from one item to another, some with additional "fuel" items.
 The Jötunn [CustomItemConversion](xref:Jotunn.Entities.CustomItemConversion) can be used for either of the conversions.
@@ -42,6 +29,7 @@ You can specify the time needed to cook the item with that config.
 var cookConfig = new CookingConversionConfig();
 cookConfig.FromItem = "CookedMeat";
 cookConfig.ToItem = "CookedLoxMeat";
+cookConfig.Station = CookingStations.CookingStation;
 cookConfig.CookTime = 2f;
 ItemManager.Instance.AddItemConversion(new CustomItemConversion(cookConfig));
 ```
@@ -56,6 +44,7 @@ You can specify the amount of items gained from a single conversion.
 var fermentConfig = new FermenterConversionConfig();
 fermentConfig.ToItem = "CookedLoxMeat";
 fermentConfig.FromItem = "Coal";
+fermentConfig.Station = Fermenters.Fermenter;
 fermentConfig.ProducedItems = 10;
 ItemManager.Instance.AddItemConversion(new CustomItemConversion(fermentConfig));
 ```
@@ -74,6 +63,7 @@ var incineratorConfig = new IncineratorConversionConfig();
 incineratorConfig.Requirements.Add(new IncineratorRequirementConfig("Wood", 1));
 incineratorConfig.Requirements.Add(new IncineratorRequirementConfig("Stone", 1));
 incineratorConfig.ToItem = "Coins";
+incineratorConfig.Station = Incinerators.Incinerator;
 incineratorConfig.ProducedItems = 20;
 incineratorConfig.RequireOnlyOneIngredient = false;  // true = only one of the requirements is needed to produce the output
 incineratorConfig.Priority = 5;                      // Higher priorities get preferred when multiple requirements are met
@@ -90,6 +80,7 @@ The default for the "Station" property in the SmelterConversionConfig is the bas
 var smelterConfig = new SmelterConversionConfig();
 smelterConfig.FromItem = "Stone";
 smelterConfig.ToItem = "CookedLoxMeat";
+smelterConfig.Station = Smelters.Smelter;
 ItemManager.Instance.AddItemConversion(new CustomItemConversion(smelterConfig));
 ```
 
@@ -105,7 +96,7 @@ ItemManager.Instance.AddItem(ingot);
 
 // Create a conversion for the blastfurnace, the custom item is the new outcome
 var blastConfig = new SmelterConversionConfig();
-blastConfig.Station = "blastfurnace"; // let's specify something other than default here
+blastConfig.Station = Smelters.BlastFurnace; // let's specify something other than default here
 blastConfig.FromItem = "Iron";
 blastConfig.ToItem = "Steel"; // this is our custom prefabs name we have loaded just above
 
