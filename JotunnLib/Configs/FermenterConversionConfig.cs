@@ -9,14 +9,20 @@ namespace Jotunn.Configs
     public class FermenterConversionConfig : ConversionConfig
     {
         /// <summary>
-        ///     The name of the station prefab this conversion is added to. Defaults to "fermenter".
+        ///     The name of the station prefab this conversion is added to. Defaults to <see cref="Fermenters.Fermenter"/>.
         /// </summary>
-        public override string Station { get; set; } = "fermenter";
+        public override string Station
+        {
+            get => station;
+            set => station = Fermenters.GetInternalName(value);
+        }
 
         /// <summary>
         ///     The amount of items one conversion yields. Defaults to 4.
         /// </summary>
         public int ProducedItems { get; set; } = 4;
+
+        private string station = Fermenters.Fermenter;
 
         /// <summary>
         ///     Turns the FermenterConversionConfig into a Valheim Fermenter.ItemConversion item.

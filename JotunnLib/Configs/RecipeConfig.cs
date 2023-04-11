@@ -36,14 +36,22 @@ namespace Jotunn.Configs
         ///     <br/>
         ///     Can be set to <c>null</c> to have the recipe be craftable without a crafting station.
         /// </summary>
-        public string CraftingStation { get; set; } = string.Empty;
+        public string CraftingStation
+        {
+            get => craftingStation;
+            set => craftingStation = CraftingStations.GetInternalName(value);
+        }
 
         /// <summary>
         ///     The name of the crafting station prefab where this item can be repaired.
         ///     <br/>
         ///     Can be set to <c>null</c> to have the recipe be repairable without a crafting station.
         /// </summary>
-        public string RepairStation { get; set; } = string.Empty;
+        public string RepairStation
+        {
+            get => repairStation;
+            set => repairStation = CraftingStations.GetInternalName(value);
+        }
 
         /// <summary>
         ///     The minimum required level for the crafting station. Defaults to <c>1</c>.
@@ -54,6 +62,9 @@ namespace Jotunn.Configs
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
         public RequirementConfig[] Requirements { get; set; } = Array.Empty<RequirementConfig>();
+
+        private string craftingStation = string.Empty;
+        private string repairStation = string.Empty;
 
         /// <summary>
         ///     Converts the RequirementConfigs to Valheim style Piece.Requirements

@@ -10,9 +10,13 @@ namespace Jotunn.Configs
     public class IncineratorConversionConfig : ConversionConfig
     {
         /// <summary>
-        ///     The name of the station prefab this conversion is added to. Defaults to "incinerator".
+        ///     The name of the station prefab this conversion is added to. Defaults to <see cref="Incinerators.Incinerator"/>.
         /// </summary>
-        public override string Station { get; set; } = "incinerator";
+        public override string Station
+        {
+            get => station;
+            set => station = Incinerators.GetInternalName(value);
+        }
 
         /// <summary>
         ///     List of requirements for this conversion.
@@ -36,6 +40,8 @@ namespace Jotunn.Configs
         ///     Defaults to false.
         /// </summary>
         public bool RequireOnlyOneIngredient { get; set; }
+
+        private string station = Incinerators.Incinerator;
 
         /// <summary>
         ///     Turns the IncineratorConversionConfig into a Valheim Incinerator.IncineratorConversion item.
