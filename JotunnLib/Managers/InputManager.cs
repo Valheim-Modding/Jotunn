@@ -211,7 +211,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Initialize the manager
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             // Dont init on a dedicated server
             if (!GUIManager.IsHeadless())

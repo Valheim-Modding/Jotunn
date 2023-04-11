@@ -84,7 +84,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Initialize localization manager.
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             Main.Harmony.PatchAll(typeof(Patches));
 

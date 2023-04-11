@@ -54,7 +54,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Creates the prefab container and registers all hooks.
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;

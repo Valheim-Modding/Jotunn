@@ -32,7 +32,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Registers all hooks.
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             ItemManager.OnKitbashItemsAvailable += ApplyKitbashes;
         }

@@ -60,7 +60,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Manager's main init
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             // Register RPCs and the admin watchdog
             ConfigRPC = NetworkManager.Instance.AddRPC(

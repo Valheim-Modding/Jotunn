@@ -66,7 +66,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Registers all hooks.
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             Main.Harmony.PatchAll(typeof(Patches));
         }
