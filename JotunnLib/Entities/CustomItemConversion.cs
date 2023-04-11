@@ -1,4 +1,5 @@
-﻿using Jotunn.Configs;
+﻿using System.Reflection;
+using Jotunn.Configs;
 using Jotunn.Managers;
 
 namespace Jotunn.Entities
@@ -80,23 +81,26 @@ namespace Jotunn.Entities
         ///     </list>
         /// </summary>
         /// <param name="config">The item conversion config</param>
-        public CustomItemConversion(ConversionConfig config)
+        public CustomItemConversion(ConversionConfig config) : base(Assembly.GetCallingAssembly())
         {
             if (config is CookingConversionConfig cookConfig)
             {
                 Type = ConversionType.CookingStation;
                 _cookingConversion = cookConfig.GetItemConversion();
             }
+
             if (config is FermenterConversionConfig fermentConfig)
             {
                 Type = ConversionType.Fermenter;
                 _fermenterConversion = fermentConfig.GetItemConversion();
             }
+
             if (config is SmelterConversionConfig smeltConfig)
             {
                 Type = ConversionType.Smelter;
                 _smelterConversion = smeltConfig.GetItemConversion();
             }
+
             if (config is IncineratorConversionConfig inciConfig)
             {
                 Type = ConversionType.Incinerator;

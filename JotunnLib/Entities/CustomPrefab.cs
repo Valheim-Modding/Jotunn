@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System.Reflection;
+using BepInEx;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -37,7 +38,7 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="prefab">The prefab for this custom item.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
-        public CustomPrefab(GameObject prefab, bool fixReference)
+        public CustomPrefab(GameObject prefab, bool fixReference) : base(Assembly.GetCallingAssembly())
         {
             Prefab = prefab;
             FixReference = fixReference;
@@ -50,7 +51,7 @@ namespace Jotunn.Entities
         /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
         /// <param name="assetName">Name of the prefab in the bundle.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
-        public CustomPrefab(AssetBundle assetBundle, string assetName, bool fixReference)
+        public CustomPrefab(AssetBundle assetBundle, string assetName, bool fixReference) : base(Assembly.GetCallingAssembly())
         {
             var prefab = assetBundle.LoadAsset<GameObject>(assetName);
             if (prefab)
@@ -73,6 +74,7 @@ namespace Jotunn.Entities
                 Logger.LogError($"CustomPrefab {this} has no prefab");
                 valid = false;
             }
+
             return valid;
         }
 

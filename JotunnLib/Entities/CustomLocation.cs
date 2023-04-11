@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
@@ -74,7 +75,7 @@ namespace Jotunn.Entities
         /// <param name="interiorPrefab">The interior prefab for this custom location.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="locationConfig">The <see cref="LocationConfig"/> for this custom location.</param>
-        public CustomLocation(GameObject exteriorPrefab, GameObject interiorPrefab, bool fixReference, LocationConfig locationConfig)
+        public CustomLocation(GameObject exteriorPrefab, GameObject interiorPrefab, bool fixReference, LocationConfig locationConfig) : base(Assembly.GetCallingAssembly())
         {
             Prefab = exteriorPrefab;
             Name = exteriorPrefab.name;

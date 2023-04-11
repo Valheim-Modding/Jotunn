@@ -1,4 +1,5 @@
-﻿using Jotunn.Configs;
+﻿using System.Reflection;
+using Jotunn.Configs;
 using Jotunn.Managers;
 
 namespace Jotunn.Entities
@@ -31,7 +32,7 @@ namespace Jotunn.Entities
         /// <param name="recipe">The <see cref="global::Recipe"/> for a custom item.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="fixRequirementReferences">If true references for <see cref="MockRequirement"/>s get resolved at runtime by Jötunn.</param>
-        public CustomRecipe(Recipe recipe, bool fixReference, bool fixRequirementReferences)
+        public CustomRecipe(Recipe recipe, bool fixReference, bool fixRequirementReferences) : base(Assembly.GetCallingAssembly())
         {
             Recipe = recipe;
             FixReference = fixReference;
@@ -43,7 +44,7 @@ namespace Jotunn.Entities
         ///     The <see cref="global::Recipe"/> is created automatically by Jötunn at runtime.
         /// </summary>
         /// <param name="recipeConfig">The <see cref="RecipeConfig"/> for a custom recipe.</param>
-        public CustomRecipe(RecipeConfig recipeConfig)
+        public CustomRecipe(RecipeConfig recipeConfig) : base(Assembly.GetCallingAssembly())
         {
             Recipe = recipeConfig.GetRecipe();
             FixReference = true;

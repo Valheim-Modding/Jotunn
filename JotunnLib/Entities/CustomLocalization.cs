@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using BepInEx;
 using Jotunn.Managers;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace Jotunn.Entities
         ///     Default constructor.
         /// </summary>
         [Obsolete("Use LocalizationManager.Instance.GetLocalization() instead")]
-        public CustomLocalization()
+        public CustomLocalization() : base(Assembly.GetCallingAssembly())
         {
             Map = new Dictionary<string, Dictionary<string, string>>();
         }

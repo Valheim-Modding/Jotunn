@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
@@ -36,13 +37,13 @@ namespace Jotunn.Entities
         ///     Internal flag for the cumulative level effects hook. Value is set in the config.
         /// </summary>
         internal bool UseCumulativeLevelEffects { get; set; }
-        
+
         /// <summary>
         ///     Custom creature from a prefab.
         /// </summary>
         /// <param name="creaturePrefab">The prefab of this custom creature.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
-        public CustomCreature(GameObject creaturePrefab, bool fixReference)
+        public CustomCreature(GameObject creaturePrefab, bool fixReference) : base(Assembly.GetCallingAssembly())
         {
             Prefab = creaturePrefab;
             FixReference = fixReference;
@@ -54,7 +55,7 @@ namespace Jotunn.Entities
         /// <param name="creaturePrefab">The prefab of this custom creature.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="creatureConfig">The <see cref="CreatureConfig"/> for this custom creature.</param>
-        public CustomCreature(GameObject creaturePrefab, bool fixReference, CreatureConfig creatureConfig)
+        public CustomCreature(GameObject creaturePrefab, bool fixReference, CreatureConfig creatureConfig) : base(Assembly.GetCallingAssembly())
         {
             Prefab = creaturePrefab;
             ApplyCreatureConfig(creatureConfig);
@@ -69,7 +70,7 @@ namespace Jotunn.Entities
         /// <param name="name">The new name of the creature after cloning.</param>
         /// <param name="basePrefabName">The name of the base prefab the custom creature is cloned from.</param>
         /// <param name="creatureConfig">The <see cref="CreatureConfig"/> for this custom creature.</param>
-        public CustomCreature(string name, string basePrefabName, CreatureConfig creatureConfig)
+        public CustomCreature(string name, string basePrefabName, CreatureConfig creatureConfig) : base(Assembly.GetCallingAssembly())
         {
             var vanilla = CreatureManager.Instance.GetCreaturePrefab(basePrefabName);
             if (vanilla)
@@ -96,7 +97,10 @@ namespace Jotunn.Entities
 
             var required = new[]
             {
-                typeof(Character), typeof(BaseAI), typeof(CapsuleCollider), typeof(Rigidbody),
+                typeof(Character),
+                typeof(BaseAI),
+                typeof(CapsuleCollider),
+                typeof(Rigidbody),
                 typeof(ZSyncAnimation)
             };
             foreach (var type in required)
@@ -108,11 +112,13 @@ namespace Jotunn.Entities
                     break;
                 }
             }
+
             if (!Prefab.GetComponentInChildren<Animator>())
             {
                 Logger.LogError($"CustomCreature {this} has no Animator component");
                 valid = false;
             }
+
             if (!Prefab.GetComponentInChildren<CharacterAnimEvent>())
             {
                 Logger.LogError($"CustomCreature {this} has no CharacterAnimEvent component");
@@ -121,7 +127,7 @@ namespace Jotunn.Entities
 
             return valid;
         }
-        
+
         /// <summary>
         ///     Helper method to determine if a prefab with a given name is a custom creature created with Jötunn.
         /// </summary>

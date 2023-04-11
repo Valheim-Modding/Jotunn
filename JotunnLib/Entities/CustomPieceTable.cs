@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
@@ -36,7 +37,7 @@ namespace Jotunn.Entities
         ///     Custom piece table from a prefab.
         /// </summary>
         /// <param name="pieceTablePrefab">The prefab for this custom piece table. It has to have a <see cref="PieceTable"/> component attached</param>
-        public CustomPieceTable(GameObject pieceTablePrefab)
+        public CustomPieceTable(GameObject pieceTablePrefab) : base(Assembly.GetCallingAssembly())
         {
             PieceTablePrefab = pieceTablePrefab;
             PieceTable = pieceTablePrefab.GetComponent<PieceTable>();
@@ -47,6 +48,7 @@ namespace Jotunn.Entities
                 {
                     categories.Add(Enum.GetName(typeof(Piece.PieceCategory), i));
                 }
+
                 Categories = categories.ToArray();
             }
         }
@@ -56,7 +58,7 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="pieceTablePrefab">The prefab for this custom piece table. It has to have a <see cref="PieceTable"/> component attached.</param>
         /// <param name="config">The <see cref="PieceTableConfig"/> for this custom piece table.</param>
-        public CustomPieceTable(GameObject pieceTablePrefab, PieceTableConfig config)
+        public CustomPieceTable(GameObject pieceTablePrefab, PieceTableConfig config) : base(Assembly.GetCallingAssembly())
         {
             PieceTablePrefab = pieceTablePrefab;
             config.Apply(pieceTablePrefab);
@@ -69,7 +71,7 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="name">The name of the custom piece table.</param>
         /// <param name="config">The <see cref="PieceTableConfig"/> for this custom piece table.</param>
-        public CustomPieceTable(string name, PieceTableConfig config)
+        public CustomPieceTable(string name, PieceTableConfig config) : base(Assembly.GetCallingAssembly())
         {
             PieceTablePrefab = new GameObject(name);
             PieceTable = PieceTablePrefab.AddComponent<PieceTable>();
@@ -83,7 +85,7 @@ namespace Jotunn.Entities
         /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
         /// <param name="assetName">Name of the prefab in the bundle. It has to have a <see cref="PieceTable"/> component attached.</param>
         /// <param name="config">The <see cref="PieceTableConfig"/> for this custom piece table.</param>
-        public CustomPieceTable(AssetBundle assetBundle, string assetName, PieceTableConfig config)
+        public CustomPieceTable(AssetBundle assetBundle, string assetName, PieceTableConfig config) : base(Assembly.GetCallingAssembly())
         {
             var pieceTablePrefab = assetBundle.LoadAsset<GameObject>(assetName);
             PieceTablePrefab = pieceTablePrefab;
@@ -105,10 +107,12 @@ namespace Jotunn.Entities
                 Logger.LogError($"CustomPieceTable {this} has no prefab");
                 valid = false;
             }
+
             if (!PieceTablePrefab.IsValid())
             {
                 valid = false;
             }
+
             if (PieceTable == null)
             {
                 Logger.LogError($"CustomPieceTable {this} has no PieceTable component");

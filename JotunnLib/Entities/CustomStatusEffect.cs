@@ -1,4 +1,5 @@
-﻿using Jotunn.Managers;
+﻿using System.Reflection;
+using Jotunn.Managers;
 
 namespace Jotunn.Entities
 {
@@ -24,7 +25,7 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="statusEffect">A preloaded <see cref="global::StatusEffect"/></param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
-        public CustomStatusEffect(StatusEffect statusEffect, bool fixReference)
+        public CustomStatusEffect(StatusEffect statusEffect, bool fixReference) : base(Assembly.GetCallingAssembly())
         {
             StatusEffect = statusEffect;
             FixReference = fixReference;
