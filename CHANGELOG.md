@@ -1,6 +1,8 @@
 # Changelog
 
 ## Version 2.12.0
+* Added prefab name helpers for CookingStations, CraftingStations, Fermenters, Incinerators, PieceCategories, PieceTables and Smelters
+* Changed Manager Init() methods to be private and not callable by mods. They were not intended to be called by mods and could cause issues
 * Marked empty CustomLocalization as obsolete, LocalizationManager.Instance.GetLocalization() should be used instead
 * Slightly improved loading time of big mod packs when creating custom entities again
 
