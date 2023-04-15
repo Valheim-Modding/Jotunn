@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.11.5
+* Fixed custom category tabs caused errors after relogging
+
 ## Version 2.11.4
 * Added the magic string `(HiddenCategory)` to disabled category tab names, so other mods can detect them easier
 * Changed that vanilla tabs are always enabled for vanilla tools and only Jotunn managed and vanilla tabs can be disabled

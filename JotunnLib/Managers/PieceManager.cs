@@ -141,6 +141,12 @@ namespace Jotunn.Managers
                 Instance.CreateCategoryTabs();
             }
 
+            [HarmonyPatch(typeof(Hud), nameof(Hud.OnDestroy)), HarmonyPostfix]
+            private static void Hud_OnDestroy()
+            {
+                Instance.DestroyCategoryTabs();
+            }
+
             [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateBuild)), HarmonyPrefix]
             private static void Hud_UpdateBuild()
             {
@@ -636,6 +642,16 @@ namespace Jotunn.Managers
             // Replace the HUD arrays
             Hud.instance.m_buildCategoryNames = newNames.ToList();
             Hud.instance.m_pieceCategoryTabs = newTabs.ToArray();
+        }
+
+        private void DestroyCategoryTabs()
+        {
+            foreach (var tab in customTabs)
+            {
+                Object.Destroy(tab.Value);
+            }
+
+            customTabs.Clear();
         }
 
         private string CreateCategoryToken(string name)
