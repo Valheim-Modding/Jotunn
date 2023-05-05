@@ -141,6 +141,12 @@ namespace Jotunn.Managers
                 Instance.CreateCategoryTabs();
             }
 
+            [HarmonyPatch(typeof(Hud), nameof(Hud.OnDestroy)), HarmonyPostfix]
+            private static void Hud_OnDestroy()
+            {
+                Instance.DestroyCategoryTabs();
+            }
+
             [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateBuild)), HarmonyPrefix]
             private static void Hud_UpdateBuild()
             {
@@ -525,7 +531,7 @@ namespace Jotunn.Managers
             //Logger.LogInfo($"Adding {PieceCategories.Count} custom piece table categories");
 
             // All piece tables using categories
-            foreach (var table in PieceTableMap.Values.Where(x => x.m_useCategories))
+            foreach (var table in PieceTableMap.Values)
             {
                 try
                 {
@@ -636,6 +642,16 @@ namespace Jotunn.Managers
             // Replace the HUD arrays
             Hud.instance.m_buildCategoryNames = newNames.ToList();
             Hud.instance.m_pieceCategoryTabs = newTabs.ToArray();
+        }
+
+        private void DestroyCategoryTabs()
+        {
+            foreach (var tab in customTabs)
+            {
+                Object.Destroy(tab.Value);
+            }
+
+            customTabs.Clear();
         }
 
         private string CreateCategoryToken(string name)
@@ -917,25 +933,52 @@ namespace Jotunn.Managers
 
                 if (!isActive && currentActive != null && currentActive == this)
                 {
-                    // Activate all vanilla tabs
-                    for (var i = 0; i < Hud.instance.m_pieceCategoryTabs.Length; i++)
-                    {
-                        var tab = Hud.instance.m_pieceCategoryTabs[i];
+                    ActivateVanillaTabs();
+                    DeactivateCustomTabs();
 
-                        if ((Piece.PieceCategory)i < Piece.PieceCategory.Max)
-                        {
-                            tab.SetActive(true);
-                        }
-                        else if (customTabs.Values.Contains(tab))
-                        {
-                            tab.SetActive(false);
-                        }
-                    }
-
-                    // Reorder tabs
                     ReorderActiveTabs();
 
                     currentActive = null;
+                }
+            }
+
+            private void ActivateVanillaTabs()
+            {
+                for (var i = 0; i < Hud.instance.m_pieceCategoryTabs.Length; i++)
+                {
+                    var tab = Hud.instance.m_pieceCategoryTabs[i];
+
+                    if ((Piece.PieceCategory)i < Piece.PieceCategory.Max)
+                    {
+                        SetTabActive(tab, tab.name, true);
+                    }
+                }
+            }
+
+            private void DeactivateCustomTabs()
+            {
+                Dictionary<GameObject, string> customTabToName = customTabs.ToDictionary(i => i.Value, i => i.Key);
+
+                foreach (GameObject tab in Hud.instance.m_pieceCategoryTabs)
+                {
+                    if (customTabToName.TryGetValue(tab, out string tabName))
+                    {
+                        SetTabActive(tab, tabName, false);
+                    }
+                }
+            }
+
+            private void SetTabActive(GameObject tab, string tabName, bool active)
+            {
+                tab.SetActive(active);
+
+                if (active)
+                {
+                    tab.name = tabName.Replace(hiddenCategoryMagic, "");
+                }
+                else
+                {
+                    tab.name = $"{tabName}{hiddenCategoryMagic}";
                 }
             }
 
@@ -943,6 +986,8 @@ namespace Jotunn.Managers
             {
                 if (currentActive != null && currentActive == this)
                 {
+                    Dictionary<GameObject, string> customTabToName = customTabs.ToDictionary(i => i.Value, i => i.Key);
+
                     // Activate all tabs for this categories
                     for (var i = 0; i < Hud.instance.m_pieceCategoryTabs.Length; i++)
                     {
@@ -950,19 +995,14 @@ namespace Jotunn.Managers
 
                         if ((Piece.PieceCategory)i < Piece.PieceCategory.Max)
                         {
-                            tab.SetActive(Keys.Contains(tab.name));
+                            SetTabActive(tab, tab.name, Keys.Contains(tab.name));
                         }
-                        else if (customTabs.Values.Contains(tab))
+                        else if (customTabToName.TryGetValue(tab, out string tabName))
                         {
-                            string name = customTabs.FirstOrDefault(x => x.Value == tab).Key;
-                            bool active = Keys.Contains(name);
-
-                            tab.SetActive(active);
-                            tab.name = active ? name : $"{name} {hiddenCategoryMagic}";
+                            SetTabActive(tab, tabName, Keys.Contains(tabName));
                         }
                     }
 
-                    // Reorder tabs
                     ReorderActiveTabs();
                 }
             }

@@ -66,6 +66,8 @@ Also note that SendPackage can either be called without returning an Enumerator 
 The custom RPC calls our provided delegate methods every time a message is received. Jötunn's implementation already determines if the current instance is a client or a server for us and provides a delegate for both. Upon receiving our data package from the client, we delay the handling virtually and broadcast a message to all connected peers using the same custom RPC instance.
 
 ```cs
+public static readonly WaitForSeconds OneSecondWait = new WaitForSeconds(1f);
+
 // React to the RPC call on a server
 private IEnumerator UselessRPCServerReceive(long sender, ZPackage package)
 {
@@ -76,12 +78,14 @@ private IEnumerator UselessRPCServerReceive(long sender, ZPackage package)
     {
         dot += ".";
         Jotunn.Logger.LogMessage(dot);
-        yield return new WaitForSeconds(1f);
+        yield return OneSecondWait;
     }
 
     Jotunn.Logger.LogMessage($"Broadcasting to all clients");
     UselessRPC.SendPackage(ZNet.instance.m_peers, new ZPackage(package.GetArray()));
 }
+
+public static readonly WaitForSeconds HalfSecondWait = new WaitForSeconds(0.5f);
 
 // React to the RPC call on a client
 private IEnumerator UselessRPCClientReceive(long sender, ZPackage package)
@@ -94,7 +98,7 @@ private IEnumerator UselessRPCClientReceive(long sender, ZPackage package)
     {
         dot += ".";
         Jotunn.Logger.LogMessage(dot);
-        yield return new WaitForSeconds(.5f);
+        yield return HalfSecondWait;
     }
 }
 ```

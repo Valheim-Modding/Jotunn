@@ -6,6 +6,13 @@
 * Marked empty CustomLocalization as obsolete, LocalizationManager.Instance.GetLocalization() should be used instead
 * Slightly improved loading time of big mod packs when creating custom entities again
 
+## Version 2.11.5
+* Fixed custom category tabs caused errors after relogging
+
+## Version 2.11.4
+* Added the magic string `(HiddenCategory)` to disabled category tab names, so other mods can detect them easier
+* Changed that vanilla tabs are always enabled for vanilla tools and only Jotunn managed and vanilla tabs can be disabled
+
 ## Version 2.11.3
 * Compatible with Valheim version 0.214.300 and the upcoming 0.215.1 patch
 * Fixed a client with a different Valheim version will no longer be additionally disconnected by Jötunn. If the player was disconnected, a mismatching Valheim version will still be displayed
