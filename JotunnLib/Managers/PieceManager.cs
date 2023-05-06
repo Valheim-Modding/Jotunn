@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
@@ -45,7 +46,6 @@ namespace Jotunn.Managers
         internal readonly Dictionary<string, PieceTableCategories> PieceTableCategoriesMap = new Dictionary<string, PieceTableCategories>();
 
         internal readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
-        private Piece.PieceCategory PieceCategoryMax = Piece.PieceCategory.Max;
 
         private static Dictionary<string, GameObject> customTabs = new Dictionary<string, GameObject>();
         private static string hiddenCategoryMagic = "(HiddenCategory)";
@@ -87,52 +87,22 @@ namespace Jotunn.Managers
 
         private static class Patches
         {
-            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.SetCategory)), HarmonyPostfix]
-            public static void PieceTable_SetCategory(PieceTable __instance, int index)
-            {
-                if (PieceTableCategories.currentActive != null)
-                {
-                    PieceTableCategories.currentActive.PieceTable_SetCategory(__instance, index);
-                }
-            }
-
-            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.NextCategory)), HarmonyPrefix]
-            public static void PieceTable_NextCategory_Prefix(PieceTable __instance, ref Piece.PieceCategory __state)
-            {
-                __state = __instance.m_selectedCategory;
-            }
-
             [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.NextCategory)), HarmonyPostfix]
-            public static void PieceTable_NextCategory_Postfix(PieceTable __instance, ref Piece.PieceCategory __state)
+            public static void PieceTable_NextCategory_Postfix(PieceTable __instance)
             {
-                if (PieceTableCategories.currentActive != null)
-                {
-                    PieceTableCategories.currentActive.PieceTable_NextCategory(__instance, __state);
-                }
-            }
-
-            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.PrevCategory)), HarmonyPrefix]
-            public static void PieceTable_PrevCategory_Prefix(PieceTable __instance, ref Piece.PieceCategory __state)
-            {
-                __state = __instance.m_selectedCategory;
+                PieceTableCategories.currentActive?.PieceTable_NextCategory(__instance);
             }
 
             [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.PrevCategory)), HarmonyPostfix]
-            public static void PieceTable_PrevCategory_Postfix(PieceTable __instance, ref Piece.PieceCategory __state)
+            public static void PieceTable_PrevCategory_Postfix(PieceTable __instance)
             {
-                if (PieceTableCategories.currentActive != null)
-                {
-                    PieceTableCategories.currentActive.PieceTable_PrevCategory(__instance, __state);
-                }
+                PieceTableCategories.currentActive?.PieceTable_PrevCategory(__instance);
             }
 
             [HarmonyPatch(typeof(Player), nameof(Player.SetBuildCategory)), HarmonyPostfix]
             public static void Player_SetBuildCategory()
             {
-                if (PieceTableCategories.currentActive != null)
-                {
-                    PieceTableCategories.currentActive.Player_SetBuildCategory();
-                }
+                PieceTableCategories.currentActive?.Player_SetBuildCategory();
             }
 
             [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
@@ -167,6 +137,18 @@ namespace Jotunn.Managers
                 AdjustPieceTableArray(__instance);
                 ReorderAllCategoryPieces(__instance);
             }
+
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), HarmonyTranspiler]
+            private static IEnumerable<CodeInstruction> UpdateAvailable_Transpiler(IEnumerable<CodeInstruction> instructions) => TranspileMaxCategory(instructions, 0);
+
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.NextCategory)), HarmonyTranspiler]
+            private static IEnumerable<CodeInstruction> NextCategory_Transpiler(IEnumerable<CodeInstruction> instructions) => TranspileMaxCategory(instructions, 0);
+
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.PrevCategory)), HarmonyTranspiler]
+            private static IEnumerable<CodeInstruction> PrevCategory_Transpiler(IEnumerable<CodeInstruction> instructions) => TranspileMaxCategory(instructions, -1);
+
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.SetCategory)), HarmonyTranspiler]
+            private static IEnumerable<CodeInstruction> SetCategory_Transpiler(IEnumerable<CodeInstruction> instructions) => TranspileMaxCategory(instructions, -1);
         }
 
         /// <summary>
@@ -295,7 +277,6 @@ namespace Jotunn.Managers
             {
                 categoryID = PieceCategories.Count + Piece.PieceCategory.Max;
                 PieceCategories.Add(name, categoryID);
-                PieceCategoryMax++;
                 isNew = true;
             }
 
@@ -577,18 +558,6 @@ namespace Jotunn.Managers
                             }
                         }
                     }
-
-                    // Add empty lists up to the max categories count
-                    if (table.m_availablePieces.Count < (int)PieceCategoryMax)
-                    {
-                        for (int i = table.m_availablePieces.Count; i < (int)PieceCategoryMax; i++)
-                        {
-                            table.m_availablePieces.Add(new List<Piece>());
-                        }
-                    }
-
-                    // Set first available category
-                    table.m_selectedCategory = categories.Values.Min();
 
                     Logger.LogDebug($"Added categories for table {table.name}");
                 }
@@ -904,6 +873,31 @@ namespace Jotunn.Managers
             }
         }
 
+        private static int MaxCategory() => Hud.instance.m_pieceCategoryTabs.Length;
+
+        private static IEnumerable<CodeInstruction> TranspileMaxCategory(IEnumerable<CodeInstruction> instructions, int maxOffset)
+        {
+            int number = (int)Piece.PieceCategory.Max + maxOffset;
+
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (instruction.LoadsConstant(number))
+                {
+                    yield return new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(PieceManager), nameof(MaxCategory)));
+
+                    if (maxOffset != 0)
+                    {
+                        yield return new CodeInstruction(OpCodes.Ldc_I4, maxOffset);
+                        yield return new CodeInstruction(OpCodes.Add);
+                    }
+                }
+                else
+                {
+                    yield return instruction;
+                }
+            }
+        }
+
         internal class PieceTableCategories : Dictionary<string, Piece.PieceCategory>
         {
             public static PieceTableCategories currentActive;
@@ -1028,56 +1022,22 @@ namespace Jotunn.Managers
                 }
             }
 
-            public void PieceTable_SetCategory(PieceTable self, int index)
+            public void PieceTable_NextCategory(PieceTable self)
             {
-                if (self.m_useCategories)
+                if (self.m_useCategories && !Hud.instance.m_pieceCategoryTabs[(int)self.m_selectedCategory].activeSelf)
                 {
-                    if (ContainsValue((Piece.PieceCategory)index))
-                    {
-                        self.m_selectedCategory = (Piece.PieceCategory)index;
-                    }
-                }
-            }
-
-            public void PieceTable_NextCategory(PieceTable self, Piece.PieceCategory oldCat)
-            {
-                if (self.m_useCategories)
-                {
-                    if (self.m_selectedCategory != oldCat)
-                    {
-                        self.m_selectedCategory = oldCat;
-                        do
-                        {
-                            self.m_selectedCategory++;
-
-                            if (self.m_selectedCategory == Instance.PieceCategoryMax)
-                            {
-                                self.m_selectedCategory = 0;
-                            }
-                        } while (!Values.Contains(self.m_selectedCategory));
-                    }
+                    self.NextCategory();
                 }
 
                 PieceCategoryScroll(self.m_selectedCategory);
             }
 
-            public void PieceTable_PrevCategory(PieceTable self, Piece.PieceCategory oldCat)
+            public void PieceTable_PrevCategory(PieceTable self)
             {
-                if (self.m_useCategories)
+                if (self.m_useCategories && !Hud.instance.m_pieceCategoryTabs[(int)self.m_selectedCategory].activeSelf)
                 {
-                    if (self.m_selectedCategory != oldCat)
-                    {
-                        self.m_selectedCategory = oldCat;
-                        do
-                        {
-                            self.m_selectedCategory--;
-
-                            if (self.m_selectedCategory < 0)
-                            {
-                                self.m_selectedCategory = Instance.PieceCategoryMax - 1;
-                            }
-                        } while (!Values.Contains(self.m_selectedCategory));
-                    }
+                    self.PrevCategory();
+                    return;
                 }
 
                 PieceCategoryScroll(self.m_selectedCategory);
