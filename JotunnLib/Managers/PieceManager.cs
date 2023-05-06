@@ -163,7 +163,10 @@ namespace Jotunn.Managers
             private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
 
             [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), HarmonyPostfix]
-            public static void PieceTable_UpdateAvailable_Postfix(PieceTable __instance) => ReorderAllCategoryPieces(__instance);
+            public static void PieceTable_UpdateAvailable_Postfix(PieceTable __instance) {
+                AdjustPieceTableArray(__instance);
+                ReorderAllCategoryPieces(__instance);
+            }
         }
 
         /// <summary>
@@ -584,10 +587,6 @@ namespace Jotunn.Managers
                         }
                     }
 
-                    // Resize selectedPiece array
-                    Array.Resize(ref table.m_selectedPiece, table.m_availablePieces.Count);
-                    Array.Resize(ref table.m_lastSelectedPiece, table.m_availablePieces.Count);
-
                     // Set first available category
                     table.m_selectedCategory = categories.Values.Min();
 
@@ -878,6 +877,12 @@ namespace Jotunn.Managers
             {
                 Logger.LogWarning($"Exception caught while reloading player recipes: {ex}");
             }
+        }
+
+        private static void AdjustPieceTableArray(PieceTable pieceTable)
+        {
+            Array.Resize(ref pieceTable.m_selectedPiece, pieceTable.m_availablePieces.Count);
+            Array.Resize(ref pieceTable.m_lastSelectedPiece, pieceTable.m_availablePieces.Count);
         }
 
         private static void ReorderAllCategoryPieces(PieceTable pieceTable)
