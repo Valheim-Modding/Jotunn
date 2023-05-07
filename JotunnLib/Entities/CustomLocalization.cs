@@ -132,7 +132,7 @@ namespace Jotunn.Entities
             }
             var cleanedToken = token.TrimStart(LocalizationManager.TokenFirstChar);
 
-            Map[language][cleanedToken] = translation;
+            AddTranslationToMap(language, cleanedToken, translation);
         }
 
         /// <summary> Add a group of translations. </summary>
@@ -152,10 +152,10 @@ namespace Jotunn.Entities
 
             foreach (var tv in tokenValue)
             {
-                var token = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
+                var cleanedToken = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
                 var translation = tv.Value;
 
-                if (!ValidateToken(token))
+                if (!ValidateToken(cleanedToken))
                 {
                     continue;
                 }
@@ -164,7 +164,7 @@ namespace Jotunn.Entities
                     continue;
                 }
 
-                Map[language][token] = translation;
+                AddTranslationToMap(language, cleanedToken, translation);
             }
         }
 
@@ -231,9 +231,9 @@ namespace Jotunn.Entities
             foreach (var tv in json)
             {
                 var translation = tv.Value as string;
-                var token = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
+                var cleanedToken = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
 
-                if (!ValidateToken(token))
+                if (!ValidateToken(cleanedToken))
                 {
                     continue;
                 }
@@ -243,7 +243,7 @@ namespace Jotunn.Entities
                     continue;
                 }
 
-                Map[language][token] = translation;
+                AddTranslationToMap(language, cleanedToken, translation);
             }
         }
 
@@ -296,7 +296,7 @@ namespace Jotunn.Entities
                         Map.Add(language, new Dictionary<string, string>());
                     }
 
-                    Map[language][cleanedToken] = translation;
+                    AddTranslationToMap(language, cleanedToken, translation);
                 }
             }
         }
@@ -331,6 +331,16 @@ namespace Jotunn.Entities
             => Map.Clear();
 
         #endregion
+
+        private void AddTranslationToMap(in string language, string cleanedToken, string translation)
+        {
+            Map[language][cleanedToken] = translation;
+
+            if (Localization.m_instance != null && !Localization.m_instance.m_translations.ContainsKey(cleanedToken))
+            {
+                Localization.m_instance.AddWord(cleanedToken, translation);
+            }
+        }
 
         #region Validation Methods
 
