@@ -45,7 +45,6 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>();
 
         private readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
-        private readonly Dictionary<string, Piece.PieceCategory> UnassignedPieceCategories = new Dictionary<string, Piece.PieceCategory>();
 
         private static Dictionary<string, GameObject> customTabs = new Dictionary<string, GameObject>();
         private static string hiddenCategoryMagic = "(HiddenCategory)";
@@ -99,7 +98,7 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
             private static void Hud_Awake()
             {
-                Instance.ResolveUnassignedCategories(ZNetScene.instance.m_prefabs);
+                Instance.AssignCustomCategories();
                 Instance.CreateCategoryTabs();
             }
 
@@ -114,9 +113,6 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPostfix]
             private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
-
-            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), HarmonyPrefix]
-            private static void PieceTable_UpdateAvailable_Prefix(PieceTable __instance) => Instance.ResolveUnassignedCategories(__instance.m_pieces);
 
             [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), HarmonyPostfix]
             public static void PieceTable_UpdateAvailable_Postfix(PieceTable __instance)
@@ -294,10 +290,8 @@ namespace Jotunn.Managers
                 return category;
             }
 
-            category = (Piece.PieceCategory)name.GetStableHashCode();
-            UnassignedPieceCategories[name] = category;
-            isNew = true;
-            return category;
+            isNew = false;
+            return Piece.PieceCategory.Misc;
         }
 
         /// <summary>
@@ -318,11 +312,6 @@ namespace Jotunn.Managers
                 return PieceCategories[name];
             }
 
-            if (!Hud.instance && UnassignedPieceCategories.TryGetValue(name, out category))
-            {
-                return category;
-            }
-
             return null;
         }
 
@@ -338,15 +327,13 @@ namespace Jotunn.Managers
             RefreshCategories();
         }
 
-        private void ResolveUnassignedCategories(List<GameObject> pieces)
+        private void AssignCustomCategories()
         {
-            Dictionary<Piece.PieceCategory, string> unassignedCategories = UnassignedPieceCategories.ToDictionary(x => x.Value, x => x.Key);
-
-            foreach (var prefab in pieces)
+            foreach (var customPiece in Pieces.Values)
             {
-                if (prefab.TryGetComponent(out Piece piece) && unassignedCategories.ContainsKey(piece.m_category))
+                if (customPiece != null && customPiece.Piece && !string.IsNullOrEmpty(customPiece.Category))
                 {
-                    piece.m_category = AddPieceCategory(string.Empty, unassignedCategories[piece.m_category]);
+                    customPiece.Piece.m_category = AddPieceCategory(customPiece.PieceTable, customPiece.Category);
                 }
             }
         }
