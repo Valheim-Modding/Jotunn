@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.11.6
+* Fixed an issue with custom category tabs where the hammer menu wouldn't open when using a controller
+
 ## Version 2.11.5
 * Fixed custom category tabs caused errors after relogging
 
