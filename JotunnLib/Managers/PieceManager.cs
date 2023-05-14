@@ -99,7 +99,7 @@ namespace Jotunn.Managers
             private static void Hud_Awake()
             {
                 Instance.AssignCustomCategories();
-                Instance.CreateCategoryTabs();
+                Instance.RefreshCategories();
             }
 
             [HarmonyPatch(typeof(Hud), nameof(Hud.OnDestroy)), HarmonyPostfix]
@@ -135,6 +135,12 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.SetCategory)), HarmonyTranspiler]
             private static IEnumerable<CodeInstruction> SetCategory_Transpiler(IEnumerable<CodeInstruction> instructions) => TranspileMaxCategory(instructions, -1);
+
+            [HarmonyPatch(typeof(Enum), nameof(Enum.GetValues)), HarmonyPostfix]
+            private static void EnumGetValuesPatch(Type enumType, ref Array __result) => Instance.EnumGetValuesPatch(enumType, ref __result);
+
+            [HarmonyPatch(typeof(Enum), nameof(Enum.GetNames)), HarmonyPostfix]
+            private static void EnumGetNamesPatch(Type enumType, ref string[] __result) => Instance.EnumGetNamesPatch(enumType, ref __result);
         }
 
         /// <summary>
@@ -270,30 +276,25 @@ namespace Jotunn.Managers
 
             Piece.PieceCategory category;
 
-            if (Hud.instance)
+            var names = Enum.GetNames(typeof(Piece.PieceCategory));
+
+            for (int i = 0; i < names.Length; i++)
             {
-                for (int i = 0; i < Hud.instance.m_buildCategoryNames.Count; i++)
+                if (names[i] == name)
                 {
-                    if (Hud.instance.m_buildCategoryNames[i] == name)
-                    {
-                        PieceCategories[name] = (Piece.PieceCategory)i;
-                        isNew = false;
-                        return (Piece.PieceCategory)i;
-                    }
+                    category = (Piece.PieceCategory)i;
+                    PieceCategories[name] = category;
+                    isNew = false;
+                    return category;
                 }
-
-                category = (Piece.PieceCategory)(Hud.instance.m_buildCategoryNames.Count);
-                string token = CreateCategoryToken(name);
-
-                Hud.instance.m_buildCategoryNames.Add($"${token}");
-                PieceCategories[name] = category;
-
-                isNew = true;
-                return category;
             }
 
-            isNew = false;
-            return Piece.PieceCategory.Misc;
+            // create a new category
+            category = (Piece.PieceCategory)names.Length - 1;
+            PieceCategories[name] = category;
+
+            isNew = true;
+            return category;
         }
 
         /// <summary>
@@ -309,12 +310,47 @@ namespace Jotunn.Managers
                 return category;
             }
 
-            if (PieceCategories.ContainsKey(name))
+            if (PieceCategories.TryGetValue(name, out category))
             {
-                return PieceCategories[name];
+                return category;
             }
 
             return null;
+        }
+
+        private void EnumGetValuesPatch(Type enumType, ref Array __result)
+        {
+            if (enumType != typeof(Piece.PieceCategory))
+            {
+                return;
+            }
+
+            if (PieceCategories.Count == 0)
+            {
+                return;
+            }
+
+            var categories = new Piece.PieceCategory[__result.Length + PieceCategories.Count];
+
+            __result.CopyTo(categories, 0);
+            PieceCategories.Values.CopyTo(categories, __result.Length);
+
+            __result = categories;
+        }
+
+        private void EnumGetNamesPatch(Type enumType, ref string[] __result)
+        {
+            if (enumType != typeof(Piece.PieceCategory))
+            {
+                return;
+            }
+
+            if (PieceCategories.Count == 0)
+            {
+                return;
+            }
+
+            __result = __result.AddRangeToArray(PieceCategories.Keys.ToArray());
         }
 
         /// <summary>
@@ -474,16 +510,20 @@ namespace Jotunn.Managers
                 return;
             }
 
-            // Append tabs and their names to the GUI for every custom category not already added
-            foreach (var category in PieceCategories)
-            {
-                if (!customTabs.ContainsKey(category.Key))
-                {
-                    string name = category.Key;
-                    GameObject tab = CreateCategoryTab(name);
+            var enumNames = Enum.GetNames(typeof(Piece.PieceCategory)).Where(name => name != "All").ToList();
 
-                    Hud.instance.m_pieceCategoryTabs = Hud.instance.m_pieceCategoryTabs.AddItem(tab).ToArray();
-                }
+            for (int i = Hud.instance.m_buildCategoryNames.Count; i < enumNames.Count; ++i)
+            {
+                Hud.instance.m_buildCategoryNames.Add(enumNames[i]);
+            }
+
+            // Append tabs and their names to the GUI for every custom category not already added
+            for (int i = Hud.instance.m_pieceCategoryTabs.Length; i < Hud.instance.m_buildCategoryNames.Count; i++)
+            {
+                string name = Hud.instance.m_buildCategoryNames[i];
+                GameObject tab = CreateCategoryTab(name);
+
+                Hud.instance.m_pieceCategoryTabs = Hud.instance.m_pieceCategoryTabs.AddItem(tab).ToArray();
             }
 
             if (Player.m_localPlayer && Player.m_localPlayer.m_buildPieces)
@@ -722,7 +762,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private static int MaxCategory() => Hud.instance.m_pieceCategoryTabs.Length;
+        private static int MaxCategory() => Enum.GetValues(typeof(Piece.PieceCategory)).Length - 1;
 
         private static IEnumerable<CodeInstruction> TranspileMaxCategory(IEnumerable<CodeInstruction> instructions, int maxOffset)
         {
@@ -778,6 +818,14 @@ namespace Jotunn.Managers
         /// </summary>
         public void RefreshCategories()
         {
+            // Only touch categories when new ones were added
+            if (!PieceCategories.Any())
+            {
+                return;
+            }
+
+            CreateCategoryTabs();
+
             if (!Player.m_localPlayer)
             {
                 return;
