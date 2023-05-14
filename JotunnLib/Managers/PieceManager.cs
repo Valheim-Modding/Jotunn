@@ -114,6 +114,9 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPostfix]
             private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
 
+            [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), HarmonyPrefix]
+            public static void PieceTable_UpdateAvailable_Prefix(PieceTable __instance) => ExpandAvailablePieces(__instance);
+
             [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), HarmonyPostfix]
             public static void PieceTable_UpdateAvailable_Postfix(PieceTable __instance)
             {
@@ -483,6 +486,11 @@ namespace Jotunn.Managers
                     Hud.instance.m_pieceCategoryTabs = Hud.instance.m_pieceCategoryTabs.AddItem(tab).ToArray();
                 }
             }
+
+            if (Player.m_localPlayer && Player.m_localPlayer.m_buildPieces)
+            {
+                Player.m_localPlayer.UpdateAvailablePiecesList();
+            }
         }
 
         private void DestroyCategoryTabs()
@@ -675,6 +683,18 @@ namespace Jotunn.Managers
             catch (Exception ex)
             {
                 Logger.LogWarning($"Exception caught while reloading player recipes: {ex}");
+            }
+        }
+
+        private static void ExpandAvailablePieces(PieceTable __instance)
+        {
+            if (__instance.m_availablePieces.Count > 0)
+            {
+                int missing = MaxCategory() - __instance.m_availablePieces.Count;
+                for (int i = 0; i < missing; i++)
+                {
+                    __instance.m_availablePieces.Add(new List<Piece>());
+                }
             }
         }
 
