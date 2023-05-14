@@ -42,6 +42,7 @@ namespace Jotunn.Entities
                 if (Piece)
                 {
                     Piece.m_category = PieceManager.Instance.AddPieceCategory(PieceTable, category);
+                    PieceManager.Instance.RefreshCategories();
                 }
             }
         }

@@ -253,7 +253,6 @@ namespace Jotunn.Managers
             if (isNew)
             {
                 CreateCategoryTabs();
-                RefreshCategories();
             }
 
             return categoryID;
@@ -774,7 +773,10 @@ namespace Jotunn.Managers
             return categories;
         }
 
-        private void RefreshCategories()
+        /// <summary>
+        ///     Updates the piece categories, should be called after setting the m_category field of a piece.
+        /// </summary>
+        public void RefreshCategories()
         {
             if (!Player.m_localPlayer)
             {
