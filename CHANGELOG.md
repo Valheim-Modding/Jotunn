@@ -6,6 +6,9 @@
 * Marked empty CustomLocalization as obsolete, LocalizationManager.Instance.GetLocalization() should be used instead
 * Slightly improved loading time of big mod packs when creating custom entities again
 
+## Version 2.11.6
+* Fixed an issue with custom category tabs where the hammer menu wouldn't open when using a controller
+
 ## Version 2.11.5
 * Fixed custom category tabs caused errors after relogging
 

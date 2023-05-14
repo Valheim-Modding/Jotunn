@@ -586,6 +586,7 @@ namespace Jotunn.Managers
 
                     // Resize selectedPiece array
                     Array.Resize(ref table.m_selectedPiece, table.m_availablePieces.Count);
+                    Array.Resize(ref table.m_lastSelectedPiece, table.m_availablePieces.Count);
 
                     // Set first available category
                     table.m_selectedCategory = categories.Values.Min();
