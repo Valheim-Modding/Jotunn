@@ -43,7 +43,7 @@ namespace Jotunn.Utils
                         }
                     }
                 }
-                to.IncreseDataRevision();
+                to.IncreaseDataRevision();
             }
 
             public static ZDO Place(ZDO zdo)
@@ -85,7 +85,7 @@ namespace Jotunn.Utils
             {
                 if (!IsValid(zdo)) return;
                 if (!zdo.IsOwner())
-                    zdo.SetOwner(ZDOMan.instance.GetMyID());
+                    zdo.SetOwner(ZDOMan.GetSessionID());
                 if (ZNetScene.instance.m_instances.TryGetValue(zdo, out var view))
                     ZNetScene.instance.Destroy(view.gameObject);
                 else

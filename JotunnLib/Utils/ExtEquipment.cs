@@ -49,7 +49,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Check for variant changes and pass the variant to AttachItem
         /// </summary>
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquiped)), HarmonyILManipulator]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetRightHandEquipped)), HarmonyILManipulator]
         private static void VisEquipment_SetRightHandEquiped(ILContext il)
         {
             ExtEquipment instance = null;
@@ -88,7 +88,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Check for variant changes and pass the variant to AttachBackItem
         /// </summary>
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetBackEquiped)), HarmonyILManipulator]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetBackEquipped)), HarmonyILManipulator]
         private static void VisEquipment_SetBackEquiped(ILContext il)
         {
             ExtEquipment instance = null;
@@ -126,7 +126,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Check for variant changes and pass the variant to AttachArmor
         /// </summary>
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetChestEquiped)), HarmonyILManipulator]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetChestEquipped)), HarmonyILManipulator]
         private static void VisEquipment_SetChestEquiped(ILContext il)
         {
             ExtEquipment instance = null;

@@ -97,7 +97,7 @@ namespace TestMod
                 UndoManager.Instance.Add(QueueName, action);
 
                 // Remove the ZDO from the game
-                zNetView.GetZDO().SetOwner(ZDOMan.instance.GetMyID());
+                zNetView.GetZDO().SetOwner(ZDOMan.GetSessionID());
                 ZNetScene.instance.Destroy(zNetView.gameObject);
                 
                 // Do some console output
