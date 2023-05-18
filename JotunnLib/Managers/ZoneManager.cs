@@ -78,7 +78,6 @@ namespace Jotunn.Managers
         ///     Return a <see cref="Heightmap.Biome"/> that matches any of the provided Biomes
         /// </summary>
         /// <param name="biomes">Biomes that should match</param> 
-#pragma warning disable S3265 // Non-flags enums should not be used in bitwise operations
         public static Heightmap.Biome AnyBiomeOf(params Heightmap.Biome[] biomes)
         {
             Heightmap.Biome result = Heightmap.Biome.None;
@@ -100,7 +99,7 @@ namespace Jotunn.Managers
             List<Heightmap.Biome> biomes = new List<Heightmap.Biome>();
             foreach (Heightmap.Biome area in Enum.GetValues(typeof(Heightmap.Biome)))
             {
-                if (area == Heightmap.Biome.BiomesMax || (biome & area) == 0)
+                if ((biome & area) == 0)
                 {
                     continue;
                 }
@@ -110,7 +109,6 @@ namespace Jotunn.Managers
 
             return biomes;
         }
-#pragma warning restore S3265 // Non-flags enums should not be used in bitwise operations
 
         /// <summary>
         ///     Create an empty GameObject that is disabled, so any Components in instantiated GameObjects will not start their lifecycle.
