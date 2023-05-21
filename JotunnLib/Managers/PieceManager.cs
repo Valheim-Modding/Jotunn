@@ -743,7 +743,7 @@ namespace Jotunn.Managers
                 try
                 {
                     // Fix references if needed
-                    if (customPiece.FixReference | customPiece.FixConfig)
+                    if (customPiece.FixReference || customPiece.FixConfig)
                     {
                         customPiece.PiecePrefab.FixReferences(customPiece.FixReference);
                         customPiece.FixReference = false;

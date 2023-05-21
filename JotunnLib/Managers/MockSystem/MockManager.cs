@@ -163,7 +163,7 @@ namespace Jotunn.Managers
         {
             // This is totally arbitrary.
             // I had to add a depth because of call stack exploding otherwise
-            if (depth == 3 || objectToFix == null)
+            if (depth == 5 || objectToFix == null)
             {
                 return;
             }
