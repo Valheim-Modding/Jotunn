@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.11.7
+* Added Valheim network version check to the disconnect window to better identify the cause of a disconnect. Only visible if both server and client are running Jotunn 2.11.7 or higher
+* Removed the Valheim version string check from the disconnect window, as the network version is used for the version check
+
 ## Version 2.11.6
 * Fixed an issue with custom category tabs where the hammer menu wouldn't open when using a controller
 
