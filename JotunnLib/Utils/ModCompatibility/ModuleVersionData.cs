@@ -22,6 +22,8 @@ namespace Jotunn.Utils
 
         public string VersionString { get; internal set; } = string.Empty;
 
+        public uint NetworkVersion { get; internal set; }
+
         /// <summary>
         ///     Create from module data
         /// </summary>
@@ -30,6 +32,7 @@ namespace Jotunn.Utils
         {
             ValheimVersion = GameVersions.ValheimVersion;
             VersionString = GetVersionString();
+            NetworkVersion = GameVersions.NetworkVersion;
             Modules = new List<ModModule>(versionData);
         }
 
@@ -37,6 +40,7 @@ namespace Jotunn.Utils
         {
             ValheimVersion = valheimVersion;
             VersionString = GetVersionString();
+            NetworkVersion = GameVersions.NetworkVersion;
             Modules = new List<ModModule>(versionData);
         }
 
@@ -63,6 +67,11 @@ namespace Jotunn.Utils
                 if (pkg.m_reader.BaseStream.Position != pkg.m_reader.BaseStream.Length)
                 {
                     VersionString = pkg.ReadString();
+                }
+
+                if (pkg.m_reader.BaseStream.Position != pkg.m_reader.BaseStream.Length)
+                {
+                    NetworkVersion = pkg.ReadUInt();
                 }
             }
             catch (Exception ex)
@@ -91,6 +100,7 @@ namespace Jotunn.Utils
             }
 
             pkg.Write(VersionString);
+            pkg.Write(NetworkVersion);
 
             return pkg;
         }
@@ -131,13 +141,20 @@ namespace Jotunn.Utils
         {
             var sb = new StringBuilder();
 
-            if (string.IsNullOrEmpty(VersionString))
+            string versionString = VersionString;
+
+            if (string.IsNullOrEmpty(versionString))
             {
-                sb.AppendLine($"Valheim {ValheimVersion.Major}.{ValheimVersion.Minor}.{ValheimVersion.Build}");
+                versionString = $"Valheim {ValheimVersion.Major}.{ValheimVersion.Minor}.{ValheimVersion.Build}";
+            }
+
+            if (NetworkVersion > 0)
+            {
+                sb.AppendLine($"Valheim {versionString} (n-{NetworkVersion})");
             }
             else
             {
-                sb.AppendLine($"Valheim {VersionString}");
+                sb.AppendLine($"Valheim {versionString}");
             }
 
             foreach (var mod in Modules)
