@@ -280,7 +280,6 @@ namespace Jotunn.Utils
                    CreateLowerVersionErrorMessage(serverData, clientData) +
                    CreateHigherVersionErrorMessage(serverData, clientData) +
                    CreateAdditionalModsErrorMessage(serverData, clientData) +
-                   CreateVersionStringErrorMessage(serverData, clientData) +
                    CreateFurtherStepsMessage();
         }
 
@@ -299,20 +298,6 @@ namespace Jotunn.Utils
                 return ColoredLine(Color.red, "$mod_compat_header_valheim_version") +
                        ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_valheim_version_error_description", $"{serverData.ValheimVersion}", $"{clientData.ValheimVersion}") +
                        ColoredLine(Color.white, "$mod_compat_valheim_version_downgrade", $"{serverData.ValheimVersion}") +
-                       Environment.NewLine;
-            }
-
-            return string.Empty;
-        }
-
-        private static string CreateVersionStringErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
-        {
-            if (serverData.ValheimVersion == clientData.ValheimVersion && !string.IsNullOrEmpty(serverData.VersionString) && serverData.VersionString != clientData.VersionString)
-            {
-                return ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_header_version_string") +
-                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_version_string_description") +
-                       ColoredLine(Color.white, "$mod_compat_version_strong_local", $"{clientData.VersionString}") +
-                       ColoredLine(Color.white, "$mod_compat_version_strong_remote", $"{serverData.VersionString}") +
                        Environment.NewLine;
             }
 
