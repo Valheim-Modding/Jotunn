@@ -9,6 +9,8 @@ namespace Jotunn.Utils
     {
         public static System.Version ValheimVersion { get; } = GetValheimVersion();
 
+        public static uint NetworkVersion { get; } = GetNetworkVersion();
+
         private static System.Version GetValheimVersion()
         {
             // Valheim 0.214.305 and below
@@ -41,6 +43,18 @@ namespace Jotunn.Utils
             var patch = (int)patchField.GetValue(instance);
 
             return new System.Version(major, minor, patch);
+        }
+
+        private static uint GetNetworkVersion()
+        {
+            var networkVersionField = typeof(Version).GetField("m_networkVersion", ReflectionHelper.AllBindingFlags);
+
+            if (networkVersionField == null)
+            {
+                return 0;
+            }
+
+            return (uint)networkVersionField.GetValue(null);
         }
     }
 }

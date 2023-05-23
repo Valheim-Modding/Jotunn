@@ -285,19 +285,24 @@ namespace Jotunn.Utils
 
         private static string CreateVanillaVersionErrorMessage(ModuleVersionData serverData, ModuleVersionData clientData)
         {
-            if (serverData.ValheimVersion > clientData.ValheimVersion)
+            if (serverData.NetworkVersion <= 0 || clientData.NetworkVersion <= 0)
+            {
+                return string.Empty;
+            }
+
+            if (serverData.NetworkVersion > clientData.NetworkVersion)
             {
                 return ColoredLine(Color.red, "$mod_compat_header_valheim_version") +
-                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_valheim_version_error_description", $"{serverData.ValheimVersion}", $"{clientData.ValheimVersion}") +
-                       ColoredLine(Color.white, "$mod_compat_valheim_version_upgrade", serverData.ValheimVersion.ToString()) +
+                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_valheim_version_error_description", $"{serverData.NetworkVersion}", $"{clientData.NetworkVersion}") +
+                       ColoredLine(Color.white, "$mod_compat_valheim_version_upgrade") +
                        Environment.NewLine;
             }
 
-            if (serverData.ValheimVersion < clientData.ValheimVersion)
+            if (serverData.NetworkVersion < clientData.NetworkVersion)
             {
                 return ColoredLine(Color.red, "$mod_compat_header_valheim_version") +
-                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_valheim_version_error_description", $"{serverData.ValheimVersion}", $"{clientData.ValheimVersion}") +
-                       ColoredLine(Color.white, "$mod_compat_valheim_version_downgrade", $"{serverData.ValheimVersion}") +
+                       ColoredLine(GUIManager.Instance.ValheimOrange, "$mod_compat_valheim_version_error_description", $"{serverData.NetworkVersion}", $"{clientData.NetworkVersion}") +
+                       ColoredLine(Color.white, "$mod_compat_valheim_version_downgrade") +
                        Environment.NewLine;
             }
 
