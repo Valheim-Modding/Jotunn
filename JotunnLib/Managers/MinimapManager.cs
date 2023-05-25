@@ -520,7 +520,7 @@ namespace Jotunn.Managers
             watch.Start();
             Logger.LogDebug("Setting up MapDrawings");
 
-            MainTex = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
+            MainTex = new Texture2D(TextureSize, TextureSize, TextureFormat.RGB24, mipChain: false);
             HeightFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RFloat, mipChain: false);
             ForestFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
             FogFilter ??= new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
@@ -1089,7 +1089,14 @@ namespace Jotunn.Managers
                     wrapMode = TextureWrapMode.Clamp,
                     name = Name
                 };
-                Graphics.CopyTexture(Instance.TransparentTex, t);
+                if (t.format != TextureFormat.RGB24)
+                {
+                    Graphics.CopyTexture(Instance.TransparentTex, t);
+                }
+                else
+                {
+                    Graphics.CopyTexture(Minimap.instance.m_mapTexture, t);
+                }
                 return t;
             }
         }
