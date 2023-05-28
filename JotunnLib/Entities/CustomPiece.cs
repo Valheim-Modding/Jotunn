@@ -29,8 +29,7 @@ namespace Jotunn.Entities
 
         /// <summary>
         ///     Name of the category this custom piece belongs to.<br />
-        ///     This may be different from the corresponding Piece.m_category value, as custom categories can only be registered later at runtime.
-        ///     When setting this value, Piece.m_category will be updated accordingly, possibly not immediately.
+        ///     When setting this value, Piece.m_category will be updated as well.
         /// </summary>
         public string Category
         {
