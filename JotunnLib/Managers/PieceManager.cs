@@ -96,11 +96,7 @@ namespace Jotunn.Managers
             public static void Player_SetPlaceMode() => Instance.RefreshCategories();
 
             [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
-            private static void Hud_Awake()
-            {
-                Instance.AssignCustomCategories();
-                Instance.RefreshCategories();
-            }
+            private static void Hud_Awake() => Instance.RefreshCategories();
 
             [HarmonyPatch(typeof(Hud), nameof(Hud.OnDestroy)), HarmonyPostfix]
             private static void Hud_OnDestroy() => Instance.DestroyCategoryTabs();
@@ -363,17 +359,6 @@ namespace Jotunn.Managers
         public void RemovePieceCategory(string table, string name)
         {
             RefreshCategories();
-        }
-
-        private void AssignCustomCategories()
-        {
-            foreach (var customPiece in Pieces.Values)
-            {
-                if (customPiece != null && customPiece.Piece && !string.IsNullOrEmpty(customPiece.Category))
-                {
-                    customPiece.Piece.m_category = AddPieceCategory(customPiece.PieceTable, customPiece.Category);
-                }
-            }
         }
 
         /// <summary>
