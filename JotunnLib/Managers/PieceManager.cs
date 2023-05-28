@@ -559,8 +559,29 @@ namespace Jotunn.Managers
             GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], categoryRoot);
             newTab.SetActive(false);
             newTab.name = name;
+
             UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
             handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
+
+            var text = newTab.transform.Find("Text").GetComponent<Text>();
+            text.rectTransform.offsetMin = new Vector2(3, 1);
+            text.rectTransform.offsetMax = new Vector2(-3, -1);
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = 12;
+            text.resizeTextMaxSize = 20;
+            text.lineSpacing = 0.8f;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+
+            var selectedText = newTab.transform.Find("Selected/Text").GetComponent<Text>();
+            selectedText.resizeTextForBestFit = true;
+            selectedText.rectTransform.offsetMin = new Vector2(3, 1);
+            selectedText.rectTransform.offsetMax = new Vector2(-3, -1);
+            selectedText.resizeTextMinSize = 12;
+            selectedText.resizeTextMaxSize = 20;
+            selectedText.lineSpacing = 0.8f;
+            selectedText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            selectedText.verticalOverflow = VerticalWrapMode.Truncate;
 
             customTabs.Add(name, newTab);
             return newTab;
