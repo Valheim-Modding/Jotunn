@@ -12,7 +12,7 @@ jobs:
     name: Builds documentation and publishes to GitHub Pages
     steps:
       # Checkout repo
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
         name: Checkout repo
 
       # Install NuGet
