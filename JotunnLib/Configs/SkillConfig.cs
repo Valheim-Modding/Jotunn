@@ -118,7 +118,7 @@ namespace Jotunn.Configs
             {
                 m_description = Description,
                 m_icon = Icon,
-                m_increaseStep = IncreaseStep,
+                m_increseStep = IncreaseStep,
                 m_skill = UID
             };
         }
