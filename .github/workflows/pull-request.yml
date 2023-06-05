@@ -15,7 +15,7 @@ jobs:
       # Get Valheim version id
       - name: Get Valheim version id
         id: valheimversion
-        run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
+        run: echo "valheimversion=$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
 
       # Install NuGet
       - uses: nuget/setup-nuget@v1

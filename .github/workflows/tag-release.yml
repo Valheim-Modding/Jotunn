@@ -18,13 +18,13 @@ jobs:
 
       - name: Get Valheim version id
         id: valheimversion
-        run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
+        run: echo "valheimversion=$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")" >> $GITHUB_OUTPUT
 
       - name: Get the version
         id: get_version
         run: |
-          echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-          echo ::set-output name=VERSION_NUMBER::${GITHUB_REF/refs\/tags\/v/}
+          echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
+          echo "VERSION_NUMBER=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_OUTPUT
 
       - name: Install NuGet
         uses: nuget/setup-nuget@v1
@@ -152,8 +152,8 @@ jobs:
 #      - name: Create output vars from unex.yml
 #        id: unexconf
 #        run: |
-#          echo ::set-output name=modid::${{ steps.unexyaml.outputs.modid }}
-#        
+#          echo "modid=${{ steps.unexyaml.outputs.modid }}" >> $GITHUB_OUTPUT
+#
 #      - name: Upload to NexusMods
 #        run: >
 #          dotnet unex upload

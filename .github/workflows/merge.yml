@@ -19,12 +19,12 @@ jobs:
       # Get date
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
       # Get Valheim version id
       - name: Get Valheim version id
         id: valheimversion
-        run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
+        run: echo "valheimversion=$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")" >> $GITHUB_OUTPUT
 
       # Install NuGet
       - uses: nuget/setup-nuget@v1
