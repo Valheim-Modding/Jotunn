@@ -119,13 +119,13 @@ jobs:
           mv JotunnLib/bin/Debug/net462/Jotunn.dll Jotunn-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
       - name: Upload Nexusmods zip as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Jotunn-${{ steps.get_version.outputs.VERSION }}-Nexusmods.zip
           path: JotunnLib/_package/Nexusmods/Jotunn-${{ steps.get_version.outputs.VERSION }}.zip
 
       - name: Upload Thunderstore zip as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Jotunn-${{ steps.get_version.outputs.VERSION }}-Thunderstore.zip
           path: JotunnLib/_package/Thunderstore/Jotunn-${{ steps.get_version.outputs.VERSION }}.zip
