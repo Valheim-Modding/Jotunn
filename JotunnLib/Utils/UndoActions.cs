@@ -13,25 +13,29 @@ namespace Jotunn.Utils
     {
         private static class UndoHelper
         {
+            private static Dictionary<ZDO, BinarySearchDictionary<int, float>> clonedFloats = new Dictionary<ZDO, BinarySearchDictionary<int, float>>();
+            private static Dictionary<ZDO, BinarySearchDictionary<int, Vector3>> clonedVec3 = new Dictionary<ZDO, BinarySearchDictionary<int, Vector3>>();
+            private static Dictionary<ZDO, BinarySearchDictionary<int, Quaternion>> clonedQuats = new Dictionary<ZDO, BinarySearchDictionary<int, Quaternion>>();
+            private static Dictionary<ZDO, BinarySearchDictionary<int, int>> clonedInts = new Dictionary<ZDO, BinarySearchDictionary<int, int>>();
+            private static Dictionary<ZDO, BinarySearchDictionary<int, long>> clonedLongs = new Dictionary<ZDO, BinarySearchDictionary<int, long>>();
+            private static Dictionary<ZDO, BinarySearchDictionary<int, string>> clonedStrings = new Dictionary<ZDO, BinarySearchDictionary<int, string>>();
+            private static Dictionary<ZDO, BinarySearchDictionary<int, byte[]>> clonedByteArrays = new Dictionary<ZDO, BinarySearchDictionary<int, byte[]>>();
+
             public static void CopyData(ZDO from, ZDO to)
             {
                 var refresh = to.m_prefab != from.m_prefab;
-                to.m_floats = from.m_floats;
-                to.m_vec3 = from.m_vec3;
-                to.m_quats = from.m_quats;
-                to.m_ints = from.m_ints;
-                to.m_longs = from.m_longs;
-                to.m_strings = from.m_strings;
-                to.m_byteArrays = from.m_byteArrays;
+
                 to.m_prefab = from.m_prefab;
                 to.m_position = from.m_position;
                 to.m_rotation = from.m_rotation;
+                ApplyZDOExtraData(to.m_uid, from);
+
                 var zs = ZNetScene.instance;
                 if (zs.m_instances.TryGetValue(to, out var view))
                 {
                     var tf = view.transform;
                     tf.position = from.m_position;
-                    tf.rotation = from.m_rotation;
+                    tf.rotation = Quaternion.Euler(from.m_rotation);
                     tf.localScale = from.GetVec3("scale", Vector3.one);
                     if (refresh)
                     {
@@ -43,7 +47,19 @@ namespace Jotunn.Utils
                         }
                     }
                 }
+
                 to.IncreaseDataRevision();
+            }
+
+            public static void ApplyZDOExtraData(ZDOID id, ZDO zdo)
+            {
+                ZDOExtraData.s_floats[id] = CloneBinarySearchDictionary(clonedFloats[zdo]);
+                ZDOExtraData.s_vec3[id] = CloneBinarySearchDictionary(clonedVec3[zdo]);
+                ZDOExtraData.s_quats[id] = CloneBinarySearchDictionary(clonedQuats[zdo]);
+                ZDOExtraData.s_ints[id] = CloneBinarySearchDictionary(clonedInts[zdo]);
+                ZDOExtraData.s_longs[id] = CloneBinarySearchDictionary(clonedLongs[zdo]);
+                ZDOExtraData.s_strings[id] = CloneBinarySearchDictionary(clonedStrings[zdo]);
+                ZDOExtraData.s_byteArrays[id] = CloneBinarySearchDictionary(clonedByteArrays[zdo]);
             }
 
             public static ZDO Place(ZDO zdo)
@@ -55,7 +71,7 @@ namespace Jotunn.Utils
                 if (!netView) throw new InvalidOperationException("No view");
                 var added = netView.GetZDO();
                 netView.SetLocalScale(zdo.GetVec3("scale", obj.transform.localScale));
-                CopyData(zdo.Clone(), added);
+                CopyData(zdo, added);
                 return added;
             }
 
@@ -79,7 +95,23 @@ namespace Jotunn.Utils
                 return data;
             }
 
-            public static ZDO[] Clone(IEnumerable<ZDO> data) => data.Select(zdo => zdo.Clone()).ToArray();
+            public static ZDO[] Clone(IEnumerable<ZDO> data) => data.Select(CloneZDO).ToArray();
+
+            private static ZDO CloneZDO(ZDO zdo)
+            {
+                var clone = zdo.Clone();
+                clone.SaveClone = false;
+
+                clonedFloats[clone] = CloneBinarySearchDictionary(clone.m_uid, ZDOExtraData.s_floats);
+                clonedVec3[clone] = CloneBinarySearchDictionary(clone.m_uid, ZDOExtraData.s_vec3);
+                clonedQuats[clone] = CloneBinarySearchDictionary(clone.m_uid, ZDOExtraData.s_quats);
+                clonedInts[clone] = CloneBinarySearchDictionary(clone.m_uid, ZDOExtraData.s_ints);
+                clonedLongs[clone] = CloneBinarySearchDictionary(clone.m_uid, ZDOExtraData.s_longs);
+                clonedStrings[clone] = CloneBinarySearchDictionary(clone.m_uid, ZDOExtraData.s_strings);
+                clonedByteArrays[clone] = CloneBinarySearchDictionary(clone.m_uid, ZDOExtraData.s_byteArrays);
+
+                return clone;
+            }
 
             public static void RemoveZDO(ZDO zdo)
             {
@@ -129,6 +161,16 @@ namespace Jotunn.Utils
                 compiler.m_lastOpRadius = 0f;
                 compiler.Save();
                 compiler.m_hmap.Poke(false);
+            }
+
+            public static BinarySearchDictionary<TKey, TValue> CloneBinarySearchDictionary<TKey, TValue>(BinarySearchDictionary<TKey, TValue> dict) where TKey : IComparable<TKey>
+            {
+                return dict.Clone() as BinarySearchDictionary<TKey, TValue>;
+            }
+
+            public static BinarySearchDictionary<TKey, TValue> CloneBinarySearchDictionary<TKey, TValue>(ZDOID id, Dictionary<ZDOID, BinarySearchDictionary<TKey, TValue>> dict) where TKey : IComparable<TKey>
+            {
+                return CloneBinarySearchDictionary(dict.GetValueOrDefaultPiktiv(id, new BinarySearchDictionary<TKey, TValue>()));
             }
         }
         
