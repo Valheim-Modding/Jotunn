@@ -307,12 +307,33 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Get a list of all custom piece category names
+        ///     Get a list of all custom Jötunn piece category names
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use GetPieceCategoriesMap to get a complete map of all categories, not only Jötunn ones")]
         public List<string> GetPieceCategories()
         {
             return PieceCategories.Keys.ToList();
+        }
+
+        /// <summary>
+        ///     Get a complete map of all piece categories.
+        ///     This includes vanilla, Jötunn and other modded categories that use the same system
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<Piece.PieceCategory, string> GetPieceCategoriesMap()
+        {
+            var values = Enum.GetValues(typeof(Piece.PieceCategory));
+            var names = Enum.GetNames(typeof(Piece.PieceCategory));
+
+            var map = new Dictionary<Piece.PieceCategory, string>();
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                map[(Piece.PieceCategory)values.GetValue(i)] = names[i];
+            }
+
+            return map;
         }
 
         /// <summary>
