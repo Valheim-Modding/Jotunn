@@ -47,7 +47,7 @@ namespace Jotunn.Managers
 
         private readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
 
-        private static Dictionary<string, GameObject> customTabs = new Dictionary<string, GameObject>();
+        private static List<GameObject> customTabs = new List<GameObject>();
         private static string hiddenCategoryMagic = "(HiddenCategory)";
 
         /// <summary>
@@ -716,7 +716,8 @@ namespace Jotunn.Managers
 
             for (int i = Hud.instance.m_buildCategoryNames.Count; i < enumNames.Count; ++i)
             {
-                Hud.instance.m_buildCategoryNames.Add(enumNames[i]);
+                var token = CreateCategoryToken(enumNames[i]);
+                Hud.instance.m_buildCategoryNames.Add(token);
             }
 
             // Append tabs and their names to the GUI for every custom category not already added
@@ -738,7 +739,7 @@ namespace Jotunn.Managers
         {
             foreach (var tab in customTabs)
             {
-                Object.Destroy(tab.Value);
+                Object.Destroy(tab);
             }
 
             customTabs.Clear();
@@ -748,7 +749,7 @@ namespace Jotunn.Managers
         {
             char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
             string tokenCategory = string.Concat(name.ToLower().Split(forbiddenCharsArray));
-            string token = $"jotunn_cat_{tokenCategory}";
+            string token = $"$jotunn_cat_{tokenCategory}";
 
             LocalizationManager.Instance.JotunnLocalization.AddTranslation(token, name);
             return token;
@@ -818,7 +819,7 @@ namespace Jotunn.Managers
             selectedText.horizontalOverflow = HorizontalWrapMode.Wrap;
             selectedText.verticalOverflow = VerticalWrapMode.Truncate;
 
-            customTabs.Add(name, newTab);
+            customTabs.Add(newTab);
             return newTab;
         }
 
