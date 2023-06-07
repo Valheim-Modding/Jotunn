@@ -47,8 +47,6 @@ namespace Jotunn.Managers
 
         private readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private static bool categoryRefreshNeeded = false;
-
-        private static List<GameObject> customTabs = new List<GameObject>();
         private static string hiddenCategoryMagic = "(HiddenCategory)";
 
         /// <summary>
@@ -109,9 +107,6 @@ namespace Jotunn.Managers
                     Instance.RefreshCategories();
                 }
             }
-
-            [HarmonyPatch(typeof(Hud), nameof(Hud.OnDestroy)), HarmonyPostfix]
-            private static void Hud_OnDestroy() => Instance.DestroyCategoryTabs();
 
             [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
             private static void RegisterCustomData(ObjectDB __instance) => Instance.RegisterCustomData(__instance);
@@ -747,16 +742,6 @@ namespace Jotunn.Managers
             }
         }
 
-        private void DestroyCategoryTabs()
-        {
-            foreach (var tab in customTabs)
-            {
-                Object.Destroy(tab);
-            }
-
-            customTabs.Clear();
-        }
-
         private string CreateCategoryToken(string name)
         {
             char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
@@ -831,7 +816,6 @@ namespace Jotunn.Managers
             selectedText.horizontalOverflow = HorizontalWrapMode.Wrap;
             selectedText.verticalOverflow = VerticalWrapMode.Truncate;
 
-            customTabs.Add(newTab);
             return newTab;
         }
 
