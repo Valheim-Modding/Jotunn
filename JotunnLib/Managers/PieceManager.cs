@@ -21,6 +21,7 @@ namespace Jotunn.Managers
     public class PieceManager : IManager
     {
         private static PieceManager _instance;
+
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
@@ -260,39 +261,6 @@ namespace Jotunn.Managers
             return categoryID;
         }
 
-        private Piece.PieceCategory GetOrCreatePieceCategory(string name, out bool isNew)
-        {
-            Piece.PieceCategory? existingCategory = GetPieceCategory(name);
-
-            if (existingCategory != null)
-            {
-                isNew = false;
-                return existingCategory.Value;
-            }
-
-            Piece.PieceCategory category;
-
-            var names = Enum.GetNames(typeof(Piece.PieceCategory));
-
-            for (int i = 0; i < names.Length; i++)
-            {
-                if (names[i] == name)
-                {
-                    category = (Piece.PieceCategory)i;
-                    PieceCategories[name] = category;
-                    isNew = false;
-                    return category;
-                }
-            }
-
-            // create a new category
-            category = (Piece.PieceCategory)names.Length - 1;
-            PieceCategories[name] = category;
-
-            isNew = true;
-            return category;
-        }
-
         /// <summary>
         ///     Get a <see cref="Piece.PieceCategory"/> by name. Translates
         ///     vanilla or custom Piece Categories to their current integer value.
@@ -312,41 +280,6 @@ namespace Jotunn.Managers
             }
 
             return null;
-        }
-
-        private void EnumGetValuesPatch(Type enumType, ref Array __result)
-        {
-            if (enumType != typeof(Piece.PieceCategory))
-            {
-                return;
-            }
-
-            if (PieceCategories.Count == 0)
-            {
-                return;
-            }
-
-            var categories = new Piece.PieceCategory[__result.Length + PieceCategories.Count];
-
-            __result.CopyTo(categories, 0);
-            PieceCategories.Values.CopyTo(categories, __result.Length);
-
-            __result = categories;
-        }
-
-        private void EnumGetNamesPatch(Type enumType, ref string[] __result)
-        {
-            if (enumType != typeof(Piece.PieceCategory))
-            {
-                return;
-            }
-
-            if (PieceCategories.Count == 0)
-            {
-                return;
-            }
-
-            __result = __result.AddRangeToArray(PieceCategories.Keys.ToArray());
         }
 
         /// <summary>
@@ -480,96 +413,6 @@ namespace Jotunn.Managers
                     }
                 }
             }
-        }
-
-        private void CreateCategoryTabs()
-        {
-            // Only touch categories when new ones were added
-            if (!PieceCategories.Any())
-            {
-                return;
-            }
-
-            if (!Hud.instance)
-            {
-                return;
-            }
-
-            var enumNames = Enum.GetNames(typeof(Piece.PieceCategory)).Where(name => name != "All").ToList();
-
-            for (int i = Hud.instance.m_buildCategoryNames.Count; i < enumNames.Count; ++i)
-            {
-                Hud.instance.m_buildCategoryNames.Add(enumNames[i]);
-            }
-
-            // Append tabs and their names to the GUI for every custom category not already added
-            for (int i = Hud.instance.m_pieceCategoryTabs.Length; i < Hud.instance.m_buildCategoryNames.Count; i++)
-            {
-                string name = Hud.instance.m_buildCategoryNames[i];
-                GameObject tab = CreateCategoryTab(name);
-
-                Hud.instance.m_pieceCategoryTabs = Hud.instance.m_pieceCategoryTabs.AddItem(tab).ToArray();
-            }
-
-            if (Player.m_localPlayer && Player.m_localPlayer.m_buildPieces)
-            {
-                Player.m_localPlayer.UpdateAvailablePiecesList();
-            }
-        }
-
-        private void DestroyCategoryTabs()
-        {
-            foreach (var tab in customTabs)
-            {
-                Object.Destroy(tab.Value);
-            }
-
-            customTabs.Clear();
-        }
-
-        private string CreateCategoryToken(string name)
-        {
-            char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
-            string tokenCategory = string.Concat(name.ToLower().Split(forbiddenCharsArray));
-            string token = $"jotunn_cat_{tokenCategory}";
-
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(token, name);
-            return token;
-        }
-
-        private GameObject CreateCategoryTab(string name)
-        {
-            Transform categoryRoot = Hud.instance.m_pieceCategoryRoot.transform;
-
-            GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], categoryRoot);
-            newTab.SetActive(false);
-            newTab.name = name;
-
-            UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
-            handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
-
-            var text = newTab.transform.Find("Text").GetComponent<Text>();
-            text.rectTransform.offsetMin = new Vector2(3, 1);
-            text.rectTransform.offsetMax = new Vector2(-3, -1);
-            text.resizeTextForBestFit = true;
-            text.resizeTextMinSize = 12;
-            text.resizeTextMaxSize = 20;
-            text.lineSpacing = 0.8f;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Truncate;
-
-            var selectedText = newTab.transform.Find("Selected/Text").GetComponent<Text>();
-            selectedText.resizeTextForBestFit = true;
-            selectedText.rectTransform.offsetMin = new Vector2(3, 1);
-            selectedText.rectTransform.offsetMax = new Vector2(-3, -1);
-            selectedText.resizeTextMinSize = 12;
-            selectedText.resizeTextMaxSize = 20;
-            selectedText.lineSpacing = 0.8f;
-            selectedText.horizontalOverflow = HorizontalWrapMode.Wrap;
-            selectedText.verticalOverflow = VerticalWrapMode.Truncate;
-
-            customTabs.Add(name, newTab);
-            return newTab;
         }
 
         /// <summary>
@@ -731,6 +574,68 @@ namespace Jotunn.Managers
             }
         }
 
+        #region Internal Custom Categories Handling
+
+        private static int MaxCategory() => Enum.GetValues(typeof(Piece.PieceCategory)).Length - 1;
+
+        private static IEnumerable<CodeInstruction> TranspileMaxCategory(IEnumerable<CodeInstruction> instructions, int maxOffset)
+        {
+            int number = (int)Piece.PieceCategory.Max + maxOffset;
+
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (instruction.LoadsConstant(number))
+                {
+                    yield return new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(PieceManager), nameof(MaxCategory)));
+
+                    if (maxOffset != 0)
+                    {
+                        yield return new CodeInstruction(OpCodes.Ldc_I4, maxOffset);
+                        yield return new CodeInstruction(OpCodes.Add);
+                    }
+                }
+                else
+                {
+                    yield return instruction;
+                }
+            }
+        }
+
+        private void EnumGetValuesPatch(Type enumType, ref Array __result)
+        {
+            if (enumType != typeof(Piece.PieceCategory))
+            {
+                return;
+            }
+
+            if (PieceCategories.Count == 0)
+            {
+                return;
+            }
+
+            var categories = new Piece.PieceCategory[__result.Length + PieceCategories.Count];
+
+            __result.CopyTo(categories, 0);
+            PieceCategories.Values.CopyTo(categories, __result.Length);
+
+            __result = categories;
+        }
+
+        private void EnumGetNamesPatch(Type enumType, ref string[] __result)
+        {
+            if (enumType != typeof(Piece.PieceCategory))
+            {
+                return;
+            }
+
+            if (PieceCategories.Count == 0)
+            {
+                return;
+            }
+
+            __result = __result.AddRangeToArray(PieceCategories.Keys.ToArray());
+        }
+
         private static void ExpandAvailablePieces(PieceTable __instance)
         {
             if (__instance.m_availablePieces.Count > 0)
@@ -768,32 +673,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private static int MaxCategory() => Enum.GetValues(typeof(Piece.PieceCategory)).Length - 1;
-
-        private static IEnumerable<CodeInstruction> TranspileMaxCategory(IEnumerable<CodeInstruction> instructions, int maxOffset)
-        {
-            int number = (int)Piece.PieceCategory.Max + maxOffset;
-
-            foreach (CodeInstruction instruction in instructions)
-            {
-                if (instruction.LoadsConstant(number))
-                {
-                    yield return new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(PieceManager), nameof(MaxCategory)));
-
-                    if (maxOffset != 0)
-                    {
-                        yield return new CodeInstruction(OpCodes.Ldc_I4, maxOffset);
-                        yield return new CodeInstruction(OpCodes.Add);
-                    }
-                }
-                else
-                {
-                    yield return instruction;
-                }
-            }
-        }
-
-        private void SetTabActive(GameObject tab, string tabName, bool active)
+        private static void SetTabActive(GameObject tab, string tabName, bool active)
         {
             tab.SetActive(active);
 
@@ -817,6 +697,129 @@ namespace Jotunn.Managers
             }
 
             return categories;
+        }
+
+        private void CreateCategoryTabs()
+        {
+            // Only touch categories when new ones were added
+            if (!PieceCategories.Any())
+            {
+                return;
+            }
+
+            if (!Hud.instance)
+            {
+                return;
+            }
+
+            var enumNames = Enum.GetNames(typeof(Piece.PieceCategory)).Where(name => name != "All").ToList();
+
+            for (int i = Hud.instance.m_buildCategoryNames.Count; i < enumNames.Count; ++i)
+            {
+                Hud.instance.m_buildCategoryNames.Add(enumNames[i]);
+            }
+
+            // Append tabs and their names to the GUI for every custom category not already added
+            for (int i = Hud.instance.m_pieceCategoryTabs.Length; i < Hud.instance.m_buildCategoryNames.Count; i++)
+            {
+                string name = Hud.instance.m_buildCategoryNames[i];
+                GameObject tab = CreateCategoryTab(name);
+
+                Hud.instance.m_pieceCategoryTabs = Hud.instance.m_pieceCategoryTabs.AddItem(tab).ToArray();
+            }
+
+            if (Player.m_localPlayer && Player.m_localPlayer.m_buildPieces)
+            {
+                Player.m_localPlayer.UpdateAvailablePiecesList();
+            }
+        }
+
+        private void DestroyCategoryTabs()
+        {
+            foreach (var tab in customTabs)
+            {
+                Object.Destroy(tab.Value);
+            }
+
+            customTabs.Clear();
+        }
+
+        private string CreateCategoryToken(string name)
+        {
+            char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
+            string tokenCategory = string.Concat(name.ToLower().Split(forbiddenCharsArray));
+            string token = $"jotunn_cat_{tokenCategory}";
+
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(token, name);
+            return token;
+        }
+
+        private Piece.PieceCategory GetOrCreatePieceCategory(string name, out bool isNew)
+        {
+            Piece.PieceCategory? existingCategory = GetPieceCategory(name);
+
+            if (existingCategory != null)
+            {
+                isNew = false;
+                return existingCategory.Value;
+            }
+
+            Piece.PieceCategory category;
+
+            var names = Enum.GetNames(typeof(Piece.PieceCategory));
+
+            for (int i = 0; i < names.Length; i++)
+            {
+                if (names[i] == name)
+                {
+                    category = (Piece.PieceCategory)i;
+                    PieceCategories[name] = category;
+                    isNew = false;
+                    return category;
+                }
+            }
+
+            // create a new category
+            category = (Piece.PieceCategory)names.Length - 1;
+            PieceCategories[name] = category;
+
+            isNew = true;
+            return category;
+        }
+
+        private GameObject CreateCategoryTab(string name)
+        {
+            Transform categoryRoot = Hud.instance.m_pieceCategoryRoot.transform;
+
+            GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], categoryRoot);
+            newTab.SetActive(false);
+            newTab.name = name;
+
+            UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
+            handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
+
+            var text = newTab.transform.Find("Text").GetComponent<Text>();
+            text.rectTransform.offsetMin = new Vector2(3, 1);
+            text.rectTransform.offsetMax = new Vector2(-3, -1);
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = 12;
+            text.resizeTextMaxSize = 20;
+            text.lineSpacing = 0.8f;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+
+            var selectedText = newTab.transform.Find("Selected/Text").GetComponent<Text>();
+            selectedText.resizeTextForBestFit = true;
+            selectedText.rectTransform.offsetMin = new Vector2(3, 1);
+            selectedText.rectTransform.offsetMax = new Vector2(-3, -1);
+            selectedText.resizeTextMinSize = 12;
+            selectedText.resizeTextMaxSize = 20;
+            selectedText.lineSpacing = 0.8f;
+            selectedText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            selectedText.verticalOverflow = VerticalWrapMode.Truncate;
+
+            customTabs.Add(name, newTab);
+            return newTab;
         }
 
         /// <summary>
@@ -910,5 +913,7 @@ namespace Jotunn.Managers
                 self.PrevCategory();
             }
         }
+
+        #endregion
     }
 }
