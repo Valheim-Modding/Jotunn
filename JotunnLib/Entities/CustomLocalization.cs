@@ -374,7 +374,7 @@ namespace Jotunn.Entities
 
         private bool ValidateTranslation(in string translation)
         {
-            if (string.IsNullOrEmpty(translation))
+            if (translation == null)
             {
                 throw new ArgumentNullException(nameof(translation));
             }
