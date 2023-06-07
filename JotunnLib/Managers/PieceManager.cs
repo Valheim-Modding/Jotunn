@@ -52,6 +52,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Settings of the hammer UI tab selection.
         /// </summary>
+        [Obsolete("No longer used")]
         public static class PieceCategorySettings
         {
             /// <summary>
@@ -63,16 +64,19 @@ namespace Jotunn.Managers
             /// <summary>
             ///     Minimum size of a piece table tab. The tab can grow bigger than this the name doesn't fit.
             /// </summary>
+            [Obsolete("This setting is no longer used")]
             public static float MinTabSize { get; set; } = 140f;
 
             /// <summary>
             ///     Tab size per name character. This determines how fast the tab size grows.
             /// </summary>
+            [Obsolete("This setting is no longer used")]
             public static float TabSizePerCharacter { get; set; } = 11f;
 
             /// <summary>
             ///     Minimum left/right space that is visible for not selected adjacent tabs.
             /// </summary>
+            [Obsolete("This setting is no longer used")]
             public static float TabMargin { get; set; } = 50f;
         }
 
