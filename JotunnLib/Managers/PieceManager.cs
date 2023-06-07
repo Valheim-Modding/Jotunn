@@ -46,6 +46,7 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>();
 
         private readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
+        private static bool categoryRefreshNeeded = false;
 
         private static List<GameObject> customTabs = new List<GameObject>();
         private static string hiddenCategoryMagic = "(HiddenCategory)";
@@ -98,6 +99,16 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
             private static void Hud_Awake() => Instance.RefreshCategories();
+
+            [HarmonyPatch(typeof(Hud), nameof(Hud.LateUpdate)), HarmonyPostfix]
+            private static void Hud_LateUpdate()
+            {
+                if (categoryRefreshNeeded)
+                {
+                    categoryRefreshNeeded = false;
+                    Instance.RefreshCategories();
+                }
+            }
 
             [HarmonyPatch(typeof(Hud), nameof(Hud.OnDestroy)), HarmonyPostfix]
             private static void Hud_OnDestroy() => Instance.DestroyCategoryTabs();
@@ -256,6 +267,8 @@ namespace Jotunn.Managers
             if (isNew)
             {
                 CreateCategoryTabs();
+                // use a flag to refresh the categories later. The new category is not yet assigned to the piece
+                categoryRefreshNeeded = true;
             }
 
             return categoryID;
@@ -289,9 +302,9 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="table">Prefab or item name of the PieceTable.</param>
         /// <param name="name">Name of the category.</param>
+        [Obsolete("Not used categories are now automatically hidden if no pieces is assigned. Duo to mod compatibility, hiding tabs manually is no longer supported")]
         public void RemovePieceCategory(string table, string name)
         {
-            RefreshCategories();
         }
 
         /// <summary>
@@ -541,7 +554,6 @@ namespace Jotunn.Managers
             {
                 LoadPieceTables();
                 RegisterInPieceTables();
-                RefreshCategories();
             }
         }
 
@@ -826,7 +838,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Updates the piece categories, should be called after setting the m_category field of a piece.
         /// </summary>
-        public void RefreshCategories()
+        private void RefreshCategories()
         {
             // Only touch categories when new ones were added
             if (!PieceCategories.Any())
@@ -834,6 +846,7 @@ namespace Jotunn.Managers
                 return;
             }
 
+            // make sure all category tabs are already created correctly
             CreateCategoryTabs();
 
             if (!Player.m_localPlayer)
