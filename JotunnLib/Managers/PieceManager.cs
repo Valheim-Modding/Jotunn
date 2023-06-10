@@ -46,6 +46,7 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, string> PieceTableNameMap = new Dictionary<string, string>();
 
         private readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
+        private readonly Dictionary<string, Piece.PieceCategory> OtherPieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private static bool categoryRefreshNeeded = false;
         private static string hiddenCategoryMagic = "(HiddenCategory)";
 
@@ -287,6 +288,11 @@ namespace Jotunn.Managers
             }
 
             if (PieceCategories.TryGetValue(name, out category))
+            {
+                return category;
+            }
+
+            if (OtherPieceCategories.TryGetValue(name, out category))
             {
                 return category;
             }
@@ -789,21 +795,21 @@ namespace Jotunn.Managers
 
             Piece.PieceCategory category;
 
-            var names = Enum.GetNames(typeof(Piece.PieceCategory));
+            var categories = GetPieceCategoriesMap();
 
-            for (int i = 0; i < names.Length; i++)
+            foreach (var categoryPair in categories)
             {
-                if (names[i] == name)
+                if (categoryPair.Value == name)
                 {
-                    category = (Piece.PieceCategory)i;
-                    PieceCategories[name] = category;
+                    category = categoryPair.Key;
+                    OtherPieceCategories[name] = category;
                     isNew = false;
                     return category;
                 }
             }
 
             // create a new category
-            category = (Piece.PieceCategory)names.Length - 1;
+            category = (Piece.PieceCategory)categories.Count - 1;
             PieceCategories[name] = category;
 
             isNew = true;
