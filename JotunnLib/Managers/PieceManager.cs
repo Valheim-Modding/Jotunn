@@ -267,9 +267,10 @@ namespace Jotunn.Managers
             if (isNew)
             {
                 CreateCategoryTabs();
-                // use a flag to refresh the categories later. The new category is not yet assigned to the piece
-                categoryRefreshNeeded = true;
             }
+
+            // refresh the categories later. The new category is not yet assigned to the piece
+            categoryRefreshNeeded = true;
 
             return categoryID;
         }
@@ -307,9 +308,9 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="table">Prefab or item name of the PieceTable.</param>
         /// <param name="name">Name of the category.</param>
-        [Obsolete("Not used categories are now automatically hidden if no pieces is assigned. Duo to mod compatibility, hiding tabs manually is no longer supported")]
         public void RemovePieceCategory(string table, string name)
         {
+            categoryRefreshNeeded = true;
         }
 
         /// <summary>
