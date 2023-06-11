@@ -59,12 +59,20 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get the internal name for a piece category from its human readable name.
-        ///     If the given name is not a known piece category, the value is returned unchanged.
         /// </summary>
         /// <param name="pieceCategory"></param>
-        /// <returns></returns>
+        /// <returns>
+        ///     The matched internal name.
+        ///     If the pieceCategory parameter is null or empty, an empty string is returned.
+        ///     Otherwise the unchanged pieceCategory parameter is returned.
+        /// </returns>
         public static string GetInternalName(string pieceCategory)
         {
+            if (string.IsNullOrEmpty(pieceCategory))
+            {
+                return string.Empty;
+            }
+
             if (NamesMap.TryGetValue(pieceCategory, out string internalName))
             {
                 return internalName;

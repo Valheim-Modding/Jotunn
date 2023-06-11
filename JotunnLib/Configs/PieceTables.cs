@@ -49,12 +49,20 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get the internal name for a piece table from its human readable name.
-        ///     If the given name is not a known piece table, the value is returned unchanged.
         /// </summary>
         /// <param name="pieceTable"></param>
-        /// <returns></returns>
+        /// <returns>
+        ///     The matched internal name.
+        ///     If the pieceTable parameter is null or empty, an empty string is returned.
+        ///     Otherwise the unchanged pieceTable parameter is returned.
+        /// </returns>
         public static string GetInternalName(string pieceTable)
         {
+            if (string.IsNullOrEmpty(pieceTable))
+            {
+                return string.Empty;
+            }
+
             if (NamesMap.TryGetValue(pieceTable, out string internalName))
             {
                 return internalName;

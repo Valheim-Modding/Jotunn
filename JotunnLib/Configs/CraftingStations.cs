@@ -74,12 +74,20 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get the internal name for a crafting station from its human readable name.
-        ///     If the given name is not a known crafting station, the value is returned unchanged.
         /// </summary>
         /// <param name="craftingStation"></param>
-        /// <returns></returns>
+        /// <returns>
+        ///     The matched internal name.
+        ///     If the craftingStation parameter is null or empty, <see cref="None"/> is returned.
+        ///     Otherwise the unchanged craftingStation parameter is returned.
+        /// </returns>
         public static string GetInternalName(string craftingStation)
         {
+            if (string.IsNullOrEmpty(craftingStation))
+            {
+                return None;
+            }
+
             if (NamesMap.TryGetValue(craftingStation, out string internalName))
             {
                 return internalName;

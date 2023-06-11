@@ -69,12 +69,20 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get the internal name for a smelter from its human readable name.
-        ///     If the given name is not a known smelter, the value is returned unchanged.
         /// </summary>
         /// <param name="smelter"></param>
-        /// <returns></returns>
+        /// <returns>
+        ///     The matched internal name.
+        ///     If the smelter parameter is null or empty, an empty string is returned.
+        ///     Otherwise the unchanged smelter parameter is returned.
+        /// </returns>
         public static string GetInternalName(string smelter)
         {
+            if (string.IsNullOrEmpty(smelter))
+            {
+                return string.Empty;
+            }
+
             if (NamesMap.TryGetValue(smelter, out string internalName))
             {
                 return internalName;

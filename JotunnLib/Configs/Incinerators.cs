@@ -39,12 +39,20 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get the internal name for a incinerator from its human readable name.
-        ///     If the given name is not a known incinerator, the value is returned unchanged.
         /// </summary>
         /// <param name="incinerator"></param>
-        /// <returns></returns>
+        /// <returns>
+        ///     The matched internal name.
+        ///     If the incinerator parameter is null or empty, an empty string is returned.
+        ///     Otherwise the unchanged incinerator parameter is returned.
+        /// </returns>
         public static string GetInternalName(string incinerator)
         {
+            if (string.IsNullOrEmpty(incinerator))
+            {
+                return string.Empty;
+            }
+
             if (NamesMap.TryGetValue(incinerator, out string internalName))
             {
                 return internalName;

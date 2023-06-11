@@ -49,12 +49,20 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get the internal name for a cooking station from its human readable name.
-        ///     If the given name is not a known cooking station, the value is returned unchanged.
         /// </summary>
         /// <param name="cookingStation"></param>
-        /// <returns></returns>
+        /// <returns>
+        ///     The matched internal name.
+        ///     If the cookingStation parameter is null or empty, an empty string is returned.
+        ///     Otherwise the unchanged cookingStation parameter is returned.
+        /// </returns>
         public static string GetInternalName(string cookingStation)
         {
+            if (string.IsNullOrEmpty(cookingStation))
+            {
+                return string.Empty;
+            }
+
             if (NamesMap.TryGetValue(cookingStation, out string internalName))
             {
                 return internalName;

@@ -39,12 +39,20 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Get the internal name for a fermenter from its human readable name.
-        ///     If the given name is not a known fermenter, the value is returned unchanged.
         /// </summary>
         /// <param name="fermenter"></param>
-        /// <returns></returns>
+        /// <returns>
+        ///     The matched internal name.
+        ///     If the fermenter parameter is null or empty, an empty string is returned.
+        ///     Otherwise the unchanged fermenter parameter is returned.
+        /// </returns>
         public static string GetInternalName(string fermenter)
         {
+            if (string.IsNullOrEmpty(fermenter))
+            {
+                return string.Empty;
+            }
+
             if (NamesMap.TryGetValue(fermenter, out string internalName))
             {
                 return internalName;
