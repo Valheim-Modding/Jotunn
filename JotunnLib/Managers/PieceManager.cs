@@ -921,6 +921,11 @@ namespace Jotunn.Managers
 
         private void PieceTable_NextCategory(PieceTable self)
         {
+            if (self.m_pieces.Count == 0)
+            {
+                return;
+            }
+
             if (self.m_useCategories && !Hud.instance.m_pieceCategoryTabs[(int)self.m_selectedCategory].activeSelf)
             {
                 self.NextCategory();
@@ -929,6 +934,11 @@ namespace Jotunn.Managers
 
         private void PieceTable_PrevCategory(PieceTable self)
         {
+            if (self.m_pieces.Count == 0)
+            {
+                return;
+            }
+
             if (self.m_useCategories && !Hud.instance.m_pieceCategoryTabs[(int)self.m_selectedCategory].activeSelf)
             {
                 self.PrevCategory();
