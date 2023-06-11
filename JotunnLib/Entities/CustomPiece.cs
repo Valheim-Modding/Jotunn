@@ -38,7 +38,7 @@ namespace Jotunn.Entities
             {
                 category = value;
 
-                if (Piece)
+                if (Piece && !string.IsNullOrEmpty(category))
                 {
                     Piece.m_category = PieceManager.Instance.AddPieceCategory(PieceTable, category);
                 }
