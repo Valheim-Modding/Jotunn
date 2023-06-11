@@ -2,9 +2,18 @@
 
 ## Version 2.12.0
 * Added prefab name helpers for CookingStations, CraftingStations, Fermenters, Incinerators, PieceCategories, PieceTables and Smelters
+* Added `CustomPiece.Category` helper property to make it easier to set the piece category at runtime.
+* Added `PieceManager.Instance.GetPieceCategoriesMap` to get a complete map of all piece categories
+* Reworked custom piece categories to be compatible with other mods. This changes some internal category ids
+* Changed custom hammer tabs to stack instead of scroll. Tabs also no longer have a dynamic width, instead the text tires to fit the tab
+* Changed `PieceManager.GetPieceCategories` to be obsolete, use `PieceManager.Instance.GetPieceCategoriesMap` instead to get a complete map of all piece categories
+* Changed `PieceManager.PieceCategorySettings` to be obsolete as they are no longer used
+* Changed `PieceManager.RemovePieceCategory` to no longer remove categories where a piece is still assigned to the category. This is to prevent problems with other mods that might still use this category 
 * Changed Manager Init() methods to be private and not callable by mods. They were not intended to be called by mods and could cause issues
 * Changed Mock resolve depth from 3 to 5, this should catch some edge cases where fields were nested deeper
 * Changed empty CustomLocalization constructor to be marked obsolete, LocalizationManager.Instance.GetLocalization() should be used instead
+* Fixed empty translation values where not allowed, thus a valid key can be translated to an empty string
+* Fixed translations not being added to the Localization instance if it was already initialized
 * Slightly improved loading time of big mod packs when creating custom entities again
 
 ## Version 2.11.7

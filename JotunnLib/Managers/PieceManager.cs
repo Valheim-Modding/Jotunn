@@ -303,8 +303,7 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Remove a <see cref="Piece.PieceCategory"/> from a table by name.
-        ///     This does not remove the category from the game but "hides" it
-        ///     in the given table.
+        ///     This does noting if a piece is still assigned to the category, remove it before calling this.
         /// </summary>
         /// <param name="table">Prefab or item name of the PieceTable.</param>
         /// <param name="name">Name of the category.</param>
