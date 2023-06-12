@@ -888,8 +888,14 @@ namespace Jotunn.Managers
             bool onlyMiscActive = visibleCategories.Count == 1 && visibleCategories.First() == Piece.PieceCategory.Misc;
             pieceTable.m_useCategories = !onlyMiscActive;
 
-            int maxHorizontalTabs = (int)(categoryRoot.rect.width / tabSize.x);
-            int visibleTabs = 0;
+            int maxHorizontalTabs = Mathf.Max((int)(categoryRoot.rect.width / tabSize.x), 1);
+            int visibleTabs = VisibleTabCount(visibleCategories);
+
+            float tabAnchorX = (-tabSize.x * maxHorizontalTabs) / 2f + tabSize.x / 2f;
+            float tabAnchorY = (tabSize.y + verticalSpacing) * Mathf.Floor((float)(visibleTabs - 1) / maxHorizontalTabs) + 5f;
+            Vector2 tabAnchor = new Vector2(tabAnchorX, tabAnchorY);
+
+            int tabIndex = 0;
 
             for (int i = 0; i < Hud.instance.m_pieceCategoryTabs.Length; ++i)
             {
@@ -902,21 +908,37 @@ namespace Jotunn.Managers
                 if (active)
                 {
                     RectTransform rect = tab.GetComponent<RectTransform>();
-                    float x = tabSize.x * (visibleTabs % maxHorizontalTabs);
-                    float y = (tabSize.y + verticalSpacing) * Mathf.Floor((float)visibleTabs / maxHorizontalTabs);
-                    rect.anchoredPosition = firstTab.anchoredPosition + new Vector2(x, y);
-                    visibleTabs++;
+                    float x = tabSize.x * (tabIndex % maxHorizontalTabs);
+                    float y = -(tabSize.y + verticalSpacing) * Mathf.Floor((float)tabIndex / maxHorizontalTabs);
+                    rect.anchoredPosition = tabAnchor + new Vector2(x, y);
+                    rect.anchorMin = new Vector2(0.5f, 0f);
+                    rect.anchorMax = new Vector2(0.5f, 1f);
+                    tabIndex++;
                 }
             }
 
             RectTransform background = (RectTransform)selectionWindow.Find("Bkg2").transform;
-            float height = (tabSize.y + verticalSpacing) * Mathf.Max(0, Mathf.FloorToInt((float)(visibleTabs - 1) / maxHorizontalTabs));
+            float height = (tabSize.y + verticalSpacing) * Mathf.Max(0, Mathf.FloorToInt((float)(tabIndex - 1) / maxHorizontalTabs));
             background.offsetMax = new Vector2(background.offsetMax.x, height);
 
             if ((int)Player.m_localPlayer.m_buildPieces.m_selectedCategory >= Hud.instance.m_buildCategoryNames.Count)
             {
                 Player.m_localPlayer.m_buildPieces.SetCategory((int)visibleCategories.First());
             }
+        }
+
+        private static int VisibleTabCount(HashSet<Piece.PieceCategory> visibleCategories) {
+            int visibleTabs = 0;
+
+            for (int i = 0; i < Hud.instance.m_pieceCategoryTabs.Length; ++i) {
+                bool active = visibleCategories.Contains((Piece.PieceCategory)i);
+
+                if (active) {
+                    visibleTabs++;
+                }
+            }
+
+            return visibleTabs;
         }
 
         private void PieceTable_NextCategory(PieceTable self)
