@@ -155,7 +155,7 @@ namespace Jotunn.DebugUtils
 
             _toolValue.text = string.Empty;
 
-            var item = Player.m_localPlayer.GetInventory().GetEquipedtems()
+            var item = Player.m_localPlayer.GetInventory().GetEquippedItems()
                 .FirstOrDefault(x => x.IsWeapon() || x.m_shared.m_buildPieces != null);
             if (item != null)
             {

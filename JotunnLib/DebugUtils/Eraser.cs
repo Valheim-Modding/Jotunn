@@ -142,7 +142,7 @@ namespace Jotunn.DebugUtils
 
             Logger.LogInfo(string.Format("Deleted {0} (uid: {1})", player.m_hovering.name, zNetView.GetZDO().m_uid));
 
-            zNetView.GetZDO().SetOwner(ZDOMan.instance.GetMyID());
+            zNetView.GetZDO().SetOwner(ZDOMan.GetSessionID());
             ZNetScene.instance.Destroy(zNetView.gameObject);
         }
     }

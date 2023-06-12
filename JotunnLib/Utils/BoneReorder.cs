@@ -35,7 +35,7 @@ namespace Jotunn.Utils
             return applied;
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLegEquiped)), HarmonyPostfix]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetLegEquipped)), HarmonyPostfix]
         private static void VisEquipmentOnSetLegEquiped(VisEquipment __instance, int hash, ref bool __result)
         {
             if (__result && __instance.m_legItemInstances != null)
@@ -44,7 +44,7 @@ namespace Jotunn.Utils
             }
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetHelmetEquiped)), HarmonyPostfix]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetHelmetEquipped)), HarmonyPostfix]
 
         private static void VisEquipmentOnSetHelmetEquiped(VisEquipment __instance, int hash, int hairHash, ref bool __result)
         {
@@ -54,7 +54,7 @@ namespace Jotunn.Utils
             }
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetChestEquiped)), HarmonyPostfix]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetChestEquipped)), HarmonyPostfix]
         private static void VisEquipmentOnSetChestEquiped(VisEquipment __instance, int hash, ref bool __result)
         {
             if (__result && __instance.m_chestItemInstances != null)
@@ -63,7 +63,7 @@ namespace Jotunn.Utils
             }
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetShoulderEquiped)), HarmonyPostfix]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetShoulderEquipped)), HarmonyPostfix]
         private static void VisEquipmentOnSetShoulderEquiped(VisEquipment __instance, int hash, int variant, ref bool __result)
         {
             if (__result && __instance.m_shoulderItemInstances != null)
@@ -72,7 +72,7 @@ namespace Jotunn.Utils
             }
         }
 
-        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetUtilityEquiped)), HarmonyPostfix]
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetUtilityEquipped)), HarmonyPostfix]
         private static void VisEquipmentOnSetUtilityEquiped(VisEquipment __instance, int hash, ref bool __result)
         {
             if (__result && __instance.m_utilityItemInstances != null)
