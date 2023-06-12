@@ -1219,6 +1219,13 @@ namespace TestMod
             }
         }
 
+        private void AddCategorySetting(CustomPiece piece)
+        {
+            var cat = Config.Bind("PieceCategories", piece.PiecePrefab.name, piece.Category);
+            piece.Category = cat.Value;
+            cat.SettingChanged += (_1, _2) => piece.Category = cat.Value;
+        }
+
         // Add custom pieces from an "empty" prefab with new piece categories
         private void AddPieceCategories()
         {
@@ -1238,6 +1245,7 @@ namespace TestMod
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
 
                 PieceManager.Instance.AddPiece(CP);
+                AddCategorySetting(CP);
             }
 
             CP = new CustomPiece("piece_lel", true, new PieceConfig
@@ -1257,6 +1265,7 @@ namespace TestMod
                 prefab.GetComponent<MeshRenderer>().material.color = Color.grey;
 
                 PieceManager.Instance.AddPiece(CP);
+                AddCategorySetting(CP);
             }
         }
 

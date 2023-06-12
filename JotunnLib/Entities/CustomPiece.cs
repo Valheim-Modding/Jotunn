@@ -28,6 +28,24 @@ namespace Jotunn.Entities
         public string PieceTable { get; set; }
 
         /// <summary>
+        ///     Name of the category this custom piece belongs to.<br />
+        ///     When setting this value, Piece.m_category will be updated as well.
+        /// </summary>
+        public string Category
+        {
+            get => category;
+            set
+            {
+                category = value;
+
+                if (Piece && !string.IsNullOrEmpty(category))
+                {
+                    Piece.m_category = PieceManager.Instance.AddPieceCategory(PieceTable, category);
+                }
+            }
+        }
+
+        /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
@@ -36,6 +54,8 @@ namespace Jotunn.Entities
         ///     Indicator if references from configs should get replaced
         /// </summary>
         internal bool FixConfig { get; set; }
+
+        private string category;
 
         /// <summary>
         ///     Custom piece from a prefab.<br />
@@ -70,6 +90,7 @@ namespace Jotunn.Entities
             PieceTable = pieceConfig.PieceTable;
             FixReference = false;
             FixConfig = true;
+            Category = pieceConfig.Category;
 
             pieceConfig.Apply(piecePrefab);
         }
@@ -88,6 +109,7 @@ namespace Jotunn.Entities
             PieceTable = pieceConfig.PieceTable;
             FixReference = fixReference;
             FixConfig = true;
+            Category = pieceConfig.Category;
 
             pieceConfig.Apply(piecePrefab);
         }
@@ -133,6 +155,7 @@ namespace Jotunn.Entities
                 PieceTable = pieceConfig.PieceTable;
                 FixReference = false;
                 FixConfig = true;
+                Category = pieceConfig.Category;
 
                 pieceConfig.Apply(piecePrefab);
             }
@@ -156,6 +179,7 @@ namespace Jotunn.Entities
                 PieceTable = pieceConfig.PieceTable;
                 FixReference = fixReference;
                 FixConfig = true;
+                Category = pieceConfig.Category;
 
                 pieceConfig.Apply(piecePrefab);
             }
@@ -197,6 +221,7 @@ namespace Jotunn.Entities
                 Piece = PiecePrefab.AddComponent<Piece>();
                 PieceTable = pieceConfig.PieceTable;
                 FixConfig = true;
+                Category = pieceConfig.Category;
 
                 pieceConfig.Apply(PiecePrefab);
             }
@@ -237,6 +262,7 @@ namespace Jotunn.Entities
                 Piece = PiecePrefab.GetComponent<Piece>();
                 PieceTable = pieceConfig.PieceTable;
                 FixConfig = true;
+                Category = pieceConfig.Category;
 
                 pieceConfig.Apply(PiecePrefab);
             }
