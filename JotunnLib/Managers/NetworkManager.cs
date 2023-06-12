@@ -43,7 +43,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Manager's main init
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             Main.Harmony.PatchAll(typeof(Patches));
         }

@@ -1,3 +1,4 @@
+using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
@@ -38,7 +39,7 @@ namespace Jotunn.Entities
         /// <param name="prefab">The prefab for this custom clutter.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="config">The <see cref="ClutterConfig"/> for this custom vegation.</param>
-        public CustomClutter(GameObject prefab, bool fixReference, ClutterConfig config)
+        public CustomClutter(GameObject prefab, bool fixReference, ClutterConfig config) : base(Assembly.GetCallingAssembly())
         {
             Prefab = prefab;
             Name = prefab.name;
@@ -55,7 +56,7 @@ namespace Jotunn.Entities
         /// <param name="assetName">Name of the prefab in the bundle.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="config">The <see cref="ClutterConfig"/> for this custom clutter.</param>
-        public CustomClutter(AssetBundle assetBundle, string assetName, bool fixReference, ClutterConfig config)
+        public CustomClutter(AssetBundle assetBundle, string assetName, bool fixReference, ClutterConfig config) : base(Assembly.GetCallingAssembly())
         {
             var prefab = assetBundle.LoadAsset<GameObject>(assetName);
             if (prefab)

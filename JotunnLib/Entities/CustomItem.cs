@@ -1,4 +1,5 @@
-﻿using Jotunn.Configs;
+﻿using System.Reflection;
+using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -42,7 +43,7 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="itemPrefab">The prefab for this custom item.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
-        public CustomItem(GameObject itemPrefab, bool fixReference)
+        public CustomItem(GameObject itemPrefab, bool fixReference) : base(Assembly.GetCallingAssembly())
         {
             ItemPrefab = itemPrefab;
             ItemDrop = itemPrefab.GetComponent<ItemDrop>();
@@ -56,7 +57,7 @@ namespace Jotunn.Entities
         /// <param name="itemPrefab">The prefab for this custom item.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="itemConfig">The item config for this custom item.</param>
-        public CustomItem(GameObject itemPrefab, bool fixReference, ItemConfig itemConfig)
+        public CustomItem(GameObject itemPrefab, bool fixReference, ItemConfig itemConfig) : base(Assembly.GetCallingAssembly())
         {
             ItemPrefab = itemPrefab;
             ItemDrop = itemPrefab.GetComponent<ItemDrop>();
@@ -70,7 +71,7 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="name">Name of the new prefab. Must be unique.</param>
         /// <param name="addZNetView">If true a ZNetView component will be added to the prefab for network sync.</param>
-        public CustomItem(string name, bool addZNetView)
+        public CustomItem(string name, bool addZNetView) : base(Assembly.GetCallingAssembly())
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
@@ -84,7 +85,7 @@ namespace Jotunn.Entities
         /// <param name="name">Name of the new prefab. Must be unique.</param>
         /// <param name="addZNetView">If true a ZNetView component will be added to the prefab for network sync.</param>
         /// <param name="itemConfig">The item config for this custom item.</param>
-        public CustomItem(string name, bool addZNetView, ItemConfig itemConfig)
+        public CustomItem(string name, bool addZNetView, ItemConfig itemConfig) : base(Assembly.GetCallingAssembly())
         {
             ItemPrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             ItemDrop = ItemPrefab.AddComponent<ItemDrop>();
@@ -98,7 +99,7 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="name">The new name of the prefab after cloning.</param>
         /// <param name="basePrefabName">The name of the base prefab the custom item is cloned from.</param>
-        public CustomItem(string name, string basePrefabName)
+        public CustomItem(string name, string basePrefabName) : base(Assembly.GetCallingAssembly())
         {
             var itemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
             if (itemPrefab)
@@ -114,7 +115,7 @@ namespace Jotunn.Entities
         /// <param name="name">The new name of the prefab after cloning.</param>
         /// <param name="basePrefabName">The name of the base prefab the custom item is cloned from.</param>
         /// <param name="itemConfig">The item config for this custom item.</param>
-        public CustomItem(string name, string basePrefabName, ItemConfig itemConfig)
+        public CustomItem(string name, string basePrefabName, ItemConfig itemConfig) : base(Assembly.GetCallingAssembly())
         {
             var itemPrefab = PrefabManager.Instance.CreateClonedPrefab(name, basePrefabName);
             if (itemPrefab)
@@ -133,7 +134,7 @@ namespace Jotunn.Entities
         /// <param name="assetName">Name of the prefab in the bundle.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="itemConfig">The item config for this custom item.</param>
-        public CustomItem(AssetBundle assetBundle, string assetName, bool fixReference, ItemConfig itemConfig)
+        public CustomItem(AssetBundle assetBundle, string assetName, bool fixReference, ItemConfig itemConfig) : base(Assembly.GetCallingAssembly())
         {
             ItemPrefab = assetBundle.LoadAsset<GameObject>(assetName);
             if (ItemPrefab)

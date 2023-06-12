@@ -83,7 +83,7 @@ namespace TestMod
             //Jotunn.Logger.ShowDate = true;
 
             // Create a custom Localization and add it to the Manager
-            Localization = new CustomLocalization();
+            Localization = LocalizationManager.Instance.GetLocalization();
             LocalizationManager.Instance.AddLocalization(Localization);
 
             // Create stuff
@@ -765,30 +765,38 @@ namespace TestMod
             // Add translations for the custom item in AddClonedItems
             Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                {"item_evilsword", "Sword of Darkness"}, {"item_evilsword_desc", "Bringing the light"},
-                {"evilsword_shwing", "Woooosh"}, {"evilsword_scroll", "*scroll*"},
-                {"evilsword_beevil", "Be evil"}, {"evilsword_beevilmessage", ":reee:"},
-                {"evilsword_effectname", "Evil"}, {"evilsword_effectstart", "You feel evil"},
+                {"item_evilsword", "Sword of Darkness"},
+                {"item_evilsword_desc", "Bringing the light"},
+                {"evilsword_shwing", "Woooosh"},
+                {"evilsword_scroll", "*scroll*"},
+                {"evilsword_beevil", "Be evil"},
+                {"evilsword_beevilmessage", ":reee:"},
+                {"evilsword_effectname", "Evil"},
+                {"evilsword_effectstart", "You feel evil"},
                 {"evilsword_effectstop", "You feel nice again"}
             });
 
             // Add translations for the custom piece in AddPieceCategories
             Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                { "piece_lul", "Lulz" }, { "piece_lul_description", "Do it for them" },
-                { "piece_lel", "Lölz" }, { "piece_lel_description", "Härhärhär" }
+                { "piece_lul", "Lulz" },
+                { "piece_lul_description", "Do it for them" },
+                { "piece_lel", "Lölz" },
+                { "piece_lel_description", "Härhärhär" }
             });
 
             // Add translations for the custom variant in AddClonedItems
             Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                { "lulz_shield", "Lulz Shield" }, { "lulz_shield_desc", "Lough at your enemies" }
+                { "lulz_shield", "Lulz Shield" },
+                { "lulz_shield_desc", "Lough at your enemies" }
             });
 
             // Add translations for the rendered tree
             Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                {"rendered_tree", "Rendered Tree"}, {"rendered_tree_desc", "A powerful tree, that can render its own icon. Magic!"}
+                {"rendered_tree", "Rendered Tree"},
+                {"rendered_tree_desc", "A powerful tree, that can render its own icon. Magic!"}
             });
         }
 
@@ -903,7 +911,7 @@ namespace TestMod
 
             // Create a conversion for the blastfurnace, the custom item is the new outcome
             var blastConfig = new SmelterConversionConfig();
-            blastConfig.Station = "blastfurnace"; // let's specify something other than default here
+            blastConfig.Station = Smelters.BlastFurnace; // let's specify something other than default here
             blastConfig.FromItem = "Iron";
             blastConfig.ToItem = "Steel"; // this is our custom prefabs name we have loaded just above
 
@@ -1005,7 +1013,8 @@ namespace TestMod
             // Add additional localization manually
             Localization.AddTranslation("English", new Dictionary<string, string>
             {
-                { "bprune_make", "Capture Blueprint"}, { "bprune_piece", "Place Blueprint"}
+                { "bprune_make", "Capture Blueprint"},
+                { "bprune_piece", "Place Blueprint"}
             });
 
             // Don't forget to unload the bundle to free the resources
@@ -1070,7 +1079,10 @@ namespace TestMod
 
             PieceConfig cylinder = new PieceConfig();
             cylinder.Name = "$cylinder_display_name";
-            cylinder.PieceTable = "Hammer";
+            cylinder.Description = "$cylinder_description";
+            cylinder.PieceTable = PieceTables.Hammer;
+            cylinder.CraftingStation = CraftingStations.Workbench;
+            cylinder.Category = PieceCategories.Misc;
             cylinder.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
 
             PieceManager.Instance.AddPiece(new CustomPiece(pieceBundle, "Cylinder", fixReference: false, cylinder));
@@ -1080,8 +1092,8 @@ namespace TestMod
         {
             PieceConfig rug = new PieceConfig();
             rug.Name = "$our_rug_deer_display_name";
-            rug.PieceTable = "Hammer";
-            rug.Category = "Misc";
+            rug.PieceTable = PieceTables.Hammer;
+            rug.Category = PieceCategories.Misc;
             rug.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
 
             PieceManager.Instance.AddPiece(new CustomPiece("our_rug_deer", "rug_deer", rug));
@@ -1207,6 +1219,13 @@ namespace TestMod
             }
         }
 
+        private void AddCategorySetting(CustomPiece piece)
+        {
+            var cat = Config.Bind("PieceCategories", piece.PiecePrefab.name, piece.Category);
+            piece.Category = cat.Value;
+            cat.SettingChanged += (_1, _2) => piece.Category = cat.Value;
+        }
+
         // Add custom pieces from an "empty" prefab with new piece categories
         private void AddPieceCategories()
         {
@@ -1215,8 +1234,8 @@ namespace TestMod
                 Name = "$piece_lul",
                 Description = "$piece_lul_description",
                 Icon = TestSprite,
-                PieceTable = "Hammer",
-                // ExtendStation = "piece_workbench", // Test station extension
+                PieceTable = PieceTables.Hammer,
+                // ExtendStation = CraftingStations.Workbench, // Test station extension
                 Category = "Lulzies."  // Test custom category
             });
 
@@ -1226,6 +1245,7 @@ namespace TestMod
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
 
                 PieceManager.Instance.AddPiece(CP);
+                AddCategorySetting(CP);
             }
 
             CP = new CustomPiece("piece_lel", true, new PieceConfig
@@ -1233,8 +1253,8 @@ namespace TestMod
                 Name = "$piece_lel",
                 Description = "$piece_lel_description",
                 Icon = TestSprite,
-                PieceTable = "Hammer",
-                ExtendStation = "piece_workbench", // Test station extension
+                PieceTable = PieceTables.Hammer,
+                ExtendStation = CraftingStations.Workbench, // Test station extension
                 Category = "Lulzies."  // Test custom category
             });
 
@@ -1245,6 +1265,7 @@ namespace TestMod
                 prefab.GetComponent<MeshRenderer>().material.color = Color.grey;
 
                 PieceManager.Instance.AddPiece(CP);
+                AddCategorySetting(CP);
             }
         }
 
@@ -1252,39 +1273,34 @@ namespace TestMod
         private void AddInvalidEntities()
         {
             CustomItem CI = new CustomItem("item_faulty", false);
-            if (CI != null)
-            {
-                CI.ItemDrop.m_itemData.m_shared.m_icons = new Sprite[]
-                {
-                    TestSprite
-                };
-                ItemManager.Instance.AddItem(CI);
 
-                CustomRecipe CR = new CustomRecipe(new RecipeConfig
+            CI.ItemDrop.m_itemData.m_shared.m_icons = new Sprite[]
+            {
+                TestSprite
+            };
+            ItemManager.Instance.AddItem(CI);
+
+            CustomRecipe CR = new CustomRecipe(new RecipeConfig
+            {
+                Item = "item_faulty",
+                Requirements = new RequirementConfig[]
                 {
-                    Item = "item_faulty",
-                    Requirements = new RequirementConfig[]
-                    {
-                        new RequirementConfig { Item = "NotReallyThereResource", Amount = 99 }
-                    }
-                });
-                ItemManager.Instance.AddRecipe(CR);
-            }
+                    new RequirementConfig("NotReallyThereResource", 99)
+                }
+            });
+            ItemManager.Instance.AddRecipe(CR);
 
             CustomPiece CP = new CustomPiece("piece_fukup", false, new PieceConfig
             {
                 Icon = TestSprite,
-                PieceTable = "Hammer",
+                PieceTable = PieceTables.Hammer,
                 Requirements = new RequirementConfig[]
                 {
-                    new RequirementConfig { Item = "StillNotThereResource", Amount = 99 }
+                    new RequirementConfig("StillNotThereResource", 99)
                 }
             });
 
-            if (CP != null)
-            {
-                PieceManager.Instance.AddPiece(CP);
-            }
+            PieceManager.Instance.AddPiece(CP);
         }
 
         // Add new items as copies of vanilla items - just works when vanilla prefabs are already loaded (ObjectDB.CopyOtherDB for example)
@@ -1297,7 +1313,7 @@ namespace TestMod
                 ItemConfig evilSwordConfig = new ItemConfig();
                 evilSwordConfig.Name = "$item_evilsword";
                 evilSwordConfig.Description = "$item_evilsword_desc";
-                evilSwordConfig.CraftingStation = "piece_workbench";
+                evilSwordConfig.CraftingStation = CraftingStations.Workbench;
                 evilSwordConfig.AddRequirement(new RequirementConfig("Stone", 1));
                 evilSwordConfig.AddRequirement(new RequirementConfig("Wood", 1));
 
@@ -1312,7 +1328,7 @@ namespace TestMod
                 RecipeConfig recipeConfig = new RecipeConfig();
                 recipeConfig.Name = "Recipe_EvilSword2";
                 recipeConfig.Item = "EvilSword";
-                recipeConfig.CraftingStation = "piece_workbench";
+                recipeConfig.CraftingStation = CraftingStations.Workbench;
                 recipeConfig.AddRequirement(new RequirementConfig("Stone", 2));
                 recipeConfig.AddRequirement(new RequirementConfig("Wood", 3));
 
@@ -1364,7 +1380,7 @@ namespace TestMod
                     StyleTex = styleTex,
                     Requirements = new []
                     {
-                        new RequirementConfig { Item = "Wood" }
+                        new RequirementConfig("Wood", 1)
                     }
                 });
                 ItemManager.Instance.AddItem(CI);
@@ -1417,7 +1433,7 @@ namespace TestMod
                     StyleTex = styleTex,
                     Requirements = new []
                     {
-                        new RequirementConfig { Item = "Wood" }
+                        new RequirementConfig("Wood", 1)
                     }
                 });
                 ItemManager.Instance.AddItem(cape);
@@ -1434,7 +1450,7 @@ namespace TestMod
                     StyleTex = styleTexArmor,
                     Requirements = new []
                     {
-                        new RequirementConfig { Item = "Wood" }
+                        new RequirementConfig("Wood", 1)
                     }
                 });
                 ItemManager.Instance.AddItem(chest);

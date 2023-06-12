@@ -66,7 +66,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Registers all hooks.
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             Main.Harmony.PatchAll(typeof(Patches));
         }
@@ -374,7 +374,7 @@ namespace Jotunn.Managers
                     try
                     {
                         var itemDrop = customItem.ItemDrop;
-                        if (customItem.FixReference | customItem.FixConfig)
+                        if (customItem.FixReference || customItem.FixConfig)
                         {
                             customItem.ItemPrefab.FixReferences(customItem.FixReference);
                             itemDrop.m_itemData.m_shared.FixReferences();

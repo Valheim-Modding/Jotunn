@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
@@ -37,7 +38,7 @@ namespace Jotunn.Entities
         /// <param name="prefab">The prefab for this custom vegetation.</param>
         /// <param name="config">The vegetation config for this custom vegation.</param> 
         [Obsolete("Use CustomVegetation(GameObject, bool, VegetationConfig) instead and define if references should be fixed")]
-        public CustomVegetation(GameObject prefab, VegetationConfig config)
+        public CustomVegetation(GameObject prefab, VegetationConfig config) : base(Assembly.GetCallingAssembly())
         {
             Prefab = prefab;
             Name = prefab.name;
@@ -52,7 +53,7 @@ namespace Jotunn.Entities
         /// <param name="prefab">The prefab for this custom vegetation.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="config">The <see cref="VegetationConfig"/> for this custom vegation.</param>
-        public CustomVegetation(GameObject prefab, bool fixReference, VegetationConfig config)
+        public CustomVegetation(GameObject prefab, bool fixReference, VegetationConfig config) : base(Assembly.GetCallingAssembly())
         {
             Prefab = prefab;
             Name = prefab.name;
@@ -69,7 +70,7 @@ namespace Jotunn.Entities
         /// <param name="assetName">Name of the prefab in the bundle.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="config">The <see cref="VegetationConfig"/> for this custom vegation.</param>
-        public CustomVegetation(AssetBundle assetBundle, string assetName, bool fixReference, VegetationConfig config)
+        public CustomVegetation(AssetBundle assetBundle, string assetName, bool fixReference, VegetationConfig config) : base(Assembly.GetCallingAssembly())
         {
             var prefab = assetBundle.LoadAsset<GameObject>(assetName);
             if (prefab)

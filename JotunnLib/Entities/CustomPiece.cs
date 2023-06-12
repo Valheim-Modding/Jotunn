@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using UnityEngine;
@@ -27,6 +28,24 @@ namespace Jotunn.Entities
         public string PieceTable { get; set; }
 
         /// <summary>
+        ///     Name of the category this custom piece belongs to.<br />
+        ///     When setting this value, Piece.m_category will be updated as well.
+        /// </summary>
+        public string Category
+        {
+            get => category;
+            set
+            {
+                category = value;
+
+                if (Piece && !string.IsNullOrEmpty(category))
+                {
+                    Piece.m_category = PieceManager.Instance.AddPieceCategory(PieceTable, category);
+                }
+            }
+        }
+
+        /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
@@ -35,6 +54,8 @@ namespace Jotunn.Entities
         ///     Indicator if references from configs should get replaced
         /// </summary>
         internal bool FixConfig { get; set; }
+
+        private string category;
 
         /// <summary>
         ///     Custom piece from a prefab.<br />
@@ -47,7 +68,7 @@ namespace Jotunn.Entities
         ///     Can by the "internal" or the <see cref="GameObject"/>s name (e.g. "_PieceTableHammer" or "Hammer")
         /// </param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
-        public CustomPiece(GameObject piecePrefab, string pieceTable, bool fixReference)
+        public CustomPiece(GameObject piecePrefab, string pieceTable, bool fixReference) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = piecePrefab;
             Piece = piecePrefab.GetComponent<Piece>();
@@ -62,13 +83,14 @@ namespace Jotunn.Entities
         /// <param name="piecePrefab">The prefab for this custom piece.</param>
         /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
         [Obsolete("Use CustomPiece(GameObject, bool, PieceConfig) instead and define if references should be fixed")]
-        public CustomPiece(GameObject piecePrefab, PieceConfig pieceConfig)
+        public CustomPiece(GameObject piecePrefab, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = piecePrefab;
             Piece = piecePrefab.GetComponent<Piece>();
             PieceTable = pieceConfig.PieceTable;
             FixReference = false;
             FixConfig = true;
+            Category = pieceConfig.Category;
 
             pieceConfig.Apply(piecePrefab);
         }
@@ -80,13 +102,14 @@ namespace Jotunn.Entities
         /// <param name="piecePrefab">The prefab for this custom piece.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
-        public CustomPiece(GameObject piecePrefab, bool fixReference, PieceConfig pieceConfig)
+        public CustomPiece(GameObject piecePrefab, bool fixReference, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = piecePrefab;
             Piece = piecePrefab.GetComponent<Piece>();
             PieceTable = pieceConfig.PieceTable;
             FixReference = fixReference;
             FixConfig = true;
+            Category = pieceConfig.Category;
 
             pieceConfig.Apply(piecePrefab);
         }
@@ -103,7 +126,7 @@ namespace Jotunn.Entities
         ///     Can by the "internal" or the <see cref="GameObject"/>s name (e.g. "_PieceTableHammer" or "Hammer")
         /// </param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
-        public CustomPiece(AssetBundle assetBundle, string assetName, string pieceTable, bool fixReference)
+        public CustomPiece(AssetBundle assetBundle, string assetName, string pieceTable, bool fixReference) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = assetBundle.LoadAsset<GameObject>(assetName);
             if (PiecePrefab)
@@ -122,7 +145,7 @@ namespace Jotunn.Entities
         /// <param name="assetName">Name of the prefab in the bundle.</param>
         /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
         [Obsolete("Use CustomPiece(AssetBundle, string, bool, PieceConfig) instead and define if references should be fixed")]
-        public CustomPiece(AssetBundle assetBundle, string assetName, PieceConfig pieceConfig)
+        public CustomPiece(AssetBundle assetBundle, string assetName, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
             var piecePrefab = assetBundle.LoadAsset<GameObject>(assetName);
             if (piecePrefab)
@@ -132,6 +155,7 @@ namespace Jotunn.Entities
                 PieceTable = pieceConfig.PieceTable;
                 FixReference = false;
                 FixConfig = true;
+                Category = pieceConfig.Category;
 
                 pieceConfig.Apply(piecePrefab);
             }
@@ -145,7 +169,7 @@ namespace Jotunn.Entities
         /// <param name="assetName">Name of the prefab in the bundle.</param>
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
-        public CustomPiece(AssetBundle assetBundle, string assetName, bool fixReference, PieceConfig pieceConfig)
+        public CustomPiece(AssetBundle assetBundle, string assetName, bool fixReference, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
             var piecePrefab = assetBundle.LoadAsset<GameObject>(assetName);
             if (piecePrefab)
@@ -155,6 +179,7 @@ namespace Jotunn.Entities
                 PieceTable = pieceConfig.PieceTable;
                 FixReference = fixReference;
                 FixConfig = true;
+                Category = pieceConfig.Category;
 
                 pieceConfig.Apply(piecePrefab);
             }
@@ -170,7 +195,7 @@ namespace Jotunn.Entities
         ///     Name of the <see cref="global::PieceTable"/> the custom piece should be added to.
         ///     Can by the "internal" or the <see cref="GameObject"/>s name (e.g. "_PieceTableHammer" or "Hammer")
         /// </param>
-        public CustomPiece(string name, bool addZNetView, string pieceTable)
+        public CustomPiece(string name, bool addZNetView, string pieceTable) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             if (PiecePrefab)
@@ -188,7 +213,7 @@ namespace Jotunn.Entities
         /// <param name="name">Name of the new prefab. Must be unique.</param>
         /// <param name="addZNetView">If true a ZNetView component will be added to the prefab for network sync.</param>
         /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
-        public CustomPiece(string name, bool addZNetView, PieceConfig pieceConfig)
+        public CustomPiece(string name, bool addZNetView, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
             if (PiecePrefab)
@@ -196,6 +221,7 @@ namespace Jotunn.Entities
                 Piece = PiecePrefab.AddComponent<Piece>();
                 PieceTable = pieceConfig.PieceTable;
                 FixConfig = true;
+                Category = pieceConfig.Category;
 
                 pieceConfig.Apply(PiecePrefab);
             }
@@ -211,7 +237,7 @@ namespace Jotunn.Entities
         ///     Name of the <see cref="global::PieceTable"/> the custom piece should be added to.
         ///     Can by the "internal" or the <see cref="GameObject"/>s name (e.g. "_PieceTableHammer" or "Hammer")
         /// </param>
-        public CustomPiece(string name, string baseName, string pieceTable)
+        public CustomPiece(string name, string baseName, string pieceTable) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = PrefabManager.Instance.CreateClonedPrefab(name, baseName);
             if (PiecePrefab)
@@ -228,7 +254,7 @@ namespace Jotunn.Entities
         /// <param name="name">The new name of the prefab after cloning.</param>
         /// <param name="baseName">The name of the base prefab the custom item is cloned from.</param>
         /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
-        public CustomPiece(string name, string baseName, PieceConfig pieceConfig)
+        public CustomPiece(string name, string baseName, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = PrefabManager.Instance.CreateClonedPrefab(name, baseName);
             if (PiecePrefab)
@@ -236,6 +262,7 @@ namespace Jotunn.Entities
                 Piece = PiecePrefab.GetComponent<Piece>();
                 PieceTable = pieceConfig.PieceTable;
                 FixConfig = true;
+                Category = pieceConfig.Category;
 
                 pieceConfig.Apply(PiecePrefab);
             }

@@ -19,39 +19,6 @@ The code snippets are taken from our [example mod](https://github.com/Valheim-Mo
 > You **must** only use names of existing prefabs.
 > This can be prefabs you created, that have already been registered by another mod, or that already exist in the game.
 
-## Vanilla Piece Tables
-| GameObject Name       | Jotunn Alias |
-|-----------------------|--------------|
-| _CultivatorPieceTable | Cultivator   |
-| _HammerPieceTable     | Hammer       |
-| _HoePieceTable        | Hoe          |
-
-To set what piece table is used, you can either use the GameObject name or the Jötunn alias for vanilla tables.
-This works with custom piece tables as well.
-```cs
-PieceConfig pieceConfig = new PieceConfig();
-pieceConfig.PieceTable = "Hammer";
-```
-
-## Vanilla Crafting Stations
-
-| GameObject Name      | Localized Name |
-|----------------------|----------------|
-| blackforge           | Black forge    |
-| forge                | Forge          |
-| piece_artisanstation | Artisan table  |
-| piece_cauldron       | Cauldron       |
-| piece_magetable      | Galdr table    |
-| piece_stonecutter    | Stonecutter    |
-| piece_workbench      | Workbench      |
-
-To set what crafting station is needed to place, repair and remove the piece, the GameObject name has to be used.
-This works with custom crafting stations as well.
-```cs
-PieceConfig pieceConfig = new PieceConfig();
-pieceConfig.CraftingStation = "piece_workbench";
-```
-
 ## Creating custom pieces
 
 ### Custom pieces using PieceConfigs
@@ -67,7 +34,10 @@ private void Awake()
 
     PieceConfig cylinder = new PieceConfig();
     cylinder.Name = "$cylinder_display_name";
-    cylinder.PieceTable = "Hammer";
+    cylinder.Description = "$cylinder_description";
+    cylinder.PieceTable = PieceTables.Hammer;
+    cylinder.CraftingStation = CraftingStations.Workbench;
+    cylinder.Category = PieceCategories.Misc;
     cylinder.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
 
     PieceManager.Instance.AddPiece(new CustomPiece(pieceBundle, "Cylinder", fixReference: false, cylinder));
@@ -88,8 +58,8 @@ private void CreateDeerRugPiece()
 {
     PieceConfig rug = new PieceConfig();
     rug.Name = "$our_rug_deer_display_name";
-    rug.PieceTable = "Hammer";
-    rug.Category = "Misc";
+    rug.PieceTable = PieceTableNames.Hammer;
+    rug.Category = PieceCategoryNames.Misc;
     rug.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
 
     PieceManager.Instance.AddPiece(new CustomPiece("our_rug_deer", "rug_deer", rug));
@@ -127,9 +97,9 @@ private void AddPieceCategories()
     PieceConfig lulConfig = new PieceConfig();
     lulConfig.Name = "$piece_lul";
     lulConfig.Description = "$piece_lul_description";
-    lulConfig.PieceTable = "Hammer";
+    lulConfig.PieceTable = PieceTableNames.Hammer;
     lulConfig.Icon = RenderManager.Instance.Render(cube, RenderManager.IsometricRotation); // render a new icon at runtime
-    lulConfig.ExtendStation = "piece_workbench"; // Makes this piece a station extension
+    lulConfig.ExtendStation = CraftingStations.Workbench; // Makes this piece a station extension
     lulConfig.Category = "Lulzies";  // Adds a custom category for the Hammer
     PieceManager.Instance.AddPiece(new CustomPiece(cube, false, lulConfig));
 }

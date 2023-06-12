@@ -152,6 +152,7 @@ namespace Jotunn.Utils
                 }
             }
 
+            AssemblyToPluginInfoCache[assembly] = null;
             return null;
         }
 

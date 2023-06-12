@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System.Reflection;
+using BepInEx;
 using Jotunn.Utils;
 
 namespace Jotunn.Entities
@@ -28,6 +29,21 @@ namespace Jotunn.Entities
         internal CustomEntity(BepInPlugin sourceMod)
         {
             SourceMod = sourceMod;
+        }
+
+        /// <summary>
+        ///     ctor with passed calling assembly.
+        ///     If the calling is no BepInEx plugin or Jotunn itself, the SourceMod will be searched via reflection
+        /// </summary>
+        /// <param name="callingAssembly"></param>
+        internal CustomEntity(Assembly callingAssembly)
+        {
+            SourceMod = BepInExUtils.GetPluginInfoFromAssembly(callingAssembly)?.Metadata;
+
+            if (SourceMod == null || SourceMod.GUID == Main.Instance.Info.Metadata.GUID)
+            {
+                SourceMod = BepInExUtils.GetSourceModMetadata();
+            }
         }
     }
 }

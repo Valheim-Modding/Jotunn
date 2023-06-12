@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using BepInEx;
 using Jotunn.Managers;
 using UnityEngine;
@@ -13,14 +14,23 @@ namespace Jotunn.Entities
         /// <summary> Map that work as [language][token] = translation. </summary>
         internal Dictionary<string, Dictionary<string, string>> Map { get; }
 
-        /// <summary> Default constuctor. </summary>
-        public CustomLocalization()
-            => Map = new Dictionary<string, Dictionary<string, string>>();
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        [Obsolete("Use LocalizationManager.Instance.GetLocalization() instead")]
+        public CustomLocalization() : base(Assembly.GetCallingAssembly())
+        {
+            Map = new Dictionary<string, Dictionary<string, string>>();
+        }
 
-        /// <summary> SourceMod hint constuctor. </summary>
+        /// <summary>
+        ///     SourceMod hint constructor.
+        /// </summary>
         /// <param name="sourceMod"> Mod data in the shape of BepInPlugin class. </param>
         public CustomLocalization(BepInPlugin sourceMod) : base(sourceMod)
-            => Map = new Dictionary<string, Dictionary<string, string>>();
+        {
+            Map = new Dictionary<string, Dictionary<string, string>>();
+        }
 
         /// <summary> Retrieve list of languages that have been added. </summary>
         public IEnumerable<string> GetLanguages() => Map.Keys;
@@ -122,7 +132,7 @@ namespace Jotunn.Entities
             }
             var cleanedToken = token.TrimStart(LocalizationManager.TokenFirstChar);
 
-            Map[language][cleanedToken] = translation;
+            AddTranslationToMap(language, cleanedToken, translation);
         }
 
         /// <summary> Add a group of translations. </summary>
@@ -142,10 +152,10 @@ namespace Jotunn.Entities
 
             foreach (var tv in tokenValue)
             {
-                var token = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
+                var cleanedToken = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
                 var translation = tv.Value;
 
-                if (!ValidateToken(token))
+                if (!ValidateToken(cleanedToken))
                 {
                     continue;
                 }
@@ -154,7 +164,7 @@ namespace Jotunn.Entities
                     continue;
                 }
 
-                Map[language][token] = translation;
+                AddTranslationToMap(language, cleanedToken, translation);
             }
         }
 
@@ -221,9 +231,9 @@ namespace Jotunn.Entities
             foreach (var tv in json)
             {
                 var translation = tv.Value as string;
-                var token = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
+                var cleanedToken = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
 
-                if (!ValidateToken(token))
+                if (!ValidateToken(cleanedToken))
                 {
                     continue;
                 }
@@ -233,7 +243,7 @@ namespace Jotunn.Entities
                     continue;
                 }
 
-                Map[language][token] = translation;
+                AddTranslationToMap(language, cleanedToken, translation);
             }
         }
 
@@ -286,7 +296,7 @@ namespace Jotunn.Entities
                         Map.Add(language, new Dictionary<string, string>());
                     }
 
-                    Map[language][cleanedToken] = translation;
+                    AddTranslationToMap(language, cleanedToken, translation);
                 }
             }
         }
@@ -322,6 +332,16 @@ namespace Jotunn.Entities
 
         #endregion
 
+        private void AddTranslationToMap(in string language, string cleanedToken, string translation)
+        {
+            Map[language][cleanedToken] = translation;
+
+            if (Localization.m_instance != null && !Localization.m_instance.m_translations.ContainsKey(cleanedToken))
+            {
+                Localization.m_instance.AddWord(cleanedToken, translation);
+            }
+        }
+
         #region Validation Methods
 
         private bool ValidateLanguage(in string language)
@@ -354,7 +374,7 @@ namespace Jotunn.Entities
 
         private bool ValidateTranslation(in string translation)
         {
-            if (string.IsNullOrEmpty(translation))
+            if (translation == null)
             {
                 throw new ArgumentNullException(nameof(translation));
             }

@@ -292,7 +292,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Initialize the manager
         /// </summary>
-        public void Init()
+        void IManager.Init()
         {
             // Cache headless state
             Headless = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
