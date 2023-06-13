@@ -827,25 +827,17 @@ namespace Jotunn.Managers
             UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
             handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
 
-            var text = newTab.transform.Find("Text").GetComponent<Text>();
-            text.rectTransform.offsetMin = new Vector2(3, 1);
-            text.rectTransform.offsetMax = new Vector2(-3, -1);
-            text.resizeTextForBestFit = true;
-            text.resizeTextMinSize = 12;
-            text.resizeTextMaxSize = 20;
-            text.lineSpacing = 0.8f;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Truncate;
-
-            var selectedText = newTab.transform.Find("Selected/Text").GetComponent<Text>();
-            selectedText.resizeTextForBestFit = true;
-            selectedText.rectTransform.offsetMin = new Vector2(3, 1);
-            selectedText.rectTransform.offsetMax = new Vector2(-3, -1);
-            selectedText.resizeTextMinSize = 12;
-            selectedText.resizeTextMaxSize = 20;
-            selectedText.lineSpacing = 0.8f;
-            selectedText.horizontalOverflow = HorizontalWrapMode.Wrap;
-            selectedText.verticalOverflow = VerticalWrapMode.Truncate;
+            foreach (var text in newTab.GetComponentsInChildren<Text>())
+            {
+                text.rectTransform.offsetMin = new Vector2(3, 1);
+                text.rectTransform.offsetMax = new Vector2(-3, -1);
+                text.resizeTextForBestFit = true;
+                text.resizeTextMinSize = 12;
+                text.resizeTextMaxSize = 20;
+                text.lineSpacing = 0.8f;
+                text.horizontalOverflow = HorizontalWrapMode.Wrap;
+                text.verticalOverflow = VerticalWrapMode.Truncate;
+            }
 
             return newTab;
         }
@@ -917,9 +909,17 @@ namespace Jotunn.Managers
                 }
             }
 
-            RectTransform background = (RectTransform)selectionWindow.Find("Bkg2").transform;
-            float height = (tabSize.y + verticalSpacing) * Mathf.Max(0, Mathf.FloorToInt((float)(tabIndex - 1) / maxHorizontalTabs));
-            background.offsetMax = new Vector2(background.offsetMax.x, height);
+            RectTransform background = (RectTransform)selectionWindow.Find("Bkg2")?.transform;
+
+            if (background)
+            {
+                float height = (tabSize.y + verticalSpacing) * Mathf.Max(0, Mathf.FloorToInt((float)(tabIndex - 1) / maxHorizontalTabs));
+                background.offsetMax = new Vector2(background.offsetMax.x, height);
+            }
+            else
+            {
+                Logger.LogWarning("RefreshCategories: Could not find background image");
+            }
 
             if ((int)Player.m_localPlayer.m_buildPieces.m_selectedCategory >= Hud.instance.m_buildCategoryNames.Count)
             {
@@ -943,12 +943,14 @@ namespace Jotunn.Managers
 
         private void PieceTable_NextCategory(PieceTable self)
         {
-            if (self.m_pieces.Count == 0)
+            if (self.m_pieces.Count == 0 || !self.m_useCategories)
             {
                 return;
             }
 
-            if (self.m_useCategories && !Hud.instance.m_pieceCategoryTabs[(int)self.m_selectedCategory].activeSelf)
+            var selectedTab = Hud.instance.m_pieceCategoryTabs[(int)self.m_selectedCategory];
+
+            if (selectedTab.name.Contains(hiddenCategoryMagic))
             {
                 self.NextCategory();
             }
@@ -956,12 +958,14 @@ namespace Jotunn.Managers
 
         private void PieceTable_PrevCategory(PieceTable self)
         {
-            if (self.m_pieces.Count == 0)
+            if (self.m_pieces.Count == 0 || !self.m_useCategories)
             {
                 return;
             }
 
-            if (self.m_useCategories && !Hud.instance.m_pieceCategoryTabs[(int)self.m_selectedCategory].activeSelf)
+            var selectedTab = Hud.instance.m_pieceCategoryTabs[(int)self.m_selectedCategory];
+
+            if (selectedTab.name.Contains(hiddenCategoryMagic))
             {
                 self.PrevCategory();
             }

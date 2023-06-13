@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Bootstrap;
 using HarmonyLib;
 using Jotunn.Managers;
 using Jotunn.Utils;
@@ -86,11 +87,6 @@ namespace Jotunn
             ModQuery.Init();
             ModCompatibility.Init();
 
-#if DEBUG
-            // Enable helper on DEBUG build
-            RootObject.AddComponent<DebugUtils.DebugHelper>();
-#endif
-
             // Flip the "modded" switch of Valheim
             Game.isModded = true;
 
@@ -99,6 +95,14 @@ namespace Jotunn
 
         private void Start()
         {
+#if DEBUG
+            if (!Chainloader.PluginInfos.ContainsKey("randyknapp.mods.auga"))
+            {
+                // Enable helper on DEBUG build
+                RootObject.AddComponent<DebugUtils.DebugHelper>();
+            }
+#endif
+
 #pragma warning disable CS0612 // Method is obsolete
             InitializePatches();
 #pragma warning restore CS0612 // Method is obsolete
