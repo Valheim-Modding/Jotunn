@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.12.1
+* Fixed compatibility issues with the custom hammer tabs when Auga is installed. There will be some warnings as some visual changes can't be applied but these should not affect the functionality
+
 ## Version 2.12.0
 * Compatible with Valheim version 0.216.9, not working with an older version
 * Added prefab name helpers for CookingStations, CraftingStations, Fermenters, Incinerators, PieceCategories, PieceTables and Smelters

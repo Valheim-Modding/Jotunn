@@ -918,7 +918,7 @@ namespace Jotunn.Managers
             }
             else
             {
-                Logger.LogWarning("RefreshCategories: Could not find background image");
+                Logger.LogWarning("Category Refresh: Could not find background image, skipping resize");
             }
 
             if ((int)Player.m_localPlayer.m_buildPieces.m_selectedCategory >= Hud.instance.m_buildCategoryNames.Count)
