@@ -750,20 +750,18 @@ namespace Jotunn.Managers
                 return;
             }
 
-            var enumNames = Enum.GetNames(typeof(Piece.PieceCategory)).Where(name => name != "All").ToList();
+            int maxCategory = MaxCategory();
 
-            for (int i = Hud.instance.m_buildCategoryNames.Count; i < enumNames.Count; ++i)
+            // Fill empty category names to prevent index issues, the correct names are set by the respective mods later
+            for (int i = Hud.instance.m_buildCategoryNames.Count; i < maxCategory; ++i)
             {
-                var token = CreateCategoryToken(enumNames[i]);
-                Hud.instance.m_buildCategoryNames.Add(token);
+                Hud.instance.m_buildCategoryNames.Add("");
             }
 
             // Append tabs and their names to the GUI for every custom category not already added
-            for (int i = Hud.instance.m_pieceCategoryTabs.Length; i < Hud.instance.m_buildCategoryNames.Count; i++)
+            for (int i = Hud.instance.m_pieceCategoryTabs.Length; i < maxCategory; i++)
             {
-                string name = Hud.instance.m_buildCategoryNames[i];
-                GameObject tab = CreateCategoryTab(name);
-
+                GameObject tab = CreateCategoryTab();
                 Hud.instance.m_pieceCategoryTabs = Hud.instance.m_pieceCategoryTabs.AddItem(tab).ToArray();
             }
 
@@ -773,14 +771,11 @@ namespace Jotunn.Managers
             }
         }
 
-        private string CreateCategoryToken(string name)
+        private string GetCategoryToken(string name)
         {
             char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
             string tokenCategory = string.Concat(name.ToLower().Split(forbiddenCharsArray));
-            string token = $"$jotunn_cat_{tokenCategory}";
-
-            LocalizationManager.Instance.JotunnLocalization.AddTranslation(token, name);
-            return token;
+            return $"jotunn_cat_{tokenCategory}";
         }
 
         private Piece.PieceCategory GetOrCreatePieceCategory(string name, out bool isNew)
@@ -811,18 +806,19 @@ namespace Jotunn.Managers
             // create a new category
             category = (Piece.PieceCategory)categories.Count - 1;
             PieceCategories[name] = category;
+            var token = GetCategoryToken(name);
+            LocalizationManager.Instance.JotunnLocalization.AddTranslation(token, name);
 
             isNew = true;
             return category;
         }
 
-        private GameObject CreateCategoryTab(string name)
+        private GameObject CreateCategoryTab()
         {
             Transform categoryRoot = Hud.instance.m_pieceCategoryRoot.transform;
 
             GameObject newTab = Object.Instantiate(Hud.instance.m_pieceCategoryTabs[0], categoryRoot);
             newTab.SetActive(false);
-            newTab.name = name;
 
             UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
             handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
@@ -875,7 +871,8 @@ namespace Jotunn.Managers
             const int verticalSpacing = 1;
             Vector2 tabSize = firstTab.rect.size;
 
-            HashSet<Piece.PieceCategory> visibleCategories = CategoriesInPieceTable(pieceTable);
+            var visibleCategories = CategoriesInPieceTable(pieceTable);
+            var categories = GetPieceCategoriesMap();
 
             bool onlyMiscActive = visibleCategories.Count == 1 && visibleCategories.First() == Piece.PieceCategory.Misc;
             pieceTable.m_useCategories = !onlyMiscActive;
@@ -892,7 +889,7 @@ namespace Jotunn.Managers
             for (int i = 0; i < Hud.instance.m_pieceCategoryTabs.Length; ++i)
             {
                 GameObject tab = Hud.instance.m_pieceCategoryTabs[i];
-                string categoryName = Hud.instance.m_buildCategoryNames[i];
+                string categoryName = categories[(Piece.PieceCategory)i];
                 bool active = visibleCategories.Contains((Piece.PieceCategory)i);
 
                 SetTabActive(tab, categoryName, active);
@@ -906,6 +903,12 @@ namespace Jotunn.Managers
                     rect.anchorMin = new Vector2(0.5f, 0f);
                     rect.anchorMax = new Vector2(0.5f, 1f);
                     tabIndex++;
+                }
+
+                // only update names of own tabs, as translation tokens may be different between mods
+                if (PieceCategories.ContainsKey(categoryName))
+                {
+                    Hud.instance.m_buildCategoryNames[i] = $"${GetCategoryToken(categoryName)}";
                 }
             }
 
@@ -925,6 +928,8 @@ namespace Jotunn.Managers
             {
                 Player.m_localPlayer.m_buildPieces.SetCategory((int)visibleCategories.First());
             }
+
+            Hud.instance.GetComponentInParent<Localize>().RefreshLocalization();
         }
 
         private static int VisibleTabCount(HashSet<Piece.PieceCategory> visibleCategories) {
