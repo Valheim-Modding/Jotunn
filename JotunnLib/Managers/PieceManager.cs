@@ -739,12 +739,6 @@ namespace Jotunn.Managers
 
         private void CreateCategoryTabs()
         {
-            // Only touch categories when new ones were added
-            if (!PieceCategories.Any())
-            {
-                return;
-            }
-
             if (!Hud.instance)
             {
                 return;
@@ -843,12 +837,6 @@ namespace Jotunn.Managers
         /// </summary>
         private void RefreshCategories()
         {
-            // Only touch categories when new ones were added
-            if (!PieceCategories.Any())
-            {
-                return;
-            }
-
             // make sure all category tabs are already created correctly
             CreateCategoryTabs();
 
