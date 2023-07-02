@@ -153,12 +153,21 @@ Jötunn uses the [LocationConfig](xref:Jotunn.Configs.LocationConfig) combined w
 Use `ZoneManager.Instance.GetZoneLocation` to get a reference to the `ZoneLocation`.
 
 You can add prefabs to the `m_locationPrefab` to add them wherever this location is placed:
-```cs
-var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
-var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
 
-var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
-eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
+```cs
+void Awake()
+{
+    ZoneManager.OnVanillaLocationsAvailable += ModifyEikthyrAltar;
+}
+
+void ModifyEikthyrAltar()
+{
+    var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
+    var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
+
+    var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
+    eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
+}
 ```
 
 ![Modified Eikthyr Location](../images/data/modifyEikthyrLocation.png)
@@ -167,10 +176,22 @@ eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
 
 Use `ZoneManager.Instance.CreateClonedLocation` to clone a location.
 The cloned location is automatically added.
+
 ```cs
-CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
-myEikthyrLocation.ZoneLocation.m_exteriorRadius = 1f; // Easy to place :D
-myEikthyrLocation.ZoneLocation.m_quantity = 20; //MOAR
+void Awake()
+{
+    ZoneManager.OnVanillaLocationsAvailable += CreateClonedEikthyrAltar;
+}
+
+void CreateClonedEikthyrAltar()
+{
+    CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
+    myEikthyrLocation.ZoneLocation.m_exteriorRadius = 1f; // Easy to place :D
+    myEikthyrLocation.ZoneLocation.m_quantity = 20; // MOAR
+
+    // unsubscribe to only execute once, the cloned location is saved in the ZoneManager
+    ZoneManager.OnVanillaLocationsAvailable -= CreateClonedEikthyrAltar;
+}
 ```
 
 ### Creating empty Location containers
@@ -181,51 +202,66 @@ This means you can instantiate prefabs without enabling them immediately.
 It only creates the container, it still needs to be registered with `ZoneManager.Instance.AddCustomLocation`
 
 ```cs
-GameObject cubesLocation = ZoneManager.Instance.CreateLocationContainer("lulzcube_location");
-
-// Stack of lulzcubes to easily spot the instances
-for (int i = 0; i < 10; i++)
+void Awake()
 {
-    var lulzCube = Instantiate(lulzCubePrefab, cubesLocation.transform);
-    lulzCube.transform.localPosition = new Vector3(0, i + 3, 0);
-    lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
+    CreateLulzcubeLocation();
 }
 
-LocationConfig cubesConfig = new LocationConfig();
-cubesConfig.Biome = Heightmap.Biome.Meadows;
-cubesConfig.Quantity = 100;
-cubesConfig.Priotized = true;
-cubesConfig.ExteriorRadius = 2f;
-cubesConfig.ClearArea = true;
-ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubesLocation, false, cubesConfig));
+void CreateLulzcubeLocation()
+{
+    GameObject cubesLocation = ZoneManager.Instance.CreateLocationContainer("lulzcube_location");
 
+    // Stack of lulzcubes to easily spot the instances
+    for (int i = 0; i < 10; i++)
+    {
+        var lulzCube = Instantiate(lulzCubePrefab, cubesLocation.transform);
+        lulzCube.transform.localPosition = new Vector3(0, i + 3, 0);
+        lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
+    }
+
+    LocationConfig cubesConfig = new LocationConfig();
+    cubesConfig.Biome = Heightmap.Biome.Meadows;
+    cubesConfig.Quantity = 100;
+    cubesConfig.Priotized = true;
+    cubesConfig.ExteriorRadius = 2f;
+    cubesConfig.ClearArea = true;
+    ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubesLocation, fixReference: false, cubesConfig));
+}
 ```
 
 ### Creating locations from AssetBundles
 
-You can also create your locations in Unity, it should have a Location component. If you plan on further altering your prefab in code, you must create a location container from your prefab, which creates an instance of it for you to use as a parent. If you don't plan on altering your prefab, you can just create a CustomLocation without creating the additional container.
+You can also create your locations in Unity, it should have a Location component.
+If you plan on further altering your prefab in code, you must create a location container from your prefab, which creates an instance of it for you to use as a parent.
+If you don't plan on altering your prefab, you can just create a CustomLocation without creating the additional container.
 
 You can use `JVLmock_<prefab_name>` GameObjects to [reference vanilla prefabs](asset-mocking.md) in your location by setting the `fixReference` parameter of the CustomLocation constructor to `true`.
 
 ```cs
-// Create location from AssetBundle using spawners and random spawns
-var spawnerLocation = locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation");
+void Awake()
+{
+    CreateSpawnerLocation();
+}
 
-// Create a location container from your prefab if you want to alter it before adding the location to the manager.
-/* 
-var spawnerLocation =
-    ZoneManager.Instance.CreateLocationContainer(
-        locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation"));
-*/
+void CreateSpawnerLocation()
+{
+    // Create location from AssetBundle using spawners and random spawns
+    var spawnerLocationPrefab = locationsAssetBundle.LoadAsset<GameObject>("SpawnerLocation");
 
-LocationConfig spawnerConfig = new LocationConfig();
-spawnerConfig.Biome = Heightmap.Biome.Meadows;
-spawnerConfig.Quantity = 100;
-spawnerConfig.Priotized = true;
-spawnerConfig.ExteriorRadius = 2f;
-spawnerConfig.MinAltitude = 1f;
-spawnerConfig.ClearArea = true;
-ZoneManager.Instance.AddCustomLocation(new CustomLocation(spawnerLocation, true, spawnerConfig));
+    // Create a location container from your prefab if you want to alter it before adding the location to the manager.
+    /*
+    var spawnerLocation = ZoneManager.Instance.CreateLocationContainer(spawnerLocationPrefab);
+    */
+
+    LocationConfig spawnerConfig = new LocationConfig();
+    spawnerConfig.Biome = Heightmap.Biome.Meadows;
+    spawnerConfig.Quantity = 100;
+    spawnerConfig.Priotized = true;
+    spawnerConfig.ExteriorRadius = 2f;
+    spawnerConfig.MinAltitude = 1f;
+    spawnerConfig.ClearArea = true;
+    ZoneManager.Instance.AddCustomLocation(new CustomLocation(spawnerLocationPrefab, fixReference: true, spawnerConfig));
+}
 ```
 
 
@@ -235,12 +271,21 @@ Jötunn uses the [VegetationConfig](xref:Jotunn.Configs.VegetationConfig) combin
 
 ### Modifying existing vegetation
 
-Modify existing Vegetation configuration to increase the group size:
+Changes to Vanilla vegetation must be made each time.\
+Here is an example of modifying an existing vegetation configuration to increase the group size:
 
 ```cs
-var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
-raspberryBush.m_groupSizeMin = 10;
-raspberryBush.m_groupSizeMax = 30;
+void Awake()
+{
+    ZoneManager.OnVanillaLocationsAvailable += ModifyRaspberryBush;
+}
+
+void ModifyRaspberryBush()
+{
+    var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
+    raspberryBush.m_groupSizeMin = 10;
+    raspberryBush.m_groupSizeMax = 30;
+}
 ```
 
 ![](../images/data/moreRaspberryBushes.png)
@@ -250,11 +295,19 @@ raspberryBush.m_groupSizeMax = 30;
 Any prefab can be added as vegetation:
 
 ```cs
-// Use vegetation for singular prefabs
-VegetationConfig lulzCubeConfig = new VegetationConfig();
-lulzCubeConfig.Biome = Heightmap.Biome.Meadows;
-lulzCubeConfig.BlockCheck = true;
-CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, false, lulzCubeConfig);
+void Awake()
+{
+    AddLulzCubeVegetation();
+}
+
+void AddLulzCubeVegetation()
+{
+    // Use vegetation for singular prefabs
+    VegetationConfig lulzCubeConfig = new VegetationConfig();
+    lulzCubeConfig.Biome = Heightmap.Biome.Meadows;
+    lulzCubeConfig.BlockCheck = true;
+    CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, false, fixReference: lulzCubeConfig);
+}
 ```
 
 This example defines very little filters, so this prefab will be found all over every Meadows.
@@ -264,12 +317,19 @@ This example defines very little filters, so this prefab will be found all over 
 
 ### Adding Clutter
 The prefab can be loaded directly from an AssetBundle:
-```cs
-AssetBundle ClutterAssetBundle = AssetUtils.LoadAssetBundleFromResources("clutterbundle");
 
-ClutterConfig stone = new ClutterConfig();
-stone.Amount = 5;
-ZoneManager.Instance.AddCustomClutter(new CustomClutter(ClutterAssetBundle, "TestStone", false, stone));
+```cs
+void Awake()
+{
+    AddStoneClutter();
+}
+
+void AddStoneClutter()
+{
+    ClutterConfig stone = new ClutterConfig();
+    stone.Amount = 5;
+    ZoneManager.Instance.AddCustomClutter(new CustomClutter(ClutterAssetBundle, "TestStone", fixReference: false, stone));
+}
 ```
 
 ![test stone clutter](../images/data/customClutter.png)
