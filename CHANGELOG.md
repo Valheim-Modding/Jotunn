@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.12.2
+* Fixed an error when switching tabs with Q/E and no custom categories where added
+* Fixed order of custom tabs with other mods that add custom categories
+
 ## Version 2.12.1
 * Fixed compatibility issues with the custom hammer tabs when Auga is installed. There will be some warnings as some visual changes can't be applied but these should not affect the functionality
 
