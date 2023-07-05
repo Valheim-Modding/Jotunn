@@ -14,7 +14,8 @@
                 }
             ],
             "shouldSkipMarkup": true,
-            "dest": "Documentation/api"
+            "dest": "Documentation/api",
+            "memberLayout": "separatePages"
         }
     ],
     "build": {
