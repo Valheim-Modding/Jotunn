@@ -125,10 +125,6 @@
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.AnimationModule.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="UnityEngine.ARModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.ARModule.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(VALHEIM_INSTALL)\unstripped_corlib\UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>True</Private>
