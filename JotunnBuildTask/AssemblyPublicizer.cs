@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using Mono.Cecil;
 
 namespace JotunnBuildTask
@@ -15,11 +13,11 @@ namespace JotunnBuildTask
         /// </summary>
         /// <param name="input">Input assembly</param>
         /// <returns></returns>
-        public static bool PublicizeDll(string input, string publicizedFolder, string ValheimPath, TaskLoggingHelper Log)
+        public static bool PublicizeDll(string input, string publicizedFolder, string ValheimPath)
         {
             if (!File.Exists(input))
             {
-                Log.LogMessage(MessageImportance.High, $"File {input} not found.");
+                Console.WriteLine($"File {input} not found.");
                 return false;
             }
 
@@ -27,7 +25,7 @@ namespace JotunnBuildTask
 
             try
             {
-                Log.LogMessage(MessageImportance.High, $"Publicizing {input}.");
+                Console.WriteLine($"Publicizing {input}.");
 
                 assemblyDefinition = AssemblyDefinition.ReadAssembly(input);
                 BaseAssemblyResolver assemblyResolver = (BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver;
@@ -53,7 +51,7 @@ namespace JotunnBuildTask
             }
             catch (Exception exception)
             {
-                Log.LogMessage(MessageImportance.High, $"{exception.Message}");
+                Console.WriteLine($"{exception.Message}");
                 return false;
             }
 
@@ -97,8 +95,8 @@ namespace JotunnBuildTask
             }
             catch (Exception exception)
             {
-                Log.LogMessage(MessageImportance.High, $"Could not write file {outputFilename}.");
-                Log.LogMessage(MessageImportance.High, exception.Message);
+                Console.WriteLine($"Could not write file {outputFilename}.");
+                Console.WriteLine(exception.Message);
                 return false;
             }
 

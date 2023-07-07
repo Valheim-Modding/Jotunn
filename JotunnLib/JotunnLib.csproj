@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="HarmonyX" Version="2.9.0" />
-    <PackageReference Include="MonoMod" Version="21.9.19.1" />
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="5.10.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -412,15 +411,11 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\JotunnBuildTask.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.Mdb.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.Pdb.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\Mono.Cecil.Rocks.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.exe" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.RuntimeDetour.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.RuntimeDetour.HookGen.exe" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\MonoMod.Utils.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\JotunnBuildTask.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.Mdb.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.Pdb.dll" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.Rocks.dll" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsCorlib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\Paths.props" Pack="true" PackagePath="build" />
