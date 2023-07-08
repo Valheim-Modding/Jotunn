@@ -23,7 +23,15 @@ jobs:
       - name: Install NuGet dependencies
         run: nuget restore JotunnLib.sln
 
-      # Needed so csproj can load correctly, isn't actually used
+      # Prepare Valheim dependencies
+      - name: Prepare Valheim dependencies
+        run: |
+          mkdir -p ~/VHINSTALL
+          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2105/"
+          unzip bepinex.zip -d ~/BepInExRaw
+          mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
+
+      # Needed so csproj can load correctly
       - name: Set references to DLLs
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
