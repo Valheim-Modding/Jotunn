@@ -1,4 +1,10 @@
-﻿using UnityEngine.SceneManagement;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Jotunn.Configs;
+using Jotunn.Managers;
+using Jotunn.Utils;
+using UnityEngine.SceneManagement;
 
 namespace JotunnDoc.Docs
 {
@@ -29,14 +35,27 @@ namespace JotunnDoc.Docs
             AddTableHeader("Name", "Keycode", "Axis", "Gamepad");
 
             var buttons = ZInput.instance.m_buttons;
+            var jotunnButtons = GetStaticPrivateField<Dictionary<string, ButtonConfig>>(InputManager.Instance, "Buttons");
 
-            foreach (var pair in buttons)
+            foreach (var pair in buttons.Where(x => !jotunnButtons.ContainsKey(x.Key)))
             {
                 ZInput.ButtonDef button = pair.Value;
                 AddTableRow(pair.Key, button.m_key.ToString(), button.m_axis, button.m_gamepad.ToString());
             }
 
             Save();
+        }
+
+        public static T GetStaticPrivateField<T>(object instance, string name)
+        {
+            FieldInfo var = instance.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Static);
+
+            if (var == null)
+            {
+                return default(T);
+            }
+
+            return (T)var.GetValue(instance);
         }
     }
 }
