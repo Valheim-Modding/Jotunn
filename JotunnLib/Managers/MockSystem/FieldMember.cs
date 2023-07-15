@@ -21,7 +21,14 @@ namespace Jotunn {
 
         public override object GetValue(object obj)
         {
-            return fieldInfo.GetValue(obj);
+            try
+            {
+                return fieldInfo.GetValue(obj);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public override void SetValue(object obj, object value)

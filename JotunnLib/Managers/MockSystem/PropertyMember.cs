@@ -27,7 +27,7 @@ namespace Jotunn {
             }
             catch
             {
-                return null; 
+                return null;
             }
         }
 
