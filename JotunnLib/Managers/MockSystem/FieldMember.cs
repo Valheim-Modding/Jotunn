@@ -27,6 +27,7 @@ namespace Jotunn {
             }
             catch
             {
+                // this doesn't usually happen and isn't really harmful, so we just ignore it and don't resolve the field. Logging the error would be too much spam
                 return null;
             }
         }

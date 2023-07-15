@@ -27,6 +27,8 @@ namespace Jotunn {
             }
             catch
             {
+                // this doesn't usually happen, only in rare cases like mocking TMP components
+                // it's not really harmful, so we just ignore it and don't resolve the property. Logging the error would be too much spam
                 return null;
             }
         }
