@@ -61,6 +61,10 @@ jobs:
         run: |
           sudo chown -R "$UID" JotunnLib/_site
 
+      - name: Fix DocFX css
+        run: |
+          cp JotunnLib/_site/styles/docfx.vendor.min.css JotunnLib/_site/styles/docfx.vendor.css
+
       # Patch broken docfx JavaScript that fails to parse query params for tabs
       - name: Patch DocFX JavaScript bugs
         run: |
