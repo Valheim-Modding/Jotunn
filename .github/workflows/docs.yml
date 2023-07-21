@@ -15,6 +15,11 @@ jobs:
       - uses: actions/checkout@v3
         name: Checkout repo
 
+      - name: Dotnet Setup
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.x
+
       # Install NuGet
       - uses: nuget/setup-nuget@v1
         name: Install NuGet
@@ -36,17 +41,19 @@ jobs:
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
+      - name: Install docfx
+        run: |
+          dotnet tool update -g docfx --version 2.65.0
+
       # Build docs
-      - uses: nunit/docfx-action@v2.4.0
-        name: Build documentation
-        with:
-          args: JotunnLib/docfx.json
+      - name: Build documentation
+        run: |
+          docfx JotunnLib/docfx.json
 
       # Build docs again so cref is resolved
-      - uses: nunit/docfx-action@v2.4.0
-        name: Build documentation again with crefs
-        with:
-          args: JotunnLib/docfx.json
+      - name: Build documentation again with crefs
+        run: |
+          docfx JotunnLib/docfx.json
 
       # Fix permissions on DocFX output (should not be owned by root!)
       # See https://github.com/nikeee/docfx-action/issues/13
