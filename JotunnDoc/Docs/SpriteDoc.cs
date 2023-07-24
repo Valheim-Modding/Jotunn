@@ -32,7 +32,7 @@ namespace JotunnDoc.Docs
 
             var sprites = Resources.FindObjectsOfTypeAll<Sprite>().OrderBy(x => x.name);
 
-            foreach (var sprite in sprites)
+            foreach (var sprite in sprites.Where(x => !string.IsNullOrEmpty(x.name)))
             {
                 AddTableRow(sprite.name, sprite.texture.name, sprite.textureRect.ToString());
             }

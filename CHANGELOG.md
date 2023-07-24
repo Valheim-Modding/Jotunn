@@ -1,4 +1,7 @@
 # Changelog
+## Version 2.12.4
+* Fixed mock resolution to not fail when a member throws an exception on GetValue. This happens in rare cases, for example when mocking a TMP component (thx OrianaVenture)
+
 ## Version 2.12.3
 * Fixed an error with the console command for the upcoming 0.217 update (currently in PTB), still compatible with the stable Valheim release (0.216.9). Note that the PTB branch isn't supported and may cause unexpected issues at any time
 * Fixed JotunnBuildTask compile issues for .NET 7.0

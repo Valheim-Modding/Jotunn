@@ -16,7 +16,8 @@
             "shouldSkipMarkup": true,
             "filter": "docfxFilter.yml",
             "dest": "Documentation/api",
-            "memberLayout": "separatePages"
+            "memberLayout": "separatePages",
+            "allowCompilationErrors": true
         }
     ],
     "build": {
