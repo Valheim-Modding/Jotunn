@@ -14,7 +14,8 @@
   topicHref: pieces/overview.md
 
 - name: Status Effects
-  href: status-effects/status-effects-list.md
+  href: status-effects/toc.yml
+  topicHref: status-effects/overview.md
 
 - name: Input
   href: input/toc.yml
