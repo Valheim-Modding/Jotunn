@@ -13,6 +13,10 @@
   href: pieces/toc.yml
   topicHref: pieces/overview.md
 
+- name: Status Effects
+  href: status-effects/toc.yml
+  topicHref: status-effects/overview.md
+
 - name: Input
   href: input/toc.yml
   topicHref: input/overview.md

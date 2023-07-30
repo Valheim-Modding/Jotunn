@@ -6,6 +6,7 @@ This section contains lists of things in Valheim such as:
 - Items
 - Recipes
 - Pieces
+- Status Effects
 - English localizations of those
 - Sprites
 - RPCs
