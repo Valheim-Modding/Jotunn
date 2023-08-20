@@ -43,7 +43,7 @@ jobs:
 
       - name: Install docfx
         run: |
-          dotnet tool update -g docfx --version 2.67.5
+          dotnet tool update -g docfx --version 2.70.0
 
       # Build docs
       - name: Build documentation
