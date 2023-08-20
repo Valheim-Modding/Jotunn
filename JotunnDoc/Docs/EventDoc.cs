@@ -15,12 +15,10 @@ namespace JotunnDoc.Docs
             CreatureManager.OnCreaturesRegistered += () => AddText("CreatureManager.OnCreaturesRegistered");
             CreatureManager.OnVanillaCreaturesAvailable += () => AddText("CreatureManager.OnVanillaCreaturesAvailable");
 
-            GUIManager.OnPixelFixCreated += () => AddText("GUIManager.OnPixelFixCreated");
             GUIManager.OnCustomGUIAvailable += () => AddText("GUIManager.OnCustomGUIAvailable");
 
             ItemManager.OnItemsRegistered += () => AddText("ItemManager.OnItemsRegistered");
             ItemManager.OnItemsRegisteredFejd += () => AddText("ItemManager.OnItemsRegisteredFejd");
-            ItemManager.OnVanillaItemsAvailable += () => AddText("ItemManager.OnVanillaItemsAvailable");
 
             LocalizationManager.OnLocalizationAdded += () => AddText("LocalizationManager.OnLocalizationAdded");
 

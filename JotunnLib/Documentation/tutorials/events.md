@@ -28,4 +28,4 @@ void PrefabsAvailable() {
 
 The following diagram shows the order of events and when they are executed in the game:
 
-![Event Flow](../images/data/eventFlow.png)
+![Event Flow](../images/data/eventFlow.svg)

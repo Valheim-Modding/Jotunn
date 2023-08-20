@@ -44,8 +44,6 @@ deactivate Valheim
 Valheim -> Valheim++: ObjectDB.CopyOtherDB
     hnote over CreatureManager : OnVanillaCreaturesAvailable
     hnote over PrefabManager: OnVanillaPrefabsAvailable 
-    hnote over ItemManager #salmon: OnVanillaItemsAvailable  
-    hnote over ItemManager #salmon: OnKitbashItemsAvailable
     hnote over ItemManager: OnItemsRegisteredFejd
 deactivate Valheim
 
@@ -69,7 +67,6 @@ Valheim -> Valheim++: ClutterSystem.Awake
 deactivate Valheim
 
 Valheim -> Valheim++: SceneManager.sceneLoaded
-    hnote over GUIManager: OnPixelFixCreated
     hnote over GUIManager: OnCustomGUIAvailable
 deactivate Valheim
 
