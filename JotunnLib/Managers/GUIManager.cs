@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.GUI;
@@ -23,6 +25,7 @@ namespace Jotunn.Managers
     public class GUIManager : IManager
     {
         private static GUIManager _instance;
+
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -220,12 +223,17 @@ namespace Jotunn.Managers
                 {
                     EnableInputBlock();
                 }
+
                 if (InputBlocked && InputBlockRequests == 0)
                 {
                     ResetInputBlock();
                 }
-
             }
+        }
+
+        private static bool IsInputBlocked()
+        {
+            return InputBlocked;
         }
 
         /// <summary>
@@ -273,22 +281,6 @@ namespace Jotunn.Managers
             }
         }
 
-        private static void Menu_IsVisible(ref bool __result)
-        {
-            if (InputBlocked)
-            {
-                __result = true;
-            }
-        }
-        
-        private static void TextInput_IsVisible(ref bool __result)
-        {
-            if (InputBlocked)
-            {
-                __result = true;
-            }
-        }
-
         /// <summary>
         ///     Initialize the manager
         /// </summary>
@@ -315,17 +307,31 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(PlayerController), nameof(PlayerController.TakeInput)), HarmonyPostfix]
             private static void PlayerController_TakeInput(ref bool __result) => GUIManager.PlayerController_TakeInput(ref __result);
 
-            [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible)), HarmonyPostfix]
-            private static void Menu_IsVisible(ref bool __result) => GUIManager.Menu_IsVisible(ref __result);
-            
-            [HarmonyPatch(typeof(TextInput), nameof(TextInput.IsVisible)), HarmonyPostfix]
-            private static void TextInput_IsVisible(ref bool __result) => GUIManager.TextInput_IsVisible(ref __result);
+            [HarmonyPatch(typeof(GameCamera), nameof(GameCamera.UpdateMouseCapture)), HarmonyTranspiler, HarmonyWrapSafe]
+            private static IEnumerable<CodeInstruction> GameCamera_UpdateMouseCapture(IEnumerable<CodeInstruction> instructions) => UnlockMouseTranspiler(instructions);
 
             [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui)), HarmonyPostfix]
             private static void FejdStartup_SetupGui(FejdStartup __instance) => Instance.FejdStartup_SetupGui(__instance);
 
             [HarmonyPatch(typeof(Game), nameof(Game.Start)), HarmonyPostfix]
             private static void Game_Start(Game __instance) => Instance.Game_Start(__instance);
+        }
+
+        private static IEnumerable<CodeInstruction> UnlockMouseTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            Label? jumpLabel = null;
+
+            return new CodeMatcher(instructions)
+                .MatchForward(true,
+                    new CodeMatch(i => i.Calls(AccessTools.Method(typeof(InventoryGui), nameof(InventoryGui.IsVisible)))),
+                    new CodeMatch(i => i.Branches(out jumpLabel))
+                )
+                .Advance(1)
+                .InsertAndAdvance(
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GUIManager), nameof(IsInputBlocked))),
+                    new CodeInstruction(OpCodes.Brtrue, jumpLabel)
+                )
+                .InstructionEnumeration();
         }
 
         /// <summary>
