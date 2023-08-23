@@ -1,0 +1,15 @@
+ZoneManager.OnVanillaClutterAvailable
+LocalizationManager.OnLocalizationAdded
+GUIManager.OnCustomGUIAvailable
+CreatureManager.OnVanillaCreaturesAvailable
+PrefabManager.OnVanillaPrefabsAvailable
+ItemManager.OnItemsRegisteredFejd
+--- Game Scene ---
+PrefabManager.OnPrefabsRegistered
+ItemManager.OnItemsRegistered
+PieceManager.OnPiecesRegistered
+ZoneManager.OnVanillaClutterAvailable
+GUIManager.OnCustomGUIAvailable
+ZoneManager.OnVanillaZonesAvailable
+MinimapManager.OnVanillaMapAvailable
+MinimapManager.OnVanillaMapDataLoaded
