@@ -273,6 +273,9 @@ namespace Jotunn.Managers
                 Object.Destroy(child.gameObject);
             }
 
+            // Clear layouts
+            inputHint?.m_inputLayoutSettings.Clear();
+
             foreach (var buttonConfig in config.ButtonConfigs)
             {
                 string key = ZInput.instance.GetBoundKeyString(buttonConfig.Name, true);

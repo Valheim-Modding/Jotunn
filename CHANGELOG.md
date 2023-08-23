@@ -1,4 +1,7 @@
-# Changelog
+﻿# Changelog
+## Version 2.12.5
+* Fixed NRE using KeyHints
+
 ## Version 2.12.4
 * Fixed mock resolution to not fail when a member throws an exception on GetValue. This happens in rare cases, for example when mocking a TMP component (thx OrianaVenture)
 
