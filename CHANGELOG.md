@@ -1,4 +1,5 @@
-﻿# Changelog
+# Changelog
+
 ## Version 2.12.5
 * Fixed NRE using KeyHints
 * Fixed Mouse cursor not visible when blocking Input for UI

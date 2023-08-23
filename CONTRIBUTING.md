@@ -1,4 +1,4 @@
-﻿# Contributing
+# Contributing
 
 ## Setting up development environment
 
