@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.12.6
+* Fixed input block did not prevent input from closing the inventory
+* Fixed PrefabManager.Cache to prefer materials with a non-error shader
+
 ## Version 2.12.5
 * Fixed NRE using KeyHints
 * Fixed Mouse cursor not visible when blocking Input for UI
