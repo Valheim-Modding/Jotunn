@@ -301,6 +301,9 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(GameCamera), nameof(GameCamera.UpdateMouseCapture)), HarmonyTranspiler, HarmonyWrapSafe]
             private static IEnumerable<CodeInstruction> GameCamera_UpdateMouseCapture(IEnumerable<CodeInstruction> instructions) => UnlockMouseTranspiler(instructions);
 
+            [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Update)), HarmonyTranspiler, HarmonyWrapSafe]
+            private static IEnumerable<CodeInstruction> InventoryGui_Update(IEnumerable<CodeInstruction> instructions) => BlockUseTranspiler(instructions);
+
             [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui)), HarmonyPostfix]
             private static void FejdStartup_SetupGui(FejdStartup __instance) => Instance.FejdStartup_SetupGui(__instance);
 
@@ -308,6 +311,11 @@ namespace Jotunn.Managers
             private static void Game_Start(Game __instance) => Instance.Game_Start(__instance);
         }
 
+        /// <summary>
+        ///     Allows for free mouse movement when the GUIManager blocks the input
+        /// </summary>
+        /// <param name="instructions"></param>
+        /// <returns></returns>
         private static IEnumerable<CodeInstruction> UnlockMouseTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             Label? jumpLabel = null;
@@ -315,6 +323,28 @@ namespace Jotunn.Managers
             return new CodeMatcher(instructions)
                 .MatchForward(true,
                     new CodeMatch(i => i.Calls(AccessTools.Method(typeof(InventoryGui), nameof(InventoryGui.IsVisible)))),
+                    new CodeMatch(i => i.Branches(out jumpLabel))
+                )
+                .Advance(1)
+                .InsertAndAdvance(
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GUIManager), nameof(IsInputBlocked))),
+                    new CodeInstruction(OpCodes.Brtrue, jumpLabel)
+                )
+                .InstructionEnumeration();
+        }
+
+        /// <summary>
+        ///     Prevents hiding the InventoryGui on an E press or similar when the GUIManager blocks the input
+        /// </summary>
+        /// <param name="instructions"></param>
+        /// <returns></returns>
+        private static IEnumerable<CodeInstruction> BlockUseTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            Label? jumpLabel = null;
+
+            return new CodeMatcher(instructions)
+                .MatchForward(true,
+                    new CodeMatch(i => i.Calls(AccessTools.Method(typeof(Menu), nameof(Menu.IsVisible)))),
                     new CodeMatch(i => i.Branches(out jumpLabel))
                 )
                 .Advance(1)
