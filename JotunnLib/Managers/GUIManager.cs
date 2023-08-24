@@ -265,15 +265,7 @@ namespace Jotunn.Managers
             }
         }
 
-        private static void PlayerController_TakeInput(ref bool __result)
-        {
-            if (InputBlocked)
-            {
-                __result = false;
-            }
-        }
-
-        private static void Player_TakeInput(ref bool __result)
+        private static void TakeInput(ref bool __result)
         {
             if (InputBlocked)
             {
@@ -301,11 +293,10 @@ namespace Jotunn.Managers
 
         private static class Patches
         {
-            [HarmonyPatch(typeof(Player), nameof(Player.TakeInput)), HarmonyPostfix]
-            private static void Player_TakeInput(ref bool __result) => GUIManager.Player_TakeInput(ref __result);
-
-            [HarmonyPatch(typeof(PlayerController), nameof(PlayerController.TakeInput)), HarmonyPostfix]
-            private static void PlayerController_TakeInput(ref bool __result) => GUIManager.PlayerController_TakeInput(ref __result);
+            [HarmonyPostfix]
+            [HarmonyPatch(typeof(PlayerController), nameof(PlayerController.TakeInput))]
+            [HarmonyPatch(typeof(Player), nameof(Player.TakeInput))]
+            private static void TakeInputPatch(ref bool __result) => TakeInput(ref __result);
 
             [HarmonyPatch(typeof(GameCamera), nameof(GameCamera.UpdateMouseCapture)), HarmonyTranspiler, HarmonyWrapSafe]
             private static IEnumerable<CodeInstruction> GameCamera_UpdateMouseCapture(IEnumerable<CodeInstruction> instructions) => UnlockMouseTranspiler(instructions);
