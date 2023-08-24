@@ -438,18 +438,18 @@ namespace Jotunn.Managers
             ///     Only one asset can be associated with a name, this ties to find the best match if there is already a cached one present.
             /// </summary>
             /// <param name="map"></param>
-            /// <param name="unityObject"></param>
+            /// <param name="newObject"></param>
             /// <param name="name"></param>
             /// <returns></returns>
-            private static Object FindBestAsset(IDictionary<string, Object> map, Object unityObject, string name)
+            private static Object FindBestAsset(IDictionary<string, Object> map, Object newObject, string name)
             {
                 if (!map.TryGetValue(name, out Object cached))
                 {
-                    return unityObject;
+                    return newObject;
                 }
 
                 // if a ObjectDB parent exists in the main scene, prefer it over the prefab
-                if (name == "_NetScene" && cached is GameObject cachedGo && unityObject is GameObject newGo)
+                if (name == "_NetScene" && cached is GameObject cachedGo && newObject is GameObject newGo)
                 {
                     if (!cachedGo.activeInHierarchy && newGo.activeInHierarchy)
                     {
@@ -457,22 +457,48 @@ namespace Jotunn.Managers
                     }
                 }
 
-                bool cachedHasParent = GetParent(cached);
-                bool otherHasParent = GetParent(unityObject);
+                if (cached is Material cachedMat && newObject is Material newMat && FindBestMaterial(cachedMat, newMat, out var material))
+                {
+                    return material;
+                }
 
-                if (!cachedHasParent && otherHasParent)
+                bool cachedHasParent = GetParent(cached);
+                bool newHasParent = GetParent(newObject);
+
+                if (!cachedHasParent && newHasParent)
                 {
                     // as the cached object has no parent, it is more likely a real prefab and not a child GameObject
                     return cached;
                 }
 
-                if (cachedHasParent && !otherHasParent)
+                if (cachedHasParent && !newHasParent)
                 {
                     // as the new object has no parent, it is more likely a real prefab and not a child GameObject
-                    return unityObject;
+                    return newObject;
                 }
 
-                return unityObject;
+                return newObject;
+            }
+
+            private static bool FindBestMaterial(Material cachedMaterial, Material newMaterial, out Object material)
+            {
+                string cachedShaderName = cachedMaterial.shader.name;
+                string newShaderName = newMaterial.shader.name;
+
+                if (cachedShaderName == "Hidden/InternalErrorShader" && newShaderName != "Hidden/InternalErrorShader")
+                {
+                    material = newMaterial;
+                    return true;
+                }
+
+                if (cachedShaderName != "Hidden/InternalErrorShader" && newShaderName == "Hidden/InternalErrorShader")
+                {
+                    material = cachedMaterial;
+                    return true;
+                }
+
+                material = null;
+                return false;
             }
 
             private static Dictionary<string, Object> GetCachedMap(Type type)
