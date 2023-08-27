@@ -61,6 +61,12 @@ namespace Jotunn.Configs
             {
                 return Name;
             }
+
+            if (!string.IsNullOrEmpty(SourcePrefab))
+            {
+                return SourcePrefab;
+            }
+
             return base.ToString();
         }
     }

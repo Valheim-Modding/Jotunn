@@ -101,6 +101,7 @@ namespace Jotunn.Managers
             {
                 if (!Instance.Kitbash(kitbashObject, config))
                 {
+                    Logger.LogWarning(kitbashObject.SourceMod, $"Kitbash failed for {kitbashObject}");
                     return false;
                 }
             }
@@ -123,7 +124,7 @@ namespace Jotunn.Managers
 
             if (!sourcePrefab)
             {
-                Logger.LogWarning(kitbashObject.SourceMod, $"No prefab found for {config}");
+                Logger.LogWarning(kitbashObject.SourceMod, $"Prefab '{config.SourcePrefab}' not found for {config.ToString()}");
                 return false;
             }
 
@@ -131,7 +132,7 @@ namespace Jotunn.Managers
 
             if (!sourceTransform)
             {
-                Logger.LogWarning(kitbashObject.SourceMod, $"Source path not found for {config}");
+                Logger.LogWarning(kitbashObject.SourceMod, $"Source path '{config.SourcePath}' not found for {config.ToString()}");
                 return false;
             }
 
@@ -140,7 +141,7 @@ namespace Jotunn.Managers
 
             if (!parentTransform)
             {
-                Logger.LogWarning(kitbashObject.SourceMod, $"Target parent not found for {config}");
+                Logger.LogWarning(kitbashObject.SourceMod, $"Target parent not found for {config.ToString()}");
                 return false;
             }
 
@@ -157,7 +158,7 @@ namespace Jotunn.Managers
 
                 if (sourceMaterials == null)
                 {
-                    Logger.LogWarning(kitbashObject.SourceMod, $"No materials found for {config}");
+                    Logger.LogWarning(kitbashObject.SourceMod, $"No materials found for {config.ToString()}");
                     return false;
                 }
                    
