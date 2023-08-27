@@ -77,13 +77,12 @@ namespace Jotunn.Managers
                         {
                             kitbashObject.Prefab.FixReferences();
                         }
+
                         ApplyKitbash(kitbashObject);
-                            
-                        Logger.LogDebug($"Kitbash for {kitbashObject} applied");
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError(e);
+                        Logger.LogError(kitbashObject.SourceMod, e);
                     }
                 }
 
@@ -100,7 +99,7 @@ namespace Jotunn.Managers
         {
             foreach (KitbashSourceConfig config in kitbashObject.Config.KitbashSources)
             {
-                if (!Instance.Kitbash(kitbashObject.Prefab, config))
+                if (!Instance.Kitbash(kitbashObject, config))
                 {
                     return false;
                 }
@@ -117,31 +116,40 @@ namespace Jotunn.Managers
             return true;
         }
 
-        private bool Kitbash(GameObject kitbashedPrefab, KitbashSourceConfig config)
+        private bool Kitbash(KitbashObject kitbashObject, KitbashSourceConfig config)
         {
             // Try to load a custom prefab
             GameObject sourcePrefab = PrefabManager.Instance.GetPrefab(config.SourcePrefab);
 
-            // If no prefab is found, warn and return
             if (!sourcePrefab)
             {
-                Logger.LogWarning($"No prefab found for {config}");
+                Logger.LogWarning(kitbashObject.SourceMod, $"No prefab found for {config}");
                 return false;
             }
-            GameObject sourceGameObject = sourcePrefab.transform.Find(config.SourcePath).gameObject;
 
-            Transform parentTransform = config.TargetParentPath != null ? kitbashedPrefab.transform.Find(config.TargetParentPath) : kitbashedPrefab.transform;
-            if (parentTransform == null)
+            Transform sourceTransform = sourcePrefab.transform.Find(config.SourcePath);
+
+            if (!sourceTransform)
             {
-                Logger.LogWarning($"Target parent not found for {config}");
+                Logger.LogWarning(kitbashObject.SourceMod, $"Source path not found for {config}");
                 return false;
             }
-            GameObject kitbashObject = Object.Instantiate(sourceGameObject, parentTransform);
 
-            kitbashObject.name = config.Name ?? sourceGameObject.name;
-            kitbashObject.transform.localPosition = config.Position;
-            kitbashObject.transform.localRotation = config.Rotation;
-            kitbashObject.transform.localScale = config.Scale;
+            GameObject kitbashPrefab = kitbashObject.Prefab;
+            Transform parentTransform = config.TargetParentPath != null ? kitbashPrefab.transform.Find(config.TargetParentPath) : kitbashPrefab.transform;
+
+            if (!parentTransform)
+            {
+                Logger.LogWarning(kitbashObject.SourceMod, $"Target parent not found for {config}");
+                return false;
+            }
+
+            GameObject sourceGameObject = sourceTransform.gameObject;
+            GameObject kitbashedObject = Object.Instantiate(sourceGameObject, parentTransform);
+            kitbashedObject.name = config.Name ?? sourceGameObject.name;
+            kitbashedObject.transform.localPosition = config.Position;
+            kitbashedObject.transform.localRotation = config.Rotation;
+            kitbashedObject.transform.localScale = config.Scale;
 
             if (config.Materials != null)
             {
@@ -149,11 +157,11 @@ namespace Jotunn.Managers
 
                 if (sourceMaterials == null)
                 {
-                    Logger.LogWarning($"No materials found for {config}");
+                    Logger.LogWarning(kitbashObject.SourceMod, $"No materials found for {config}");
                     return false;
                 }
                    
-                SkinnedMeshRenderer[] targetSkinnedMeshRenderers = kitbashObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+                SkinnedMeshRenderer[] targetSkinnedMeshRenderers = kitbashedObject.GetComponentsInChildren<SkinnedMeshRenderer>();
 
                 foreach (SkinnedMeshRenderer targetSkinnedMeshRenderer in targetSkinnedMeshRenderers)
                 {
@@ -161,14 +169,14 @@ namespace Jotunn.Managers
                     targetSkinnedMeshRenderer.materials = sourceMaterials;
                 }
 
-                MeshRenderer[] targetMeshRenderers = kitbashObject.GetComponentsInChildren<MeshRenderer>();
+                MeshRenderer[] targetMeshRenderers = kitbashedObject.GetComponentsInChildren<MeshRenderer>();
                 foreach (MeshRenderer targetMeshRenderer in targetMeshRenderers)
                 {
                     targetMeshRenderer.sharedMaterials = sourceMaterials;
                     targetMeshRenderer.materials = sourceMaterials;
                 }
-
             }
+
             return true;
         }
 
