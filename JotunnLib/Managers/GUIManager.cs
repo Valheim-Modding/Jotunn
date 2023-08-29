@@ -273,6 +273,14 @@ namespace Jotunn.Managers
             }
         }
 
+        private static void TextInput_IsVisible(ref bool __result)
+        {
+            if (InputBlocked)
+            {
+                __result = true;
+            }
+        }
+
         /// <summary>
         ///     Initialize the manager
         /// </summary>
@@ -298,8 +306,8 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(Player), nameof(Player.TakeInput))]
             private static void TakeInputPatch(ref bool __result) => TakeInput(ref __result);
 
-            [HarmonyPatch(typeof(GameCamera), nameof(GameCamera.UpdateMouseCapture)), HarmonyTranspiler, HarmonyWrapSafe]
-            private static IEnumerable<CodeInstruction> GameCamera_UpdateMouseCapture(IEnumerable<CodeInstruction> instructions) => UnlockMouseTranspiler(instructions);
+            [HarmonyPatch(typeof(TextInput), nameof(TextInput.IsVisible)), HarmonyPostfix]
+            private static void TextInputPatch(ref bool __result) => TextInput_IsVisible(ref __result);
 
             [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Update)), HarmonyTranspiler, HarmonyWrapSafe]
             private static IEnumerable<CodeInstruction> InventoryGui_Update(IEnumerable<CodeInstruction> instructions) => BlockUseTranspiler(instructions);
@@ -309,28 +317,6 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(Game), nameof(Game.Start)), HarmonyPostfix]
             private static void Game_Start(Game __instance) => Instance.Game_Start(__instance);
-        }
-
-        /// <summary>
-        ///     Allows for free mouse movement when the GUIManager blocks the input
-        /// </summary>
-        /// <param name="instructions"></param>
-        /// <returns></returns>
-        private static IEnumerable<CodeInstruction> UnlockMouseTranspiler(IEnumerable<CodeInstruction> instructions)
-        {
-            Label? jumpLabel = null;
-
-            return new CodeMatcher(instructions)
-                .MatchForward(true,
-                    new CodeMatch(i => i.Calls(AccessTools.Method(typeof(InventoryGui), nameof(InventoryGui.IsVisible)))),
-                    new CodeMatch(i => i.Branches(out jumpLabel))
-                )
-                .Advance(1)
-                .InsertAndAdvance(
-                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GUIManager), nameof(IsInputBlocked))),
-                    new CodeInstruction(OpCodes.Brtrue, jumpLabel)
-                )
-                .InstructionEnumeration();
         }
 
         /// <summary>
