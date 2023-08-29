@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.12.7
+* Fixed input block did not prevent the map from opening
+* Improved Kitbash error and warning messages to include the mod name and affected Kitbash settings
+
 ## Version 2.12.6
 * Fixed input block did not prevent input from closing the inventory
 * Fixed PrefabManager.Cache to prefer materials with a non-error shader
