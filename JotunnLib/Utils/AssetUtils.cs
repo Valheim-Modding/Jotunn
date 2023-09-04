@@ -155,7 +155,7 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
-        ///     Load an assembly-embedded file as a char string />
+        ///     Load an assembly-embedded file as a <see cref="string" />. Use this if the automatic detection of the assembly fails.
         /// </summary>
         /// <param name="fileName">Name of the file. Folders are point-seperated e.g. folder/file.json becomes folder.file.json</param>
         /// <param name="resourceAssembly">Executing assembly</param>
@@ -189,6 +189,16 @@ namespace Jotunn.Utils
             }
 
             return ret;
+        }
+
+        /// <summary>
+        ///     Load an assembly-embedded file as a <see cref="string" />. The calling assembly is automatically detected.
+        /// </summary>
+        /// <param name="fileName">Name of the file. Folders are point-seperated e.g. folder/file.json becomes folder.file.json</param>
+        /// <returns></returns>
+        public static string LoadTextFromResources(string fileName)
+        {
+            return LoadTextFromResources(fileName, ReflectionHelper.GetCallingAssembly());
         }
 
         /// <summary>
