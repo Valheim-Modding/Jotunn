@@ -327,6 +327,12 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public bool AddCustomClutter(CustomClutter customClutter)
         {
+            if (!customClutter.IsValid())
+            {
+                Logger.LogWarning(customClutter.SourceMod, $"Custom clutter '{customClutter}' is not valid");
+                return false;
+            }
+
             if (Clutter.ContainsKey(customClutter.Name))
             {
                 return false;
