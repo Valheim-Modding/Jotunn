@@ -243,6 +243,11 @@ namespace Jotunn.Managers
                 return prefab;
             }
 
+            if (ObjectDB.instance && ObjectDB.instance.m_itemByHash.TryGetValue(hash, out var item))
+            {
+                return item;
+            }
+
             return Cache.GetPrefab<GameObject>(name);
         }
 
