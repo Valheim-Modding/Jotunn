@@ -168,14 +168,12 @@ namespace Jotunn.Managers
                 return;
             }
 
-            depth++;
-
             var type = objectToFix.GetType();
             ClassMember classMember = ClassMember.GetClassMember(type);
 
             foreach (var member in classMember.Members)
             {
-                FixMemberReferences(member, objectToFix, depth);
+                FixMemberReferences(member, objectToFix, depth + 1);
             }
         }
 
