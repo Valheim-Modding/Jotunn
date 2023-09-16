@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿﻿using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -39,7 +39,7 @@ namespace Jotunn
         /// <returns>Component</returns>
         public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
         {
-            return gameObject.GetComponent<T>() ?? gameObject.AddComponent<T>();
+            return gameObject.TryGetComponent(out T component) ? component : gameObject.AddComponent<T>();
         }
 
         /// <summary>
