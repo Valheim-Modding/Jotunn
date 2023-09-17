@@ -2,6 +2,7 @@
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -135,24 +136,14 @@ namespace Jotunn.Entities
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         public CustomPiece(AssetBundle assetBundle, string assetName, string pieceTable, bool fixReference) : base(Assembly.GetCallingAssembly())
         {
-            try
+            fallbackPieceName = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
             {
-                PiecePrefab = assetBundle.LoadAsset<GameObject>(assetName);
-            }
-            catch (Exception e)
-            {
-                fallbackPieceName = assetName;
-                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}:\n{e}");
                 return;
             }
 
-            if (!PiecePrefab)
-            {
-                fallbackPieceName = assetName;
-                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}");
-                return;
-            }
-
+            PiecePrefab = prefab;
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
             FixReference = fixReference;
@@ -168,24 +159,14 @@ namespace Jotunn.Entities
         [Obsolete("Use CustomPiece(AssetBundle, string, bool, PieceConfig) instead and define if references should be fixed")]
         public CustomPiece(AssetBundle assetBundle, string assetName, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
-            try
+            fallbackPieceName = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
             {
-                PiecePrefab = assetBundle.LoadAsset<GameObject>(assetName);
-            }
-            catch (Exception e)
-            {
-                fallbackPieceName = assetName;
-                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}:\n{e}");
                 return;
             }
 
-            if (!PiecePrefab)
-            {
-                fallbackPieceName = assetName;
-                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}");
-                return;
-            }
-
+            PiecePrefab = prefab;
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceConfig.PieceTable;
             FixReference = false;
@@ -205,24 +186,14 @@ namespace Jotunn.Entities
         /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
         public CustomPiece(AssetBundle assetBundle, string assetName, bool fixReference, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
-            try
+            fallbackPieceName = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
             {
-                PiecePrefab = assetBundle.LoadAsset<GameObject>(assetName);
-            }
-            catch (Exception e)
-            {
-                fallbackPieceName = assetName;
-                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}:\n{e}");
                 return;
             }
 
-            if (!PiecePrefab)
-            {
-                fallbackPieceName = assetName;
-                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}");
-                return;
-            }
-
+            PiecePrefab = prefab;
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceConfig.PieceTable;
             FixReference = fixReference;

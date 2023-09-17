@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -61,22 +62,12 @@ namespace Jotunn.Entities
         {
             Name = assetName;
 
-            try
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
             {
-                Prefab = assetBundle.LoadAsset<GameObject>(assetName);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}:\n{e}");
                 return;
             }
 
-            if (!Prefab)
-            {
-                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}");
-                return;
-            }
-
+            Prefab = prefab;
             Clutter = config.ToClutter();
             Clutter.m_prefab = Prefab;
             FixReference = fixReference;

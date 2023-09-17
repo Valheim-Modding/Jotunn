@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using System.Reflection;
 using System.Linq;
+using BepInEx;
 
 namespace Jotunn.Utils
 {
@@ -256,6 +257,28 @@ namespace Jotunn.Utils
             }
 
             return Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+        }
+
+        internal static bool TryLoadPrefab(BepInPlugin sourceMod, AssetBundle assetBundle, string assetName, out GameObject prefab)
+        {
+            try
+            {
+                prefab = assetBundle.LoadAsset<GameObject>(assetName);
+            }
+            catch (Exception e)
+            {
+                prefab = null;
+                Logger.LogError(sourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}:\n{e}");
+                return false;
+            }
+
+            if (!prefab)
+            {
+                Logger.LogError(sourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}");
+                return false;
+            }
+
+            return true;
         }
     }
 }

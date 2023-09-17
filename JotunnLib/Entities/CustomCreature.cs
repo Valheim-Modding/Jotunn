@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -99,24 +100,14 @@ namespace Jotunn.Entities
         /// <param name="creatureConfig">The <see cref="CreatureConfig"/> for this custom creature.</param>
         public CustomCreature(AssetBundle assetBundle, string assetName, bool fixReference, CreatureConfig creatureConfig) : base(Assembly.GetCallingAssembly())
         {
-            try
+            fallbackCreatureName = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
             {
-                Prefab = assetBundle.LoadAsset<GameObject>(assetName);
-            }
-            catch (Exception e)
-            {
-                fallbackCreatureName = assetName;
-                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}:\n{e}");
                 return;
             }
 
-            if (!Prefab)
-            {
-                fallbackCreatureName = assetName;
-                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}");
-                return;
-            }
-
+            Prefab = prefab;
             ApplyCreatureConfig(creatureConfig);
             FixReference = fixReference;
         }
