@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Jotunn.Configs;
@@ -37,6 +38,13 @@ namespace Jotunn.Entities
         ///     Internal flag for the cumulative level effects hook. Value is set in the config.
         /// </summary>
         internal bool UseCumulativeLevelEffects { get; set; }
+
+        private string CreatureName
+        {
+            get => Prefab ? Prefab.name : fallbackCreatureName;
+        }
+
+        private string fallbackCreatureName;
 
         /// <summary>
         ///     Custom creature from a prefab.
@@ -79,6 +87,38 @@ namespace Jotunn.Entities
                 creatureConfig.Name = name;
                 ApplyCreatureConfig(creatureConfig);
             }
+        }
+
+        /// <summary>
+        ///     Custom creature from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="PieceConfig"/> attached.<br />
+        ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
+        /// </summary>
+        /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
+        /// <param name="assetName">Name of the prefab in the bundle.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="creatureConfig">The <see cref="CreatureConfig"/> for this custom creature.</param>
+        public CustomCreature(AssetBundle assetBundle, string assetName, bool fixReference, CreatureConfig creatureConfig) : base(Assembly.GetCallingAssembly())
+        {
+            try
+            {
+                Prefab = assetBundle.LoadAsset<GameObject>(assetName);
+            }
+            catch (Exception e)
+            {
+                fallbackCreatureName = assetName;
+                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}:\n{e}");
+                return;
+            }
+
+            if (!Prefab)
+            {
+                fallbackCreatureName = assetName;
+                Logger.LogError(SourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}");
+                return;
+            }
+
+            ApplyCreatureConfig(creatureConfig);
+            FixReference = fixReference;
         }
 
         /// <summary>
@@ -147,13 +187,13 @@ namespace Jotunn.Entities
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return Prefab.name.GetStableHashCode();
+            return CreatureName.GetStableHashCode();
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return Prefab.name;
+            return CreatureName;
         }
 
         private void ApplyCreatureConfig(CreatureConfig creatureConfig)
