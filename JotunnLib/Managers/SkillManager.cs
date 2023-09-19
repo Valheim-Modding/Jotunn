@@ -51,7 +51,7 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(Skills), nameof(Skills.CheatResetSkill)), HarmonyPrefix]
             private static bool Skills_CheatResetSkill(Skills __instance, string name) => Instance.Skills_CheatResetSkill(__instance, name);
 
-            [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal)), HarmonyPostfix]
+            [HarmonyPatch(typeof(Terminal), nameof(Terminal.Awake)), HarmonyPostfix]
             private static void Terminal_InitTerminal() => Instance.AddSkillsToTerminal();
         }
 
@@ -242,7 +242,7 @@ namespace Jotunn.Managers
         {
             if (Terminal.commands.TryGetValue(commandName, out Terminal.ConsoleCommand command))
             {
-                Terminal.ConsoleOptionsFetcher fetcher = command.m_tabOptionsFetcher;
+                var fetcher = command.m_tabOptionsFetcher;
 
                 command.m_tabOptionsFetcher = () =>
                 {
