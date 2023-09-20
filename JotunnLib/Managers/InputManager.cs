@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
@@ -112,17 +112,17 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Translate a <see cref="GamepadButton"/> to its axis string value
         /// </summary>
-        public static string GetGamepadAxis(GamepadButton @enum)
+        public static GamepadInput GetGamepadInput(GamepadButton @enum)
         {
             return @enum switch
             {
-                GamepadButton.DPadUp => "JoyAxis 7",
-                GamepadButton.DPadDown => "-JoyAxis 7",
-                GamepadButton.DPadLeft => "-JoyAxis 6",
-                GamepadButton.DPadRight => "JoyAxis 6",
-                GamepadButton.LeftTrigger => "-JoyAxis 3",
-                GamepadButton.RightTrigger => "JoyAxis 3",
-                _ => string.Empty
+                GamepadButton.DPadUp => GamepadInput.DPadUp,
+                GamepadButton.DPadDown => GamepadInput.DPadDown,
+                GamepadButton.DPadLeft => GamepadInput.DPadLeft,
+                GamepadButton.DPadRight => GamepadInput.DPadRight,
+                GamepadButton.LeftTrigger => GamepadInput.TriggerL,
+                GamepadButton.RightTrigger => GamepadInput.TriggerR,
+                _ => GamepadInput.None
             };
         }
         
@@ -157,6 +157,23 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Translate an axis string to its <see cref="GamepadButton"/> value
         /// </summary>
+        public static GamepadButton GetGamepadButton(GamepadInput input)
+        {
+            return input switch
+            {
+                GamepadInput.DPadUp => GamepadButton.DPadUp,
+                GamepadInput.DPadDown => GamepadButton.DPadDown,
+                GamepadInput.DPadLeft => GamepadButton.DPadLeft,
+                GamepadInput.DPadRight => GamepadButton.DPadRight,
+                GamepadInput.TriggerL => GamepadButton.LeftTrigger,
+                GamepadInput.TriggerR => GamepadButton.RightTrigger,
+                _ => GamepadButton.None
+            };
+        }
+        
+        /// <summary>
+        ///     Translate an axis string to its <see cref="GamepadButton"/> value
+        /// </summary>
         public static GamepadButton GetGamepadButton(string axis)
         {
             return axis switch
@@ -170,7 +187,7 @@ namespace Jotunn.Managers
                 _ => GamepadButton.None
             };
         }
-        
+
         /// <summary>
         ///     Translate a <see cref="KeyCode"/> to its <see cref="GamepadButton"/> value
         /// </summary>
@@ -321,47 +338,34 @@ namespace Jotunn.Managers
                 foreach (var pair in Buttons)
                 {
                     var btn = pair.Value;
-                    ZInput.ButtonDef def = null;
 
                     if (!string.IsNullOrEmpty(btn.Axis))
                     {
-                        def = self.AddButton(btn.Name, btn.Axis, btn.Inverted, btn.RepeatDelay, btn.RepeatInterval);
+                        self.AddButton(btn.Name, GetGamepadInput(GetGamepadButton(btn.Axis)), btn.RepeatDelay, btn.RepeatInterval);
                     }
                     else if (btn.Key != KeyCode.None)
                     {
-                        def = self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
+                        self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
                     }
                     else if (btn.Shortcut.MainKey != KeyCode.None)
                     {
-                        def = self.AddButton(btn.Name, btn.Shortcut.MainKey, btn.RepeatDelay, btn.RepeatInterval);
+                        self.AddButton(btn.Name, btn.Shortcut.MainKey, btn.RepeatDelay, btn.RepeatInterval);
                     }
-
-                    // if (def != null)
-                    // {
-                    //     def.m_save = false;
-                    // }
-
+                    
                     if (btn.GamepadButton != GamepadButton.None)
                     {
                         var joyBtnName = $"Joy!{btn.Name}";
                         KeyCode keyCode = GetGamepadKeyCode(btn.GamepadButton);
-                        string axis = GetGamepadAxis(btn.GamepadButton);
-                        ZInput.ButtonDef joyDef = null;
+                        GamepadInput input = GetGamepadInput(btn.GamepadButton);
 
                         if (keyCode != KeyCode.None)
                         {
-                            joyDef = self.AddButton(joyBtnName, keyCode, btn.RepeatDelay, btn.RepeatInterval);
+                            self.AddButton(joyBtnName, keyCode, btn.RepeatDelay, btn.RepeatInterval);
                         }
 
-                        if (!string.IsNullOrEmpty(axis))
+                        if (input != GamepadInput.None)
                         {
-                            bool invert = axis.StartsWith("-");
-                            joyDef = self.AddButton(joyBtnName, axis.TrimStart('-'), invert, btn.RepeatDelay, btn.RepeatInterval);
-                        }
-
-                        if (joyDef != null)
-                        {
-                            joyDef.m_save = false;
+                            self.AddButton(joyBtnName, input, btn.RepeatDelay, btn.RepeatInterval);
                         }
                     }
 
@@ -442,7 +446,7 @@ namespace Jotunn.Managers
                 foreach (var btn in ZInput.instance.m_buttons.Where(x =>
                     x.Value.m_key == button.Key ||
                     x.Value.m_key == GetGamepadKeyCode(button.GamepadButton) ||
-                    (x.Value.m_axis == GetGamepadAxis(button.GamepadButton).TrimStart('-') && x.Value.m_inverted == GetGamepadAxis(button.GamepadButton).StartsWith("-"))))
+                    x.Value.m_gamepadInput == GetGamepadInput(button.GamepadButton)))
                 {
                     ZInput.ResetButtonStatus(btn.Key);
                     btn.Value.m_pressed = false;

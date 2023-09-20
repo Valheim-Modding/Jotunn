@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -738,13 +738,11 @@ namespace Jotunn.Managers
                 ZInput.instance.m_buttons.TryGetValue($"Joy!{buttonName}", out def))
             {
                 var keyCode = InputManager.GetGamepadKeyCode((InputManager.GamepadButton)entry.BoxedValue);
-                var axis = InputManager.GetGamepadAxis((InputManager.GamepadButton)entry.BoxedValue);
+                var input = InputManager.GetGamepadInput((InputManager.GamepadButton)entry.BoxedValue);
 
-                if (!string.IsNullOrEmpty(axis))
+                if (input != GamepadInput.None)
                 {
-                    bool invert = axis.StartsWith("-");
-                    def.m_axis = axis.TrimStart('-');
-                    def.m_inverted = invert;
+                    def.m_gamepadInput = input;
                 }
                 else
                 {

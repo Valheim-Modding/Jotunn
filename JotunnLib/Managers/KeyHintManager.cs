@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
@@ -315,10 +315,9 @@ namespace Jotunn.Managers
                 if (gamepadButton == GamepadButton.None &&
                     ZInput.instance.m_buttons.TryGetValue($"Joy{buttonConfig.Name}", out var buttonDef))
                 {
-                    if (!string.IsNullOrEmpty(buttonDef.m_axis))
+                    if (buttonDef.m_gamepadInput != GamepadInput.None)
                     {
-                        string invAxis = $"{(buttonDef.m_inverted ? "-" : null)}{buttonDef.m_axis}";
-                        gamepadButton = GetGamepadButton(invAxis);
+                        gamepadButton = GetGamepadButton(buttonDef.m_gamepadInput);
                     }
                     else
                     {
