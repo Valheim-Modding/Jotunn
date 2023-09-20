@@ -27,6 +27,7 @@ namespace Jotunn.Utils
 
         internal static void Init()
         {
+            Logger.LogInfo("Initializing ModQuery");
             Main.Harmony.PatchAll(typeof(ModQuery));
         }
 
@@ -49,6 +50,11 @@ namespace Jotunn.Utils
         /// </summary>
         public static void Enable()
         {
+            if (!enabled)
+            {
+                Init();
+            }
+
             enabled = true;
         }
 
@@ -119,11 +125,6 @@ namespace Jotunn.Utils
         [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake)), HarmonyPostfix]
         private static void FejdStartup_Awake_Postfix()
         {
-            if (!enabled)
-            {
-                return;
-            }
-
             FindAndPatchPatches(AccessTools.Method(typeof(ZNetScene), nameof(ZNetScene.Awake)));
             FindAndPatchPatches(AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.Awake)));
             FindAndPatchPatches(AccessTools.Method(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)));
@@ -133,11 +134,6 @@ namespace Jotunn.Utils
         [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPrefix, HarmonyPriority(1000)]
         private static void ObjectDBAwake(ObjectDB __instance)
         {
-            if (!enabled)
-            {
-                return;
-            }
-
             // make sure vanilla prefabs are already added to not assign them to the first mod that call this function in a prefix
             __instance.UpdateItemHashes();
         }

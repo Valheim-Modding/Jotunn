@@ -61,7 +61,12 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private LocalizationManager() {}
+        private LocalizationManager() { }
+
+        static LocalizationManager()
+        {
+            ((IManager)Instance).Init();
+        }
 
         /// <summary>
         ///     Localizations for internal use.
@@ -86,6 +91,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing LocalizationManager");
+
             Main.Harmony.PatchAll(typeof(Patches));
 
             DoQuoteLineSplit = (Func<StringReader, List<List<string>>>)

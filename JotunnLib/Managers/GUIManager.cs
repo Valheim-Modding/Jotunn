@@ -36,6 +36,11 @@ namespace Jotunn.Managers
         /// </summary>
         private GUIManager() { }
 
+        static GUIManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         /// <summary>
         ///     Event that gets fired every time the Unity scene changed and a new PixelFix
         ///     object was created. Subscribe to this event to create your custom GUI objects
@@ -286,6 +291,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing GUIManager");
+
             // Cache headless state
             Headless = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
 

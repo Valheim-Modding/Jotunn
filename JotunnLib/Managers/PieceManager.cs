@@ -32,6 +32,11 @@ namespace Jotunn.Managers
         /// </summary>
         private PieceManager() { }
 
+        static PieceManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         /// <summary>
         ///     Event that gets fired after all pieces were added to their respective PieceTables.
         ///     Your code will execute every time a new ObjectDB is created (on every game start).
@@ -86,6 +91,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing PieceManager");
             Main.Harmony.PatchAll(typeof(Patches));
         }
 

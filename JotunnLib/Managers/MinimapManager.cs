@@ -29,6 +29,11 @@ namespace Jotunn.Managers
         /// </summary>
         private MinimapManager() { }
 
+        static MinimapManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         /// <summary>
         ///     Event that gets fired once the Map for a World has started and Mods can begin to draw.
         /// </summary>
@@ -98,6 +103,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing MinimapManager");
+
             // Dont init on a headless server
             if (GUIManager.IsHeadless())
             {

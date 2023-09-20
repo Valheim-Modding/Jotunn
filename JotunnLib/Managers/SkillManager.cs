@@ -24,6 +24,11 @@ namespace Jotunn.Managers
         /// </summary>
         private SkillManager() { }
 
+        static SkillManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         private bool addedSkillsToTerminal = false;
 
         /// <summary>
@@ -31,6 +36,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing SkillManager");
             Main.Harmony.PatchAll(typeof(Patches));
         }
 

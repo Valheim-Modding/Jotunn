@@ -26,9 +26,13 @@ namespace Jotunn.Utils
 
         internal static void Init()
         {
+            Logger.LogInfo("Initializing ModCompatibility");
+
             var localization = LocalizationManager.Instance.JotunnLocalization;
             localization.AddJsonFile("English", AssetUtils.LoadTextFromResources("English.json", typeof(Main).Assembly));
             localization.AddJsonFile("German", AssetUtils.LoadTextFromResources("German.json", typeof(Main).Assembly));
+
+            Main.Harmony.PatchAll(typeof(ModCompatibility));
         }
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection)), HarmonyPrefix, HarmonyPriority(Priority.First)]

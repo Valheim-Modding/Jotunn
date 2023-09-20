@@ -25,6 +25,11 @@ namespace Jotunn.Managers
         /// </summary>
         private KeyHintManager() { }
 
+        static KeyHintManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         /// <summary>
         ///     Internal Dictionary holding the references to the custom key hints added to the manager
         /// </summary>
@@ -63,6 +68,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing KeyHintManager");
+
             // Dont init on a headless server
             if (!GUIManager.IsHeadless())
             {

@@ -24,7 +24,10 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private MockManager() {}
+        private MockManager()
+        {
+            ((IManager)this).Init();
+        }
 
         /// <summary>
         ///     Legacy ValheimLib prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
@@ -52,6 +55,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing MockManager");
+
             MockPrefabContainer = new GameObject("MockPrefabs");
             MockPrefabContainer.transform.parent = Main.RootObject.transform;
             MockPrefabContainer.SetActive(false);

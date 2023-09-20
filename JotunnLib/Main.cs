@@ -38,59 +38,20 @@ namespace Jotunn
         internal static Harmony Harmony;
         internal static GameObject RootObject;
 
-        private List<IManager> Managers;
-
         private void Awake()
         {
-            // Set instance
             Instance = this;
-
-            // Harmony patches
             Harmony = new Harmony(ModGuid);
-            Harmony.PatchAll(typeof(ModCompatibility));
-
-            // Initialize Logger
-            Jotunn.Logger.Init();
 
             // Root Container for GameObjects in the DontDestroyOnLoad scene
             RootObject = new GameObject("_JotunnRoot");
             DontDestroyOnLoad(RootObject);
 
-            // Create and initialize all managers
-            Managers = new List<IManager>
-            {
-                LocalizationManager.Instance,
-                CommandManager.Instance,
-                InputManager.Instance,
-                SkillManager.Instance,
-                PrefabManager.Instance,
-                ItemManager.Instance,
-                PieceManager.Instance,
-                CreatureManager.Instance,
-                ZoneManager.Instance,
-                MockManager.Instance,
-                KitbashManager.Instance,
-                GUIManager.Instance,
-                KeyHintManager.Instance,
-                NetworkManager.Instance,
-                SynchronizationManager.Instance,
-                RenderManager.Instance,
-                MinimapManager.Instance,
-                UndoManager.Instance
-            };
-            foreach (IManager manager in Managers)
-            {
-                Logger.LogInfo("Initializing " + manager.GetType().Name);
-                manager.Init();
-            }
-
-            ModQuery.Init();
+            Jotunn.Logger.Init();
             ModCompatibility.Init();
 
             // Flip the "modded" switch of Valheim
             Game.isModded = true;
-
-            Logger.LogInfo("Jötunn v" + Version + " loaded successfully");
         }
 
         private void Start()

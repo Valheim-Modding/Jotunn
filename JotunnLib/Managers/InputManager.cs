@@ -206,13 +206,20 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private InputManager() {}
+        private InputManager() { }
+
+        static InputManager()
+        {
+            ((IManager)Instance).Init();
+        }
 
         /// <summary>
         ///     Initialize the manager
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing InputManager");
+
             // Dont init on a dedicated server
             if (!GUIManager.IsHeadless())
             {

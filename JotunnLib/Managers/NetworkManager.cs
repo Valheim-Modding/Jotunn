@@ -24,7 +24,12 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private NetworkManager() {}
+        private NetworkManager() { }
+
+        static NetworkManager()
+        {
+            ((IManager)Instance).Init();
+        }
 
         /// <summary>
         ///     Delegate for receiving <see cref="ZPackage">ZPackages</see>.
@@ -45,6 +50,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing NetworkManager");
             Main.Harmony.PatchAll(typeof(Patches));
         }
 

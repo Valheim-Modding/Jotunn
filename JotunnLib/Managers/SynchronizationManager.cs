@@ -51,6 +51,11 @@ namespace Jotunn.Managers
         /// </summary>
         private SynchronizationManager() { }
 
+        static SynchronizationManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         /// <summary>
         ///     Clientside indicator if the current player has admin status on 
         ///     the current world, always true on local games
@@ -62,6 +67,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing SynchronizationManager");
+
             // Register RPCs and the admin watchdog
             ConfigRPC = NetworkManager.Instance.AddRPC(
                 Main.Instance.Info.Metadata, "ConfigSync", ConfigRPC_OnServerReceive, ConfigRPC_OnClientReceive);
