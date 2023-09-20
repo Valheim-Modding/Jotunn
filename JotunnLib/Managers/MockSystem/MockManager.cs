@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using HarmonyLib;
 using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
@@ -61,8 +62,14 @@ namespace Jotunn.Managers
             MockPrefabContainer.transform.parent = Main.RootObject.transform;
             MockPrefabContainer.SetActive(false);
 
+            Main.Harmony.PatchAll(typeof(Patches));
+        }
+
+        private static class Patches
+        {
             // use a later event to fix materials as more textures have loaded by then
-            ZoneManager.OnVanillaLocationsAvailable += FixQueuedMaterials;
+            [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.Start)), HarmonyPostfix]
+            private static void ZoneSystem_Start(ZoneSystem __instance) => FixQueuedMaterials();
         }
 
         /// <summary>
