@@ -118,40 +118,11 @@ namespace Jotunn.Managers
                 typeof(bool),
                 typeof(bool),
                 typeof(Terminal.ConsoleOptionsFetcher),
-            });
-
-            // Valheim 0.216.9 and below
-            if (constructor != null)
-            {
-                return (Terminal.ConsoleCommand)constructor.Invoke(new object[]
-                {
-                    command.Name,
-                    command.Help,
-                    (Terminal.ConsoleEvent)((args) => command.Run(args.Args.Skip(1).ToArray())),
-                    command.IsCheat,
-                    command.IsNetwork,
-                    command.OnlyServer,
-                    command.IsSecret,
-                    false, // allowInDevBuild
-                    (Terminal.ConsoleOptionsFetcher)command.CommandOptionList,
-                });
-            }
-
-            constructor = AccessTools.Constructor(typeof(Terminal.ConsoleCommand), new[]
-            {
-                typeof(string),
-                typeof(string),
-                typeof(Terminal.ConsoleEvent),
                 typeof(bool),
                 typeof(bool),
-                typeof(bool),
-                typeof(bool),
-                typeof(bool),
-                typeof(Terminal.ConsoleOptionsFetcher),
                 typeof(bool),
             });
 
-            // Valheim 0.217.7 and above
             if (constructor != null)
             {
                 return (Terminal.ConsoleCommand)constructor.Invoke(new object[]
@@ -166,6 +137,8 @@ namespace Jotunn.Managers
                     false, // allowInDevBuild
                     (Terminal.ConsoleOptionsFetcher)command.CommandOptionList,
                     false, // alwaysRefreshTabOptions
+                    false, // remoteCommand
+                    false, // onlyAdmin
                 });
             }
 
