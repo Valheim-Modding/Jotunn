@@ -302,6 +302,7 @@ namespace Jotunn.Managers
                 return;
             }
 
+            Instance.TryCreateGUI();
             Main.Harmony.PatchAll(typeof(Patches));
             SceneManager.sceneLoaded += InitialLoad;
         }
@@ -319,11 +320,18 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Update)), HarmonyTranspiler, HarmonyWrapSafe]
             private static IEnumerable<CodeInstruction> InventoryGui_Update(IEnumerable<CodeInstruction> instructions) => BlockUseTranspiler(instructions);
 
-            [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui)), HarmonyPostfix]
-            private static void FejdStartup_SetupGui(FejdStartup __instance) => Instance.FejdStartup_SetupGui(__instance);
+            [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui))]
+            [HarmonyPatch(typeof(Game), nameof(Game.Start))]
+            [HarmonyPostfix]
+            private static void CreateCustomGUI()
+            {
+                bool created = Instance.TryCreateGUI();
 
-            [HarmonyPatch(typeof(Game), nameof(Game.Start)), HarmonyPostfix]
-            private static void Game_Start(Game __instance) => Instance.Game_Start(__instance);
+                if (!created)
+                {
+                    Logger.LogError("Could not create custom GUI");
+                }
+            }
         }
 
         /// <summary>
@@ -466,32 +474,47 @@ namespace Jotunn.Managers
             }
         }
 
-        private void FejdStartup_SetupGui(FejdStartup self)
+        private bool TryCreateGUI()
         {
-            GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "GuiRoot");
-            Transform gui = root?.transform.Find("GUI");
-            if (!gui)
-            {
-                Logger.LogError("GuiRoot GUI not found, not creating custom GUI");
-                return;
-            }
-            GUIInStart = true;
-            CreateCustomGUI(gui);
+            GUIInStart = SceneManager.GetActiveScene().name == "start";
             ResetInputBlock();
+
+            if (CustomGUIFront && CustomGUIBack)
+            {
+                return true;
+            }
+
+            Transform gui = FindGUIRoot();
+
+            if (gui)
+            {
+                CreateCustomGUI(gui);
+                return true;
+            }
+
+            return false;
         }
 
-        private void Game_Start(Game self)
+        private static Transform FindGUIRoot()
         {
-            GameObject root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == "_GameMain");
-            Transform gui = root?.transform.Find("LoadingGUI");
-            if (!gui)
+            var rootGameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+
+            foreach (var rootObject in rootGameObjects)
             {
-                Logger.LogError("_GameMain LoadingGUI not found, not creating custom GUI");
-                return;
+                var name = rootObject.name;
+
+                if (name == "GuiRoot")
+                {
+                    return rootObject.transform.Find("GUI");
+                }
+
+                if (name == "_GameMain")
+                {
+                    return rootObject.transform.Find("LoadingGUI");
+                }
             }
-            GUIInStart = false;
-            CreateCustomGUI(gui);
-            ResetInputBlock();
+
+            return null;
         }
 
         /// <summary>
