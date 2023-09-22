@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
@@ -136,6 +137,32 @@ namespace Jotunn.Managers
             var container = Object.Instantiate(gameObject, LocationContainer.transform);
             container.name = gameObject.name;
             return container;
+        }
+
+        /// <summary>
+        ///     Loads and spawns a GameObject from an AssetBundle as a location container.<br />
+        ///     The copy is disabled, so any Components in instantiated child GameObjects will not start their lifecycle.<br />
+        ///     Use this if you plan to alter your location prefab in code after importing it. <br />
+        ///     Don't create a separate container if you won't alter the prefab afterwards as it creates a new instance for the container.
+        /// </summary>
+        /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
+        /// <param name="assetName">Name of the prefab in the bundle to be instantiated as the location cotainer</param>
+        public GameObject CreateLocationContainer(AssetBundle assetBundle, string assetName)
+        {
+            var sourceMod = BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
+
+            if (sourceMod == null || sourceMod.GUID == Main.Instance.Info.Metadata.GUID)
+            {
+                sourceMod = BepInExUtils.GetSourceModMetadata();
+            }
+
+            if (!AssetUtils.TryLoadPrefab(sourceMod, assetBundle, assetName, out GameObject prefab))
+            {
+                Logger.LogError(sourceMod, $"Failed to create location container for '{assetName}'");
+                return null;
+            }
+
+            return CreateLocationContainer(prefab);
         }
 
         /// <summary>
