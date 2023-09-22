@@ -31,6 +31,11 @@ namespace Jotunn.Managers
         /// </summary>
         private ZoneManager() { }
 
+        static ZoneManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         /// <summary>
         ///     Event that gets fired after the vanilla locations are in memory and available for cloning or editing.
         ///     Your code will execute every time before a new <see cref="ObjectDB"/> is copied (on every menu start).
@@ -59,6 +64,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing ZoneManager");
+
             LocationContainer = new GameObject("Locations");
             LocationContainer.transform.parent = Main.RootObject.transform;
             LocationContainer.SetActive(false);

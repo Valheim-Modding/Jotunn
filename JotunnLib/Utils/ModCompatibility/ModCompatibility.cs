@@ -26,9 +26,8 @@ namespace Jotunn.Utils
 
         internal static void Init()
         {
-            var localization = LocalizationManager.Instance.JotunnLocalization;
-            localization.AddJsonFile("English", AssetUtils.LoadTextFromResources("English.json", typeof(Main).Assembly));
-            localization.AddJsonFile("German", AssetUtils.LoadTextFromResources("German.json", typeof(Main).Assembly));
+            Logger.LogInfo("Initializing ModCompatibility");
+            Main.Harmony.PatchAll(typeof(ModCompatibility));
         }
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection)), HarmonyPrefix, HarmonyPriority(Priority.First)]
@@ -195,6 +194,10 @@ namespace Jotunn.Utils
 
         private static CompatibilityWindow LoadCompatWindow()
         {
+            var localization = LocalizationManager.Instance.JotunnLocalization;
+            localization.AddJsonFile("English", AssetUtils.LoadTextFromResources("English.json", typeof(Main).Assembly));
+            localization.AddJsonFile("German", AssetUtils.LoadTextFromResources("German.json", typeof(Main).Assembly));
+
             AssetBundle bundle = AssetUtils.LoadAssetBundleFromResources("modcompat", typeof(Main).Assembly);
             var compatWindowGameObject = Object.Instantiate(bundle.LoadAsset<GameObject>("CompatibilityWindow"), GUIManager.CustomGUIFront.transform);
             bundle.Unload(false);

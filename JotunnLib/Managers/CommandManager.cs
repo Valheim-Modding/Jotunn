@@ -22,7 +22,12 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private CommandManager() {}
+        private CommandManager() { }
+
+        static CommandManager()
+        {
+            ((IManager)Instance).Init();
+        }
 
         /// <summary>
         ///     Internal Action delegate to add custom entities into vanilla command's option list
@@ -42,6 +47,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing CommandManager");
             AddConsoleCommand(new ClearCommand());
 
             Main.Harmony.PatchAll(typeof(Patches));

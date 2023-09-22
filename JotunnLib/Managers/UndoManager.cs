@@ -57,6 +57,11 @@ namespace Jotunn.Managers
         /// </summary>
         private UndoManager() { }
 
+        static UndoManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         /// <summary>
         ///     Container to hold all Queues.
         /// </summary>
@@ -67,6 +72,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing UndoManager");
             Main.Harmony.PatchAll(typeof(Patches));
         }
 

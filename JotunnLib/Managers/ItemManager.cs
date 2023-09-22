@@ -29,6 +29,11 @@ namespace Jotunn.Managers
         /// </summary>
         private ItemManager() { }
 
+        static ItemManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         /// <summary>
         ///     Event that gets fired after the vanilla items are in memory and available for cloning.
         ///     Your code will execute every time a new ObjectDB is copied (on every menu start).
@@ -68,6 +73,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing ItemManager");
             Main.Harmony.PatchAll(typeof(Patches));
         }
 

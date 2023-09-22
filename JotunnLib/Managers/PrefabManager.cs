@@ -27,6 +27,11 @@ namespace Jotunn.Managers
         /// </summary>
         private PrefabManager() { }
 
+        static PrefabManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         /// <summary>
         ///     Event that gets fired after the vanilla prefabs are in memory and available for cloning.
         ///     Your code will execute every time before a new <see cref="ObjectDB"/> is copied (on every menu start).
@@ -56,6 +61,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing PrefabManager");
+
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;
             PrefabContainer.SetActive(false);

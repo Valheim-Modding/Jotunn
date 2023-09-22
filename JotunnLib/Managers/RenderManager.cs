@@ -31,7 +31,12 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private RenderManager() {}
+        private RenderManager() { }
+
+        static RenderManager()
+        {
+            ((IManager)Instance).Init();
+        }
 
         /// <summary>
         ///     Unused Layer in Unity
@@ -47,6 +52,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing RenderManager");
+
             if (GUIManager.IsHeadless())
             {
                 return;

@@ -22,7 +22,12 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private KitbashManager() {}
+        private KitbashManager() { }
+
+        static KitbashManager()
+        {
+            ((IManager)Instance).Init();
+        }
 
         /// <summary>
         ///     Internal list of objects to which Kitbashing should be applied.
@@ -34,6 +39,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing KitbashManager");
             ItemManager.OnKitbashItemsAvailable += ApplyKitbashes;
         }
 

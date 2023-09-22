@@ -35,12 +35,12 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Name of the folder that will hold the custom .json translations files.
         /// </summary>
-        public const string TranslationsFolderName = "Translations";
+        public const string TranslationsFolderName = AutomaticLocalizationsLoading.TranslationsFolderName;
 
         /// <summary>
         ///     Name of the community translation files that will be the first custom languages files loaded before any others.
         /// </summary>
-        public const string CommunityTranslationFileName = "community_translation.json";
+        public const string CommunityTranslationFileName = AutomaticLocalizationsLoading.CommunityTranslationFileName;
 
         /// <summary>
         ///     String of chars not allowed in a token string.
@@ -61,7 +61,12 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private LocalizationManager() {}
+        private LocalizationManager() { }
+
+        static LocalizationManager()
+        {
+            ((IManager)Instance).Init();
+        }
 
         /// <summary>
         ///     Localizations for internal use.
@@ -86,6 +91,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing LocalizationManager");
+
             Main.Harmony.PatchAll(typeof(Patches));
 
             DoQuoteLineSplit = (Func<StringReader, List<List<string>>>)
@@ -167,71 +174,6 @@ namespace Jotunn.Managers
         internal static string GetPlayerLanguage()
         {
             return PlayerPrefs.GetString("language", DefaultLanguage);
-        }
-
-        private IEnumerable<FileInfo> GetTranslationFiles(string path, string searchPattern)
-        {
-            return GetTranslationFiles(new DirectoryInfo(path), searchPattern);
-        }
-
-        private IEnumerable<FileInfo> GetTranslationFiles(DirectoryInfo pathDirectoryInfo, string searchPattern)
-        {
-            if (!pathDirectoryInfo.Exists) yield break;
-
-            foreach (var path in Directory
-                .GetFiles(pathDirectoryInfo.FullName, searchPattern, SearchOption.AllDirectories).Where(path =>
-                    new DirectoryInfo(path).Parent?.Parent?.Name == TranslationsFolderName))
-            {
-                yield return new FileInfo(path);
-            }
-        }
-
-        internal void LoadingAutomaticLocalizations()
-        {
-            var jsonFormat = new HashSet<FileInfo>();
-            var unityFormat = new HashSet<FileInfo>();
-
-            // Json format community files
-            foreach (var fileInfo in GetTranslationFiles(Paths.LanguageTranslationsFolder, CommunityTranslationFileName))
-            {
-                jsonFormat.Add(fileInfo);
-            }
-
-            foreach (var fileInfo in GetTranslationFiles(Paths.LanguageTranslationsFolder, "*.json"))
-            {
-                jsonFormat.Add(fileInfo);
-            }
-
-            foreach (var fileInfo in GetTranslationFiles(Paths.LanguageTranslationsFolder, "*.language"))
-            {
-                unityFormat.Add(fileInfo);
-            }
-
-            foreach (var fileInfo in jsonFormat)
-            {
-                try
-                {
-                    var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
-                    GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.FullName, true);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWarning($"Exception caught while loading localization file {fileInfo}: {ex}");
-                }
-            }
-
-            foreach (var fileInfo in unityFormat)
-            {
-                try
-                {
-                    var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
-                    GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.FullName);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWarning($"Exception caught while loading localization file {fileInfo}: {ex}");
-                }
-            }
         }
 
         /// <summary>

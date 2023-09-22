@@ -25,6 +25,11 @@ namespace Jotunn.Managers
         /// </summary>
         private CreatureManager() { }
 
+        static CreatureManager()
+        {
+            ((IManager)Instance).Init();
+        }
+
         /// <summary>
         ///     Unity "character" layer ID. 
         /// </summary>
@@ -64,6 +69,8 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing CreatureManager");
+
             SpawnListContainer = new GameObject("Creatures");
             SpawnListContainer.transform.parent = Main.RootObject.transform;
             SpawnListContainer.SetActive(false);

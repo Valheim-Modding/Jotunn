@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using HarmonyLib;
 using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
@@ -24,7 +25,10 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private MockManager() {}
+        private MockManager()
+        {
+            ((IManager)this).Init();
+        }
 
         /// <summary>
         ///     Legacy ValheimLib prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
@@ -52,12 +56,20 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
+            Logger.LogInfo("Initializing MockManager");
+
             MockPrefabContainer = new GameObject("MockPrefabs");
             MockPrefabContainer.transform.parent = Main.RootObject.transform;
             MockPrefabContainer.SetActive(false);
 
+            Main.Harmony.PatchAll(typeof(Patches));
+        }
+
+        private static class Patches
+        {
             // use a later event to fix materials as more textures have loaded by then
-            ZoneManager.OnVanillaLocationsAvailable += FixQueuedMaterials;
+            [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.Start)), HarmonyPostfix]
+            private static void ZoneSystem_Start(ZoneSystem __instance) => FixQueuedMaterials();
         }
 
         /// <summary>
