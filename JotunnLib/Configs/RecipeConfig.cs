@@ -59,6 +59,16 @@ namespace Jotunn.Configs
         public int MinStationLevel { get; set; } = 1;
 
         /// <summary>
+        ///     Whether this recipe requires only one of the crafting requirements to be crafted. Defaults to <c>false</c>.
+        /// </summary>
+        public bool RequireOnlyOneIngredient { get; set; } = false;
+
+        /// <summary>
+        ///     Multiplier for the amount of items created by the recipe based on the quality of the crafting materials. Defaults to <c>1</c>.
+        /// </summary>
+        public int QualityResultAmountMultiplier { get; set; } = 1;
+
+        /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
         public RequirementConfig[] Requirements { get; set; } = Array.Empty<RequirementConfig>();
@@ -123,6 +133,8 @@ namespace Jotunn.Configs
 
             recipe.m_minStationLevel = MinStationLevel;
             recipe.m_resources = GetRequirements();
+            recipe.m_requireOnlyOneIngredient = RequireOnlyOneIngredient;
+            recipe.m_qualityResultAmountMultiplier = QualityResultAmountMultiplier;
 
             return recipe;
         }
