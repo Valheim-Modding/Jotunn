@@ -1,9 +1,17 @@
 # Changelog
 
-## Version 2.12.8
+## Version 2.13.0
+* Improved startup time by only initialising accessed managers. This reduces the load time without dependent mods by about 90% (on my machine under 100ms instead of 800ms), making Jötunn almost unnoticeable. When all managers are accessed, the overall startup time is the same as before. Also, if a Valheim update breaks some parts, only loaded managers are affected
+* Added `AssetUtils.LoadTextFromResources` overload without assembly parameter
+* Added CustomCreature constructor with AssetBundle parameter
+* Added `ZoneManager.CreateLocationContainer` with AssetBundle parameter
+* Added `CustomVegetation.IsValid` interface
+* Added `RequirementConfig.IsValid` interface
+* Added recipe RequireOnlyOneIngredient and QualityResultAmountMultiplier
 * Fixed GetOrAddComponent to use TryGetComponent (thx redseiko)
+* Improved error messages of entities loaded directly from AssetBundles: CustomClutter, CustomCreature, CustomItem, CustomPiece, CustomPieceTable, CustomPrefab, CustomVegetation
 * Improved PrefabManager.GetPrefab to search for items in ObjectDB if available
-* Improved startup time slightly
+* Improved startup time of SkillManager
 
 ## Version 2.12.7
 * Fixed input block did not prevent the map from opening
