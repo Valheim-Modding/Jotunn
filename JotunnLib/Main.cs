@@ -68,7 +68,7 @@ namespace Jotunn
             InitializePatches();
 #pragma warning restore CS0612 // Method is obsolete
 
-            LocalizationManager.Instance.LoadingAutomaticLocalizations();
+            AutomaticLocalizationsLoading.Init();
         }
 
         private void OnApplicationQuit()
