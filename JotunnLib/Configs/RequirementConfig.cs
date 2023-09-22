@@ -66,7 +66,7 @@ namespace Jotunn.Configs
         ///     Checks if the requirement has any item and amount set.
         /// </summary>
         /// <returns></returns>
-        internal bool IsValid()
+        public bool IsValid()
         {
             return !string.IsNullOrEmpty(Item) && (Amount > 0 || AmountPerLevel > 0);
         }
