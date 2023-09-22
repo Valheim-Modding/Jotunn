@@ -271,7 +271,7 @@ namespace Jotunn.Managers
 
             return Locations.Remove(name);
         }
-        
+
         /// <summary>
         ///     Register a CustomVegetation to be added to the ZoneSystem
         /// </summary>
@@ -279,6 +279,11 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public bool AddCustomVegetation(CustomVegetation customVegetation)
         {
+            if (!customVegetation.IsValid())
+            {
+                return false;
+            }
+
             if (!PrefabManager.Instance.AddPrefab(customVegetation.Prefab, customVegetation.SourceMod))
             {
                 return false;

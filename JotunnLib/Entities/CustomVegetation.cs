@@ -2,6 +2,7 @@
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -72,15 +73,17 @@ namespace Jotunn.Entities
         /// <param name="config">The <see cref="VegetationConfig"/> for this custom vegation.</param>
         public CustomVegetation(AssetBundle assetBundle, string assetName, bool fixReference, VegetationConfig config) : base(Assembly.GetCallingAssembly())
         {
-            var prefab = assetBundle.LoadAsset<GameObject>(assetName);
-            if (prefab)
+            Name = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
             {
-                Prefab = prefab;
-                Name = prefab.name;
-                Vegetation = config.ToVegetation();
-                Vegetation.m_prefab = prefab;
-                FixReference = fixReference;
+                return;
             }
+
+            Prefab = prefab;
+            Vegetation = config.ToVegetation();
+            Vegetation.m_prefab = Prefab;
+            FixReference = fixReference;
         }
 
         /// <summary>
@@ -91,6 +94,23 @@ namespace Jotunn.Entities
         public static bool IsCustomVegetation(string prefabName)
         {
             return ZoneManager.Instance.Vegetations.ContainsKey(prefabName);
+        }
+
+        /// <summary>
+        ///     Checks if a custom vegetation is valid (i.e. has a prefab, an <see cref="ItemDrop"/> and an icon, if it should be craftable).
+        /// </summary>
+        /// <returns>true if all criteria is met</returns>
+        public bool IsValid()
+        {
+            bool valid = true;
+
+            if (!Prefab)
+            {
+                Logger.LogError(SourceMod, $"CustomVegetation '{this}' has no prefab");
+                valid = false;
+            }
+
+            return valid;
         }
 
         /// <inheritdoc/>
