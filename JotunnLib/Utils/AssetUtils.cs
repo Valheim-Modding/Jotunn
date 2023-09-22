@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using System.Reflection;
 using System.Linq;
+using BepInEx;
 
 namespace Jotunn.Utils
 {
@@ -155,7 +156,7 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
-        ///     Load an assembly-embedded file as a char string />
+        ///     Load an assembly-embedded file as a <see cref="string" />. Use this if the automatic detection of the assembly fails.
         /// </summary>
         /// <param name="fileName">Name of the file. Folders are point-seperated e.g. folder/file.json becomes folder.file.json</param>
         /// <param name="resourceAssembly">Executing assembly</param>
@@ -189,6 +190,16 @@ namespace Jotunn.Utils
             }
 
             return ret;
+        }
+
+        /// <summary>
+        ///     Load an assembly-embedded file as a <see cref="string" />. The calling assembly is automatically detected.
+        /// </summary>
+        /// <param name="fileName">Name of the file. Folders are point-seperated e.g. folder/file.json becomes folder.file.json</param>
+        /// <returns></returns>
+        public static string LoadTextFromResources(string fileName)
+        {
+            return LoadTextFromResources(fileName, ReflectionHelper.GetCallingAssembly());
         }
 
         /// <summary>
@@ -246,6 +257,28 @@ namespace Jotunn.Utils
             }
 
             return Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+        }
+
+        internal static bool TryLoadPrefab(BepInPlugin sourceMod, AssetBundle assetBundle, string assetName, out GameObject prefab)
+        {
+            try
+            {
+                prefab = assetBundle.LoadAsset<GameObject>(assetName);
+            }
+            catch (Exception e)
+            {
+                prefab = null;
+                Logger.LogError(sourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}:\n{e}");
+                return false;
+            }
+
+            if (!prefab)
+            {
+                Logger.LogError(sourceMod, $"Failed to load prefab '{assetName}' from AssetBundle {assetBundle}");
+                return false;
+            }
+
+            return true;
         }
     }
 }

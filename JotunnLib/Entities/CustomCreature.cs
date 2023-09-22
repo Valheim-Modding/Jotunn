@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -37,6 +39,13 @@ namespace Jotunn.Entities
         ///     Internal flag for the cumulative level effects hook. Value is set in the config.
         /// </summary>
         internal bool UseCumulativeLevelEffects { get; set; }
+
+        private string CreatureName
+        {
+            get => Prefab ? Prefab.name : fallbackCreatureName;
+        }
+
+        private string fallbackCreatureName;
 
         /// <summary>
         ///     Custom creature from a prefab.
@@ -82,6 +91,28 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
+        ///     Custom creature from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="PieceConfig"/> attached.<br />
+        ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
+        /// </summary>
+        /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
+        /// <param name="assetName">Name of the prefab in the bundle.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="creatureConfig">The <see cref="CreatureConfig"/> for this custom creature.</param>
+        public CustomCreature(AssetBundle assetBundle, string assetName, bool fixReference, CreatureConfig creatureConfig) : base(Assembly.GetCallingAssembly())
+        {
+            fallbackCreatureName = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
+            {
+                return;
+            }
+
+            Prefab = prefab;
+            ApplyCreatureConfig(creatureConfig);
+            FixReference = fixReference;
+        }
+
+        /// <summary>
         ///     Checks if a custom creature is valid (i.e. has a prefab and all required components).
         /// </summary>
         /// <returns>true if all criteria is met</returns>
@@ -91,11 +122,11 @@ namespace Jotunn.Entities
 
             if (!Prefab)
             {
-                Logger.LogError($"CustomCreature {this} has no prefab");
+                Logger.LogError(SourceMod, $"CustomCreature '{this}' has no prefab");
                 valid = false;
             }
 
-            var required = new[]
+            var requiredComponents = new[]
             {
                 typeof(Character),
                 typeof(BaseAI),
@@ -103,25 +134,25 @@ namespace Jotunn.Entities
                 typeof(Rigidbody),
                 typeof(ZSyncAnimation)
             };
-            foreach (var type in required)
+
+            foreach (var type in requiredComponents)
             {
-                if (!Prefab.GetComponent(type))
+                if (Prefab && !Prefab.GetComponent(type))
                 {
-                    Logger.LogError($"CustomCreature {this} has no {type} component");
+                    Logger.LogError(SourceMod, $"CustomCreature '{this}' has no {type} component");
                     valid = false;
-                    break;
                 }
             }
 
-            if (!Prefab.GetComponentInChildren<Animator>())
+            if (Prefab && !Prefab.GetComponentInChildren<Animator>())
             {
-                Logger.LogError($"CustomCreature {this} has no Animator component");
+                Logger.LogError(SourceMod, $"CustomCreature '{this}' has no Animator component");
                 valid = false;
             }
 
-            if (!Prefab.GetComponentInChildren<CharacterAnimEvent>())
+            if (Prefab && !Prefab.GetComponentInChildren<CharacterAnimEvent>())
             {
-                Logger.LogError($"CustomCreature {this} has no CharacterAnimEvent component");
+                Logger.LogError(SourceMod, $"CustomCreature '{this}' has no CharacterAnimEvent component");
                 valid = false;
             }
 
@@ -147,13 +178,13 @@ namespace Jotunn.Entities
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return Prefab.name.GetStableHashCode();
+            return CreatureName.GetStableHashCode();
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return Prefab.name;
+            return CreatureName;
         }
 
         private void ApplyCreatureConfig(CreatureConfig creatureConfig)

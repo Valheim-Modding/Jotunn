@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -36,6 +37,13 @@ namespace Jotunn.Entities
         ///     Indicator if references from configs should get replaced
         /// </summary>
         internal bool FixConfig { get; set; }
+
+        private string ItemName
+        {
+            get => ItemPrefab ? ItemPrefab.name : fallbackItemName;
+        }
+
+        private string fallbackItemName;
 
         /// <summary>
         ///     Custom item from a prefab.<br />
@@ -136,13 +144,17 @@ namespace Jotunn.Entities
         /// <param name="itemConfig">The item config for this custom item.</param>
         public CustomItem(AssetBundle assetBundle, string assetName, bool fixReference, ItemConfig itemConfig) : base(Assembly.GetCallingAssembly())
         {
-            ItemPrefab = assetBundle.LoadAsset<GameObject>(assetName);
-            if (ItemPrefab)
+            fallbackItemName = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
             {
-                ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
-                FixReference = fixReference;
-                ApplyItemConfig(itemConfig);
+                return;
             }
+
+            ItemPrefab = prefab;
+            ItemDrop = ItemPrefab.GetComponent<ItemDrop>();
+            FixReference = fixReference;
+            ApplyItemConfig(itemConfig);
         }
 
         /// <summary>
@@ -155,21 +167,25 @@ namespace Jotunn.Entities
 
             if (!ItemPrefab)
             {
-                Logger.LogError($"CustomItem {this} has no prefab");
+                Logger.LogError(SourceMod, $"CustomItem '{this}' has no prefab");
                 valid = false;
             }
-            if (!ItemPrefab.IsValid())
+
+            if (ItemPrefab && !ItemPrefab.IsValid())
             {
                 valid = false;
             }
-            if (ItemDrop == null)
+
+            if (!ItemDrop)
             {
-                Logger.LogError($"CustomItem {this} has no ItemDrop component");
+                Logger.LogError(SourceMod, $"CustomItem '{this}' has no ItemDrop component");
                 valid = false;
             }
-            if (Recipe != null && ItemDrop?.m_itemData.m_shared.m_icons.Length == 0)
+
+            int? iconCount = ItemDrop ? ItemDrop.m_itemData?.m_shared?.m_icons?.Length : null;
+            if (Recipe != null && (iconCount == null || iconCount == 0))
             {
-                Logger.LogError($"CustomItem {this} has no icon");
+                Logger.LogError(SourceMod, $"CustomItem '{this}' has no icon");
                 valid = false;
             }
 
@@ -203,13 +219,13 @@ namespace Jotunn.Entities
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return ItemPrefab.name.GetStableHashCode();
+            return ItemName.GetStableHashCode();
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return ItemPrefab.name;
+            return ItemName;
         }
 
         private void ApplyItemConfig(ItemConfig itemConfig)

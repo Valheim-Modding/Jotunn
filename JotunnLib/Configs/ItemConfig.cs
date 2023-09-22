@@ -70,6 +70,16 @@ namespace Jotunn.Configs
         public int MinStationLevel { get; set; } = 1;
 
         /// <summary>
+        ///     Whether this recipe requires only one of the crafting requirements to be crafted. Defaults to <c>false</c>.
+        /// </summary>
+        public bool RequireOnlyOneIngredient { get; set; } = false;
+
+        /// <summary>
+        ///     Multiplier for the amount of items created by the recipe based on the quality of the crafting materials. Defaults to <c>1</c>.
+        /// </summary>
+        public int QualityResultAmountMultiplier { get; set; } = 1;
+
+        /// <summary>
         ///     Icons for this item. If more than one icon is added, this item automatically has variants.
         /// </summary>
         public Sprite[] Icons { get; set; } = null;
@@ -222,6 +232,8 @@ namespace Jotunn.Configs
 
             recipe.m_minStationLevel = MinStationLevel;
             recipe.m_resources = GetRequirements();
+            recipe.m_requireOnlyOneIngredient = RequireOnlyOneIngredient;
+            recipe.m_qualityResultAmountMultiplier = QualityResultAmountMultiplier;
 
             return recipe;
         }

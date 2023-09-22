@@ -15,30 +15,25 @@ namespace Jotunn
         /// <returns></returns>
         public static bool IsValid(this GameObject self)
         {
-            try
+            var name = self.name;
+            if (name.IndexOf('(') > 0)
             {
-                var name = self.name;
-                if (name.IndexOf('(') > 0)
-                {
-                    name = name.Substring(self.name.IndexOf('(')).Trim();
-                }
-                if (string.IsNullOrEmpty(name))
-                {
-                    throw new Exception($"GameObject must have a name !");
-                }
-                if (self.GetComponent<ZNetView>() && self.name.IndexOfAny(new[] { ')', ' ' }) > 0)
-                {
-                    throw new Exception($"GameObject name must not contain parenthesis or spaces!");
-                }
-
-                return true;
+                name = name.Substring(self.name.IndexOf('(')).Trim();
             }
-            catch (Exception e)
-            {
-                Logger.LogError(e);
 
+            if (string.IsNullOrEmpty(name))
+            {
+                Logger.LogError($"GameObject must have a name!");
                 return false;
             }
+
+            if (self.GetComponent<ZNetView>() && self.name.IndexOfAny(new[] { ')', ' ' }) > 0)
+            {
+                Logger.LogError($"GameObject name '{self.name}' must not contain parenthesis or spaces!");
+                return false;
+            }
+
+            return true;
         }
     }
 

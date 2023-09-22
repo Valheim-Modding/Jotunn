@@ -2,6 +2,7 @@
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -54,6 +55,13 @@ namespace Jotunn.Entities
         ///     Indicator if references from configs should get replaced
         /// </summary>
         internal bool FixConfig { get; set; }
+
+        private string PieceName
+        {
+            get => PiecePrefab ? PiecePrefab.name : fallbackPieceName;
+        }
+
+        private string fallbackPieceName;
 
         private string category;
 
@@ -128,11 +136,15 @@ namespace Jotunn.Entities
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         public CustomPiece(AssetBundle assetBundle, string assetName, string pieceTable, bool fixReference) : base(Assembly.GetCallingAssembly())
         {
-            PiecePrefab = assetBundle.LoadAsset<GameObject>(assetName);
-            if (PiecePrefab)
+            fallbackPieceName = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
             {
-                Piece = PiecePrefab.GetComponent<Piece>();
+                return;
             }
+
+            PiecePrefab = prefab;
+            Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
             FixReference = fixReference;
         }
@@ -147,18 +159,21 @@ namespace Jotunn.Entities
         [Obsolete("Use CustomPiece(AssetBundle, string, bool, PieceConfig) instead and define if references should be fixed")]
         public CustomPiece(AssetBundle assetBundle, string assetName, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
-            var piecePrefab = assetBundle.LoadAsset<GameObject>(assetName);
-            if (piecePrefab)
-            {
-                PiecePrefab = piecePrefab;
-                Piece = piecePrefab.GetComponent<Piece>();
-                PieceTable = pieceConfig.PieceTable;
-                FixReference = false;
-                FixConfig = true;
-                Category = pieceConfig.Category;
+            fallbackPieceName = assetName;
 
-                pieceConfig.Apply(piecePrefab);
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
+            {
+                return;
             }
+
+            PiecePrefab = prefab;
+            Piece = PiecePrefab.GetComponent<Piece>();
+            PieceTable = pieceConfig.PieceTable;
+            FixReference = false;
+            FixConfig = true;
+            Category = pieceConfig.Category;
+
+            pieceConfig.Apply(PiecePrefab);
         }
         
         /// <summary>
@@ -171,18 +186,21 @@ namespace Jotunn.Entities
         /// <param name="pieceConfig">The <see cref="PieceConfig"/> for this custom piece.</param>
         public CustomPiece(AssetBundle assetBundle, string assetName, bool fixReference, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
-            var piecePrefab = assetBundle.LoadAsset<GameObject>(assetName);
-            if (piecePrefab)
-            {
-                PiecePrefab = piecePrefab;
-                Piece = piecePrefab.GetComponent<Piece>();
-                PieceTable = pieceConfig.PieceTable;
-                FixReference = fixReference;
-                FixConfig = true;
-                Category = pieceConfig.Category;
+            fallbackPieceName = assetName;
 
-                pieceConfig.Apply(piecePrefab);
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
+            {
+                return;
             }
+
+            PiecePrefab = prefab;
+            Piece = PiecePrefab.GetComponent<Piece>();
+            PieceTable = pieceConfig.PieceTable;
+            FixReference = fixReference;
+            FixConfig = true;
+            Category = pieceConfig.Category;
+
+            pieceConfig.Apply(PiecePrefab);
         }
 
         /// <summary>
@@ -198,11 +216,15 @@ namespace Jotunn.Entities
         public CustomPiece(string name, bool addZNetView, string pieceTable) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
-            if (PiecePrefab)
+
+            if (!PiecePrefab)
             {
-                Piece = PiecePrefab.AddComponent<Piece>();
-                Piece.m_name = name;
+                fallbackPieceName = name;
+                return;
             }
+
+            Piece = PiecePrefab.AddComponent<Piece>();
+            Piece.m_name = name;
             PieceTable = pieceTable;
         }
 
@@ -216,15 +238,19 @@ namespace Jotunn.Entities
         public CustomPiece(string name, bool addZNetView, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = PrefabManager.Instance.CreateEmptyPrefab(name, addZNetView);
-            if (PiecePrefab)
-            {
-                Piece = PiecePrefab.AddComponent<Piece>();
-                PieceTable = pieceConfig.PieceTable;
-                FixConfig = true;
-                Category = pieceConfig.Category;
 
-                pieceConfig.Apply(PiecePrefab);
+            if (!PiecePrefab)
+            {
+                fallbackPieceName = name;
+                return;
             }
+
+            Piece = PiecePrefab.AddComponent<Piece>();
+            PieceTable = pieceConfig.PieceTable;
+            FixConfig = true;
+            Category = pieceConfig.Category;
+
+            pieceConfig.Apply(PiecePrefab);
         }
 
         /// <summary>
@@ -240,10 +266,14 @@ namespace Jotunn.Entities
         public CustomPiece(string name, string baseName, string pieceTable) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = PrefabManager.Instance.CreateClonedPrefab(name, baseName);
-            if (PiecePrefab)
+
+            if (!PiecePrefab)
             {
-                Piece = PiecePrefab.GetComponent<Piece>();
+                fallbackPieceName = name;
+                return;
             }
+
+            Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
         }
 
@@ -257,15 +287,19 @@ namespace Jotunn.Entities
         public CustomPiece(string name, string baseName, PieceConfig pieceConfig) : base(Assembly.GetCallingAssembly())
         {
             PiecePrefab = PrefabManager.Instance.CreateClonedPrefab(name, baseName);
-            if (PiecePrefab)
-            {
-                Piece = PiecePrefab.GetComponent<Piece>();
-                PieceTable = pieceConfig.PieceTable;
-                FixConfig = true;
-                Category = pieceConfig.Category;
 
-                pieceConfig.Apply(PiecePrefab);
+            if (!PiecePrefab)
+            {
+                fallbackPieceName = name;
+                return;
             }
+
+            Piece = PiecePrefab.GetComponent<Piece>();
+            PieceTable = pieceConfig.PieceTable;
+            FixConfig = true;
+            Category = pieceConfig.Category;
+
+            pieceConfig.Apply(PiecePrefab);
         }
 
         /// <summary>
@@ -279,26 +313,26 @@ namespace Jotunn.Entities
 
             if (!PiecePrefab)
             {
-                Logger.LogError($"CustomPiece {this} has no prefab");
+                Logger.LogError(SourceMod, $"CustomPiece '{this}' has no prefab");
                 valid = false;
             }
-            if (!PiecePrefab.IsValid())
+            if (PiecePrefab && !PiecePrefab.IsValid())
             {
                 valid = false;
             }
-            if (Piece == null)
+            if (!Piece)
             {
-                Logger.LogError($"CustomPiece {this} has no Piece component");
+                Logger.LogError(SourceMod, $"CustomPiece '{this}' has no Piece component");
                 valid = false;
             }
-            if (Piece.m_icon == null)
+            if (Piece && !Piece.m_icon)
             {
-                Logger.LogError($"CustomPiece {this} has no icon");
+                Logger.LogError(SourceMod, $"CustomPiece '{this}' has no icon");
                 valid = false;
             }
             if (string.IsNullOrEmpty(PieceTable))
             {
-                Logger.LogError($"CustomPiece {this} has no PieceTable");
+                Logger.LogError(SourceMod, $"CustomPiece '{this}' has no PieceTable");
                 valid = false;
             }
 
@@ -324,13 +358,13 @@ namespace Jotunn.Entities
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return PiecePrefab.name.GetStableHashCode();
+            return PieceName.GetStableHashCode();
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return PiecePrefab.name;
+            return PieceName;
         }
     }
 }

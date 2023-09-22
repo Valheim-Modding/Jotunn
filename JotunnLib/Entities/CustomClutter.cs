@@ -1,6 +1,8 @@
+using System;
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -58,15 +60,34 @@ namespace Jotunn.Entities
         /// <param name="config">The <see cref="ClutterConfig"/> for this custom clutter.</param>
         public CustomClutter(AssetBundle assetBundle, string assetName, bool fixReference, ClutterConfig config) : base(Assembly.GetCallingAssembly())
         {
-            var prefab = assetBundle.LoadAsset<GameObject>(assetName);
-            if (prefab)
+            Name = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
             {
-                Prefab = prefab;
-                Name = prefab.name;
-                Clutter = config.ToClutter();
-                Clutter.m_prefab = prefab;
-                FixReference = fixReference;
+                return;
             }
+
+            Prefab = prefab;
+            Clutter = config.ToClutter();
+            Clutter.m_prefab = Prefab;
+            FixReference = fixReference;
+        }
+
+        /// <summary>
+        ///     Checks if a custom clutter is valid (i.e. has a prefab).
+        /// </summary>
+        /// <returns>true if all criteria is met</returns>
+        public bool IsValid()
+        {
+            bool valid = true;
+
+            if (!Prefab)
+            {
+                Logger.LogError(SourceMod, $"Custom Clutter '{this}' has no prefab");
+                valid = false;
+            }
+
+            return valid;
         }
 
         /// <inheritdoc/>
