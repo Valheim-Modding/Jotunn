@@ -21,6 +21,13 @@ namespace Jotunn.Entities
         /// </summary>
         public bool FixReference { get; set; }
 
+        private string PrefabName
+        {
+            get => Prefab ? Prefab.name : fallbackPrefabName;
+        }
+
+        private string fallbackPrefabName;
+
         /// <summary>
         ///     Internal ctor with provided <see cref="BepInPlugin"/> metadata.<br />
         ///     Does not fix references.
@@ -53,12 +60,15 @@ namespace Jotunn.Entities
         /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
         public CustomPrefab(AssetBundle assetBundle, string assetName, bool fixReference) : base(Assembly.GetCallingAssembly())
         {
-            var prefab = assetBundle.LoadAsset<GameObject>(assetName);
-            if (prefab)
+            fallbackPrefabName = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
             {
-                Prefab = prefab;
-                FixReference = fixReference;
+                return;
             }
+
+            Prefab = prefab;
+            FixReference = fixReference;
         }
 
         /// <summary>
@@ -71,7 +81,7 @@ namespace Jotunn.Entities
 
             if (!Prefab)
             {
-                Logger.LogError($"CustomPrefab {this} has no prefab");
+                Logger.LogError(SourceMod, $"CustomPrefab '{this}' has no prefab");
                 valid = false;
             }
 
@@ -91,7 +101,7 @@ namespace Jotunn.Entities
         /// <inheritdoc/>
         public override string ToString()
         {
-            return Prefab.name;
+            return PrefabName;
         }
     }
 }
