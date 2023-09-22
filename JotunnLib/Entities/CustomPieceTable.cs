@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -32,6 +33,13 @@ namespace Jotunn.Entities
         ///     All categories provided here will be used and displayed on the <see cref="Hud"/>.
         /// </summary>
         public string[] Categories { get; set; } = Array.Empty<string>();
+
+        private string PieceTableName
+        {
+            get => PieceTablePrefab ? PieceTablePrefab.name : fallbackPieceTableName;
+        }
+
+        private string fallbackPieceTableName;
 
         /// <summary>
         ///     Custom piece table from a prefab.
@@ -87,10 +95,16 @@ namespace Jotunn.Entities
         /// <param name="config">The <see cref="PieceTableConfig"/> for this custom piece table.</param>
         public CustomPieceTable(AssetBundle assetBundle, string assetName, PieceTableConfig config) : base(Assembly.GetCallingAssembly())
         {
-            var pieceTablePrefab = assetBundle.LoadAsset<GameObject>(assetName);
-            PieceTablePrefab = pieceTablePrefab;
-            config.Apply(pieceTablePrefab);
-            PieceTable = pieceTablePrefab.GetComponent<PieceTable>();
+            fallbackPieceTableName = assetName;
+
+            if (!AssetUtils.TryLoadPrefab(SourceMod, assetBundle, assetName, out GameObject prefab))
+            {
+                return;
+            }
+
+            PieceTablePrefab = prefab;
+            config.Apply(PieceTablePrefab);
+            PieceTable = PieceTablePrefab.GetComponent<PieceTable>();
             Categories = config.GetCategories();
         }
 
@@ -104,18 +118,18 @@ namespace Jotunn.Entities
 
             if (!PieceTablePrefab)
             {
-                Logger.LogError($"CustomPieceTable {this} has no prefab");
+                Logger.LogError(SourceMod, $"CustomPieceTable '{this}' has no prefab");
                 valid = false;
             }
 
-            if (!PieceTablePrefab.IsValid())
+            if (PieceTablePrefab && !PieceTablePrefab.IsValid())
             {
                 valid = false;
             }
 
             if (PieceTable == null)
             {
-                Logger.LogError($"CustomPieceTable {this} has no PieceTable component");
+                Logger.LogError(SourceMod, $"CustomPieceTable '{this}' has no PieceTable component");
                 valid = false;
             }
 
@@ -131,13 +145,13 @@ namespace Jotunn.Entities
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return PieceTablePrefab.name.GetStableHashCode();
+            return PieceTableName.GetStableHashCode();
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return PieceTablePrefab.name;
+            return PieceTableName;
         }
     }
 }
