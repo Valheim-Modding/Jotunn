@@ -49,6 +49,7 @@ namespace Jotunn
 
             Jotunn.Logger.Init();
             ModCompatibility.Init();
+            ((IManager)SynchronizationManager.Instance).Init();
 
             // Flip the "modded" switch of Valheim
             Game.isModded = true;

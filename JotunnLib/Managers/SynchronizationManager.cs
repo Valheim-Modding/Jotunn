@@ -51,11 +51,6 @@ namespace Jotunn.Managers
         /// </summary>
         private SynchronizationManager() { }
 
-        static SynchronizationManager()
-        {
-            ((IManager)Instance).Init();
-        }
-
         /// <summary>
         ///     Clientside indicator if the current player has admin status on 
         ///     the current world, always true on local games
