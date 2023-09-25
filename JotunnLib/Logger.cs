@@ -18,20 +18,9 @@ namespace Jotunn
         /// </summary>
         public static bool ShowDate = false;
 
-        private static Logger instance;
+        private static Logger instance = new Logger();
 
         private readonly Dictionary<string, ManualLogSource> logger = new Dictionary<string, ManualLogSource>();
-
-        /// <summary>
-        ///     Singleton init
-        /// </summary>
-        internal static void Init()
-        {
-            if (instance == null)
-            {
-                instance = new Logger();
-            }
-        }
 
         /// <summary>
         ///     Remove and clear all Logger instances

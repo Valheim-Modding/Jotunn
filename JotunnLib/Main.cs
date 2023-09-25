@@ -47,7 +47,6 @@ namespace Jotunn
             RootObject = new GameObject("_JotunnRoot");
             DontDestroyOnLoad(RootObject);
 
-            Jotunn.Logger.Init();
             ModCompatibility.Init();
             ((IManager)SynchronizationManager.Instance).Init();
 

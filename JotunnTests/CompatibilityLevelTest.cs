@@ -25,7 +25,6 @@ namespace Jotunn.Utils
         {
             clientVersionData = new ModuleVersionData(v_1_0_0, new List<ModModule>());
             serverVersionData = new ModuleVersionData(v_1_0_0, new List<ModModule>());
-            Logger.Init();
         }
 
         [Fact]
