@@ -62,7 +62,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Logger.LogInfo("Initializing SynchronizationManager");
+            Main.LogManagerInit("SynchronizationManager");
 
             // Register RPCs and the admin watchdog
             ConfigRPC = NetworkManager.Instance.AddRPC(

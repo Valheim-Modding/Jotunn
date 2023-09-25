@@ -47,7 +47,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Logger.LogInfo("Initializing CommandManager");
+            Main.LogManagerInit("CommandManager");
             AddConsoleCommand(new ClearCommand());
 
             Main.Harmony.PatchAll(typeof(Patches));

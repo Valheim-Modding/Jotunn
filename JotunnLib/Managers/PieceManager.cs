@@ -91,7 +91,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Logger.LogInfo("Initializing PieceManager");
+            Main.LogManagerInit("PieceManager");
             Main.Harmony.PatchAll(typeof(Patches));
         }
 

@@ -91,7 +91,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Logger.LogInfo("Initializing LocalizationManager");
+            Main.LogManagerInit("LocalizationManager");
 
             Main.Harmony.PatchAll(typeof(Patches));
 

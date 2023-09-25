@@ -73,7 +73,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Logger.LogInfo("Initializing ItemManager");
+            Main.LogManagerInit("ItemManager");
             Main.Harmony.PatchAll(typeof(Patches));
         }
 
