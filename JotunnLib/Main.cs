@@ -38,13 +38,16 @@ namespace Jotunn
         internal static Harmony Harmony = new Harmony(ModGuid);
         internal static GameObject RootObject;
 
-        private void Awake()
+        static Main()
         {
-            Instance = this;
-
             // Root Container for GameObjects in the DontDestroyOnLoad scene
             RootObject = new GameObject("_JotunnRoot");
             DontDestroyOnLoad(RootObject);
+        }
+
+        private void Awake()
+        {
+            Instance = this;
 
             ModCompatibility.Init();
             ((IManager)SynchronizationManager.Instance).Init();
