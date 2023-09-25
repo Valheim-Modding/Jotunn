@@ -35,13 +35,12 @@ namespace Jotunn
         public const string ModGuid = "com.jotunn.jotunn";
 
         internal static Main Instance;
-        internal static Harmony Harmony;
+        internal static Harmony Harmony = new Harmony(ModGuid);
         internal static GameObject RootObject;
 
         private void Awake()
         {
             Instance = this;
-            Harmony = new Harmony(ModGuid);
 
             // Root Container for GameObjects in the DontDestroyOnLoad scene
             RootObject = new GameObject("_JotunnRoot");
