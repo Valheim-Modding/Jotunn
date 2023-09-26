@@ -138,6 +138,11 @@ namespace Jotunn.Managers
                 AddRecipe(customItem.Recipe);
             }
 
+            if (PrefabManager.Instance.MenuObjectDB)
+            {
+                RegisterItemInObjectDB(PrefabManager.Instance.MenuObjectDB, customItem.ItemPrefab, customItem.SourceMod);
+            }
+
             return true;
         }
 

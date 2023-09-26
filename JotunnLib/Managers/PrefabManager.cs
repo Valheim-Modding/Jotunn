@@ -56,6 +56,8 @@ namespace Jotunn.Managers
         /// </summary>
         internal Dictionary<string, CustomPrefab> Prefabs { get; } = new Dictionary<string, CustomPrefab>();
 
+        internal ObjectDB MenuObjectDB { get; private set; }
+
         /// <summary>
         ///     Creates the prefab container and registers all hooks.
         /// </summary>
@@ -77,7 +79,10 @@ namespace Jotunn.Managers
             private static void RegisterAllToZNetScene() => Instance.RegisterAllToZNetScene();
 
             [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPrefix, HarmonyPriority(Priority.Last)]
-            private static void InvokeOnVanillaObjectsAvailable() => Instance.InvokeOnVanillaObjectsAvailable();
+            private static void InvokeOnVanillaObjectsAvailable(ObjectDB other) {
+                Instance.MenuObjectDB = other;
+                Instance.InvokeOnVanillaObjectsAvailable();
+            }
 
             [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
             private static void InvokeOnPrefabsRegistered() => Instance.InvokeOnPrefabsRegistered();
