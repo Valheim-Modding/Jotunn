@@ -317,8 +317,10 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(TextInput), nameof(TextInput.IsVisible)), HarmonyPostfix]
             private static void TextInputPatch(ref bool __result) => TextInput_IsVisible(ref __result);
 
-            [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Update)), HarmonyTranspiler, HarmonyWrapSafe]
-            private static IEnumerable<CodeInstruction> InventoryGui_Update(IEnumerable<CodeInstruction> instructions) => BlockUseTranspiler(instructions);
+            [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Update))]
+            [HarmonyPatch(typeof(GameCamera), nameof(GameCamera.UpdateCamera))]
+            [HarmonyTranspiler, HarmonyWrapSafe]
+            private static IEnumerable<CodeInstruction> BlockUsePatch(IEnumerable<CodeInstruction> instructions) => BlockUseTranspiler(instructions);
 
             [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui))]
             [HarmonyPatch(typeof(Game), nameof(Game.Start))]
