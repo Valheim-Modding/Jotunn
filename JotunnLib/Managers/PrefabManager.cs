@@ -84,6 +84,11 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Makes sure the PrefabManager initializes. Only needed if timing is important.
+        /// </summary>
+        internal void Activate() { }
+
+        /// <summary>
         ///     Add a custom prefab to the manager with known source mod metadata. Don't fix references.
         /// </summary>
         /// <param name="prefab">Prefab to add</param>

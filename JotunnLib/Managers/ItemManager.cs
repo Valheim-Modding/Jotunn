@@ -75,6 +75,7 @@ namespace Jotunn.Managers
         {
             Main.LogManagerInit("ItemManager");
             Main.Harmony.PatchAll(typeof(Patches));
+            PrefabManager.Instance.Activate();
         }
 
         private static class Patches
