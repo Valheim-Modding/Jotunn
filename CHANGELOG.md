@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.14.1
+* Fixed some errors when a Jotunn depend mod has no BepInEx dependency set and loads before Jotunn. A warning will be logged
+* Fixed items were not added to the main menu ObjectDB if added in OnVanillaPrefabsAvailable event and thus not visually shown on the player
+
 ## Version 2.14.0
 * Fixed the SynchronizationManager wasn't always initialised, resulting in no sync of admin configs
 
