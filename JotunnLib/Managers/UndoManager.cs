@@ -72,7 +72,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("UndoManager");
+            Main.LogInit("UndoManager");
             Main.Harmony.PatchAll(typeof(Patches));
         }
 

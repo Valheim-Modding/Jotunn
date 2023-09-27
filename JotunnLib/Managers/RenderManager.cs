@@ -52,7 +52,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("RenderManager");
+            Main.LogInit("RenderManager");
 
             if (GUIManager.IsHeadless())
             {

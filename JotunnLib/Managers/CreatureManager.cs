@@ -69,7 +69,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("CreatureManager");
+            Main.LogInit("CreatureManager");
 
             SpawnListContainer = new GameObject("Creatures");
             SpawnListContainer.transform.parent = Main.RootObject.transform;

@@ -39,7 +39,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("KitbashManager");
+            Main.LogInit("KitbashManager");
             ItemManager.OnKitbashItemsAvailable += ApplyKitbashes;
         }
 

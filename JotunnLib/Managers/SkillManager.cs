@@ -36,7 +36,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("SkillManager");
+            Main.LogInit("SkillManager");
             Main.Harmony.PatchAll(typeof(Patches));
         }
 

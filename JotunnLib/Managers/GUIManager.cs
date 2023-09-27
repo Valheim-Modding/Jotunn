@@ -291,7 +291,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("GUIManager");
+            Main.LogInit("GUIManager");
 
             // Cache headless state
             Headless = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;

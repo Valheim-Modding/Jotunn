@@ -68,7 +68,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("KeyHintManager");
+            Main.LogInit("KeyHintManager");
 
             // Dont init on a headless server
             if (!GUIManager.IsHeadless())

@@ -132,13 +132,13 @@ namespace Jotunn
             }
         }
 
-        internal static void LogManagerInit(string manager)
+        internal static void LogInit(string module)
         {
-            Jotunn.Logger.LogInfo($"Initializing {manager}");
+            Jotunn.Logger.LogInfo($"Initializing {module}");
 
             if (!Instance)
             {
-                string message = $"{manager} was accessed before Jotunn Awake, this can cause unexpected behaviour. " +
+                string message = $"{module} was accessed before Jotunn Awake, this can cause unexpected behaviour. " +
                                  "Please make sure to add `[BepInDependency(Jotunn.Main.ModGuid)]` next to your BaseUnityPlugin";
                 Jotunn.Logger.LogWarning(BepInExUtils.GetSourceModMetadata(), message);
             }

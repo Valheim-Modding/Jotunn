@@ -50,7 +50,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("NetworkManager");
+            Main.LogInit("NetworkManager");
             Main.Harmony.PatchAll(typeof(Patches));
         }
 

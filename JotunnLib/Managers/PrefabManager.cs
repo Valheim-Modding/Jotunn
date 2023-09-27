@@ -63,7 +63,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("PrefabManager");
+            Main.LogInit("PrefabManager");
 
             PrefabContainer = new GameObject("Prefabs");
             PrefabContainer.transform.parent = Main.RootObject.transform;

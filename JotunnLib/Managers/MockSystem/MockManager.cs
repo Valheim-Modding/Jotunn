@@ -56,7 +56,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("MockManager");
+            Main.LogInit("MockManager");
 
             MockPrefabContainer = new GameObject("MockPrefabs");
             MockPrefabContainer.transform.parent = Main.RootObject.transform;

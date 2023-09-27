@@ -64,7 +64,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("ZoneManager");
+            Main.LogInit("ZoneManager");
 
             LocationContainer = new GameObject("Locations");
             LocationContainer.transform.parent = Main.RootObject.transform;

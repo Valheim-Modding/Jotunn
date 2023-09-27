@@ -218,7 +218,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("InputManager");
+            Main.LogInit("InputManager");
 
             // Dont init on a dedicated server
             if (!GUIManager.IsHeadless())

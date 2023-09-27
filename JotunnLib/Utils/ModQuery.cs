@@ -27,7 +27,7 @@ namespace Jotunn.Utils
 
         internal static void Init()
         {
-            Logger.LogInfo("Initializing ModQuery");
+            Main.LogInit("ModQuery");
             Main.Harmony.PatchAll(typeof(ModQuery));
         }
 

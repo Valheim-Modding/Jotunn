@@ -103,7 +103,7 @@ namespace Jotunn.Managers
         /// </summary>
         void IManager.Init()
         {
-            Main.LogManagerInit("MinimapManager");
+            Main.LogInit("MinimapManager");
 
             // Dont init on a headless server
             if (GUIManager.IsHeadless())

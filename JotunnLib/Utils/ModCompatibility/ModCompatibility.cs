@@ -26,7 +26,7 @@ namespace Jotunn.Utils
 
         internal static void Init()
         {
-            Logger.LogInfo("Initializing ModCompatibility");
+            Main.LogInit("ModCompatibility");
             Main.Harmony.PatchAll(typeof(ModCompatibility));
         }
 
