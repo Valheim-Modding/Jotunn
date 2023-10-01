@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using HarmonyLib;
-using Jotunn.ConsoleCommands;
 using Jotunn.Entities;
 
 namespace Jotunn.Managers
@@ -48,8 +47,6 @@ namespace Jotunn.Managers
         void IManager.Init()
         {
             Main.LogInit("CommandManager");
-            AddConsoleCommand(new ClearCommand());
-
             Main.Harmony.PatchAll(typeof(Patches));
         }
 
