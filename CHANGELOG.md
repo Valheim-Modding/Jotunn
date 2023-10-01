@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.14.2
+* Fixed adding commands being aborted if a command tries to override an existing name
+* Removed the clear command to improve mod compatibility. With the recent changes, the command wasn't always added anyway
+
 ## Version 2.14.1
 * Fixed some errors when a Jotunn dependent mod has no BepInEx dependency set and loads before Jotunn. A warning will be logged
 * Fixed items were not added to the main menu ObjectDB if added in the OnVanillaPrefabsAvailable event and thus not visually shown on the player
