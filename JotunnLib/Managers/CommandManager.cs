@@ -97,7 +97,7 @@ namespace Jotunn.Managers
                     if (self.m_commandList.Contains(cmd.Name))
                     {
                         Logger.LogWarning(cmd.SourceMod, $"Cannot override existing command: {cmd.Name}");
-                        return;
+                        continue;
                     }
 
                     // Add to the vanilla system
