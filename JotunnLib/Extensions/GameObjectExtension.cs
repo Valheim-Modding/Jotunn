@@ -1,5 +1,6 @@
-﻿﻿using System.Reflection;
-using UnityEngine;
+﻿using System.Reflection;
+ using TMPro;
+ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Jotunn
@@ -224,7 +225,10 @@ namespace Jotunn
 
         internal static GameObject SetText(this GameObject go, string text)
         {
-            go.GetComponent<Text>().text = text;
+            var txt = go.GetComponent<Text>();
+            if (txt != null) txt.text = text;
+            var tmp = go.GetComponent<TMP_Text>();
+            if (tmp != null) tmp.text = text;
             return go;
         }
     }
