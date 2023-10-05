@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.14.4
+* Fixed KeyHints display
+
 ## Version 2.14.3
 * Compatible with Valheim version 0.217.22, not working with an older version
 * Updated and compiled for BepInExPack 5.4.2200
