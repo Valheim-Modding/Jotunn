@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.14.3
+* Compatible with Valheim version 0.217.22, not working with an older version
+* Updated and compiled for BepInExPack 5.4.2200
+
 ## Version 2.14.2
 * Fixed adding commands being aborted if a command tries to override an existing name
 * Removed the console clear command to improve mod compatibility. With the recent changes, the command wasn't always added anyway
