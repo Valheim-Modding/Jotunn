@@ -94,6 +94,11 @@ namespace Jotunn.Managers
             Main.LogInit("PieceManager");
             Main.Harmony.PatchAll(typeof(Patches));
             PrefabManager.Instance.Activate();
+
+            if (ObjectDB.instance)
+            {
+                LoadPieceTables();
+            }
         }
 
         private static class Patches
