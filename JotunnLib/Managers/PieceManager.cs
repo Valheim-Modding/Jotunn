@@ -453,15 +453,8 @@ namespace Jotunn.Managers
 
                 if (table != null)
                 {
-                    if (!PieceTableMap.ContainsKey(table.name))
-                    {
-                        PieceTableMap.Add(table.name, table);
-                    }
-
-                    if (!PieceTableNameMap.ContainsKey(item.name))
-                    {
-                        PieceTableNameMap.Add(item.name, table.name);
-                    }
+                    PieceTableMap[table.name] = table;
+                    PieceTableNameMap[item.name] = table.name;
                 }
             }
         }
