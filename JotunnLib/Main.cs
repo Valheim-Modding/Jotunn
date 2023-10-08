@@ -36,18 +36,15 @@ namespace Jotunn
 
         internal static Main Instance;
         internal static Harmony Harmony = new Harmony(ModGuid);
-        internal static GameObject RootObject;
 
-        static Main()
-        {
-            // Root Container for GameObjects in the DontDestroyOnLoad scene
-            RootObject = new GameObject("_JotunnRoot");
-            DontDestroyOnLoad(RootObject);
-        }
+        private static GameObject rootObject;
+
+        internal static GameObject RootObject => GetRootObject();
 
         private void Awake()
         {
             Instance = this;
+            GetRootObject();
 
             ModCompatibility.Init();
             ((IManager)SynchronizationManager.Instance).Init();
@@ -77,6 +74,19 @@ namespace Jotunn
         {
             // Unload still loaded asset bundles to keep unity from crashing
             AssetBundle.UnloadAllAssetBundles(false);
+        }
+
+        private static GameObject GetRootObject()
+        {
+            if (rootObject)
+            {
+                return rootObject;
+            }
+
+            // create root container for GameObjects in the DontDestroyOnLoad scene
+            rootObject = new GameObject("_JotunnRoot");
+            DontDestroyOnLoad(rootObject);
+            return rootObject;
         }
 
         /// <summary>
