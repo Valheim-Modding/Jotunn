@@ -391,6 +391,22 @@ namespace Jotunn.Managers
             // Add the custom piece to the PieceManager
             Pieces.Add(customPiece.PiecePrefab.name, customPiece);
 
+            if (ObjectDB.instance)
+            {
+                try
+                {
+                    RegisterCustomPiece(customPiece);
+                }
+                catch (MockResolveException ex)
+                {
+                    Logger.LogWarning(customPiece?.SourceMod, $"Skipping piece {customPiece}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(customPiece?.SourceMod, $"Error caught while adding piece {customPiece}: {ex}");
+                }
+            }
+
             return true;
         }
 
@@ -480,23 +496,7 @@ namespace Jotunn.Managers
 
                 try
                 {
-                    // Fix references if needed
-                    if (customPiece.FixReference || customPiece.FixConfig)
-                    {
-                        customPiece.PiecePrefab.FixReferences(customPiece.FixReference);
-                        customPiece.FixReference = false;
-                        customPiece.FixConfig = false;
-                    }
-
-                    // Assign vfx_ExtensionConnection for StationExtensions
-                    var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
-                    if (extension != null && !extension.m_connectionPrefab)
-                    {
-                        extension.m_connectionPrefab = PrefabManager.Cache.GetPrefab<GameObject>("vfx_ExtensionConnection");
-                    }
-
-                    // Assign the piece to the actual PieceTable if not already in there
-                    RegisterPieceInPieceTable(customPiece.PiecePrefab, customPiece.PieceTable, null, customPiece.SourceMod);
+                    RegisterCustomPiece(customPiece);
                 }
                 catch (MockResolveException ex)
                 {
@@ -520,6 +520,24 @@ namespace Jotunn.Managers
 
                 RemovePiece(piece);
             }
+        }
+
+        private void RegisterCustomPiece(CustomPiece customPiece) {
+            // Fix references if needed
+            if (customPiece.FixReference || customPiece.FixConfig) {
+                customPiece.PiecePrefab.FixReferences(customPiece.FixReference);
+                customPiece.FixReference = false;
+                customPiece.FixConfig = false;
+            }
+
+            // Assign vfx_ExtensionConnection for StationExtensions
+            var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
+            if (extension != null && !extension.m_connectionPrefab) {
+                extension.m_connectionPrefab = PrefabManager.Cache.GetPrefab<GameObject>("vfx_ExtensionConnection");
+            }
+
+            // Assign the piece to the actual PieceTable if not already in there
+            RegisterPieceInPieceTable(customPiece.PiecePrefab, customPiece.PieceTable, null, customPiece.SourceMod);
         }
 
         /// <summary>
