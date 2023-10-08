@@ -391,22 +391,6 @@ namespace Jotunn.Managers
             // Add the custom piece to the PieceManager
             Pieces.Add(customPiece.PiecePrefab.name, customPiece);
 
-            if (ObjectDB.instance)
-            {
-                try
-                {
-                    RegisterCustomPiece(customPiece);
-                }
-                catch (MockResolveException ex)
-                {
-                    Logger.LogWarning(customPiece?.SourceMod, $"Skipping piece {customPiece}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWarning(customPiece?.SourceMod, $"Error caught while adding piece {customPiece}: {ex}");
-                }
-            }
-
             return true;
         }
 

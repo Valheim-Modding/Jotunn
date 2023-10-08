@@ -2,7 +2,6 @@
 
 ## Version 2.14.4
 * Fixed KeyHints display
-* Fixed pieces were not added if PieceManager.AddPiece was called after ObjectDB.Awake
 * Fixed internal piece table list was not available if the PieceManager was initialised after ObjectDB.Awake
 * Fixed internal piece table list was not fully updated if the game was reloaded without a restart
 * Fixed an error when a development build of Valheim is used
