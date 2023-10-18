@@ -31,6 +31,8 @@ namespace Jotunn.Managers
         /// </summary>
         public static GUIManager Instance => _instance ??= new GUIManager();
 
+        private bool hasInitializedAssets;
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>
@@ -304,7 +306,8 @@ namespace Jotunn.Managers
 
             Instance.TryCreateGUI();
             Main.Harmony.PatchAll(typeof(Patches));
-            SceneManager.sceneLoaded += InitialLoad;
+            InitializeAssets();
+            SceneManager.sceneLoaded += (Scene scene, LoadSceneMode loadMode) => InitializeAssets();
         }
 
         private static class Patches
@@ -361,12 +364,17 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Load GUI assets on first start
         /// </summary>
-        /// <param name="scene"></param>
-        /// <param name="loadMode"></param>
-        internal void InitialLoad(Scene scene, LoadSceneMode loadMode)
+        internal void InitializeAssets()
         {
+            if (hasInitializedAssets)
+            {
+                return;
+            }
+
+            var activeScene = SceneManager.GetActiveScene();
+
             // Load valheim GUI assets
-            if (scene.name == "start")
+            if (activeScene.name == "start" || activeScene.name == "main")
             {
                 try
                 {
@@ -425,10 +433,12 @@ namespace Jotunn.Managers
                     {
                         ApplyTextStyle(pickerTxt, ValheimOrange, pickerTxt.fontSize);
                     }
+
                     foreach (InputField pickerInput in colorPicker.GetComponentsInChildren<InputField>(true))
                     {
                         ApplyInputFieldStyle(pickerInput, 13);
                     }
+
                     foreach (Button pickerButton in colorPicker.GetComponentsInChildren<Button>(true))
                     {
                         ApplyButtonStyle(pickerButton, 13);
@@ -449,10 +459,12 @@ namespace Jotunn.Managers
                     {
                         ApplyTextStyle(pickerTxt, ValheimOrange, pickerTxt.fontSize);
                     }
+
                     foreach (InputField pickerInput in gradientPicker.GetComponentsInChildren<InputField>(true))
                     {
                         ApplyInputFieldStyle(pickerInput, 13);
                     }
+
                     foreach (Button pickerButton in gradientPicker.GetComponentsInChildren<Button>(true))
                     {
                         if (pickerButton.name != "ColorButton")
@@ -471,7 +483,7 @@ namespace Jotunn.Managers
                 }
                 finally
                 {
-                    SceneManager.sceneLoaded -= InitialLoad;
+                    hasInitializedAssets = true;
                 }
             }
         }
