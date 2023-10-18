@@ -70,7 +70,14 @@ namespace Jotunn.Managers
             PrefabContainer.SetActive(false);
 
             Main.Harmony.PatchAll(typeof(Patches));
-            SceneManager.sceneUnloaded += current => Cache.ClearCache();
+            SceneManager.sceneUnloaded += current =>
+            {
+                Cache.ClearCache();
+
+                // We need to dereference the MenuObjectDB manually, otherwise the script won't be destroyed properly.
+                // This is likely a Unity bug, everything in the Unity docs suggests that the scene and script are always completely destroyed.
+                Instance.MenuObjectDB = null;
+            };
         }
 
         private static class Patches
