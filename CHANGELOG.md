@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.14.5
+* Fixed GUIManager assets not being properly initialized when later accessed, causing some elements to not show up
+* Fixed an edge case where holding a reference to the ObjectDB causes it not to be destroyed correctly. This fixes some errors on logout with certain mods
+
 ## Version 2.14.4
 * Fixed KeyHints display
 * Fixed internal piece table list was not available if the PieceManager was initialised after ObjectDB.Awake
