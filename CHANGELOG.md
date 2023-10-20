@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.14.6
+* Finally fixed the debug mode Jötunn ASCII art
+
 ## Version 2.14.5
 * Fixed GUIManager assets not being properly initialized when later accessed, causing some elements to not show up
 * Fixed an edge case where holding a reference to the ObjectDB causes it not to be destroyed correctly. This fixes some errors on logout with certain mods
