@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using HarmonyLib;
 using Jotunn.Managers;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -72,7 +71,6 @@ namespace Jotunn.DebugUtils
 
         private void Player_OnSpawned_Postfix()
         {
-            Character.s_dpsDebugEnabled = true;
             Player.m_debugMode = true;
             Terminal.m_cheat = true;
             Console.instance.m_autoCompleteSecrets = true;
