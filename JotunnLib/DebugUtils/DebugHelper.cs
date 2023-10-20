@@ -1,24 +1,24 @@
-﻿using System;
+using System;
 using System.Linq;
 using HarmonyLib;
 using Jotunn.Managers;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace Jotunn.DebugUtils
 {
     internal class DebugHelper : MonoBehaviour
     {
-        private const string jtn = @"
- __/\\__  __/\\___  __/\\__  ___ /\\   _/\\___   _/\\___   
-(_    _))(_     _))(__  __))/  //\ \\ (_      ))(_      )) 
-  \  \\   /  _  \\   /  \\  \:.\\_\ \\ /  :   \\ /  :   \\ 
-/\/ .:\\ /:.(_)) \\ /:.  \\  \  :.  ///:. |   ///:. |   // 
+        private const string jtn = @"<mspace=10px>
+ __/\\\__  __/\\\___  __/\\\__  ___ /\\\   _/\\\___   _/\\\___   
+(_    _))(_     _))(__  __))/  //\ \\\ (_      ))(_      )) 
+  \  \\\   /  _  \\\   /  \\\  \:.\\\_\ \\\ /  :   \\\ /  :   \\\ 
+/\/ .:\\\ /:.(_)) \\\ /:.  \\\  \  :.  ///:. |   ///:. |   // 
 \__  _// \  _____// \__  // (_   ___))\___|  // \___|  //  
    \//    \//          \//    \//          \//       \//   
                                             DEBUG MÖDE
-";
+</mspace>";
 
         private static DebugHelper instance;
 
@@ -77,13 +77,7 @@ namespace Jotunn.DebugUtils
             Terminal.m_cheat = true;
             Console.instance.m_autoCompleteSecrets = true;
             Console.instance.updateCommandList();
-            try
-            {
-                Font fnt = Font.CreateDynamicFontFromOSFont("Consolas", 14);
-                Console.instance.gameObject.GetComponentInChildren<Text>(true).font = fnt;
-                Console.instance.Print(jtn);
-            }
-            catch (Exception) { }
+            Console.instance.Print(jtn);
         }
 
         private void ProvidePasswordPatch(ZNet self, ZRpc rpc, bool needPassword)
