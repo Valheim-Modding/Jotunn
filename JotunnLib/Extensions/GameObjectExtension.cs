@@ -57,9 +57,16 @@ namespace Jotunn
 
             foreach (PropertyInfo propertyInfo in duplicate.GetType().GetProperties(flags))
             {
-                if (propertyInfo.Name == "rayTracingMode")
-                {
-                    continue;
+                switch (propertyInfo.Name) {
+                    // setting rayTracingMode prints a warning, because ray tracing is disabled
+                    case "rayTracingMode":
+                        continue;
+                    // this is Component.name and is shared with the GameObject name. Copying a component should not change the GameObject name
+                    case "name":
+                        continue;
+                    // this is Component.tag and sets the GameObject tag. Copying a component should not change the GameObject tag
+                    case "tag":
+                        continue;
                 }
 
                 if (propertyInfo.CanWrite && propertyInfo.GetMethod != null)
