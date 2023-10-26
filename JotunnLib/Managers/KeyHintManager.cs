@@ -432,7 +432,19 @@ namespace Jotunn.Managers
                 }
 
                 // Get the current equipped item name
-                ItemDrop.ItemData item = Player.m_localPlayer.m_rightItem;
+                ItemDrop.ItemData item = null;
+                if (Player.m_localPlayer.m_rightItem != null)
+                {
+                    item = Player.m_localPlayer.m_rightItem;
+                }
+                else if (Player.m_localPlayer.m_leftItem != null && Player.m_localPlayer.m_leftItem.m_shared.m_itemType != ItemDrop.ItemData.ItemType.Torch)
+                {
+                    item = Player.m_localPlayer.m_leftItem;
+                }
+                else if (Player.m_localPlayer.m_unarmedWeapon)
+                {
+                    item = Player.m_localPlayer.m_unarmedWeapon.m_itemData;
+                }
                 if (!(item != null && (item.IsWeapon() || item.m_shared?.m_buildPieces != null)))
                 {
                     return false;

@@ -4,6 +4,7 @@
 * Added a soft dependency to the LocalizationCache mod so that it loads a bit earlier. This has no direct impact on Jötunn
 * Fixed the debug mode Jötunn ASCII art
 * Fixed AddComponentCopy was setting the name and tag of the Component's GameObject
+* Fixed KeyHints for left hand items
 
 ## Version 2.14.5
 * Fixed GUIManager assets not being properly initialized when later accessed, causing some elements to not show up
