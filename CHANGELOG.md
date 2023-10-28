@@ -2,6 +2,7 @@
 
 ## Version 2.14.6
 * Added a soft dependency to the LocalizationCache mod so that it loads a bit earlier. This has no direct impact on Jötunn
+* Changed prebuild references from the unstripped_corlib folder to the game assemblies as Valheim is no longer unstripped and the folder has been removed from the BepInEx package
 * Fixed the debug mode Jötunn ASCII art
 * Fixed AddComponentCopy was setting the name and tag of the Component's GameObject
 * Fixed KeyHints for left hand items
