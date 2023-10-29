@@ -31,7 +31,7 @@ namespace Jotunn.Managers
         private bool ConfigurationManagerWindowShown;
 
         /// <summary>
-        ///     Event triggered after server configuration is applied to client
+        ///     Event triggered after configuration has been synced on either the server or client
         /// </summary>
         public static event EventHandler<ConfigurationSynchronizationEventArgs> OnConfigurationSynchronized;
 
@@ -810,6 +810,7 @@ namespace Jotunn.Managers
 
                 // Apply config locally
                 ApplyConfigZPackage(package, out bool initial);
+                InvokeOnConfigurationSynchronized(initial); // new line
 
                 // Send to all other clients
                 ConfigRPC.SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package);
