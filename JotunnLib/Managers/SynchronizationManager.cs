@@ -36,6 +36,11 @@ namespace Jotunn.Managers
         public static event EventHandler<ConfigurationSynchronizationEventArgs> OnConfigurationSynchronized;
 
         /// <summary>
+        ///     Event triggered before syncing configuration on either the server or client
+        /// </summary>
+        public static event EventHandler<ConfigurationSynchronizationEventArgs> OnApplyingConfiguration;
+
+        /// <summary>
         ///     Event triggered after a clients admin status changed on the server
         /// </summary>
         public static event Action OnAdminStatusChanged;
@@ -788,6 +793,8 @@ namespace Jotunn.Managers
 
         private IEnumerator ConfigRPC_OnClientReceive(long sender, ZPackage package)
         {
+            InvokeOnApplyingConfiguration(); // new line
+
             byte packageFlags = package.ReadByte();
 
             if ((packageFlags & INITIAL_CONFIG) != 0)
@@ -807,6 +814,7 @@ namespace Jotunn.Managers
             if (ZNet.instance.IsAdmin(sender))
             {
                 Logger.LogInfo($"Received configuration data from client {sender}");
+                InvokeOnApplyingConfiguration(); // new line
 
                 // Apply config locally
                 ApplyConfigZPackage(package, out bool initial);
@@ -824,6 +832,14 @@ namespace Jotunn.Managers
         private void InvokeOnConfigurationSynchronized(bool initial)
         {
             OnConfigurationSynchronized?.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = initial });
+        }
+
+        /// <summary>
+        ///     Safely invoke the <see cref="OnConfigurationSynchronized"/> event
+        /// </summary>
+        private void InvokeOnApplyingConfiguration()
+        {
+            OnApplyingConfiguration?.SafeInvoke(this, new ConfigurationSynchronizationEventArgs());
         }
 
         /// <summary>
