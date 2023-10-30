@@ -808,7 +808,7 @@ namespace Jotunn.Managers
 
         private IEnumerator ConfigRPC_OnClientReceive(long sender, ZPackage package)
         {
-            InvokeOnApplyingConfiguration(); // new line
+            InvokeOnApplyingConfiguration();
 
             byte packageFlags = package.ReadByte();
 
@@ -829,11 +829,11 @@ namespace Jotunn.Managers
             if (ZNet.instance.IsAdmin(sender))
             {
                 Logger.LogInfo($"Received configuration data from client {sender}");
-                InvokeOnApplyingConfiguration(); // new line
+                InvokeOnApplyingConfiguration();
 
                 // Apply config locally
                 ApplyConfigZPackage(package, out bool initial, out HashSet<string> pluginIDs);
-                InvokeOnConfigurationSynchronized(initial, pluginIDs); // new line
+                InvokeOnConfigurationSynchronized(initial, pluginIDs);
 
                 // Send to all other clients
                 ConfigRPC.SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package);
