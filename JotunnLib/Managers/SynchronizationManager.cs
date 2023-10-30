@@ -704,6 +704,8 @@ namespace Jotunn.Managers
                     // Send values to server if it is a client instance
                     if (ZNet.instance.IsClientInstance())
                     {
+                        // Fire event that admin config will be changed locally, since the RPC does not come back to the sender
+                        InvokeOnApplyingConfiguration();
                         ConfigRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
 
                         // Get IDs of plugins that received data
@@ -711,8 +713,7 @@ namespace Jotunn.Managers
                         pluginIDs.ForEach(x => GetPluginIdentifier(x));
 
                         // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
-                        var pluginIDs = new HashSet<string>(valuesToSend.Select(x => x.Item1));
-                        InvokeOnConfigurationSynchronized(false, pluginIDs);
+                        InvokeOnConfigurationSynchronized(false, new HashSet<string>(pluginIDs));
                     }
                     // Send changed values to all connected clients
                     else
