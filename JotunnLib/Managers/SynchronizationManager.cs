@@ -461,6 +461,15 @@ namespace Jotunn.Managers
             return config.ConfigFilePath.Replace(BepInEx.Paths.ConfigPath, "").Replace("\\", "/").Trim('/');
         }
 
+        private static string GetPluginIdentifier(string configFileIdentifier)
+        {
+            if (configFileIdentifier.EndsWith(".cfg"))
+            {
+                configFileIdentifier = configFileIdentifier.Substring(0, configFileIdentifier.Length - 4);
+            }
+            return configFileIdentifier;
+        }
+
         private ConfigFile GetConfigFile(string identifier)
         {
             if (CustomConfigs.TryGetValue(identifier, out var config))
@@ -697,6 +706,10 @@ namespace Jotunn.Managers
                     {
                         ConfigRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
 
+                        // Get IDs of plugins that received data
+                        var pluginIDs = valuesToSend.Select(x => x.Item1).ToList();
+                        pluginIDs.ForEach(x => GetPluginIdentifier(x));
+
                         // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
                         var pluginIDs = new HashSet<string>(valuesToSend.Select(x => x.Item1));
                         InvokeOnConfigurationSynchronized(false, pluginIDs);
@@ -876,6 +889,7 @@ namespace Jotunn.Managers
                 var section = configPkg.ReadString();
                 var key = configPkg.ReadString();
                 var serializedValue = configPkg.ReadString();
+                pluginIDs.Add(GetPluginIdentifier(configIdentifier));
 
                 Logger.LogDebug($"Received {configIdentifier} {section} {key} {serializedValue}");
 
