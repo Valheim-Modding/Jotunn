@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 
 namespace Jotunn.Utils
 {
@@ -11,5 +12,10 @@ namespace Jotunn.Utils
         ///     Is this the initial synchronization?
         /// </summary>
         public bool InitialSynchronization { get; set; }
+
+        /// <summary>
+        ///     GUID for each Plugin that received configuration data.
+        /// </summary>
+        public HashSet<string> UpdatedPluginIDs { get; set; }
     }
 }
