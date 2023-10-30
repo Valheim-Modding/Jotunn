@@ -898,7 +898,6 @@ namespace Jotunn.Managers
 
                 if (config != null)
                 {
-                    pluginIDs.Add(configIdentifier);
                     if (config.Keys.Contains(new ConfigDefinition(section, key)))
                     {
                         var entry = config[section, key];
