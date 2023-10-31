@@ -16,6 +16,6 @@ namespace Jotunn.Utils
         /// <summary>
         ///     GUID for each Plugin that received configuration data.
         /// </summary>
-        public HashSet<string> UpdatedPluginIDs { get; set; }
+        public HashSet<string> UpdatedPluginGUIDs { get; set; }
     }
 }
