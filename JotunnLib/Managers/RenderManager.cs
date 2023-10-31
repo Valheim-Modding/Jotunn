@@ -445,7 +445,7 @@ namespace Jotunn.Managers
             {
                 this.camera = camera;
                 previousRenderTexture = RenderTexture.active;
-                temporaryRenderTexture = RenderTexture.GetTemporary(textureWidth, textureHeight, 32);
+                temporaryRenderTexture = RenderTexture.GetTemporary(textureWidth, textureHeight);
 
                 camera.targetTexture = temporaryRenderTexture;
                 RenderTexture.active = temporaryRenderTexture;
