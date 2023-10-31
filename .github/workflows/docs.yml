@@ -32,7 +32,7 @@ jobs:
       - name: Prepare Valheim dependencies
         run: |
           mkdir -p ~/VHINSTALL
-          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2200/"
+          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2202/"
           unzip bepinex.zip -d ~/BepInExRaw
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
 
