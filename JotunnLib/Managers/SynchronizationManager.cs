@@ -27,6 +27,7 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
         private readonly Dictionary<string, ConfigFile> CustomConfigs = new Dictionary<string, ConfigFile>();
         private List<Tuple<string, string, string, string>> CachedConfigValues = new List<Tuple<string, string, string, string>>();
+        private readonly Dictionary<string, string> CachedCustomConfigGUIDs = new Dictionary<string, string>();
         private BaseUnityPlugin ConfigurationManager;
         private bool ConfigurationManagerWindowShown;
 
@@ -145,6 +146,10 @@ namespace Jotunn.Managers
 
             Logger.LogDebug($"Registering custom config file {identifier}");
             CustomConfigs.Add(identifier, customFile);
+
+            // Add to cached pluginGUIDs to get source mod for custom config files
+            var plugin = BepInExUtils.GetSourceModMetadata();
+            CachedCustomConfigGUIDs.Add(identifier, plugin.GUID);
         }
 
         /// <summary>
