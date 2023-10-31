@@ -466,13 +466,19 @@ namespace Jotunn.Managers
             return config.ConfigFilePath.Replace(BepInEx.Paths.ConfigPath, "").Replace("\\", "/").Trim('/');
         }
 
-        private static string GetPluginIdentifier(string configFileIdentifier)
+        private bool GetPluginGUID(string configFileIdentifier, out string pluginGUID)
         {
-            if (configFileIdentifier.EndsWith(".cfg"))
+            if (IsDefaultModConfig(configFileIdentifier, out pluginGUID))
             {
-                configFileIdentifier = configFileIdentifier.Substring(0, configFileIdentifier.Length - 4);
+                return true;
             }
-            return configFileIdentifier;
+
+            if (CachedCustomConfigGUIDs.ContainsKey(configFileIdentifier))
+            {
+                pluginGUID = CachedCustomConfigGUIDs[configFileIdentifier];
+                return true;
+            }
+            return false;
         }
 
         private ConfigFile GetConfigFile(string identifier)
@@ -714,11 +720,17 @@ namespace Jotunn.Managers
                         ConfigRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
 
                         // Get IDs of plugins that received data
-                        var pluginIDs = valuesToSend.Select(x => x.Item1).ToList();
-                        pluginIDs.ForEach(x => GetPluginIdentifier(x));
+                        var pluginGUIDs = new HashSet<string>();
+                        foreach (var entry in valuesToSend)
+                        {
+                            if (GetPluginGUID(entry.Item1, out string pluginGUID))
+                            {
+                                pluginGUIDs.Add(pluginGUID);
+                            }
+                        }
 
                         // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
-                        InvokeOnConfigurationSynchronized(false, new HashSet<string>(pluginIDs));
+                        InvokeOnConfigurationSynchronized(false, pluginGUIDs);
                     }
                     // Send changed values to all connected clients
                     else
@@ -824,8 +836,8 @@ namespace Jotunn.Managers
             }
 
             package.SetPos(0);
-            ApplyConfigZPackage(package, out bool initial, out HashSet<string> pluginIDs);
-            InvokeOnConfigurationSynchronized(initial, pluginIDs);
+            ApplyConfigZPackage(package, out bool initial, out HashSet<string> pluginGUIDs);
+            InvokeOnConfigurationSynchronized(initial, pluginGUIDs);
             yield break;
         }
 
@@ -838,8 +850,8 @@ namespace Jotunn.Managers
                 InvokeOnApplyingConfiguration();
 
                 // Apply config locally
-                ApplyConfigZPackage(package, out bool initial, out HashSet<string> pluginIDs);
-                InvokeOnConfigurationSynchronized(initial, pluginIDs);
+                ApplyConfigZPackage(package, out bool initial, out HashSet<string> pluginGUIDs);
+                InvokeOnConfigurationSynchronized(initial, pluginGUIDs);
 
                 // Send to all other clients
                 ConfigRPC.SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package);
@@ -850,14 +862,14 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Safely invoke the <see cref="OnConfigurationSynchronized"/> event
         /// </summary>
-        private void InvokeOnConfigurationSynchronized(bool initial, HashSet<string> pluginIDs)
+        private void InvokeOnConfigurationSynchronized(bool initial, HashSet<string> pluginGUIDs)
         {
             OnConfigurationSynchronized?.SafeInvoke(
                 this,
                 new ConfigurationSynchronizationEventArgs()
                 {
                     InitialSynchronization = initial,
-                    UpdatedPluginIDs = pluginIDs
+                    UpdatedPluginGUIDs = pluginGUIDs
                 }
             );
         }
@@ -875,11 +887,11 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="configPkg">Package of config tuples</param>
         /// <param name="initial">Indicator if this was an initial config package</param>
-        /// <param name="pluginIDs">Indicator if this was an initial config package</param>
-        private void ApplyConfigZPackage(ZPackage configPkg, out bool initial, out HashSet<string> pluginIDs)
+        /// <param name="pluginGUIDs">Indicator if this was an initial config package</param>
+        private void ApplyConfigZPackage(ZPackage configPkg, out bool initial, out HashSet<string> pluginGUIDs)
         {
             initial = (configPkg.ReadByte() & INITIAL_CONFIG) != 0;
-            pluginIDs = new HashSet<string>();
+            pluginGUIDs = new HashSet<string>();
 
             Logger.LogDebug($"Applying{(initial ? " initial" : null)} configuration data package");
 
@@ -895,7 +907,10 @@ namespace Jotunn.Managers
                 var section = configPkg.ReadString();
                 var key = configPkg.ReadString();
                 var serializedValue = configPkg.ReadString();
-                pluginIDs.Add(GetPluginIdentifier(configIdentifier));
+                if (GetPluginGUID(configIdentifier, out string pluginGUID))
+                {
+                    pluginGUIDs.Add(pluginGUID);
+                }
 
                 Logger.LogDebug($"Received {configIdentifier} {section} {key} {serializedValue}");
 
