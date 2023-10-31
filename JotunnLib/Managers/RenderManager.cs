@@ -24,6 +24,11 @@ namespace Jotunn.Managers
         private Sprite EmptySprite { get; } = Sprite.Create(Texture2D.whiteTexture, Rect.zero, Vector2.one);
 
         /// <summary>
+        ///     Appended string to file names to force a cache recreation, if changed
+        /// </summary>
+        private static string cacheRevision = "c0";
+
+        /// <summary>
         ///     Singleton instance
         /// </summary>
         public static RenderManager Instance => _instance ??= new RenderManager();
@@ -217,7 +222,7 @@ namespace Jotunn.Managers
 
         private string GetCachePath(string name, string version)
         {
-            return Path.Combine(Utils.Paths.IconCachePath, $"{name}-{version}.png");
+            return Path.Combine(Utils.Paths.IconCachePath, $"{name}-{version}-{cacheRevision}.png");
         }
 
         private string GetVersion(BepInPlugin plugin)

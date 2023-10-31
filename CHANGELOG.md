@@ -6,6 +6,7 @@
 * Fixed the debug mode Jötunn ASCII art
 * Fixed AddComponentCopy was setting the name and tag of the Component's GameObject
 * Fixed KeyHints for left hand items
+* Fixed sprite rendering results in mostly empty sprites in Unity 2022, backwards compatible and an existing cached sprite will be recreated
 
 ## Version 2.14.5
 * Fixed GUIManager assets not being properly initialized when later accessed, causing some elements to not show up
