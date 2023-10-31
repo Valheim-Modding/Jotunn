@@ -57,7 +57,8 @@ namespace Jotunn
 
             foreach (PropertyInfo propertyInfo in duplicate.GetType().GetProperties(flags))
             {
-                switch (propertyInfo.Name) {
+                switch (propertyInfo.Name)
+                {
                     // setting rayTracingMode prints a warning, because ray tracing is disabled
                     case "rayTracingMode":
                         continue;
@@ -67,6 +68,22 @@ namespace Jotunn
                     // this is Component.tag and sets the GameObject tag. Copying a component should not change the GameObject tag
                     case "tag":
                         continue;
+                    // not allowed to access
+                    case "mesh":
+                        if (duplicate is MeshFilter)
+                            continue;
+                        break;
+                    // not allowed to access
+                    case "material":
+                    case "materials":
+                        if (duplicate is Renderer)
+                            continue;
+                        break;
+                    // setting the bounds overrides the default bounding box and the renderer bounding volume will no longer be automatically calculated
+                    case "bounds":
+                        if (duplicate is Renderer)
+                            continue;
+                        break;
                 }
 
                 if (propertyInfo.CanWrite && propertyInfo.GetMethod != null)

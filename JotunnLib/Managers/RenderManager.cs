@@ -39,11 +39,10 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Unused Layer in Unity
+        ///     Arbitrary unused Layer in the game
         /// </summary>
-        private const int Layer = 3;
+        private const int Layer = 31;
 
-        private static readonly Vector3 SpawnPoint = new Vector3(10000f, 10000f, 10000f);
         private Camera Renderer;
         private Light Light;
 
@@ -244,9 +243,9 @@ namespace Jotunn.Managers
 
                 // calculate the Z position of the prefab as it needs to be far away from the camera
                 float maxMeshSize = Mathf.Max(renderObject.Size.x, renderObject.Size.y) + 0.1f;
-                float distance = maxMeshSize / Mathf.Tan(Renderer.fieldOfView * Mathf.Deg2Rad) * renderObject.Request.DistanceMultiplier;
+                float distance = (maxMeshSize / Mathf.Tan(Renderer.fieldOfView * Mathf.Deg2Rad)) * renderObject.Request.DistanceMultiplier;
 
-                Renderer.transform.position = SpawnPoint + new Vector3(0, 0, distance);
+                Renderer.transform.position = new Vector3(0, 0, distance);
 
                 Renderer.Render();
 
@@ -279,7 +278,7 @@ namespace Jotunn.Managers
             Renderer = new GameObject("Render Camera", typeof(Camera)).GetComponent<Camera>();
             Renderer.backgroundColor = new Color(0, 0, 0, 0);
             Renderer.clearFlags = CameraClearFlags.SolidColor;
-            Renderer.transform.position = SpawnPoint;
+            Renderer.transform.position = Vector3.zero;
             Renderer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
 
             Renderer.fieldOfView = 0.5f;
@@ -287,7 +286,7 @@ namespace Jotunn.Managers
             Renderer.cullingMask = 1 << Layer;
 
             Light = new GameObject("Render Light", typeof(Light)).GetComponent<Light>();
-            Light.transform.position = SpawnPoint;
+            Light.transform.position = Vector3.zero;
             Light.transform.rotation = Quaternion.Euler(5f, 180f, 5f);
             Light.type = LightType.Directional;
             Light.cullingMask = 1 << Layer;
@@ -337,7 +336,7 @@ namespace Jotunn.Managers
             }
 
             // center the prefab
-            spawn.transform.position = SpawnPoint - (min + max) / 2f;
+            spawn.transform.position = -(min + max) / 2f;
             Vector3 size = new Vector3(
                 Mathf.Abs(min.x) + Mathf.Abs(max.x),
                 Mathf.Abs(min.y) + Mathf.Abs(max.y),
