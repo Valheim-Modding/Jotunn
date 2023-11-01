@@ -39,7 +39,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Event triggered before syncing configuration on either the server or client
         /// </summary>
-        public static event EventHandler<ConfigurationSynchronizationEventArgs> OnApplyingConfiguration;
+        public static event EventHandler<SyncingConfigurationEventArgs> OnSyncingConfiguration;
 
         /// <summary>
         ///     Event triggered after a clients admin status changed on the server
@@ -879,7 +879,7 @@ namespace Jotunn.Managers
         /// </summary>
         private void InvokeOnApplyingConfiguration()
         {
-            OnApplyingConfiguration?.SafeInvoke(this, new ConfigurationSynchronizationEventArgs());
+            OnSyncingConfiguration?.SafeInvoke(this, new SyncingConfigurationEventArgs());
         }
 
         /// <summary>
