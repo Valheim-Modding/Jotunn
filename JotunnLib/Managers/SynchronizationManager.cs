@@ -716,7 +716,7 @@ namespace Jotunn.Managers
                     if (ZNet.instance.IsClientInstance())
                     {
                         // Fire event that admin config will be changed locally, since the RPC does not come back to the sender
-                        InvokeOnApplyingConfiguration();
+                        InvokeOnSyncingConfiguration();
                         ConfigRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
 
                         // Get IDs of plugins that received data
@@ -826,7 +826,7 @@ namespace Jotunn.Managers
 
         private IEnumerator ConfigRPC_OnClientReceive(long sender, ZPackage package)
         {
-            InvokeOnApplyingConfiguration();
+            InvokeOnSyncingConfiguration();
 
             byte packageFlags = package.ReadByte();
 
@@ -847,7 +847,7 @@ namespace Jotunn.Managers
             if (ZNet.instance.IsAdmin(sender))
             {
                 Logger.LogInfo($"Received configuration data from client {sender}");
-                InvokeOnApplyingConfiguration();
+                InvokeOnSyncingConfiguration();
 
                 // Apply config locally
                 ApplyConfigZPackage(package, out bool initial, out HashSet<string> pluginGUIDs);
@@ -877,7 +877,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Safely invoke the <see cref="OnConfigurationSynchronized"/> event
         /// </summary>
-        private void InvokeOnApplyingConfiguration()
+        private void InvokeOnSyncingConfiguration()
         {
             OnSyncingConfiguration?.SafeInvoke(this, new SyncingConfigurationEventArgs());
         }
