@@ -20,20 +20,26 @@ namespace Jotunn.Managers
     {
         private CustomRPC ConfigRPC;
         private CustomRPC AdminRPC;
-        private List<Tuple<CustomRPC, Func<ZNetPeer, ZPackage>>> InitialSync = new List<Tuple<CustomRPC, Func<ZNetPeer,ZPackage>>>();
+        private List<Tuple<CustomRPC, Func<ZNetPeer, ZPackage>>> InitialSync = new List<Tuple<CustomRPC, Func<ZNetPeer, ZPackage>>>();
 
         internal readonly Dictionary<ConfigEntryBase, object> localValues = new Dictionary<ConfigEntryBase, object>();
 
         private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
         private readonly Dictionary<string, ConfigFile> CustomConfigs = new Dictionary<string, ConfigFile>();
         private List<Tuple<string, string, string, string>> CachedConfigValues = new List<Tuple<string, string, string, string>>();
+        private readonly Dictionary<string, string> CachedCustomConfigGUIDs = new Dictionary<string, string>();
         private BaseUnityPlugin ConfigurationManager;
         private bool ConfigurationManagerWindowShown;
 
         /// <summary>
-        ///     Event triggered after server configuration is applied to client
+        ///     Event triggered after configuration has been synced on either the server or client
         /// </summary>
         public static event EventHandler<ConfigurationSynchronizationEventArgs> OnConfigurationSynchronized;
+
+        /// <summary>
+        ///     Event triggered before syncing configuration on either the server or client
+        /// </summary>
+        public static event EventHandler<SyncingConfigurationEventArgs> OnSyncingConfiguration;
 
         /// <summary>
         ///     Event triggered after a clients admin status changed on the server
@@ -41,6 +47,7 @@ namespace Jotunn.Managers
         public static event Action OnAdminStatusChanged;
 
         private static SynchronizationManager _instance;
+
         /// <summary>
         ///     Singleton instance
         /// </summary>
@@ -49,10 +56,11 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Hide .ctor
         /// </summary>
-        private SynchronizationManager() { }
+        private SynchronizationManager()
+        { }
 
         /// <summary>
-        ///     Clientside indicator if the current player has admin status on 
+        ///     Clientside indicator if the current player has admin status on
         ///     the current world, always true on local games
         /// </summary>
         public bool PlayerIsAdmin { get; private set; }
@@ -138,6 +146,10 @@ namespace Jotunn.Managers
 
             Logger.LogDebug($"Registering custom config file {identifier}");
             CustomConfigs.Add(identifier, customFile);
+
+            // Add to cached pluginGUIDs to get source mod for custom config files
+            var plugin = BepInExUtils.GetSourceModMetadata();
+            CachedCustomConfigGUIDs.Add(identifier, plugin.GUID);
         }
 
         /// <summary>
@@ -454,6 +466,21 @@ namespace Jotunn.Managers
             return config.ConfigFilePath.Replace(BepInEx.Paths.ConfigPath, "").Replace("\\", "/").Trim('/');
         }
 
+        private bool GetPluginGUID(string configFileIdentifier, out string pluginGUID)
+        {
+            if (IsDefaultModConfig(configFileIdentifier, out pluginGUID))
+            {
+                return true;
+            }
+
+            if (CachedCustomConfigGUIDs.ContainsKey(configFileIdentifier))
+            {
+                pluginGUID = CachedCustomConfigGUIDs[configFileIdentifier];
+                return true;
+            }
+            return false;
+        }
+
         private ConfigFile GetConfigFile(string identifier)
         {
             if (CustomConfigs.TryGetValue(identifier, out var config))
@@ -609,7 +636,6 @@ namespace Jotunn.Managers
             return false;
         }
 
-
         /// <summary>
         ///     Cache the synchronizable configuration values for comparison
         /// </summary>
@@ -689,10 +715,22 @@ namespace Jotunn.Managers
                     // Send values to server if it is a client instance
                     if (ZNet.instance.IsClientInstance())
                     {
+                        // Fire event that admin config will be changed locally, since the RPC does not come back to the sender
+                        InvokeOnSyncingConfiguration();
                         ConfigRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
 
+                        // Get IDs of plugins that received data
+                        var pluginGUIDs = new HashSet<string>();
+                        foreach (var entry in valuesToSend)
+                        {
+                            if (GetPluginGUID(entry.Item1, out string pluginGUID))
+                            {
+                                pluginGUIDs.Add(pluginGUID);
+                            }
+                        }
+
                         // Also fire event that admin config was changed locally, since the RPC does not come back to the sender
-                        InvokeOnConfigurationSynchronized(false);
+                        InvokeOnConfigurationSynchronized(false, pluginGUIDs);
                     }
                     // Send changed values to all connected clients
                     else
@@ -788,6 +826,8 @@ namespace Jotunn.Managers
 
         private IEnumerator ConfigRPC_OnClientReceive(long sender, ZPackage package)
         {
+            InvokeOnSyncingConfiguration();
+
             byte packageFlags = package.ReadByte();
 
             if ((packageFlags & INITIAL_CONFIG) != 0)
@@ -796,8 +836,8 @@ namespace Jotunn.Managers
             }
 
             package.SetPos(0);
-            ApplyConfigZPackage(package, out bool initial);
-            InvokeOnConfigurationSynchronized(initial);
+            ApplyConfigZPackage(package, out bool initial, out HashSet<string> pluginGUIDs);
+            InvokeOnConfigurationSynchronized(initial, pluginGUIDs);
             yield break;
         }
 
@@ -807,9 +847,11 @@ namespace Jotunn.Managers
             if (ZNet.instance.IsAdmin(sender))
             {
                 Logger.LogInfo($"Received configuration data from client {sender}");
+                InvokeOnSyncingConfiguration();
 
                 // Apply config locally
-                ApplyConfigZPackage(package, out bool initial);
+                ApplyConfigZPackage(package, out bool initial, out HashSet<string> pluginGUIDs);
+                InvokeOnConfigurationSynchronized(initial, pluginGUIDs);
 
                 // Send to all other clients
                 ConfigRPC.SendPackage(ZNet.instance.m_peers.Where(x => x.m_uid != sender).ToList(), package);
@@ -820,9 +862,24 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Safely invoke the <see cref="OnConfigurationSynchronized"/> event
         /// </summary>
-        private void InvokeOnConfigurationSynchronized(bool initial)
+        private void InvokeOnConfigurationSynchronized(bool initial, HashSet<string> pluginGUIDs)
         {
-            OnConfigurationSynchronized?.SafeInvoke(this, new ConfigurationSynchronizationEventArgs() { InitialSynchronization = initial });
+            OnConfigurationSynchronized?.SafeInvoke(
+                this,
+                new ConfigurationSynchronizationEventArgs()
+                {
+                    InitialSynchronization = initial,
+                    UpdatedPluginGUIDs = pluginGUIDs
+                }
+            );
+        }
+
+        /// <summary>
+        ///     Safely invoke the <see cref="OnConfigurationSynchronized"/> event
+        /// </summary>
+        private void InvokeOnSyncingConfiguration()
+        {
+            OnSyncingConfiguration?.SafeInvoke(this, new SyncingConfigurationEventArgs());
         }
 
         /// <summary>
@@ -830,9 +887,11 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="configPkg">Package of config tuples</param>
         /// <param name="initial">Indicator if this was an initial config package</param>
-        private void ApplyConfigZPackage(ZPackage configPkg, out bool initial)
+        /// <param name="pluginGUIDs">Indicator if this was an initial config package</param>
+        private void ApplyConfigZPackage(ZPackage configPkg, out bool initial, out HashSet<string> pluginGUIDs)
         {
             initial = (configPkg.ReadByte() & INITIAL_CONFIG) != 0;
+            pluginGUIDs = new HashSet<string>();
 
             Logger.LogDebug($"Applying{(initial ? " initial" : null)} configuration data package");
 
@@ -848,6 +907,10 @@ namespace Jotunn.Managers
                 var section = configPkg.ReadString();
                 var key = configPkg.ReadString();
                 var serializedValue = configPkg.ReadString();
+                if (GetPluginGUID(configIdentifier, out string pluginGUID))
+                {
+                    pluginGUIDs.Add(pluginGUID);
+                }
 
                 Logger.LogDebug($"Received {configIdentifier} {section} {key} {serializedValue}");
 
@@ -930,19 +993,33 @@ namespace Jotunn.Managers
             }
 
             public bool IsConnected() => Original.IsConnected();
+
             public ZPackage Recv() => Original.Recv();
+
             public int GetSendQueueSize() => Original.GetSendQueueSize();
+
             public int GetCurrentSendRate() => Original.GetCurrentSendRate();
+
             public bool IsHost() => Original.IsHost();
+
             public void Dispose() => Original.Dispose();
+
             public bool GotNewData() => Original.GotNewData();
+
             public void Close() => Original.Close();
+
             public string GetEndPointString() => Original.GetEndPointString();
+
             public void GetAndResetStats(out int totalSent, out int totalRecv) => Original.GetAndResetStats(out totalSent, out totalRecv);
+
             public void GetConnectionQuality(out float localQuality, out float remoteQuality, out int ping, out float outByteSec, out float inByteSec) => Original.GetConnectionQuality(out localQuality, out remoteQuality, out ping, out outByteSec, out inByteSec);
+
             public ISocket Accept() => Original.Accept();
+
             public int GetHostPort() => Original.GetHostPort();
+
             public bool Flush() => Original.Flush();
+
             public string GetHostName() => Original.GetHostName();
 
             public void VersionMatch()
