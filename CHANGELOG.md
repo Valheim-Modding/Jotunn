@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.15.0
+* Added SynchronizationManager OnSyncingConfiguration event that is called before configs are synced on the server/client (thx Searica)
+* Added UpdatedPluginGUIDs to arguments of OnConfigurationSynchronized event (thx Searica)
+* Changed SynchronizationManager OnConfigurationSynchronized event to trigger on both server and client (thx Searica)
+
 ## Version 2.14.6
 * Added a soft dependency to the LocalizationCache mod so that it loads a bit earlier. This has no direct impact on Jötunn
 * Changed prebuild references from the unstripped_corlib folder to the game assemblies as Valheim is no longer unstripped and the folder has been removed from the BepInEx package
