@@ -875,7 +875,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Safely invoke the <see cref="OnConfigurationSynchronized"/> event
+        ///     Safely invoke the <see cref="OnSyncingConfiguration"/> event
         /// </summary>
         private void InvokeOnSyncingConfiguration()
         {
