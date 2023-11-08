@@ -46,6 +46,11 @@ namespace Jotunn.Managers
         /// </summary>
         public static event Action OnAdminStatusChanged;
 
+        /// <summary>
+        ///     Event triggered after the in-game configuration manager window is closed
+        /// </summary>
+        public static event Action OnConfigurationWindowClosed;
+
         private static SynchronizationManager _instance;
 
         /// <summary>
@@ -574,9 +579,19 @@ namespace Jotunn.Managers
 
             if (!ConfigurationManagerWindowShown)
             {
+                InvokeOnConfigurationWindowClosed();
+
                 // After closing the window check for changed configs
                 SynchronizeChangedConfig();
             }
+        }
+
+        /// <summary>
+        ///     Safely invoke the <see cref="OnConfigurationWindowClosed"/> event
+        /// </summary>
+        private void InvokeOnConfigurationWindowClosed()
+        {
+            OnConfigurationWindowClosed?.SafeInvoke();
         }
 
         /// <summary>
