@@ -95,7 +95,7 @@ namespace Jotunn.Utils
             copyTexture.Apply();
 
             int height = (int)Math.Round((float)width * texture.height / texture.width);
-            texture.Resize(width, height);
+            texture.Reinitialize(width, height);
             texture.Apply();
 
             Color[] rpixels = texture.GetPixels(0);
