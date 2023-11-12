@@ -1,9 +1,11 @@
 # Changelog
 
 ## Version 2.15.0
-* Added SynchronizationManager OnSyncingConfiguration event that is called before configs are synced on the server/client (thx Searica)
+* Added OnSyncingConfiguration event to the SynchronizationManager that is called before configs are synced on the server/client (thx Searica)
 * Added UpdatedPluginGUIDs to arguments of OnConfigurationSynchronized event (thx Searica)
+* Addded OnConfigurationWindowClosed event to the SynchronizationManager (thx Searica)
 * Changed SynchronizationManager OnConfigurationSynchronized event to trigger on both server and client (thx Searica)
+* Fixed a build time warning in ScaleTexture that prevents Jotunn from loading in Unity 2022.3.12 projects
 
 ## Version 2.14.6
 * Added a soft dependency to the LocalizationCache mod so that it loads a bit earlier. This has no direct impact on Jötunn
