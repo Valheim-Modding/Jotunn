@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Jotunn.Extensions
 {
-    internal static class TransformExtensions
+    public static class TransformExtensions
     {
         /// <summary>
         ///     Extension method to find nested children by name using either
