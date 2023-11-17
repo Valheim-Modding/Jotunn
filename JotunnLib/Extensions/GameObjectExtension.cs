@@ -113,7 +113,7 @@ namespace Jotunn
         /// <typeparam name="T"></typeparam>
         /// <param name="gameObject"></param>
         /// <returns></returns>
-        public static bool HasComponent<T>(this GameObject gameObject) where T : UnityEngine.Component
+        public static bool HasComponent<T>(this GameObject gameObject) where T : Component
         {
             return gameObject.GetComponent<T>() != null;
         }
@@ -151,7 +151,7 @@ namespace Jotunn
         ///     Check if GameObject has any of the specified components.
         /// </summary>
         /// <param name="gameObject"></param>
-        /// <param name="components"></param>
+        /// <param name="componentNames"></param>
         /// <returns></returns>
         public static bool HasAnyComponent(this GameObject gameObject, params string[] componentNames)
         {
@@ -229,7 +229,7 @@ namespace Jotunn
         ///     have the specific component.
         /// </summary>
         /// <param name="gameObject"></param>
-        /// <param name="includeInactive"></param>
+        /// <param name="includeInactive">Whether to include inactive child objects in the search or not.</param>
         /// <returns></returns>
         public static bool HasComponentInChildren<T>(this GameObject gameObject, bool includeInactive = false) where T : Component
         {
@@ -243,7 +243,7 @@ namespace Jotunn
         /// <typeparam name="T"></typeparam>
         /// <param name="gameObject"></param>
         /// <param name="name"></param>
-        /// <param name="includeInactive"></param>
+        /// <param name="includeInactive">Whether to include inactive child objects in the search or not.</param>
         /// <returns></returns>
         public static T GetComponentInChildrenByName<T>(
             this GameObject gameObject,
@@ -267,8 +267,8 @@ namespace Jotunn
         ///     a breadth-first or depth-first search. Default is breadth-first.
         /// </summary>
         /// <param name="gameObject"></param>
-        /// <param name="childName"></param>
-        /// <param name="breadthFirst"></param>
+        /// <param name="childName">Name of the child object to search for.</param>
+        /// <param name="breadthFirst"> Whether to preform a breadth first or depth first search. Default is breadth first.</param>
         /// <returns></returns>
         public static Transform FindDeepChild(this GameObject gameObject, string childName, bool breadthFirst = true)
         {

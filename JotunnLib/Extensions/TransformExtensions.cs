@@ -10,7 +10,8 @@ namespace Jotunn.Extensions
         ///     a breadth-first or depth-first search. Default is breadth-first.
         /// </summary>
         /// <param name="transform"></param>
-        /// <param name="childName"></param>
+        /// <param name="childName">Name of the child object to search for.</param>
+        /// <param name="breadthFirst"> Whether to preform a breadth first or depth first search. Default is breadth first.</param>
         /// <returns></returns>
         public static Transform FindDeepChild(
             this Transform transform,
