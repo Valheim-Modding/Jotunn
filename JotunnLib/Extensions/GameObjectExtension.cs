@@ -3,6 +3,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Jotunn.Extensions;
 
 namespace Jotunn
 {
@@ -259,6 +260,19 @@ namespace Jotunn
             }
             Logger.LogWarning($"No {nameof(T)} with name {name} found for GameObject: {gameObject.name}");
             return null;
+        }
+
+        /// <summary>
+        ///     Extension method to find nested children by name using either
+        ///     a breadth-first or depth-first search. Default is breadth-first.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="childName"></param>
+        /// <param name="breadthFirst"></param>
+        /// <returns></returns>
+        public static Transform FindDeepChild(this GameObject gameObject, string childName, bool breadthFirst = true)
+        {
+            return gameObject?.transform.FindDeepChild(childName, breadthFirst);
         }
     }
 
