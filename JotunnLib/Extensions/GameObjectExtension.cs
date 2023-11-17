@@ -199,6 +199,29 @@ namespace Jotunn
             }
             return true;
         }
+
+        /// <summary>
+        ///     Check if GameObject or any of it's children
+        ///     have any of the specified components.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="components"></param>
+        /// <returns></returns>
+        public static bool HasAnyComponentInChildren(
+            this GameObject gameObject,
+            bool includeInactive = false,
+            params Type[] components
+        )
+        {
+            foreach (var compo in components)
+            {
+                if (gameObject.GetComponentInChildren(compo, includeInactive) != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     /// <summary>
