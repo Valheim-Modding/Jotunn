@@ -1,6 +1,6 @@
-﻿using System.Reflection;
- using TMPro;
- using UnityEngine;
+using System.Reflection;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Jotunn
@@ -103,6 +103,28 @@ namespace Jotunn
             }
 
             return target;
+        }
+
+        /// <summary>
+        ///     Extension method to check if GameObject has a component.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public static bool HasComponent<T>(this GameObject gameObject) where T : UnityEngine.Component
+        {
+            return gameObject.GetComponent<T>() != null;
+        }
+
+        /// <summary>
+        ///     Extension method to check if GameObject has a component.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public static bool HasComponent(this GameObject gameObject, string componentName)
+        {
+            return gameObject.GetComponent(componentName) != null;
         }
     }
 
