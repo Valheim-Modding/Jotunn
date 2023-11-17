@@ -163,6 +163,42 @@ namespace Jotunn
             }
             return false;
         }
+
+        /// <summary>
+        ///     Check if GameObject has all of the specified components.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="componentNames"></param>
+        /// <returns></returns>
+        public static bool HasAllComponents(this GameObject gameObject, params string[] componentNames)
+        {
+            foreach (var name in componentNames)
+            {
+                if (gameObject.GetComponent(name) == null)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        ///     Check if GameObject has all of the specified components.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="components"></param>
+        /// <returns></returns>
+        public static bool HasAllComponents(this GameObject gameObject, params Type[] components)
+        {
+            foreach (var compo in components)
+            {
+                if (gameObject.GetComponent(compo) == null)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     /// <summary>
