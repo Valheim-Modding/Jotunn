@@ -88,5 +88,19 @@ namespace Jotunn.Extensions
             }
             return s;
         }
+
+        /// <summary>
+        ///     Returns a copy of the string with the first character capitalized
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        internal static string CapitalizeFirstLetter(this string s)
+        {
+            if (s.Length == 0)
+                return s;
+            else if (s.Length == 1)
+                return $"{char.ToUpper(s[0])}";
+            else
+                return char.ToUpper(s[0]) + s.Substring(1);
     }
 }
