@@ -1,6 +1,6 @@
 namespace Jotunn.Extensions
 {
-    internal static class StringExtensions
+    public static class StringExtensions
     {
         /// <summary>
         ///     Returns true if the string contains any of the substrings.
@@ -8,7 +8,7 @@ namespace Jotunn.Extensions
         /// <param name="str"></param>
         /// <param name="substrings"></param>
         /// <returns></returns>
-        internal static bool ContainsAny(this string str, params string[] substrings)
+        public static bool ContainsAny(this string str, params string[] substrings)
         {
             foreach (var substring in substrings)
             {
@@ -26,7 +26,7 @@ namespace Jotunn.Extensions
         /// <param name="str"></param>
         /// <param name="suffixes"></param>
         /// <returns></returns>
-        internal static bool EndsWithAny(this string str, params string[] suffixes)
+        public static bool EndsWithAny(this string str, params string[] suffixes)
         {
             foreach (var substring in suffixes)
             {
@@ -44,7 +44,7 @@ namespace Jotunn.Extensions
         /// <param name="str"></param>
         /// <param name="prefixes"></param>
         /// <returns></returns>
-        internal static bool StartsWithAny(this string str, params string[] prefixes)
+        public static bool StartsWithAny(this string str, params string[] prefixes)
         {
             foreach (var substring in prefixes)
             {
@@ -63,7 +63,7 @@ namespace Jotunn.Extensions
         /// <param name="s"></param>
         /// <param name="suffix"></param>
         /// <returns></returns>
-        internal static string RemoveSuffix(this string s, string suffix)
+        public static string RemoveSuffix(this string s, string suffix)
         {
             if (s.EndsWith(suffix))
             {
@@ -80,7 +80,7 @@ namespace Jotunn.Extensions
         /// <param name="s"></param>
         /// <param name="prefix"></param>
         /// <returns></returns>
-        internal static string RemovePrefix(this string s, string prefix)
+        public static string RemovePrefix(this string s, string prefix)
         {
             if (s.StartsWith(prefix))
             {
@@ -94,7 +94,7 @@ namespace Jotunn.Extensions
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        internal static string CapitalizeFirstLetter(this string s)
+        public static string CapitalizeFirstLetter(this string s)
         {
             if (s.Length == 0)
                 return s;
@@ -109,7 +109,7 @@ namespace Jotunn.Extensions
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal static string EmptyIfNull(this object value)
+        public static string EmptyIfNull(this object value)
         {
             if (value == null)
             {
