@@ -1,4 +1,5 @@
 using System.Reflection;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -125,6 +126,42 @@ namespace Jotunn
         public static bool HasComponent(this GameObject gameObject, string componentName)
         {
             return gameObject.GetComponent(componentName) != null;
+        }
+
+        /// <summary>
+        ///     Check if GameObject has any of the specified components.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="components"></param>
+        /// <returns></returns>
+        public static bool HasAnyComponent(this GameObject gameObject, params Type[] components)
+        {
+            foreach (var compo in components)
+            {
+                if (gameObject.GetComponent(compo) != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///     Check if GameObject has any of the specified components.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="components"></param>
+        /// <returns></returns>
+        public static bool HasAnyComponent(this GameObject gameObject, params string[] componentNames)
+        {
+            foreach (var name in componentNames)
+            {
+                if (gameObject.GetComponent(name) != null)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
