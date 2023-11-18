@@ -151,19 +151,14 @@ namespace Jotunn
         /// <returns></returns>
         public static bool HasAllComponents(this GameObject gameObject, params string[] componentNames)
         {
-            int compCount = 0;
             foreach (var name in componentNames)
             {
-                if (gameObject.GetComponent(name))
-                {
-                    compCount++;
-                }
-                else
+                if (!gameObject.GetComponent(name))
                 {
                     return false;
                 }
             }
-            return compCount == componentNames.Length;
+            return true;
         }
 
         /// <summary>
@@ -174,19 +169,14 @@ namespace Jotunn
         /// <returns></returns>
         public static bool HasAllComponents(this GameObject gameObject, params Type[] components)
         {
-            int compCount = 0;
             foreach (var compo in components)
             {
-                if (gameObject.GetComponent(compo))
-                {
-                    compCount++;
-                }
-                else
+                if (!gameObject.GetComponent(compo))
                 {
                     return false;
                 }
             }
-            return compCount == components.Length;
+            return true;
         }
 
         /// <summary>
