@@ -107,29 +107,6 @@ namespace Jotunn
             return target;
         }
 
-        /// <summary>
-        ///     Extension method to check if GameObject has a component.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="gameObject"></param>
-        /// <returns></returns>
-        public static bool HasComponent<T>(this GameObject gameObject) where T : Component
-        {
-            return gameObject.GetComponent<T>() != null;
-        }
-
-        /// <summary>
-        ///     Extension method to check if GameObject has a component.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="gameObject"></param>
-        /// <returns></returns>
-        public static bool HasComponent(this GameObject gameObject, string componentName)
-        {
-            return gameObject.GetComponent(componentName) != null;
-        }
-
-        /// <summary>
         ///     Check if GameObject has any of the specified components.
         /// </summary>
         /// <param name="gameObject"></param>
