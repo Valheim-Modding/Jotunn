@@ -116,7 +116,7 @@ namespace Jotunn
         {
             foreach (var compo in components)
             {
-                if (gameObject.GetComponent(compo) != null)
+                if (gameObject.GetComponent(compo))
                 {
                     return true;
                 }
@@ -134,7 +134,7 @@ namespace Jotunn
         {
             foreach (var name in componentNames)
             {
-                if (gameObject.GetComponent(name) != null)
+                if (gameObject.GetComponent(name))
                 {
                     return true;
                 }
