@@ -103,19 +103,5 @@ namespace Jotunn.Extensions
             else
                 return char.ToUpper(s[0]) + s.Substring(1);
         }
-
-        /// <summary>
-        ///     Returns an Empty string if value is null
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static string EmptyIfNull(this object value)
-        {
-            if (value == null)
-            {
-                return string.Empty;
-            }
-            return value.ToString();
-        }
     }
 }
