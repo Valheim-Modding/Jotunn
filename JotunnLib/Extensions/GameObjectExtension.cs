@@ -194,7 +194,7 @@ namespace Jotunn
         {
             foreach (var compo in components)
             {
-                if (gameObject.GetComponentInChildren(compo, includeInactive) != null)
+                if (gameObject.GetComponentInChildren(compo, includeInactive))
                 {
                     return true;
                 }
