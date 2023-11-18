@@ -213,18 +213,6 @@ namespace Jotunn
         }
 
         /// <summary>
-        ///     Check if GameObject or any of it's children
-        ///     have the specific component.
-        /// </summary>
-        /// <param name="gameObject"></param>
-        /// <param name="includeInactive">Whether to include inactive child objects in the search or not.</param>
-        /// <returns></returns>
-        public static bool HasComponentInChildren<T>(this GameObject gameObject, bool includeInactive = false) where T : Component
-        {
-            return gameObject.GetComponentInChildren<T>(includeInactive) != null;
-        }
-
-        /// <summary>
         ///     Extension method to find nested children by name using either
         ///     a breadth-first or depth-first search. Default is breadth-first.
         /// </summary>
