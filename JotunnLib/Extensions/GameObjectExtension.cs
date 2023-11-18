@@ -107,6 +107,7 @@ namespace Jotunn
             return target;
         }
 
+        /// <summary>
         ///     Check if GameObject has any of the specified components.
         /// </summary>
         /// <param name="gameObject"></param>
