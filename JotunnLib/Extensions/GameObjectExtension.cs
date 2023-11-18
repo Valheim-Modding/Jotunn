@@ -139,7 +139,7 @@ namespace Jotunn
         {
             foreach (var compo in components)
             {
-                if (gameObject.GetComponent(compo) != null)
+                if (gameObject.GetComponent(compo))
                 {
                     return true;
                 }
