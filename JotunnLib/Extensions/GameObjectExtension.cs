@@ -183,6 +183,7 @@ namespace Jotunn
         ///     have any of the specified components.
         /// </summary>
         /// <param name="gameObject"></param>
+        /// <param name="includeInactive"></param>
         /// <param name="components"></param>
         /// <returns></returns>
         public static bool HasAnyComponentInChildren(
