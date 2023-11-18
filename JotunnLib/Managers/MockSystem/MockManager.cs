@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
+using Jotunn.Extensions;
 using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
@@ -146,11 +147,7 @@ namespace Jotunn.Managers
                 // Cut off the suffix in the name to correctly query the original material
                 if (unityObject is Material)
                 {
-                    const string materialInstance = " (Instance)";
-                    if (unityObjectName.EndsWith(materialInstance))
-                    {
-                        unityObjectName = unityObjectName.Substring(0, unityObjectName.Length - materialInstance.Length);
-                    }
+                    unityObjectName = unityObjectName.RemoveSuffix(" (Instance)");
                 }
 
                 Object ret = PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);

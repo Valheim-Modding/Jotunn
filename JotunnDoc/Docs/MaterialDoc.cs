@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using Jotunn.Entities;
+using Jotunn.Extensions;
 using Jotunn.Utils;
 using JotunnDoc.Patches;
 using UnityEngine;
@@ -41,14 +42,10 @@ namespace JotunnDoc.Docs
             {
                 foreach (Material mat in ShaderHelper.GetAllRendererMaterials(prefab))
                 {
-                    const string instanceToken = " (Instance)";
                     string matName = mat.name;
 
                     // Add distinct materials
-                    if (matName.EndsWith(instanceToken))
-                    {
-                        matName = matName.Substring(0, matName.Length - instanceToken.Length);
-                    }
+                    matName = matName.RemoveSuffix(" (Instance)");
 
                     if (!mats.ContainsKey(matName))
                     {
@@ -60,6 +57,7 @@ namespace JotunnDoc.Docs
                     {
                         matPrefabs.Add(matName, new List<string>());
                     }
+
                     matPrefabs[matName].Add(prefab.name);
                 }
             }

@@ -1,5 +1,8 @@
 namespace Jotunn.Extensions
 {
+    /// <summary>
+    ///     Helper methods for strings
+    /// </summary>
     public static class StringExtensions
     {
         /// <summary>
