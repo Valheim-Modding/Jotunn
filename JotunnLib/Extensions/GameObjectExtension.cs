@@ -1,7 +1,9 @@
-﻿using System.Reflection;
- using TMPro;
- using UnityEngine;
+using System.Reflection;
+using System;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
+using Jotunn.Extensions;
 
 namespace Jotunn
 {
@@ -26,7 +28,7 @@ namespace Jotunn
         /// <typeparam name="T">Any type that inherits MonoBehaviour</typeparam>
         /// <param name="this">this</param>
         /// <returns>Returns null when MonoBehaviours.op_equality returns false.</returns>
-        public static T OrNull<T>(this T @this) where T : Object
+        public static T OrNull<T>(this T @this) where T : UnityEngine.Object
         {
             return (T)(@this ? @this : null);
         }
@@ -103,6 +105,118 @@ namespace Jotunn
             }
 
             return target;
+        }
+
+        /// <summary>
+        ///     Check if GameObject has any of the specified components.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="components"></param>
+        /// <returns></returns>
+        public static bool HasAnyComponent(this GameObject gameObject, params Type[] components)
+        {
+            foreach (var compo in components)
+            {
+                if (gameObject.GetComponent(compo))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///     Check if GameObject has any of the specified components.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="componentNames"></param>
+        /// <returns></returns>
+        public static bool HasAnyComponent(this GameObject gameObject, params string[] componentNames)
+        {
+            foreach (var name in componentNames)
+            {
+                if (gameObject.GetComponent(name))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///     Check if GameObject has all of the specified components.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="componentNames"></param>
+        /// <returns></returns>
+        public static bool HasAllComponents(this GameObject gameObject, params string[] componentNames)
+        {
+            foreach (var name in componentNames)
+            {
+                if (!gameObject.GetComponent(name))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        ///     Check if GameObject has all of the specified components.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="components"></param>
+        /// <returns></returns>
+        public static bool HasAllComponents(this GameObject gameObject, params Type[] components)
+        {
+            foreach (var compo in components)
+            {
+                if (!gameObject.GetComponent(compo))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        ///     Check if GameObject or any of it's children
+        ///     have any of the specified components.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="includeInactive"></param>
+        /// <param name="components"></param>
+        /// <returns></returns>
+        public static bool HasAnyComponentInChildren(
+            this GameObject gameObject,
+            bool includeInactive = false,
+            params Type[] components
+        )
+        {
+            foreach (var compo in components)
+            {
+                if (gameObject.GetComponentInChildren(compo, includeInactive))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///     Extension method to find nested children by name using either
+        ///     a breadth-first or depth-first search. Default is breadth-first.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="childName">Name of the child object to search for.</param>
+        /// <param name="searchType">Whether to preform a breadth first or depth first search. Default is breadth first.</param>
+        public static Transform FindDeepChild(
+            this GameObject gameObject,
+            string childName,
+            global::Utils.IterativeSearchType searchType = global::Utils.IterativeSearchType.BreadthFirst
+        )
+        {
+            return gameObject.transform.FindDeepChild(childName, searchType);
         }
     }
 
