@@ -268,11 +268,14 @@ namespace Jotunn
         /// </summary>
         /// <param name="gameObject"></param>
         /// <param name="childName">Name of the child object to search for.</param>
-        /// <param name="breadthFirst"> Whether to preform a breadth first or depth first search. Default is breadth first.</param>
-        /// <returns></returns>
-        public static Transform FindDeepChild(this GameObject gameObject, string childName, bool breadthFirst = true)
+        /// <param name="searchType">Whether to preform a breadth first or depth first search. Default is breadth first.</param>
+        public static Transform FindDeepChild(
+            this GameObject gameObject,
+            string childName,
+            global::Utils.IterativeSearchType searchType = global::Utils.IterativeSearchType.BreadthFirst
+        )
         {
-            return gameObject?.transform.FindDeepChild(childName, breadthFirst);
+            return gameObject.transform.FindDeepChild(childName, searchType);
         }
     }
 
