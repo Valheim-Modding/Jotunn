@@ -106,7 +106,7 @@ namespace Jotunn.Managers
             Main.LogInit("MinimapManager");
 
             // Dont init on a headless server
-            if (GUIManager.IsHeadless())
+            if (GUIUtils.IsHeadless)
             {
                 return;
             }

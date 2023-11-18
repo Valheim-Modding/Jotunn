@@ -58,7 +58,7 @@ namespace Jotunn.Managers
         {
             Main.LogInit("RenderManager");
 
-            if (GUIManager.IsHeadless())
+            if (GUIUtils.IsHeadless)
             {
                 return;
             }
@@ -167,7 +167,7 @@ namespace Jotunn.Managers
                 return null;
             }
 
-            if (GUIManager.IsHeadless())
+            if (GUIUtils.IsHeadless)
             {
                 return EmptySprite;
             }

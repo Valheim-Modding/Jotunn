@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using Jotunn.Configs;
+using Jotunn.Utils;
 using UnityEngine;
 using static Jotunn.Managers.InputManager;
 using Object = UnityEngine.Object;
@@ -71,7 +72,7 @@ namespace Jotunn.Managers
             Main.LogInit("KeyHintManager");
 
             // Dont init on a headless server
-            if (!GUIManager.IsHeadless())
+            if (!GUIUtils.IsHeadless)
             {
                 Main.Harmony.PatchAll(typeof(Patches));
             }

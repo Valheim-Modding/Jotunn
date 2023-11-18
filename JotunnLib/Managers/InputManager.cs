@@ -4,6 +4,7 @@ using System.Linq;
 using BepInEx.Configuration;
 using HarmonyLib;
 using Jotunn.Configs;
+using Jotunn.Utils;
 using UnityEngine;
 
 namespace Jotunn.Managers
@@ -238,7 +239,7 @@ namespace Jotunn.Managers
             Main.LogInit("InputManager");
 
             // Dont init on a dedicated server
-            if (!GUIManager.IsHeadless())
+            if (!GUIUtils.IsHeadless)
             {
                 Main.Harmony.PatchAll(typeof(Patches));
             }

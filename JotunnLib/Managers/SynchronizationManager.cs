@@ -630,7 +630,7 @@ namespace Jotunn.Managers
         /// </summary>
         private static bool ConfigEntryBase_GetSerializedValue(ConfigEntryBase __instance, ref string __result)
         {
-            if (!__instance.IsSyncable() || GUIManager.IsHeadless() || __instance.GetLocalValue() == null)
+            if (!__instance.IsSyncable() || GUIUtils.IsHeadless || __instance.GetLocalValue() == null)
             {
                 return true;
             }
@@ -644,7 +644,7 @@ namespace Jotunn.Managers
         /// </summary>
         private static bool ConfigEntryBase_SetSerializedValue(ConfigEntryBase __instance, string value)
         {
-            if (GUIManager.IsHeadless() || __instance.GetLocalValue() == null)
+            if (GUIUtils.IsHeadless || __instance.GetLocalValue() == null)
             {
                 return true;
             }
