@@ -215,32 +215,6 @@ namespace Jotunn
         }
 
         /// <summary>
-        ///     Extension method to get the first component in the GameObject
-        ///     or it's children that has the specified name.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="gameObject"></param>
-        /// <param name="name"></param>
-        /// <param name="includeInactive">Whether to include inactive child objects in the search or not.</param>
-        /// <returns></returns>
-        public static T GetComponentInChildrenByName<T>(
-            this GameObject gameObject,
-            string name,
-            bool includeInactive = false
-        ) where T : Component
-        {
-            foreach (var compo in gameObject.GetComponentsInChildren<T>(includeInactive))
-            {
-                if (compo.name == name)
-                {
-                    return compo;
-                }
-            }
-            Logger.LogWarning($"No {nameof(T)} with name {name} found for GameObject: {gameObject.name}");
-            return null;
-        }
-
-        /// <summary>
         ///     Extension method to find nested children by name using either
         ///     a breadth-first or depth-first search. Default is breadth-first.
         /// </summary>
