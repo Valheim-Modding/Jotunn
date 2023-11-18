@@ -7,6 +7,7 @@
 * Added more helper methods for GameObject, Transform and String (thx Searica)
 * Changed SynchronizationManager OnConfigurationSynchronized event to trigger on both server and client (thx Searica)
 * Fixed a build time warning in ScaleTexture that prevents Jotunn from loading in Unity 2022.3.12 projects
+* Fixed a bug where the GUIManager could be initialized at shutdown with certain calls, resulting in an error
 
 ## Version 2.14.6
 * Added a soft dependency to the LocalizationCache mod so that it loads a bit earlier. This has no direct impact on Jötunn
