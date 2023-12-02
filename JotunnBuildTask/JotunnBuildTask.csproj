@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <ProjectGuid>{839DFF98-EE10-4BA6-879F-5BF628889F4F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>JotunnBuildTask</RootNamespace>

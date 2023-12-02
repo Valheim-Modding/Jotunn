@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <Product>JotunnLib</Product>
     <Id>JotunnLib</Id>
     <LangVersion>8.0</LangVersion>
