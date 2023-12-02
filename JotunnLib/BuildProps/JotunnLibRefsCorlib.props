@@ -1,30 +1,39 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Reference Include="$(VALHEIM_INSTALL)/valheim_Data/Managed/assembly_googleanalytics.dll" Publicize="true">
+    <Reference Include="assembly_googleanalytics_publicized">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_googleanalytics_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(VALHEIM_INSTALL)/valheim_Data/Managed/assembly_guiutils.dll" Publicize="true">
+    <Reference Include="assembly_guiutils_publicized">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(VALHEIM_INSTALL)/valheim_Data/Managed/assembly_lux.dll" Publicize="true">
+    <Reference Include="assembly_lux_publicized">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_lux_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(VALHEIM_INSTALL)/valheim_Data/Managed/assembly_postprocessing.dll" Publicize="true">
+    <Reference Include="assembly_postprocessing_publicized">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_postprocessing_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(VALHEIM_INSTALL)/valheim_Data/Managed/assembly_simplemeshcombine.dll" Publicize="true">
+    <Reference Include="assembly_simplemeshcombine_publicized">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_simplemeshcombine_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(VALHEIM_INSTALL)/valheim_Data/Managed/assembly_steamworks.dll" Publicize="true">
+    <Reference Include="assembly_steamworks_publicized">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_steamworks_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(VALHEIM_INSTALL)/valheim_Data/Managed/assembly_sunshafts.dll" Publicize="true">
+    <Reference Include="assembly_sunshafts_publicized">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_sunshafts_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(VALHEIM_INSTALL)/valheim_Data/Managed/assembly_utils.dll" Publicize="true">
+    <Reference Include="assembly_utils_publicized">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(VALHEIM_INSTALL)/valheim_Data/Managed/assembly_valheim.dll" Publicize="true">
+    <Reference Include="assembly_valheim_publicized">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx">
