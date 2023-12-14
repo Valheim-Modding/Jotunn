@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static Jotunn.Managers.InputManager;
 
 namespace Jotunn.Utils
 {
@@ -118,6 +119,127 @@ namespace Jotunn.Utils
                     Logger.LogWarning($"Key {key} not found in new input system");
                     return Key.None;
             }
+        }
+
+        /// <summary>
+        ///     Translates a <see cref="GamepadButton"/> to its <see cref="KeyCode"/> value
+        /// </summary>
+        public static KeyCode GetGamepadKeyCode(GamepadButton @enum)
+        {
+            return @enum switch
+            {
+                GamepadButton.ButtonSouth => KeyCode.JoystickButton0,
+                GamepadButton.ButtonEast => KeyCode.JoystickButton1,
+                GamepadButton.ButtonWest => KeyCode.JoystickButton2,
+                GamepadButton.ButtonNorth => KeyCode.JoystickButton3,
+                GamepadButton.LeftShoulder => KeyCode.JoystickButton4,
+                GamepadButton.RightShoulder => KeyCode.JoystickButton5,
+                GamepadButton.SelectButton => KeyCode.JoystickButton6,
+                GamepadButton.StartButton => KeyCode.JoystickButton7,
+                GamepadButton.LeftStickButton => KeyCode.JoystickButton8,
+                GamepadButton.RightStickButton => KeyCode.JoystickButton9,
+                _ => KeyCode.None
+            };
+        }
+
+        /// <summary>
+        ///     Translates a <see cref="GamepadButton"/> to its axis string value
+        /// </summary>
+        public static GamepadInput GetGamepadInput(GamepadButton @enum)
+        {
+            return @enum switch
+            {
+                GamepadButton.DPadUp => GamepadInput.DPadUp,
+                GamepadButton.DPadDown => GamepadInput.DPadDown,
+                GamepadButton.DPadLeft => GamepadInput.DPadLeft,
+                GamepadButton.DPadRight => GamepadInput.DPadRight,
+                GamepadButton.LeftTrigger => GamepadInput.TriggerL,
+                GamepadButton.RightTrigger => GamepadInput.TriggerR,
+                _ => GamepadInput.None
+            };
+        }
+
+        /// <summary>
+        ///     Translates a <see cref="GamepadButton"/> to its printable string value
+        /// </summary>
+        public static string GetGamepadString(GamepadButton @enum)
+        {
+            return @enum switch
+            {
+                GamepadButton.None => string.Empty,
+                GamepadButton.DPadLeft => "<",
+                GamepadButton.DPadUp => ">",
+                GamepadButton.DPadRight => ">",
+                GamepadButton.DPadDown => "<",
+                GamepadButton.ButtonNorth => "Y",
+                GamepadButton.ButtonSouth => "A",
+                GamepadButton.ButtonWest => "X",
+                GamepadButton.ButtonEast => "B",
+                GamepadButton.LeftShoulder => "LB",
+                GamepadButton.RightShoulder => "RB",
+                GamepadButton.LeftTrigger => "LT",
+                GamepadButton.RightTrigger => "RT",
+                GamepadButton.StartButton => "Menu",
+                GamepadButton.SelectButton => "Back",
+                GamepadButton.LeftStickButton => "L",
+                GamepadButton.RightStickButton => "R",
+                _ => string.Empty
+            };
+        }
+
+        /// <summary>
+        ///     Translates an axis string to its <see cref="GamepadButton"/> value
+        /// </summary>
+        public static GamepadButton GetGamepadButton(GamepadInput input)
+        {
+            return input switch
+            {
+                GamepadInput.DPadUp => GamepadButton.DPadUp,
+                GamepadInput.DPadDown => GamepadButton.DPadDown,
+                GamepadInput.DPadLeft => GamepadButton.DPadLeft,
+                GamepadInput.DPadRight => GamepadButton.DPadRight,
+                GamepadInput.TriggerL => GamepadButton.LeftTrigger,
+                GamepadInput.TriggerR => GamepadButton.RightTrigger,
+                _ => GamepadButton.None
+            };
+        }
+
+        /// <summary>
+        ///     Translate an axis string to its <see cref="GamepadButton"/> value
+        /// </summary>
+        public static GamepadButton GetGamepadButton(string axis)
+        {
+            return axis switch
+            {
+                "JoyAxis 7" => GamepadButton.DPadUp,
+                "-JoyAxis 7" => GamepadButton.DPadDown,
+                "-JoyAxis 6" => GamepadButton.DPadLeft,
+                "JoyAxis 6" => GamepadButton.DPadRight,
+                "-JoyAxis 3" => GamepadButton.LeftTrigger,
+                "JoyAxis 3" => GamepadButton.RightTrigger,
+                _ => GamepadButton.None
+            };
+        }
+
+        /// <summary>
+        ///     Translates a <see cref="KeyCode"/> to its <see cref="GamepadButton"/> value
+        /// </summary>
+        public static GamepadButton GetGamepadButton(KeyCode key)
+        {
+            return key switch
+            {
+                KeyCode.JoystickButton0 => GamepadButton.ButtonSouth,
+                KeyCode.JoystickButton1 => GamepadButton.ButtonEast,
+                KeyCode.JoystickButton2 => GamepadButton.ButtonWest,
+                KeyCode.JoystickButton3 => GamepadButton.ButtonNorth,
+                KeyCode.JoystickButton4 => GamepadButton.LeftShoulder,
+                KeyCode.JoystickButton5 => GamepadButton.RightShoulder,
+                KeyCode.JoystickButton6 => GamepadButton.SelectButton,
+                KeyCode.JoystickButton7 => GamepadButton.StartButton,
+                KeyCode.JoystickButton8 => GamepadButton.LeftStickButton,
+                KeyCode.JoystickButton9 => GamepadButton.RightStickButton,
+                _ => GamepadButton.None
+            };
         }
     }
 }
