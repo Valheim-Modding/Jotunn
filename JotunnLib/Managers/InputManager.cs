@@ -288,9 +288,10 @@ namespace Jotunn.Managers
 
             if (buttonConfig.Config == null && buttonConfig.Key == KeyCode.None &&
                 buttonConfig.ShortcutConfig == null && buttonConfig.Shortcut.MainKey == KeyCode.None &&
-                string.IsNullOrEmpty(buttonConfig.Axis))
+                buttonConfig.GamepadConfig == null && buttonConfig.GamepadButton == GamepadButton.None
+                && string.IsNullOrEmpty(buttonConfig.Axis))
             {
-                throw new ArgumentException($"{nameof(buttonConfig)} needs either Axis, Key, Shortcut or a Config set.", nameof(buttonConfig));
+                throw new ArgumentException($"{nameof(buttonConfig)} needs either Axis, Key, Gamepad, Shortcut or a Config set.", nameof(buttonConfig));
             }
 
             if (Buttons.ContainsKey(buttonConfig.Name + "!" + modGuid))
@@ -346,23 +347,17 @@ namespace Jotunn.Managers
                     }
                     else if (btn.Key != KeyCode.None)
                     {
-                        self.AddButton(btn.Name, btn.Key, btn.RepeatDelay, btn.RepeatInterval);
+                        self.AddButton(btn.Name, InputUtils.KeyCodeToKey(btn.Key), btn.RepeatDelay, btn.RepeatInterval);
                     }
                     else if (btn.Shortcut.MainKey != KeyCode.None)
                     {
-                        self.AddButton(btn.Name, btn.Shortcut.MainKey, btn.RepeatDelay, btn.RepeatInterval);
+                        self.AddButton(btn.Name, InputUtils.KeyCodeToKey(btn.Shortcut.MainKey), btn.RepeatDelay, btn.RepeatInterval);
                     }
                     
                     if (btn.GamepadButton != GamepadButton.None)
                     {
                         var joyBtnName = $"Joy!{btn.Name}";
-                        KeyCode keyCode = GetGamepadKeyCode(btn.GamepadButton);
                         GamepadInput input = GetGamepadInput(btn.GamepadButton);
-
-                        if (keyCode != KeyCode.None)
-                        {
-                            self.AddButton(joyBtnName, keyCode, btn.RepeatDelay, btn.RepeatInterval);
-                        }
 
                         if (input != GamepadInput.None)
                         {
@@ -445,8 +440,8 @@ namespace Jotunn.Managers
             if (button.BlockOtherInputs)
             {
                 foreach (var btn in ZInput.instance.m_buttons.Where(x =>
-                    x.Value.m_key == button.Key ||
-                    x.Value.m_key == GetGamepadKeyCode(button.GamepadButton) ||
+                    x.Value.m_key == InputUtils.KeyCodeToKey(button.Key) ||
+                    x.Value.m_key == InputUtils.KeyCodeToKey(GetGamepadKeyCode(button.GamepadButton)) ||
                     x.Value.m_gamepadInput == GetGamepadInput(button.GamepadButton)))
                 {
                     ZInput.ResetButtonStatus(btn.Key);

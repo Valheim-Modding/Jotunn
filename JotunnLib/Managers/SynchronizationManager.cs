@@ -775,20 +775,17 @@ namespace Jotunn.Managers
 
             ZInput.ButtonDef def;
 
-            if (entry.SettingType == typeof(KeyCode) &&
-                ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
+            if (entry.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
             {
-                def.m_key = (KeyCode)entry.BoxedValue;
+                def.m_key = InputUtils.KeyCodeToKey((KeyCode)entry.BoxedValue);
             }
 
-            if (entry.SettingType == typeof(KeyboardShortcut) &&
-                ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
+            if (entry.SettingType == typeof(KeyboardShortcut) && ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
             {
-                def.m_key = ((KeyboardShortcut)entry.BoxedValue).MainKey;
+                def.m_key = InputUtils.KeyCodeToKey(((KeyboardShortcut)entry.BoxedValue).MainKey);
             }
 
-            if (entry.SettingType == typeof(InputManager.GamepadButton) &&
-                ZInput.instance.m_buttons.TryGetValue($"Joy!{buttonName}", out def))
+            if (entry.SettingType == typeof(InputManager.GamepadButton) && ZInput.instance.m_buttons.TryGetValue($"Joy!{buttonName}", out def))
             {
                 var keyCode = InputManager.GetGamepadKeyCode((InputManager.GamepadButton)entry.BoxedValue);
                 var input = InputManager.GetGamepadInput((InputManager.GamepadButton)entry.BoxedValue);
@@ -799,7 +796,7 @@ namespace Jotunn.Managers
                 }
                 else
                 {
-                    def.m_key = keyCode;
+                    def.m_key = InputUtils.KeyCodeToKey(keyCode);
                 }
             }
         }

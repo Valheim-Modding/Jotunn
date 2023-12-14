@@ -43,7 +43,17 @@ namespace Jotunn.Configs
             }
             set
             {
-                _key = value;
+                GamepadButton gamepadButton = GetGamepadButton(value);
+
+                if (gamepadButton != GamepadButton.None)
+                {
+                    Logger.LogWarning($"ButtonConfig: Key {value} is a GamepadButton, setting GamepadButton instead");
+                    GamepadButton = gamepadButton;
+                }
+                else
+                {
+                    _key = value;
+                }
             }
         }
 
@@ -74,7 +84,17 @@ namespace Jotunn.Configs
             }
             set
             {
-                _shortcut = value;
+                GamepadButton gamepadButton = GetGamepadButton(value.MainKey);
+
+                if (gamepadButton != GamepadButton.None)
+                {
+                    Logger.LogWarning($"ButtonConfig: Shortcut {value.MainKey} is a GamepadButton, setting GamepadButton instead");
+                    GamepadButton = gamepadButton;
+                }
+                else
+                {
+                    _shortcut = value;
+                }
             }
         }
 

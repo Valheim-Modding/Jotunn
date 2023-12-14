@@ -165,7 +165,12 @@
       <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.InputModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.JSONSerializeModule">
+    <Reference Include="Unity.InputSystem">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>false</Private>
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Unity.InputSystem.dll</HintPath>
+    </Reference>
+      <Reference Include="UnityEngine.JSONSerializeModule">
       <SpecificVersion>False</SpecificVersion>
       <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
