@@ -116,7 +116,7 @@ namespace Jotunn.Utils
                 case KeyCode.AltGr: return Key.AltGr;
 
                 default:
-                    Logger.LogWarning($"Key {key} not found in new input system");
+                    Logger.LogWarning($"Key {key} not found in the new input system");
                     return Key.None;
             }
         }
