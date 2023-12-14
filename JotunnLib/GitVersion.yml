@@ -1,7 +1,7 @@
 ﻿assembly-versioning-scheme: MajorMinorPatch
 mode: ContinuousDeployment
 tag-prefix: '[vV]'
-next-version: 2.15.1
+next-version: 2.15.2
 commit-message-incrementing: MergeMessageOnly
 branches:
   feat:
