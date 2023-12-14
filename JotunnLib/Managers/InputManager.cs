@@ -6,6 +6,7 @@ using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Utils;
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 
 namespace Jotunn.Managers
 {
@@ -274,13 +275,27 @@ namespace Jotunn.Managers
                     }
                     else if (btn.Key != KeyCode.None)
                     {
-                        self.AddButton(btn.Name, InputUtils.KeyCodeToKey(btn.Key), btn.RepeatDelay, btn.RepeatInterval);
+                        if (InputUtils.TryKeyCodeToMouseButton(btn.Key, out MouseButton mouseButton))
+                        {
+                            self.AddButton(btn.Name, mouseButton, btn.RepeatDelay, btn.RepeatInterval);
+                        }
+                        else
+                        {
+                            self.AddButton(btn.Name, InputUtils.KeyCodeToKey(btn.Key), btn.RepeatDelay, btn.RepeatInterval);
+                        }
                     }
                     else if (btn.Shortcut.MainKey != KeyCode.None)
                     {
-                        self.AddButton(btn.Name, InputUtils.KeyCodeToKey(btn.Shortcut.MainKey), btn.RepeatDelay, btn.RepeatInterval);
+                        if (InputUtils.TryKeyCodeToMouseButton(btn.Shortcut.MainKey, out MouseButton mouseButton))
+                        {
+                            self.AddButton(btn.Name, mouseButton, btn.RepeatDelay, btn.RepeatInterval);
+                        }
+                        else
+                        {
+                            self.AddButton(btn.Name, InputUtils.KeyCodeToKey(btn.Shortcut.MainKey), btn.RepeatDelay, btn.RepeatInterval);
+                        }
                     }
-                    
+
                     if (btn.GamepadButton != GamepadButton.None)
                     {
                         var joyBtnName = $"Joy!{btn.Name}";

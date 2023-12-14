@@ -122,6 +122,37 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
+        ///     Tries to convert a <see cref="KeyCode"/> KeyCode to a InputSystem <see cref="UnityEngine.InputSystem.LowLevel.MouseButton"/>
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="mouseButton"></param>
+        /// <returns></returns>
+        public static bool TryKeyCodeToMouseButton(KeyCode key, out UnityEngine.InputSystem.LowLevel.MouseButton mouseButton)
+        {
+            switch (key)
+            {
+                case KeyCode.Mouse0:
+                    mouseButton = UnityEngine.InputSystem.LowLevel.MouseButton.Left;
+                    return true;
+                case KeyCode.Mouse1:
+                    mouseButton = UnityEngine.InputSystem.LowLevel.MouseButton.Right;
+                    return true;
+                case KeyCode.Mouse2:
+                    mouseButton = UnityEngine.InputSystem.LowLevel.MouseButton.Middle;
+                    return true;
+                case KeyCode.Mouse3:
+                    mouseButton = UnityEngine.InputSystem.LowLevel.MouseButton.Forward;
+                    return true;
+                case KeyCode.Mouse4:
+                    mouseButton = UnityEngine.InputSystem.LowLevel.MouseButton.Back;
+                    return true;
+                default:
+                    mouseButton = UnityEngine.InputSystem.LowLevel.MouseButton.Left;
+                    return false;
+            }
+        }
+
+        /// <summary>
         ///     Translates a <see cref="GamepadButton"/> to its <see cref="KeyCode"/> value
         /// </summary>
         public static KeyCode GetGamepadKeyCode(GamepadButton @enum)
