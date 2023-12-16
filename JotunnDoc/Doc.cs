@@ -15,14 +15,14 @@ namespace JotunnDoc
         private StreamWriter writer;
         private static ConfigEntry<string> documentationDirConfig;
 
-        public Doc(string filePath)
+        public Doc(string filePath, string fileFormat = "md")
         {
             FilePath = Path.Combine(documentationDirConfig.Value, "data", filePath);
 
             // Ensure we only create markdown files
-            if (!FilePath.EndsWith(".md"))
+            if (!FilePath.EndsWith($".{fileFormat}"))
             {
-                FilePath += ".md";
+                FilePath += $".{fileFormat}";
             }
 
             // Create directory if it doesn't exist

@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using HarmonyLib;
+using Jotunn;
 using Jotunn.Managers;
 
 namespace JotunnDoc.Docs
@@ -8,30 +12,78 @@ namespace JotunnDoc.Docs
     {
         private static event Action ZNetSceneAwake;
 
-        public EventDoc() : base("flow.md")
+        public EventDoc() : base("flow", "puml")
         {
-            ZNetSceneAwake += () => AddText("--- Game Scene ---");
+            AddText(@"
+@startuml
+'' flow
+!pragma teoz true
+hide footbox
 
-            CreatureManager.OnCreaturesRegistered += () => AddText("CreatureManager.OnCreaturesRegistered");
-            CreatureManager.OnVanillaCreaturesAvailable += () => AddText("CreatureManager.OnVanillaCreaturesAvailable");
+participant Valheim
+participant BepInEx
 
-            GUIManager.OnCustomGUIAvailable += () => AddText("GUIManager.OnCustomGUIAvailable");
+box JotunnMods
+    collections JotunnMod
+end box
 
-            ItemManager.OnItemsRegistered += () => AddText("ItemManager.OnItemsRegistered");
-            ItemManager.OnItemsRegisteredFejd += () => AddText("ItemManager.OnItemsRegisteredFejd");
+box Jotunn
+    participant LocalizationManager
+    participant CreatureManager
+    participant PrefabManager
+    participant PieceManager
+    participant ItemManager
+    participant ZoneManager
+    participant GUIManager
+    participant MinimapManager
+end box
 
-            LocalizationManager.OnLocalizationAdded += () => AddText("LocalizationManager.OnLocalizationAdded");
+group For each mod
+    ?->JotunnMod **: Loaded by\nBepInEx
+    JotunnMod -> JotunnMod ++ #lightgreen: Awake
+end group
 
-            MinimapManager.OnVanillaMapAvailable += () => AddText("MinimapManager.OnVanillaMapAvailable");
-            MinimapManager.OnVanillaMapDataLoaded += () => AddText("MinimapManager.OnVanillaMapDataLoaded");
+== Main Menu Scene ==
+".TrimStart());
 
-            PrefabManager.OnPrefabsRegistered += () => AddText("PrefabManager.OnPrefabsRegistered");
-            PrefabManager.OnVanillaPrefabsAvailable += () => AddText("PrefabManager.OnVanillaPrefabsAvailable");
+            ZNetSceneAwake += () => AddText("note over Valheim #lightblue: Main menu interactable\n\n== Loading Scene ==\n== Game Scene  ==\n");
 
-            ZoneManager.OnVanillaClutterAvailable += () => AddText("ZoneManager.OnVanillaClutterAvailable");
-            ZoneManager.OnVanillaLocationsAvailable += () => AddText("ZoneManager.OnVanillaZonesAvailable");
+            CreatureManager.OnCreaturesRegistered += () => AddEvent("CreatureManager", "OnCreaturesRegistered");
+            CreatureManager.OnVanillaCreaturesAvailable += () => AddEvent("CreatureManager", "OnVanillaCreaturesAvailable");
 
-            PieceManager.OnPiecesRegistered += () => AddText("PieceManager.OnPiecesRegistered");
+            GUIManager.OnCustomGUIAvailable += () => AddEvent("GUIManager", "OnCustomGUIAvailable");
+
+            ItemManager.OnItemsRegistered += () => AddEvent("ItemManager", "OnItemsRegistered");
+            ItemManager.OnItemsRegisteredFejd += () => AddEvent("ItemManager", "OnItemsRegisteredFejd");
+
+            LocalizationManager.OnLocalizationAdded += () => AddEvent("LocalizationManager", "OnLocalizationAdded");
+
+            MinimapManager.OnVanillaMapAvailable += () => AddEvent("MinimapManager", "OnVanillaMapAvailable");
+            MinimapManager.OnVanillaMapDataLoaded += () => AddEvent("MinimapManager", "OnVanillaMapDataLoaded");
+
+            PrefabManager.OnPrefabsRegistered += () => AddEvent("PrefabManager", "OnPrefabsRegistered");
+            PrefabManager.OnVanillaPrefabsAvailable += () => AddEvent("PrefabManager", "OnVanillaPrefabsAvailable");
+
+            ZoneManager.OnVanillaClutterAvailable += () => AddEvent("ZoneManager", "OnVanillaClutterAvailable");
+            ZoneManager.OnVanillaLocationsAvailable += () => AddEvent("ZoneManager", "OnVanillaZonesAvailable");
+
+            PieceManager.OnPiecesRegistered += () => AddEvent("PieceManager", "OnPiecesRegistered");
+        }
+
+        private void AddEvent(string manager, string eventname)
+        {
+            MethodBase valheimMethod = new StackTrace().GetFrames()
+                .First(x =>
+                    x.GetMethod().ReflectedType?.Assembly != typeof(Main).Assembly &&
+                    x.GetMethod().ReflectedType?.Assembly != typeof(JotunnDoc).Assembly
+                ).GetMethod();
+
+            string type = valheimMethod.DeclaringType.Name;
+            string method = valheimMethod.Name.Replace($"DMD<{type}::", "").Replace(">", "");
+
+            AddText($"Valheim -> Valheim++: {type}.{method}");
+            AddText($"    hnote over {manager}: {eventname}");
+            AddText($"deactivate Valheim\n");
         }
 
         [HarmonyPatch]
