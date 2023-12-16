@@ -6,7 +6,7 @@ New Assets can be created with Unity and imported into Valheim using Jötunn. In
 
 Creation Tools
 * [Visual Studio](https://visualstudio.microsoft.com/de/downloads/) - Editor for our plugin code
-* [Unity 2020.3.45](https://unity3d.com/unity/whats-new/2020.3.45) - Game engine that Valheim runs in
+* [Unity 2022.3.12](https://unity3d.com/unity/whats-new/2022.3.12) - Game engine that Valheim runs in
 
 Game Mods (install these into your game as our mod has dependencies on them)
 * [Jötunn, the Valheim Library](https://valheim.thunderstore.io/package/ValheimModding/Jotunn/) - Mod with convenience methods we will use
@@ -22,7 +22,7 @@ To add an item to the game, a mod maker will have to:
 
 ## Unity Editor Setup
 
-Valheim uses Unity Version **2020.3.45**
+Valheim uses Unity Version **2022.3.12**
 
 If you don't have Unity already installed, download [UnityHub](https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe) from their website or install it with the Visual Studio Installer via `Individual Components` -> `Visual Studio Tools for Unity`. You will need an Unity account to register your PC and get a free licence. [Create the account](https://id.unity.com/account/new), login with it in UnityHub and get your licence via `Settings` -> `Licence Management`.
 
@@ -30,7 +30,8 @@ We will want to have two instances of the Unity Editor running, working in two d
 
 ### Ripped Game Project
 
-Create a ripped copy of the original game project by using [AssetRipper](https://github.com/ds5678/AssetRipper/releases). You can find [step-by-step instructions](https://github.com/Valheim-Modding/Wiki/wiki/Valheim-Unity-Project-Guide) on the Valheim-Modding Wiki. After ripping the project you can open this as a reference on the vanilla prefabs or to copy parts of the assets you want to use to your mod stub project.
+To create a ripped project from the original game, follow the [step-by-step instructions](https://github.com/Valheim-Modding/Wiki/wiki/Valheim-Unity-Project-Guide) on the Valheim-Modding Wiki.
+After ripping the project you can open this as a reference on the vanilla prefabs or to copy parts of the assets you want to use to your mod stub project.
 
 ### Mod Stub Project
 
