@@ -33,17 +33,13 @@ Valheim -> Valheim++: ClutterSystem.Awake
 deactivate Valheim
 
 Valheim -> Valheim++: FejdStartup.SetupGui
+    hnote over GUIManager: OnCustomGUIAvailable
     hnote over LocalizationManager: OnLocalizationAdded
 deactivate Valheim
 
-Valheim -> Valheim++: SceneManager.sceneLoaded
-    hnote over GUIManager: OnPixelFixCreated
-    hnote over GUIManager: OnCustomGUIAvailable
-deactivate Valheim
-
 Valheim -> Valheim++: ObjectDB.CopyOtherDB
-    hnote over CreatureManager : OnVanillaCreaturesAvailable
-    hnote over PrefabManager: OnVanillaPrefabsAvailable 
+    hnote over CreatureManager: OnVanillaCreaturesAvailable
+    hnote over PrefabManager: OnVanillaPrefabsAvailable
     hnote over ItemManager: OnItemsRegisteredFejd
 deactivate Valheim
 
@@ -52,36 +48,36 @@ note over Valheim #lightblue: Main menu interactable
 == Loading Scene ==
 == Game Scene  ==
 
-Valheim -> Valheim ++: ZNetScene.Awake
+Valheim -> Valheim++: ZNetScene.Awake
     hnote over CreatureManager: OnCreaturesRegistered
     hnote over PrefabManager: OnPrefabsRegistered
 deactivate Valheim
 
-Valheim -> Valheim++ : ObjectDB.Awake
-    hnote over PieceManager: OnPiecesRegistered
+Valheim -> Valheim++: ObjectDB.Awake
     hnote over ItemManager: OnItemsRegistered
-deactivate Valheim 
+    hnote over PieceManager: OnPiecesRegistered
+deactivate Valheim
 
 Valheim -> Valheim++: ClutterSystem.Awake
     hnote over ZoneManager: OnVanillaClutterAvailable
 deactivate Valheim
 
-Valheim -> Valheim++: SceneManager.sceneLoaded
+Valheim -> Valheim++: Game.Start
     hnote over GUIManager: OnCustomGUIAvailable
 deactivate Valheim
 
-Valheim -> Valheim ++: ZoneSystem.SetupLocations
-    hnote over ZoneManager: OnVanillaLocationsAvailable
+Valheim -> Valheim++: ZoneSystem.SetupLocations
+    hnote over ZoneManager: OnVanillaZonesAvailable
 deactivate Valheim
 
-Valheim -> Valheim ++: Minimap.Awake
+Valheim -> Valheim++: Minimap.Start
     hnote over MinimapManager: OnVanillaMapAvailable
 deactivate Valheim
 
-Valheim -> Valheim ++: Minimap.LoadMapData
+Valheim -> Valheim++: Minimap.LoadMapData
     hnote over MinimapManager: OnVanillaMapDataLoaded
 deactivate Valheim
- 
+
 note over Valheim #lightblue: Game interactable
  
 @enduml
