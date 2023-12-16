@@ -10,7 +10,7 @@ namespace JotunnDoc.Docs
     {
         public VegetationDoc() : base("zones/vegetation-list.md")
         {
-            ZoneManager.OnVanillaLocationsAvailable += DocVegetations;
+            ZoneManager.OnVanillaLocationsAvailable += () => JotunnDoc.StartDelayed(DocVegetations);
         }
 
         private void DocVegetations()

@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using BepInEx;
 using UnityEngine;
@@ -12,11 +14,14 @@ namespace JotunnDoc
     [BepInDependency(Jotunn.Main.ModGuid)]
     public class JotunnDoc : BaseUnityPlugin
     {
+        public static JotunnDoc Instance { get; private set; }
         private List<Doc> docs;
         private Harmony harmony;
 
         private void Awake()
         {
+            Instance = this;
+
             harmony = new Harmony("com.jotunn.jotunndoc");
             harmony.PatchAll();
 
@@ -57,6 +62,17 @@ namespace JotunnDoc
             text = Regex.Replace(text, @"[^\u0000-\u007F]+", string.Empty);
 
             return text;
+        }
+
+        public static void StartDelayed(Action action)
+        {
+            Instance.StartCoroutine(RunDelayed(action));
+        }
+
+        private static IEnumerator RunDelayed(Action action)
+        {
+            yield return null;
+            action();
         }
     }
 }

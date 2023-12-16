@@ -12,10 +12,10 @@ namespace JotunnDoc.Docs
     {
         public CharacterDoc() : base("prefabs/character-list.md")
         {
-            GameEvents.OnPlayerSpawned += DocCharacters;
+            GameEvents.OnPlayerSpawned += (player) => JotunnDoc.StartDelayed(DocCharacters);
         }
 
-        private void DocCharacters(Player self)
+        private void DocCharacters()
         {
             if (Generated)
             {

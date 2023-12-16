@@ -12,7 +12,7 @@ namespace JotunnDoc.Docs
     {
         public PieceDoc() : base("pieces/piece-list.md")
         {
-            PieceManager.OnPiecesRegistered += DocPieces;
+            PieceManager.OnPiecesRegistered += () => JotunnDoc.StartDelayed(DocPieces);
         }
 
         public void DocPieces()

@@ -12,7 +12,7 @@ namespace JotunnDoc.Docs
 
         public LocationDoc() : base("zones/location-list.md")
         {
-            ZoneManager.OnVanillaLocationsAvailable += DocLocations;
+            ZoneManager.OnVanillaLocationsAvailable += () => JotunnDoc.StartDelayed(DocLocations);
         }
 
         private void DocLocations()

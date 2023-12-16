@@ -11,7 +11,7 @@ namespace JotunnDoc.Docs
     {
         public ItemDoc() : base("objects/item-list.md")
         {
-            ItemManager.OnItemsRegistered += DocItems;
+            ItemManager.OnItemsRegistered += () => JotunnDoc.StartDelayed(DocItems);
         }
 
         private void DocItems()
