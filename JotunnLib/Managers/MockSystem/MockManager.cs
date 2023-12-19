@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -41,6 +41,11 @@ namespace Jotunn.Managers
         ///     Prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
         /// </summary>
         public const string JVLMockPrefix = "JVLmock_";
+
+        /// <summary>
+        ///     String used by the Mock System to recognize start of a relative path of a replacement for a Mock gameObject.
+        /// </summary>
+        public const string JVLMockSeparator = "__";
 
         /// <summary>
         ///     Internal container for mocked prefabs
@@ -142,22 +147,40 @@ namespace Jotunn.Managers
             }
 
             var unityObjectName = unityObject.name;
-            if (IsMockName(unityObjectName, out unityObjectName))
+            if (IsMockName(unityObjectName, out unityObjectName, out string pathName))
             {
-                // Cut off the suffix in the name to correctly query the original material
-                if (unityObject is Material)
+                unityObjectName = GetCleanedName(unityObject.GetType(), unityObjectName);
+
+                if (pathName != null)
                 {
-                    unityObjectName = unityObjectName.RemoveSuffix(" (Instance)");
+                    // Handle mocks that require path of existing prefab to find/replace
+                    // These are represented by JVLMock_PrefabName__ChildName
+                    pathName = GetCleanedName(mockObjectType, pathName);
+
+                    GameObject parent = PrefabManager.Cache.GetPrefab(typeof(GameObject), unityObjectName) as GameObject;
+                    var childTransform = parent?.FindDeepChild(pathName);
+
+                    var obj = FindObjectInChildren(childTransform?.gameObject, mockObjectType);
+
+                    if (obj == null)
+                    {
+                        throw new MockResolveException($"Mock {mockObjectType.Name} {unityObjectName} " +
+                        $"with path {pathName} could not be resolved", unityObject.name, mockObjectType);
+                    }
+
+                    return obj;
                 }
-
-                Object ret = PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);
-
-                if (!ret)
+                else
                 {
-                    throw new MockResolveException($"Mock {mockObjectType.Name} {unityObjectName} could not be resolved", unityObjectName, mockObjectType);
-                }
+                    Object ret = PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);
 
-                return ret;
+                    if (!ret)
+                    {
+                        throw new MockResolveException($"Mock {mockObjectType.Name} {unityObjectName} could not be resolved", unityObjectName, mockObjectType);
+                    }
+
+                    return ret;
+                }
             }
 
             if (unityObject is Material material)
@@ -186,11 +209,24 @@ namespace Jotunn.Managers
             }
         }
 
-        private static bool IsMockName(string name, out string cleanedName)
+        private static bool IsMockName(string name, out string cleanedName, out string pathName)
         {
+            pathName = null;
+
             if (name.StartsWith(JVLMockPrefix, StringComparison.Ordinal))
             {
-                cleanedName = name.Substring(JVLMockPrefix.Length);
+                int separator = name.IndexOf(JVLMockSeparator);
+
+                if (separator > 0)
+                {
+                    cleanedName = name.Substring(JVLMockPrefix.Length, separator - JVLMockPrefix.Length);
+                    pathName = name.Substring(separator + JVLMockSeparator.Length);
+                }
+                else
+                {
+                    cleanedName = name.Substring(JVLMockPrefix.Length);
+                }
+
                 return true;
             }
 
@@ -204,6 +240,21 @@ namespace Jotunn.Managers
 
             cleanedName = name;
             return false;
+        }
+
+        private static string GetCleanedName(Type objectType, string name)
+        {
+            // Cut off the suffix in the name to correctly query the original
+            if (objectType == typeof(Material))
+            {
+                return name.RemoveSuffix(" (Instance)");
+            }
+            else if (objectType == typeof(Mesh))
+            {
+                return name.RemoveSuffix(" Instance");
+            }
+
+            return name;
         }
 
         private static void FixMemberReferences(MemberBase member, object objectToFix, int depth)
@@ -429,7 +480,7 @@ namespace Jotunn.Managers
         {
             Shader usedShader = material.shader;
 
-            if (!usedShader || !IsMockName(usedShader.name, out string cleanedShaderName))
+            if (!usedShader || !IsMockName(usedShader.name, out string cleanedShaderName, out string pathName))
             {
                 return true;
             }
@@ -451,6 +502,57 @@ namespace Jotunn.Managers
             }
 
             return true;
+        }
+
+        private static Object FindObjectInChildren(Component unityObject, Type objectType)
+        {
+            var type = unityObject.GetType();
+            ClassMember classMember = ClassMember.GetClassMember(type);
+
+            foreach (var member in classMember.Members)
+            {
+                if (member.MemberType == objectType)
+                {
+                    var obj = (Object)member.GetValue(unityObject);
+                    if (obj != null)
+                    {
+                        return obj;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static Object FindObjectInChildren(GameObject unityObject, Type objectType)
+        {
+            if (unityObject == null)
+            {
+                return null;
+            }
+
+            foreach (var component in unityObject.GetComponents<Component>())
+            {
+                if (!(component is Transform))
+                {
+                    var obj = FindObjectInChildren(component, objectType);
+                    if (obj != null)
+                    {
+                        return obj;
+                    }
+                }
+            }
+
+            foreach (Transform tf in unityObject.transform)
+            {
+                var obj = FindObjectInChildren(tf.gameObject, objectType);
+                if (obj != null)
+                {
+                    return obj;
+                }
+            }
+
+            return null;
         }
     }
 }

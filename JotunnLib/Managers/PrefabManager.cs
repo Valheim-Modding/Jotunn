@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
@@ -41,7 +41,7 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Event that gets fired after registering all custom prefabs to <see cref="ZNetScene"/>.
-        ///     Your code will execute every time a new ZNetScene is created (on every game start). 
+        ///     Your code will execute every time a new ZNetScene is created (on every game start).
         ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
         public static event Action OnPrefabsRegistered;
@@ -401,7 +401,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Safely invoke the <see cref="OnVanillaPrefabsAvailable"/> event
         /// </summary>
-        /// 
+        ///
         private void InvokeOnVanillaObjectsAvailable()
         {
             OnVanillaPrefabsAvailable?.SafeInvoke();
