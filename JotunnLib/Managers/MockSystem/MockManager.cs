@@ -151,16 +151,16 @@ namespace Jotunn.Managers
             {
                 unityObjectName = GetCleanedName(unityObject.GetType(), unityObjectName);
 
-                if (pathName != null)
+                if (!string.IsNullOrEmpty(pathName))
                 {
                     // Handle mocks that require path of existing prefab to find/replace
                     // These are represented by JVLMock_PrefabName__ChildName
                     pathName = GetCleanedName(mockObjectType, pathName);
 
-                    GameObject parent = PrefabManager.Cache.GetPrefab(typeof(GameObject), unityObjectName) as GameObject;
-                    var childTransform = parent?.FindDeepChild(pathName);
+                    GameObject parent = PrefabManager.Cache.GetPrefab<GameObject>(unityObjectName);
+                    var childTransform = parent.FindDeepChild(pathName);
 
-                    var obj = FindObjectInChildren(childTransform?.gameObject, mockObjectType);
+                    var obj = FindObjectInChildren(childTransform.gameObject, mockObjectType);
 
                     if (obj == null)
                     {
@@ -215,7 +215,7 @@ namespace Jotunn.Managers
 
             if (name.StartsWith(JVLMockPrefix, StringComparison.Ordinal))
             {
-                int separator = name.IndexOf(JVLMockSeparator);
+                int separator = name.IndexOf(JVLMockSeparator, StringComparison.Ordinal);
 
                 if (separator > 0)
                 {
