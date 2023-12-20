@@ -147,31 +147,32 @@ namespace Jotunn.Managers
             }
 
             var unityObjectName = unityObject.name;
-            if (IsMockName(unityObjectName, out unityObjectName, out string pathName))
+            if (IsMockName(unityObjectName, out unityObjectName, out List<string> childNames))
             {
-                unityObjectName = GetCleanedName(unityObject.GetType(), unityObjectName);
-
-                if (!string.IsNullOrEmpty(pathName))
+                if (childNames != null && childNames.Count > 0)
                 {
                     // Handle mocks that require path of existing prefab to find/replace
-                    // These are represented by JVLMock_PrefabName__ChildName
-                    pathName = GetCleanedName(mockObjectType, pathName);
+                    // These are represented by JVLMock_PrefabName__ChildName__ChildName2 etc
+
+                    childNames[childNames.Count - 1] = GetCleanedName(mockObjectType, childNames[childNames.Count - 1]);
 
                     GameObject parent = PrefabManager.Cache.GetPrefab<GameObject>(unityObjectName);
-                    var childTransform = parent.FindDeepChild(pathName);
+                    var childTransform = parent.FindDeepChild(childNames);
 
                     var obj = FindObjectInChildren(childTransform.gameObject, mockObjectType);
 
                     if (obj == null)
                     {
-                        throw new MockResolveException($"Mock {mockObjectType.Name} {unityObjectName} " +
-                        $"with path {pathName} could not be resolved", unityObject.name, mockObjectType);
+                        var path = string.Join<string>("/", childNames);
+                        throw new MockResolveException($"Mock {unityObjectName} with path {path} " +
+                            $"could not be resolved", unityObjectName, path, mockObjectType);
                     }
 
                     return obj;
                 }
                 else
                 {
+                    unityObjectName = GetCleanedName(unityObject.GetType(), unityObjectName);
                     Object ret = PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);
 
                     if (!ret)
@@ -209,18 +210,23 @@ namespace Jotunn.Managers
             }
         }
 
-        private static bool IsMockName(string name, out string cleanedName, out string pathName)
+        private static bool IsMockName(string name, out string cleanedName, out List<string> childNames)
         {
-            pathName = null;
+            childNames = null;
 
             if (name.StartsWith(JVLMockPrefix, StringComparison.Ordinal))
             {
-                int separator = name.IndexOf(JVLMockSeparator, StringComparison.Ordinal);
+                var splitNames = name.Split(new[] { "__" }, StringSplitOptions.RemoveEmptyEntries);
 
-                if (separator > 0)
+                if (splitNames.Length > 1)
                 {
-                    cleanedName = name.Substring(JVLMockPrefix.Length, separator - JVLMockPrefix.Length);
-                    pathName = name.Substring(separator + JVLMockSeparator.Length);
+                    childNames = new List<string>();
+                    cleanedName = splitNames[0].Substring(JVLMockPrefix.Length);
+
+                    for (int i = 1; i < splitNames.Length; i++)
+                    {
+                        childNames.Add(splitNames[i]);
+                    }
                 }
                 else
                 {
@@ -480,7 +486,7 @@ namespace Jotunn.Managers
         {
             Shader usedShader = material.shader;
 
-            if (!usedShader || !IsMockName(usedShader.name, out string cleanedShaderName, out string pathName))
+            if (!usedShader || !IsMockName(usedShader.name, out string cleanedShaderName, out List<string> childNames))
             {
                 return true;
             }

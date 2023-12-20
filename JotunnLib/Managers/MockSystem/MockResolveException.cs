@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Jotunn.Managers.MockSystem
 {
@@ -11,6 +11,11 @@ namespace Jotunn.Managers.MockSystem
         ///     Name of the prefab that could not be resolved. Mock prefix is already removed.
         /// </summary>
         public string FailedMockName { get; private set; }
+
+        /// <summary>
+        ///     Path within the prefab that could not be resolved.
+        /// </summary>
+        public string FailedMockPathName { get; private set; }
 
         /// <summary>
         ///     Type of the prefab that could not be resolved.
@@ -37,6 +42,20 @@ namespace Jotunn.Managers.MockSystem
         public MockResolveException(string message, string failedMockName, Type mockType) : base(message)
         {
             FailedMockName = failedMockName;
+            MockType = mockType;
+        }
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="MockResolveException" /> class.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="failedMockName"></param>
+        /// <param name="failedMockPathName"></param>
+        /// <param name="mockType"></param>
+        public MockResolveException(string message, string failedMockName, string failedMockPathName, Type mockType) : base(message)
+        {
+            FailedMockName = failedMockName;
+            FailedMockPathName = failedMockPathName;
             MockType = mockType;
         }
     }
