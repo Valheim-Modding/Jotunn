@@ -1,7 +1,4 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition="$(BepInExPath)=='' AND $(VALHEIM_INSTALL) != ''">
-    <BepInExPath>$(VALHEIM_INSTALL)\BepInEx</BepInExPath>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="assembly_googleanalytics_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_googleanalytics_publicized.dll</HintPath>
@@ -40,19 +37,19 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>$(BepInExPath)\core\BepInEx.dll</HintPath>
+      <HintPath>$(BEPINEX_PATH)\core\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>$(BepInExPath)\core\0Harmony.dll</HintPath>
+      <HintPath>$(BEPINEX_PATH)\core\0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx.Preloader">
-      <HintPath>$(BepInExPath)\core\BepInEx.Preloader.dll</HintPath>
+      <HintPath>$(BEPINEX_PATH)\core\BepInEx.Preloader.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="HarmonyXInterop">
-      <HintPath>$(BepInExPath)\core\HarmonyXInterop.dll</HintPath>
+      <HintPath>$(BEPINEX_PATH)\core\HarmonyXInterop.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Mono.Security">
