@@ -19,4 +19,7 @@
       </PropertyGroup>
     </When>
   </Choose>
+  <PropertyGroup Condition="$(BEPINEX_PATH)=='' AND $(VALHEIM_INSTALL) != ''">
+    <BEPINEX_PATH>$(VALHEIM_INSTALL)\BepInEx</BEPINEX_PATH>
+  </PropertyGroup>
 </Project>

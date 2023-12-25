@@ -37,19 +37,19 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>$(BEPINEX_PATH)\core\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>$(BEPINEX_PATH)\core\0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx.Preloader">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\BepInEx.Preloader.dll</HintPath>
+      <HintPath>$(BEPINEX_PATH)\core\BepInEx.Preloader.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="HarmonyXInterop">
-      <HintPath>$(VALHEIM_INSTALL)\BepInEx\core\HarmonyXInterop.dll</HintPath>
+      <HintPath>$(BEPINEX_PATH)\core\HarmonyXInterop.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Mono.Security">
