@@ -233,10 +233,10 @@ namespace Jotunn
             global::Utils.IterativeSearchType searchType = global::Utils.IterativeSearchType.BreadthFirst
         )
         {
-            var child = gameObject.transform.FindDeepChild(childNames[0], searchType);
-            for (int i = 1; i < childNames.Count; i++)
-            {
-                child = child.FindDeepChild(childNames[i], searchType);
+            var child = gameObject.transform;
+
+            foreach (string childName in childNames) {
+                child = child.FindDeepChild(childName, searchType);
             }
 
             return child;
