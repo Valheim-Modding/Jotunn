@@ -123,6 +123,7 @@ namespace Jotunn
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -141,6 +142,7 @@ namespace Jotunn
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -159,6 +161,7 @@ namespace Jotunn
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -177,6 +180,7 @@ namespace Jotunn
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -201,6 +205,7 @@ namespace Jotunn
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -235,7 +240,8 @@ namespace Jotunn
         {
             var child = gameObject.transform;
 
-            foreach (string childName in childNames) {
+            foreach (string childName in childNames)
+            {
                 child = child.FindDeepChild(childName, searchType);
             }
 
