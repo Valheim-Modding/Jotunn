@@ -229,7 +229,7 @@ namespace Jotunn
         /// <param name="searchType">Whether to preform a breadth first or depth first search. Default is breadth first.</param>
         public static Transform FindDeepChild(
             this GameObject gameObject,
-            List<string> childNames,
+            IEnumerable<string> childNames,
             global::Utils.IterativeSearchType searchType = global::Utils.IterativeSearchType.BreadthFirst
         )
         {
