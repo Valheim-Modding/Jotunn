@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Jotunn.Extensions;
@@ -217,22 +218,8 @@ namespace Jotunn.Managers
             if (name.StartsWith(JVLMockPrefix, StringComparison.Ordinal))
             {
                 var splitNames = name.Split(new[] { JVLMockSeparator }, StringSplitOptions.RemoveEmptyEntries);
-
-                if (splitNames.Length > 1)
-                {
-                    childNames = new List<string>();
-                    cleanedName = splitNames[0].Substring(JVLMockPrefix.Length);
-
-                    for (int i = 1; i < splitNames.Length; i++)
-                    {
-                        childNames.Add(splitNames[i]);
-                    }
-                }
-                else
-                {
-                    cleanedName = name.Substring(JVLMockPrefix.Length);
-                }
-
+                cleanedName = splitNames[0].Substring(JVLMockPrefix.Length);
+                childNames = splitNames.Skip(1).ToList();
                 return true;
             }
 
