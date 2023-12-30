@@ -157,16 +157,35 @@ namespace Jotunn.Managers
 
                     childNames[childNames.Count - 1] = GetCleanedName(mockObjectType, childNames[childNames.Count - 1]);
 
-                    GameObject parent = PrefabManager.Cache.GetPrefab<GameObject>(unityObjectName);
-                    var childTransform = parent.FindDeepChild(childNames);
+                    var parent = PrefabManager.Cache.GetPrefab<GameObject>(unityObjectName);
 
-                    var obj = FindObjectInChildren(childTransform.gameObject, mockObjectType);
+                    if (!parent)
+                    {
+                        var path = string.Join<string>("/", childNames);
+                        throw new MockResolveException(
+                            $"Mock {mockObjectType.Name} at '{unityObjectName}' with child path '{path}' could not be resolved. Prefab '{unityObjectName}' not found.",
+                            unityObjectName, path, mockObjectType);
+                    }
+
+                    var child = parent.FindDeepChild(childNames);
+
+                    if (!child || child.name != childNames.Last())
+                    {
+                        var path = string.Join<string>("/", childNames);
+                        throw new MockResolveException(
+                            $"Mock {mockObjectType.Name} at '{unityObjectName}' with child path '{path}' could not be resolved. Child '{childNames.Last()}' not found with the specified path.",
+                            unityObjectName, path, mockObjectType);
+                    }
+
+                    var obj = FindObjectInChildren(child.gameObject, mockObjectType);
 
                     if (obj == null)
                     {
                         var path = string.Join<string>("/", childNames);
-                        throw new MockResolveException($"Mock {unityObjectName} with path {path} " +
-                            $"could not be resolved", unityObjectName, path, mockObjectType);
+                        var usedPath = child.GetPath().TrimStart('/');
+                        throw new MockResolveException(
+                            $"Mock {mockObjectType.Name} at '{unityObjectName}' with child path '{path}' could not be resolved. {mockObjectType.Name} not found at child '{usedPath}'.",
+                            unityObjectName, path, mockObjectType);
                     }
 
                     return obj;
@@ -178,7 +197,9 @@ namespace Jotunn.Managers
 
                     if (!ret)
                     {
-                        throw new MockResolveException($"Mock {mockObjectType.Name} {unityObjectName} could not be resolved", unityObjectName, mockObjectType);
+                        throw new MockResolveException(
+                            $"Mock {mockObjectType.Name} '{unityObjectName}' could not be resolved. Object with name '{unityObjectName}' was not found.",
+                            unityObjectName, mockObjectType);
                     }
 
                     return ret;

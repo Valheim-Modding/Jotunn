@@ -243,6 +243,11 @@ namespace Jotunn
             foreach (string childName in childNames)
             {
                 child = child.FindDeepChild(childName, searchType);
+
+                if (!child)
+                {
+                    return null;
+                }
             }
 
             return child;

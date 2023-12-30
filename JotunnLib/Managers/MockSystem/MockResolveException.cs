@@ -15,7 +15,7 @@ namespace Jotunn.Managers.MockSystem
         /// <summary>
         ///     Path within the prefab that could not be resolved.
         /// </summary>
-        public string FailedMockPathName { get; private set; }
+        public string FailedMockPath { get; private set; }
 
         /// <summary>
         ///     Type of the prefab that could not be resolved.
@@ -50,12 +50,12 @@ namespace Jotunn.Managers.MockSystem
         /// </summary>
         /// <param name="message"></param>
         /// <param name="failedMockName"></param>
-        /// <param name="failedMockPathName"></param>
+        /// <param name="failedMockPath"></param>
         /// <param name="mockType"></param>
-        public MockResolveException(string message, string failedMockName, string failedMockPathName, Type mockType) : base(message)
+        public MockResolveException(string message, string failedMockName, string failedMockPath, Type mockType) : base(message)
         {
             FailedMockName = failedMockName;
-            FailedMockPathName = failedMockPathName;
+            FailedMockPath = failedMockPath;
             MockType = mockType;
         }
     }
