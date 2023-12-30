@@ -244,7 +244,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(customCreature?.SourceMod, $"Skipping creature {customCreature}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
+                        Logger.LogWarning(customCreature?.SourceMod, $"Skipping creature {customCreature}: {ex.Message}");
                         toDelete.Add(customCreature);
                     }
                     catch (Exception ex)

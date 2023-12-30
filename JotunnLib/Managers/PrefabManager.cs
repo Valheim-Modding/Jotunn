@@ -343,7 +343,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(customPrefab?.SourceMod, $"Skipping prefab {customPrefab}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
+                        Logger.LogWarning(customPrefab?.SourceMod, $"Skipping prefab {customPrefab}: {ex.Message}");
                         toDelete.Add(customPrefab);
                     }
                     catch (Exception ex)
