@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Jotunn.Managers.MockSystem
 {
@@ -39,7 +40,7 @@ namespace Jotunn.Managers.MockSystem
         /// <param name="message"></param>
         /// <param name="failedMockName"></param>
         /// <param name="mockType"></param>
-        public MockResolveException(string message, string failedMockName, Type mockType) : base(message)
+        public MockResolveException(string message, string failedMockName, Type mockType) : base(ConstructMessage(message, failedMockName, string.Empty, mockType))
         {
             FailedMockName = failedMockName;
             MockType = mockType;
@@ -52,11 +53,21 @@ namespace Jotunn.Managers.MockSystem
         /// <param name="failedMockName"></param>
         /// <param name="failedMockPath"></param>
         /// <param name="mockType"></param>
-        public MockResolveException(string message, string failedMockName, string failedMockPath, Type mockType) : base(message)
+        public MockResolveException(string message, string failedMockName, IEnumerable<string> failedMockPath, Type mockType) : base(ConstructMessage(message, failedMockName, string.Join<string>("->", failedMockPath), mockType))
         {
             FailedMockName = failedMockName;
-            FailedMockPath = failedMockPath;
+            FailedMockPath = string.Join<string>("->", failedMockPath);
             MockType = mockType;
+        }
+
+        private static string ConstructMessage(string message, string failedMockName, string failedMockPath, Type mockType)
+        {
+            if (string.IsNullOrEmpty(failedMockPath))
+            {
+                return $"Mock {mockType.Name} '{failedMockName}' could not be resolved. {message}";
+            }
+
+            return $"Mock {mockType.Name} at '{failedMockName}' with child path '{failedMockPath}' could not be resolved. {message}";
         }
     }
 }
