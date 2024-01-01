@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.16.0
+* Added mocking of ambiguous assets like meshes. This can be done via a new `JVLmock_PrefabName__ChildName` format where assets can be searched inside a named prefab. Multiple children can be provided for a specific path to a child, otherwise breadth search is used (thx OrianaVenture)
+* Improved warnings of unresolvable mocks
+
 ## Version 2.15.2
 * Fixed ButtonConfigs with mouse keys were not correctly converted for the input changes in Valheim 0.217.38
 
