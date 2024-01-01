@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Jotunn.Extensions;
+using System.Collections.Generic;
 
 namespace Jotunn
 {
@@ -122,6 +123,7 @@ namespace Jotunn
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -140,6 +142,7 @@ namespace Jotunn
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -158,6 +161,7 @@ namespace Jotunn
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -176,6 +180,7 @@ namespace Jotunn
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -200,6 +205,7 @@ namespace Jotunn
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -217,6 +223,34 @@ namespace Jotunn
         )
         {
             return gameObject.transform.FindDeepChild(childName, searchType);
+        }
+
+        /// <summary>
+        ///     Extension method to find nested children by an ordered list of names using either
+        ///     a breadth-first or depth-first search. Default is breadth-first.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="childNames">Names in order of the child object to search for.</param>
+        /// <param name="searchType">Whether to preform a breadth first or depth first search. Default is breadth first.</param>
+        public static Transform FindDeepChild(
+            this GameObject gameObject,
+            IEnumerable<string> childNames,
+            global::Utils.IterativeSearchType searchType = global::Utils.IterativeSearchType.BreadthFirst
+        )
+        {
+            var child = gameObject.transform;
+
+            foreach (string childName in childNames)
+            {
+                child = child.FindDeepChild(childName, searchType);
+
+                if (!child)
+                {
+                    return null;
+                }
+            }
+
+            return child;
         }
     }
 

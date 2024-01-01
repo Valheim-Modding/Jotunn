@@ -442,7 +442,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(customClutter?.SourceMod, $"Skipping clutter {customClutter}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
+                        Logger.LogWarning(customClutter?.SourceMod, $"Skipping clutter {customClutter}: {ex.Message}");
                         toDelete.Add(customClutter.Name);
                     }
                     catch (Exception ex)
@@ -500,7 +500,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(customLocation?.SourceMod, $"Skipping location {customLocation}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
+                        Logger.LogWarning(customLocation?.SourceMod, $"Skipping location {customLocation}: {ex.Message}");
                         toDelete.Add(customLocation.Name);
                     }
                     catch (Exception ex)
@@ -539,7 +539,7 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(customVegetation?.SourceMod, $"Skipping vegetation {customVegetation}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
+                        Logger.LogWarning(customVegetation?.SourceMod, $"Skipping vegetation {customVegetation}: {ex.Message}");
                         toDelete.Add(customVegetation.Name);
                     }
                     catch (Exception ex)

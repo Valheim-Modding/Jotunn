@@ -484,7 +484,7 @@ namespace Jotunn.Managers
                 }
                 catch (MockResolveException ex)
                 {
-                    Logger.LogWarning(customPiece?.SourceMod, $"Skipping piece {customPiece}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
+                    Logger.LogWarning(customPiece?.SourceMod, $"Skipping piece {customPiece}: {ex.Message}");
                     toDelete.Add(customPiece);
                 }
                 catch (Exception ex)

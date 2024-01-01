@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Jotunn.Extensions;
@@ -41,6 +42,11 @@ namespace Jotunn.Managers
         ///     Prefix used by the Mock System to recognize Mock gameObject that must be replaced at some point.
         /// </summary>
         public const string JVLMockPrefix = "JVLmock_";
+
+        /// <summary>
+        ///     String used by the Mock System to recognize start of a relative path of a replacement for a Mock gameObject.
+        /// </summary>
+        public const string JVLMockSeparator = "__";
 
         /// <summary>
         ///     Internal container for mocked prefabs
@@ -136,36 +142,56 @@ namespace Jotunn.Managers
         /// <returns>the real prefab</returns>
         public static Object GetRealPrefabFromMock(Object unityObject, Type mockObjectType)
         {
-            if (!unityObject)
+            if (!unityObject || !IsMockName(unityObject.name, out string assetName, out List<string> childNames))
             {
                 return null;
             }
 
-            var unityObjectName = unityObject.name;
-            if (IsMockName(unityObjectName, out unityObjectName))
+            if (childNames.Count == 0 && TryGetAsset(mockObjectType, assetName, out Object asset))
             {
-                // Cut off the suffix in the name to correctly query the original material
-                if (unityObject is Material)
-                {
-                    unityObjectName = unityObjectName.RemoveSuffix(" (Instance)");
-                }
-
-                Object ret = PrefabManager.Cache.GetPrefab(mockObjectType, unityObjectName);
-
-                if (!ret)
-                {
-                    throw new MockResolveException($"Mock {mockObjectType.Name} {unityObjectName} could not be resolved", unityObjectName, mockObjectType);
-                }
-
-                return ret;
+                return asset;
             }
 
-            if (unityObject is Material material)
+            var prefab = PrefabManager.Cache.GetPrefab<GameObject>(assetName);
+
+            if (!prefab)
             {
-                TryFixMaterial(material);
+                throw new MockResolveException($"Object with name '{assetName}' was not found.", assetName, mockObjectType);
             }
 
-            return null;
+            if (childNames.Count > 0)
+            {
+                var child = prefab.FindDeepChild(childNames);
+
+                if (!child || child.name != childNames.Last())
+                {
+                    throw new MockResolveException($"Child '{childNames.Last()}' not found with the specified path.", assetName, childNames, mockObjectType);
+                }
+
+                prefab = child.gameObject;
+            }
+
+            if (TryFindAssetInSelfOrChildComponents(prefab, mockObjectType, out asset))
+            {
+                return asset;
+            }
+
+            if (childNames.Count > 0)
+            {
+                var usedPath = prefab.transform.GetPath().TrimStart('/');
+                throw new MockResolveException($"{mockObjectType.Name} not found at child '{usedPath}'.", assetName, childNames, mockObjectType);
+            }
+            else
+            {
+                throw new MockResolveException($"{mockObjectType.Name} not found at prefab '{assetName}'.", assetName, mockObjectType);
+            }
+        }
+
+        private static bool TryGetAsset(Type mockObjectType, string assetName, out Object asset)
+        {
+            assetName = GetCleanedName(mockObjectType, assetName);
+            asset = PrefabManager.Cache.GetPrefab(mockObjectType, assetName);
+            return (bool)asset;
         }
 
         internal static void FixReferences(object objectToFix, int depth)
@@ -186,24 +212,43 @@ namespace Jotunn.Managers
             }
         }
 
-        private static bool IsMockName(string name, out string cleanedName)
+        private static bool IsMockName(string name, out string assetName, out List<string> childNames)
         {
             if (name.StartsWith(JVLMockPrefix, StringComparison.Ordinal))
             {
-                cleanedName = name.Substring(JVLMockPrefix.Length);
+                var splitNames = name.Split(new[] { JVLMockSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                assetName = splitNames[0].Substring(JVLMockPrefix.Length);
+                childNames = splitNames.Skip(1).ToList();
                 return true;
             }
 
 #pragma warning disable CS0618
             if (name.StartsWith(MockPrefix, StringComparison.Ordinal))
             {
-                cleanedName = name.Substring(MockPrefix.Length);
+                assetName = name.Substring(MockPrefix.Length);
+                childNames = new List<string>();
                 return true;
             }
 #pragma warning restore CS0618
 
-            cleanedName = name;
+            assetName = name;
+            childNames = new List<string>();
             return false;
+        }
+
+        private static string GetCleanedName(Type objectType, string name)
+        {
+            // Cut off the suffix in the name to correctly query the original
+            if (objectType == typeof(Material))
+            {
+                return name.RemoveSuffix(" (Instance)");
+            }
+            else if (objectType == typeof(Mesh))
+            {
+                return name.RemoveSuffix(" Instance");
+            }
+
+            return name;
         }
 
         private static void FixMemberReferences(MemberBase member, object objectToFix, int depth)
@@ -224,6 +269,10 @@ namespace Jotunn.Managers
                 if (realPrefab)
                 {
                     member.SetValue(objectToFix, realPrefab);
+                }
+                else if (target is Material material)
+                {
+                    TryFixMaterial(material);
                 }
             }
             else if (member.IsEnumeratedClass && member.IsEnumerableOfUnityObjects)
@@ -252,6 +301,11 @@ namespace Jotunn.Managers
                     var realPrefab = GetRealPrefabFromMock(unityObject, member.EnumeratedType);
                     list.Add(realPrefab ? realPrefab : unityObject);
                     hasAnyMockResolved = hasAnyMockResolved || realPrefab;
+
+                    if (!realPrefab && unityObject is Material material)
+                    {
+                        TryFixMaterial(material);
+                    }
                 }
 
                 if (list.Count > 0 && hasAnyMockResolved)
@@ -318,10 +372,10 @@ namespace Jotunn.Managers
             for (int i = 0; i < drops.Count; i++)
             {
                 var drop = drops[i];
-                var realPrefab = GetRealPrefabFromMock(drop.m_item, typeof(GameObject));
+                var realPrefab = GetRealPrefabFromMock<GameObject>(drop.m_item);
                 if (realPrefab)
                 {
-                    drop.m_item = (GameObject)realPrefab;
+                    drop.m_item = realPrefab;
                 }
 
                 drops[i] = drop;
@@ -429,7 +483,7 @@ namespace Jotunn.Managers
         {
             Shader usedShader = material.shader;
 
-            if (!usedShader || !IsMockName(usedShader.name, out string cleanedShaderName))
+            if (!usedShader || !IsMockName(usedShader.name, out string cleanedShaderName, out List<string> childNames))
             {
                 return true;
             }
@@ -451,6 +505,58 @@ namespace Jotunn.Managers
             }
 
             return true;
+        }
+
+        private static bool TryFindAssetOfComponent(Component unityObject, Type objectType, out Object asset)
+        {
+            var type = unityObject.GetType();
+            ClassMember classMember = ClassMember.GetClassMember(type);
+
+            foreach (var member in classMember.Members)
+            {
+                if (member.MemberType == objectType && member.HasGetMethod)
+                {
+                    asset = (Object)member.GetValue(unityObject);
+                    if (asset != null)
+                    {
+                        return asset;
+                    }
+                }
+            }
+
+            asset = null;
+            return false;
+        }
+
+        private static bool TryFindAssetInSelfOrChildComponents(GameObject unityObject, Type objectType, out Object asset)
+        {
+            if (unityObject == null)
+            {
+                asset = null;
+                return false;
+            }
+
+            foreach (var component in unityObject.GetComponents<Component>())
+            {
+                if (!(component is Transform))
+                {
+                    if (TryFindAssetOfComponent(component, objectType, out asset))
+                    {
+                        return (bool)asset;
+                    }
+                }
+            }
+
+            foreach (Transform tf in unityObject.transform)
+            {
+                if (TryFindAssetInSelfOrChildComponents(tf.gameObject, objectType, out asset))
+                {
+                    return (bool)asset;
+                }
+            }
+
+            asset = null;
+            return false;
         }
     }
 }
