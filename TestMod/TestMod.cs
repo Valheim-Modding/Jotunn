@@ -1481,6 +1481,7 @@ namespace TestMod
             treeItemConfig.Description = "$rendered_tree_desc";
             treeItemConfig.Icons = new Sprite[] { renderedIcon };
             treeItemConfig.Weight = 6;
+            treeItemConfig.StackSize = 10;
             treeItemConfig.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
 
             ItemManager.Instance.AddItem(new CustomItem("item_MyTree", "BeechSeeds", treeItemConfig));

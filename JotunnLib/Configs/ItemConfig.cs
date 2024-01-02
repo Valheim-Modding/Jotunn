@@ -85,6 +85,11 @@ namespace Jotunn.Configs
         public float Weight { get; set; } = -1;
 
         /// <summary>
+        ///     Maximum stack size. Values lower than 1 are ignored when applying the config. Defaults to <c>-1</c>.
+        /// </summary>
+        public int StackSize = -1;
+
+        /// <summary>
         ///     Icons for this item. If more than one icon is added, this item automatically has variants.
         /// </summary>
         public Sprite[] Icons { get; set; } = null;
@@ -151,6 +156,11 @@ namespace Jotunn.Configs
             if (Weight >= 0)
             {
                 shared.m_weight = Weight;
+            }
+
+            if (StackSize >= 1)
+            {
+                shared.m_maxStackSize = StackSize;
             }
 
             // Set icons if provided
