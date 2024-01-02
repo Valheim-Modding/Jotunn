@@ -113,3 +113,7 @@ These people have been integral to pushing JVL out of the door, and without them
 *Nosirrom#2626*: [github](https://github.com/donchad)
 
 *Jere#0989*: [github](https://github.com/JereKuusela), [thunderstore](https://valheim.thunderstore.io/package/JereKuusela/), [nexus](https://www.nexusmods.com/valheim/users/117845818)
+
+*Searica*: [github](https://github.com/searica), [thunderstore](https://valheim.thunderstore.io/package/Searica/)
+
+*OrianaVenture*: [github](https://github.com/OrianaVenture), [thunderstore](https://valheim.thunderstore.io/package/VentureValheim/)
