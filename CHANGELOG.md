@@ -4,6 +4,7 @@
 * Added mocking of ambiguous assets like meshes. This can be done via a new `JVLmock_PrefabName__ChildName` format where assets can be searched inside a named prefab. Multiple children can be provided for a specific path to a child, otherwise breadth search is used (thx OrianaVenture)
 * Added Weight and StackSize properties to ItemConfig, items are unaffected by default values
 * Added Icon property to ItemConfig for simpler access to Icons for non-variants
+* Added optional `BEPINEX_PATH` environment variable for build process (thx Defee)
 * Improved warnings of unresolvable mocks
 
 ## Version 2.15.2
