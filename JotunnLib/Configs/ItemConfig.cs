@@ -80,6 +80,11 @@ namespace Jotunn.Configs
         public int QualityResultAmountMultiplier { get; set; } = 1;
 
         /// <summary>
+        ///     Weight of a single item in an inventory. Values lower than 0 are ignored when applying the config. Defaults to <c>-1</c>.
+        /// </summary>
+        public float Weight { get; set; } = -1;
+
+        /// <summary>
         ///     Icons for this item. If more than one icon is added, this item automatically has variants.
         /// </summary>
         public Sprite[] Icons { get; set; } = null;
@@ -141,6 +146,11 @@ namespace Jotunn.Configs
             if (!string.IsNullOrEmpty(PieceTable))
             {
                 shared.m_buildPieces = Mock<PieceTable>.Create(PieceTable);
+            }
+
+            if (Weight >= 0)
+            {
+                shared.m_weight = Weight;
             }
 
             // Set icons if provided
