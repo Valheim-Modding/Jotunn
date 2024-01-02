@@ -216,8 +216,9 @@ namespace Jotunn.Managers
         {
             if (name.StartsWith(JVLMockPrefix, StringComparison.Ordinal))
             {
-                var splitNames = name.Split(new[] { JVLMockSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                assetName = splitNames[0].Substring(JVLMockPrefix.Length);
+                var mockTarget = name.Substring(JVLMockPrefix.Length);
+                var splitNames = mockTarget.Split(new[] { JVLMockSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                assetName = splitNames[0];
                 childNames = splitNames.Skip(1).ToList();
                 return true;
             }
