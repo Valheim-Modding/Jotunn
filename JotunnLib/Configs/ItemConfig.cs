@@ -95,6 +95,25 @@ namespace Jotunn.Configs
         public Sprite[] Icons { get; set; } = null;
 
         /// <summary>
+        ///     Gets or sets the first icon of the item. For item variants with multiple icons, use the <see cref="Icons"/> property instead.
+        /// </summary>
+        public Sprite Icon
+        {
+            get => Icons?.Length >= 1 ? Icons[0] : null;
+            set
+            {
+                if (Icons == null || Icons.Length == 0)
+                {
+                    Icons = new Sprite[] { value };
+                }
+                else
+                {
+                    Icons[0] = value;
+                }
+            }
+        }
+
+        /// <summary>
         ///     Texture holding the variants different styles.
         /// </summary>
         public Texture2D StyleTex { get; set; } = null;

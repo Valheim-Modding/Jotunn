@@ -1479,7 +1479,7 @@ namespace TestMod
             ItemConfig treeItemConfig = new ItemConfig();
             treeItemConfig.Name = "$rendered_tree";
             treeItemConfig.Description = "$rendered_tree_desc";
-            treeItemConfig.Icons = new Sprite[] { renderedIcon };
+            treeItemConfig.Icon = renderedIcon;
             treeItemConfig.Weight = 6;
             treeItemConfig.StackSize = 10;
             treeItemConfig.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
@@ -1665,7 +1665,7 @@ namespace TestMod
             ItemConfig lulzCubeConfig = new ItemConfig();
             lulzCubeConfig.Name = "$item_lulzanimalparts";
             lulzCubeConfig.Description = "$item_lulzanimalparts_desc";
-            lulzCubeConfig.Icons = new[] {lulzsprite};
+            lulzCubeConfig.Icon = lulzsprite;
 
             var lulzItem = new CustomItem("item_lul", true, lulzCubeConfig);
             lulzItem.ItemDrop.m_itemData.m_shared.m_maxStackSize = 20;
