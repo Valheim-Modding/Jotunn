@@ -39,17 +39,24 @@ Inside your solution folder is a PowerShell script called `RenameSolution.ps1`. 
 
 ## Add project references
 
-Jötunn can automatically set references to all important libraries needed to mod the game on your project. To use this feature browse to your solution directory. Create a new file called `Environment.props` and place the following contents inside, modifying your `<VALHEIM_INSTALL>` to point to your game directory. This sets up references in your project to BepInEx, the publicised dlls, the unstripped corlibs from Unity.
+Jötunn automatically references all dependencies that may be needed for the development process.
+To overwrite paths, create a new file called `Environment.props` at the project root and place the following contents inside, modify as needed.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <!-- Valheim install folder. This is normally found automatically, uncomment to overwrite it. Needs to be your path to the base Valheim folder. -->
+    <!-- Valheim install folder. This is usually found automatically, uncomment to overwrite.
+         Needs to be your path to the base Valheim folder. -->
     <!-- <VALHEIM_INSTALL>X:\PathToYourSteamLibary\steamapps\common\Valheim</VALHEIM_INSTALL>-->
 
-    <!-- This is the folder where your build gets copied to when using the post-build automations -->
-    <MOD_DEPLOYPATH>$(VALHEIM_INSTALL)\BepInEx\plugins</MOD_DEPLOYPATH>
+    <!-- BepInEx install folder. This is usually found automatically, uncomment to overwrite.
+         Note the default value $(VALHEIM_INSTALL)\BepInEx requires the VALHEIM_INSTALL property to be set. -->
+    <!-- <BEPINEX_PATH>$(VALHEIM_INSTALL)\BepInEx</VALHEIM_INSTALL>-->
+
+    <!-- This is the folder where your build gets copied to when using the post-build automations.
+         Note the default value $(VALHEIM_INSTALL)\BepInEx\plugins requires the VALHEIM_INSTALL property to be set. -->
+    <!-- <MOD_DEPLOYPATH>$(VALHEIM_INSTALL)\BepInEx\plugins</MOD_DEPLOYPATH>-->
   </PropertyGroup>
 </Project>
 ```
