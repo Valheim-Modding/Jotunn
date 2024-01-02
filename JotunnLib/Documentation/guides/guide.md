@@ -14,12 +14,10 @@
 * Open Visual Studio and create a new project with `Clone a repository`. Paste the URL to your newly created repository on github and select a folder on your local hard drive for it.<br />
 ![VS Clone forked stub](../images/getting-started/vs-CloneForkedStub.png)
 
-## BepInEx and unstripped Unity dlls
+## BepInEx
 
-* For a mod to function at all you need BepInEx installed to Valheim and also the unstripped Unity libs as the devs of Valheim decided to strip their shipped versions down to just the methods they use. This is some sort of "protection" which totally does not hinder us at all ;)
-
-* If you are using Vortex or any other mod manager, you most likely have the folders already in Valheim. If not download the [BepInExPack for Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) and extract its contents anywhere except the Valheim installation folder. Inside the pack is another folder called `BepInExPack_Valheim`. Copy the contents of that folder into your own Valheim installation.
-
+* To run or build a mod [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) must installed.
+  Please use the BepInEx pack from Thunderstore as it's configured for Valheim, a release from Github may not work properly.
 
 # [2. Customising the ModStub project](#tab/tabid-2)
 # Customising the ModStub project
@@ -84,7 +82,7 @@ Jötunn can automatically create the publicised assemblies for you. To use this 
 
 If you decide to disable the prebuild, you will need to:
 * Publicized assemblies are manually generated with [AssemblyPublicizer](https://github.com/CabbageCrow/AssemblyPublicizer). Please follow the instructions found on GitHub using the Valheim assembly DLLs found under `Valheim/valheim_Data/Managed`.
-* Reference those publicized assemblies and any of the Unity assemblies you want to use (at the very least `UnityEngine.dll`) from the `unstripped_corlibs` folder in your mod project.
+* Reference those publicized assemblies and any of the Unity assemblies you want to use (at the very least `UnityEngine.dll`) in your mod project.
 
 # [4. PostBuild Automations](#tab/tabid-4)
 # PostBuild Automations
