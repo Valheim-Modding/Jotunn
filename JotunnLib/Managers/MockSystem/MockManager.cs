@@ -142,7 +142,12 @@ namespace Jotunn.Managers
         /// <returns>the real prefab</returns>
         public static Object GetRealPrefabFromMock(Object unityObject, Type mockObjectType)
         {
-            if (!unityObject || !IsMockName(unityObject.name, out string assetName, out List<string> childNames))
+            if (!unityObject)
+            {
+                return null;
+            }
+
+            if (!IsMockName(GetCleanedName(mockObjectType, unityObject.name), out string assetName, out List<string> childNames))
             {
                 return null;
             }
@@ -189,7 +194,6 @@ namespace Jotunn.Managers
 
         private static bool TryGetAsset(Type mockObjectType, string assetName, out Object asset)
         {
-            assetName = GetCleanedName(mockObjectType, assetName);
             asset = PrefabManager.Cache.GetPrefab(mockObjectType, assetName);
             return (bool)asset;
         }
