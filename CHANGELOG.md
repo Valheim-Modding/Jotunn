@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.16.1
+* Fixed mocks targeting an asset starting with an underscore were not split correctly and threw exceptions
+* Fixed mocks using the asset path were not cleaned and could fail to resolve
+
 ## Version 2.16.0
 * Added mocking of ambiguous assets like meshes. This can be done via a new `JVLmock_PrefabName__ChildName` format where assets can be searched inside a named prefab. Multiple children can be provided for a specific path to a child, otherwise breadth search is used (thx OrianaVenture)
 * Added Weight and StackSize properties to ItemConfig, items are unaffected by default values
