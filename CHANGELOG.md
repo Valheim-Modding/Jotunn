@@ -1,7 +1,7 @@
 # Changelog
 
 ## Version 2.16.2
-* Fixed a bug that could occur on some locations after a relog without restart, where objects within the locations were not spawned again
+* Fixed a bug where newly spawned locations did not spawn their child net objects anymore after a relog without restart was performed
 
 ## Version 2.16.1
 * Fixed mocks targeting an asset starting with an underscore were not split correctly and threw exceptions
