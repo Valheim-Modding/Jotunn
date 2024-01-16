@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.16.2
+* Fixed a bug that could occur on some locations after a relog without restart, where objects within the locations were not spawned again
+
 ## Version 2.16.1
 * Fixed mocks targeting an asset starting with an underscore were not split correctly and threw exceptions
 * Fixed mocks using the asset path were not cleaned and could fail to resolve

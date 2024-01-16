@@ -471,8 +471,7 @@ namespace Jotunn.Managers
                     continue;
                 }
 
-                ZoneSystem.PrepareNetViews(location.m_prefab, location.m_netViews);
-                ZoneSystem.PrepareRandomSpawns(location.m_prefab, location.m_randomSpawns);
+                PrepareLocation(location);
             }
 
             if (Locations.Count > 0)
@@ -564,7 +563,7 @@ namespace Jotunn.Managers
         /// <param name="zoneLocation"><see cref="ZoneLocation"/> to add to the <see cref="ZoneSystem"/></param>
         public void RegisterLocationInZoneSystem(ZoneLocation zoneLocation) =>
             RegisterLocationInZoneSystem(ZoneSystem.instance, zoneLocation, BepInExUtils.GetSourceModMetadata());
-        
+
         /// <summary>
         ///     Internal method for adding a ZoneLocation to a specific ZoneSystem.
         /// </summary>
@@ -575,7 +574,7 @@ namespace Jotunn.Managers
         {
             zoneSystem.m_locations.Add(zoneLocation);
 
-            ZoneSystem.PrepareNetViews(zoneLocation.m_prefab, zoneLocation.m_netViews);
+            PrepareLocation(zoneLocation);
 
             foreach (var znet in zoneLocation.m_netViews)
             {
@@ -589,8 +588,6 @@ namespace Jotunn.Managers
                     PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
                 }
             }
-
-            ZoneSystem.PrepareRandomSpawns(zoneLocation.m_prefab, zoneLocation.m_randomSpawns);
 
             foreach (var znet in zoneLocation.m_randomSpawns.SelectMany(x => x.m_childNetViews))
             {
@@ -608,6 +605,29 @@ namespace Jotunn.Managers
             if (!zoneSystem.m_locationsByHash.ContainsKey(zoneLocation.m_hash))
             {
                 zoneSystem.m_locationsByHash.Add(zoneLocation.m_hash, zoneLocation);
+            }
+        }
+
+        private void PrepareLocation(ZoneLocation location)
+        {
+            if (location.m_netViews != null)
+            {
+                foreach (var netView in location.m_netViews)
+                {
+                    netView.gameObject.SetActive(true);
+                }
+
+                ZoneSystem.PrepareNetViews(location.m_prefab, location.m_netViews);
+            }
+
+            if (location.m_randomSpawns != null)
+            {
+                foreach (var randomSpawn in location.m_randomSpawns)
+                {
+                    randomSpawn.gameObject.SetActive(true);
+                }
+
+                ZoneSystem.PrepareRandomSpawns(location.m_prefab, location.m_randomSpawns);
             }
         }
 
