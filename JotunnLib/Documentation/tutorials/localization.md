@@ -108,8 +108,8 @@ private void AddLocalizations()
 
 ### Prefabs
 
-It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime via [CustomLocalization.AddJsonFile](xref:Jotunn.Entities.CustomLocalization.AddJsonFile(System.String,System.String)).
-In this example, we use our filenames to provide the language which we wish to add the translations for:
+It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime via [CustomLocalization.AddJsonFile](xref:Jotunn.Entities.CustomLocalization.AddJsonFile(System.String,System.String)). 
+In this example, we use our filenames to provide the language which we wish to add the translations for.
 
 ```cs
 private void BlueprintRuneLocalizations()
@@ -117,11 +117,14 @@ private void BlueprintRuneLocalizations()
     TextAsset[] textAssets = blueprintRuneBundle.LoadAllAssets<TextAsset>();
     foreach (var textAsset in textAssets)
     {
+        // Adjust the replacement string to match the file name in your asset bundle
         var lang = textAsset.name.Replace(".json", null);
         Localization.AddJsonFile(lang, textAsset.ToString());
     }
 }
 ```
+Note: Ensure the replacement in textAsset.name.Replace() matches the filename of your file in the asset bundle. For instance, if your file names include "_MyModName" instead of ".json" then use `textAsset.name.Replace("_MyModName", null)` instead.
+![AssetBundleName](https://i.imgur.com/uZtp1B0.png)
 
 ![Blueprint Rune Localizations](../images/data/blueprintRuneLocalizations.png)
 
