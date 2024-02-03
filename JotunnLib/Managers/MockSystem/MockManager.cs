@@ -147,6 +147,11 @@ namespace Jotunn.Managers
                 return null;
             }
 
+            if (GUIUtils.IsHeadless && mockObjectType == typeof(Texture))
+            {
+                return null;
+            }
+
             if (!IsMockName(GetCleanedName(mockObjectType, unityObject.name), out string assetName, out List<string> childNames))
             {
                 return null;
@@ -389,6 +394,11 @@ namespace Jotunn.Managers
 
         private static void TryFixMaterial(Material material)
         {
+            if (GUIUtils.IsHeadless)
+            {
+                return;
+            }
+
             if (!material || fixedMaterials.Contains(material) || queuedToFixMaterials.Contains(material))
             {
                 return;
