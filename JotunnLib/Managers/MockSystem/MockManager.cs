@@ -410,7 +410,7 @@ namespace Jotunn.Managers
         private static void FixQueuedMaterials()
         {
             // if the cache is already initialized, some later loaded textures are not found
-            PrefabManager.Cache.ClearCache<Texture>();
+            PrefabManager.Cache.Clear<Texture>();
             allVanillaObjectsAvailable = true;
 
             foreach (var material in new HashSet<Material>(queuedToFixMaterials))

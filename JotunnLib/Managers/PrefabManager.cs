@@ -72,7 +72,7 @@ namespace Jotunn.Managers
             Main.Harmony.PatchAll(typeof(Patches));
             SceneManager.sceneUnloaded += current =>
             {
-                Cache.ClearCache();
+                Cache.Clear();
 
                 // We need to dereference the MenuObjectDB manually, otherwise the script won't be destroyed properly.
                 // This is likely a Unity bug, everything in the Unity docs suggests that the scene and script are always completely destroyed.
@@ -413,7 +413,8 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     The global cache of prefabs per scene.
+        ///     Global cache of Unity Objects by asset name.<br />
+        ///     Built on first access of every type and is cleared on scene change.
         /// </summary>
         public static class Cache
         {
@@ -553,12 +554,23 @@ namespace Jotunn.Managers
                 return map;
             }
 
-            internal static void ClearCache()
+            /// <summary>
+            ///     Clears the entire cache, resulting in a rebuilt on the next access.<br />
+            ///     This can be useful if an asset is loaded late after a scene change and might be missing in the cache.
+            ///     Rebuilding can be an expensive operation, so use with caution.
+            /// </summary>
+            public static void Clear()
             {
                 dictionaryCache.Clear();
             }
 
-            internal static void ClearCache<T>()
+            /// <summary>
+            ///     Clears the cache for a specific type, resulting in a rebuilt on the next access.<br />
+            ///     This can be useful if an asset is loaded late after a scene change and might be missing in the cache.
+            ///     Rebuilding can be an expensive operation, so use with caution.
+            /// </summary>
+            /// <typeparam name="T">The type of object to clear the cache for</typeparam>
+            public static void Clear<T>() where T : Object
             {
                 dictionaryCache.Remove(typeof(T));
             }
