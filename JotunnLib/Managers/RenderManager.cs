@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -315,37 +315,52 @@ namespace Jotunn.Managers
         /// <returns></returns>
         private static RenderObject SpawnSafe(RenderRequest request)
         {
-            GameObject prefab = request.Target;
+            // create temporary parent and clone target as child
+            GameObject parent = new GameObject();
+            parent.SetActive(false);
+            GameObject spawn = Object.Instantiate(request.Target, parent.transform);
 
-            // map prefab GameObjects to the instantiated GameObjects
-            Dictionary<GameObject, GameObject> realToClone = new Dictionary<GameObject, GameObject>();
-            GameObject spawn = SpawnOnlyTransformsClone(prefab, null, realToClone);
+            // delete problematic components Monobehavours
+            parent.GetComponentsInChildren<MonoBehaviour>(true)
+                .Where(monoBehaviour => monoBehaviour != null && monoBehaviour.gameObject != null)
+                .OrderBy(monoBehaviour => monoBehaviour is CharacterDrop ? 0 : 1) // Order by whether it's a CharacterDrop, as other scripts depend on it
+                .ToList().ForEach(monoBehaviour => Object.DestroyImmediate(monoBehaviour));
 
-            foreach (var pair in realToClone)
-            {
-                CopyVisualComponents(pair.Key, pair.Value, realToClone);
-            }
+            parent.GetComponentsInChildren<Animator>(true)
+                .Where(animator => animator != null && animator.gameObject != null)
+                .ToList()
+                .ForEach(animator => Object.DestroyImmediate(animator));
 
+            SetLayerRecursive(spawn);
+            spawn.transform.SetParent(null);
+            Object.DestroyImmediate(parent);
             spawn.transform.position = Vector3.zero;
             spawn.transform.rotation = request.Rotation;
-            spawn.name = prefab.name;
+            spawn.name = request.Target.name;
 
             // calculate visual center
             Vector3 min = new Vector3(1000f, 1000f, 1000f);
             Vector3 max = new Vector3(-1000f, -1000f, -1000f);
 
-            foreach (Renderer meshRenderer in spawn.GetComponentsInChildren<Renderer>())
-            {
-                min = Vector3.Min(min, meshRenderer.bounds.min);
-                max = Vector3.Max(max, meshRenderer.bounds.max);
-            }
+            spawn.GetComponentsInChildren<Renderer>().ToList()
+                .Where(renderer => renderer is MeshRenderer || renderer is SkinnedMeshRenderer)
+                .ToList().ForEach(renderer =>
+                {
+                    min = Vector3.Min(min, renderer.bounds.min);
+                    max = Vector3.Max(max, renderer.bounds.max);
+                });
 
             // center the prefab
             spawn.transform.position = -(min + max) / 2f;
+
             Vector3 size = new Vector3(
                 Mathf.Abs(min.x) + Mathf.Abs(max.x),
                 Mathf.Abs(min.y) + Mathf.Abs(max.y),
                 Mathf.Abs(min.z) + Mathf.Abs(max.z));
+
+            // simulate particle effects
+            foreach (ParticleSystem particleSystem in spawn.GetComponentsInChildren<ParticleSystem>(true))
+                particleSystem.Simulate(request.ParticleSimulationTime);
 
             // just in case it doesn't gets deleted properly later
             TimedDestruction timedDestruction = spawn.AddComponent<TimedDestruction>();
@@ -376,6 +391,12 @@ namespace Jotunn.Managers
             }
 
             return clone;
+        }
+
+        private static void SetLayerRecursive(GameObject root)
+        {
+            root.layer = Layer;
+            foreach (Transform child in root.transform) SetLayerRecursive(child.gameObject);
         }
 
         private static Transform MapRealBoneToClonedBone(Dictionary<GameObject, GameObject> resolver, Transform transform)
@@ -523,6 +544,11 @@ namespace Jotunn.Managers
             {
                 Target = target;
             }
+
+            /// <summary>
+            ///     Simulates the particle effects for this amount of seconds. 0 for no particles.
+            /// </summary>
+            public float ParticleSimulationTime { get; set; } = 2f;
         }
     }
 }
