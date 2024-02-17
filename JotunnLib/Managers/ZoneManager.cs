@@ -71,6 +71,7 @@ namespace Jotunn.Managers
             LocationContainer.SetActive(false);
 
             Main.Harmony.PatchAll(typeof(Patches));
+            PrefabManager.Instance.Activate();
         }
 
         private static class Patches
