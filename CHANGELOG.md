@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.17.0
+* Added PrefabManager.Cache.Clear to API
+* Fixed warnings about missing textures on dedicated servers
+* Fixed category text not being resized automatically
+* Fixed category tokens omitting invalid characters like spaces from the original name, they are now replaced with an underscore
+
 ## Version 2.16.2
 * Fixed a bug where newly spawned locations did not spawn their child net objects anymore after a relog without restart was performed
 
