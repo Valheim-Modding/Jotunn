@@ -8,9 +8,9 @@ using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
@@ -824,16 +824,16 @@ namespace Jotunn.Managers
             UIInputHandler handler = newTab.GetOrAddComponent<UIInputHandler>();
             handler.m_onLeftDown += Hud.instance.OnLeftClickCategory;
 
-            foreach (var text in newTab.GetComponentsInChildren<Text>())
+            foreach (var text in newTab.GetComponentsInChildren<TMP_Text>(true))
             {
                 text.rectTransform.offsetMin = new Vector2(3, 1);
                 text.rectTransform.offsetMax = new Vector2(-3, -1);
-                text.resizeTextForBestFit = true;
-                text.resizeTextMinSize = 12;
-                text.resizeTextMaxSize = 20;
+                text.enableAutoSizing = true;
+                text.fontSizeMin = 10;
+                text.fontSizeMax = 20;
                 text.lineSpacing = 0.8f;
-                text.horizontalOverflow = HorizontalWrapMode.Wrap;
-                text.verticalOverflow = VerticalWrapMode.Truncate;
+                text.textWrappingMode = TextWrappingModes.Normal;
+                text.overflowMode = TextOverflowModes.Truncate;
             }
 
             return newTab;
