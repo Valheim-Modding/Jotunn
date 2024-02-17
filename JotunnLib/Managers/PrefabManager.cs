@@ -93,6 +93,10 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
             private static void InvokeOnPrefabsRegistered() => Instance.InvokeOnPrefabsRegistered();
+
+            // some assets from locations may only be available now, clear the cache to resolve later mocks correctly
+            [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations)), HarmonyPrefix, HarmonyPriority(Priority.High)]
+            private static void ZoneSystem_ClearPrefabCache(ZoneSystem __instance) => Cache.Clear();
         }
 
         /// <summary>

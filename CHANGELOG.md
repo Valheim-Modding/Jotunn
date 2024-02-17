@@ -1,7 +1,8 @@
 # Changelog
 
 ## Version 2.17.0
-* Added PrefabManager.Cache.Clear to API
+* Added PrefabManager.Cache.Clear to the API
+* Added a PrefabManager cache clear before ZoneSystem.SetupLocations to fix mocked assets that are late available
 * Fixed warnings about missing textures on dedicated servers
 * Fixed category text not being resized automatically
 * Fixed category tokens omitting invalid characters like spaces from the original name, they are now replaced with an underscore
