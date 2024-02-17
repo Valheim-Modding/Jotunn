@@ -775,7 +775,7 @@ namespace Jotunn.Managers
         private string GetCategoryToken(string name)
         {
             char[] forbiddenCharsArray = LocalizationManager.ForbiddenChars.ToCharArray();
-            string tokenCategory = string.Concat(name.ToLower().Split(forbiddenCharsArray));
+            string tokenCategory = string.Join("_", name.ToLower().Split(forbiddenCharsArray));
             return $"jotunn_cat_{tokenCategory}";
         }
 
