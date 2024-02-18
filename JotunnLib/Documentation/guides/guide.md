@@ -50,7 +50,7 @@ To overwrite paths, create a new file called `Environment.props` at the project 
 
     <!-- BepInEx install folder. This is usually found automatically, uncomment to overwrite.
          Note the default value $(VALHEIM_INSTALL)\BepInEx requires the VALHEIM_INSTALL property to be set. -->
-    <!-- <BEPINEX_PATH>$(VALHEIM_INSTALL)\BepInEx</VALHEIM_INSTALL>-->
+    <!-- <BEPINEX_PATH>$(VALHEIM_INSTALL)\BepInEx</BEPINEX_PATH>-->
 
     <!-- This is the folder where your build gets copied to when using the post-build automations.
          Note the default value $(VALHEIM_INSTALL)\BepInEx\plugins requires the VALHEIM_INSTALL property to be set. -->
