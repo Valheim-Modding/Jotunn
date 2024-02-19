@@ -335,12 +335,12 @@ namespace Jotunn.Managers
             // build dag of coomponent dependencies
             DAG dag = new DAG(parent.transform);
 
-            List<Component> componets = dag.TopologicalSort();
+            List<Component> components = dag.TopologicalSort();
             // can not be spawned safe
             if (dag.hasCycle) return null;
 
             // delete all components except visuals and transforms
-            foreach (var component in componets)
+            foreach (var component in components)
             {
                 if (!(IsRenderComponent(component) || (request.ParticleSimulationTime >= 0 && IsParticleComponent(component))))
                     Object.DestroyImmediate(component);
