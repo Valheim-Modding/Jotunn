@@ -182,7 +182,9 @@ namespace Jotunn.Managers
                 SetupRendering();
             }
 
-            RenderObject spawned = SpawnSafe(renderRequest);
+            RenderObject spawned = SpawnRenderClone(renderRequest);
+            // no safe spawn possible
+            if (spawned == null) return null;
             Sprite rendered = RenderSprite(spawned);
 
             if (renderRequest.UseCache)
@@ -308,28 +310,41 @@ namespace Jotunn.Managers
             return component is Renderer || component is MeshFilter;
         }
 
+        private static bool IsRenderComponent(Component component)
+        {
+            return component is MeshRenderer || component is SkinnedMeshRenderer || component is MeshFilter || component is Transform;
+        }
+
+        private static bool IsParticleComponent(Component component)
+        {
+            return component is ParticleSystemRenderer || component is ParticleSystem;
+        }
+
         /// <summary>
         ///     Spawn a prefab without any Components except visuals. Also prevents calling Awake methods of the prefab.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        private static RenderObject SpawnSafe(RenderRequest request)
+        private static RenderObject SpawnRenderClone(RenderRequest request)
         {
             // create temporary parent and clone target as child
             GameObject parent = new GameObject();
             parent.SetActive(false);
             GameObject spawn = Object.Instantiate(request.Target, parent.transform);
 
-            // delete problematic components Monobehavours
-            parent.GetComponentsInChildren<MonoBehaviour>(true)
-                .Where(monoBehaviour => monoBehaviour != null && monoBehaviour.gameObject != null)
-                .OrderBy(monoBehaviour => monoBehaviour is CharacterDrop ? 0 : 1) // Order by whether it's a CharacterDrop, as other scripts depend on it
-                .ToList().ForEach(monoBehaviour => Object.DestroyImmediate(monoBehaviour));
+            // build dag of coomponent dependencies
+            DAG dag = new DAG(parent.transform);
 
-            parent.GetComponentsInChildren<Animator>(true)
-                .Where(animator => animator != null && animator.gameObject != null)
-                .ToList()
-                .ForEach(animator => Object.DestroyImmediate(animator));
+            List<Component> componets = dag.TopologicalSort();
+            // can not be spawned safe
+            if (dag.hasCycle) return null;
+
+            // delete all components except visuals and transforms
+            foreach (var component in componets)
+            {
+                if (!(IsRenderComponent(component) || (request.ParticleSimulationTime >= 0 && IsParticleComponent(component))))
+                    Object.DestroyImmediate(component);
+            }
 
             SetLayerRecursive(spawn);
             spawn.transform.SetParent(null);
@@ -342,13 +357,14 @@ namespace Jotunn.Managers
             Vector3 min = new Vector3(1000f, 1000f, 1000f);
             Vector3 max = new Vector3(-1000f, -1000f, -1000f);
 
-            spawn.GetComponentsInChildren<Renderer>().ToList()
-                .Where(renderer => renderer is MeshRenderer || renderer is SkinnedMeshRenderer)
-                .ToList().ForEach(renderer =>
+            foreach (Renderer renderer in spawn.GetComponentsInChildren<Renderer>())
+            {
+                if (renderer is MeshRenderer || renderer is SkinnedMeshRenderer)
                 {
                     min = Vector3.Min(min, renderer.bounds.min);
                     max = Vector3.Max(max, renderer.bounds.max);
-                });
+                }
+            }
 
             // center the prefab
             spawn.transform.position = -(min + max) / 2f;
@@ -358,9 +374,11 @@ namespace Jotunn.Managers
                 Mathf.Abs(min.y) + Mathf.Abs(max.y),
                 Mathf.Abs(min.z) + Mathf.Abs(max.z));
 
-            // simulate particle effects
+            // simulate particle effects (in case of simulation time less than 0, components have already been destroyed)
             foreach (ParticleSystem particleSystem in spawn.GetComponentsInChildren<ParticleSystem>(true))
+            {
                 particleSystem.Simulate(request.ParticleSimulationTime);
+            }
 
             // just in case it doesn't gets deleted properly later
             TimedDestruction timedDestruction = spawn.AddComponent<TimedDestruction>();
@@ -372,71 +390,12 @@ namespace Jotunn.Managers
             };
         }
 
-        private static GameObject SpawnOnlyTransformsClone(GameObject prefab, Transform parent, Dictionary<GameObject, GameObject> realToClone)
-        {
-            GameObject clone = new GameObject();
-            clone.gameObject.layer = Layer;
-            clone.gameObject.SetActive(prefab.activeSelf);
-            clone.name = prefab.name;
-            clone.transform.SetParent(parent);
-            clone.transform.localPosition = prefab.transform.localPosition;
-            clone.transform.localRotation = prefab.transform.localRotation;
-            clone.transform.localScale = prefab.transform.localScale;
-
-            realToClone.Add(prefab, clone);
-
-            for (int i = 0; i < prefab.transform.childCount; i++)
-            {
-                SpawnOnlyTransformsClone(prefab.transform.GetChild(i).gameObject, clone.transform, realToClone);
-            }
-
-            return clone;
-        }
-
         private static void SetLayerRecursive(GameObject root)
         {
             root.layer = Layer;
-            foreach (Transform child in root.transform) SetLayerRecursive(child.gameObject);
-        }
-
-        private static Transform MapRealBoneToClonedBone(Dictionary<GameObject, GameObject> resolver, Transform transform)
-        {
-            if (transform)
+            foreach (Transform child in root.transform)
             {
-                return resolver[transform.gameObject].transform;
-            }
-
-            return transform;
-        }
-
-        private static void CopyVisualComponents(GameObject prefab, GameObject clone, Dictionary<GameObject, GameObject> resolver)
-        {
-            foreach (MeshFilter meshFilter in prefab.GetComponents<MeshFilter>())
-            {
-                clone.gameObject.AddComponentCopy(meshFilter);
-            }
-
-            foreach (Renderer renderer in prefab.GetComponents<Renderer>())
-            {
-                Renderer clonedRenderer = (Renderer)clone.gameObject.AddComponentCopy(renderer);
-
-                if (!(renderer is SkinnedMeshRenderer skinnedMeshRenderer))
-                {
-                    continue;
-                }
-
-                SkinnedMeshRenderer clonedSkinnedMeshRenderer = (SkinnedMeshRenderer)clonedRenderer;
-
-                if (skinnedMeshRenderer.rootBone != null)
-                {
-                    Transform[] bones = skinnedMeshRenderer.bones.Select(t => MapRealBoneToClonedBone(resolver, t)).ToArray();
-                    clonedSkinnedMeshRenderer.bones = bones;
-                    clonedSkinnedMeshRenderer.updateWhenOffscreen = true;
-                }
-                else
-                {
-                    clonedSkinnedMeshRenderer.rootBone = null;
-                }
+                SetLayerRecursive(child.gameObject);
             }
         }
 
@@ -546,9 +505,110 @@ namespace Jotunn.Managers
             }
 
             /// <summary>
-            ///     Simulates the particle effects for this amount of seconds. 0 for no particles.
+            ///     Simulates the particle effects for this amount of seconds. <0 for no particles.
             /// </summary>
-            public float ParticleSimulationTime { get; set; } = 2f;
+            public float ParticleSimulationTime { get; set; } = 5f;
         }
     }
+
+    /// <summary>
+    ///     Directed Acyclic Graph (DAG) class to resolve component dependencies
+    /// </summary>
+    public class DAG
+    {
+        /// <summary>
+        ///     Are there cycles in the graph
+        /// </summary>
+        public bool hasCycle { get; private set; }
+        private readonly Transform initial;
+        private readonly Dictionary<Component, List<Component>> nodes = new Dictionary<Component, List<Component>>();
+        private readonly HashSet<Component> visitedNodes = new HashSet<Component>();
+
+        /// <summary>
+        ///     Constructor taking the component to resolve the dependencies for
+        /// </summary>
+        public DAG(Transform initial)
+        {
+            if (initial == null) return;
+            hasCycle = false;
+            this.initial = initial;
+
+            Parse(initial);
+        }
+
+        private void Parse(Component element)
+        {
+            if (element == null) return;
+
+            visitedNodes.Add(element);
+
+            if (!nodes.ContainsKey(element)) nodes.Add(element, new List<Component>());
+
+            foreach (Component component in element.gameObject.GetComponentsInChildren<Component>(true))
+            {
+                // element already processed
+                if (visitedNodes.Contains(component)) continue;
+
+                nodes[element].Add(component);
+                Parse(component);
+            }
+        }
+
+        /// <summary>
+        ///     Retrieves the components from DAG according to their dependencies in order to destroy the components in correct order 
+        /// </summary>
+        /// <returns>List of <see cref="Component"/></returns>
+        public List<Component> TopologicalSort()
+        {
+            List<Component> result = new List<Component>();
+            HashSet<Component> visited = new HashSet<Component>();
+            HashSet<Component> recursionStack = new HashSet<Component>();
+
+            foreach (var node in nodes.Keys)
+            {
+                if (!visited.Contains(node))
+                {
+                    if (!TopologicalSortUtil(node, visited, recursionStack, result))
+                    {
+                        Logger.LogError($"Cycles detected in component dependencies for component {node}. Unable to determine deletion order for {initial}.");
+                        return null;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private bool TopologicalSortUtil(Component node, HashSet<Component> visited, HashSet<Component> recursionStack, List<Component> result)
+        {
+            if (recursionStack.Contains(node))
+            {
+                // Cycle detected
+                hasCycle = true;
+                return false;
+            }
+
+            if (!visited.Contains(node))
+            {
+                visited.Add(node);
+                recursionStack.Add(node);
+
+                foreach (var neighbor in nodes[node])
+                {
+                    if (!TopologicalSortUtil(neighbor, visited, recursionStack, result))
+                    {
+                        return false;
+                    }
+                }
+
+                recursionStack.Remove(node);
+                result.Add(node);
+            }
+
+            return true;
+        }
+
+    }
+
+
 }
