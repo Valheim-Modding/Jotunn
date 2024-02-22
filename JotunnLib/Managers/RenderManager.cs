@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using Jotunn.Utils;
 using UnityEngine;
+using static Mono.Security.X509.X520;
 using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
@@ -332,19 +334,12 @@ namespace Jotunn.Managers
             parent.SetActive(false);
             GameObject spawn = Object.Instantiate(request.Target, parent.transform);
 
-            // build dag of coomponent dependencies
-            DAG dag = new DAG(parent.transform);
-
-            List<Component> components = dag.TopologicalSort();
-            // can not be spawned safe
-            if (dag.hasCycle) return null;
-
-            // delete all components except visuals and transforms
-            foreach (var component in components)
+            // exception could happen e.g. if a renderer has a dependency to a script
+            if (!RecursivelyRemoveComponents(parent.transform, request))
             {
-                if (!(IsRenderComponent(component) || (request.ParticleSimulationTime >= 0 && IsParticleComponent(component))))
-                    Object.DestroyImmediate(component);
-            }
+                Logger.LogWarning($"Sprite could not be rendered for {request.Target} due to components not being removed.");
+                return null;
+            }            
 
             SetLayerRecursive(spawn);
             spawn.transform.SetParent(null);
@@ -388,6 +383,102 @@ namespace Jotunn.Managers
             {
                 Request = request
             };
+        }
+
+        /// <summary>
+        ///     Recursively remove all components not needed for rendering in order of their dependencies.
+        /// </summary>
+        /// <param name="parentTransform"></param>
+        /// <param name="request"></param>
+        /// <returns>false if components could not be removed, true otherwise</returns>
+        private static bool RecursivelyRemoveComponents(Transform parentTransform, RenderRequest request)
+        {
+            GameObject go = parentTransform.gameObject;
+
+            // remove components from all childs
+            for (int i = 0; i < parentTransform.childCount; i++)
+            {
+                RecursivelyRemoveComponents(parentTransform.GetChild(i), request);
+            }
+
+            // remove components in order of its dependencies
+            List<Type> typesToRemove = GetTopolocialSort(parentTransform);
+            // cycles detected
+            if (typesToRemove == null) return false;
+
+            foreach (Type type in typesToRemove)
+            {
+                foreach (Component componentToRemove in go.GetComponents(type))
+                {
+                    if (!(IsRenderComponent(componentToRemove) || (request.ParticleSimulationTime >= 0 && IsParticleComponent(componentToRemove))))
+                    {
+                        try
+                        {
+                            Object.DestroyImmediate(componentToRemove);
+                        }
+                        // could happen if a component needed for rendering has a dependency to a script component
+                        catch (Exception e)
+                        {
+                            Logger.LogError($"Component {componentToRemove} could not be removed. Exception caught: {e.Message}");
+                            return false;
+                        }
+                    }
+                }
+            }
+        
+            return true;
+        }
+
+        /// <summary>
+        ///     Topological sort (regarding dependencies between components) of all components of this transforms gameobject
+        /// </summary>
+        /// <param name="tranform"></param>
+        /// <returns>A topologically sorted list of types. Null if cycles have been detected.</returns>
+        private static List<Type> GetTopolocialSort(Transform tranform)
+        {
+            List<Type> result = new List<Type>();
+            HashSet<Type> visitedNodes = new HashSet<Type>();
+            HashSet<Type> recursionStack = new HashSet<Type>();
+
+            foreach(Component component in tranform.gameObject.GetComponents<Component>())
+            {
+                if (!TopologicalSortUtil(component.GetType(), visitedNodes, recursionStack, result))
+                {
+                    Logger.LogWarning($"Cycles detected in component dependencies for type {component.GetType()}. Unable to determine deletion order for {tranform}.");
+                    return null;
+                }
+            }
+            
+            result.Reverse();
+            return result;
+        }
+
+        private static bool TopologicalSortUtil(Type node, HashSet<Type> visited, HashSet<Type> recursionStack, List<Type> result)
+        {
+            // Type already processed
+            if (visited.Contains(node)) return true;
+
+            // Cycle detected
+            if (recursionStack.Contains(node)) return false;
+            recursionStack.Add(node);
+
+            // Parse dependencies
+            IEnumerable<RequireComponent> requirements = node.GetCustomAttributes<RequireComponent>();
+            foreach (RequireComponent requirement in requirements)
+            {
+                if (requirement.m_Type0 != null)
+                    if (!TopologicalSortUtil(requirement.m_Type0, visited, recursionStack, result)) return false;
+                if (requirement.m_Type1 != null)
+                    if (!TopologicalSortUtil(requirement.m_Type1, visited, recursionStack, result)) return false;
+                if (requirement.m_Type2 != null)
+                    if (!TopologicalSortUtil(requirement.m_Type2, visited, recursionStack, result)) return false;
+            }
+
+            recursionStack.Remove(node);
+            visited.Add(node);
+            result.Add(node);
+            
+            return true;
         }
 
         private static void SetLayerRecursive(GameObject root)
@@ -505,110 +596,10 @@ namespace Jotunn.Managers
             }
 
             /// <summary>
-            ///     Simulates the particle effects for this amount of seconds. <0 for no particles.
+            ///     Simulates the particle effects for this amount of seconds. Less than 0 for no particles.
             /// </summary>
             public float ParticleSimulationTime { get; set; } = 5f;
         }
     }
-
-    /// <summary>
-    ///     Directed Acyclic Graph (DAG) class to resolve component dependencies
-    /// </summary>
-    public class DAG
-    {
-        /// <summary>
-        ///     Are there cycles in the graph
-        /// </summary>
-        public bool hasCycle { get; private set; }
-        private readonly Transform initial;
-        private readonly Dictionary<Component, List<Component>> nodes = new Dictionary<Component, List<Component>>();
-        private readonly HashSet<Component> visitedNodes = new HashSet<Component>();
-
-        /// <summary>
-        ///     Constructor taking the component to resolve the dependencies for
-        /// </summary>
-        public DAG(Transform initial)
-        {
-            if (initial == null) return;
-            hasCycle = false;
-            this.initial = initial;
-
-            Parse(initial);
-        }
-
-        private void Parse(Component element)
-        {
-            if (element == null) return;
-
-            visitedNodes.Add(element);
-
-            if (!nodes.ContainsKey(element)) nodes.Add(element, new List<Component>());
-
-            foreach (Component component in element.gameObject.GetComponentsInChildren<Component>(true))
-            {
-                // element already processed
-                if (visitedNodes.Contains(component)) continue;
-
-                nodes[element].Add(component);
-                Parse(component);
-            }
-        }
-
-        /// <summary>
-        ///     Retrieves the components from DAG according to their dependencies in order to destroy the components in correct order 
-        /// </summary>
-        /// <returns>List of <see cref="Component"/></returns>
-        public List<Component> TopologicalSort()
-        {
-            List<Component> result = new List<Component>();
-            HashSet<Component> visited = new HashSet<Component>();
-            HashSet<Component> recursionStack = new HashSet<Component>();
-
-            foreach (var node in nodes.Keys)
-            {
-                if (!visited.Contains(node))
-                {
-                    if (!TopologicalSortUtil(node, visited, recursionStack, result))
-                    {
-                        Logger.LogError($"Cycles detected in component dependencies for component {node}. Unable to determine deletion order for {initial}.");
-                        return null;
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private bool TopologicalSortUtil(Component node, HashSet<Component> visited, HashSet<Component> recursionStack, List<Component> result)
-        {
-            if (recursionStack.Contains(node))
-            {
-                // Cycle detected
-                hasCycle = true;
-                return false;
-            }
-
-            if (!visited.Contains(node))
-            {
-                visited.Add(node);
-                recursionStack.Add(node);
-
-                foreach (var neighbor in nodes[node])
-                {
-                    if (!TopologicalSortUtil(neighbor, visited, recursionStack, result))
-                    {
-                        return false;
-                    }
-                }
-
-                recursionStack.Remove(node);
-                result.Add(node);
-            }
-
-            return true;
-        }
-
-    }
-
 
 }
