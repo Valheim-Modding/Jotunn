@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using Jotunn.Utils;
 using UnityEngine;
@@ -21,6 +22,7 @@ namespace Jotunn.Managers
         public static readonly Quaternion IsometricRotation = Quaternion.Euler(23, 51, 25.8f);
 
         private static RenderManager _instance;
+
         private Sprite EmptySprite { get; } = Sprite.Create(Texture2D.whiteTexture, Rect.zero, Vector2.one);
 
         /// <summary>
@@ -182,7 +184,14 @@ namespace Jotunn.Managers
                 SetupRendering();
             }
 
-            RenderObject spawned = SpawnSafe(renderRequest);
+            RenderObject spawned = SpawnRenderClone(renderRequest);
+
+            if (spawned == null)
+            {
+                // no safe spawn possible
+                return null;
+            }
+
             Sprite rendered = RenderSprite(spawned);
 
             if (renderRequest.UseCache)
@@ -308,44 +317,68 @@ namespace Jotunn.Managers
             return component is Renderer || component is MeshFilter;
         }
 
+        private static bool IsRenderComponent(Component component)
+        {
+            return component is MeshRenderer || component is SkinnedMeshRenderer || component is MeshFilter || component is Transform;
+        }
+
+        private static bool IsParticleComponent(Component component)
+        {
+            return component is ParticleSystemRenderer || component is ParticleSystem;
+        }
+
         /// <summary>
         ///     Spawn a prefab without any Components except visuals. Also prevents calling Awake methods of the prefab.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        private static RenderObject SpawnSafe(RenderRequest request)
+        private static RenderObject SpawnRenderClone(RenderRequest request)
         {
-            GameObject prefab = request.Target;
+            // create temporary parent and clone target as child
+            GameObject parent = new GameObject();
+            parent.SetActive(false);
+            GameObject spawn = Object.Instantiate(request.Target, parent.transform);
 
-            // map prefab GameObjects to the instantiated GameObjects
-            Dictionary<GameObject, GameObject> realToClone = new Dictionary<GameObject, GameObject>();
-            GameObject spawn = SpawnOnlyTransformsClone(prefab, null, realToClone);
-
-            foreach (var pair in realToClone)
+            // exception could happen e.g. if a renderer has a dependency to a script
+            if (!RecursivelyRemoveComponents(parent.transform, request))
             {
-                CopyVisualComponents(pair.Key, pair.Value, realToClone);
+                Logger.LogWarning($"Sprite could not be rendered for {request.Target} due to components not being removed.");
+                return null;
             }
 
+            SetLayerRecursive(spawn);
+            spawn.transform.SetParent(null);
+            Object.DestroyImmediate(parent);
             spawn.transform.position = Vector3.zero;
             spawn.transform.rotation = request.Rotation;
-            spawn.name = prefab.name;
+            spawn.name = request.Target.name;
 
             // calculate visual center
             Vector3 min = new Vector3(1000f, 1000f, 1000f);
             Vector3 max = new Vector3(-1000f, -1000f, -1000f);
 
-            foreach (Renderer meshRenderer in spawn.GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in spawn.GetComponentsInChildren<Renderer>())
             {
-                min = Vector3.Min(min, meshRenderer.bounds.min);
-                max = Vector3.Max(max, meshRenderer.bounds.max);
+                if (renderer is MeshRenderer || renderer is SkinnedMeshRenderer)
+                {
+                    min = Vector3.Min(min, renderer.bounds.min);
+                    max = Vector3.Max(max, renderer.bounds.max);
+                }
             }
 
             // center the prefab
             spawn.transform.position = -(min + max) / 2f;
+
             Vector3 size = new Vector3(
                 Mathf.Abs(min.x) + Mathf.Abs(max.x),
                 Mathf.Abs(min.y) + Mathf.Abs(max.y),
                 Mathf.Abs(min.z) + Mathf.Abs(max.z));
+
+            // simulate particle effects (in case of simulation time less than 0, components have already been destroyed)
+            foreach (ParticleSystem particleSystem in spawn.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                particleSystem.Simulate(request.ParticleSimulationTime);
+            }
 
             // just in case it doesn't gets deleted properly later
             TimedDestruction timedDestruction = spawn.AddComponent<TimedDestruction>();
@@ -357,65 +390,112 @@ namespace Jotunn.Managers
             };
         }
 
-        private static GameObject SpawnOnlyTransformsClone(GameObject prefab, Transform parent, Dictionary<GameObject, GameObject> realToClone)
+        /// <summary>
+        ///     Recursively remove all components not needed for rendering in order of their dependencies.
+        /// </summary>
+        /// <param name="parentTransform"></param>
+        /// <param name="request"></param>
+        /// <returns>false if components could not be removed, true otherwise</returns>
+        private static bool RecursivelyRemoveComponents(Transform parentTransform, RenderRequest request)
         {
-            GameObject clone = new GameObject();
-            clone.gameObject.layer = Layer;
-            clone.gameObject.SetActive(prefab.activeSelf);
-            clone.name = prefab.name;
-            clone.transform.SetParent(parent);
-            clone.transform.localPosition = prefab.transform.localPosition;
-            clone.transform.localRotation = prefab.transform.localRotation;
-            clone.transform.localScale = prefab.transform.localScale;
+            GameObject go = parentTransform.gameObject;
 
-            realToClone.Add(prefab, clone);
-
-            for (int i = 0; i < prefab.transform.childCount; i++)
+            // remove components from all childs
+            for (int i = 0; i < parentTransform.childCount; i++)
             {
-                SpawnOnlyTransformsClone(prefab.transform.GetChild(i).gameObject, clone.transform, realToClone);
+                RecursivelyRemoveComponents(parentTransform.GetChild(i), request);
             }
 
-            return clone;
+            // remove components in order of its dependencies
+            List<Type> typesToRemove = GetTopolocialSort(parentTransform);
+
+            if (typesToRemove == null)
+            {
+                // cycles detected
+                return false;
+            }
+
+            foreach (Type type in typesToRemove)
+            {
+                foreach (Component componentToRemove in go.GetComponents(type))
+                {
+                    if (!(IsRenderComponent(componentToRemove) || (request.ParticleSimulationTime >= 0 && IsParticleComponent(componentToRemove))))
+                    {
+                        try
+                        {
+                            Object.DestroyImmediate(componentToRemove);
+                        }
+                        catch (Exception e)
+                        {
+                            // could happen if a component needed for rendering has a dependency to a script component
+                            Logger.LogError($"Component {componentToRemove} could not be removed. Exception caught: {e.Message}");
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
 
-        private static Transform MapRealBoneToClonedBone(Dictionary<GameObject, GameObject> resolver, Transform transform)
+        /// <summary>
+        ///     Topological sort (regarding dependencies between components) of all components of this transforms gameobject
+        /// </summary>
+        /// <param name="tranform"></param>
+        /// <returns>A topologically sorted list of types. Null if cycles have been detected.</returns>
+        private static List<Type> GetTopolocialSort(Transform tranform)
         {
-            if (transform)
+            List<Type> result = new List<Type>();
+            HashSet<Type> visitedNodes = new HashSet<Type>();
+            HashSet<Type> recursionStack = new HashSet<Type>();
+
+            foreach (Component component in tranform.gameObject.GetComponents<Component>())
             {
-                return resolver[transform.gameObject].transform;
+                if (!TopologicalSortUtil(component.GetType(), visitedNodes, recursionStack, result))
+                {
+                    Logger.LogWarning($"Cycles detected in component dependencies for type {component.GetType()}. Unable to determine deletion order for {tranform}.");
+                    return null;
+                }
             }
 
-            return transform;
+            result.Reverse();
+            return result;
         }
 
-        private static void CopyVisualComponents(GameObject prefab, GameObject clone, Dictionary<GameObject, GameObject> resolver)
+        private static bool TopologicalSortUtil(Type node, HashSet<Type> visited, HashSet<Type> recursionStack, List<Type> result)
         {
-            foreach (MeshFilter meshFilter in prefab.GetComponents<MeshFilter>())
+            // Type already processed
+            if (visited.Contains(node)) return true;
+
+            // Cycle detected
+            if (recursionStack.Contains(node)) return false;
+            recursionStack.Add(node);
+
+            // Parse dependencies
+            IEnumerable<RequireComponent> requirements = node.GetCustomAttributes<RequireComponent>(true);
+            foreach (RequireComponent requirement in requirements)
             {
-                clone.gameObject.AddComponentCopy(meshFilter);
+                if (requirement.m_Type0 != null && !TopologicalSortUtil(requirement.m_Type0, visited, recursionStack, result))
+                    return false;
+                if (requirement.m_Type1 != null && !TopologicalSortUtil(requirement.m_Type1, visited, recursionStack, result))
+                    return false;
+                if (requirement.m_Type2 != null && !TopologicalSortUtil(requirement.m_Type2, visited, recursionStack, result))
+                    return false;
             }
 
-            foreach (Renderer renderer in prefab.GetComponents<Renderer>())
+            recursionStack.Remove(node);
+            visited.Add(node);
+            result.Add(node);
+
+            return true;
+        }
+
+        private static void SetLayerRecursive(GameObject root)
+        {
+            root.layer = Layer;
+            foreach (Transform child in root.transform)
             {
-                Renderer clonedRenderer = (Renderer)clone.gameObject.AddComponentCopy(renderer);
-
-                if (!(renderer is SkinnedMeshRenderer skinnedMeshRenderer))
-                {
-                    continue;
-                }
-
-                SkinnedMeshRenderer clonedSkinnedMeshRenderer = (SkinnedMeshRenderer)clonedRenderer;
-
-                if (skinnedMeshRenderer.rootBone != null)
-                {
-                    Transform[] bones = skinnedMeshRenderer.bones.Select(t => MapRealBoneToClonedBone(resolver, t)).ToArray();
-                    clonedSkinnedMeshRenderer.bones = bones;
-                    clonedSkinnedMeshRenderer.updateWhenOffscreen = true;
-                }
-                else
-                {
-                    clonedSkinnedMeshRenderer.rootBone = null;
-                }
+                SetLayerRecursive(child.gameObject);
             }
         }
 
@@ -523,6 +603,11 @@ namespace Jotunn.Managers
             {
                 Target = target;
             }
+
+            /// <summary>
+            ///     Simulates the particle effects for this amount of seconds. Less than 0 for no particles.
+            /// </summary>
+            public float ParticleSimulationTime { get; set; } = 5f;
         }
     }
 }
