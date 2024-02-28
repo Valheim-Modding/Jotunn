@@ -434,9 +434,14 @@ namespace Jotunn.Utils
                     .GetCustomAttributes(typeof(NetworkCompatibilityAttribute), true)
                     .Cast<NetworkCompatibilityAttribute>()
                     .FirstOrDefault();
+
                 if (networkCompatibilityAttribute != null)
                 {
                     yield return new ModModule(plugin.Value.Info.Metadata, networkCompatibilityAttribute);
+                }
+                else
+                {
+                    yield return new ModModule(plugin.Value.Info.Metadata);
                 }
             }
         }

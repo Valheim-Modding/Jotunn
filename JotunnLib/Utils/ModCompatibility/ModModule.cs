@@ -43,6 +43,14 @@ namespace Jotunn.Utils
             this.versionStrictness = networkAttribute.EnforceSameVersion;
         }
 
+        public ModModule(BepInPlugin plugin)
+        {
+            this.name = plugin.Name;
+            this.version = plugin.Version;
+            this.compatibilityLevel = CompatibilityLevel.NotEnforced;
+            this.versionStrictness = VersionStrictness.None;
+        }
+
         public string GetVersionString()
         {
             return $"{version.Major}.{version.Minor}.{version.Build}";
