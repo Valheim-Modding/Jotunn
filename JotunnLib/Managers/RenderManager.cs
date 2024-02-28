@@ -7,7 +7,6 @@ using System.Reflection;
 using BepInEx;
 using Jotunn.Utils;
 using UnityEngine;
-using static Mono.Security.X509.X520;
 using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
@@ -23,6 +22,7 @@ namespace Jotunn.Managers
         public static readonly Quaternion IsometricRotation = Quaternion.Euler(23, 51, 25.8f);
 
         private static RenderManager _instance;
+
         private Sprite EmptySprite { get; } = Sprite.Create(Texture2D.whiteTexture, Rect.zero, Vector2.one);
 
         /// <summary>
@@ -185,8 +185,13 @@ namespace Jotunn.Managers
             }
 
             RenderObject spawned = SpawnRenderClone(renderRequest);
-            // no safe spawn possible
-            if (spawned == null) return null;
+
+            if (spawned == null)
+            {
+                // no safe spawn possible
+                return null;
+            }
+
             Sprite rendered = RenderSprite(spawned);
 
             if (renderRequest.UseCache)
@@ -339,7 +344,7 @@ namespace Jotunn.Managers
             {
                 Logger.LogWarning($"Sprite could not be rendered for {request.Target} due to components not being removed.");
                 return null;
-            }            
+            }
 
             SetLayerRecursive(spawn);
             spawn.transform.SetParent(null);
@@ -403,8 +408,12 @@ namespace Jotunn.Managers
 
             // remove components in order of its dependencies
             List<Type> typesToRemove = GetTopolocialSort(parentTransform);
-            // cycles detected
-            if (typesToRemove == null) return false;
+
+            if (typesToRemove == null)
+            {
+                // cycles detected
+                return false;
+            }
 
             foreach (Type type in typesToRemove)
             {
@@ -416,16 +425,16 @@ namespace Jotunn.Managers
                         {
                             Object.DestroyImmediate(componentToRemove);
                         }
-                        // could happen if a component needed for rendering has a dependency to a script component
                         catch (Exception e)
                         {
+                            // could happen if a component needed for rendering has a dependency to a script component
                             Logger.LogError($"Component {componentToRemove} could not be removed. Exception caught: {e.Message}");
                             return false;
                         }
                     }
                 }
             }
-        
+
             return true;
         }
 
@@ -440,7 +449,7 @@ namespace Jotunn.Managers
             HashSet<Type> visitedNodes = new HashSet<Type>();
             HashSet<Type> recursionStack = new HashSet<Type>();
 
-            foreach(Component component in tranform.gameObject.GetComponents<Component>())
+            foreach (Component component in tranform.gameObject.GetComponents<Component>())
             {
                 if (!TopologicalSortUtil(component.GetType(), visitedNodes, recursionStack, result))
                 {
@@ -448,7 +457,7 @@ namespace Jotunn.Managers
                     return null;
                 }
             }
-            
+
             result.Reverse();
             return result;
         }
@@ -463,21 +472,21 @@ namespace Jotunn.Managers
             recursionStack.Add(node);
 
             // Parse dependencies
-            IEnumerable<RequireComponent> requirements = node.GetCustomAttributes<RequireComponent>();
+            IEnumerable<RequireComponent> requirements = node.GetCustomAttributes<RequireComponent>(true);
             foreach (RequireComponent requirement in requirements)
             {
-                if (requirement.m_Type0 != null)
-                    if (!TopologicalSortUtil(requirement.m_Type0, visited, recursionStack, result)) return false;
-                if (requirement.m_Type1 != null)
-                    if (!TopologicalSortUtil(requirement.m_Type1, visited, recursionStack, result)) return false;
-                if (requirement.m_Type2 != null)
-                    if (!TopologicalSortUtil(requirement.m_Type2, visited, recursionStack, result)) return false;
+                if (requirement.m_Type0 != null && !TopologicalSortUtil(requirement.m_Type0, visited, recursionStack, result))
+                    return false;
+                if (requirement.m_Type1 != null && !TopologicalSortUtil(requirement.m_Type1, visited, recursionStack, result))
+                    return false;
+                if (requirement.m_Type2 != null && !TopologicalSortUtil(requirement.m_Type2, visited, recursionStack, result))
+                    return false;
             }
 
             recursionStack.Remove(node);
             visited.Add(node);
             result.Add(node);
-            
+
             return true;
         }
 
@@ -601,5 +610,4 @@ namespace Jotunn.Managers
             public float ParticleSimulationTime { get; set; } = 5f;
         }
     }
-
 }
