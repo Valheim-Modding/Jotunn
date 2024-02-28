@@ -35,6 +35,8 @@ namespace Jotunn.Managers
         /// </summary>
         public static RenderManager Instance => _instance ??= new RenderManager();
 
+        private static Dictionary<Type, List<Type>> componentDependencies = new Dictionary<Type, List<Type>>();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>
@@ -472,15 +474,14 @@ namespace Jotunn.Managers
             recursionStack.Add(node);
 
             // Parse dependencies
-            IEnumerable<RequireComponent> requirements = node.GetCustomAttributes<RequireComponent>(true);
-            foreach (RequireComponent requirement in requirements)
+            var dependencies = GetComponentDependencies(node);
+
+            foreach (Type dependency in dependencies)
             {
-                if (requirement.m_Type0 != null && !TopologicalSortUtil(requirement.m_Type0, visited, recursionStack, result))
+                if (!TopologicalSortUtil(dependency, visited, recursionStack, result))
+                {
                     return false;
-                if (requirement.m_Type1 != null && !TopologicalSortUtil(requirement.m_Type1, visited, recursionStack, result))
-                    return false;
-                if (requirement.m_Type2 != null && !TopologicalSortUtil(requirement.m_Type2, visited, recursionStack, result))
-                    return false;
+                }
             }
 
             recursionStack.Remove(node);
@@ -488,6 +489,23 @@ namespace Jotunn.Managers
             result.Add(node);
 
             return true;
+        }
+
+        private static List<Type> GetComponentDependencies(Type node) {
+            if (!componentDependencies.TryGetValue(node, out List<Type> dependencies)) {
+                dependencies = new List<Type>();
+
+                foreach (RequireComponent requirement in node.GetCustomAttributes<RequireComponent>(true)) {
+                    dependencies.Add(requirement.m_Type0);
+                    dependencies.Add(requirement.m_Type1);
+                    dependencies.Add(requirement.m_Type2);
+                }
+
+                dependencies = dependencies.Where(t => t != null).Distinct().ToList();
+                componentDependencies[node] = dependencies;
+            }
+
+            return dependencies;
         }
 
         private static void SetLayerRecursive(GameObject root)
