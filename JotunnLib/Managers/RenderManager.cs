@@ -28,7 +28,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Appended string to file names to force a cache recreation, if changed
         /// </summary>
-        private static string cacheRevision = "c0";
+        private static string cacheRevision = "c1";
 
         /// <summary>
         ///     Singleton instance
