@@ -15,7 +15,7 @@ using ZoneLocation = ZoneSystem.ZoneLocation;
 namespace Jotunn.Managers
 {
     /// <summary>
-    ///     Manager for adding custom Locations and Vegetation.
+    ///     Manager for adding custom Locations, Vegetation and Clutter.
     /// </summary>
     public class ZoneManager : IManager
     {
@@ -38,17 +38,45 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Event that gets fired after the vanilla locations are in memory and available for cloning or editing.
-        ///     Your code will execute every time before a new <see cref="ObjectDB"/> is copied (on every menu start).
+        ///     Your code will execute every time a new <see cref="ZoneSystem"/> is available.
         ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
         public static event Action OnVanillaLocationsAvailable;
 
         /// <summary>
+        ///     Event that gets fired after all <see cref="CustomLocation"/> are registered in the <see cref="ZoneSystem"/>.
+        ///     Your code will execute every time a new <see cref="ZoneSystem"/> is available.
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
+        public static event Action OnLocationsRegistered;
+
+        /// <summary>
         ///     Event that gets fired after the vanilla clutter is in memory and available obtain.
-        ///     Your code will execute every time before a new <see cref="ClutterSystem"/> is instantiated.
+        ///     Your code will execute every time a new <see cref="ClutterSystem"/> is available.
         ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
         public static event Action OnVanillaClutterAvailable;
+
+        /// <summary>
+        ///     Event that gets fired after all <see cref="CustomClutter"/> are registered in the <see cref="ClutterSystem"/>.
+        ///     Your code will execute every time a new <see cref="ClutterSystem"/> is available.
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
+        public static event Action OnClutterRegistered;
+
+        /// <summary>
+        ///     Event that gets fired after the vanilla vegetation is in memory and available obtain.
+        ///     Your code will execute every time a new <see cref="ZoneSystem"/> is available.
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
+        public static event Action OnVanillaVegetationAvailable;
+
+        /// <summary>
+        ///     Event that gets fired after all <see cref="CustomVegetation"/> are registered in the <see cref="ZoneSystem"/>.
+        ///     Your code will execute every time a new <see cref="ZoneSystem"/> is available.
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
+        public static event Action OnVegetationRegistered;
 
         /// <summary>
         ///     Container for custom locations in the DontDestroyOnLoad scene.
@@ -77,7 +105,11 @@ namespace Jotunn.Managers
         private static class Patches
         {
             [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations)), HarmonyPostfix]
-            private static void ZoneSystem_SetupLocations(ZoneSystem __instance) => Instance.ZoneSystem_SetupLocations(__instance);
+            private static void ZoneSystem_SetupLocations(ZoneSystem __instance)
+            {
+                Instance.RegisterLocations(__instance);
+                Instance.RegisterVegetation(__instance);
+            }
 
             [HarmonyPatch(typeof(ClutterSystem), nameof(ClutterSystem.Awake)), HarmonyPostfix]
             private static void ClutterSystem_Awake(ClutterSystem __instance) => Instance.ClutterSystem_Awake(__instance);
@@ -458,9 +490,11 @@ namespace Jotunn.Managers
                     Clutter.Remove(name);
                 }
             }
+
+            InvokeOnClutterRegistered();
         }
 
-        private void ZoneSystem_SetupLocations(ZoneSystem self)
+        private void RegisterLocations(ZoneSystem self)
         {
             InvokeOnVanillaLocationsAvailable();
 
@@ -516,6 +550,13 @@ namespace Jotunn.Managers
                 }
             }
 
+            InvokeOnLocationsRegistered();
+        }
+
+        private void RegisterVegetation(ZoneSystem self)
+        {
+            InvokeOnVanillaVegetationAvailable();
+
             if (Vegetations.Count > 0)
             {
                 List<string> toDelete = new List<string>();
@@ -554,6 +595,8 @@ namespace Jotunn.Managers
                     Vegetations.Remove(name);
                 }
             }
+
+            InvokeOnVegetationRegistered();
         }
 
         /// <summary>
@@ -632,20 +675,11 @@ namespace Jotunn.Managers
             }
         }
 
-        /// <summary>
-        ///     Safely invoke OnVanillaLocationsAvailable
-        /// </summary>
-        private static void InvokeOnVanillaLocationsAvailable()
-        {
-            OnVanillaLocationsAvailable?.SafeInvoke();
-        }
-
-        /// <summary>
-        ///     Safely invoke OnVanillaClutterAvailable
-        /// </summary>
-        private static void InvokeOnVanillaClutterAvailable()
-        {
-            OnVanillaClutterAvailable?.SafeInvoke();
-        }
+        private static void InvokeOnVanillaLocationsAvailable() => OnVanillaLocationsAvailable?.SafeInvoke();
+        private static void InvokeOnLocationsRegistered() => OnLocationsRegistered?.SafeInvoke();
+        private static void InvokeOnVanillaVegetationAvailable() => OnVanillaVegetationAvailable?.SafeInvoke();
+        private static void InvokeOnVegetationRegistered() => OnVegetationRegistered?.SafeInvoke();
+        private static void InvokeOnVanillaClutterAvailable() => OnVanillaClutterAvailable?.SafeInvoke();
+        private static void InvokeOnClutterRegistered() => OnClutterRegistered?.SafeInvoke();
     }
 }
