@@ -95,6 +95,13 @@ namespace JotunnDoc
             Generated = true;
         }
 
+        public void Clear()
+        {
+            writer.Close();
+            File.Delete(FilePath);
+            writer = File.CreateText(FilePath);
+        }
+
         internal static string RangeString(float m_min, float m_max)
         {
             if (m_min == m_max)
