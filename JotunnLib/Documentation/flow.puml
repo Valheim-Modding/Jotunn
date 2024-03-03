@@ -30,6 +30,7 @@ end group
 
 Valheim -> Valheim++: ClutterSystem.Awake
     hnote over ZoneManager: OnVanillaClutterAvailable
+    hnote over ZoneManager: OnClutterRegistered
 deactivate Valheim
 
 Valheim -> Valheim++: FejdStartup.SetupGui
@@ -60,6 +61,7 @@ deactivate Valheim
 
 Valheim -> Valheim++: ClutterSystem.Awake
     hnote over ZoneManager: OnVanillaClutterAvailable
+    hnote over ZoneManager: OnClutterRegistered
 deactivate Valheim
 
 Valheim -> Valheim++: Game.Start
@@ -67,7 +69,10 @@ Valheim -> Valheim++: Game.Start
 deactivate Valheim
 
 Valheim -> Valheim++: ZoneSystem.SetupLocations
-    hnote over ZoneManager: OnVanillaZonesAvailable
+    hnote over ZoneManager: OnVanillaLocationsAvailable
+    hnote over ZoneManager: OnLocationsRegistered
+    hnote over ZoneManager: OnVanillaVegetationAvailable
+    hnote over ZoneManager: OnVegetationRegistered
 deactivate Valheim
 
 Valheim -> Valheim++: Minimap.Start
@@ -78,6 +83,7 @@ Valheim -> Valheim++: Minimap.LoadMapData
     hnote over MinimapManager: OnVanillaMapDataLoaded
 deactivate Valheim
 
+
 note over Valheim #lightblue: Game interactable
- 
+
 @enduml
