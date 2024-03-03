@@ -4,6 +4,7 @@
 * Added non enforced mods to version check messages, so changed enforcement across mod versions can be detected and applied on the server
 * Added rendering of particle effects to the RenderManager (thx bid)
 * Added RenderManager.RenderRequest.ParticleSimulationTime to control the time of the particle simulation (thx bid)
+* Added events to ZoneManager: OnLocationsRegistered, OnClutterRegistered, OnVanillaVegetationAvailable and OnVegetationRegistered
 
 ## Version 2.17.0
 * Added PrefabManager.Cache.Clear to the API
