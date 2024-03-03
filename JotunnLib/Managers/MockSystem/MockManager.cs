@@ -24,6 +24,8 @@ namespace Jotunn.Managers
         /// </summary>
         public static MockManager Instance => _instance ??= new MockManager();
 
+        private static MethodInfo Object_IsPersistent { get; } = AccessTools.Method(typeof(Object), "IsPersistent");
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>
@@ -219,6 +221,28 @@ namespace Jotunn.Managers
             {
                 FixMemberReferences(member, objectToFix, depth + 1);
             }
+        }
+
+        internal static void ReplaceMockGameObject(Transform child, GameObject realPrefab, GameObject parent)
+        {
+            if (IsPersistent(parent))
+            {
+                Logger.LogWarning($"Cannot replace mock child {child.name} in persistent prefab {parent.name}. " +
+                                  $"Clone the prefab before replacing mocks, i.e. with PrefabManager.Instance.CreateClonedPrefab " +
+                                  $"or ZoneManager.Instance.CreateLocationContainer for locations");
+                return;
+            }
+
+            int siblingIndex = child.GetSiblingIndex();
+            Object.Destroy(child.gameObject);
+
+            var newObject = Object.Instantiate(realPrefab, parent.transform);
+            newObject.transform.SetSiblingIndex(siblingIndex);
+            newObject.name.RemoveSuffix("(Clone)");
+        }
+
+        private static bool IsPersistent(GameObject parent) {
+            return (bool)Object_IsPersistent.Invoke(null, new object[] { parent });
         }
 
         private static bool IsMockName(string name, out string assetName, out List<string> childNames)
