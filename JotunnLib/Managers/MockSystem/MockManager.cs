@@ -233,12 +233,16 @@ namespace Jotunn.Managers
                 return;
             }
 
+            var newObject = Object.Instantiate(realPrefab, parent.transform);
+            newObject.name = realPrefab.name;
+            newObject.SetActive(child.gameObject.activeSelf);
+            newObject.transform.position = child.gameObject.transform.position;
+            newObject.transform.rotation = child.gameObject.transform.rotation;
+            newObject.transform.localScale = child.gameObject.transform.localScale;
+
             int siblingIndex = child.GetSiblingIndex();
             Object.DestroyImmediate(child.gameObject);
-
-            var newObject = Object.Instantiate(realPrefab, parent.transform);
             newObject.transform.SetSiblingIndex(siblingIndex);
-            newObject.name.RemoveSuffix("(Clone)");
         }
 
         private static bool IsPersistent(GameObject parent) {
