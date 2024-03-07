@@ -234,7 +234,7 @@ namespace Jotunn.Managers
             }
 
             int siblingIndex = child.GetSiblingIndex();
-            Object.Destroy(child.gameObject);
+            Object.DestroyImmediate(child.gameObject);
 
             var newObject = Object.Instantiate(realPrefab, parent.transform);
             newObject.transform.SetSiblingIndex(siblingIndex);
