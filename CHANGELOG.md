@@ -1,7 +1,8 @@
 # Changelog
 
 ## Version 2.18.0
-* Added non enforced mods to version check messages, so changed enforcement across mod versions can be detected and applied on the server
+* Added GameObject mocking, i.e. objects in the hierarchy with the JVLmock_ prefix will be swapped with the real object
+* Added non-enforced mods to version check messages, so changed enforcement across mod versions can be detected and applied on the server
 * Added rendering of particle effects to the RenderManager (thx bid)
 * Added RenderManager.RenderRequest.ParticleSimulationTime to control the time of the particle simulation (thx bid)
 * Added events to ZoneManager: OnLocationsRegistered, OnClutterRegistered, OnVanillaVegetationAvailable and OnVegetationRegistered
