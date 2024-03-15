@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Jotunn.Managers;
 using Jotunn.Utils;
@@ -50,9 +51,26 @@ namespace Jotunn
                 return;
             }
 
-            foreach (Transform tf in gameObject.transform)
+            List<Tuple<Transform, GameObject>> mockChildren = new List<Tuple<Transform, GameObject>>();
+
+            foreach (Transform child in gameObject.transform)
             {
-                tf.gameObject.FixReferences(true);
+                var realPrefab = MockManager.GetRealPrefabFromMock<GameObject>(child.gameObject);
+
+                if (realPrefab)
+                {
+                    mockChildren.Add(new Tuple<Transform, GameObject>(child, realPrefab));
+                }
+                else
+                {
+                    child.gameObject.FixReferences(true);
+                }
+            }
+
+            // mock GameObjects have to be replaced in a second loop to avoid modifying the transform hierarchy while iterating over it
+            foreach (var mockChild in mockChildren)
+            {
+                MockManager.ReplaceMockGameObject(mockChild.Item1, mockChild.Item2, gameObject);
             }
         }
 
