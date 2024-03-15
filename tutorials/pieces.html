@@ -1,0 +1,286 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Pieces and PieceTables </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Pieces and PieceTables ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="pieces-and-piecetables">Pieces and PieceTables</h1>
+
+<p><em>Pieces</em> in Valheim are anything that can be built in the game, through means such as the Hammer, Cultivator, Hoe or your own custom tool items.
+This includes things such as plant sapplings, the workbench, and walls.
+In order for a prefab to be a <em>piece</em>, it must have the <code>Piece</code> component attached to the prefab.</p>
+<p><em>Piece Tables</em> in Valheim are connecting the buildable pieces to the tools used for building.
+They also define the build categories and if a tool can remove pieces again.
+In vanilla Valheim you only can use four building categories or none on a piece table.
+Jötunn adds the ability to use custom categories on vanilla tools or completely own categories on custom tool items.
+In order for a prefab to be a <em>piece table</em>, it must have the <code>PieceTable</code> component attached to the prefab.</p>
+<p>Custom pieces and piece tables are handled by the <a class="xref" href="../api/Jotunn.Managers.PieceManager.html">PieceManager</a> singleton.</p>
+<p>This example requires <a href="asset-loading.html">assets</a> to be loaded.
+The code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>You <strong>must</strong> only use names of existing prefabs.
+This can be prefabs you created, that have already been registered by another mod, or that already exist in the game.</p>
+</div>
+<h2 id="creating-custom-pieces">Creating custom pieces</h2>
+<h3 id="custom-pieces-using-piececonfigs">Custom pieces using PieceConfigs</h3>
+<p>Now we will load a new piece from an asset bundle.
+In order to better facilitate creation of pieces we have introduced the abstractions of <a class="xref" href="../api/Jotunn.Configs.PieceConfig.html">PieceConfig's</a> and <a class="xref" href="../api/Jotunn.Configs.RequirementConfig.html">RequirementConfig</a>.
+These allow us to quickly and easily define common properties for pieces, such as the table they belong too, any restrictions or resources required.</p>
+<pre><code class="lang-cs">private void Awake()
+{
+    AssetBundle pieceBundle = AssetUtils.LoadAssetBundleFromResources(&quot;pieces&quot;);
+
+    PieceConfig cylinder = new PieceConfig();
+    cylinder.Name = &quot;$cylinder_display_name&quot;;
+    cylinder.Description = &quot;$cylinder_description&quot;;
+    cylinder.PieceTable = PieceTables.Hammer;
+    cylinder.CraftingStation = CraftingStations.Workbench;
+    cylinder.Category = PieceCategories.Misc;
+    cylinder.AddRequirement(new RequirementConfig(&quot;Wood&quot;, 2, 0, true));
+
+    PieceManager.Instance.AddPiece(new CustomPiece(pieceBundle, &quot;Cylinder&quot;, fixReference: false, cylinder));
+}
+</code></pre>
+<p>To clone an existing pieces, they first have to be loaded by the game and are not available in <code>Awake</code>.
+Jötunn provides the <code>PrefabManager.OnVanillaPrefabsAvailable</code> event where vanilla prefabs are loaded.
+This event is called every time before a new <see cref="ObjectDB"></see> is copied.
+This means we have to unregister after adding our custom pieces, because Jötunn already cached the custom piece.</p>
+<pre><code class="lang-cs">private void Awake()
+{
+    PrefabManager.OnVanillaPrefabsAvailable += CreateDeerRugPiece;
+}
+
+private void CreateDeerRugPiece()
+{
+    PieceConfig rug = new PieceConfig();
+    rug.Name = &quot;$our_rug_deer_display_name&quot;;
+    rug.PieceTable = PieceTableNames.Hammer;
+    rug.Category = PieceCategoryNames.Misc;
+    rug.AddRequirement(new RequirementConfig(&quot;Wood&quot;, 2, 0, true));
+
+    PieceManager.Instance.AddPiece(new CustomPiece(&quot;our_rug_deer&quot;, &quot;rug_deer&quot;, rug));
+
+    // You want that to run only once, Jotunn has the piece cached for the game session
+    PrefabManager.OnVanillaPrefabsAvailable -= CreateDeerRugPiece;
+}
+</code></pre>
+<p>And here we have our final results:<br>
+<img src="../Documentation/images/data/customPieces.png" alt="Blue Print Rune Piece Table"></p>
+<p>As you can see in the screenshot the name and description are not yet localized.
+To read more about localization/translation head over to the <a href="localization.html">localization tutorial pages</a>.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>A <code>PieceConfig</code> has an empty array of requirements by default and doesn't change original requirements of that piece unless requirements were explicitely added to the <code>PieceConfig</code> object. So in case you really want to remove all requirements from a specific piece (for example a cloned vanilla piece), you have to do it manually: <code>CustomPiece.Piece.m_resources = Array.Empty&lt;Piece.Requirement&gt;();</code></p>
+</div>
+<h2 id="adding-custom-piece-table-categories-to-vanilla-tables">Adding custom piece table categories to vanilla tables</h2>
+<p>With <a class="xref" href="../api/Jotunn.Configs.PieceConfig.html">PieceConfig's</a> it is possible to add your pieces to a vanilla or even custom piece table category.
+For this example we create &quot;empty&quot; pieces (GameObjects with just a cube model and a Piece component) and add them to a new category &quot;Lulzies&quot; on the Hammer.</p>
+<pre><code class="lang-cs">// Implementation of custom pieces from an &quot;empty&quot; prefab with new piece categories
+private void AddPieceCategories()
+{
+    // load a test texture from out mod folder
+    var testTexture = AssetUtils.LoadTexture(&quot;TestMod/Assets/test_tex.jpg&quot;);
+
+    GameObject cube = PrefabManager.Instance.CreateEmptyPrefab(&quot;piece_lul&quot;);
+    // Add our test texture to the Unity MeshRenderer
+    cube.GetComponent&lt;MeshRenderer&gt;().material.mainTexture = testTexture;
+
+    PieceConfig lulConfig = new PieceConfig();
+    lulConfig.Name = &quot;$piece_lul&quot;;
+    lulConfig.Description = &quot;$piece_lul_description&quot;;
+    lulConfig.PieceTable = PieceTableNames.Hammer;
+    lulConfig.Icon = RenderManager.Instance.Render(cube, RenderManager.IsometricRotation); // render a new icon at runtime
+    lulConfig.ExtendStation = CraftingStations.Workbench; // Makes this piece a station extension
+    lulConfig.Category = &quot;Lulzies&quot;;  // Adds a custom category for the Hammer
+    PieceManager.Instance.AddPiece(new CustomPiece(cube, false, lulConfig));
+}
+</code></pre>
+<p>The result is a new category added to the piece table of the Hammer:<br>
+<img src="../Documentation/images/data/customVanillaCategories.png" alt="Custom Vanilla Categories"></p>
+<p>One of the pieces placed in the world:<br>
+<img src="../Documentation/images/data/pieceStubPlaced.png" alt="Piece Stub Placed"></p>
+<h3 id="custom-piece-table">Custom piece table</h3>
+<p>After loading our custom item, we will load a piece table GameObject from our example asset bundle, create a <a class="xref" href="../api/Jotunn.Entities.CustomPieceTable.html">CustomPieceTable</a> from it and add it to the <a class="xref" href="../api/Jotunn.Managers.PieceManager.html">PieceManager</a>.</p>
+<pre><code class="lang-cs">private void CreateRunePieceTable()
+{
+    GameObject tablePrefab = blueprintRuneBundle.LoadAsset&lt;GameObject&gt;(&quot;_BlueprintTestTable&quot;);
+    CustomPieceTable CPT = new CustomPieceTable(tablePrefab);
+    PieceManager.Instance.AddPieceTable(CPT);
+}
+</code></pre>
+<h2 id="creating-completely-new-categories-using-piecetableconfigs">Creating completely new categories using PieceTableConfigs</h2>
+<p>While adding pieces with custom categories to existing piece tables (such as the Hammer), you can also create custom items with piece tables using only custom categories.
+For that you will need to use <a class="xref" href="../api/Jotunn.Configs.PieceTableConfig.html">PieceTableConfig's</a> when creating a <a class="xref" href="../api/Jotunn.Entities.CustomPieceTable.html">CustomPieceTable</a>.
+This example is not used in our example mod but in our TestMod for Jötunn.
+Keep that in mind as you will not find the code in the example mod.
+We are still using the piece table of the example <code>Blueprint Rune</code> but this time add the custom pieces to own categories.</p>
+<pre><code class="lang-cs">private void AddItemsWithConfigs()
+{
+    // Add a custom piece table with custom categories
+    PieceTableConfig runeTable = new PieceTableConfig();
+    runeTable.CanRemovePieces = false;
+    runeTable.UseCategories = false;
+    runeTable.UseCustomCategories = true;
+    runeTable.CustomCategories = new string[] { &quot;Make&quot;, &quot;Place&quot; };
+    PieceManager.Instance.AddPieceTable(new CustomPieceTable(BlueprintRuneBundle, &quot;_BlueprintTestTable&quot;, runeTable));
+
+    // Create and add a custom item
+    ItemConfig runeConfig = new ItemConfig();
+    runeConfig.Amount = 1;
+    runeConfig.AddRequirement(new RequirementConfig(&quot;Stone&quot;, 1));
+    // Prefab did not use mocked refs so no need to fix them
+    var runeItem = new CustomItem(BlueprintRuneBundle, &quot;BlueprintTestRune&quot;, fixReference: false, runeConfig);
+    ItemManager.Instance.AddItem(runeItem);
+
+    // Create and add custom pieces
+    PieceConfig makeConfig = new PieceConfig();
+    makeConfig.PieceTable = &quot;_BlueprintTestTable&quot;;
+    makeConfig.Category = &quot;Make&quot;;
+    var makePiece = new CustomPiece(BlueprintRuneBundle, &quot;make_testblueprint&quot;, fixReference: false, makeConfig);
+    PieceManager.Instance.AddPiece(makePiece);
+
+    var placeConfig = new PieceConfig();
+    placeConfig.PieceTable = &quot;_BlueprintTestTable&quot;;
+    placeConfig.Category = &quot;Place&quot;;
+    placeConfig.AllowedInDungeons = true;
+    placeConfig.AddRequirement(new RequirementConfig(&quot;Wood&quot;, 2));
+    var placePiece = new CustomPiece(BlueprintRuneBundle, &quot;piece_testblueprint&quot;, fixReference: false, placeConfig);
+    PieceManager.Instance.AddPiece(placePiece);
+}
+</code></pre>
+<p>The result is a tool with two completely custom categories:<br>
+<img src="../Documentation/images/data/customTableCategories.png" alt="Custom Piece Tables Categories"></p>
+<h2 id="translating-your-custom-categories">Translating your custom categories</h2>
+<p>You can provide localized versions of your custom categories.
+Please see our <a href="localization.html#localizable-content-in-j%C3%B6tunn">localization tutorial</a> on how to do this.</p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/pieces.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

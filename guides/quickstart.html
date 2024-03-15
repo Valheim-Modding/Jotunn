@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Developer&#39;s Quickstart </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Developer&#39;s Quickstart ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="developers-quickstart">Developer's Quickstart</h1>
+
+<p>These are the basic steps to integrate Jötunn into a new or existing project.</p>
+<h2 id="install-jötunn-via-nuget">Install Jötunn via NuGet</h2>
+<p>If you just want to use the library and none of its automations, all you'll need to do is install the latest release of Jötunn from <a href="https://www.nuget.org/packages/JotunnLib">nuget.org</a> into your project and start using it.</p>
+<p>Adding a Nuget in Visual Studio is pretty simple. Let's take a look:'</p>
+<ul>
+<li>Right click on your project, and select <em>Manage Nuget Packages</em> <br><img src="../Documentation/images/data/vs-Manage-Nuget.png" alt="Vs Manage Nuget"></li>
+<li>Click on <em>Browse</em> tab in the main pane, then type Jotunn to search for our nuget. Ensure that <em>Include Pre-Release</em> is unchecked.<br><img src="../Documentation/images/data/vs-NugetAddJotunn.png" alt="Vs Nuget Add Jotunn"> and then select <em>Install</em> in the right hand pane.</li>
+<li>Jötunn should now be installed as a dependency for your project, and the <code>Jotunn</code> namespace should be resolved.</li>
+</ul>
+<h2 id="publicized-valheim-assemblies">Publicized Valheim assemblies</h2>
+<p>It is recommended that you use publicized versions of the game's assemblies to make the modding more convenient as you don't have to use code reflection to access private methods or otherwise inaccessible members.</p>
+<p>You can generate these dependencies manually and add them to your project, or let Jötunn's PreBuild task handle that for you.</p>
+<h2 id="manual-dependency-generation">Manual dependency generation</h2>
+<p>Publicized assemblies are manually generated with <a href="https://github.com/CabbageCrow/AssemblyPublicizer">AssemblyPublicizer</a>. Please follow the instructions found on GitHub using the Valheim assembly DLLs found under <code>Valheim/valheim_Data/Managed</code>.</p>
+<h2 id="activate-prebuild-automations">Activate PreBuild automations</h2>
+<h3 id="project-references">Project references</h3>
+<p>Jötunn automatically references all dependencies that may be needed for the development process.
+To overwrite paths, create a new file called <code>Environment.props</code> at the project root and place the following contents inside, modify as needed.</p>
+<pre><code class="lang-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;Project ToolsVersion=&quot;Current&quot; xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;
+  &lt;PropertyGroup&gt;
+    &lt;!-- Valheim install folder. This is usually found automatically, uncomment to overwrite.
+         Needs to be your path to the base Valheim folder. --&gt;
+    &lt;!-- &lt;VALHEIM_INSTALL&gt;X:\PathToYourSteamLibary\steamapps\common\Valheim&lt;/VALHEIM_INSTALL&gt;--&gt;
+
+    &lt;!-- BepInEx install folder. This is usually found automatically, uncomment to overwrite.
+         Note the default value $(VALHEIM_INSTALL)\BepInEx requires the VALHEIM_INSTALL property to be set. --&gt;
+    &lt;!-- &lt;BEPINEX_PATH&gt;$(VALHEIM_INSTALL)\BepInEx&lt;/BEPINEX_PATH&gt;--&gt;
+
+    &lt;!-- This is the folder where your build gets copied to when using the post-build automations.
+         Note the default value $(VALHEIM_INSTALL)\BepInEx\plugins requires the VALHEIM_INSTALL property to be set. --&gt;
+    &lt;!-- &lt;MOD_DEPLOYPATH&gt;$(VALHEIM_INSTALL)\BepInEx\plugins&lt;/MOD_DEPLOYPATH&gt;--&gt;
+  &lt;/PropertyGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<p><strong>WARNING:</strong> <em>If you already have references to BepInEx and Valheim, this task will most certainly duplicate them.</em></p>
+<h3 id="publicize-valheim-assemblies">Publicize Valheim assemblies</h3>
+<p>Jötunn can automatically create the publicized game assemblies for you. To use this feature you must have the <code>Environment.props</code> file from the last step. Additionally you need to create a new file called <code>DoPrebuild.props</code> in your solution directory.</p>
+<pre><code class="lang-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;Project ToolsVersion=&quot;Current&quot; xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;
+  &lt;PropertyGroup&gt;
+    &lt;ExecutePrebuild&gt;true&lt;/ExecutePrebuild&gt;
+  &lt;/PropertyGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<p><strong>WARNING:</strong> <em>This prebuild task will automate the generation of publicising of game assemblies. By enabling this, you understand that you will be generating new publicised assemblies upon PreBuild <strong>IF</strong> the binaries have been updated since the last time the PreBuild has run.</em></p>
+<h2 id="first-build-dependency-acquisition">First build dependency acquisition</h2>
+<p>Even if you have errors in your project, you should still build the solution to ensure that the PreBuild task has run and completed successfully.</p>
+<p>After the PreBuild has run, and dependencies have been generated, they are automatically referenced via Jötunn. They are generated inside of your game directory, and will ensure that your mods are always built against the latest version of the game.</p>
+<p>Done! You should now have all of your required dependencies resolved, such as BepInEx, Harmony, Monomod, Publicised assemblies, Unity corelibs, and Jotunn!</p>
+<h2 id="bepindependency">BepInDependency</h2>
+<p>Don't forget to add dependency tags for bepin and compatibility! This will certify your mod throws an error if ever installed without Jötunn. Click for more information about <a href="../tutorials/networkcompatibility.html">NetworkCompatibilty</a>.</p>
+<pre><code class="lang-cs">[BepInDependency(Jotunn.Main.ModGuid)]
+[NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+</code></pre>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/guides/quickstart.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

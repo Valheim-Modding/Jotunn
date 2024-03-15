@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Loading Assets </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Loading Assets ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="loading-assets">Loading Assets</h1>
+
+<p><em>Assets</em> are resources imported into the game besides the dll file holding our plugin code.
+They can be images, localization files or complete asset bundles exported from Unity to import into the game.
+There are two different ways of loading your assets, commonly known as <em>side loaded</em> and <em>embedded</em>.</p>
+<p><strong>Note</strong>: The code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<h3 id="side-loading">Side loading</h3>
+<p>Side loading would be where the assets are packaged alongside your plugin.dll.</p>
+<p>You may have noticed that we include a postbuild command into the <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a> to copy the <code>Assets</code> directory into the games plugin directory.
+Although this allows for easy development iteration though being able to change assets without recompilation, it is not so easily distributable to users, and must be packaged side by side with your released plugin, and exposes your assets to being directly modified by the user.</p>
+<p>The example mod's post build action is a simple XCOPY command: <code>&lt;Exec Command=&quot;xcopy &amp;quot;$(ProjectDir)Assets&amp;quot; &amp;quot;$(VALHEIM_INSTALL)\BepInEx\plugins\JotunnModExample\Assets\&amp;quot; /S /Y&quot; /&gt;</code></p>
+<h3 id="embedded-resource">Embedded resource</h3>
+<p>Another option is to embed our resources inside the binary itself.
+You may do this by right clicking a folder inside of your project, and add an existing item.
+Once it has been added, right click the item, select properties, and set the build action to embedded resource:</p>
+<p><img src="../Documentation/images/data/Assets.EmbeddedResource.png" alt="Assets.Embedded Resource"></p>
+<h3 id="referencing-our-assets">Referencing our assets</h3>
+<p>In order to load our resources, we can utilise Jötunn's <a class="xref" href="../api/Jotunn.Utils.AssetUtils.html">AssetUtils</a> helper methods, such as <a class="xref" href="../api/Jotunn.Utils.AssetUtils.LoadTexture.html#Jotunn_Utils_AssetUtils_LoadTexture_System_String_System_Boolean_">LoadTexture</a>, <a class="xref" href="../api/Jotunn.Utils.AssetUtils.LoadAssetBundle.html#Jotunn_Utils_AssetUtils_LoadAssetBundle_System_String_">LoadAssetBundle</a>, <a class="xref" href="../api/Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources.html#Jotunn_Utils_AssetUtils_LoadAssetBundleFromResources_System_String_System_Reflection_Assembly_">LoadAssetBundleFromResources</a>. The method below showcases a number of ways to load your assets into various forms of objects.</p>
+<pre><code class="lang-cs">private void LoadAssets()
+{
+    // path to the folder where the mod dll is located
+    string modPath = Path.GetDirectoryName(Info.Location);
+
+    // Load texture from filesystem
+    TestTex = AssetUtils.LoadTexture(Path.Combine(modPath, &quot;Assets/test_tex.jpg&quot;));
+    TestSprite = Sprite.Create(TestTex, new Rect(0f, 0f, TestTex.width, TestTex.height), Vector2.zero);
+
+    // Load asset bundle from filesystem
+    TestAssets = AssetUtils.LoadAssetBundle(Path.Combine(modPath, &quot;Assets/jotunnlibtest&quot;));
+    Jotunn.Logger.LogInfo(TestAssets);
+
+    // Print Embedded Resources
+    Jotunn.Logger.LogInfo($&quot;Embedded resources: {string.Join(&quot;, &quot;, typeof(JotunnModExample).Assembly.GetManifestResourceNames())}&quot;);
+
+    // Load asset bundles from embedded resources
+    EmbeddedResourceBundle = AssetUtils.LoadAssetBundleFromResources(&quot;eviesbackpacks&quot;);
+    BackpackPrefab = EmbeddedResourceBundle.LoadAsset&lt;GameObject&gt;(&quot;CapeSilverBackpack&quot;);
+}
+</code></pre>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/asset-loading.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

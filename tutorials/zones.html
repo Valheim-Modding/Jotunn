@@ -1,0 +1,535 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Zones / Locations / Vegetation / Clutter </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Zones / Locations / Vegetation / Clutter ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="zones--locations--vegetation--clutter">Zones / Locations / Vegetation / Clutter</h1>
+
+<p>The world of Valheim is split up into <em>Zones</em>, each 64 by 64 meters, controlled by the <em>ZoneSystem</em>.
+Each <em>Zone</em> can potentially have a single <em>Location</em> instance, and many <em>Vegetation</em> instances.</p>
+<h2 id="locations">Locations</h2>
+<p>Locations are bundles of objects that are placed randomly during world generation.
+These include the boss altars, crypts, Fulin villages and more.
+For a full overview, check the <a href="../data/zones/location-list.html">Locations list</a></p>
+<p>These are unpacked only when a player gets close to the position of a placed location.
+Once unpacked, the GameObjects are saved like regular pieces.</p>
+<p>Only GameObjects with a <code>ZNetView.m_persistent = true</code> will be saved and instantiated on load after unpacking.</p>
+<p>Each Zone can contain only 1 location.
+This means that the number of slots is limited.
+Try to keep the total number of locations added low so everything has a chance to place.</p>
+<h2 id="vegetation">Vegetation</h2>
+<p>Vegetation are singular prefabs that are scattered in a Zone.
+This is most of the spawned objects:</p>
+<ul>
+<li>Plants &amp; trees</li>
+<li>Rocks: both normal stone &amp; ore spawns</li>
+<li>Leviathans</li>
+<li>Ice in the Deep North</li>
+<li>Non-interactable effects like fireflies &amp; mist</li>
+</ul>
+<p>There is no limit to the number of vegetation in a single zone.</p>
+<h2 id="clutter">Clutter</h2>
+<p>Clutter are client side prefabs that are scattered around on the ground.
+This means they aren't saved to the world nor synced in multiplayer.
+However, they can still have animations, shaders or behaviour that reacts to the world.</p>
+<h2 id="world-generation">World generation</h2>
+<p>Valheim's worlds are procedurally generated exactly once using a provided seed.</p>
+<h3 id="locations-1">Locations</h3>
+<p>When a new world is generated, the game goes through the list of available locations.
+The list is sorted so all locations with <code>Prioritized = true</code> are handled first.</p>
+<p>The game will attempt to place <code>Quantity</code> instances of each location, it will attempt up to 100.000 times, or even 200.000 if it is Prioritized!</p>
+<p>Every time it selects a random Zone and checks if there are no other location instances in this zone already and if the Zone matches the BiomeArea (in the middle of a Biome, or on the edge between different biomes)</p>
+<p>If these checks succeed, it will then attempt to actually fit the location into the terrain up to 20 times (for this selected zone)</p>
+<p>This is when the filters are used, everything is checked on the center of the location:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MinDistance<br>MaxDistance</td>
+<td>The distance between the center of the world and this location should be between these values<br>Configuring value 0 will match any distance.</td>
+</tr>
+<tr>
+<td>Biome</td>
+<td>The location must be in a biome that matches this field. You can specify multiple biomes for a single location, any of these will match.</td>
+</tr>
+<tr>
+<td>MinAltitude<br>MaxAltitude</td>
+<td>The height of the location should be between these values. 0 is the shoreline.</td>
+</tr>
+<tr>
+<td>InForest<br>ForestThresholdMin<br>ForestThresholdMax</td>
+<td>If enabled, the value of the forest fractal in the seed of this location must be between these values<br>0 is the center of the forest.<br>1 is on the edge of the forest<br>Above 1 will move the location further from the forest edge.</td>
+</tr>
+<tr>
+<td>MinTerrainDelta<br>MaxTerrainDelta</td>
+<td>The game will sample 10 random points in the circle defined by <code>ExteriorRadius</code> and calculate the local mininum and maximum height. The difference between these values is the TerrainDelta, which should be between the configured values.</td>
+</tr>
+<tr>
+<td>DistanceFromSimilar</td>
+<td>Check for other instances of the same location, or from the same <code>Group</code> if configured, if any are found within this range, this filter will fail<br>This is disabled by default with value 0.</td>
+</tr>
+</tbody>
+</table>
+<p>Once a location passes all the checks it is registered to that location.</p>
+<p>If a location fails to place all <code>Quantity</code> instances, the game will print a warning in the log.</p>
+<p>When a player gets close to this zone for the first time, the location prefab is placed with these properties</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SnapToWater</td>
+<td>If enabled, spawns the location at the water level height instead of ground height (only useful if Altitude checks &lt; 0)</td>
+</tr>
+<tr>
+<td>ClearArea</td>
+<td>Mark the area defined by <code>ExteriorRadius</code> to not spawn <em>any</em> Vegetation</td>
+</tr>
+<tr>
+<td>SlopeRotation</td>
+<td>If enabled, will rotate the location to face the slope. Priotized over RandomRotation</td>
+</tr>
+<tr>
+<td>RandomRotation</td>
+<td>If enabled, will rotate the location randomly. Will be ignored if SlopeRotation is enabled</td>
+</tr>
+</tbody>
+</table>
+<h3 id="vegetation-1">Vegetation</h3>
+<p>Vegetation is placed when a Zone is first discovered.
+The game will go through all available Vegetation, and attempt to place each type according to its configuration.</p>
+<p>The number of attempts is determined by:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Max</td>
+<td>Maximum amount of groups in the zone<br>Values between 0 - 1 are used as a percentage chance to spawn a single group in this zone</td>
+</tr>
+<tr>
+<td>Min</td>
+<td>If the value of Max is above 1, this is used as the minimum number of groups</td>
+</tr>
+<tr>
+<td>GroupSizeMin<br>GroupSizeMax</td>
+<td>Number of instances in each group. The game will attempt to place this many, but there are no guarantees any will actually place</td>
+</tr>
+</tbody>
+</table>
+<p>Every attempt to place an instance of a Vegetation will go through these checks:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BlockCheck</td>
+<td>If enabled, does a raycast down and check if there are no objects in the way on these layers<ul><li>Default</li><li>static_solid</li><li>Default_small</li><li>piece</li></ul>These objects are either part of a Location, or another Vegetation that was already placed.</td>
+</tr>
+<tr>
+<td>Biome</td>
+<td>The vegetation must be in a biome that matches this field. You can specify multiple biomes for a single vegeation, any of these will match.</td>
+</tr>
+<tr>
+<td>BiomeArea</td>
+<td>Check the position within a Biome, either in the middle of a Biome, or on the edge between different biomes.</td>
+</tr>
+<tr>
+<td>MinAltitude<br>MaxAltitude</td>
+<td>The height of the vegetation should be between these values. 0 is the shoreline.</td>
+</tr>
+<tr>
+<td>MinOceanDepth<br>MaxOceanDepth</td>
+<td>If these values are not equal, check that the value of the OceanDepth from the seed is between these values.<br>This is not the same as Altitude, not entirely sure how to interpret this.</td>
+</tr>
+<tr>
+<td>MinTilt<br>MaxTilt</td>
+<td>Checks the slope of the terrain mesh at this point, using the normal of the mesh<br>In degrees: 0 is flat ground, 90 is a vertical wall.</td>
+</tr>
+<tr>
+<td>MinTerrainDelta<br>MaxTerrainDelta</td>
+<td>Only enabled if the <code>TerrainDeltaRadius</code> is not 0<br>The game will sample 10 random points in the circle defined by <code>TerrainDeltaRadius</code> and calculate the local mininum and maximum height. The difference between these values is the TerrainDelta, which should be between the configured values.</td>
+</tr>
+<tr>
+<td>InForest<br>ForestThresholdMin<br>ForestThresholdMax</td>
+<td>If enabled, the value of the forest fractal in the seed of this vegetation must be between these values<br>0 is the center of the forest.<br>1 is on the edge of the forest<br>Above 1 will move the vegetation further from the forest edge.</td>
+</tr>
+</tbody>
+</table>
+<p>Locations have a property <code>ClearArea</code>, enabling this will prevent <em>any</em> vegetation from spawning in the <code>ExteriorRadius</code> of the location.</p>
+<h2 id="clutter-1">Clutter</h2>
+<p>Clutter is newly generated in a radius around the player and destroyed if the player gets too far away.</p>
+<p>Every clutter only checks it's own properties to determine if it should get placed, they cannot block each other.</p>
+<p>First, those conditions are checked:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InForest<br>ForestThresholdMin<br>ForestThresholdMax</td>
+<td>If enabled, the value of the forest fractal in the seed of this clutter must be between these values<br>0 is the center of the forest.<br>1 is on the edge of the forest<br>Above 1 will move the clutter further from the forest edge.</td>
+</tr>
+<tr>
+<td>FractalScale<br>FractalThresholdMin<br>FractalThresholdMax</td>
+<td>If FractalScale is greater then one, the value (between 0 and 1) of a scaled fractal noise map of this clutter must be between the min and max values in order to be placed.</td>
+</tr>
+<tr>
+<td>Biome</td>
+<td>The clutter must be in a biome that matches this field. You can specify multiple biomes, any of these will be matched.</td>
+</tr>
+<tr>
+<td>MinAltitude<br>MaxAltitude</td>
+<td>The height where the clutter should be placed these values. 0 is the shoreline.</td>
+</tr>
+<tr>
+<td>MaxTilt</td>
+<td>Checks the slope of the terrain mesh at this point, using the normal of the mesh<br>In degrees: 0 is flat ground, 90 is a vertical wall.</td>
+</tr>
+<tr>
+<td>OceanDepthCheck<br>MinOceanDepth<br>MaxOceanDepth</td>
+<td>If OceanDepthCheck is enabled, check that the value of the OceanDepth from the seed is between these values.<br>This is not the same as Altitude, not entirely sure how to interpret this.</td>
+</tr>
+<tr>
+<td>OnCleared<br>OnUncleared</td>
+<td>Checks if the clutter should be placed on modified and/or unmodified ground.</td>
+</tr>
+</tbody>
+</table>
+<p>After all checks, the placement values will be calculated:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SnapToWater</td>
+<td>If enabled, spawns the clutter at the water level height instead of ground height.</td>
+</tr>
+<tr>
+<td>RandomOffset</td>
+<td>If greater then one, the y position will be random around this value.</td>
+</tr>
+<tr>
+<td>TerrainTilt</td>
+<td>If enabled, the underlying terrain tilt will be used for the rotation. Otherwise it will always point straight up.</td>
+</tr>
+<tr>
+<td>ScaleMin<br>ScaleMax</td>
+<td>If an instance renderer is used, the clutter size will be random between those values</td>
+</tr>
+</tbody>
+</table>
+<h1 id="zonemanager">ZoneManager</h1>
+<p>Jötunn provides a <a class="xref" href="../api/Jotunn.Managers.ZoneManager.html">ZoneManager</a> singleton for mods to interact with the ZoneSystem of Valheim.</p>
+<h2 id="timing">Timing</h2>
+<p>Locations, Vegetation and clutter are loaded during world load.
+You can add your custom locations, vegetation and clutter to the manager as early as your mods Awake().</p>
+<p>You can use the event <a class="xref" href="../api/Jotunn.Managers.ZoneManager.OnVanillaLocationsAvailable.html">ZoneManager.OnVanillaLocationsAvailable</a> to get a callback to clone or modify vanilla locations when those are available for use but before your custom entites get injected to the game.
+This is called every time a world loads.</p>
+<p>Adding custom and cloned locations, vegetation and clutter must only be done once.
+Modifications to vanilla locations, vegetation and clutter must be repeated every time!</p>
+<h2 id="locations-2">Locations</h2>
+<p>Jötunn uses the <a class="xref" href="../api/Jotunn.Configs.LocationConfig.html">LocationConfig</a> combined with <a class="xref" href="../api/Jotunn.Entities.CustomLocation.html">CustomLocation</a> to define new Locations that will be injected into the world generation.</p>
+<h3 id="modifying-existing-locations">Modifying existing locations</h3>
+<p>Use <code>ZoneManager.Instance.GetZoneLocation</code> to get a reference to the <code>ZoneLocation</code>.</p>
+<p>You can add prefabs to the <code>m_locationPrefab</code> to add them wherever this location is placed:</p>
+<pre><code class="lang-cs">void Awake()
+{
+    ZoneManager.OnVanillaLocationsAvailable += ModifyEikthyrAltar;
+}
+
+void ModifyEikthyrAltar()
+{
+    var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation(&quot;Eikthyrnir&quot;);
+    var lulzCubePrefab = PrefabManager.Instance.GetPrefab(&quot;piece_lul&quot;);
+
+    var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
+    eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
+}
+</code></pre>
+<p><img src="../Documentation/images/data/modifyEikthyrLocation.png" alt="Modified Eikthyr Location"></p>
+<h3 id="creating-copies-of-existing-locations">Creating copies of existing locations</h3>
+<p>Use <code>ZoneManager.Instance.CreateClonedLocation</code> to clone a location.
+The cloned location is automatically added.</p>
+<pre><code class="lang-cs">void Awake()
+{
+    ZoneManager.OnVanillaLocationsAvailable += CreateClonedEikthyrAltar;
+}
+
+void CreateClonedEikthyrAltar()
+{
+    CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation(&quot;MyEikthyrAltar&quot;, &quot;Eikthyrnir&quot;);
+    myEikthyrLocation.ZoneLocation.m_exteriorRadius = 1f; // Easy to place :D
+    myEikthyrLocation.ZoneLocation.m_quantity = 20; // MOAR
+
+    // unsubscribe to only execute once, the cloned location is saved in the ZoneManager
+    ZoneManager.OnVanillaLocationsAvailable -= CreateClonedEikthyrAltar;
+}
+</code></pre>
+<h3 id="creating-empty-location-containers">Creating empty Location containers</h3>
+<p>To create new locations in code, use the <code>ZoneManager.Instance.CreateLocationContainer</code>.
+This will create a GameObject that is attached to a disabled internal container GameObject.
+This means you can instantiate prefabs without enabling them immediately.
+It only creates the container, it still needs to be registered with <code>ZoneManager.Instance.AddCustomLocation</code></p>
+<pre><code class="lang-cs">void Awake()
+{
+    CreateLulzcubeLocation();
+}
+
+void CreateLulzcubeLocation()
+{
+    GameObject cubesLocation = ZoneManager.Instance.CreateLocationContainer(&quot;lulzcube_location&quot;);
+
+    // Stack of lulzcubes to easily spot the instances
+    for (int i = 0; i &lt; 10; i++)
+    {
+        var lulzCube = Instantiate(lulzCubePrefab, cubesLocation.transform);
+        lulzCube.transform.localPosition = new Vector3(0, i + 3, 0);
+        lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
+    }
+
+    LocationConfig cubesConfig = new LocationConfig();
+    cubesConfig.Biome = Heightmap.Biome.Meadows;
+    cubesConfig.Quantity = 100;
+    cubesConfig.Priotized = true;
+    cubesConfig.ExteriorRadius = 2f;
+    cubesConfig.ClearArea = true;
+    ZoneManager.Instance.AddCustomLocation(new CustomLocation(cubesLocation, fixReference: false, cubesConfig));
+}
+</code></pre>
+<h3 id="creating-locations-from-assetbundles">Creating locations from AssetBundles</h3>
+<p>You can also create your locations in Unity, it should have a Location component.
+If you plan on further altering your prefab in code, you must create a location container from your prefab, which creates an instance of it for you to use as a parent.
+If you don't plan on altering your prefab, you can just create a CustomLocation without creating the additional container.</p>
+<p>You can use <code>JVLmock_&lt;prefab_name&gt;</code> GameObjects to <a href="asset-mocking.html">reference vanilla prefabs</a> in your location by setting the <code>fixReference</code> parameter of the CustomLocation constructor to <code>true</code>.</p>
+<pre><code class="lang-cs">void Awake()
+{
+    CreateSpawnerLocation();
+}
+
+void CreateSpawnerLocation()
+{
+    // Create location from AssetBundle using spawners and random spawns
+    var spawnerLocationPrefab = locationsAssetBundle.LoadAsset&lt;GameObject&gt;(&quot;SpawnerLocation&quot;);
+
+    // Create a location container from your prefab if you want to alter it before adding the location to the manager.
+    /*
+    var spawnerLocation = ZoneManager.Instance.CreateLocationContainer(spawnerLocationPrefab);
+    */
+
+    LocationConfig spawnerConfig = new LocationConfig();
+    spawnerConfig.Biome = Heightmap.Biome.Meadows;
+    spawnerConfig.Quantity = 100;
+    spawnerConfig.Priotized = true;
+    spawnerConfig.ExteriorRadius = 2f;
+    spawnerConfig.MinAltitude = 1f;
+    spawnerConfig.ClearArea = true;
+    ZoneManager.Instance.AddCustomLocation(new CustomLocation(spawnerLocationPrefab, fixReference: true, spawnerConfig));
+}
+</code></pre>
+<h2 id="vegetation-2">Vegetation</h2>
+<p>Jötunn uses the <a class="xref" href="../api/Jotunn.Configs.VegetationConfig.html">VegetationConfig</a> combined with <a class="xref" href="../api/Jotunn.Entities.CustomVegetation.html">CustomVegetation</a> to define new Vegetation that will be injected into the world generation.</p>
+<h3 id="modifying-existing-vegetation">Modifying existing vegetation</h3>
+<p>Changes to Vanilla vegetation must be made each time.<br>
+Here is an example of modifying an existing vegetation configuration to increase the group size:</p>
+<pre><code class="lang-cs">void Awake()
+{
+    ZoneManager.OnVanillaLocationsAvailable += ModifyRaspberryBush;
+}
+
+void ModifyRaspberryBush()
+{
+    var raspberryBush = ZoneManager.Instance.GetZoneVegetation(&quot;RaspberryBush&quot;);
+    raspberryBush.m_groupSizeMin = 10;
+    raspberryBush.m_groupSizeMax = 30;
+}
+</code></pre>
+<p><img src="../Documentation/images/data/moreRaspberryBushes.png" alt=""></p>
+<h3 id="adding-vegetation">Adding vegetation</h3>
+<p>Any prefab can be added as vegetation:</p>
+<pre><code class="lang-cs">void Awake()
+{
+    AddLulzCubeVegetation();
+}
+
+void AddLulzCubeVegetation()
+{
+    // Use vegetation for singular prefabs
+    VegetationConfig lulzCubeConfig = new VegetationConfig();
+    lulzCubeConfig.Biome = Heightmap.Biome.Meadows;
+    lulzCubeConfig.BlockCheck = true;
+    CustomVegetation customVegetation = new CustomVegetation(lulzCubePrefab, false, fixReference: lulzCubeConfig);
+}
+</code></pre>
+<p>This example defines very little filters, so this prefab will be found all over every Meadows.</p>
+<p><img src="../Documentation/images/data/customVegetation.png" alt="Lulzcube vegetation"></p>
+<h3 id="adding-clutter">Adding Clutter</h3>
+<p>The prefab can be loaded directly from an AssetBundle:</p>
+<pre><code class="lang-cs">void Awake()
+{
+    AddStoneClutter();
+}
+
+void AddStoneClutter()
+{
+    ClutterConfig stone = new ClutterConfig();
+    stone.Amount = 5;
+    ZoneManager.Instance.AddCustomClutter(new CustomClutter(ClutterAssetBundle, &quot;TestStone&quot;, fixReference: false, stone));
+}
+</code></pre>
+<p><img src="../Documentation/images/data/customClutter.png" alt="test stone clutter"></p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/zones.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

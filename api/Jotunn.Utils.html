@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Namespace Jotunn.Utils
+ </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Namespace Jotunn.Utils
+ ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Jotunn.Utils">
+
+  <h1 id="Jotunn_Utils" data-uid="Jotunn.Utils" class="text-break">Namespace Jotunn.Utils
+</h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="markdown level0 remarks"></div>
+    <h3 id="classes">
+Classes
+</h3>
+      <h4><a class="xref" href="Jotunn.Utils.AssetUtils.html">AssetUtils</a></h4>
+      <section>Util functions related to loading assets at runtime.</section>
+      <h4><a class="xref" href="Jotunn.Utils.BepInExUtils.html">BepInExUtils</a></h4>
+      <section>Helper methods to access BepInEx plugin information</section>
+      <h4><a class="xref" href="Jotunn.Utils.BoneReorder.html">BoneReorder</a></h4>
+      <section>Original code from https://github.com/GoldenJude.</section>
+      <h4><a class="xref" href="Jotunn.Utils.ConfigurationSynchronizationEventArgs.html">ConfigurationSynchronizationEventArgs</a></h4>
+      <section>Event args class for configuration synchronization event</section>
+      <h4><a class="xref" href="Jotunn.Utils.GameConstants.html">GameConstants</a></h4>
+      <section>Constants of hardcoded strings used in-game</section>
+      <h4><a class="xref" href="Jotunn.Utils.GameConstants.GlobalKey.html">GameConstants.GlobalKey</a></h4>
+      <section>GlobalKey strings</section>
+      <h4><a class="xref" href="Jotunn.Utils.GameConstants.Weather.html">GameConstants.Weather</a></h4>
+      <section>Weather strings</section>
+      <h4><a class="xref" href="Jotunn.Utils.HashUtils.html">HashUtils</a></h4>
+      <section>A util class for computing various hashes</section>
+      <h4><a class="xref" href="Jotunn.Utils.ModCompatibility.html">ModCompatibility</a></h4>
+      <section>Implementation of the mod compatibility features.</section>
+      <h4><a class="xref" href="Jotunn.Utils.ModQuery.html">ModQuery</a></h4>
+      <section>Utility class to query metadata about added content of any loaded mod, including non-Jötunn ones.
+It is disabled by default, as it unnecessary increases the loading time when not used.<br>
+<a class="xref" href="Jotunn.Utils.ModQuery.Enable.html#Jotunn_Utils_ModQuery_Enable">Enable()</a> has to be called anytime before FejdStartup.Awake, meaning in your plugin's Awake or Start.</section>
+      <h4><a class="xref" href="Jotunn.Utils.ModRegistry.html">ModRegistry</a></h4>
+      <section>Utility class to query metadata about loaded Jötunn mods and their added content</section>
+      <h4><a class="xref" href="Jotunn.Utils.ModRegistry.ModInfo.html">ModRegistry.ModInfo</a></h4>
+      <section>Model class holding metadata of Jötunn mods.</section>
+      <h4><a class="xref" href="Jotunn.Utils.NetworkCompatibilityAttribute.html">NetworkCompatibilityAttribute</a></h4>
+      <section>Mod compatibility attribute<br>
+<br>
+PLEASE READ<br>
+Example usage:<br>
+If your mod adds its own RPCs, EnforceModOnClients is likely a must (otherwise clients would just discard the messages from the server), same version you do have to determine, if your sent data changed<br>
+If your mod adds items, you always should enforce mods on client and same version (there could be nasty side effects with different versions of an item)<br>
+If your mod is just GUI changes (for example bigger inventory, additional equip slots) there is no need to set this attribute</section>
+      <h4><a class="xref" href="Jotunn.Utils.PatchInitAttribute.html">PatchInitAttribute</a></h4>
+      <section>Priority attribute for PatchInitalizer.</section>
+      <h4><a class="xref" href="Jotunn.Utils.Paths.html">Paths</a></h4>
+      <section>Various Path constants used in Jötunn</section>
+      <h4><a class="xref" href="Jotunn.Utils.ReflectionHelper.html">ReflectionHelper</a></h4>
+      <section>Various utility methods aiding Reflection tasks.</section>
+      <h4><a class="xref" href="Jotunn.Utils.ReflectionHelper.Cache.html">ReflectionHelper.Cache</a></h4>
+      <section>Cache for Reflection tasks.</section>
+      <h4><a class="xref" href="Jotunn.Utils.ShaderHelper.html">ShaderHelper</a></h4>
+      <section>Various static utility methods for working with Shaders</section>
+      <h4><a class="xref" href="Jotunn.Utils.SyncingConfigurationEventArgs.html">SyncingConfigurationEventArgs</a></h4>
+      <section>Event args class for syncing configuration event</section>
+      <h4><a class="xref" href="Jotunn.Utils.UndoActions.html">UndoActions</a></h4>
+      <section>Pre-defined actions to use with the <a class="xref" href="Jotunn.Managers.UndoManager.html">UndoManager</a>.</section>
+      <h4><a class="xref" href="Jotunn.Utils.UndoActions.HeightUndoData.html">UndoActions.HeightUndoData</a></h4>
+      <section>Heightmap data wrapper</section>
+      <h4><a class="xref" href="Jotunn.Utils.UndoActions.PaintUndoData.html">UndoActions.PaintUndoData</a></h4>
+      <section>Paint data wrapper</section>
+      <h4><a class="xref" href="Jotunn.Utils.UndoActions.TerrainUndoData.html">UndoActions.TerrainUndoData</a></h4>
+      <section>Heightmap and Paint data collection</section>
+      <h4><a class="xref" href="Jotunn.Utils.UndoActions.UndoCreate.html">UndoActions.UndoCreate</a></h4>
+      <section>"Create" action for the <a class="xref" href="Jotunn.Managers.UndoManager.html">UndoManager</a>. Can undo and redo ZDO creation.</section>
+      <h4><a class="xref" href="Jotunn.Utils.UndoActions.UndoRemove.html">UndoActions.UndoRemove</a></h4>
+      <section>"Remove" action for the <a class="xref" href="Jotunn.Managers.UndoManager.html">UndoManager</a>. Can undo and redo ZDO removal.</section>
+      <h4><a class="xref" href="Jotunn.Utils.UndoActions.UndoTerrain.html">UndoActions.UndoTerrain</a></h4>
+      <section>"Terrain" action for the <a class="xref" href="Jotunn.Managers.UndoManager.html">UndoManager</a>. Can undo and redo terrain modifications.</section>
+      <h4><a class="xref" href="Jotunn.Utils.WeightedItem-1.html">WeightedItem&lt;T&gt;</a></h4>
+      <section>Weighted item used in <a class="xref" href="Jotunn.Utils.WeightedList-2.html">WeightedList&lt;T, ItemType&gt;</a></section>
+      <h4><a class="xref" href="Jotunn.Utils.WeightedList-2.html">WeightedList&lt;T, ItemType&gt;</a></h4>
+      <section>Like a list but stores elements in the order specified by the weight.</section>
+    <h3 id="interfaces">
+Interfaces
+</h3>
+      <h4><a class="xref" href="Jotunn.Utils.IModPrefab.html">IModPrefab</a></h4>
+      <section>Interface to match a prefab to the mod that has created it.</section>
+    <h3 id="enums">
+Enums
+</h3>
+      <h4><a class="xref" href="Jotunn.Utils.CompatibilityLevel.html">CompatibilityLevel</a></h4>
+      <section>Determines the level of compatibility of a mod which is enforced by Jötunn.
+Servers disconnect clients with mods which enforce their compatibility when 
+the version does not match as defined by the VersionStrictness attribute.</section>
+      <h4><a class="xref" href="Jotunn.Utils.VersionStrictness.html">VersionStrictness</a></h4>
+      <section>Enum used for telling whether or not the same mod version should be used by both the server and the clients.
+This enum is only useful with certain CompatibilityLevel values.</section>
+
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

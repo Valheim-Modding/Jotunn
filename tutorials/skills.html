@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Custom skills </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Custom skills ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="custom-skills">Custom skills</h1>
+
+<p>Creation of custom skills is done through the <a class="xref" href="../api/Jotunn.Managers.SkillManager.html">SkillManager</a> singleton, by specifying a <a class="xref" href="../api/Jotunn.Configs.SkillConfig.html">SkillConfig</a>.</p>
+<p>This can be done in two ways:</p>
+<ul>
+<li>Through a JSON file, using <a class="xref" href="../api/Jotunn.Managers.SkillManager.AddSkillsFromJson.html#Jotunn_Managers_SkillManager_AddSkillsFromJson_System_String_">AddSkillsFromJson</a></li>
+<li>Through code, using <a class="xref" href="../api/Jotunn.Managers.SkillManager.AddSkill.html#Jotunn_Managers_SkillManager_AddSkill_Jotunn_Configs_SkillConfig_">AddSkill</a></li>
+</ul>
+<p>The two approaches can both be used at once, and can be mixed as you see fit.</p>
+<p><em>Note: By default, unless you actually have any levels in your skill, it won't show up in the skils menu.
+You must first raise your skill (either using a command, or actually implementing a way to earn levels) in order to be able to see it</em></p>
+<h2 id="skillconfigs">SkillConfigs</h2>
+<p>Custom skills are created by providing a <a class="xref" href="../api/Jotunn.Configs.SkillConfig.html">SkillConfig</a> object.
+The only required field on this object is the <code>Identifier</code>, and all other fields are optional.
+Make <strong>sure</strong> that the <code>Identifier</code> you provide is <strong>unique</strong>, and <strong>will not change</strong>.
+The saving/loading of skills on a user's save depends on the SkillType Jotunn generates from the <code>Identifier</code> provided, so if you change the <code>Identifier</code>, the skill will be saved differently.</p>
+<p>For more info, check out the <a class="xref" href="../api/Jotunn.Configs.SkillConfig.html">SkillConfig</a> page.</p>
+<h2 id="localizing-skills">Localizing skills</h2>
+<p>When creating skills, it's entirely up to the mod developer if they wish to create localizations for their skills or not.
+If you wish to create a skill that does not have localization, you can just set the <code>Name</code> and <code>Description</code> fields in your skillconfig to exactly what you'd like them to be in-game:</p>
+<pre><code class="lang-cs">SkillConfig skill = new SkillConfig();
+skill.Name = &quot;My testing skill&quot;;
+skill.Description = &quot;A nice testing skill!&quot;;
+// ... other fields
+</code></pre>
+<p>If you wish to create localizations, then you will need to set the <code>Name</code> and <code>Description</code> fields to a <em>unique</em> token containing no spaces, starting with a <code>$</code>.
+his can be done like so:</p>
+<pre><code class="lang-cs">SkillConfig skill = new SkillConfig();
+skill.Name = &quot;$skill_test&quot;;
+skill.Description = &quot;$skill_test_desc&quot;;
+// ... other fields
+</code></pre>
+<p>Now, these unique tokens can be localized exactly the same as you would for items, pieces, or anything else.
+Refer to the <a href="localization.html">localization tutorial</a> for a detailed guide on how this process works.</p>
+<h2 id="examples">Examples</h2>
+<p>This is what our finished product should look like in-game:</p>
+<p><img src="../Documentation/images/data/customSkillRaised.png" alt="Custom skill raised"></p>
+<h3 id="adding-skills-through-json">Adding skills through JSON</h3>
+<p>First, we must create a JSON file which will keep an array of all the skills we wish to add.
+This JSON file should contain an array of <a class="xref" href="../api/Jotunn.Configs.SkillConfig.html">SkillConfig</a> objects (note, this <em>must</em> be an array).
+This can be done like so:</p>
+<pre><code class="lang-json">[
+  {
+    &quot;Identifier&quot;: &quot;com.jotunn.testmod.testskill&quot;,
+    &quot;Name&quot;: &quot;$skill_test&quot;,
+    &quot;Description&quot;: &quot;$skill_test_desc&quot;,
+    &quot;IconPath&quot;: &quot;TestMod/Assets/test_tex.jpg&quot;
+  },
+  {
+    &quot;Identifier&quot;: &quot;com.jotunn.testmod.anotherskill&quot;,
+    &quot;Name&quot;: &quot;Another Test Skill&quot;,
+    &quot;Description&quot;: &quot;A test skill that does not use localization&quot;
+  }
+]
+</code></pre>
+<p>Next, we need to tell Jotunn where our JSON file is.
+If the JSON file is not in an AssetBundle, we can load it like so:</p>
+<pre><code class="lang-cs">private void Awake()
+{
+    // Test adding a skill with a texture
+    SkillManager.Instance.AddSkillsFromJson(&quot;TestMod/Assets/skills.json&quot;);
+}
+</code></pre>
+<p>Finally, if we want to use a reference to our skill for anything in our mod, we can get its SkillType by using <a class="xref" href="../api/Jotunn.Managers.SkillManager.GetSkill.html#Jotunn_Managers_SkillManager_GetSkill_System_String_">GetSkill</a> with the skill's <code>Identifier</code>:</p>
+<pre><code class="lang-cs">public static Skills.SkillType TestSkillType = 0;
+
+private void Awake()
+{
+    // Test adding a skill with a texture
+    SkillManager.Instance.AddSkillsFromJson(&quot;TestMod/Assets/skills.json&quot;);
+
+    // Get TestSkill SkillType, then we can use it raise skills, etc.
+    TestSkillType = SkillManager.Instance.GetSkill(&quot;com.jotunn.testmod.testskill&quot;);
+}
+</code></pre>
+<h3 id="adding-skills-through-code">Adding skills through code</h3>
+<p><em>This example requires <a href="asset-loading.html">assets</a> to be loaded.</em></p>
+<p>To create a new skill, you must call the <a class="xref" href="../api/Jotunn.Managers.SkillManager.AddSkill.html#Jotunn_Managers_SkillManager_AddSkill_Jotunn_Configs_SkillConfig_">AddSkill</a> method.
+This should be called from within your mod's <code>Awake</code> method, and it will return a randomly generated SkillType for your new skill.</p>
+<pre><code class="lang-cs">public static Skills.SkillType TestSkillType = 0;
+
+private void Awake()
+{
+    // Test adding a skill with a texture
+    Sprite testSkillSprite = Sprite.Create(testTex, new Rect(0f, 0f, testTex.width, testTex.height), Vector2.zero);
+
+    var skill = new SkillConfig();
+    skill.Identifier = &quot;com.jotunn.JotunnModExample.testskill&quot;;
+    skill.Name = &quot;TestingSkill&quot;;
+    skill.Description = &quot;A nice testing skill!&quot;;
+    skill.Icon = testSkillSprite;
+    skill.IncreaseStep = 1f;
+
+    Skills.SkillType TestSkillType = SkillManager.Instance.AddSkill(skill);
+}
+</code></pre>
+<h3 id="interacting-with-our-skill">Interacting with our skill</h3>
+<p>From here, we can then use the <code>TestSkillType</code> to interact with out skill.
+For example, we can raise our skill's level on keypress.
+To do this, we can listen for keypresses in our <code>Update()</code> method.</p>
+<pre><code class="lang-cs">private void Update()
+{
+    if (Input.GetKeyDown(KeyCode.F8))
+    {
+        Player.m_localPlayer.RaiseSkill(TestSkillType, 1);
+    }
+}
+</code></pre>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/skills.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

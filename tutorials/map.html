@@ -1,0 +1,291 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Map Overlays &amp; Drawings </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Map Overlays &amp; Drawings ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="map-overlays--drawings">Map Overlays &amp; Drawings</h1>
+
+<p>Valheim's <em>Minimap</em> is used to display the current world map including many layers like exploration status (fog), height and biome information and more. When talking about the Minimap we refer both to the small &quot;preview&quot; on the right upper corner and the full map view shown when pressing &quot;M&quot; in-game. Jötunn provides an API for creating either overlays on top of the map or drawing on specific layers. You can create your own <a class="xref" href="../api/Jotunn.Managers.MinimapManager.MapOverlay.html">MapOverlay</a> or <a class="xref" href="../api/Jotunn.Managers.MinimapManager.MapDrawing.html">MapDrawing</a> classes using the <a class="xref" href="../api/Jotunn.Managers.MinimapManager.html">MinimapManager</a>.</p>
+<h2 id="creating-overlays">Creating Overlays</h2>
+<p>The simplest way to add custom content to the map is to use the <a class="xref" href="../api/Jotunn.Managers.MinimapManager.MapOverlay.html">MapOverlay</a> class. This class provides a Texture2D which you can write to directly. This Texture2D is then rendered directly on top of the Vanilla Minimap. By default the overlays respect the exploration status of the map (the &quot;fog&quot;) so your content is not shown on areas the player has not yet explored. You can optionally decide to ignore the exploration status of the map so your custom overlay is always visible.</p>
+<h3 id="example">Example</h3>
+<p>In this example we will implement an overlay which shows the world's zones laid overtop of the map. We subscribe to the <a class="xref" href="../api/Jotunn.Managers.MinimapManager.OnVanillaMapAvailable.html">OnVanillaMapAvailable</a> event and draw the zone borders onto the overlay's texture.</p>
+<p><strong>Note</strong>: The code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<pre><code class="lang-cs">private void Awake()
+{
+    // Add map overlays to the minimap on world load
+    MinimapManager.OnVanillaMapAvailable += CreateMapOverlay;
+}
+
+// Map overlay showing the zone boundaries
+private void CreateMapOverlay()
+{
+    // Get or create a map overlay instance by name
+    var zoneOverlay = MinimapManager.Instance.GetMapOverlay(&quot;ZoneOverlay&quot;);
+
+    // Create a Color array with space for every pixel of the map
+    int mapSize = zoneOverlay.TextureSize * zoneOverlay.TextureSize;
+    Color[] mainPixels = new Color[mapSize];
+            
+    // Iterate over the dimensions of the overlay and set a color for
+    // every pixel in our mainPixels array wherever a zone boundary is
+    Color color = Color.white;
+    int zoneSize = 64;
+    int index = 0;
+    for (int x = 0; x &lt; zoneOverlay.TextureSize; ++x)
+    {
+        for (int y = 0; y &lt; zoneOverlay.TextureSize; ++y, ++index)
+        {
+            if (x % zoneSize == 0 || y % zoneSize == 0)
+            {
+                mainPixels[index] = color;
+            }
+        }
+    }
+
+    // Set the pixel array on the overlay texture
+    // This is much faster than setting every pixel individually
+    zoneOverlay.OverlayTex.SetPixels(mainPixels);
+
+    // Apply the changes to the overlay
+    // This also triggers the MinimapManager to display this overlay
+    zoneOverlay.OverlayTex.Apply();
+}
+</code></pre>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>Since the map is different after every world load, you should not save your own reference to the MapOverlay or MapDrawing classes but always get it from the manager using GetMapOverlay or GetMapDrawing. Jötunn automatically creates and destroys the overlays on every game load and logout.</p>
+</div>
+<h2 id="creating-drawings">Creating Drawings</h2>
+<p>Valheim's actual map consists of many individual layers. Jötunn exposes some of them for mods to draw on via <a class="xref" href="../api/Jotunn.Managers.MinimapManager.MapDrawing.html">MapDrawings</a>.<br>
+But first we give some details about the vanilla map structure.</p>
+<h3 id="map-layers">Map Layers</h3>
+<p>The Minimap is composed using multiple layers/filters and in a specific order. The MapDrawing object has several local Texture2D members corresponding to the first four of the following layers. In addition to the layers used by the MapDrawing object, there are more layers that interact with the Minimap which we do not use. These are displayed here as a reference.</p>
+<ol>
+<li>_MainTex<br>
+Texture displayed on normal terrain, eg, the colour of meadows.</li>
+<li>_MaskTex<br>
+Mask used to determine whether to display forests or not. 1 for forest, 0 for no forest.</li>
+<li>_HeightTex<br>
+Mask that determines height of different features. eg, Oceans, and mountains. Determines where MountainTex and WaterTex is displayed.</li>
+<li>_FogTex<br>
+Mask that determines where fog is displayed. Most values mean there is fog.</li>
+<li>_BackgroundTex<br>
+Colour of background texture. Displayed underneath map? Effects _MainTex. Gives an additional textured texture to the land.</li>
+<li>_FogLayerTex<br>
+Controls the colour of the Fog overlay. Also controls some sort of shading underneath water. Affected by world light. Lighter in center, darker in outside.</li>
+<li>_MountainTex<br>
+The texture displayed on mountains. Works with the _heightTex mask.</li>
+<li>_ForestTex<br>
+Controls the colour of forest areas. Is masked by _MaskTex.</li>
+<li>_ForestColor<br>
+Could not determine.</li>
+<li>_WaterTex<br>
+Controls shallow water and shorelines. Does not control deep ocean.</li>
+<li>_SpaceTex<br>
+Controls the spacey texture outside the large globe.</li>
+<li>_CloudTex<br>
+Controls the clouds that fly overtop everything else.</li>
+</ol>
+<p>The following are some details we have figured out about the order of the vanilla map layers for reference:</p>
+<p>Fog (6) on top, then clouds (12), then forest (8) (but is composited with _HeightTex (3) data).
+Then _MainTex (1) is displayed alongside _WaterTex (10) and _MountainTex (7) and _FoglayerTex (6).
+_BackgroundTex (5) also affects _MainTex somehow, it's best to just clear it.</p>
+<p>_SpaceTex controls the space-themed texture background that's seen outside of the large minimap.</p>
+<p>_MaskTex (2), _HeightTex (3), and _FogTex (4) are just used as filters/masks.</p>
+<h3 id="drawing-to-the-main-layer">Drawing to the Main Layer</h3>
+<p>Set a Color value on the <a class="xref" href="../api/Jotunn.Managers.MinimapManager.MapDrawing.MainTex.html#Jotunn_Managers_MinimapManager_MapDrawing_MainTex">MainTex</a> of the MapDrawing instance to override the vanilla map at that pixels position. Choose whichever RGB colors you want, and set the alpha value to maximum.</p>
+<h3 id="drawing-to-the-height-layer">Drawing to the Height Layer</h3>
+<p>Set the Red value of a Color on the <a class="xref" href="../api/Jotunn.Managers.MinimapManager.MapDrawing.HeightFilter.html#Jotunn_Managers_MinimapManager_MapDrawing_HeightFilter">HeightFilter</a> to correspond to the world height that you want.<br>
+Less than 0-30 means ocean height. 31 and up corresponds to variously shaded land heights until it reaches the mountain layer.<br>
+The MinimapManager provides a shortcut for the <a class="xref" href="../api/Jotunn.Managers.MinimapManager.MeadowHeight.html">&quot;meadow height&quot;</a>.</p>
+<h3 id="drawing-to-the-fog-and-forest-layers">Drawing to the Fog and Forest Layers</h3>
+<p>Set the &quot;Red&quot; value of a Color on the <a class="xref" href="../api/Jotunn.Managers.MinimapManager.MapDrawing.FogFilter.html#Jotunn_Managers_MinimapManager_MapDrawing_FogFilter">FogFilter</a> or the <a class="xref" href="../api/Jotunn.Managers.MinimapManager.MapDrawing.ForestFilter.html#Jotunn_Managers_MinimapManager_MapDrawing_ForestFilter">ForestFilter</a> of the MapDrawing instance to toggle either of the layers on the pixels position on or off.<br>
+A &quot;Red&quot; value of 0 disables the filter on the position, everything unequal 0 enables it.<br>
+The MinimapManager provides a shortcut for turning the filter <a class="xref" href="../api/Jotunn.Managers.MinimapManager.FilterOn.html">on</a> or <a class="xref" href="../api/Jotunn.Managers.MinimapManager.FilterOff.html">off</a>.</p>
+<h3 id="example-1">Example</h3>
+<p>In this example we will draw a square originating on each Map Pin. This time we subscribe to the manager's <a class="xref" href="../api/Jotunn.Managers.MinimapManager.OnVanillaMapDataLoaded.html">OnVanillaMapDataLoaded</a> event to make sure all pins have already been loaded by the game. The actual drawing involves setting the terrain height for the square to a flat value, removing forest, removing fog, and changing the main texture color.</p>
+<p><strong>Note</strong>: The code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<pre><code class="lang-cs">private void Awake()
+{
+    // Add map overlays to the minimap after map data has been loaded
+    MinimapManager.OnVanillaMapDataLoaded += CreateMapDrawing;
+}
+
+// Draw a square starting at every map pin
+private void CreateMapDrawing()
+{
+    // Get or create a map drawing instance by name
+    var pinOverlay = MinimapManager.Instance.GetMapDrawing(&quot;PinOverlay&quot;);
+
+    // Create Color arrays which can be set as a block on the texture
+    // Note: &quot;Populate&quot; is an extension method provided by Jötunn
+    // filling the new array with the provided value
+    int squareSize = 10;
+    Color[] colorPixels = new Color[squareSize*squareSize].Populate(Color.blue);
+    Color[] filterPixels = new Color[squareSize*squareSize].Populate(MinimapManager.FilterOff);
+    Color[] heightPixels = new Color[squareSize*squareSize].Populate(MinimapManager.MeadowHeight);
+
+    // Loop every loaded pin
+    foreach (var p in Minimap.instance.m_pins)
+    {
+        // Translate the world position of the pin to the overlay position
+        var pos = MinimapManager.Instance.WorldToOverlayCoords(p.m_pos, pinOverlay.TextureSize);
+                
+        // Set a block of pixels on the MainTex to make the map use our color instead of the vanilla one
+        pinOverlay.MainTex.SetPixels((int)pos.x, (int)pos.y, squareSize, squareSize, colorPixels);
+                
+        // Set a block of pixels on the ForestFilter and FogFilter, removing forest and fog from the map
+        pinOverlay.ForestFilter.SetPixels((int)pos.x, (int)pos.y, squareSize, squareSize, filterPixels);
+        pinOverlay.FogFilter.SetPixels((int)pos.x, (int)pos.y, squareSize, squareSize, filterPixels);
+
+        // Set a block of pixels on the HeightFilter so our square will always be drawn at meadow height
+        pinOverlay.HeightFilter.SetPixels((int)pos.x, (int)pos.y, squareSize, squareSize, heightPixels);
+    }
+            
+    // Apply the changes to all textures
+    // This also triggers the MinimapManager to display this drawing
+    pinOverlay.MainTex.Apply();
+    pinOverlay.FogFilter.Apply();
+    pinOverlay.ForestFilter.Apply();
+    pinOverlay.HeightFilter.Apply();
+}
+</code></pre>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>Using a MapDrawing which alters the fog layer (i.e. has written data to the FogFilter texture) will stop the game from updating the exploration data on the map as long as the overlay is enabled. Mods using the fog layer should be aware of this fact. You can destroy the FogFilter texture on the ModDrawing instance using Unity's Object.Destroy() to reenable the game's exploration while your overlay is still enabled. Disabling the overlay completely via GUI has the same effect.</p>
+</div>
+<h2 id="toggle-overlays-via-gui">Toggle Overlays via GUI</h2>
+<p>Jötunn adds a button to the large map view and adds a toggle for every MapOverlay or MapDrawing created by a mod. There you can enable or disable every layer individually:</p>
+<p><img src="../Documentation/images/data/minimap_toggles.png" alt="overlay toggles"></p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/map.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

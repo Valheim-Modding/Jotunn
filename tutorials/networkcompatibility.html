@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>NetworkCompatibility </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="NetworkCompatibility ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="networkcompatibility">NetworkCompatibility</h1>
+
+<p><a class="xref" href="../api/Jotunn.Utils.NetworkCompatibilityAttribute.html">NetworkCompatibility</a> is an attribute developers can attach to their <code>BaseUnityPlugin</code> which will allow them to specify and configure the specific network requirements their plugin requires to maintain client&lt;-&gt;client interoperability, consistency, and synchronisation. One example of this may be a mod which uses a custom asset. While one client may be able to create, use, and interact with the object in the environment, if no other clients have the asset mod then they will experience a difference in gameplay from the client with the asset.</p>
+<p>In order to quote <em>&quot;enforce&quot;</em> network compatibility, a version check is initiated when the client connects to the server, where each client will compare their plugins, and the requirements specified by each, and the server will decide depending on the requirements of each plugin, if the client is permissible. If there is a version mismatch, the client will be disconnected with a version mismatch error, that details the pluginGUID'd and the offending version string, and the requirement. The client may then satisfy the requirements and reconnect successfully.</p>
+<h2 id="networkcompatibility-attribute">NetworkCompatibility Attribute</h2>
+<p>The <a class="xref" href="../api/Jotunn.Utils.NetworkCompatibilityAttribute.html">NetworkCompatibility attribute</a> provides two parameters, one for <a class="xref" href="../api/Jotunn.Utils.CompatibilityLevel.html">CompatibilityLevel</a> (should Jötunn ensure that your mod is loaded on server and clients), and one for <a class="xref" href="../api/Jotunn.Utils.VersionStrictness.html">VersionStrictness</a> (should Jötunn ensure that specific versions of your mod are loaded). This attribute must be defined on your mods main class (the one which inherits from BaseUnityPlugin) to use the feature. If nothing is defined your mod is treated as it had the compatibility level of <code>NotEnforced</code>.</p>
+<p>Example:</p>
+<pre><code class="lang-cs">[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+internal class TestMod : BaseUnityPlugin
+{
+  ...
+}
+</code></pre>
+<h2 id="compatibility-level">Compatibility Level</h2>
+<p>The compatibility levels define if your mod has to be loaded on both sides and if your mod's version must be checked by Jötunn.</p>
+<p><strong>NotEnforced:</strong> The compatibility check ignores if the mod is installed or not and also does not check the version at all. VersionStrictness value is ignored.</p>
+<p><strong>VersionCheckOnly:</strong> The compatibility check ignores the mod if it is not installed on both sides. If it is installed on both sides the version is checked according to the VersionStrictness value.</p>
+<p><strong>EveryoneMustHaveMod:</strong> It is checked if the mod is installed and if the version matches the requirements of the VersionStrictness value.</p>
+<p><strong>ClientMustHaveMod:</strong> If the mod is installed on the server, every client must have it, too. VersionStrictness does apply when installed on both sides.</p>
+<p><strong>ServerMustHaveMod:</strong> If the mod is installed on the client, the server must have it, too. VersionStrictness does apply when installed on both sides.</p>
+<h2 id="version-strictness">Version Strictness</h2>
+<p>Version strictness defines at which level according to the <a href="#semantic-versioning-and-networkcompatibility">Semantic Versioning scheme</a> the mod's version must be equal to be allowed to connect.</p>
+<h2 id="example">Example</h2>
+<p>Lets take a look at how this interacts over two devices, a dedicated server and a client. In all examples the compatibility level is <code>EveryoneMustHaveMod</code> and the versions strictness is <code>Minor</code>.</p>
+<p><strong>Clientside NetworkCompatibility plugin, none server</strong>: Client Version mismatch from additional plugin:<br><img src="../Documentation/images/utils/NetworkCompatClientsideAdditional.png" alt="NetworkCompatibilityClientHasAdditionalMod"></p>
+<p><strong>Clientside none, NetworkCompatibilityPlugin server</strong>: Server version mismatch from additional plugin:<br><img src="../Documentation/images/utils/NetworkCompatClientMissingModule.png" alt="Network Compat Client Missing Module"></p>
+<p><strong>VersionStrictness unequal, client&gt;server</strong>: server version mismatch from major, minor, patch:<br><img src="../Documentation/images/utils/NetworkCompatClient-gr-Server.png" alt="File"></p>
+<p><strong>VersionStrictness unequal, server&gt;client</strong>: client version mismatch from major, minor, patch:<br><img src="../Documentation/images/utils/NetworkCompatServer-gr-Client.png" alt="Network Compat Server Gr Client"></p>
+<h2 id="semantic-versioning-and-networkcompatibility">Semantic versioning and NetworkCompatibility</h2>
+<p><a href="https://semver.org/">Semantic Versioning</a> is the process of assigning versions to states in the form of <code>Major.Minor.Patch</code>. In general, bug fixes are usually placed within the patch version, feature additions are placed within the minor version, and breaking changes are placed within the major version.</p>
+<p><strong>Major</strong>:
+When applying this to network compatibility module, the &quot;safe&quot;/normal use case is to enforce minor version strictness. One use case for this may be for instance an asset/item mod, which introduces new items every minor version. In this case it is important to maintain minor version strictness to ensure network sync of item assets with the server and other clients.</p>
+<p><strong>Minor</strong>:
+Another use case might be an overhaul which tweaks many different settings and client inputs/UX/interactions, and for the most part although minor features are frequently pushed, they do not require version synchronisation on such a granular level. In this scenario, the developer might opt for major version strictness.</p>
+<p><strong>Patch</strong>:
+Generally, it is not advised to enforce version strictness on patches, however we do not dictate how developers control their versioning, and as thus we expose this version for network compatibility should the developer only choose to increment patches.</p>
+<p>Some examples which <strong>need</strong> version synchronicity with the server and other clients:</p>
+<ul>
+<li>Newly introduced RPCs (client or server wouldn't know what to do with them)</li>
+<li>Changed RPCs (for example data format changes) which could either break server or client execution</li>
+<li>New and removed items</li>
+<li>Changed items (for example newly added upgrades)</li>
+</ul>
+<p>If your mod does any of the above we encourage you to set the NetworkCompatibility attribute to <code>EveryoneMustHaveMod</code> and the version strictness accordingly.
+Our suggestion is to set it to <code>Minor</code> which still gives you the flexibility to add unrelated changes without needing the server or clients to upgrade.</p>
+<p>But whatever strictness you choose, you need to increase your version accordingly to make sure clients and servers can work together.</p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/networkcompatibility.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

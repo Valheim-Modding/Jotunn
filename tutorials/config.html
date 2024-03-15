@@ -1,0 +1,247 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Persistent &amp; Synced Configurations </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Persistent &amp; Synced Configurations ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="persistent--synced-configurations">Persistent &amp; Synced Configurations</h1>
+
+<p>Jötunn itself does not provide any implementations or abstractions for persisent configurations.
+We do however respect <a href="https://docs.bepinex.dev/articles/dev_guide/plugin_tutorial/4_configuration.html">BepInEx.ConfigEntry</a>'s, their various properties, as well as their <a href="https://github.com/BepInEx/BepInEx.ConfigurationManager">ConfigurationManager</a> properties.
+Furthermore we have implemented a method of enforcing server side sync on specific configs via the <code>ConfigurationManagerAttributes</code> <code>IsAdminOnly</code> flag.</p>
+<p><strong>Note:</strong> <code>IsAdminOnly</code> is provided via JVL, not BepInEx.</p>
+<p><strong>Note</strong>: The code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<h2 id="binding-and-accessing-configurations">Binding and accessing configurations</h2>
+<p>Configurations are defined by &quot;binding&quot; a configuration.
+Refer to the <a href="https://docs.bepinex.dev/articles/dev_guide/plugin_tutorial/4_configuration.html">BepInEx documentation</a> about configurations to learn more about that.</p>
+<pre><code class="lang-cs">// Create some sample configuration values
+private void CreateConfigValues()
+{
+    AcceptableValueRange floatRange = new AcceptableValueRange&lt;float&gt;(0f, 1f);
+
+    // Add client config which can be edited in every local instance independently
+    StringConfig = Config.Bind(&quot;Client config&quot;, &quot;LocalString&quot;, &quot;Some string&quot;, &quot;Client side string&quot;);
+    FloatConfig = Config.Bind(&quot;Client config&quot;, &quot;LocalFloat&quot;, 0.5f, new ConfigDescription(&quot;Client side float with a value range&quot;, floatRange));
+    IntegerConfig = Config.Bind(&quot;Client config&quot;, &quot;LocalInteger&quot;, 2, new ConfigDescription(&quot;Client side integer without a range&quot;));
+    BoolConfig = Config.Bind(&quot;Client config&quot;, &quot;LocalBool&quot;, false, new ConfigDescription(&quot;Client side bool / checkbox&quot;));
+}
+</code></pre>
+<p>Use the property to access the current value in your code:</p>
+<pre><code class="lang-cs">// Examples for reading and writing configuration values
+private void ReadAndWriteConfigValues()
+{
+    // Reading configuration entry
+    string readValue = StringConfig.Value;
+
+    // Writing configuration entry
+    IntegerConfig.Value = 150;
+}
+</code></pre>
+<h2 id="synced-configurations">Synced configurations</h2>
+<p>We can sync a client configuration with the server by setting the <code>IsAdminOnly</code> flag on the configuration like so:</p>
+<pre><code class="lang-cs">// Create some sample configuration values to check server sync
+private void CreateConfigValues()
+{
+    ConfigurationManagerAttributes isAdminOnly = new ConfigurationManagerAttributes { IsAdminOnly = true };
+    AcceptableValueRange&lt;float&gt; floatRange = new AcceptableValueRange&lt;float&gt;(0f, 1000f);
+
+    // Add server config which gets pushed to all clients connecting and can only be edited by admins
+    // In local/single player games the player is always considered the admin
+    Config.Bind(&quot;Server config&quot;, &quot;StringValue1&quot;, &quot;StringValue&quot;,  new ConfigDescription(&quot;Server side string&quot;, null, isAdminOnly));
+    Config.Bind(&quot;Server config&quot;, &quot;FloatValue1&quot;, 750f, new ConfigDescription(&quot;Server side float&quot;, floatRange, isAdminOnly));
+    Config.Bind(&quot;Server config&quot;, &quot;IntegerValue1&quot;, 200, new ConfigDescription(&quot;Server side integer&quot;, null, isAdminOnly));
+    Config.Bind(&quot;Server config&quot;, &quot;BoolValue1&quot;, false, new ConfigDescription(&quot;Server side bool&quot;, null, isAdminOnly));
+}
+</code></pre>
+<p>This allows admins defined in the servers adminlist.txt to change the values on the fly, however clients without admin have no control over this configs.
+Every client connecting to that server using the same mod will receive the configuration values from the server.
+Local settings will be overriden by the servers values as long as the client is connected to that server.</p>
+<p>Changing the configs at runtime will sync the changes to all clients connected to the server.</p>
+<h2 id="synced-admin-status">Synced admin status</h2>
+<p>Upon connection to a server, Jötunn checks the admin status of the connecting player on that server, given that Jötunn is installed on both sides.
+The admin status of a player is determined by the adminlist.txt file of Valheim. If the player has admin status on a server, that player is able to change configuration values declared as <code>IsAdminOnly</code> as described before.
+If that status changes on the server because of changes on the adminlist.txt, Jötunn will automatically synchronize that change to any affected client.
+This unlocks or locks the players ability to change admin configuration.
+Mods using Jötunn can query the admin status locally and dont need to rely on a RPC call to check the players status on the connected server.
+The current admin status of a player can be read from <a class="xref" href="../api/Jotunn.Managers.SynchronizationManager.PlayerIsAdmin.html#Jotunn_Managers_SynchronizationManager_PlayerIsAdmin">SynchronizationManager.PlayerIsAdmin</a>.</p>
+<p><strong>Note</strong>: When starting a local game the local player always gains admin status regardless of any given adminlist.txt values.</p>
+<p><strong>Note</strong>: At the start scene / main menu the player is admin per default. This means that admin only configuration can also be changed in the main menu but will only be active in a local game.</p>
+<h2 id="additional-config-attributes">Additional config attributes</h2>
+<p>Besides the <code>IsAdminOnly</code> attribute, additional custom attributes are provided.
+See <a href="https://github.com/Valheim-Modding/Jotunn/blob/dev/JotunnLib/Utils/ConfigurationManagerAttributes.cs">ConfigurationManagerAttributes</a> for a full list.</p>
+<ul>
+<li>Browsable: When set to <code>false</code>, that entry will be created but not accessible through the settings GUI</li>
+<li>ReadOnly: Only show the value but don't allow editing</li>
+</ul>
+<pre><code class="lang-cs">private void CreateConfigValues()
+{
+    // Invisible configs
+    Config.Bind(&quot;Client config&quot;, &quot;InvisibleInt&quot;, 150,
+        new ConfigDescription(&quot;Invisible int, testing browsable=false&quot;, null,
+        new ConfigurationManagerAttributes() { Browsable = false }));
+}
+</code></pre>
+<h2 id="config-synced-event">&quot;Config synced&quot; event</h2>
+<p>Jötunn provides an event in the SynchronizationManager you can subscribe to: <a class="xref" href="../api/Jotunn.Managers.SynchronizationManager.OnConfigurationSynchronized.html">SynchronizationManager.OnConfigurationSynchronized</a>. It fires when configuration is synced from a server to the client. Upon connection there is always an initial sync event. If configuration is changed and distributed during a game session, the event is fired every time you receive or send configuration. This applies to server side configuration only (i.e. <code>AdminOnly = true</code>). To distinguish between the initial and recurring config sync use the <a class="xref" href="../api/Jotunn.Utils.ConfigurationSynchronizationEventArgs.html">ConfigurationSynchronizationEventArgs</a>.</p>
+<pre><code class="lang-cs">SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =&gt;
+{
+    if (attr.InitialSynchronization)
+    {
+        Jotunn.Logger.LogMessage(&quot;Initial Config sync event received&quot;);
+    }
+    else
+    {
+        Jotunn.Logger.LogMessage(&quot;Config sync event received&quot;);
+    }
+};
+</code></pre>
+<h2 id="admin-status-changed-event">&quot;Admin status changed&quot; event</h2>
+<p>Similar to the event on configuration sync there is also an event when the admin status of a player on the server changed and got synced to the client: <a class="xref" href="../api/Jotunn.Managers.SynchronizationManager.OnAdminStatusChanged.html">SynchronizationManager.OnAdminStatusChanged</a>.</p>
+<pre><code class="lang-cs">SynchronizationManager.OnAdminStatusChanged += () =&gt;
+{
+    Jotunn.Logger.LogMessage($&quot;Admin status sync event received: {(SynchronizationManager.Instance.PlayerIsAdmin ? &quot;You're admin now&quot; : &quot;Downvoted, boy&quot;)}&quot;);
+};
+</code></pre>
+<h2 id="custom-config-files">Custom config files</h2>
+<p>Only the default configuration file of a mod is synchronized by default.
+To include a custom config file, it must be added to the SynchronizationManager as it cannot be detected automatically.
+The file must be located inside the <code>BepInEx/config</code> folder to guarantee the same relative path for all clients.
+This alone does not synchronize the entries, the <code>IsAdminOnly</code> attribute is still needed.</p>
+<pre><code class="lang-cs">ConfigFile customConfig = new ConfigFile(Path.Combine(Paths.ConfigPath, &quot;path/custom_config.cfg&quot;), true);
+SynchronizationManager.Instance.RegisterCustomConfig(customConfig);
+</code></pre>
+<p>Now <code>customConfig</code> can be used like <code>Config</code> in the previous examples.
+Note that <code>customConfig.Reload()</code> may be called to initiate a config sync if entries are set directly.</p>
+<h2 id="translating-the-menu-entry">Translating the menu entry</h2>
+<p>You can provide localized versions of the menu entry string.
+Please see our <a href="localization.html#localizable-content-in-j%C3%B6tunn">localization tutorial</a> on how to do this.</p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/config.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

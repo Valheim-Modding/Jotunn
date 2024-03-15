@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Undo/Redo Queue </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Undo/Redo Queue ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="undoredo-queue">Undo/Redo Queue</h1>
+
+<p>Jötunn's <a class="xref" href="../api/Jotunn.Managers.UndoManager.html">UndoManager</a> provides a simple interface to record, roll back and replay any actions in the game while managing the history of the queue for you as well as providing multiple queues which can be used by multiple mods simultaneously.</p>
+<p><strong>Note</strong>: The code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<h2 id="using-pre-defined-undoactions">Using pre-defined UndoActions</h2>
+<p>Jötunn provides some common actions for you to use in your mods, found in the <a class="xref" href="../api/Jotunn.Utils.UndoActions.html">UndoActions</a> class. Those actions include creation and removal of ZDOs as well as an action for terrain manipulation. To be able to revert or replay those actions in the game, you will have to collect the data you are manipulating and create an action with those. After passing it to the UndoManager, you can use the public API of the manager to undo or redo the actions you recorded.</p>
+<p>For this example we created multiple console commands using Jötunn's <a class="xref" href="../api/Jotunn.Managers.CommandManager.html">CommandManager</a> to be able to create or remove stuff from the game and commands to execute the undo and redo commands.</p>
+<p>Jötunn supports multiple independent undo queues which are distinguished by their name. So the first thing we make is to define our queue's name.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>Every mod that uses the same queue name shares that queue. So it is possible for multiple mods to have a common undo queue without having to depend on each other.</p>
+</div>
+<pre><code class="lang-cs">// Defining a queue name for the UndoManager that is shared by all our actions
+private const string QueueName = &quot;TestUndo&quot;;
+</code></pre>
+<p>Next we will create our console commands to create and remove stuff from the game.</p>
+<pre><code class="lang-cs">public class TestCreateCommand : ConsoleCommand
+{
+    public override string Name =&gt; &quot;undotest.create&quot;;
+
+    public override string Help =&gt; &quot;Creates stuff to test the undo manager&quot;;
+
+    public override void Run(string[] args)
+    {
+        // Do some validation
+        if (!Player.m_localPlayer)
+        {
+            Console.instance.Print(&quot;Can be used in game only!&quot;);
+            return;
+        }
+
+        // Get a random prefab from the game
+        GameObject prefab = PrefabManager.Instance.GetPrefab(&quot;Hammer&quot;);
+        if (!prefab)
+        {
+            Console.instance.Print(&quot;Can't find prefab&quot;);
+            return;
+        }
+
+        // Instantiate that prefab in the game
+        var obj = Instantiate(prefab, Player.m_localPlayer.transform.position + Player.m_localPlayer.transform.forward * 2f + Vector3.up, Quaternion.identity);
+
+        // Create an UndoCreate action with the ZDO of the prefab
+        var action = new UndoActions.UndoCreate(new[] { obj.GetComponent&lt;ZNetView&gt;().GetZDO() });
+        UndoManager.Instance.Add(QueueName, action);
+
+        // Do some console output
+        Console.instance.Print(&quot;Created Hammer&quot;);
+    }
+}
+
+public class TestRemoveCommand : ConsoleCommand
+{
+    public override string Name =&gt; &quot;undotest.remove&quot;;
+
+    public override string Help =&gt; &quot;Remove hovered stuff to test the undo manager&quot;;
+
+    public override void Run(string[] args)
+    {
+        // Do some validation
+        if (!Player.m_localPlayer)
+        {
+            Console.instance.Print(&quot;Can be used in game only!&quot;);
+            return;
+        }
+
+        // Get the current hovered object's ZDO
+        if (!Player.m_localPlayer.GetHoverObject())
+        {
+            Console.instance.Print(&quot;Nothing hovered!&quot;);
+            return;
+        }
+        var hoverObject = Player.m_localPlayer.GetHoverObject();
+        var zNetView = hoverObject.GetComponentInParent&lt;ZNetView&gt;();
+        if (!zNetView || !zNetView.IsValid())
+        {
+            return;
+        }
+                
+        // Create an UndoRemove action with that ZDO
+        var action = new UndoActions.UndoRemove(new[] { zNetView.GetZDO() });
+        UndoManager.Instance.Add(QueueName, action);
+
+        // Remove the ZDO from the game
+        zNetView.GetZDO().SetOwner(ZDOMan.instance.GetMyID());
+        ZNetScene.instance.Destroy(zNetView.gameObject);
+        
+        // Do some console output
+        Console.instance.Print(&quot;Removed GameObject&quot;);
+    }
+}
+
+</code></pre>
+<p>We will also need commands to undo and redo our added actions.</p>
+<pre><code class="lang-cs">public class TestUndoCommand : ConsoleCommand
+{
+    public override string Name =&gt; &quot;undotest.undo&quot;;
+
+    public override string Help =&gt; &quot;Undo the stuff&quot;;
+
+    public override void Run(string[] args)
+    {
+        if (!Player.m_localPlayer)
+        {
+            Console.instance.Print(&quot;Can be used in game only!&quot;);
+            return;
+        }
+
+        // Calling Undo() on the manager using the queue's name will
+        // undo your last added action to that queue
+        UndoManager.Instance.Undo(QueueName);
+    }
+}
+
+public class TestRedoCommand : ConsoleCommand
+{
+    public override string Name =&gt; &quot;undotest.redo&quot;;
+
+    public override string Help =&gt; &quot;Redo the stuff&quot;;
+
+    public override void Run(string[] args)
+    {
+        if (!Player.m_localPlayer)
+        {
+            Console.instance.Print(&quot;Can be used in game only!&quot;);
+            return;
+        }
+                
+        // Calling Redo() on the manager using the queue's name will
+        // redo the last action which was removed by using Undo() from that queue
+        UndoManager.Instance.Redo(QueueName);
+    }
+}
+</code></pre>
+<p>To be able to use those commands in the game it is important to also add them to the <a class="xref" href="../api/Jotunn.Managers.CommandManager.html">CommandManager</a>. If you want to learn more about console commands, check out the <a href="console-commands.html">command tutorial</a>.</p>
+<pre><code class="lang-cs">private void Awake()
+{
+    // Add custom commands for testing the UndoManager
+    CommandManager.Instance.AddConsoleCommand(new TestCreateCommand());
+    CommandManager.Instance.AddConsoleCommand(new TestRemoveCommand());
+    CommandManager.Instance.AddConsoleCommand(new TestUndoCommand());
+    CommandManager.Instance.AddConsoleCommand(new TestRedoCommand());
+}
+</code></pre>
+<p>Using our commands in the game gets us this console output. First we created and spawned a new hammer prefab, then we removed a built stone pillar by using the <code>undotest.create</code> and <code>undotest.remove</code> commands. After that we used the <code>undotest.undo</code> command two times, first reverting the removal of the stone pillar, then reverting the spawning of the hammer. Then we replayed those actions again using the <code>undotest.redo</code> command, effectively spawning the hammer and removing the stone pillar again.</p>
+<p><img src="../Documentation/images/data/undoOutput.png" alt="console output of the undo/redo commands"></p>
+<h2 id="creating-your-own-undoactions">Creating your own UndoActions</h2>
+<p>Instead of using the very few pre-defined actions provided by Jötunn, mods can create their own actions to use in the undo queue. The manager's <code>Add()</code> method accepts any class that implements the provided <a class="xref" href="../api/Jotunn.Managers.UndoManager.IUndoAction.html">IUndoAction</a> interface. Please refer to Jötunn's API documentation and check out the <a href="https://github.com/Valheim-Modding/Jotunn/blob/dev/JotunnLib/Utils/UndoActions.cs">pre-defined UndoActions</a> to learn how to make your own.</p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/undoqueue.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
