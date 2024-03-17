@@ -467,7 +467,10 @@ namespace Jotunn.Managers
         private static bool TopologicalSortUtil(Type node, HashSet<Type> visited, HashSet<Type> recursionStack, List<Type> result)
         {
             // Type already processed
-            if (visited.Contains(node)) return true;
+            if (visited.Contains(node) || visited.Any(node.IsSubclassOf))
+            {
+                return true;
+            }
 
             // Cycle detected
             if (recursionStack.Contains(node)) return false;
