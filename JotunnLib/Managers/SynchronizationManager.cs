@@ -777,7 +777,14 @@ namespace Jotunn.Managers
 
             if (entry.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
             {
-                def.m_key = InputUtils.KeyCodeToKey((KeyCode)entry.BoxedValue);
+                if (InputUtils.TryKeyCodeToMouseButton((KeyCode)entry.BoxedValue, out var mouseButton))
+                {
+                    def.m_mouseButton = mouseButton;
+                }
+                else
+                {
+                    def.m_key = InputUtils.KeyCodeToKey((KeyCode)entry.BoxedValue);
+                }
             }
 
             if (entry.SettingType == typeof(KeyboardShortcut) && ZInput.instance.m_buttons.TryGetValue(buttonName, out def))

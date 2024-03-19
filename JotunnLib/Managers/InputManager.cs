@@ -381,10 +381,7 @@ namespace Jotunn.Managers
 
             if (button.BlockOtherInputs)
             {
-                foreach (var btn in ZInput.instance.m_buttons.Where(x =>
-                    x.Value.m_key == InputUtils.KeyCodeToKey(button.Key) ||
-                    x.Value.m_key == InputUtils.KeyCodeToKey(GetGamepadKeyCode(button.GamepadButton)) ||
-                    x.Value.m_gamepadInput == GetGamepadInput(button.GamepadButton)))
+                foreach (var btn in ZInput.instance.m_buttons.Where(pair => button.IsSameButton(pair.Value)))
                 {
                     ZInput.ResetButtonStatus(btn.Key);
                     btn.Value.m_pressed = false;
