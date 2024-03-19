@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.18.1
+* Fixed errors about failing to remove components in the RenderManager, which could occur in specific inheritance edge cases
+
 ## Version 2.18.0
 * Added GameObject mocking, i.e. objects in the hierarchy with the JVLmock_ prefix will be swapped with the real object
 * Added non-enforced mods to version check messages, so changed enforcement across mod versions can be detected and applied on the server
