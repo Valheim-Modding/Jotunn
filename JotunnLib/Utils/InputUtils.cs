@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using BepInEx.Configuration;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static Jotunn.Managers.InputManager;
@@ -271,6 +272,58 @@ namespace Jotunn.Utils
                 KeyCode.JoystickButton9 => GamepadButton.RightStickButton,
                 _ => GamepadButton.None
             };
+        }
+
+        internal static void SetInputButtons(ConfigEntryBase entry)
+        {
+            if (ZInput.instance == null)
+            {
+                return;
+            }
+
+            string buttonName = entry.GetBoundButtonName();
+
+            if (string.IsNullOrEmpty(buttonName))
+            {
+                return;
+            }
+
+            ZInput.ButtonDef def;
+
+            if (entry.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
+            {
+                if (TryKeyCodeToMouseButton((KeyCode)entry.BoxedValue, out var mouseButton))
+                {
+                    def.m_bMouseButtonSet = true;
+                    def.m_mouseButton = mouseButton;
+                    def.m_key = Key.None;
+                }
+                else
+                {
+                    def.m_bMouseButtonSet = false;
+                    def.m_key = KeyCodeToKey((KeyCode)entry.BoxedValue);
+                }
+            }
+
+            if (entry.SettingType == typeof(KeyboardShortcut) && ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
+            {
+                def.m_key = KeyCodeToKey(((KeyboardShortcut)entry.BoxedValue).MainKey);
+            }
+
+            if (entry.SettingType == typeof(GamepadButton) && ZInput.instance.m_buttons.TryGetValue($"Joy!{buttonName}", out def))
+            {
+                var keyCode = GetGamepadKeyCode((GamepadButton)entry.BoxedValue);
+                var input = GetGamepadInput((GamepadButton)entry.BoxedValue);
+
+                if (input != GamepadInput.None)
+                {
+                    def.m_gamepadInput = input;
+                }
+                else
+                {
+                    def.m_key = KeyCodeToKey(keyCode);
+                }
+            }
         }
     }
 }

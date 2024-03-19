@@ -1,4 +1,5 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
 using Jotunn.Utils;
 using UnityEngine;
 using static Jotunn.Managers.InputManager;
@@ -62,7 +63,27 @@ namespace Jotunn.Configs
         ///     BepInEx configuration entry of a KeyCode that should be used.
         ///     Overrides the <see cref="Key"/> value of this config.
         /// </summary>
-        public ConfigEntry<KeyCode> Config { get; set; }
+        public ConfigEntry<KeyCode> Config
+        {
+            get => config;
+            set
+            {
+                if (config != null)
+                {
+                    config.SettingChanged -= OnConfigOnSettingChanged;
+                }
+
+                config = value;
+                config.SettingChanged += OnConfigOnSettingChanged;
+            }
+        }
+
+        private void OnConfigOnSettingChanged(object sender, EventArgs args)
+        {
+            InputUtils.SetInputButtons(config);
+        }
+
+        private ConfigEntry<KeyCode> config;
 
         /// <summary>
         ///     Private store for the shortcut

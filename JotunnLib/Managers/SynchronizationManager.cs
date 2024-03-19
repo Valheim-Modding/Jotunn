@@ -713,7 +713,7 @@ namespace Jotunn.Managers
                     }
 
                     // Set buttons if changed
-                    SetInputButtons(cx);
+                    InputUtils.SetInputButtons(cx);
                 }
             }
 
@@ -756,55 +756,6 @@ namespace Jotunn.Managers
 
                 // Rebuild config cache
                 CacheConfigurationValues();
-            }
-        }
-
-        private void SetInputButtons(ConfigEntryBase entry)
-        {
-            if (ZInput.instance == null)
-            {
-                return;
-            }
-
-            string buttonName = entry.GetBoundButtonName();
-
-            if (string.IsNullOrEmpty(buttonName))
-            {
-                return;
-            }
-
-            ZInput.ButtonDef def;
-
-            if (entry.SettingType == typeof(KeyCode) && ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
-            {
-                if (InputUtils.TryKeyCodeToMouseButton((KeyCode)entry.BoxedValue, out var mouseButton))
-                {
-                    def.m_mouseButton = mouseButton;
-                }
-                else
-                {
-                    def.m_key = InputUtils.KeyCodeToKey((KeyCode)entry.BoxedValue);
-                }
-            }
-
-            if (entry.SettingType == typeof(KeyboardShortcut) && ZInput.instance.m_buttons.TryGetValue(buttonName, out def))
-            {
-                def.m_key = InputUtils.KeyCodeToKey(((KeyboardShortcut)entry.BoxedValue).MainKey);
-            }
-
-            if (entry.SettingType == typeof(InputManager.GamepadButton) && ZInput.instance.m_buttons.TryGetValue($"Joy!{buttonName}", out def))
-            {
-                var keyCode = InputManager.GetGamepadKeyCode((InputManager.GamepadButton)entry.BoxedValue);
-                var input = InputManager.GetGamepadInput((InputManager.GamepadButton)entry.BoxedValue);
-
-                if (input != GamepadInput.None)
-                {
-                    def.m_gamepadInput = input;
-                }
-                else
-                {
-                    def.m_key = InputUtils.KeyCodeToKey(keyCode);
-                }
             }
         }
 
@@ -946,7 +897,7 @@ namespace Jotunn.Managers
                             entry.BoxedValue = TomlTypeConverter.ConvertToValue(serializedValue, entry.SettingType);
 
                             // Set buttons after receive
-                            SetInputButtons(entry);
+                            InputUtils.SetInputButtons(entry);
                         }
                         else
                         {
