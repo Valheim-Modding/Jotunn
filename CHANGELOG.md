@@ -2,6 +2,8 @@
 
 ## Version 2.18.1
 * Fixed errors about failing to remove components in the RenderManager, which could occur in specific inheritance edge cases
+* Fixed mouse button were not converted to the new input system
+* Fixed button config changes did not update the button at runtime in singleplayer
 
 ## Version 2.18.0
 * Added GameObject mocking, i.e. objects in the hierarchy with the JVLmock_ prefix will be swapped with the real object
