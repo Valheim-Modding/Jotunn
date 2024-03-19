@@ -2,7 +2,7 @@
 
 ## Version 2.18.1
 * Fixed errors about failing to remove components in the RenderManager, which could occur in specific inheritance edge cases
-* Fixed mouse button were not converted to the new input system
+* Fixed mouse buttons from configs were not converted to the new input system
 * Fixed button config changes did not update the button at runtime in singleplayer
 
 ## Version 2.18.0
