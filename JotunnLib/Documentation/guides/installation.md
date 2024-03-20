@@ -4,7 +4,7 @@ This section will cover how to manually install Jötunn, without using a mod man
 
 ## 0. Installing BepInEx
 
-Before we even start, be sure that you have [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) downloaded and installed correctly. (If you have any other mods or rented a "modding enabled" server, odds are you'll have this installed.)
+Before we even start, be sure that you have [BepInEx](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/) downloaded and installed correctly. (If you have any other mods or rented a "modding enabled" server, odds are you'll have this installed.)
 
 If this is a manual install, extract the ZIP archive and move everything from `BepInEx_Valheim` into your Valheim directory (eg. `C:\<PathToYourSteamLibary>\steamapps\common\Valheim`).
 It should look something like this:
@@ -15,7 +15,7 @@ It should look something like this:
 
 Download Jötunn from your prefered public mirror (Note: You can find test builds through the public Discord):
 - [Nexus Mods](https://www.nexusmods.com/valheim/mods/1138)
-- [Thunderstore](https://valheim.thunderstore.io/package/ValheimModding/Jotunn/)
+- [Thunderstore](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/)
 
 Now you should have the ZIP file like so (names may vary depending on download source and version, but contents should be the same):
 

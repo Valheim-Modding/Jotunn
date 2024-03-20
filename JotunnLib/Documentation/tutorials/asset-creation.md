@@ -9,7 +9,7 @@ Creation Tools
 * [Unity 2022.3.12](https://unity3d.com/unity/whats-new/2022.3.12) - Game engine that Valheim runs in
 
 Game Mods (install these into your game as our mod has dependencies on them)
-* [Jötunn, the Valheim Library](https://valheim.thunderstore.io/package/ValheimModding/Jotunn/) - Mod with convenience methods we will use
+* [Jötunn, the Valheim Library](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/) - Mod with convenience methods we will use
 
 ## Summary of Steps
 

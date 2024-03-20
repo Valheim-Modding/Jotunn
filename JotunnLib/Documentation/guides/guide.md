@@ -16,7 +16,7 @@
 
 ## BepInEx
 
-* To run or build a mod [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/) must installed.
+* To run or build a mod [BepInEx](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/) must installed.
   Please use the BepInEx pack from Thunderstore as it's configured for Valheim, a release from Github may not work properly.
 
 # [2. Customising the ModStub project](#tab/tabid-2)

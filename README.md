@@ -14,10 +14,10 @@ For a more in-depth installation guide, please check out the [manual installatio
 However, here is a quick run-down:
 
 1. **Install BepInEx:**\
-Download [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/), extract everything inside `BepInEx_Valheim` into your Valheim folder (typically `C:\<PathToYourSteamLibary>\steamapps\common\Valheim`).
+Download [BepInEx](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/), extract everything inside `BepInEx_Valheim` into your Valheim folder (typically `C:\<PathToYourSteamLibary>\steamapps\common\Valheim`).
 
 2. **Install Jötunn:**\
-Download from either [Nexus](https://www.nexusmods.com/valheim/mods/1138) / [Thunderstore](https://valheim.thunderstore.io/package/ValheimModding/Jotunn), extract the ZIP and place all content into `BepInEx/plugins/Jotunn` of your Valheim install.
+Download from either [Nexus](https://www.nexusmods.com/valheim/mods/1138) / [Thunderstore](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn), extract the ZIP and place all content into `BepInEx/plugins/Jotunn` of your Valheim install.
 
 That's it, launch the game and mod away!
 
@@ -82,17 +82,17 @@ These people have been integral to pushing JVL out of the door, and without them
 
 *Jules#7950*: [github](https://github.com/sirskunkalot)
 
-*Margmas#9562*: [github](https://github.com/MSchmoecker), [thunderstore](https://valheim.thunderstore.io/package/MSchmoecker/), [nexus](https://www.nexusmods.com/users/111418768)
+*Margmas#9562*: [github](https://github.com/MSchmoecker), [thunderstore](https://thunderstore.io/c/valheim/p/MSchmoecker/), [nexus](https://www.nexusmods.com/users/111418768)
 
-*iDeathHD#7866*: [github](https://github.com/xiaoxiao921), [thunderstore](https://valheim.thunderstore.io/package/xiaoxiao921/)
+*iDeathHD#7866*: [github](https://github.com/xiaoxiao921), [thunderstore](https://thunderstore.io/c/valheim/p/xiaoxiao921/)
 
 *Algorithman#6741*: [github](https://github.com/Algorithman)
 
 *Quaesar#5604*: [github](https://github.com/RatikKapoor)
 
-*radu#0571*: [github](https://github.com/raduschirliu), [thunderstore](https://valheim.thunderstore.io/package/radu/), [nexus](https://www.nexusmods.com/users/112072898)
+*radu#0571*: [github](https://github.com/raduschirliu), [thunderstore](https://thunderstore.io/c/valheim/p/radu/), [nexus](https://www.nexusmods.com/users/112072898)
 
-*paddy#1337*: [github](https://github.com/paddywaan), [thunderstore](https://valheim.thunderstore.io/package/paddywan/), [nexus](https://valheim.thunderstore.io/package/ValheimModding/)
+*paddy#1337*: [github](https://github.com/paddywaan), [thunderstore](https://thunderstore.io/c/valheim/p/paddywan/)
 
 #### Contributors:
 
@@ -100,7 +100,7 @@ These people have been integral to pushing JVL out of the door, and without them
 
 *GoldenJude#8965*: [github](https://github.com/GoldenJude), [nexus](https://www.nexusmods.com/users/48864143?tab=user+files)
 
-*zarboz#7828*: [github](https://github.com/sbtoonz), [thunderstore](https://valheim.thunderstore.io/package/sbtoonz/), [nexus](https://www.nexusmods.com/users/4057483)
+*zarboz#7828*: [github](https://github.com/sbtoonz), [thunderstore](https://thunderstore.io/c/valheim/p/sbtoonz/), [nexus](https://www.nexusmods.com/users/4057483)
 
 *MarcoPogo#6095*: [github](https://github.com/MathiasDecrock), [nexus](https://www.nexusmods.com/users/3030830?tab=user+files)
 
@@ -108,12 +108,12 @@ These people have been integral to pushing JVL out of the door, and without them
 
 *Tekla#1012*: [github](https://github.com/T3kla/ValMods/wiki)
 
-*JoeyParrish#8644*: [github](https://github.com/joeyparrish), [thunderstore](https://valheim.thunderstore.io/package/joeyparrish/), [nexus](https://www.nexusmods.com/users/128211453)
+*JoeyParrish#8644*: [github](https://github.com/joeyparrish), [thunderstore](https://thunderstore.io/c/valheim/p/joeyparrish/), [nexus](https://www.nexusmods.com/users/128211453)
 
 *Nosirrom#2626*: [github](https://github.com/donchad)
 
-*Jere#0989*: [github](https://github.com/JereKuusela), [thunderstore](https://valheim.thunderstore.io/package/JereKuusela/), [nexus](https://www.nexusmods.com/valheim/users/117845818)
+*Jere#0989*: [github](https://github.com/JereKuusela), [thunderstore](https://thunderstore.io/c/valheim/p/JereKuusela/), [nexus](https://www.nexusmods.com/valheim/users/117845818)
 
-*Searica*: [github](https://github.com/searica), [thunderstore](https://valheim.thunderstore.io/package/Searica/)
+*Searica*: [github](https://github.com/searica), [thunderstore](https://thunderstore.io/c/valheim/p/Searica/)
 
-*OrianaVenture*: [github](https://github.com/OrianaVenture), [thunderstore](https://valheim.thunderstore.io/package/VentureValheim/)
+*OrianaVenture*: [github](https://github.com/OrianaVenture), [thunderstore](https://thunderstore.io/c/valheim/p/VentureValheim/)
