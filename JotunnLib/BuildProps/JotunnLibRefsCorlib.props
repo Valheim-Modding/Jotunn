@@ -36,6 +36,10 @@
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="SoftReferenceableAssets">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\SoftReferenceableAssets_publicized.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="BepInEx">
       <HintPath>$(BEPINEX_PATH)\core\BepInEx.dll</HintPath>
       <Private>false</Private>
