@@ -293,10 +293,13 @@ namespace Jotunn.Managers
         public CustomLocation CreateClonedLocation(string name, string baseName)
         {
             var baseZoneLocation = GetZoneLocation(baseName);
-            var copiedPrefab = Object.Instantiate(baseZoneLocation.m_prefab, Vector3.zero, Quaternion.identity, LocationContainer.transform);
-            copiedPrefab.name = name;
+            baseZoneLocation.m_prefab.Load();
+
+            var copiedPrefab = AssetManager.Instance.ClonePrefab(baseZoneLocation.m_prefab.Asset, name, LocationContainer.transform);
             var clonedLocation = new CustomLocation(copiedPrefab, false, new LocationConfig(baseZoneLocation));
             AddCustomLocation(clonedLocation);
+
+            baseZoneLocation.m_prefab.Release();
             return clonedLocation;
         }
         
@@ -498,17 +501,6 @@ namespace Jotunn.Managers
         {
             InvokeOnVanillaLocationsAvailable();
 
-            // Prepare vanilla locations again as they may have been modified by a mod
-            foreach (var location in ZoneSystem.instance.m_locations)
-            {
-                if (!location.m_enable || !location.m_prefab)
-                {
-                    continue;
-                }
-
-                PrepareLocation(location);
-            }
-
             if (Locations.Count > 0)
             {
                 List<string> toDelete = new List<string>();
@@ -616,11 +608,9 @@ namespace Jotunn.Managers
         /// <param name="sourceMod"><see cref="BepInPlugin"/> which created the location</param>
         private void RegisterLocationInZoneSystem(ZoneSystem zoneSystem, ZoneLocation zoneLocation, BepInPlugin sourceMod)
         {
-            zoneSystem.m_locations.Add(zoneLocation);
+            zoneLocation.m_prefab.Load();
 
-            PrepareLocation(zoneLocation);
-
-            foreach (var znet in zoneLocation.m_netViews)
+            foreach (var znet in global::Utils.GetEnabledComponentsInChildren<ZNetView>(zoneLocation.m_prefab.Asset))
             {
                 string prefabName = znet.GetPrefabName();
                 if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
@@ -633,7 +623,13 @@ namespace Jotunn.Managers
                 }
             }
 
-            foreach (var znet in zoneLocation.m_randomSpawns.SelectMany(x => x.m_childNetViews))
+            RandomSpawn[] randomSpawns = global::Utils.GetEnabledComponentsInChildren<RandomSpawn>(zoneLocation.m_prefab.Asset);
+            foreach (var randomSpawn in randomSpawns)
+            {
+                randomSpawn.Prepare();
+            }
+
+            foreach (var znet in randomSpawns.SelectMany(x => x.m_childNetViews))
             {
                 string prefabName = znet.GetPrefabName();
                 if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
@@ -646,33 +642,13 @@ namespace Jotunn.Managers
                 }
             }
 
-            if (!zoneSystem.m_locationsByHash.ContainsKey(zoneLocation.m_hash))
+            if (!zoneSystem.m_locationsByHash.ContainsKey(zoneLocation.Hash))
             {
-                zoneSystem.m_locationsByHash.Add(zoneLocation.m_hash, zoneLocation);
-            }
-        }
-
-        private void PrepareLocation(ZoneLocation location)
-        {
-            if (location.m_netViews != null)
-            {
-                foreach (var netView in location.m_netViews)
-                {
-                    netView.gameObject.SetActive(true);
-                }
-
-                ZoneSystem.PrepareNetViews(location.m_prefab, location.m_netViews);
+                zoneSystem.m_locationsByHash.Add(zoneLocation.Hash, zoneLocation);
+                zoneSystem.m_locations.Add(zoneLocation);
             }
 
-            if (location.m_randomSpawns != null)
-            {
-                foreach (var randomSpawn in location.m_randomSpawns)
-                {
-                    randomSpawn.gameObject.SetActive(true);
-                }
-
-                ZoneSystem.PrepareRandomSpawns(location.m_prefab, location.m_randomSpawns);
-            }
+            zoneLocation.m_prefab.Release();
         }
 
         private static void InvokeOnVanillaLocationsAvailable() => OnVanillaLocationsAvailable?.SafeInvoke();
