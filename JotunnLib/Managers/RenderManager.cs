@@ -467,9 +467,15 @@ namespace Jotunn.Managers
         private static bool TopologicalSortUtil(Type node, HashSet<Type> visited, HashSet<Type> recursionStack, List<Type> result)
         {
             // Type already processed
-            if (visited.Contains(node) || visited.Any(node.IsSubclassOf))
+            if (visited.Contains(node)) return true;           
+            List<Type> tailList = null;
+
+            //check if supertype is already in list, split list to insert dependencies of sub type before super type
+            int splitIndex = result.FindIndex(node.IsSubclassOf);
+            if (splitIndex != -1)
             {
-                return true;
+                tailList = result.Skip(splitIndex).ToList();
+                result.RemoveRange(splitIndex, result.Count - splitIndex);
             }
 
             // Cycle detected
@@ -487,9 +493,12 @@ namespace Jotunn.Managers
                 }
             }
 
+            // if super type was in list, concat tail of list back without adding subtype to result
+            if (tailList != null) result.AddRange(tailList);
+            else result.Add(node);
+
             recursionStack.Remove(node);
-            visited.Add(node);
-            result.Add(node);
+            visited.Add(node);            
 
             return true;
         }
