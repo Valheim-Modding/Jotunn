@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using BepInEx;
 using HarmonyLib;
+using Jotunn.Extensions;
 using Jotunn.Utils;
 using SoftReferenceableAssets;
 using UnityEngine;
@@ -62,6 +63,11 @@ namespace Jotunn.Managers
                     .RemoveInstructions(2)
                     .InstructionEnumeration();
             }
+        }
+
+        public bool IsReady()
+        {
+            return Runtime.s_assetLoader != null;
         }
 
         public AssetID AddPrefab(GameObject prefab, GameObject original = null)
@@ -158,17 +164,18 @@ namespace Jotunn.Managers
 
         private void CreateNameToAssetID()
         {
-            foreach (var pair in Runtime.GetAllAssetPathsInBundleMappedToAssetID())
+            foreach (var pair in Runtime.GetAllAssetPathsInBundleMappedToAssetID().ToList())
             {
                 string key = pair.Key.Split('/').Last();
-                int lastDot = key.LastIndexOf('.');
+                string extenstion = key.Split('.').Last();
+                string asset = key.RemoveSuffix($".{extenstion}");
 
-                if (lastDot >= 0)
+                if (nameToAssetID.ContainsKey(asset))
                 {
-                    key = key.Substring(0, lastDot);
+                    continue;
                 }
 
-                nameToAssetID.Add(key, pair.Value);
+                nameToAssetID.Add(asset, pair.Value);
             }
         }
 
@@ -184,6 +191,12 @@ namespace Jotunn.Managers
                 this.asset = asset;
                 this.originalID = original ? Instance.NameToAssetID(original.name) : default;
             }
+        }
+
+        public SoftReference<Object> GetSoftReference(string name)
+        {
+            AssetID assetID = NameToAssetID(name);
+            return assetID.IsValid ? new SoftReference<Object>(assetID) : default;
         }
     }
 }

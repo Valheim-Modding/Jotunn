@@ -5,6 +5,7 @@ using BepInEx;
 using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers.MockSystem;
+using SoftReferenceableAssets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -436,6 +437,18 @@ namespace Jotunn.Managers
                 if (GetCachedMap(type).TryGetValue(name, out var unityObject))
                 {
                     return unityObject;
+                }
+
+                if (AssetManager.Instance.IsReady())
+                {
+                    SoftReference<Object> asset = AssetManager.Instance.GetSoftReference(name);
+
+                    if (asset.IsValid)
+                    {
+                        // load an never release reference to keep it loaded
+                        asset.Load();
+                        return asset.Asset;
+                    }
                 }
 
                 return null;

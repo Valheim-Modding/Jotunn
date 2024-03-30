@@ -4,6 +4,7 @@ using BepInEx.Bootstrap;
 using HarmonyLib;
 using Jotunn.Managers;
 using Jotunn.Utils;
+using SoftReferenceableAssets;
 using UnityEngine;
 
 namespace Jotunn
@@ -46,6 +47,7 @@ namespace Jotunn
 
             ModCompatibility.Init();
             ((IManager)SynchronizationManager.Instance).Init();
+            Runtime.MakeAllAssetsLoadable();
 
             // Flip the "modded" switch of Valheim
             Game.isModded = true;
