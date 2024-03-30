@@ -928,7 +928,7 @@ namespace TestMod
 
             // Fix references
             var fix = PrefabManager.Instance.CreateEmptyPrefab("prefab_fix", false);
-            fix.GetComponent<Renderer>().material = new Material(Shader.Find("Standard"));
+            fix.GetComponent<Renderer>().material = new Material(PrefabManager.Cache.GetPrefab<Shader>("Standard"));
             fix.GetComponent<Renderer>().material.name = "JVLmock_amber";
             PrefabManager.Instance.AddPrefab(new CustomPrefab(fix, true));
 
