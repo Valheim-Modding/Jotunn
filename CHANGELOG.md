@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.18.2
+* Fixed more cases where components were not correctly removed in the RenderManager (thx bid)
+
 ## Version 2.18.1
 * Fixed errors about failing to remove components in the RenderManager, which could occur in specific inheritance edge cases
 * Fixed mouse buttons from configs were not converted to the new input system
