@@ -23,7 +23,9 @@ namespace Jotunn.Managers
         public static AssetManager Instance => instance ??= new AssetManager();
 
         private Dictionary<AssetID, AssetRef> assets = new Dictionary<AssetID, AssetRef>();
-        private Dictionary<string, AssetID> nameToAssetID = new Dictionary<string, AssetID>();
+
+        private Dictionary<string, AssetID> mapNameToAssetID;
+        private Dictionary<string, AssetID> MapNameToAssetID => mapNameToAssetID ??= CreateNameToAssetID();
 
         /// <summary>
         ///     Hide .ctor
@@ -157,16 +159,23 @@ namespace Jotunn.Managers
 
         public AssetID NameToAssetID(string name)
         {
-            if (nameToAssetID.Count == 0)
+            if (!IsReady())
             {
-                CreateNameToAssetID();
+                throw new InvalidOperationException("Asset System is not initialized yet");
             }
 
-            return nameToAssetID.TryGetValue(name, out AssetID assetID) ? assetID : default;
+            return MapNameToAssetID.TryGetValue(name, out AssetID assetID) ? assetID : default;
         }
 
-        private void CreateNameToAssetID()
+        private static Dictionary<string, AssetID> CreateNameToAssetID()
         {
+            if (!Instance.IsReady())
+            {
+                throw new InvalidOperationException("Asset System is not initialized yet");
+            }
+
+            Dictionary<string, AssetID> nameToAssetID = new Dictionary<string, AssetID>();
+
             foreach (var pair in Runtime.GetAllAssetPathsInBundleMappedToAssetID().ToList())
             {
                 string key = pair.Key.Split('/').Last();
@@ -180,6 +189,8 @@ namespace Jotunn.Managers
 
                 nameToAssetID.Add(asset, pair.Value);
             }
+
+            return nameToAssetID;
         }
 
         private struct AssetRef
