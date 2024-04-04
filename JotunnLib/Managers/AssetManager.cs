@@ -156,6 +156,11 @@ namespace Jotunn.Managers
                 return assetID;
             }
 
+            if (MapNameToAssetID.TryGetValue(typeof(Object), out nameToAssetID) && nameToAssetID.TryGetValue(name, out assetID))
+            {
+                return assetID;
+            }
+
             Logger.LogWarning($"Failed to find AssetID for {name} ({type})");
             return new AssetID();
         }
@@ -173,12 +178,25 @@ namespace Jotunn.Managers
             }
 
             Dictionary<Type, Dictionary<string, AssetID>> nameToAssetID = new Dictionary<Type, Dictionary<string, AssetID>>();
+            Dictionary<string, string> nameToFullPath = new Dictionary<string, string>();
 
             foreach (var pair in Runtime.GetAllAssetPathsInBundleMappedToAssetID().ToList())
             {
                 string key = pair.Key.Split('/').Last();
                 string extenstion = key.Split('.').Last();
                 string asset = key.RemoveSuffix($".{extenstion}");
+
+                if (pair.Key.StartsWith("Assets/world/Locations") && extenstion == "prefab")
+                {
+                    // ignore locations, to prevent skipping real ZNet prefabs
+                    continue;
+                }
+
+                if (pair.Key == "Assets/UI/prefabs/radials/elements/Hammer.prefab")
+                {
+                    // skip UI element in favour of Assets/GameElements/Items/tools/Hammer.prefab
+                    continue;
+                }
 
                 Type type = Instance.TypeFromExtension(extenstion);
 
@@ -189,7 +207,7 @@ namespace Jotunn.Managers
 
                 if (type == null)
                 {
-                    Logger.LogWarning($"Unhandled extension '{extenstion}' for asset '{pair.Key}'");
+                    Logger.LogDebug($"Unhandled extension '{extenstion}' for asset '{pair.Key}'");
                     type = typeof(Object);
                 }
 
@@ -200,10 +218,16 @@ namespace Jotunn.Managers
 
                 if (nameToAssetID[type].ContainsKey(asset))
                 {
+                    if (extenstion == "prefab")
+                    {
+                        Logger.LogWarning($"Ambiguous asset name for path: existing: {nameToFullPath[asset]}, new: {pair.Key}");
+                    }
+
                     continue;
                 }
 
                 nameToAssetID[type].Add(asset, pair.Value);
+                nameToFullPath[asset] = pair.Key;
             }
 
             return nameToAssetID;
@@ -245,6 +269,8 @@ namespace Jotunn.Managers
                     return typeof(TMPro.TMP_FontAsset);
                 case "rendertexture":
                     return typeof(RenderTexture);
+                case "lighting":
+                    return typeof(LightingSettings);
                 default:
                     return null;
             }
