@@ -9,6 +9,8 @@ using Jotunn.Extensions;
 using Jotunn.Utils;
 using SoftReferenceableAssets;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
@@ -24,8 +26,8 @@ namespace Jotunn.Managers
 
         private Dictionary<AssetID, AssetRef> assets = new Dictionary<AssetID, AssetRef>();
 
-        private Dictionary<string, AssetID> mapNameToAssetID;
-        private Dictionary<string, AssetID> MapNameToAssetID => mapNameToAssetID ??= CreateNameToAssetID();
+        private Dictionary<Type, Dictionary<string, AssetID>> mapNameToAssetID;
+        private Dictionary<Type, Dictionary<string, AssetID>> MapNameToAssetID => mapNameToAssetID ??= CreateNameToAssetID();
 
         /// <summary>
         ///     Hide .ctor
@@ -157,24 +159,35 @@ namespace Jotunn.Managers
             return clone;
         }
 
-        public AssetID NameToAssetID(string name)
+        public AssetID NameToAssetID(Type type, string name)
         {
             if (!IsReady())
             {
                 throw new InvalidOperationException("Asset System is not initialized yet");
             }
 
-            return MapNameToAssetID.TryGetValue(name, out AssetID assetID) ? assetID : default;
+            if (MapNameToAssetID.TryGetValue(type, out var nameToAssetID) && nameToAssetID.TryGetValue(name, out AssetID assetID))
+            {
+                return assetID;
+            }
+
+            Logger.LogWarning($"Failed to find AssetID for {name} ({type})");
+            return new AssetID();
         }
 
-        private static Dictionary<string, AssetID> CreateNameToAssetID()
+        public AssetID NameToAssetID<T>(string name) where T : Object
+        {
+            return NameToAssetID(typeof(T), name);
+        }
+
+        private static Dictionary<Type, Dictionary<string, AssetID>> CreateNameToAssetID()
         {
             if (!Instance.IsReady())
             {
                 throw new InvalidOperationException("Asset System is not initialized yet");
             }
 
-            Dictionary<string, AssetID> nameToAssetID = new Dictionary<string, AssetID>();
+            Dictionary<Type, Dictionary<string, AssetID>> nameToAssetID = new Dictionary<Type, Dictionary<string, AssetID>>();
 
             foreach (var pair in Runtime.GetAllAssetPathsInBundleMappedToAssetID().ToList())
             {
@@ -182,15 +195,74 @@ namespace Jotunn.Managers
                 string extenstion = key.Split('.').Last();
                 string asset = key.RemoveSuffix($".{extenstion}");
 
-                if (nameToAssetID.ContainsKey(asset))
+                Type type = Instance.TypeFromExtension(extenstion);
+
+                if (type == null && extenstion == "asset" && key.StartsWith("Recipe_"))
+                {
+                    type = typeof(Recipe);
+                }
+
+                if (type == null)
+                {
+                    Logger.LogWarning($"Unhandled extension '{extenstion}' for asset '{pair.Key}'");
+                    type = typeof(Object);
+                }
+
+                if (!nameToAssetID.ContainsKey(type))
+                {
+                    nameToAssetID.Add(type, new Dictionary<string, AssetID>());
+                }
+
+                if (nameToAssetID[type].ContainsKey(asset))
                 {
                     continue;
                 }
 
-                nameToAssetID.Add(asset, pair.Value);
+                nameToAssetID[type].Add(asset, pair.Value);
             }
 
             return nameToAssetID;
+        }
+
+        private Type TypeFromExtension(string extension)
+        {
+            switch (extension.ToLower())
+            {
+                case "prefab":
+                    return typeof(GameObject);
+                case "mat":
+                    return typeof(Material);
+                case "obj":
+                case "fbx":
+                    return typeof(Mesh);
+                case "png":
+                case "jpg":
+                case "tga":
+                case "tif":
+                    return typeof(Texture2D);
+                case "wav":
+                case "mp3":
+                    return typeof(AudioClip);
+                case "controller":
+                    return typeof(RuntimeAnimatorController);
+                case "physicmaterial":
+                    return typeof(PhysicMaterial);
+                case "shader":
+                    return typeof(Shader);
+                case "anim":
+                    return typeof(AnimationClip);
+                case "mixer":
+                    return typeof(AudioMixer);
+                case "txt":
+                    return typeof(TextAsset);
+                case "ttf":
+                case "otf":
+                    return typeof(TMPro.TMP_FontAsset);
+                case "rendertexture":
+                    return typeof(RenderTexture);
+                default:
+                    return null;
+            }
         }
 
         private struct AssetRef
@@ -203,13 +275,19 @@ namespace Jotunn.Managers
             {
                 this.sourceMod = sourceMod;
                 this.asset = asset;
-                this.originalID = original ? Instance.NameToAssetID(original.name) : default;
+                this.originalID = original ? Instance.NameToAssetID(original.GetType(), original.name) : default;
             }
         }
 
-        public SoftReference<Object> GetSoftReference(string name)
+        public SoftReference<T> GetSoftReference<T>(string name) where T: Object
         {
-            AssetID assetID = NameToAssetID(name);
+            AssetID assetID = NameToAssetID<T>(name);
+            return assetID.IsValid ? new SoftReference<T>(assetID) : default;
+        }
+
+        public SoftReference<Object> GetSoftReference(Type type, string name)
+        {
+            AssetID assetID = NameToAssetID(type, name);
             return assetID.IsValid ? new SoftReference<Object>(assetID) : default;
         }
     }

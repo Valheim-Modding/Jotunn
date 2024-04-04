@@ -441,7 +441,7 @@ namespace Jotunn.Managers
 
                 if (AssetManager.Instance.IsReady())
                 {
-                    SoftReference<Object> asset = AssetManager.Instance.GetSoftReference(name);
+                    SoftReference<Object> asset = AssetManager.Instance.GetSoftReference(type, name);
 
                     if (asset.IsValid)
                     {
