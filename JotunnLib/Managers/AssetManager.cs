@@ -68,7 +68,6 @@ namespace Jotunn.Managers
 
             if (assets.ContainsKey(assetID))
             {
-                Logger.LogWarning($"Asset '{prefab.name}' with ID {assetID} already exists. Skipping {nameof(AddPrefab)}.");
                 return assetID;
             }
 
@@ -161,7 +160,6 @@ namespace Jotunn.Managers
                 return assetID;
             }
 
-            Logger.LogWarning($"Failed to find AssetID for {name} ({type})");
             return new AssetID();
         }
 
