@@ -55,21 +55,6 @@ namespace Jotunn.Managers
                     AddAssetToBundleLoader(__instance, prefab.Key, prefab.Value);
                 }
             }
-
-            [HarmonyPatch(typeof(BundleLoader), MethodType.Constructor, typeof(string), typeof(string))]
-            [HarmonyPatch(typeof(AssetLoader), MethodType.Constructor, typeof(AssetID), typeof(AssetLocation))]
-            [HarmonyTranspiler]
-            private static IEnumerable<CodeInstruction> BundleLoaderConstructorTranspiler(MethodBase __originalMethod, IEnumerable<CodeInstruction> instructions)
-            {
-                FieldInfo operationToLoaderIndex = AccessTools.Field(__originalMethod.DeclaringType, "m_operationToLoaderIndex");
-                return new CodeMatcher(instructions)
-                    .MatchForward(false,
-                        new CodeMatch(OpCodes.Newobj),
-                        new CodeMatch(i => i.StoresField(operationToLoaderIndex)))
-                    .ThrowIfInvalid("not found m_operationToLoaderIndex")
-                    .RemoveInstructions(2)
-                    .InstructionEnumeration();
-            }
         }
 
         public bool IsReady()
