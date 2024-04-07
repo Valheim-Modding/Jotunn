@@ -123,7 +123,6 @@ namespace Jotunn.Managers
 
             if (assetRef.originalID.IsValid && originalBundleLoaderIndex > 0)
             {
-                Logger.LogDebug($"Original bundle loader index: {originalBundleLoaderIndex}");
                 BundleLoader originalBundleLoader = assetBundleLoader.m_bundleLoaders[originalBundleLoaderIndex];
 
                 bundleLoader.m_bundleLoaderIndicesOfThisAndDependencies = originalBundleLoader
@@ -288,7 +287,6 @@ namespace Jotunn.Managers
 
                 if (type == null)
                 {
-                    Logger.LogDebug($"Unhandled extension '{extenstion}' for asset '{pair.Key}'");
                     type = typeof(Object);
                 }
 
