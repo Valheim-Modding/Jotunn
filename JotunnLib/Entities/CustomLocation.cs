@@ -97,7 +97,7 @@ namespace Jotunn.Entities
             }
 
             ZoneLocation = locationConfig.GetZoneLocation();
-            ZoneLocation.m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddPrefab(exteriorPrefab));
+            ZoneLocation.m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(exteriorPrefab));
             ZoneLocation.m_prefabName = exteriorPrefab.name;
 
             FixReference = fixReference;

@@ -155,7 +155,7 @@ namespace Jotunn.Managers
             customPrefab.Prefab.transform.SetParent(PrefabContainer.transform, false);
 
             Prefabs.Add(name, customPrefab);
-            AssetManager.Instance.AddPrefab(customPrefab.Prefab, null);
+            AssetManager.Instance.AddAsset(customPrefab.Prefab, null);
         }
 
         /// <summary>

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Extensions;
@@ -10,11 +8,14 @@ using Jotunn.Utils;
 using SoftReferenceableAssets;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
 {
+    /// <summary>
+    ///     Manager to handle interactions with the vanilla asset system, called SoftReferenceableAssets.
+    ///     See the <a href="https://valheim.com/support/modding-faq-for-the-asset-bundle-update-0-217-40/">Vanilla FAQ</a> for more information.
+    /// </summary>
     public class AssetManager : IManager
     {
         private static AssetManager instance;
@@ -57,21 +58,34 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Checks if the vanilla loader is ready.
+        ///     If false, <see cref="SoftReferenceableAssets.Runtime.Loader">Runtime.Loader</see> must not be accessed and no assets may be loaded.
+        ///     If the vanilla loader is initialized too early, mods can become incompatible.
+        /// </summary>
+        /// <returns>true if the vanilla asset loader is ready, false otherwise</returns>
         public bool IsReady()
         {
             return Runtime.s_assetLoader != null;
         }
 
-        public AssetID AddPrefab(GameObject prefab, GameObject original = null)
+        /// <summary>
+        ///     Registers a new asset with the same asset dependencies as the original asset and generates a unique AssetID.<br />
+        ///     Assets can be added at any time and will be registered as soon as the vanilla loader is ready.
+        /// </summary>
+        /// <param name="asset">The asset to register</param>
+        /// <param name="original">Assets to copy dependencies from</param>
+        /// <returns>AssetID generated from the prefab's name</returns>
+        public AssetID AddAsset(Object asset, Object original)
         {
-            AssetID assetID = GenerateFakeAssetID(prefab);
+            AssetID assetID = GenerateAssetID(asset);
 
             if (assets.ContainsKey(assetID))
             {
                 return assetID;
             }
 
-            AssetRef assetRef = new AssetRef(BepInExUtils.GetSourceModMetadata(), prefab, original);
+            AssetRef assetRef = new AssetRef(BepInExUtils.GetSourceModMetadata(), asset, original);
             assets.Add(assetID, assetRef);
 
             if (AssetBundleLoader.Instance != null)
@@ -80,6 +94,17 @@ namespace Jotunn.Managers
             }
 
             return assetID;
+        }
+
+        /// <summary>
+        ///     Registers a new asset and generates a unique AssetID.<br />
+        ///     Assets can be added at any time and will be registered as soon as the vanilla loader is ready.
+        /// </summary>
+        /// <param name="asset">The asset to register</param>
+        /// <returns>AssetID generated from the prefab's name</returns>
+        public AssetID AddAsset(Object asset)
+        {
+            return AddAsset(asset, null);
         }
 
         private static void AddAssetToBundleLoader(AssetBundleLoader assetBundleLoader, AssetID assetID, AssetRef assetRef)
@@ -127,27 +152,49 @@ namespace Jotunn.Managers
             Logger.LogDebug($"Added prefab '{assetRef.asset.name}' with ID {assetID} to AssetBundleLoader");
         }
 
-        private static AssetID GenerateFakeAssetID(Object asset)
+        /// <summary>
+        ///     Generates a unique AssetID, based on the asset name
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <returns>AssetID generated from the prefab's name</returns>
+        public AssetID GenerateAssetID(Object asset)
         {
             uint u = (uint)asset.name.GetStableHashCode();
             return new AssetID(u, u, u, u);
         }
 
+        /// <summary>
+        ///     Clones a prefab and registers it in the SoftReference system with the same dependencies as the original asset
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <param name="newName"></param>
+        /// <param name="parent"></param>
+        /// <returns></returns>
         public GameObject ClonePrefab(GameObject asset, string newName, Transform parent)
         {
             GameObject clone = Object.Instantiate(asset, parent);
             clone.name = newName;
 
-            AddPrefab(clone, asset);
+            AddAsset(clone, asset);
 
             return clone;
         }
 
-        public AssetID NameToAssetID(Type type, string name)
+        /// <summary>
+        ///     Finds the AssetID by an asset name at runtime.<br />
+        ///     The closed matching base type must be used.
+        ///     E.g. for prefabs use <see cref="GameObject"/>, for Textures use <see cref="Texture2D"/> etc.<br />
+        ///     If no asset is found, an invalid AssetID is returned.
+        /// </summary>
+        /// <param name="type">Asset type to search for</param>
+        /// <param name="name">Asset name to search for</param>
+        /// <returns>The AssetID of the searched asset if found, otherwise an invalid AssetID</returns>
+        /// <exception cref="InvalidOperationException">Thrown if the vanilla asset system is not initialized yet</exception>
+        public AssetID GetAssetID(Type type, string name)
         {
             if (!IsReady())
             {
-                throw new InvalidOperationException("Asset System is not initialized yet");
+                throw new InvalidOperationException("The vanilla asset system is not initialized yet");
             }
 
             if (MapNameToAssetID.TryGetValue(type, out var nameToAssetID) && nameToAssetID.TryGetValue(name, out AssetID assetID))
@@ -163,16 +210,50 @@ namespace Jotunn.Managers
             return new AssetID();
         }
 
-        public AssetID NameToAssetID<T>(string name) where T : Object
+        /// <summary>
+        ///     Finds the AssetID by an asset name at runtime.<br />
+        ///     The closed matching base type must be used.
+        ///     E.g. for prefabs use <see cref="GameObject"/>, for Textures use <see cref="Texture2D"/> etc.<br />
+        ///     If no asset is found, an invalid AssetID is returned.
+        /// </summary>
+        /// <param name="name">Asset name to search for</param>
+        /// <typeparam name="T">Asset type to search for</typeparam>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Thrown if the vanilla asset system is not initialized yet</exception>
+        public AssetID GetAssetID<T>(string name) where T : Object
         {
-            return NameToAssetID(typeof(T), name);
+            return GetAssetID(typeof(T), name);
+        }
+
+        /// <summary>
+        ///     Finds the AssetID by an asset name at runtime and returns a SoftReference to the asset.<br />
+        /// </summary>
+        /// <param name="type">Asset type to search for</param>
+        /// <param name="name">Asset name to search for</param>
+        /// <returns></returns>
+        public SoftReference<Object> GetSoftReference(Type type, string name)
+        {
+            AssetID assetID = GetAssetID(type, name);
+            return assetID.IsValid ? new SoftReference<Object>(assetID) : default;
+        }
+
+        /// <summary>
+        ///     Finds the AssetID by an asset name at runtime and returns a SoftReference to the asset.<br />
+        /// </summary>
+        /// <param name="name">Asset name to search for</param>
+        /// <typeparam name="T">Asset type to search for</typeparam>
+        /// <returns></returns>
+        public SoftReference<T> GetSoftReference<T>(string name) where T: Object
+        {
+            AssetID assetID = GetAssetID<T>(name);
+            return assetID.IsValid ? new SoftReference<T>(assetID) : default;
         }
 
         private static Dictionary<Type, Dictionary<string, AssetID>> CreateNameToAssetID()
         {
             if (!Instance.IsReady())
             {
-                throw new InvalidOperationException("Asset System is not initialized yet");
+                throw new InvalidOperationException("The vanilla asset system is not initialized yet");
             }
 
             Dictionary<Type, Dictionary<string, AssetID>> nameToAssetID = new Dictionary<Type, Dictionary<string, AssetID>>();
@@ -284,20 +365,8 @@ namespace Jotunn.Managers
             {
                 this.sourceMod = sourceMod;
                 this.asset = asset;
-                this.originalID = original ? Instance.NameToAssetID(original.GetType(), original.name) : default;
+                this.originalID = original ? Instance.GetAssetID(original.GetType(), original.name) : default;
             }
-        }
-
-        public SoftReference<T> GetSoftReference<T>(string name) where T: Object
-        {
-            AssetID assetID = NameToAssetID<T>(name);
-            return assetID.IsValid ? new SoftReference<T>(assetID) : default;
-        }
-
-        public SoftReference<Object> GetSoftReference(Type type, string name)
-        {
-            AssetID assetID = NameToAssetID(type, name);
-            return assetID.IsValid ? new SoftReference<Object>(assetID) : default;
         }
     }
 }
