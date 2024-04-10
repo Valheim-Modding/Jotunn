@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.19.0
+* Fixed for Valheim 0.217.46, not working with older Valheim versions
+* Added AssetManager for direct interactions with the new SoftReference system. Existing entities and mocks are already handled implicitly
+
 ## Version 2.18.2
 * Fixed more cases where components were not correctly removed in the RenderManager (thx bid)
 
