@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -80,8 +81,12 @@ namespace JotunnBuildTask
                     Directory.CreateDirectory(publicizedFolder);
                 }
 
+                List<string> assemblyNames = new List<string>();
+                assemblyNames.AddRange(Directory.GetFiles(managedFolder, "assembly_*.dll"));
+                assemblyNames.AddRange(Directory.GetFiles(managedFolder, "SoftReferenceableAssets.dll"));
+
                 // Loop assemblies and check if the hash has changed
-                foreach (var assembly in Directory.GetFiles(managedFolder, "assembly_*.dll"))
+                foreach (var assembly in assemblyNames)
                 {
                     if (!File.Exists(Path.Combine(publicizedFolder, $"{Path.GetFileNameWithoutExtension(assembly)}_{Publicized}{Path.GetExtension(assembly)}")))
                     {
