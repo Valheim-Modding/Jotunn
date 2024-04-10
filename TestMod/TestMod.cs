@@ -928,7 +928,7 @@ namespace TestMod
 
             // Fix references
             var fix = PrefabManager.Instance.CreateEmptyPrefab("prefab_fix", false);
-            fix.GetComponent<Renderer>().material = new Material(Shader.Find("Standard"));
+            fix.GetComponent<Renderer>().material = new Material(PrefabManager.Cache.GetPrefab<Shader>("Standard"));
             fix.GetComponent<Renderer>().material.name = "JVLmock_amber";
             PrefabManager.Instance.AddPrefab(new CustomPrefab(fix, true));
 
@@ -1556,15 +1556,16 @@ namespace TestMod
                 var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lal");
 
                 // Create a clone of a vanilla location
-                CustomLocation myEikthyrLocation =
-                    ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
+                CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
                 myEikthyrLocation.ZoneLocation.m_exteriorRadius = 1f; // Easy to place :D
                 myEikthyrLocation.ZoneLocation.m_quantity = 20; // MOAR
+
+                myEikthyrLocation.ZoneLocation.m_prefab.Load(); // load and keep loaded, since we modify it
 
                 // Stack of lulzcubes to easily spot the instances
                 for (int i = 0; i < 40; i++)
                 {
-                    var lulzCube = Instantiate(lulzCubePrefab, myEikthyrLocation.ZoneLocation.m_prefab.transform);
+                    var lulzCube = Instantiate(lulzCubePrefab, myEikthyrLocation.ZoneLocation.m_prefab.Asset.transform);
                     lulzCube.name = lulzCubePrefab.name;
                     lulzCube.transform.localPosition = new Vector3(0, i + 3, 0);
                     lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
@@ -1601,22 +1602,29 @@ namespace TestMod
 
             // Modify existing locations
             var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
-            eikhtyrLocation.m_exteriorRadius = 20f; //More space around the altar
+            eikhtyrLocation.m_exteriorRadius = 20f; // More space around the altar
 
-            var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
-            eikhtyrCube.name = lulzCubePrefab.name;
-            eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
+            eikhtyrLocation.m_prefab.Load(); // load and keep loaded, since we modify it
+
+            // not possible here anymore, because the prefab is persistent
+
+            // var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.Asset.transform);
+            // eikhtyrCube.name = lulzCubePrefab.name;
+            // eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
 
             // Modify existing vegetation
             var raspberryBush = ZoneManager.Instance.GetZoneVegetation("RaspberryBush");
             raspberryBush.m_groupSizeMin = 10;
             raspberryBush.m_groupSizeMax = 30;
 
+            // not possible here anymore, because the prefab is persistent
+
             // Add a prefab with a ZNetView component
-            var woodHouse3 = ZoneManager.Instance.GetZoneLocation("WoodHouse3");
-            var thistlePrefab = PrefabManager.Instance.GetPrefab("Pickable_Thistle");
-            var thistle = Instantiate(thistlePrefab, woodHouse3.m_prefab.transform);
-            thistle.transform.localPosition = new Vector3(-4.48f, 0f, 3f);
+            // var woodHouse3 = ZoneManager.Instance.GetZoneLocation("WoodHouse3");
+            // woodHouse3.m_prefab.Load(); // load and keep loaded, since we modify it
+            // var thistlePrefab = PrefabManager.Instance.GetPrefab("Pickable_Thistle");
+            // var thistle = Instantiate(thistlePrefab, woodHouse3.m_prefab.Asset.transform);
+            // thistle.transform.localPosition = new Vector3(-4.48f, 0f, 3f);
 
             // Not unregistering this hook, it needs to run every world load
         }

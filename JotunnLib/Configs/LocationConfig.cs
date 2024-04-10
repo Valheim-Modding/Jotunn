@@ -144,6 +144,9 @@ namespace Jotunn.Configs
         /// <param name="zoneLocation">ZoneLocation to copy</param>
         public LocationConfig(ZoneSystem.ZoneLocation zoneLocation)
         {
+            zoneLocation.m_prefab.Load();
+            var location = zoneLocation.m_prefab.Asset.GetComponent<Location>();
+
             Biome = zoneLocation.m_biome;
             BiomeArea = zoneLocation.m_biomeArea;
             Priotized = zoneLocation.m_prioritized;
@@ -160,15 +163,17 @@ namespace Jotunn.Configs
             MinTerrainDelta = zoneLocation.m_minTerrainDelta;
             MaxTerrainDelta = zoneLocation.m_maxTerrainDelta;
             MinDistanceFromSimilar = zoneLocation.m_minDistanceFromSimilar;
-            HasInterior = zoneLocation.m_location && zoneLocation.m_location.m_hasInterior;
+            HasInterior = location && location.m_hasInterior;
             InteriorRadius = zoneLocation.m_interiorRadius;
-            InteriorEnvironment = zoneLocation.m_location?.m_interiorEnvironment;
+            InteriorEnvironment = location?.m_interiorEnvironment;
             SlopeRotation = zoneLocation.m_slopeRotation;
             RandomRotation = zoneLocation.m_randomRotation;
             SnapToWater = zoneLocation.m_snapToWater;
             IconPlaced = zoneLocation.m_iconPlaced;
             IconAlways = zoneLocation.m_iconAlways;
-            ClearArea = zoneLocation.m_location.m_clearArea;
+            ClearArea = location && location.m_clearArea;
+
+            zoneLocation.m_prefab.Release();
         }
 
         /// <summary>

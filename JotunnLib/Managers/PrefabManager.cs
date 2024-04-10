@@ -5,6 +5,7 @@ using BepInEx;
 using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers.MockSystem;
+using SoftReferenceableAssets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -154,6 +155,7 @@ namespace Jotunn.Managers
             customPrefab.Prefab.transform.SetParent(PrefabContainer.transform, false);
 
             Prefabs.Add(name, customPrefab);
+            AssetManager.Instance.AddAsset(customPrefab.Prefab, null);
         }
 
         /// <summary>
@@ -240,10 +242,7 @@ namespace Jotunn.Managers
                 return null;
             }
 
-            var newPrefab = Object.Instantiate(prefab, PrefabContainer.transform, false);
-            newPrefab.name = name;
-
-            return newPrefab;
+            return AssetManager.Instance.ClonePrefab(prefab, name, PrefabContainer.transform);
         }
 
         /// <summary>
@@ -436,6 +435,18 @@ namespace Jotunn.Managers
                 if (GetCachedMap(type).TryGetValue(name, out var unityObject))
                 {
                     return unityObject;
+                }
+
+                if (AssetManager.Instance.IsReady())
+                {
+                    SoftReference<Object> asset = AssetManager.Instance.GetSoftReference(type, name);
+
+                    if (asset.IsValid)
+                    {
+                        // load an never release reference to keep it loaded
+                        asset.Load();
+                        return asset.Asset;
+                    }
                 }
 
                 return null;

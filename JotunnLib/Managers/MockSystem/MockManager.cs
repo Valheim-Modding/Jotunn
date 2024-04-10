@@ -531,7 +531,7 @@ namespace Jotunn.Managers
                 return true;
             }
 
-            Shader realShader = Shader.Find(cleanedShaderName);
+            Shader realShader = PrefabManager.Cache.GetPrefab<Shader>(cleanedShaderName);
 
             if (realShader)
             {

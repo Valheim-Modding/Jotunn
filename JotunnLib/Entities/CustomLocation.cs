@@ -2,6 +2,7 @@
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using SoftReferenceableAssets;
 using UnityEngine;
 
 namespace Jotunn.Entities
@@ -96,10 +97,8 @@ namespace Jotunn.Entities
             }
 
             ZoneLocation = locationConfig.GetZoneLocation();
-            ZoneLocation.m_prefab = exteriorPrefab;
+            ZoneLocation.m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(exteriorPrefab));
             ZoneLocation.m_prefabName = exteriorPrefab.name;
-            ZoneLocation.m_hash = exteriorPrefab.name.GetStableHashCode();
-            ZoneLocation.m_location = Location;
 
             FixReference = fixReference;
         }

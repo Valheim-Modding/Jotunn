@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
 using Jotunn.Entities;
+using Jotunn.Managers;
 using Jotunn.Utils;
 
 namespace Jotunn.Configs
@@ -195,10 +196,7 @@ namespace Jotunn.Configs
                     {
                         foreach (var mat in rend.materials)
                         {
-                            if (mat.shader != Shader.Find("Custom/Creature"))
-                            {
-                                mat.shader = Shader.Find("Custom/Creature");
-                            }
+                            mat.shader = PrefabManager.Cache.GetPrefab<Shader>("Custom/Creature");
 
                             if (mat.HasProperty("_StyleTex"))
                             {
