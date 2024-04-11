@@ -48,7 +48,7 @@ namespace Jotunn.Managers
 
         private static class Patches
         {
-            [HarmonyPatch(typeof(AssetBundleLoader), nameof(AssetBundleLoader.InitializeDataSide)), HarmonyPostfix]
+            [HarmonyPatch(typeof(AssetBundleLoader), nameof(AssetBundleLoader.OnInitCompleted)), HarmonyPostfix]
             private static void AssetBundleLoader_Load(AssetBundleLoader __instance)
             {
                 foreach (var prefab in Instance.assets)
@@ -66,7 +66,7 @@ namespace Jotunn.Managers
         /// <returns>true if the vanilla asset loader is ready, false otherwise</returns>
         public bool IsReady()
         {
-            return Runtime.s_assetLoader != null;
+            return Runtime.s_assetLoader != null && ((AssetBundleLoader)Runtime.s_assetLoader).Initialized;
         }
 
         /// <summary>
@@ -112,6 +112,12 @@ namespace Jotunn.Managers
             // create fake bundle, since an AssetBundle can't be created at runtime
             string bundleName = $"JVL_BundleWrapper_{assetRef.asset.name}";
             string assetPath = $"{assetRef.sourceMod.GUID}/Prefabs/{assetRef.asset.name}";
+
+            if (assetBundleLoader.m_bundleNameToLoaderIndex.ContainsKey(bundleName))
+            {
+                return;
+            }
+
             AssetLocation location = new AssetLocation(bundleName, assetPath);
             BundleLoader bundleLoader = new BundleLoader(bundleName, "");
             bundleLoader.HoldReference();
