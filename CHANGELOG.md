@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2.19.1
+* Fixed an issue where the game would load infinitely
+* Fixed mocks were not being resolved if the assets are only used in locations
+* Fixed mock meshes not being resolved correctly in some cases
+* Fixed an error when modded prefabs are cloned before the vanilla asset system is ready
+* Fixed assemblies being referenced that are no longer shipped
+
 ## Version 2.19.0
 * Fixed for Valheim 0.217.46, not working with older Valheim versions
 * Added AssetManager for direct interactions with the new SoftReference system. Existing entities and mocks are already handled implicitly
