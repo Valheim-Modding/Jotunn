@@ -168,7 +168,7 @@ namespace Jotunn.Managers
 
             if (!prefab)
             {
-                throw new MockResolveException($"Object with name '{assetName}' was not found.", assetName, mockObjectType);
+                throw new MockResolveException($"GameObject with name '{assetName}' was not found.", assetName, mockObjectType);
             }
 
             if (childNames.Count > 0)
@@ -183,7 +183,7 @@ namespace Jotunn.Managers
                 prefab = child.gameObject;
             }
 
-            if (TryFindAssetInSelfOrChildComponents(prefab, mockObjectType, out asset))
+            if (PrefabManager.TryFindAssetInSelfOrChildComponents(prefab, mockObjectType, out asset))
             {
                 return asset;
             }
@@ -548,58 +548,6 @@ namespace Jotunn.Managers
             }
 
             return true;
-        }
-
-        private static bool TryFindAssetOfComponent(Component unityObject, Type objectType, out Object asset)
-        {
-            var type = unityObject.GetType();
-            ClassMember classMember = ClassMember.GetClassMember(type);
-
-            foreach (var member in classMember.Members)
-            {
-                if (member.MemberType == objectType && member.HasGetMethod)
-                {
-                    asset = (Object)member.GetValue(unityObject);
-                    if (asset != null)
-                    {
-                        return asset;
-                    }
-                }
-            }
-
-            asset = null;
-            return false;
-        }
-
-        private static bool TryFindAssetInSelfOrChildComponents(GameObject unityObject, Type objectType, out Object asset)
-        {
-            if (unityObject == null)
-            {
-                asset = null;
-                return false;
-            }
-
-            foreach (var component in unityObject.GetComponents<Component>())
-            {
-                if (!(component is Transform))
-                {
-                    if (TryFindAssetOfComponent(component, objectType, out asset))
-                    {
-                        return (bool)asset;
-                    }
-                }
-            }
-
-            foreach (Transform tf in unityObject.transform)
-            {
-                if (TryFindAssetInSelfOrChildComponents(tf.gameObject, objectType, out asset))
-                {
-                    return (bool)asset;
-                }
-            }
-
-            asset = null;
-            return false;
         }
     }
 }

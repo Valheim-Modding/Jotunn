@@ -445,6 +445,12 @@ namespace Jotunn.Managers
                     {
                         // load an never release reference to keep it loaded
                         asset.Load();
+
+                        if (asset.Asset.GetType() != type && asset.Asset is GameObject gameObject && TryFindAssetInSelfOrChildComponents(gameObject, type, out Object childAsset))
+                        {
+                            return childAsset;
+                        }
+
                         return asset.Asset;
                     }
                 }
@@ -589,6 +595,58 @@ namespace Jotunn.Managers
             {
                 dictionaryCache.Remove(typeof(T));
             }
+        }
+
+        private static bool TryFindAssetOfComponent(Component unityObject, Type objectType, out Object asset)
+        {
+            var type = unityObject.GetType();
+            ClassMember classMember = ClassMember.GetClassMember(type);
+
+            foreach (var member in classMember.Members)
+            {
+                if (member.MemberType == objectType && member.HasGetMethod)
+                {
+                    asset = (Object)member.GetValue(unityObject);
+                    if (asset != null)
+                    {
+                        return asset;
+                    }
+                }
+            }
+
+            asset = null;
+            return false;
+        }
+
+        internal static bool TryFindAssetInSelfOrChildComponents(GameObject unityObject, Type objectType, out Object asset)
+        {
+            if (!unityObject)
+            {
+                asset = null;
+                return false;
+            }
+
+            foreach (var component in unityObject.GetComponents<Component>())
+            {
+                if (!(component is Transform))
+                {
+                    if (TryFindAssetOfComponent(component, objectType, out asset))
+                    {
+                        return (bool)asset;
+                    }
+                }
+            }
+
+            foreach (Transform tf in unityObject.transform)
+            {
+                if (TryFindAssetInSelfOrChildComponents(tf.gameObject, objectType, out asset))
+                {
+                    return (bool)asset;
+                }
+            }
+
+            asset = null;
+            return false;
         }
     }
 }
