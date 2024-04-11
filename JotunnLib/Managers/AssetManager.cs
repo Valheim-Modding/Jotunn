@@ -379,7 +379,7 @@ namespace Jotunn.Managers
             {
                 this.sourceMod = sourceMod;
                 this.asset = asset;
-                this.originalID = original ? Instance.GetAssetID(original.GetType(), original.name) : default;
+                this.originalID = original && Instance.IsReady() ? Instance.GetAssetID(original.GetType(), original.name) : default;
             }
         }
     }
