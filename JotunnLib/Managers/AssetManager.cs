@@ -272,12 +272,6 @@ namespace Jotunn.Managers
                 string extenstion = key.Split('.').Last();
                 string asset = key.RemoveSuffix($".{extenstion}");
 
-                if (pair.Key.StartsWith("Assets/world/Locations") && extenstion == "prefab")
-                {
-                    // ignore locations, to prevent skipping real ZNet prefabs
-                    continue;
-                }
-
                 if (pair.Key == "Assets/UI/prefabs/radials/elements/Hammer.prefab")
                 {
                     // skip UI element in favour of Assets/GameElements/Items/tools/Hammer.prefab
@@ -301,21 +295,35 @@ namespace Jotunn.Managers
                     nameToAssetID.Add(type, new Dictionary<string, AssetID>());
                 }
 
-                if (nameToAssetID[type].ContainsKey(asset))
+                if (nameToAssetID[type].ContainsKey(asset) && SkipAmbiguousPath(nameToFullPath[asset], pair.Key, extenstion))
                 {
-                    if (extenstion == "prefab")
-                    {
-                        Logger.LogWarning($"Ambiguous asset name for path: existing: {nameToFullPath[asset]}, new: {pair.Key}");
-                    }
-
                     continue;
                 }
 
-                nameToAssetID[type].Add(asset, pair.Value);
+                nameToAssetID[type][asset] = pair.Value;
                 nameToFullPath[asset] = pair.Key;
             }
 
             return nameToAssetID;
+        }
+
+        private static bool SkipAmbiguousPath(string oldPath, string newPath, string extension)
+        {
+            if (extension == "prefab")
+            {
+                if (oldPath.StartsWith("Assets/world/Locations"))
+                {
+                    return false;
+                }
+                else if (newPath.StartsWith("Assets/world/Locations"))
+                {
+                    return true;
+                }
+
+                Logger.LogWarning($"Ambiguous asset name for path. old: {oldPath}, new: {newPath}, using old path");
+            }
+
+            return true;
         }
 
         private Type TypeFromExtension(string extension)
