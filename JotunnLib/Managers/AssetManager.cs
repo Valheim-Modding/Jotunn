@@ -28,7 +28,7 @@ namespace Jotunn.Managers
         private Dictionary<AssetID, AssetRef> assets = new Dictionary<AssetID, AssetRef>();
 
         private Dictionary<Type, Dictionary<string, AssetID>> mapNameToAssetID;
-        private Dictionary<Type, Dictionary<string, AssetID>> MapNameToAssetID => mapNameToAssetID ??= CreateNameToAssetID();
+        internal Dictionary<Type, Dictionary<string, AssetID>> MapNameToAssetID => mapNameToAssetID ??= CreateNameToAssetID();
 
         /// <summary>
         ///     Hide .ctor

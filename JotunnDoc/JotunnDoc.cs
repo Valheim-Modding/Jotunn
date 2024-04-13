@@ -45,6 +45,7 @@ namespace JotunnDoc
                 new StatusEffectDoc(),
                 new VegetationDoc(),
                 new EventDoc(),
+                new MeshDoc(),
             };
 
             Debug.Log("Initialized JotunnDoc");
