@@ -432,11 +432,6 @@ namespace Jotunn.Managers
             /// <returns></returns>
             public static Object GetPrefab(Type type, string name)
             {
-                if (GetCachedMap(type).TryGetValue(name, out var unityObject))
-                {
-                    return unityObject;
-                }
-
                 if (AssetManager.Instance.IsReady())
                 {
                     SoftReference<Object> asset = AssetManager.Instance.GetSoftReference(type, name);
@@ -453,6 +448,11 @@ namespace Jotunn.Managers
 
                         return asset.Asset;
                     }
+                }
+
+                if (GetCachedMap(type).TryGetValue(name, out var unityObject))
+                {
+                    return unityObject;
                 }
 
                 return null;
