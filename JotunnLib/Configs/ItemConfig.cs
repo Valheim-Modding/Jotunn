@@ -188,27 +188,9 @@ namespace Jotunn.Configs
             {
                 itemDrop.m_itemData.m_shared.m_icons = Icons;
 
-                // Set variants if a StyleTex is provided
                 if (StyleTex != null)
                 {
                     ExtEquipment.Enable();
-                    foreach (var rend in ShaderHelper.GetRenderers(prefab))
-                    {
-                        foreach (var mat in rend.materials)
-                        {
-                            mat.shader = PrefabManager.Cache.GetPrefab<Shader>("Custom/Creature");
-
-                            if (mat.HasProperty("_StyleTex"))
-                            {
-                                itemDrop.m_itemData.m_shared.m_variants = Icons.Length;
-                                rend.gameObject.GetOrAddComponent<ItemStyle>();
-                                mat.EnableKeyword("_USESTYLES_ON");
-                                mat.SetFloat("_Style", 0f);
-                                mat.SetFloat("_UseStyles", 1f);
-                                mat.SetTexture("_StyleTex", StyleTex);
-                            }
-                        }
-                    }
                 }
             }
         }

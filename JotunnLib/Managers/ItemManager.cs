@@ -390,6 +390,7 @@ namespace Jotunn.Managers
                         {
                             customItem.ItemPrefab.FixReferences(customItem.FixReference);
                             itemDrop.m_itemData.m_shared.FixReferences();
+                            customItem.FixVariants();
                             customItem.FixReference = false;
                             customItem.FixConfig = false;
                         }

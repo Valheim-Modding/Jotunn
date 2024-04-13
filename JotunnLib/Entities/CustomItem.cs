@@ -34,6 +34,11 @@ namespace Jotunn.Entities
         public bool FixReference { get; set; }
 
         /// <summary>
+        ///     Texture holding the variants different styles.
+        /// </summary>
+        internal Texture2D StyleTex { get; set; } = null;
+
+        /// <summary>
         ///     Indicator if references from configs should get replaced
         /// </summary>
         internal bool FixConfig { get; set; }
@@ -228,10 +233,37 @@ namespace Jotunn.Entities
             return ItemName;
         }
 
+        internal void FixVariants()
+        {
+            Sprite[] icons = ItemDrop ? ItemDrop.m_itemData?.m_shared?.m_icons : null;
+
+            if (icons?.Length > 0 && StyleTex)
+            {
+                foreach (var rend in ShaderHelper.GetRenderers(ItemPrefab))
+                {
+                    foreach (var mat in rend.materials)
+                    {
+                        mat.shader = PrefabManager.Cache.GetPrefab<Shader>("Custom/Creature");
+
+                        if (mat.HasProperty("_StyleTex"))
+                        {
+                            ItemDrop.m_itemData.m_shared.m_variants = icons.Length;
+                            rend.gameObject.GetOrAddComponent<ItemStyle>();
+                            mat.EnableKeyword("_USESTYLES_ON");
+                            mat.SetFloat("_Style", 0f);
+                            mat.SetFloat("_UseStyles", 1f);
+                            mat.SetTexture("_StyleTex", StyleTex);
+                        }
+                    }
+                }
+            }
+        }
+
         private void ApplyItemConfig(ItemConfig itemConfig)
         {
             itemConfig.Apply(ItemPrefab);
             FixConfig = true;
+            StyleTex = itemConfig.StyleTex;
             AssignRecipeFromConfig(itemConfig);
         }
 
