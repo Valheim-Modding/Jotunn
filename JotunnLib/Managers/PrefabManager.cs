@@ -441,12 +441,15 @@ namespace Jotunn.Managers
                         // load an never release reference to keep it loaded
                         asset.Load();
 
-                        if (asset.Asset.GetType() != type && asset.Asset is GameObject gameObject && TryFindAssetInSelfOrChildComponents(gameObject, type, out Object childAsset))
+                        if (asset.Asset.GetType() == type)
+                        {
+                            return asset.Asset;
+                        }
+
+                        if (asset.Asset is GameObject gameObject && TryFindAssetInSelfOrChildComponents(gameObject, type, out Object childAsset))
                         {
                             return childAsset;
                         }
-
-                        return asset.Asset;
                     }
                 }
 
