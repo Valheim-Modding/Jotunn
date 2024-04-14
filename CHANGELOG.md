@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.19.2
+* Changed PrefabManager.Cache to prefer SoftReferences over searching loaded assets, in order to be more reliable future proof. This especially affects (directly mocked) Meshes, please see the [Mesh List](https://valheim-modding.github.io/Jotunn/data/prefabs/mesh-list.html) and update your mocks from the Internal Name to the SoftReference Name
+* Fixed item variants were not correctly applied when the item was added in Awake/Start
+* Fixed a potential error when calling PrefabManager.Cache.GetPrefab for an invalid Mesh
+
 ## Version 2.19.1
 * Fixed an issue where the game would load infinitely
 * Fixed mocks were not being resolved if the assets are only used in locations
