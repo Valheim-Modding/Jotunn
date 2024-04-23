@@ -5,7 +5,7 @@ namespace Jotunn.Utils
 {
     internal static class PieceUtils
     {
-        public static int MaxPieceCategory { get; } = GetMaxPieceCategory();
+        public static int VanillaMaxPieceCategory { get; } = GetMaxPieceCategory();
 
         private static int GetMaxPieceCategory()
         {

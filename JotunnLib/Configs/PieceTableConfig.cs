@@ -43,7 +43,7 @@ namespace Jotunn.Configs
 
             if (UseCategories)
             {
-                for (int i = 0; i < PieceUtils.MaxPieceCategory; i++)
+                for (int i = 0; i < PieceUtils.VanillaMaxPieceCategory; i++)
                 {
                     categories.Add(Enum.GetName(typeof(Piece.PieceCategory), i));
                 }
