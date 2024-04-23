@@ -625,7 +625,7 @@ namespace Jotunn.Managers
 
         private static IEnumerable<CodeInstruction> TranspileMaxCategory(IEnumerable<CodeInstruction> instructions, int maxOffset)
         {
-            int number = (int)Piece.PieceCategory.Max + maxOffset;
+            int number = PieceUtils.MaxPieceCategory + maxOffset;
 
             foreach (CodeInstruction instruction in instructions)
             {
