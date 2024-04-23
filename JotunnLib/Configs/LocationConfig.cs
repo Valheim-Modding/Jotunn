@@ -188,7 +188,9 @@ namespace Jotunn.Configs
                 m_biomeArea = BiomeArea,
                 m_quantity = Quantity,
                 m_prioritized = Priotized,
+                m_interiorRadius = InteriorRadius,
                 m_exteriorRadius = ExteriorRadius,
+                m_clearArea = ClearArea,
                 m_centerFirst = CenterFirst,
                 m_forestTresholdMin = ForestTresholdMin,
                 m_forestTresholdMax = ForestTrasholdMax,
@@ -202,7 +204,6 @@ namespace Jotunn.Configs
                 m_minTerrainDelta = MinTerrainDelta,
                 m_maxTerrainDelta = MaxTerrainDelta,
                 m_minDistanceFromSimilar = MinDistanceFromSimilar,
-                m_interiorRadius = InteriorRadius,
                 m_slopeRotation = SlopeRotation,
                 m_randomRotation = RandomRotation,
                 m_snapToWater = SnapToWater,
@@ -210,6 +211,5 @@ namespace Jotunn.Configs
                 m_iconAlways = IconAlways
             };
         }
-
     }
 }
