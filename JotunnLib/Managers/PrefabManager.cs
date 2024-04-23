@@ -629,6 +629,19 @@ namespace Jotunn.Managers
                 return false;
             }
 
+            // search for the component on the object
+            if (objectType.IsSubclassOf(typeof(Component)))
+            {
+                var component = unityObject.GetComponent(objectType);
+
+                if (component)
+                {
+                    asset = component;
+                    return true;
+                }
+            }
+
+            // search for the asset inside a component
             foreach (var component in unityObject.GetComponents<Component>())
             {
                 if (!(component is Transform))
@@ -640,6 +653,7 @@ namespace Jotunn.Managers
                 }
             }
 
+            // recursively search in children
             foreach (Transform tf in unityObject.transform)
             {
                 if (TryFindAssetInSelfOrChildComponents(tf.gameObject, objectType, out asset))
