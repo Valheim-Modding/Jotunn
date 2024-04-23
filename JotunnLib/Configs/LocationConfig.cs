@@ -13,6 +13,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Associated <see cref="Location"/> component
         /// </summary>
+        [Obsolete("Not valid because no prefab is associated in LocationConfig, use CustomLocation.Location instead.")]
         public Location Location { get; internal set; }
 
         /// <summary>
