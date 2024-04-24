@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.19.3
+* Fixed piece categories to dynamically find the vanilla category count
+* Fixed clear area of locations was not applied since changes in Valheim 0.217.43
+* Fixed mock resolve of components on GameObjects, like workstations in recipes
+* Marked LocationConfig.Location as deprecated because the association is never valid
+
 ## Version 2.19.2
 * Changed PrefabManager.Cache to prefer SoftReferences over searching loaded assets, in order to be more reliable future proof. This especially affects (directly mocked) Meshes, please see the [Mesh List](https://valheim-modding.github.io/Jotunn/data/prefabs/mesh-list.html) and update your mocks from the Internal Name to the SoftReference Name
 * Fixed item variants were not correctly applied when the item was added in Awake/Start
