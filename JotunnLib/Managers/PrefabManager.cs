@@ -441,7 +441,7 @@ namespace Jotunn.Managers
                         // load an never release reference to keep it loaded
                         asset.Load();
 
-                        if (asset.Asset.GetType() == type)
+                        if (asset.Asset != null && asset.Asset.GetType() == type)
                         {
                             return asset.Asset;
                         }
@@ -453,7 +453,8 @@ namespace Jotunn.Managers
                     }
                 }
 
-                if (GetCachedMap(type).TryGetValue(name, out var unityObject))
+                var cacheMap = GetCachedMap(type);
+                if (cacheMap != null && cacheMap.TryGetValue(name, out var unityObject))
                 {
                     return unityObject;
                 }
