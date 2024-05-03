@@ -113,9 +113,9 @@ jobs:
 
       - name: Build solution
         run: |
-          msbuild JotunnLib.sln /p:Configuration=Release
+          dotnet build -c Release
           mv JotunnLib/bin/Release/net462/Jotunn.dll Jotunn.dll
-          msbuild JotunnLib.sln /p:Configuration=Debug
+          dotnet build -c Debug
           mv JotunnLib/bin/Debug/net462/Jotunn.dll Jotunn-DEBUG-${{ steps.get_version.outputs.VERSION }}.dll
 
       - name: Upload Nexusmods zip as artifact

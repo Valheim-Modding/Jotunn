@@ -105,7 +105,7 @@ jobs:
       # Build DLLs
       - name: Build solution
         run: |
-          msbuild JotunnLib.sln /p:Configuration=Release
+          dotnet build -c Release
 
       # Upload artifact
       - uses: actions/upload-artifact@v3
