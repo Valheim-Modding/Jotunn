@@ -4,13 +4,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JotunnLib", "JotunnLib\JotunnLib.csproj", "{A6082A59-38BE-4CAB-9078-2C8FCDA65B8F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{839DFF98-EE10-4BA6-879F-5BF628889F4F} = {839DFF98-EE10-4BA6-879F-5BF628889F4F}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMod", "TestMod\TestMod.csproj", "{4C2C2CF0-05F9-42C9-AD1D-5CD040D06344}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JotunnBuildTask", "JotunnBuildTask\JotunnBuildTask.csproj", "{839DFF98-EE10-4BA6-879F-5BF628889F4F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{C48162A3-C7D9-4A0F-8CE2-C617FFFE6EB9}"
 	ProjectSection(SolutionItems) = preProject
@@ -42,10 +37,6 @@ Global
 		{4C2C2CF0-05F9-42C9-AD1D-5CD040D06344}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C2C2CF0-05F9-42C9-AD1D-5CD040D06344}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C2C2CF0-05F9-42C9-AD1D-5CD040D06344}.Release|Any CPU.Build.0 = Release|Any CPU
-		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{839DFF98-EE10-4BA6-879F-5BF628889F4F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{94B6D2A3-8547-48AD-8B66-D368EEE54D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{94B6D2A3-8547-48AD-8B66-D368EEE54D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94B6D2A3-8547-48AD-8B66-D368EEE54D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU

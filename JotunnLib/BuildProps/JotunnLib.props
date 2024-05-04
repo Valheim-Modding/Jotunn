@@ -4,12 +4,4 @@
     <GenerateResourceNeverLockTypeAssemblies>true</GenerateResourceNeverLockTypeAssemblies>
   </PropertyGroup>
   <Import Project="JotunnLibRefsCorlib.props" />
-  <UsingTask TaskName="JotunnBuildTask" AssemblyFile="JotunnBuildTask.dll" />
-  <Target Name="JotunnBuildTaskRunner" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(VALHEIM_INSTALL)')" >
-    <Message Importance="High" Text="Executing Jotunn Prebuild Task"/> 
-    <JotunnBuildTask ValheimPath="$(VALHEIM_INSTALL)" />
-  </Target>
-  <Target Name="NoJotunnBuildTask" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' != 'true'" >
-    <Message Importance="High" Text="Skipping Jotunn Prebuild Task"/>
-  </Target>
 </Project>

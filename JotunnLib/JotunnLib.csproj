@@ -89,9 +89,8 @@
 
   <Import Project="BuildProps\version.props" Condition="Exists('BuildProps\version.props')" />
   <Import Project="BuildProps\Paths.props" />
-  <Import Project="BuildProps\JotunnBuildTask.props" />
   <Import Project="BuildProps\JotunnLibRefsCorlib.props" />
-  <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'" AfterTargets="Build">
+  <Target Name="JotunnPostBuildWin" Condition="'$(OS)' == 'Windows_NT'" AfterTargets="Build">
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot; -DeployPath &quot;$(MOD_DEPLOYPATH.TrimEnd('\'))&quot; -ProjectPath &quot;$(ProjectDir.TrimEnd('\'))&quot;" />
   </Target>
 
@@ -112,11 +111,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\JotunnBuildTask.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.Mdb.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.Pdb.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.Rocks.dll" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsCorlib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\Paths.props" Pack="true" PackagePath="build" />
