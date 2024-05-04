@@ -2,358 +2,307 @@
   <ItemGroup>
     <Reference Include="assembly_googleanalytics_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_googleanalytics_publicized.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="assembly_guiutils_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="assembly_lux_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_lux_publicized.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="assembly_postprocessing_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_postprocessing_publicized.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="assembly_simplemeshcombine_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_simplemeshcombine_publicized.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="assembly_sunshafts_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_sunshafts_publicized.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="assembly_utils_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="assembly_valheim_publicized">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="SoftReferenceableAssets">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\SoftReferenceableAssets_publicized.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>$(BEPINEX_PATH)\core\BepInEx.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="0Harmony">
       <HintPath>$(BEPINEX_PATH)\core\0Harmony.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BepInEx.Preloader">
       <HintPath>$(BEPINEX_PATH)\core\BepInEx.Preloader.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="HarmonyXInterop">
       <HintPath>$(BEPINEX_PATH)\core\HarmonyXInterop.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>$(BEPINEX_PATH)\core\Mono.Cecil.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="MonoMod.Utils">
+      <HintPath>$(BEPINEX_PATH)\core\MonoMod.Utils.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Mono.Security.dll</HintPath>
-      <Private>false</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.AccessibilityModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.AIModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.AndroidJNIModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.AndroidJNIModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.ClothModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.ClothModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.ClusterInputModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.ClusterInputModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.ClusterRendererModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.ClusterRendererModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.CrashReportingModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.CrashReportingModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.DirectorModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.DirectorModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.DSPGraphModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.DSPGraphModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.GameCenterModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.GameCenterModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.GridModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.GridModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.HotReloadModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.HotReloadModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.InputModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Unity.InputSystem">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Unity.InputSystem.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
       <Reference Include="UnityEngine.JSONSerializeModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.LocalizationModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.LocalizationModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.PerformanceReportingModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.Physics2DModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.ProfilerModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.ProfilerModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.ScreenCaptureModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.SharedInternalsModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.SpriteMaskModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.SpriteShapeModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.SpriteShapeModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.StreamingModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.StreamingModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.SubstanceModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.SubstanceModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.SubsystemsModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.SubsystemsModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.TerrainModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.TerrainPhysicsModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.TilemapModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.TLSModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.TLSModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UmbraModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UmbraModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UnityAnalyticsModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UnityConnectModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UnityConnectModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UnityTestProtocolModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAudioModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestTextureModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.VehiclesModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.VehiclesModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.VFXModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.VFXModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.VideoModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.VRModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.VRModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.WindModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.WindModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.XRModule">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>false</Private>
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.XRModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
 </Project>
