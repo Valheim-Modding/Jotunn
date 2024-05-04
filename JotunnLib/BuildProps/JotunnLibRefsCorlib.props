@@ -52,6 +52,14 @@
       <HintPath>$(BEPINEX_PATH)\core\HarmonyXInterop.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>$(BEPINEX_PATH)\core\Mono.Cecil.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="MonoMod.Utils">
+      <HintPath>$(BEPINEX_PATH)\core\MonoMod.Utils.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Mono.Security">
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Mono.Security.dll</HintPath>
       <Private>false</Private>
