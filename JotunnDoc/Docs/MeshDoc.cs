@@ -1,6 +1,7 @@
 using Jotunn.Managers;
 using SoftReferenceableAssets;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace JotunnDoc.Docs
 {
