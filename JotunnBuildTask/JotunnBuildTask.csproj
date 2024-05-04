@@ -33,6 +33,7 @@
   <ItemGroup>
     <Compile Include="AssemblyPublicizer.cs" />
     <Compile Include="JotunnBuildTask.cs" />
+    <Compile Include="JVLOriginalAssemblyHashAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

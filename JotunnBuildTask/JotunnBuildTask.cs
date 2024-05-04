@@ -22,6 +22,13 @@ namespace JotunnBuildTask
         internal const string Plugins = "plugins";
         internal const string Publicized = "publicized";
 
+        private bool HasSameHash(string assembly, string publicizedAssembly, out string hash)
+        {
+            hash = MD5HashFile(assembly);
+            string publicizedHash = ReadHashFromDll(publicizedAssembly);
+            return hash == publicizedHash;
+        }
+
         private string ReadHashFromDll(string dllFile)
         {
             string result = "";
@@ -29,11 +36,12 @@ namespace JotunnBuildTask
             if (File.Exists(dllFile))
             {
                 AssemblyDefinition assemblyDefinition = AssemblyDefinition.ReadAssembly(dllFile);
-                foreach (var typeDefinition in assemblyDefinition.MainModule.Types.Where(x => x.Namespace == "BepHookGen"))
+
+                foreach (var customAttribute in assemblyDefinition.CustomAttributes)
                 {
-                    if (typeDefinition.Name.StartsWith("hash"))
+                    if (customAttribute.AttributeType.Name == nameof(JVLOriginalAssemblyHashAttribute))
                     {
-                        result = typeDefinition.Name.Substring(4);
+                        result = customAttribute.ConstructorArguments[0].Value.ToString();
                         break;
                     }
                 }
@@ -88,12 +96,14 @@ namespace JotunnBuildTask
                 // Loop assemblies and check if the hash has changed
                 foreach (var assembly in assemblyNames)
                 {
-                    if (!File.Exists(Path.Combine(publicizedFolder, $"{Path.GetFileNameWithoutExtension(assembly)}_{Publicized}{Path.GetExtension(assembly)}")))
+                    var publicizedAssembly = Path.Combine(publicizedFolder, $"{Path.GetFileNameWithoutExtension(assembly)}_{Publicized}{Path.GetExtension(assembly)}");
+
+                    if (!HasSameHash(assembly, publicizedAssembly, out string hash))
                     {
                         try
                         {
                             // Try to publicize
-                            if (!AssemblyPublicizer.PublicizeDll(assembly, publicizedFolder, ValheimPath))
+                            if (!AssemblyPublicizer.PublicizeDll(assembly, hash, publicizedFolder, ValheimPath))
                             {
                                 return false;
                             }

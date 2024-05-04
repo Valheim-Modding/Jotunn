@@ -13,7 +13,7 @@ namespace JotunnBuildTask
         /// </summary>
         /// <param name="input">Input assembly</param>
         /// <returns></returns>
-        public static bool PublicizeDll(string input, string publicizedFolder, string ValheimPath)
+        public static bool PublicizeDll(string input, string hash, string publicizedFolder, string ValheimPath)
         {
             if (!File.Exists(input))
             {
@@ -86,6 +86,11 @@ namespace JotunnBuildTask
                     field.IsPublic = true;
                 }
             }
+
+            assemblyDefinition.MainModule.Assembly.CustomAttributes.Add(new CustomAttribute(assemblyDefinition.MainModule.ImportReference(typeof(JVLOriginalAssemblyHashAttribute).GetConstructor(new[] { typeof(string) })))
+            {
+                ConstructorArguments = { new CustomAttributeArgument(assemblyDefinition.MainModule.ImportReference(typeof(string)), hash) }
+            });
 
             var outputFilename = Path.Combine(publicizedFolder, $"{Path.GetFileNameWithoutExtension(input)}_{JotunnBuildTask.Publicized}{Path.GetExtension(input)}");
 
