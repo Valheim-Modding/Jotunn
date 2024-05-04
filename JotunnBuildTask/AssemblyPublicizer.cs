@@ -32,7 +32,6 @@ namespace JotunnBuildTask
 
                 string managedFolder = Path.Combine(ValheimPath, JotunnBuildTask.ValheimData, JotunnBuildTask.Managed);
                 string serverManagedFolder = Path.Combine(ValheimPath, JotunnBuildTask.ValheimServerData, JotunnBuildTask.Managed);
-                string corlibFolder = Path.Combine(ValheimPath, JotunnBuildTask.UnstrippedCorlib);
 
                 if (Directory.Exists(managedFolder))
                 {
@@ -42,11 +41,6 @@ namespace JotunnBuildTask
                 if (Directory.Exists(serverManagedFolder))
                 {
                     assemblyResolver.AddSearchDirectory(serverManagedFolder);
-                }
-
-                if (Directory.Exists(corlibFolder))
-                {
-                    assemblyResolver.AddSearchDirectory(corlibFolder);
                 }
             }
             catch (Exception exception)
@@ -60,31 +54,37 @@ namespace JotunnBuildTask
 
             var methods = types.SelectMany(x => x.Methods).Where(x => x.IsPublic == false);
             var fields = types.SelectMany(x => x.Fields).Where(x => x.IsPublic == false);
+            var events = types.SelectMany(x => x.Events);
 
             foreach (var type in types)
             {
-                if (!type.IsPublic && !type.IsNestedPublic)
+                if (type.IsNested)
                 {
-                    if (type.IsNested)
-                    {
-                        type.IsNestedPublic = true;
-                    }
-                    else
-                    {
-                        type.IsPublic = true;
-                    }
+                    type.IsNestedPublic = true;
+                }
+                else
+                {
+                    type.IsPublic = true;
                 }
             }
-
 
             foreach (var method in methods)
             {
                 method.IsPublic = true;
             }
 
+            List<string> eventNames = new List<string>();
+            foreach (var ev in events)
+            {
+                eventNames.Add(ev.Name);
+            }
+
             foreach (var field in fields)
             {
-                field.IsPublic = true;
+                if (!eventNames.Contains(field.Name))
+                {
+                    field.IsPublic = true;
+                }
             }
 
             var outputFilename = Path.Combine(publicizedFolder, $"{Path.GetFileNameWithoutExtension(input)}_{JotunnBuildTask.Publicized}{Path.GetExtension(input)}");
