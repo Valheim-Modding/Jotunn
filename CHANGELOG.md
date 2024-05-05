@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.19.4
+- Fixed errors when running together with Krumpac's Reforged (thx probablykory)
+- Fixed prebuild publicizer could create ambiguous events
+- Fixed prebuild publicizer to include an assembly hash to detect if it has changed
+- Changed references to be copied to the output when compiling a mod
+
 ## Version 2.19.3
 * Fixed piece categories to dynamically find the vanilla category count
 * Fixed clear area of locations was not applied since changes in Valheim 0.217.43
