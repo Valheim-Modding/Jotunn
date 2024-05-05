@@ -61,7 +61,6 @@
     <None Remove="Unity\AssetBundles\minimapmanager" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="HarmonyX" Version="2.9.0" />
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="5.10.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -110,20 +109,17 @@
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>bin\Release\$(TargetFramework)\Jotunn.xml</DocumentationFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\JotunnBuildTask.dll" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.Mdb.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.Pdb.dll" Pack="true" PackagePath="build" />
-    <Content Include="$(SolutionDir)JotunnBuildTask\bin\$(ConfigurationName)\net462\Mono.Cecil.Rocks.dll" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsCorlib.props" Pack="true" PackagePath="build" />
     <Content Include="$(SolutionDir)JotunnLib\BuildProps\Paths.props" Pack="true" PackagePath="build" />
     <Content Include="$(TargetDir)Jotunn.pdb" Pack="true" PackagePath="lib/$(TargetFramework)" />
     <Content Include="$(SolutionDir)resources\JVL_Logo_128x128.png" Pack="true" PackagePath="images" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <EmbeddedResource Include="Unity\AssetBundles\colorpicker" />
     <EmbeddedResource Include="Unity\AssetBundles\jotunn" />
