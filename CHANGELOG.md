@@ -1,10 +1,11 @@
 # Changelog
 
 ## Version 2.19.4
-- Fixed errors when running together with Krumpac's Reforged (thx probablykory)
+- Fixed errors when loading prefabs when running with Krumpac's Reforged (thx probablykory)
 - Fixed prebuild publicizer could create ambiguous events
 - Fixed prebuild publicizer to include an assembly hash to detect if it has changed
-- Changed references to be copied to the output when compiling a mod
+- Changed references to be copied to the build output folder when compiling a mod that uses JotunnLib.props
+- Simplified vanilla category count lookup
 
 ## Version 2.19.3
 * Fixed piece categories to dynamically find the vanilla category count
