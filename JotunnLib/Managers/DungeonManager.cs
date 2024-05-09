@@ -79,7 +79,7 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(DungeonDB), nameof(DungeonDB.Start)), HarmonyPostfix]
             private static void OnDungeonDBStarted() => Instance.OnDungeonDBStarted();
 
-            [HarmonyPatch(typeof(DungeonDB), nameof(DungeonDB.GetRoom)), HarmonyPostfix]
+            [HarmonyPatch(typeof(DungeonDB), nameof(DungeonDB.GetRoom)), HarmonyPrefix]
             private static bool OnDungeonDBGetRoom(int hash, ref DungeonDB.RoomData __result)
             {
                 DungeonDB.RoomData result = Instance.OnDungeonDBGetRoom(hash);
