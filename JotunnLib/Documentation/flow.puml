@@ -1,4 +1,4 @@
-﻿@startuml
+@startuml
 '' flow
 !pragma teoz true
 hide footbox
