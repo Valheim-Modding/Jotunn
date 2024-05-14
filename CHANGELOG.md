@@ -1,7 +1,7 @@
 # Changelog
 
 ## Version 2.20.0
-* Fixed for Valheim 0.218.15, older Valheim versions may not work properly
+* Fixed for Valheim 0.218.15 (Ashlands), older Valheim versions may not work properly
 * Added HeavyBuild to PieceCategories
 * Fixed internal renaming of the Building piece category
 * Fixed positioning and size of hammer categories
