@@ -893,10 +893,8 @@ namespace Jotunn.Managers
                 {
                     RectTransform rect = tab.GetComponent<RectTransform>();
                     float x = tabSize.x * (tabIndex % maxHorizontalTabs);
-                    float y = -(tabSize.y + verticalSpacing) * Mathf.Floor((float)tabIndex / maxHorizontalTabs);
+                    float y = -(tabSize.y + verticalSpacing) * (Mathf.Floor((float)tabIndex / maxHorizontalTabs) + 0.5f);
                     rect.anchoredPosition = tabAnchor + new Vector2(x, y);
-                    rect.anchorMin = new Vector2(0.5f, 0f);
-                    rect.anchorMax = new Vector2(0.5f, 1f);
                     tabIndex++;
                 }
 
