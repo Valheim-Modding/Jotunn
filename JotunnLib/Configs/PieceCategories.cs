@@ -22,7 +22,12 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Piece 'Building' category
         /// </summary>
-        public static string Building => "Building";
+        public static string Building => "BuildingWorkbench";
+
+        /// <summary>
+        ///     Piece 'HeavyBuild' category
+        /// </summary>
+        public static string HeavyBuild => "BuildingStonecutter";
 
         /// <summary>
         ///     Piece 'Furniture' category
@@ -86,6 +91,7 @@ namespace Jotunn.Configs
             { nameof(Misc), Misc },
             { nameof(Crafting), Crafting },
             { nameof(Building), Building },
+            { nameof(HeavyBuild), HeavyBuild },
             { nameof(Furniture), Furniture },
             { nameof(All), All },
         };
