@@ -318,9 +318,16 @@ namespace Jotunn.Managers
                 var isArray = member.MemberType.IsArray;
                 var isList = member.MemberType.IsGenericType && member.MemberType.GetGenericTypeDefinition() == typeof(List<>);
                 var isHashSet = member.MemberType.IsGenericType && member.MemberType.GetGenericTypeDefinition() == typeof(HashSet<>);
+                var isDictionary = member.MemberType.IsGenericType && member.MemberType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
 
                 if (!(isArray || isList || isHashSet))
                 {
+                    if (isDictionary && member.EnumeratedType == typeof(ParticleSystem))
+                    {
+                        // suppress DynamicParticleReduction.originalCollisionStates and Character.m_lavaHeatParticles
+                        return;
+                    }
+
                     Logger.LogWarning($"Not fixing potential mock references for field {member.MemberType.Name} : {member.MemberType} is not supported.");
                     return;
                 }
