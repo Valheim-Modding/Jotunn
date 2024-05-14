@@ -22,7 +22,7 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Piece 'Building' category
         /// </summary>
-        public static string Building => "Building";
+        public static string Building => "BuildingWorkbench";
 
         /// <summary>
         ///     Piece 'Furniture' category
