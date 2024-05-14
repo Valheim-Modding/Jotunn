@@ -264,10 +264,10 @@ namespace Jotunn.Managers
 
                     RemoveCreature(creature);
                 }
-
-                // Invoke event that prefabs have been registered
-                InvokeOnCreaturesRegistered();
             }
+
+            // Invoke event that prefabs have been registered
+            InvokeOnCreaturesRegistered();
         }
 
         /// <summary>
