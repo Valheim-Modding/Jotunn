@@ -63,8 +63,8 @@ namespace JotunnDoc.Docs
                 var keys = new List<string>(Localization.instance.m_translations.Keys);
                 keys.Sort();
 
-                var keysAM = keys.Where(key => key.Length >= 1 && key[0] < 'm');
-                var keysMZ = keys.Where(key => key.Length >= 1 && key[0] >= 'm');
+                var keysAM = keys.Where(key => key.Length >= 1 && key.ToLower()[0] < 'm');
+                var keysMZ = keys.Where(key => key.Length >= 1 && key.ToLower()[0] >= 'm');
 
                 AddTableHeader("Key A-M", $"{languageKey} Text");
 
