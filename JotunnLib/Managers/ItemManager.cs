@@ -63,7 +63,7 @@ namespace Jotunn.Managers
         public static event Action OnItemsRegistered;
 
         // Internal lists of all custom entities added
-        internal readonly HashSet<CustomItem> Items = new HashSet<CustomItem>();
+        internal readonly Dictionary<string, CustomItem> Items = new Dictionary<string, CustomItem>();
         internal readonly HashSet<CustomRecipe> Recipes = new HashSet<CustomRecipe>();
         internal readonly HashSet<CustomStatusEffect> StatusEffects = new HashSet<CustomStatusEffect>();
         internal readonly HashSet<CustomItemConversion> ItemConversions = new HashSet<CustomItemConversion>();
@@ -111,7 +111,7 @@ namespace Jotunn.Managers
                 Logger.LogWarning(customItem.SourceMod, $"Custom item {customItem} is not valid");
                 return false;
             }
-            if (Items.Contains(customItem))
+            if (Items.ContainsKey(customItem.ItemPrefab.name))
             {
                 Logger.LogWarning(customItem.SourceMod, $"Custom item {customItem} already added");
                 return false;
@@ -130,7 +130,7 @@ namespace Jotunn.Managers
             }
 
             // Add custom item to ItemManager
-            Items.Add(customItem);
+            Items.Add(customItem.ItemPrefab.name, customItem);
 
             // Add custom recipe if provided
             if (customItem.Recipe != null)
@@ -153,7 +153,12 @@ namespace Jotunn.Managers
         /// <returns></returns>
         public CustomItem GetItem(string itemName)
         {
-            return Items.FirstOrDefault(x => x.ItemPrefab.name.Equals(itemName));
+            if (Items.TryGetValue(itemName, out CustomItem item))
+            {
+                return item;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -178,7 +183,7 @@ namespace Jotunn.Managers
         /// <param name="item"><see cref="CustomItem"/> to remove.</param>
         public void RemoveItem(CustomItem item)
         {
-            Items.Remove(item);
+            Items.Remove(item.ItemPrefab.name);
 
             if (ObjectDB.instance && item.ItemPrefab)
             {
@@ -381,7 +386,7 @@ namespace Jotunn.Managers
 
                 List<CustomItem> toDelete = new List<CustomItem>();
 
-                foreach (var customItem in Items)
+                foreach (var customItem in Items.Values)
                 {
                     try
                     {

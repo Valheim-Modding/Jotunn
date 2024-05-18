@@ -204,15 +204,7 @@ namespace Jotunn.Entities
         /// <returns>true if the prefab is added as a custom item to the <see cref="ItemManager"/>.</returns>
         public static bool IsCustomItem(string prefabName)
         {
-            foreach (var customItem in ItemManager.Instance.Items)
-            {
-                if (customItem.ItemPrefab.name == prefabName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return ItemManager.Instance.Items.ContainsKey(prefabName);
         }
 
         /// <inheritdoc/>

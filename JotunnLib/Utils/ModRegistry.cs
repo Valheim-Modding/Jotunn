@@ -41,7 +41,7 @@ namespace Jotunn.Utils
         ///     Get all added <see cref="CustomItem">CustomItems</see>
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="CustomItem"/> from all loaded mods</returns>
-        public static IEnumerable<CustomItem> GetItems() => ItemManager.Instance.Items;
+        public static IEnumerable<CustomItem> GetItems() => ItemManager.Instance.Items.Values;
 
         /// <summary>
         ///     Get all added <see cref="CustomItem">CustomItems</see> of a mod by GUID
