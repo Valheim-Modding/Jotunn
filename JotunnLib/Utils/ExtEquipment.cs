@@ -26,7 +26,10 @@ namespace Jotunn.Utils
         [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.Awake)), HarmonyPostfix]
         private static void VisEquipment_Awake(VisEquipment __instance)
         {
-            __instance.gameObject.AddComponent<ExtEquipment>();
+            if (!__instance.gameObject.TryGetComponent(out ExtEquipment _))
+            {
+                __instance.gameObject.AddComponent<ExtEquipment>();
+            }
         }
 
         /// <summary>
