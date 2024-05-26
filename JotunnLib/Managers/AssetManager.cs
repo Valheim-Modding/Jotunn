@@ -155,8 +155,6 @@ namespace Jotunn.Managers
             assetBundleLoader.m_assetLoaders = assetBundleLoader.m_assetLoaders.AddItem(loader).ToArray();
 
             Instance.MapNameToAssetID[assetRef.asset.GetType()][assetRef.asset.name] = assetID;
-
-            Logger.LogDebug($"Added prefab '{assetRef.asset.name}' with ID {assetID} to AssetBundleLoader");
         }
 
         /// <summary>
