@@ -110,8 +110,8 @@ namespace JotunnBuildTask
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Error occured on {assembly}");
-                            Console.WriteLine(ex.Message);
+                            System.Console.WriteLine($"Error occured on {assembly}");
+                            System.Console.WriteLine(ex.Message);
                             return false;
                         }
                     }
@@ -121,7 +121,7 @@ namespace JotunnBuildTask
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                System.Console.WriteLine(e.Message);
                 return false;
             }
         }

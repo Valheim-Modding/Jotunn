@@ -17,7 +17,7 @@ namespace JotunnBuildTask
         {
             if (!File.Exists(input))
             {
-                Console.WriteLine($"File {input} not found.");
+                System.Console.WriteLine($"File {input} not found.");
                 return false;
             }
 
@@ -25,7 +25,7 @@ namespace JotunnBuildTask
 
             try
             {
-                Console.WriteLine($"Publicizing {input}.");
+                System.Console.WriteLine($"Publicizing {input}.");
 
                 assemblyDefinition = AssemblyDefinition.ReadAssembly(input);
                 BaseAssemblyResolver assemblyResolver = (BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver;
@@ -45,7 +45,7 @@ namespace JotunnBuildTask
             }
             catch (Exception exception)
             {
-                Console.WriteLine($"{exception.Message}");
+                System.Console.WriteLine($"{exception.Message}");
                 return false;
             }
 
@@ -100,8 +100,8 @@ namespace JotunnBuildTask
             }
             catch (Exception exception)
             {
-                Console.WriteLine($"Could not write file {outputFilename}.");
-                Console.WriteLine(exception.Message);
+                System.Console.WriteLine($"Could not write file {outputFilename}.");
+                System.Console.WriteLine(exception.Message);
                 return false;
             }
 
