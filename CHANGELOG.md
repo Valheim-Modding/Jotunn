@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.20.1
+* Fixed an error when cloning an item with an existing ExtEquipment
+* Changed prebuild to reference Mono.Cecil from the BepInEx folder to avoid version conflicts
+* Changed internal ItemManager.Items to be a dictionary
+* Removed unnecessary debug logging from AssetManager
+
 ## Version 2.20.0
 * Fixed for Valheim 0.218.15 (Ashlands), older Valheim versions may not work properly
 * Added HeavyBuild to PieceCategories
