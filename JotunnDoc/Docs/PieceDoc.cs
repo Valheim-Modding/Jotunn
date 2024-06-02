@@ -36,7 +36,7 @@ namespace JotunnDoc.Docs
             foreach (var pair in pieceTables)
             {
                 AddHeader(2, pair.Key);
-                AddTableHeader("Piece", "Token", "Name", "Description", "Resources required");
+                AddTableHeader("Piece", "AssetID", "Token", "English Name", "Description", "Resources required");
 
                 foreach (GameObject obj in pair.Value.m_pieces.Where(x => PieceManager.Instance.GetPiece(x.name) == null))
                 {
@@ -60,6 +60,7 @@ namespace JotunnDoc.Docs
 
                     AddTableRow(
                         GetNameBox(obj.name, hasSprite),
+                        AssetManager.Instance.GetAssetID<GameObject>(obj.name).ToString(),
                         piece.m_name,
                         JotunnDoc.Localize(piece.m_name),
                         JotunnDoc.Localize(piece.m_description),
