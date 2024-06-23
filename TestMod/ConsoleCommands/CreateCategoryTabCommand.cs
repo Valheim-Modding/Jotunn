@@ -13,17 +13,12 @@ namespace TestMod.ConsoleCommands
 
         public override void Run(string[] args)
         {
-            if (args.Length < 2)
+            if (args.Length < 1)
             {
                 return;
             }
 
-            PieceManager.Instance.AddPieceCategory(args[0], args[1]);
-        }
-        
-        public override List<string> CommandOptionList()
-        {
-            return PieceManager.Instance.GetPieceTables().Select(x => x.name).ToList();
+            PieceManager.Instance.AddPieceCategory(args[0]);
         }
     }
 }

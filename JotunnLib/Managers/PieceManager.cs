@@ -193,7 +193,7 @@ namespace Jotunn.Managers
             // Create all custom categories on that table
             foreach (var category in customPieceTable.Categories)
             {
-                AddPieceCategory(customPieceTable.ToString(), category);
+                AddPieceCategory(category);
             }
 
             // Add the custom table to the PieceManager
@@ -266,12 +266,25 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Add a new <see cref="Piece.PieceCategory"/> by name. A new category
         ///     gets assigned a random integer for internal use. If you pass a vanilla category
-        ///     the actual integer value of the enum is returned. 
+        ///     the actual integer value of the enum is returned.
         /// </summary>
         /// <param name="table">Prefab or item name of the PieceTable.</param>
         /// <param name="name">Name of the category.</param>
         /// <returns>int value of the vanilla or custom category</returns>
+        [Obsolete("Use AddPieceCategory(string name) instead")]
         public Piece.PieceCategory AddPieceCategory(string table, string name)
+        {
+            return AddPieceCategory(name);
+        }
+
+        /// <summary>
+        ///     Add a new <see cref="Piece.PieceCategory"/> by name. A new category
+        ///     gets assigned a random integer for internal use. If you pass a vanilla category
+        ///     the actual integer value of the enum is returned.
+        /// </summary>
+        /// <param name="name">Name of the category.</param>
+        /// <returns>int value of the vanilla or custom category</returns>
+        public Piece.PieceCategory AddPieceCategory(string name)
         {
             Piece.PieceCategory categoryID = GetOrCreatePieceCategory(name, out bool isNew);
 
@@ -319,7 +332,19 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="table">Prefab or item name of the PieceTable.</param>
         /// <param name="name">Name of the category.</param>
+        [Obsolete("Use RemovePieceCategory(string name) instead")]
         public void RemovePieceCategory(string table, string name)
+        {
+            RemovePieceCategory(name);
+        }
+
+        /// <summary>
+        ///     Remove a <see cref="Piece.PieceCategory"/> from a table by name.
+        ///     This does noting if a piece is still assigned to the category, remove it before calling this.
+        /// </summary>
+        /// <param name="table">Prefab or item name of the PieceTable.</param>
+        /// <param name="name">Name of the category.</param>
+        public void RemovePieceCategory(string name)
         {
             categoryRefreshNeeded = true;
         }
@@ -574,7 +599,7 @@ namespace Jotunn.Managers
 
             if (!string.IsNullOrEmpty(category))
             {
-                piece.m_category = AddPieceCategory(pieceTable, category);
+                piece.m_category = AddPieceCategory(category);
             }
 
             table.m_pieces.Add(prefab);

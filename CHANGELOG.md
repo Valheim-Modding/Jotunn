@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.21.0
+* Added PieceManager.AddPieceCategory(string name) and PieceManager.RemovePieceCategory(string name)
+* Deprecated PieceManager.AddPieceCategory(string table, string name) and PieceManager.RemovePieceCategory(string table, string name), use the new overloads without the table parameter
+
 ## Version 2.20.1
 * Fixed an error when cloning an item with an existing ExtEquipment
 * Changed prebuild to reference Mono.Cecil from the BepInEx folder to avoid version conflicts
