@@ -35,11 +35,28 @@ After ripping the project you can open this as a reference on the vanilla prefab
 
 ### Mod Stub Project
 
-Jötunn provides you with a barebone project stub which also includes a Unity project. You can get [that project in its entirety](https://github.com/Valheim-Modding/JotunnModStub) from our github. If you don't have already setup your dev environment, see our [step-by-step guide](../guides/guide.md) on how to do that.
+Jötunn provides you with a barebone project stub that also includes a Unity project.
+You can get [this project in its entirety](https://github.com/Valheim-Modding/JotunnModStub) from our github.
+If you haven't already setup your dev environment, see our [step-by-step guide](../guides/guide.md) on how to do this.
 
-Before opening the Unity project, copy all files starting with `assembly_` and `ConnectedStorage.dll`, `PlayFab.dll`, `PlayFabParty.dll` from your ripped Valheim project at `<RippedValheimProject>\AuxiliaryFiles\GameAssemblies` into your stub project's `<JotunnModStub>\JotunnModUnity\Assets\Assemblies` folder (create that if necessary). This enables us to exchange prefabs between the two projects without losing the references to the added Components. 
+Before opening the Unity project, copy the following files (especially the .meta files) from your ripped Valheim project at `<RippedValheimProject>\Assets\Plugins` folder into your stub project's `<JotunnModStub>\JotunnModUnity\Assets\Assemblies` folder (create that if necessary).\
+If you are using the ModStub, you can compile the C# project instead, which will copy the necessary files for you.
+See the [CopyToUnity Task](https://github.com/Valheim-Modding/JotunnModStub/blob/d8d48e6337bf842d57f0728d277c28543d016514/JotunnModStub/JotunnModStub.csproj#L83-L108)
 
- **Copy the files to the new project directly via the filesystem - don't import the assemblies via Unity**.
+- all assembly_*.dll files
+- PlayFab.dll
+- PlayFabParty.dll
+- PlatformTools.Core.dll
+- PlatformTools.Common.dll
+- ConnectedStorage.dll
+- gui_framework.dll
+- com.rlabrecque.steamworks.net.dll
+- SoftReferenceableAssets.dll
+
+This allows us to exchange prefabs between the two projects without losing the references to the added components.\
+You can also copy the dll files from your game folder `<ValheimInstall>/valheim_Data/Managed` and recover the missing references using e.g. the NG Missing Script Recovery tool.
+
+**Copy the files directly to the new project via the file system - don't import the assemblies via Unity**.
 
 After you copied the files, open UnityHub, add the JotunnModUnity project and open it.
 
