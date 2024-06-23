@@ -143,7 +143,7 @@ namespace Jotunn.Configs
 
             if (!string.IsNullOrEmpty(Category))
             {
-                piece.m_category = PieceManager.Instance.AddPieceCategory(PieceTable, Category);
+                piece.m_category = PieceManager.Instance.AddPieceCategory(Category);
             }
         }
 
