@@ -342,7 +342,6 @@ namespace Jotunn.Managers
         ///     Remove a <see cref="Piece.PieceCategory"/> from a table by name.
         ///     This does noting if a piece is still assigned to the category, remove it before calling this.
         /// </summary>
-        /// <param name="table">Prefab or item name of the PieceTable.</param>
         /// <param name="name">Name of the category.</param>
         public void RemovePieceCategory(string name)
         {
