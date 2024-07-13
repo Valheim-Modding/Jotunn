@@ -370,30 +370,21 @@ namespace Jotunn.Managers
             {
                 try
                 {
-                    SpriteAtlas[] atlas = Resources.FindObjectsOfTypeAll<SpriteAtlas>();
+                    UIAtlas = PrefabManager.Cache.GetPrefab<SpriteAtlas>("UIAtlas");
+                    IconAtlas = PrefabManager.Cache.GetPrefab<SpriteAtlas>("IconAtlas");
 
-                    UIAtlas = atlas.FirstOrDefault(x => x.name.Equals("UIAtlas"));
-                    if (UIAtlas == null)
-                    {
-                        throw new Exception("UIAtlas not found");
-                    }
+                    AssertMissingAsset(UIAtlas, nameof(UIAtlas), nameof(SpriteAtlas));
+                    AssertMissingAsset(IconAtlas, nameof(IconAtlas), nameof(SpriteAtlas));
 
-                    IconAtlas = atlas.FirstOrDefault(x => x.name.Equals("IconAtlas"));
-                    if (IconAtlas == null)
-                    {
-                        throw new Exception("IconAtlas not found");
-                    }
+                    AveriaSerif = PrefabManager.Cache.GetPrefab<Font>("AveriaSerifLibre-Regular");
+                    AveriaSerifBold = PrefabManager.Cache.GetPrefab<Font>("AveriaSerifLibre-Bold");
+                    Norse = PrefabManager.Cache.GetPrefab<Font>("Norse");
+                    NorseBold = PrefabManager.Cache.GetPrefab<Font>("Norsebold");
 
-                    // Fonts
-                    Font[] fonts = Resources.FindObjectsOfTypeAll<Font>();
-                    AveriaSerif = fonts.FirstOrDefault(x => x.name == "AveriaSerifLibre-Regular");
-                    AveriaSerifBold = fonts.FirstOrDefault(x => x.name == "AveriaSerifLibre-Bold");
-                    Norse = fonts.FirstOrDefault(x => x.name == "Norse");
-                    NorseBold = fonts.FirstOrDefault(x => x.name == "Norsebold");
-                    if (AveriaSerifBold == null || AveriaSerif == null || Norse == null || NorseBold == null)
-                    {
-                        throw new Exception("Fonts not found");
-                    }
+                    AssertMissingAsset(AveriaSerif, nameof(AveriaSerif), nameof(Font));
+                    AssertMissingAsset(AveriaSerifBold, nameof(AveriaSerifBold), nameof(Font));
+                    AssertMissingAsset(Norse, nameof(Norse), nameof(Font));
+                    AssertMissingAsset(NorseBold, nameof(NorseBold), nameof(Font));
 
                     // DefaultControls.Resources pack
                     AssetBundle jotunnBundle = AssetUtils.LoadAssetBundleFromResources("jotunn", typeof(Main).Assembly);
@@ -477,6 +468,14 @@ namespace Jotunn.Managers
                 {
                     hasInitializedAssets = true;
                 }
+            }
+        }
+
+        private void AssertMissingAsset(Object asset, string name, string type)
+        {
+            if (!asset)
+            {
+                Logger.LogWarning($"{name} ({type}) not found");
             }
         }
 
