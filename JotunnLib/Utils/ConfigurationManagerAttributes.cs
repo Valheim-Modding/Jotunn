@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using Jotunn.Managers;
 using UnityEngine;
 
 /// <summary>
@@ -124,7 +125,7 @@ public sealed class ConfigurationManagerAttributes
         set
         {
             isAdminOnly = value;
-            IsUnlocked = !value;
+            IsUnlocked = SynchronizationManager.Instance.PlayerIsAdmin;
         }
     }
 
