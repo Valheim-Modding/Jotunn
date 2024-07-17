@@ -215,25 +215,6 @@ namespace Jotunn.Managers
             loadedEnvironments.Add(prefabName, env);
         }
 
-        /// <summary>
-        ///     Adds a new prefab to be registered when <see cref="ZoneSystem.SetupLocations"/> runs.<br />
-        ///     If you intend to use a custom door, this method enables you provide that prefab here.
-        /// </summary>
-        /// <param name="assetBundle">The <see cref="AssetBundle"/> containing the prefab.</param>
-        /// <param name="prefabName">The name of the prefab to register.</param>
-        public void RegisterPrefab(AssetBundle assetBundle, string prefabName)
-        {
-            if (assetBundle == null)
-            {
-                throw new ArgumentException("Cannot be null", nameof(assetBundle));
-            }
-            if (string.IsNullOrEmpty(prefabName))
-            {
-                throw new ArgumentException("Cannot be null or empty", nameof(prefabName));
-            }
-            prefabNames.Add(prefabName, assetBundle);
-        }
-
         private void GenerateHashes()
         {
             hashToName.Clear();
