@@ -5,10 +5,19 @@ using HarmonyLib;
 
 namespace Jotunn.Utils
 {
-    internal static class GameVersions
+    /// <summary>
+    ///     Utility class for getting game versions
+    /// </summary>
+    public static class GameVersions
     {
+        /// <summary>
+        ///     The semantic version of the running Valheim game
+        /// </summary>
         public static System.Version ValheimVersion { get; } = GetValheimVersion();
 
+        /// <summary>
+        ///     The network version of the running Valheim game, determining compatibility with other clients
+        /// </summary>
         public static uint NetworkVersion { get; } = GetNetworkVersion();
 
         private static System.Version GetValheimVersion()
