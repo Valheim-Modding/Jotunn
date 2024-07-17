@@ -65,11 +65,6 @@ namespace Jotunn.Configs
         public bool? Perimeter { get; set; }
 
         /// <summary>
-        ///     Background music to play when a player gets in range of this room.
-        /// </summary>
-        public MusicVolume MusicPrefab { get; set; }
-
-        /// <summary>
         ///     Create a config with a <see cref="Room.Theme"/>.
         /// </summary>
         /// <param name="theme"></param>
