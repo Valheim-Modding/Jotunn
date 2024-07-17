@@ -29,6 +29,8 @@ namespace Jotunn.Managers
         ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
         public static event Action OnVanillaRoomsAvailable;
+        
+        public static event Action OnRoomsRegistered;
 
         /// <summary>
         ///     Internal dictionary of all custom rooms
@@ -363,6 +365,7 @@ namespace Jotunn.Managers
         private void InvokeOnVanillaRoomsAvailable()
         {
             OnVanillaRoomsAvailable?.SafeInvoke();
+            OnRoomsRegistered?.SafeInvoke();
         }
 
         private void RegisterRoomInDungeonDB(CustomRoom room)
