@@ -28,7 +28,6 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, ConfigFile> CustomConfigs = new Dictionary<string, ConfigFile>();
         private List<Tuple<string, string, string, string>> CachedConfigValues = new List<Tuple<string, string, string, string>>();
         private readonly Dictionary<string, string> CachedCustomConfigGUIDs = new Dictionary<string, string>();
-        private BaseUnityPlugin ConfigurationManager;
         private bool ConfigurationManagerWindowShown;
 
         /// <summary>
@@ -89,20 +88,15 @@ namespace Jotunn.Managers
             // Hook start scene to reset config
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
 
-            // Find Configuration manager plugin and add to DisplayingWindowChanged event
-            const string configManagerGuid = "com.bepis.bepinex.configurationmanager";
-            if (Chainloader.PluginInfos.TryGetValue(configManagerGuid, out var configManagerInfo) && configManagerInfo.Instance)
+            if (ConfigManagerUtils.Plugin)
             {
-                ConfigurationManager = configManagerInfo.Instance;
-
-                Logger.LogDebug("Configuration manager found, trying to hook DisplayingWindowChanged");
-                var eventinfo = ConfigurationManager.GetType().GetEvent("DisplayingWindowChanged");
+                var eventinfo = ConfigManagerUtils.Plugin.GetType().GetEvent("DisplayingWindowChanged");
                 if (eventinfo != null)
                 {
                     Action<object, object> local = ConfigurationManager_DisplayingWindowChanged;
                     var converted = Delegate.CreateDelegate(eventinfo.EventHandlerType, local.Target, local.Method);
 
-                    eventinfo.AddEventHandler(ConfigurationManager, converted);
+                    eventinfo.AddEventHandler(ConfigManagerUtils.Plugin, converted);
                 }
             }
 
@@ -573,9 +567,7 @@ namespace Jotunn.Managers
         /// <param name="e"></param>
         private void ConfigurationManager_DisplayingWindowChanged(object sender, object e)
         {
-            // Read configuration manager's DisplayingWindow property
-            var pi = ConfigurationManager.GetType().GetProperty("DisplayingWindow");
-            ConfigurationManagerWindowShown = (bool)pi.GetValue(ConfigurationManager, null);
+            ConfigurationManagerWindowShown = ConfigManagerUtils.DisplayingWindow;
 
             if (!ConfigurationManagerWindowShown)
             {

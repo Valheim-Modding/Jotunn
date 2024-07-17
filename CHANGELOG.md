@@ -1,6 +1,7 @@
 # Changelog
 
 ## Version 2.21.0
+* Added ConfigManagerUtils for soft access to common ConfigurationManager functionality
 * Added PieceManager.AddPieceCategory(string name) and PieceManager.RemovePieceCategory(string name)
 * Deprecated PieceManager.AddPieceCategory(string table, string name) and PieceManager.RemovePieceCategory(string table, string name), use the new overloads without the table parameter
 * Changed GUIManager asset loading to use the prefab cache and not hard crash on missing assets
