@@ -38,7 +38,7 @@ namespace Jotunn.Managers
         private readonly Dictionary<int, string> hashToName = new Dictionary<int, string>();
         private readonly List<string> themeList = new List<string>();
         private readonly Dictionary<string, AssetBundle> prefabNames = new Dictionary<string, AssetBundle>();
-        private readonly Dictionary<string, AssetBundle> envNames = new Dictionary<string, AssetBundle>();
+        private readonly Dictionary<string, GameObject> loadedEnvironments = new Dictionary<string, GameObject>();
 
         /// <summary>
         ///     Container for Jötunn's DungeonRooms in the DontDestroyOnLoad scene.
@@ -209,7 +209,8 @@ namespace Jotunn.Managers
             {
                 throw new ArgumentException("Cannot be null or empty", nameof(prefabName));
             }
-            envNames.Add(prefabName, assetBundle);
+            var env = assetBundle.LoadAsset<GameObject>(prefabName);
+            loadedEnvironments.Add(prefabName, env);
         }
 
         /// <summary>
@@ -254,15 +255,15 @@ namespace Jotunn.Managers
             // TODO - unsure if cache clearing is still necessary for resolving mocks of these assets
             //ClearPrefabCache(typeof(Material));
 
-            if (envNames.Count > 0)
+            if (loadedEnvironments.Count > 0)
             {
-                foreach (var kvp in envNames)
+                foreach (var kvp in loadedEnvironments)
                 {
                     Logger.LogDebug($"Registering environment {kvp.Key}.");
 
-                    var env = kvp.Value.LoadAsset<GameObject>(kvp.Key);
+                    var env = kvp.Value;
                     env.FixReferences(true);
-                    UnityEngine.Object.Instantiate<GameObject>(env);
+                    UnityEngine.Object.Instantiate<GameObject>(env, DungeonRoomContainer.transform);
                 }
             }
 
