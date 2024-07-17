@@ -18,7 +18,8 @@ namespace Jotunn.Utils
 
         private static uint GetNetworkVersion()
         {
-            return Version.m_networkVersion;
+            // use Reflection because Version.m_networkVersion is a constant field, i.e. evaluated at compile time
+            return (uint)AccessTools.Field(typeof(Version), nameof(Version.m_networkVersion)).GetValue(null);
         }
     }
 }
