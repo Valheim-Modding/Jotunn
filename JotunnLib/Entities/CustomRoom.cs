@@ -142,7 +142,6 @@ namespace Jotunn.Entities
             if (roomConfig.Weight != null) Room.m_weight = roomConfig.Weight.Value;
             if (roomConfig.FaceCenter != null) Room.m_faceCenter = roomConfig.FaceCenter.Value;
             if (roomConfig.Perimeter != null) Room.m_perimeter = roomConfig.Perimeter.Value;
-            if (roomConfig.MusicPrefab != null) Room.m_musicPrefab = roomConfig.MusicPrefab;
 
             // Room can be matched by either a Room.Theme flag, or a ThemeName string.
             if (roomConfig.Theme == 0)
