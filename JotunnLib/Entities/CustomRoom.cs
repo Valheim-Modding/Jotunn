@@ -64,6 +64,8 @@ namespace Jotunn.Entities
         {
             Prefab = assetBundle.LoadAsset<GameObject>(assetName);
             Name = Prefab.name;
+            Room = roomConfig.ApplyConfig(roomConfig);
+            
             if (Prefab != null && Prefab.TryGetComponent<Room>(out var room))
             {
                 Room = room;
@@ -73,7 +75,18 @@ namespace Jotunn.Entities
                 Room = Prefab.AddComponent<Room>();
             }
             FixReference = fixReference;
-            ApplyConfig(roomConfig);
+            
+            // DungeonGenerator.PlaceRoom*() utilize soft references directly, thus registering the assets here.
+            RoomData = new DungeonDB.RoomData()
+            {
+                m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(Prefab)),
+                m_loadedRoom = Room,
+                m_prefabData = new RoomPrefabData()
+                {
+                    m_enabled = Room.m_enabled,
+                    m_theme = Theme
+                }
+            };
         }
 
 
@@ -97,6 +110,8 @@ namespace Jotunn.Entities
         {
             Prefab = prefab;
             Name = prefab.name;
+            Room = roomConfig.ApplyConfig(roomConfig);
+            
             if (prefab != null && prefab.TryGetComponent<Room>(out var room))
             {
                 Room = room;
@@ -106,44 +121,7 @@ namespace Jotunn.Entities
                 Room = prefab.AddComponent<Room>();
             }
             FixReference = fixReference;
-            ApplyConfig(roomConfig);
-        }
-
-        /// <summary>
-        ///     Helper method to determine if a prefab with a given name is a custom room created with Jötunn.
-        /// </summary>
-        /// <param name="prefabName">Name of the prefab to test.</param>
-        /// <returns>true if the prefab is added as a custom item to the <see cref="DungeonManager"/>.</returns>
-        public static bool IsCustomRoom(string prefabName)
-        {
-            return DungeonManager.Instance.Rooms.ContainsKey(prefabName);
-        }
-
-        private void ApplyConfig(RoomConfig roomConfig)
-        {
-            // Ensure Room values are overwritten only when a value's present.
-            if (roomConfig.Enabled != null) Room.m_enabled = roomConfig.Enabled.Value;
-            if (roomConfig.Entrance != null) Room.m_entrance = roomConfig.Entrance.Value;
-            if (roomConfig.Endcap != null) Room.m_endCap = roomConfig.Endcap.Value;
-            if (roomConfig.Divider != null) Room.m_divider = roomConfig.Divider.Value;
-            if (roomConfig.EndcapPrio != null) Room.m_endCapPrio = roomConfig.EndcapPrio.Value;
-            if (roomConfig.MinPlaceOrder != null) Room.m_minPlaceOrder = roomConfig.MinPlaceOrder.Value;
-            if (roomConfig.Weight != null) Room.m_weight = roomConfig.Weight.Value;
-            if (roomConfig.FaceCenter != null) Room.m_faceCenter = roomConfig.FaceCenter.Value;
-            if (roomConfig.Perimeter != null) Room.m_perimeter = roomConfig.Perimeter.Value;
-
-            // Room can be matched by either a Room.Theme flag, or a ThemeName string.
-            if (roomConfig.Theme == 0)
-            {
-                ThemeName = roomConfig.ThemeName;
-                Theme = 0;
-            }
-            else
-            {
-                Theme = roomConfig.Theme;
-                ThemeName = string.Empty;
-            }
-
+            
             // DungeonGenerator.PlaceRoom*() utilize soft references directly, thus registering the assets here.
             RoomData = new DungeonDB.RoomData()
             {
@@ -155,6 +133,16 @@ namespace Jotunn.Entities
                     m_theme = Theme
                 }
             };
+        }
+
+        /// <summary>
+        ///     Helper method to determine if a prefab with a given name is a custom room created with Jötunn.
+        /// </summary>
+        /// <param name="prefabName">Name of the prefab to test.</param>
+        /// <returns>true if the prefab is added as a custom item to the <see cref="DungeonManager"/>.</returns>
+        public static bool IsCustomRoom(string prefabName)
+        {
+            return DungeonManager.Instance.Rooms.ContainsKey(prefabName);
         }
     }
 }

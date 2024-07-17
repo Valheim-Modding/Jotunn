@@ -11,12 +11,12 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Theme name of this room.
         /// </summary>
-        public string ThemeName { get; }
+        public string ThemeName { get; set; }
 
         /// <summary>
         ///     <see cref="Room.Theme"/> of this room.
         /// </summary>
-        public Room.Theme Theme { get; }
+        public Room.Theme Theme { get; set; }
 
         /// <summary>
         ///     If set to false, room will not be added to <see cref="DungeonGenerator.m_availableRooms"/>, thus
@@ -82,6 +82,41 @@ namespace Jotunn.Configs
         {
             Theme = 0;
             ThemeName = themeName;
+        }
+        
+        
+        /// <summary>
+        ///     Converts the RoomConfig to a Valheim style <see cref="Room"/>.
+        /// </summary>
+        public Room ApplyConfig(RoomConfig roomConfig)
+        {
+            // Create a new Room instance
+            Room room = new Room();
+            
+            // Ensure Room values are overwritten only when a value's present.
+            if (roomConfig.Enabled != null) room.m_enabled = roomConfig.Enabled.Value;
+            if (roomConfig.Entrance != null) room.m_entrance = roomConfig.Entrance.Value;
+            if (roomConfig.Endcap != null) room.m_endCap = roomConfig.Endcap.Value;
+            if (roomConfig.Divider != null) room.m_divider = roomConfig.Divider.Value;
+            if (roomConfig.EndcapPrio != null) room.m_endCapPrio = roomConfig.EndcapPrio.Value;
+            if (roomConfig.MinPlaceOrder != null) room.m_minPlaceOrder = roomConfig.MinPlaceOrder.Value;
+            if (roomConfig.Weight != null) room.m_weight = roomConfig.Weight.Value;
+            if (roomConfig.FaceCenter != null) room.m_faceCenter = roomConfig.FaceCenter.Value;
+            if (roomConfig.Perimeter != null) room.m_perimeter = roomConfig.Perimeter.Value;
+            
+            // Room can be matched by either a Room.Theme flag, or a ThemeName string.
+            if (roomConfig.Theme == 0)
+            {
+                ThemeName = roomConfig.ThemeName;
+                Theme = 0;
+            }
+            else
+            {
+                Theme = roomConfig.Theme;
+                ThemeName = string.Empty;
+            }
+
+            return room;
         }
     }
 }
