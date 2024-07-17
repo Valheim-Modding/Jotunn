@@ -19,6 +19,7 @@ box Jotunn
     participant ZoneManager
     participant GUIManager
     participant MinimapManager
+    participant SynchronizationManager
 end box
 
 group For each mod
@@ -83,6 +84,13 @@ Valheim -> Valheim++: Minimap.LoadMapData
     hnote over MinimapManager: OnVanillaMapDataLoaded
 deactivate Valheim
 
+group client (only if connecting to a server)
+Valheim -> Valheim++: ZRoutedRpc.HandleRoutedRPC
+    hnote over SynchronizationManager: OnAdminStatusChanged
+    hnote over SynchronizationManager: OnSyncingConfiguration
+    hnote over SynchronizationManager: OnConfigurationSynchronized
+deactivate Valheim
+end group
 
 note over Valheim #lightblue: Game interactable
 
