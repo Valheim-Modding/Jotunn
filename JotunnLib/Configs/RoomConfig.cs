@@ -3,7 +3,7 @@ using Jotunn.Entities;
 namespace Jotunn.Configs
 {
     /// <summary>
-    ///     Configuration class for adding custom clutter.<br />
+    ///     Configuration class for adding custom rooms.<br />
     ///     Use this in a constructor of <see cref="CustomRoom"/>
     /// </summary>
     public class RoomConfig
