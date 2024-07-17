@@ -52,17 +52,6 @@ namespace Jotunn.Entities
         /// </summary>
         public DungeonDB.RoomData RoomData { get; private set; }
 
-
-        /// <summary>
-        ///     Custom room from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="global::Room"/> made from a <see cref="RoomConfig"/>.<br />
-        ///     Can fix references for <see cref="Entities.Mock{T}"/>s.
-        /// </summary>
-        /// <param name="assetBundle">A preloaded <see cref="AssetBundle"/></param>
-        /// <param name="assetName">Name of the prefab in the bundle.</param>
-        /// <param name="roomConfig">The config for this custom room.</param>
-        public CustomRoom(AssetBundle assetBundle, string assetName, RoomConfig roomConfig)
-            : this(assetBundle, assetName, false, roomConfig) { }
-
         /// <summary>
         ///     Custom room from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="global::Room"/> made from a <see cref="RoomConfig"/>.<br />
         ///     Can fix references for <see cref="Entities.Mock{T}"/>s.
