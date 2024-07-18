@@ -30,6 +30,11 @@ namespace Jotunn.Managers
         /// </summary>
         public static event Action OnVanillaRoomsAvailable;
         
+        /// <summary>
+        ///     Event that gets fired when the vanilla <see cref="DungeonDB"/> registers rooms.  Your code will execute
+        ///     every time a main scene is started (on joining a game). <br />
+        ///     If you want to execute just once you will need to unregister from the event after execution.
+        /// </summary>
         public static event Action OnRoomsRegistered;
 
         /// <summary>
