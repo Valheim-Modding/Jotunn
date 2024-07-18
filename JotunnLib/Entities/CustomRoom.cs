@@ -40,17 +40,18 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Theme name of this room.
         /// </summary>
-        public string ThemeName { get; private set; }
-
-        /// <summary>
-        ///     <see cref="Room.Theme"/> of this room.
-        /// </summary>
-        public Room.Theme Theme { get; private set; }
+        public string ThemeName
+        {
+            get => themeName; 
+            set => themeName = CraftingStations.GetInternalName(value);
+        }
 
         /// <summary>
         ///     Associated <see cref="DungeonDB.RoomData"/> holding data used during generation.
         /// </summary>
         public DungeonDB.RoomData RoomData { get; private set; }
+        
+        private string themeName = string.Empty;
 
         /// <summary>
         ///     Custom room from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="global::Room"/> made from a <see cref="RoomConfig"/>.<br />
