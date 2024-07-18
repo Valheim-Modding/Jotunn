@@ -343,7 +343,6 @@ namespace Jotunn.Managers
         
         private void InvokeOnRoomsRegistered()
         {
-            OnVanillaRoomsAvailable?.SafeInvoke();
             OnRoomsRegistered?.SafeInvoke();
         }
 
