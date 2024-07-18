@@ -307,6 +307,7 @@ namespace Jotunn.Managers
 
                 DungeonDB.instance.GenerateHashList();
                 GenerateHashes();
+                InvokeOnRoomsRegistered();
             }
         }
 
@@ -344,6 +345,11 @@ namespace Jotunn.Managers
 
 
         private void InvokeOnVanillaRoomsAvailable()
+        {
+            OnVanillaRoomsAvailable?.SafeInvoke();
+        }
+        
+        private void InvokeOnRoomsRegistered()
         {
             OnVanillaRoomsAvailable?.SafeInvoke();
             OnRoomsRegistered?.SafeInvoke();
