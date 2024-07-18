@@ -102,11 +102,8 @@ namespace Jotunn.Entities
             {
                 m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(Prefab)),
                 m_loadedRoom = Room,
-                m_prefabData = new RoomPrefabData()
-                {
-                    m_enabled = Room.m_enabled,
-                    m_theme = Theme
-                }
+                m_enabled = Room.m_enabled,
+                m_theme = GetCustomRoomTheme(roomConfig.ThemeName)
             };
         }
 
@@ -148,11 +145,8 @@ namespace Jotunn.Entities
             {
                 m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(Prefab)),
                 m_loadedRoom = Room,
-                m_prefabData = new RoomPrefabData()
-                {
-                    m_enabled = Room.m_enabled,
-                    m_theme = Room.Theme
-                }
+                m_enabled = Room.m_enabled,
+                m_theme = GetCustomRoomTheme(roomConfig.ThemeName)
             };
         }
 
@@ -170,8 +164,21 @@ namespace Jotunn.Entities
         {
             if (Enum.TryParse(roomTheme, false, out Room.Theme theme))
             {
+                Logger.LogDebug($"Found vanilla Room Theme with name {roomTheme}");
                 return theme;
             }
+            Logger.LogError($"Failed to find vanilla Room Theme with name {roomTheme}");
+            return Room.Theme.None;
+        }
+        
+        public Room.Theme GetCustomRoomTheme(string roomTheme)
+        {
+            if (Enum.TryParse(roomTheme, false, out Room.Theme theme))
+            {
+                Logger.LogDebug($"Found custom Room Theme with name {roomTheme}");
+                return theme;
+            }
+            Logger.LogError($"Failed to find custom Room Theme with name {roomTheme}");
             return Room.Theme.None;
         }
         
