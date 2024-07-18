@@ -39,7 +39,6 @@ namespace Jotunn.Managers
 
         private readonly Dictionary<int, string> hashToName = new Dictionary<int, string>();
         private readonly List<string> themeList = new List<string>();
-        private readonly Dictionary<string, AssetBundle> prefabNames = new Dictionary<string, AssetBundle>();
         private readonly Dictionary<string, GameObject> loadedEnvironments = new Dictionary<string, GameObject>();
 
         /// <summary>
@@ -247,18 +246,6 @@ namespace Jotunn.Managers
                     var env = kvp.Value;
                     env.FixReferences(true);
                     UnityEngine.Object.Instantiate<GameObject>(env, DungeonRoomContainer.transform);
-                }
-            }
-
-            if (prefabNames.Count > 0)
-            {
-                foreach (var kvp in prefabNames)
-                {
-                    Logger.LogDebug($"Registering prefab {kvp.Key}.");
-
-                    var env = kvp.Value.LoadAsset<GameObject>(kvp.Key);
-                    env.FixReferences(true);
-                    PrefabManager.Instance.AddPrefab(env);
                 }
             }
         }
