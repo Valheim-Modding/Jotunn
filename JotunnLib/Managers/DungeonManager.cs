@@ -367,9 +367,8 @@ namespace Jotunn.Managers
 
         private DungeonDB.RoomData OnDungeonDBGetRoom(int hash)
         {
-            if (hashToName.TryGetValue(hash, out var roomName))
+            if (hashToName.TryGetValue(hash, out var roomName) && Rooms.TryGetValue(roomName, out var room))
             {
-                CustomRoom room = Rooms[roomName];
                 return room.RoomData;
             }
             return null;
