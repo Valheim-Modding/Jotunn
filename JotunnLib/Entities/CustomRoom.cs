@@ -182,9 +182,5 @@ namespace Jotunn.Entities
             return Room.Theme.None;
         }
         
-        private bool IsVanillaRoom(string roomTheme)
-        {
-            return roomTheme == "None" || _theme == Room.Theme.None;
-        }
     }
 }
