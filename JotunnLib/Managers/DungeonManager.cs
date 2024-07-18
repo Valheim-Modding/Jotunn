@@ -269,14 +269,14 @@ namespace Jotunn.Managers
                 {
                     try
                     {
-                        Logger.LogDebug(string.Format("Adding custom room {0} with {1} theme", customRoom.Name, customRoom.Theme == 0 ? customRoom.ThemeName : customRoom.Theme.ToString()));
+                        Logger.LogDebug(string.Format("Adding custom room {0} with {1} theme", customRoom.Name, customRoom.ThemeName));
                         if (customRoom.FixReference)
                         {
                             customRoom.Prefab.FixReferences(true);
                             customRoom.FixReference = false;
                         }
 
-                        if (customRoom.Theme != 0)
+                        if (customRoom.ThemeName != "None")
                         {
                             RegisterRoomInDungeonDB(customRoom);
                         }
@@ -321,10 +321,10 @@ namespace Jotunn.Managers
                 else
                 {
                     Logger.LogDebug($"Adding additional rooms of type {self.m_themes} to available rooms");
-
+                    
                     DungeonGenerator.m_availableRooms.AddRange(Rooms.Values
                         .Where(r => r.Room.m_enabled)
-                        .Where(r => self.m_themes.HasFlag(r.Theme))
+                        .Where(r => self.m_themes.HasFlag(r.GetVanillaRoomTheme(r.ThemeName)))
                         .Select(r => r.RoomData));
                 }
 

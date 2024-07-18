@@ -42,8 +42,27 @@ namespace Jotunn.Entities
         /// </summary>
         public string ThemeName
         {
-            get => themeName; 
-            set => themeName = CraftingStations.GetInternalName(value);
+            get => themeName;
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    themeName = Room.Theme.None.ToString();
+                    _theme = Room.Theme.None;
+                    return;
+                }
+                
+                if (Enum.TryParse<Room.Theme>(value, true, out var result))
+                {
+                    themeName = result.ToString();
+                    _theme = result;
+                }
+                else
+                {
+                    themeName = value;
+                    _theme = Room.Theme.None;
+                }
+            }
         }
 
         /// <summary>
@@ -52,6 +71,7 @@ namespace Jotunn.Entities
         public DungeonDB.RoomData RoomData { get; private set; }
         
         private string themeName = string.Empty;
+        private Room.Theme _theme = Room.Theme.None;
 
         /// <summary>
         ///     Custom room from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="global::Room"/> made from a <see cref="RoomConfig"/>.<br />
@@ -131,7 +151,7 @@ namespace Jotunn.Entities
                 m_prefabData = new RoomPrefabData()
                 {
                     m_enabled = Room.m_enabled,
-                    m_theme = Theme
+                    m_theme = Room.Theme
                 }
             };
         }
@@ -144,6 +164,20 @@ namespace Jotunn.Entities
         public static bool IsCustomRoom(string prefabName)
         {
             return DungeonManager.Instance.Rooms.ContainsKey(prefabName);
+        }
+
+        public Room.Theme GetVanillaRoomTheme(string roomTheme)
+        {
+            if (Enum.TryParse(roomTheme, false, out Room.Theme theme))
+            {
+                return theme;
+            }
+            return Room.Theme.None;
+        }
+        
+        private bool IsVanillaRoom(string roomTheme)
+        {
+            return roomTheme == "None" || _theme == Room.Theme.None;
         }
     }
 }
