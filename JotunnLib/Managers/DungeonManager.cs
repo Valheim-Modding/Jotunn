@@ -324,7 +324,7 @@ namespace Jotunn.Managers
                     
                     DungeonGenerator.m_availableRooms.AddRange(Rooms.Values
                         .Where(r => r.Room.m_enabled)
-                        .Where(r => self.m_themes.HasFlag(r.GetVanillaRoomTheme(r.ThemeName)))
+                        .Where(r => self.m_themes.HasFlag(r.GetRoomTheme(r.ThemeName)))
                         .Select(r => r.RoomData));
                 }
 
