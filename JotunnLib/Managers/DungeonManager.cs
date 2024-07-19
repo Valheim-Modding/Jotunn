@@ -299,8 +299,9 @@ namespace Jotunn.Managers
 
                 DungeonDB.instance.GenerateHashList();
                 GenerateHashes();
-                InvokeOnRoomsRegistered();
             }
+
+            InvokeOnRoomsRegistered();
         }
 
         private void OnDungeonGeneratorSetupAvailableRooms(DungeonGenerator self)
