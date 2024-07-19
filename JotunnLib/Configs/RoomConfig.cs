@@ -1,3 +1,4 @@
+using System;
 using Jotunn.Entities;
 
 namespace Jotunn.Configs
@@ -12,11 +13,11 @@ namespace Jotunn.Configs
         ///     Theme name of this room.
         /// </summary>
         public string ThemeName { get; set; }
-
+        
         /// <summary>
-        ///     <see cref="Room.Theme"/> of this room.
+        ///     Flag indicated if this room uses a custom theme
         /// </summary>
-        public Room.Theme Theme { get; set; }
+        public bool IsCustomTheme { get; set; }
 
         /// <summary>
         ///     If set to false, room will not be added to <see cref="DungeonGenerator.m_availableRooms"/>, thus
@@ -70,7 +71,6 @@ namespace Jotunn.Configs
         /// <param name="theme"></param>
         public RoomConfig(Room.Theme theme)
         {
-            Theme = theme;
             ThemeName = string.Empty;
         }
 
@@ -80,7 +80,6 @@ namespace Jotunn.Configs
         /// <param name="themeName"></param>
         public RoomConfig(string themeName)
         {
-            Theme = 0;
             ThemeName = themeName;
         }
         
@@ -109,19 +108,27 @@ namespace Jotunn.Configs
             if (roomConfig.FaceCenter != null) room.m_faceCenter = roomConfig.FaceCenter.Value;
             if (roomConfig.Perimeter != null) room.m_perimeter = roomConfig.Perimeter.Value;
             
-            // Room can be matched by either a Room.Theme flag, or a ThemeName string.
-            if (roomConfig.Theme == 0)
+            if (roomConfig.IsCustomTheme)
             {
-                ThemeName = roomConfig.ThemeName;
-                Theme = 0;
+                if (roomConfig.ThemeName != null) room.m_theme = GetRoomTheme(roomConfig.ThemeName);
             }
             else
             {
-                Theme = roomConfig.Theme;
-                ThemeName = string.Empty;
+                if (roomConfig.ThemeName != null) room.m_theme = GetRoomTheme(roomConfig.ThemeName);
             }
 
             return room;
+        }
+        
+        public Room.Theme GetRoomTheme(string roomTheme)
+        {
+            if (Enum.TryParse(roomTheme, false, out Room.Theme theme))
+            {
+                Logger.LogDebug($"Found Room Theme with name {roomTheme}");
+                return theme;
+            }
+            Logger.LogError($"Failed to find Room Theme with name {roomTheme}");
+            return Room.Theme.None;
         }
     }
 }
