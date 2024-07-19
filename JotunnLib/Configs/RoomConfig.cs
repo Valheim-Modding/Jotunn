@@ -84,6 +84,11 @@ namespace Jotunn.Configs
             ThemeName = themeName;
         }
         
+        /// <summary>
+        ///     Create a new <see cref="RoomConfig"/>
+        /// </summary>
+        public RoomConfig() { }
+        
         
         /// <summary>
         ///     Converts the RoomConfig to a Valheim style <see cref="Room"/>.
