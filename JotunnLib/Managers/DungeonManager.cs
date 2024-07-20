@@ -100,6 +100,7 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(DungeonGenerator), nameof(DungeonGenerator.SetupAvailableRooms)), HarmonyPostfix]
             private static void OnDungeonGeneratorSetupAvailableRooms(DungeonGenerator __instance) => Instance.OnDungeonGeneratorSetupAvailableRooms(__instance);
+            
         }
 
         /// <summary>
@@ -311,15 +312,22 @@ namespace Jotunn.Managers
             {
                 if (proxy != null)
                 {
+                    Logger.LogDebug($"Found DungeonGeneratorTheme component in prefab with name {self.gameObject}");
                     Logger.LogDebug($"This dungeon generator has a custom theme = {proxy.m_themeName}, adding available rooms");
 
                     DungeonGenerator.m_availableRooms.AddRange(Rooms.Values
                         .Where(r => r.Room.m_enabled)
                         .Where(r => r.ThemeName == proxy.m_themeName)
                         .Select(r => r.RoomData));
+
+                    foreach (var room in Rooms)
+                    {
+                        Logger.LogDebug($"Attempting to add Room with name {room.Value.Name} and theme {room.Value.ThemeName}");
+                    }
                 }
                 else
                 {
+                    Logger.LogDebug($"Failed to find DungeonGeneratorTheme component in prefab with name {self.gameObject}");
                     Logger.LogDebug($"Adding additional rooms of type {self.m_themes} to available rooms");
                     
                     DungeonGenerator.m_availableRooms.AddRange(Rooms.Values
@@ -334,7 +342,6 @@ namespace Jotunn.Managers
                 }
             }
         }
-
 
         private void InvokeOnVanillaRoomsAvailable()
         {
