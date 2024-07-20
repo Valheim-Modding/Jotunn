@@ -277,7 +277,7 @@ namespace Jotunn.Managers
                             customRoom.FixReference = false;
                         }
 
-                        if (customRoom.ThemeName != "None")
+                        if (customRoom.Theme != 0)
                         {
                             RegisterRoomInDungeonDB(customRoom);
                         }
@@ -333,7 +333,7 @@ namespace Jotunn.Managers
                     
                     DungeonGenerator.m_availableRooms.AddRange(Rooms.Values
                         .Where(r => r.Room.m_enabled)
-                        .Where(r => self.m_themes.HasFlag(r.GetRoomTheme(r.ThemeName)))
+                        .Where(r => self.m_themes.HasFlag(r.Theme))
                         .Select(r => r.RoomData));
                 }
 

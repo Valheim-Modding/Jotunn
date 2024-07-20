@@ -1,5 +1,6 @@
 using System;
 using Jotunn.Entities;
+using UnityEngine;
 
 namespace Jotunn.Configs
 {
@@ -13,11 +14,11 @@ namespace Jotunn.Configs
         ///     Theme name of this room.
         /// </summary>
         public string ThemeName { get; set; }
-        
+
         /// <summary>
-        ///     Flag indicated if this room uses a custom theme
+        ///     <see cref="Room.Theme"/> of this room.
         /// </summary>
-        public bool IsCustomTheme { get; set; }
+        public Room.Theme Theme { get; set; }
 
         /// <summary>
         ///     If set to false, room will not be added to <see cref="DungeonGenerator.m_availableRooms"/>, thus
@@ -71,6 +72,7 @@ namespace Jotunn.Configs
         /// <param name="theme"></param>
         public RoomConfig(Room.Theme theme)
         {
+            Theme = theme;
             ThemeName = string.Empty;
         }
 
@@ -80,6 +82,7 @@ namespace Jotunn.Configs
         /// <param name="themeName"></param>
         public RoomConfig(string themeName)
         {
+            Theme = 0;
             ThemeName = themeName;
         }
         
@@ -88,37 +91,6 @@ namespace Jotunn.Configs
         /// </summary>
         public RoomConfig() { }
         
-        
-        /// <summary>
-        ///     Converts the RoomConfig to a Valheim style <see cref="Room"/>.
-        /// </summary>
-        public Room ApplyConfig(RoomConfig roomConfig)
-        {
-            // Create a new Room instance
-            Room room = new Room();
-            
-            // Ensure Room values are overwritten only when a value's present.
-            if (roomConfig.Enabled != null) room.m_enabled = roomConfig.Enabled.Value;
-            if (roomConfig.Entrance != null) room.m_entrance = roomConfig.Entrance.Value;
-            if (roomConfig.Endcap != null) room.m_endCap = roomConfig.Endcap.Value;
-            if (roomConfig.Divider != null) room.m_divider = roomConfig.Divider.Value;
-            if (roomConfig.EndcapPrio != null) room.m_endCapPrio = roomConfig.EndcapPrio.Value;
-            if (roomConfig.MinPlaceOrder != null) room.m_minPlaceOrder = roomConfig.MinPlaceOrder.Value;
-            if (roomConfig.Weight != null) room.m_weight = roomConfig.Weight.Value;
-            if (roomConfig.FaceCenter != null) room.m_faceCenter = roomConfig.FaceCenter.Value;
-            if (roomConfig.Perimeter != null) room.m_perimeter = roomConfig.Perimeter.Value;
-            
-            if (roomConfig.IsCustomTheme)
-            {
-                if (roomConfig.ThemeName != null) room.m_theme = GetRoomTheme(roomConfig.ThemeName);
-            }
-            else
-            {
-                if (roomConfig.ThemeName != null) room.m_theme = GetRoomTheme(roomConfig.ThemeName);
-            }
-
-            return room;
-        }
         
         public Room.Theme GetRoomTheme(string roomTheme)
         {

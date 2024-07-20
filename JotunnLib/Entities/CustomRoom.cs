@@ -40,38 +40,17 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Theme name of this room.
         /// </summary>
-        public string ThemeName
-        {
-            get => themeName;
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    themeName = Room.Theme.None.ToString();
-                    _theme = Room.Theme.None;
-                    return;
-                }
-                
-                if (Enum.TryParse<Room.Theme>(value, true, out var result))
-                {
-                    themeName = result.ToString();
-                    _theme = result;
-                }
-                else
-                {
-                    themeName = value;
-                    _theme = Room.Theme.None;
-                }
-            }
-        }
+        public string ThemeName { get; set; }
+
+        /// <summary>
+        ///     <see cref="Room.Theme"/> of this room.
+        /// </summary>
+        public Room.Theme Theme { get; set; }
 
         /// <summary>
         ///     Associated <see cref="DungeonDB.RoomData"/> holding data used during generation.
         /// </summary>
         public DungeonDB.RoomData RoomData { get; private set; }
-        
-        private string themeName = string.Empty;
-        private Room.Theme _theme = Room.Theme.None;
 
         /// <summary>
         ///     Custom room from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="global::Room"/> made from a <see cref="RoomConfig"/>.<br />
@@ -85,16 +64,21 @@ namespace Jotunn.Entities
         {
             Prefab = assetBundle.LoadAsset<GameObject>(assetName);
             Name = Prefab.name;
-            Room = roomConfig.ApplyConfig(roomConfig);
+            
+            ThemeName = roomConfig.ThemeName;
+            Theme = roomConfig.Theme;
             
             if (Prefab != null && Prefab.TryGetComponent<Room>(out var room))
             {
-                Room = room;
+                var existingRoom = room;
+                Room = ApplyConfig(roomConfig, existingRoom);
             }
             else
             {
-                Room = Prefab.AddComponent<Room>();
+                var newRoom = Prefab.AddComponent<Room>();
+                Room = ApplyConfig(roomConfig, newRoom);
             }
+            
             FixReference = fixReference;
             
             // DungeonGenerator.PlaceRoom*() utilize soft references directly, thus registering the assets here.
@@ -103,7 +87,7 @@ namespace Jotunn.Entities
                 m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(Prefab)),
                 m_loadedRoom = Room,
                 m_enabled = Room.m_enabled,
-                m_theme = GetRoomTheme(roomConfig.ThemeName)
+                m_theme = roomConfig.Theme
             };
         }
 
@@ -128,16 +112,21 @@ namespace Jotunn.Entities
         {
             Prefab = prefab;
             Name = prefab.name;
-            Room = roomConfig.ApplyConfig(roomConfig);
+            
+            ThemeName = roomConfig.ThemeName;
+            Theme = roomConfig.Theme;
             
             if (prefab != null && prefab.TryGetComponent<Room>(out var room))
             {
-                Room = room;
+                var existingRoom = room;
+                Room = ApplyConfig(roomConfig, existingRoom);
             }
             else
             {
-                Room = prefab.AddComponent<Room>();
+                var newRoom = prefab.AddComponent<Room>();
+                Room = ApplyConfig(roomConfig, newRoom);
             }
+            
             FixReference = fixReference;
             
             // DungeonGenerator.PlaceRoom*() utilize soft references directly, thus registering the assets here.
@@ -146,8 +135,27 @@ namespace Jotunn.Entities
                 m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(Prefab)),
                 m_loadedRoom = Room,
                 m_enabled = Room.m_enabled,
-                m_theme = GetRoomTheme(roomConfig.ThemeName)
+                m_theme = roomConfig.Theme
             };
+        }
+        
+        /// <summary>
+        ///     Converts the RoomConfig to a Valheim style <see cref="Room"/>.
+        /// </summary>
+        public Room ApplyConfig(RoomConfig roomConfig, Room room)
+        {
+            // Ensure Room values are overwritten only when a value's present.
+            if (roomConfig.Enabled != null) room.m_enabled = roomConfig.Enabled.Value;
+            if (roomConfig.Entrance != null) room.m_entrance = roomConfig.Entrance.Value;
+            if (roomConfig.Endcap != null) room.m_endCap = roomConfig.Endcap.Value;
+            if (roomConfig.Divider != null) room.m_divider = roomConfig.Divider.Value;
+            if (roomConfig.EndcapPrio != null) room.m_endCapPrio = roomConfig.EndcapPrio.Value;
+            if (roomConfig.MinPlaceOrder != null) room.m_minPlaceOrder = roomConfig.MinPlaceOrder.Value;
+            if (roomConfig.Weight != null) room.m_weight = roomConfig.Weight.Value;
+            if (roomConfig.FaceCenter != null) room.m_faceCenter = roomConfig.FaceCenter.Value;
+            if (roomConfig.Perimeter != null) room.m_perimeter = roomConfig.Perimeter.Value;
+
+            return room;
         }
 
         /// <summary>
