@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using BepInEx;
+using BepInEx.Bootstrap;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -122,6 +123,9 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
             private static void InvokeOnPiecesRegistered(ObjectDB __instance) => Instance.InvokeOnPiecesRegistered(__instance);
+
+            [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake)), HarmonyPostfix]
+            public static void BindSettings() => Instance.BindSettings();
 
             [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPostfix]
             private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
@@ -446,6 +450,34 @@ namespace Jotunn.Managers
             if (piece.PiecePrefab && PrefabManager.Instance.GetPrefab(piece.PiecePrefab.name))
             {
                 PrefabManager.Instance.RemovePrefab(piece.PiecePrefab.name);
+            }
+        }
+
+        private void BindSettings()
+        {
+            Dictionary<BepInPlugin, bool> saveOnConfigSet = new Dictionary<BepInPlugin, bool>();
+
+            foreach (var piece in Pieces.Values)
+            {
+                if (!saveOnConfigSet.ContainsKey(piece.SourceMod))
+                {
+                    PluginInfo plugin = Chainloader.PluginInfos[piece.SourceMod.GUID];
+                    saveOnConfigSet[piece.SourceMod] = plugin.Instance.Config.SaveOnConfigSet;
+                    plugin.Instance.Config.SaveOnConfigSet = false;
+                }
+
+                piece.BindSettings();
+            }
+
+            foreach (var sourceMod in saveOnConfigSet.Keys)
+            {
+                PluginInfo plugin = Chainloader.PluginInfos[sourceMod.GUID];
+                plugin.Instance.Config.SaveOnConfigSet = saveOnConfigSet[sourceMod];
+
+                if (plugin.Instance.Config.SaveOnConfigSet)
+                {
+                    plugin.Instance.Config.Save();
+                }
             }
         }
 
