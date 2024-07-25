@@ -76,6 +76,18 @@ namespace Jotunn.Configs
             return pieceTable;
         }
 
+        /// <summary>
+        ///     Get the human readable name for a piece table from its internal name.
+        /// </summary>
+        /// <param name="internalName"></param>
+        /// <returns>
+        ///     The matched human readable name or the unchanged internalName if no match was found.
+        /// </returns>
+        public static string GetDisplayName(string internalName)
+        {
+            return NamesMap.FirstOrDefault(x => x.Value == internalName).Key ?? internalName;
+        }
+
         private static readonly Dictionary<string, string> NamesMap = new Dictionary<string, string>
         {
             { nameof(Hammer), Hammer },
