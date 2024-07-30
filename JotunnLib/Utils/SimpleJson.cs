@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="SimpleJson.cs" company="The Outercurve Foundation">
 //    Copyright (c) 2011, The Outercurve Foundation.
 //
@@ -1386,6 +1386,19 @@ namespace SimpleJson
                 obj = type == typeof(int) || type == typeof(long) || type == typeof(double) || type == typeof(float) || type == typeof(bool) || type == typeof(decimal) || type == typeof(byte) || type == typeof(short)
                             ? Convert.ChangeType(value, type, CultureInfo.InvariantCulture)
                             : value;
+            }
+            else if (value is JsonArray && ReflectionUtils.IsTypeDictionary(type))
+            {
+                var jarray = (JsonArray)value;
+
+                Type[] types = ReflectionUtils.GetGenericTypeArguments(type);
+                Type keyType = types[0];
+                Type valueType = types[1];
+                Type genericType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
+                IDictionary dict = (IDictionary)ConstructorCache[genericType]();
+
+                foreach (JsonObject elem in jarray) dict.Add(DeserializeObject(elem[0], keyType), DeserializeObject(elem[1], valueType));
+                obj = dict;
             }
             else
             {
