@@ -14,7 +14,6 @@ namespace Jotunn.Settings
         public bool AdminOnly { get; set; }
 
         private ConfigEntry<T> entry;
-        private ConfigurationManagerAttributes attributes;
 
         public BepInExSetting(BepInPlugin sourceMod, string section, string key, T defaultValue, string description, int order, bool adminOnly = true) : base(sourceMod)
         {
@@ -34,13 +33,7 @@ namespace Jotunn.Settings
             }
 
             BaseUnityPlugin plugin = Chainloader.PluginInfos[SourceMod.GUID].Instance;
-            attributes = new ConfigurationManagerAttributes
-            {
-                IsAdminOnly = AdminOnly,
-                Order = Order,
-            };
-
-            entry = plugin.Config.Bind(Section, Key, DefaultValue, new ConfigDescription(Description, null, attributes));
+            entry = plugin.Config.Bind(Section, Key, DefaultValue, new ConfigDescription(Description, null, GenerateAttributes()));
             entry.SettingChanged += (sender, args) => Value = entry.Value;
             Value = entry.Value;
         }
@@ -62,6 +55,15 @@ namespace Jotunn.Settings
             }
 
             Value = DefaultValue;
+        }
+
+        protected virtual ConfigurationManagerAttributes GenerateAttributes()
+        {
+            return new ConfigurationManagerAttributes
+            {
+                IsAdminOnly = AdminOnly,
+                Order = Order,
+            };
         }
     }
 }

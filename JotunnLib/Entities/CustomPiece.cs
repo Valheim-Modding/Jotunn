@@ -343,10 +343,10 @@ namespace Jotunn.Entities
                 ConfigManagerUtils.BuildSettingList();
             };
 
-            CategorySetting = new BepInExSetting<string>(SourceMod, PiecePrefab.name, "Category", Category, $"Tool Category of {PiecePrefab.name}", 9);
+            CategorySetting = new BepInExDropdownSetting<string>(SourceMod, PiecePrefab.name, "Category", Category, PieceCategories.GetNames().Keys, $"Tool Category of {PiecePrefab.name}", 9);
             CategorySetting.OnChanged += () => Category = CategorySetting.Value;
 
-            PieceTableSetting = new BepInExSetting<string>(SourceMod, PiecePrefab.name, "Tool", PieceTables.GetDisplayName(PieceTable), $"Tool of of {PiecePrefab.name}", 8);
+            PieceTableSetting = new BepInExDropdownSetting<string>(SourceMod, PiecePrefab.name, "Tool", PieceTables.GetDisplayName(PieceTable), PieceTables.GetNames().Keys, $"Tool of of {PiecePrefab.name}", 8);
             PieceTableSetting.OnChanged += () => PieceTable = PieceTableSetting.Value;
         }
 
