@@ -1429,7 +1429,10 @@ namespace SimpleJson
                             obj = value;
                         else
                         {
-                            obj = ConstructorCache[type]();
+                            var constructorDelegate = ConstructorCache[type];
+                            if (constructorDelegate != null) obj = constructorDelegate();
+                            else throw new MissingMethodException($"No default constructor found for {type}");
+                            
                             foreach (KeyValuePair<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>> setter in SetCache[type])
                             {
                                 object jsonValue;
