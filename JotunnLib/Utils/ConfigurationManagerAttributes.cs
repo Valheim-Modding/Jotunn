@@ -156,6 +156,8 @@ public sealed class ConfigurationManagerAttributes
         }
     }
 
+    internal object autoCompleteList;
+
     private bool isUnlocked;
 
     private static readonly PropertyInfo[] _myProperties = typeof(ConfigurationManagerAttributes).GetProperties(BindingFlags.Instance | BindingFlags.Public);
