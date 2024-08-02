@@ -1,11 +1,10 @@
 # Changelog
 
-## Version 2.21.0
-* Added PieceManager.AddPieceCategory(string name) and PieceManager.RemovePieceCategory(string name)
-* Deprecated PieceManager.AddPieceCategory(string table, string name) and PieceManager.RemovePieceCategory(string table, string name), use the new overloads without the table parameter
-* Changed GUIManager asset loading to use the prefab cache and not hard crash on missing assets
+## Version 2.20.2
 * Fixed adding admin-only configs between loading to the main menu and before loading the game being locked for local editing
-* Fixed network version in the disconnect window was always 27 duo to being a constant value
+* Fixed network version in the disconnect window was always 27 duo to accessing a constant value
+* Fixed SimpleJson deserialization of non-primitive dictionaries (thx bid)
+* Fixed GUIManager asset loading to use the prefab cache and not hard crash on missing assets
 
 ## Version 2.20.1
 * Fixed an error when cloning an item with an existing ExtEquipment
