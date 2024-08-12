@@ -1,6 +1,6 @@
 ﻿{
     "name": "Jotunn",
-    "version_number": "2.20.2",
+    "version_number": "2.20.3",
     "website_url": "https://github.com/Valheim-Modding/Jotunn",
     "description": "Jötunn (/ˈjɔːtʊn/, 'giant'), the Valheim Library was created with the goal of making the lives of mod developers easier. It enables you to create mods for Valheim using an abstracted API so you can focus on the actual content creation.",
     "dependencies": [
