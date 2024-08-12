@@ -26,7 +26,7 @@ namespace Jotunn.Managers
 
         private readonly Dictionary<string, bool> CachedAdminStates = new Dictionary<string, bool>();
         private readonly Dictionary<string, ConfigFile> CustomConfigs = new Dictionary<string, ConfigFile>();
-        private List<Tuple<string, string, string, string>> CachedConfigValues = new List<Tuple<string, string, string, string>>();
+        private HashSet<Tuple<string, string, string, string>> CachedConfigValues = new HashSet<Tuple<string, string, string, string>>();
         private readonly Dictionary<string, string> CachedCustomConfigGUIDs = new Dictionary<string, string>();
         private BaseUnityPlugin ConfigurationManager;
         private bool ConfigurationManagerWindowShown;
@@ -117,7 +117,7 @@ namespace Jotunn.Managers
                 return adminPkg;
             });
 
-            AddInitialSynchronization(ConfigRPC, () => GenerateConfigZPackage(true, GetSyncConfigValues()));
+            AddInitialSynchronization(ConfigRPC, () => GenerateConfigZPackage(true, GetSyncConfigValues().ToList()));
         }
 
         /// <summary>
@@ -663,11 +663,11 @@ namespace Jotunn.Managers
         ///     Get syncable configuration values as tuples
         /// </summary>
         /// <returns></returns>
-        private List<Tuple<string, string, string, string>> GetSyncConfigValues()
+        private HashSet<Tuple<string, string, string, string>> GetSyncConfigValues()
         {
             Logger.LogDebug("Gathering config values");
 
-            var entries = new List<Tuple<string, string, string, string>>();
+            var entries = new HashSet<Tuple<string, string, string, string>>();
             foreach (var config in GetConfigFiles())
             {
                 string configIdentifier = GetFileIdentifier(config);
@@ -695,14 +695,14 @@ namespace Jotunn.Managers
         internal void SynchronizeChangedConfig()
         {
             // Lets compare and send to server, if applicable
-            var valuesToSend = new List<Tuple<string, string, string, string>>();
+            var valuesToSend = new HashSet<Tuple<string, string, string, string>>();
             foreach (var config in GetConfigFiles())
             {
                 string configIdentifier = GetFileIdentifier(config);
 
                 foreach (var cd in config.Keys)
                 {
-                    var cx = config[cd.Section, cd.Key];
+                    var cx = config[cd];
                     var configAttribute = cx.GetConfigurationManagerAttributes();
 
                     if (configAttribute?.IsAdminOnly == true)
@@ -718,14 +718,14 @@ namespace Jotunn.Managers
             }
 
             // We need only changed values
-            valuesToSend = valuesToSend.Where(x => !CachedConfigValues.Contains(x)).ToList();
+            valuesToSend = new HashSet<Tuple<string, string, string, string>>(valuesToSend.Where(x => !CachedConfigValues.Contains(x)));
 
             if (valuesToSend.Count > 0)
             {
                 // Send if connected
                 if (ZNet.instance != null)
                 {
-                    ZPackage package = GenerateConfigZPackage(false, valuesToSend);
+                    ZPackage package = GenerateConfigZPackage(false, valuesToSend.ToList());
 
                     // Send values to server if it is a client instance
                     if (ZNet.instance.IsClientInstance())

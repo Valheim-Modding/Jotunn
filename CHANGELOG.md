@@ -1,7 +1,8 @@
 # Changelog
 
 ## Version 2.20.3
-* Fixed explicit `AdminOnly = false` values to be locked for editing
+* Fixed explicit `AdminOnly = false` config entries to be locked for editing
+* Fixed performance when searching for config entries to sync in large config files
 
 ## Version 2.20.2
 * Fixed adding admin-only configs between loading to the main menu and before loading the game being locked for local editing
