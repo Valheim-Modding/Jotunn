@@ -1,7 +1,7 @@
 # Changelog
 
 ## Version 2.20.3
-* Fixed explicit `AdminOnly = false` config entries to be locked for editing
+* Fixed explicit `AdminOnly = false` config entries being locked for editing. Introduced in 2.20.2, `AdminOnly = true` was not affected
 * Fixed performance when searching for config entries to sync in large config files
 
 ## Version 2.20.2
