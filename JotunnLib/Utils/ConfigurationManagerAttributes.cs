@@ -125,7 +125,8 @@ public sealed class ConfigurationManagerAttributes
         set
         {
             isAdminOnly = value;
-            IsUnlocked = SynchronizationManager.Instance.PlayerIsAdmin;
+            bool locked = isAdminOnly && !SynchronizationManager.Instance.PlayerIsAdmin;
+            IsUnlocked = !locked;
         }
     }
 
