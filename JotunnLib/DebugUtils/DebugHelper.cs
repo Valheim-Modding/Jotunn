@@ -46,9 +46,6 @@ namespace Jotunn.DebugUtils
             [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SpawnLocation)), HarmonyPrefix]
             private static void ZoneSystem_SpawnLocation(ZoneSystem.ZoneLocation location, ZoneSystem.SpawnMode mode) => instance.ZoneSystem_SpawnLocation(location, mode);
 
-            [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPrefix]
-            private static void Player_OnSpawned_Prefix(Player __instance) => __instance.m_firstSpawn = false;
-
             [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPostfix]
             private static void Player_OnSpawned_Postfix() => instance.Player_OnSpawned_Postfix();
         }
