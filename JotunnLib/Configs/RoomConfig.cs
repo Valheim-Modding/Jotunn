@@ -11,14 +11,9 @@ namespace Jotunn.Configs
     public class RoomConfig
     {
         /// <summary>
-        ///     Theme name of this room.
+        ///     Theme name of this room.  If adding a room to a vanilla dungeon, use nameof(Room.Theme.value)
         /// </summary>
         public string ThemeName { get; set; }
-
-        /// <summary>
-        ///     <see cref="Room.Theme"/> of this room.
-        /// </summary>
-        public Room.Theme Theme { get; set; }
 
         /// <summary>
         ///     If set to false, room will not be added to <see cref="DungeonGenerator.m_availableRooms"/>, thus
@@ -67,22 +62,11 @@ namespace Jotunn.Configs
         public bool? Perimeter { get; set; }
 
         /// <summary>
-        ///     Create a config with a <see cref="Room.Theme"/>.
-        /// </summary>
-        /// <param name="theme"></param>
-        public RoomConfig(Room.Theme theme)
-        {
-            Theme = theme;
-            ThemeName = string.Empty;
-        }
-
-        /// <summary>
         ///     Create a config with a theme name.
         /// </summary>
         /// <param name="themeName"></param>
         public RoomConfig(string themeName)
         {
-            Theme = 0;
             ThemeName = themeName;
         }
         
@@ -90,17 +74,5 @@ namespace Jotunn.Configs
         ///     Create a new <see cref="RoomConfig"/>
         /// </summary>
         public RoomConfig() { }
-        
-        
-        public Room.Theme GetRoomTheme(string roomTheme)
-        {
-            if (Enum.TryParse(roomTheme, false, out Room.Theme theme))
-            {
-                Logger.LogDebug($"Found Room Theme with name {roomTheme}");
-                return theme;
-            }
-            Logger.LogError($"Failed to find Room Theme with name {roomTheme}");
-            return Room.Theme.None;
-        }
     }
 }

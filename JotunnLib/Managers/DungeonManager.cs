@@ -116,9 +116,14 @@ namespace Jotunn.Managers
                 throw new ArgumentException("Cannot be null", nameof(customRoom));
             }
 
-            if (!string.IsNullOrEmpty(customRoom.ThemeName) && !themeList.Contains(customRoom.ThemeName))
+            if (string.IsNullOrEmpty(customRoom.ThemeName))
             {
-                throw new ArgumentException($"Custom theme of this room ({customRoom.ThemeName}) must be registered.", nameof(customRoom));
+                throw new ArgumentException($"ThemeName of this room must have a value.", nameof(customRoom));
+            }
+
+            if (!CustomRoom.IsVanillaTheme(customRoom.ThemeName) && !themeList.Contains(customRoom.ThemeName))
+            {
+                throw new ArgumentException($"ThemeName of this room ({customRoom.ThemeName}) match a vanilla Room.Theme value or must be registered.", nameof(customRoom));
             }
 
             if (Rooms.ContainsKey(customRoom.Name))
@@ -251,7 +256,7 @@ namespace Jotunn.Managers
 
                     var env = kvp.Value;
                     env.FixReferences(true);
-                    UnityEngine.Object.Instantiate<GameObject>(env, DungeonRoomContainer.transform);
+                    UnityEngine.Object.Instantiate<GameObject>(env); // Intentionally omitting DungeonRoomContainer.transform
                 }
             }
         }
@@ -277,7 +282,7 @@ namespace Jotunn.Managers
                             customRoom.FixReference = false;
                         }
 
-                        if (customRoom.Theme != 0)
+                        if (CustomRoom.IsVanillaTheme(customRoom.ThemeName))
                         {
                             RegisterRoomInDungeonDB(customRoom);
                         }
@@ -316,25 +321,33 @@ namespace Jotunn.Managers
                     Logger.LogDebug($"Found DungeonGeneratorTheme component in prefab with name {self.gameObject}");
                     Logger.LogDebug($"This dungeon generator has a custom theme = {proxy.m_themeName}, adding available rooms");
 
-                    DungeonGenerator.m_availableRooms.AddRange(Rooms.Values
+                    var selectedRooms = Rooms.Values
                         .Where(r => r.Room.m_enabled)
-                        .Where(r => r.ThemeName == proxy.m_themeName)
-                        .Select(r => r.RoomData));
+                        .Where(r => r.ThemeName == proxy.m_themeName);
 
-                    foreach (var room in Rooms)
+                    foreach (var room in selectedRooms)
                     {
-                        Logger.LogDebug($"Attempting to add Room with name {room.Value.Name} and theme {room.Value.ThemeName}");
+                        Logger.LogDebug($"Adding Room with name {room.Name} and theme {room.ThemeName}");
+                        DungeonGenerator.m_availableRooms.Add(room.RoomData);
                     }
                 }
-                else
+                else if (self.m_themes != Room.Theme.None)
                 {
-                    Logger.LogDebug($"Failed to find DungeonGeneratorTheme component in prefab with name {self.gameObject}");
+                    Logger.LogDebug($"No DungeonGeneratorTheme component in prefab with name {self.gameObject}");
                     Logger.LogDebug($"Adding additional rooms of type {self.m_themes} to available rooms");
-                    
-                    DungeonGenerator.m_availableRooms.AddRange(Rooms.Values
+
+                    var selectedRooms = Rooms.Values
                         .Where(r => r.Room.m_enabled)
-                        .Where(r => self.m_themes.HasFlag(r.Theme))
-                        .Select(r => r.RoomData));
+                        .Where(r => self.m_themes.HasFlag(CustomRoom.GetRoomTheme(r.ThemeName)));
+
+                    foreach (var room in selectedRooms)
+                    {
+                        Logger.LogDebug($"Adding Room with name {room.Name} and theme {room.ThemeName}");
+                        DungeonGenerator.m_availableRooms.Add(room.RoomData);
+                    }
+                } else
+                {
+                    Logger.LogWarning($"DungeonManager's SetupAvailableRooms was invoked without a valid DungeonGeneratorTheme or DungeonGenerator.m_themes value.  Something may be wrong with {self.name}'s generator.");
                 }
 
                 if (DungeonGenerator.m_availableRooms.Count <= 0)
@@ -363,7 +376,6 @@ namespace Jotunn.Managers
         ///     Attempt to get room by hash.
         /// </summary>
         /// <param name="hash"></param>
-
         private DungeonDB.RoomData OnDungeonDBGetRoom(int hash)
         {
             if (hashToName.TryGetValue(hash, out var roomName) && Rooms.TryGetValue(roomName, out var room))

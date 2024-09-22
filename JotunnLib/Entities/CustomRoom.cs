@@ -43,11 +43,6 @@ namespace Jotunn.Entities
         public string ThemeName { get; set; }
 
         /// <summary>
-        ///     <see cref="Room.Theme"/> of this room.
-        /// </summary>
-        public Room.Theme Theme { get; set; }
-
-        /// <summary>
         ///     Associated <see cref="DungeonDB.RoomData"/> holding data used during generation.
         /// </summary>
         public DungeonDB.RoomData RoomData { get; private set; }
@@ -66,7 +61,6 @@ namespace Jotunn.Entities
             Name = Prefab.name;
             
             ThemeName = roomConfig.ThemeName;
-            Theme = roomConfig.Theme;
             
             if (Prefab != null && Prefab.TryGetComponent<Room>(out var room))
             {
@@ -87,7 +81,7 @@ namespace Jotunn.Entities
                 m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(Prefab)),
                 m_loadedRoom = Room,
                 m_enabled = Room.m_enabled,
-                m_theme = roomConfig.Theme
+                m_theme = GetRoomTheme(ThemeName)
             };
         }
 
@@ -114,7 +108,6 @@ namespace Jotunn.Entities
             Name = prefab.name;
             
             ThemeName = roomConfig.ThemeName;
-            Theme = roomConfig.Theme;
             
             if (prefab != null && prefab.TryGetComponent<Room>(out var room))
             {
@@ -135,7 +128,7 @@ namespace Jotunn.Entities
                 m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(Prefab)),
                 m_loadedRoom = Room,
                 m_enabled = Room.m_enabled,
-                m_theme = roomConfig.Theme
+                m_theme = GetRoomTheme(ThemeName)
             };
         }
         
@@ -168,14 +161,27 @@ namespace Jotunn.Entities
             return DungeonManager.Instance.Rooms.ContainsKey(prefabName);
         }
 
-        public Room.Theme GetRoomTheme(string roomTheme)
+        /// <summary>
+        ///     Helper method to determine if a given themeName matches any vanilla <see cref="global::Room.Theme"/> values.
+        /// </summary>
+        /// <param name="themeName">Name of the theme to test.</param>
+        /// <returns>true if the themeName matches a built-in value, or false.</returns>
+        public static bool IsVanillaTheme(string themeName)
         {
-            if (Enum.TryParse(roomTheme, false, out Room.Theme theme))
+            return Enum.TryParse(themeName, false, out Room.Theme _);
+        }
+
+        /// <summary>
+        ///     Helper method to get the <see cref="global::Room.Theme"/> value, if the given themeName matches any vanilla values.
+        /// </summary>
+        /// <param name="themeName">Name of the theme.</param>
+        /// <returns>The <see cref="global::Room.Theme"/> value, or Room.Theme.None if no match is found.</returns>        
+        public static Room.Theme GetRoomTheme(string themeName)
+        {
+            if (Enum.TryParse(themeName, false, out Room.Theme theme))
             {
-                Logger.LogDebug($"Found Room Theme with name {roomTheme}");
                 return theme;
             }
-            Logger.LogError($"Failed to find Room Theme with name {roomTheme}");
             return Room.Theme.None;
         }
         
