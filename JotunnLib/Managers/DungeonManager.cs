@@ -338,7 +338,7 @@ namespace Jotunn.Managers
 
                     var selectedRooms = Rooms.Values
                         .Where(r => r.Room.m_enabled)
-                        .Where(r => self.m_themes.HasFlag(CustomRoom.GetRoomTheme(r.ThemeName)));
+                        .Where(r => Enum.TryParse(r.ThemeName, false, out Room.Theme theme) ? theme != Room.Theme.None && self.m_themes.HasFlag(theme) : false);
 
                     foreach (var room in selectedRooms)
                     {
