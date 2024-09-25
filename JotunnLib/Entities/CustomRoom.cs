@@ -85,16 +85,6 @@ namespace Jotunn.Entities
             };
         }
 
-
-        /// <summary>
-        ///     Custom room from a prefab with a <see cref="global::Room"/> made from a <see cref="RoomConfig"/>.
-        /// </summary>
-        /// <param name="prefab">The prefab for this custom room.</param>
-        /// <param name="roomConfig">The config for this custom room.</param>
-        public CustomRoom(GameObject prefab, RoomConfig roomConfig)
-            : this(prefab, false, roomConfig) { }
-
-
         /// <summary>
         ///     Custom room from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="global::Room"/> made from a <see cref="RoomConfig"/>.<br />
         ///     Can fix references for <see cref="Entities.Mock{T}"/>s.

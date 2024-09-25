@@ -245,9 +245,6 @@ namespace Jotunn.Managers
 
         private void OnZoneSystemSetupLocations()
         {
-            // TODO - unsure if cache clearing is still necessary for resolving mocks of these assets
-            //ClearPrefabCache(typeof(Material));
-
             if (loadedEnvironments.Count > 0)
             {
                 foreach (var kvp in loadedEnvironments)
