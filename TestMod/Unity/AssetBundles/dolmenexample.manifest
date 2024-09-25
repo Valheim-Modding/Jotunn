@@ -1,0 +1,65 @@
+ManifestFileVersion: 0
+CRC: 2106348991
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 13cbe8c8d9cac0eb2a069b9aec66cbcc
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: e9e2e4db015d794c556b79337409c53e
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 108
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 1521249158, guid: 52c4b06948a177c458ef084877fa2c4a, type: 3}
+- Class: 114
+  Script: {fileID: -1931244258, guid: 52c4b06948a177c458ef084877fa2c4a, type: 3}
+- Class: 114
+  Script: {fileID: -187921205, guid: 52c4b06948a177c458ef084877fa2c4a, type: 3}
+- Class: 114
+  Script: {fileID: -1503972828, guid: 52c4b06948a177c458ef084877fa2c4a, type: 3}
+- Class: 114
+  Script: {fileID: -1235850215, guid: 52c4b06948a177c458ef084877fa2c4a, type: 3}
+- Class: 114
+  Script: {fileID: 269728403, guid: 52c4b06948a177c458ef084877fa2c4a, type: 3}
+- Class: 114
+  Script: {fileID: 712945444, guid: 52c4b06948a177c458ef084877fa2c4a, type: 3}
+- Class: 114
+  Script: {fileID: -1142149537, guid: 52c4b06948a177c458ef084877fa2c4a, type: 3}
+- Class: 114
+  Script: {fileID: 1445782272, guid: 52c4b06948a177c458ef084877fa2c4a, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 205
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: assembly_valheim
+  ClassName: EnvSetup
+Assets:
+- Assets/Rooms/_EnvSetup.prefab
+- Assets/Prefabs/DolmenCaveExample.prefab
+- Assets/Rooms/DolmenEntrance.prefab
+- Assets/Rooms/DolmenAdjuct.prefab
+- Assets/Rooms/DolmenRoomLarge.prefab
+- Assets/Rooms/DolmenHall.prefab
+- Assets/Rooms/DolmenEndcap.prefab
+Dependencies: []
