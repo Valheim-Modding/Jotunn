@@ -65,12 +65,12 @@ namespace Jotunn.Entities
             if (Prefab != null && Prefab.TryGetComponent<Room>(out var room))
             {
                 var existingRoom = room;
-                Room = ApplyConfig(roomConfig, existingRoom);
+                Room = roomConfig.Apply(existingRoom);
             }
             else
             {
                 var newRoom = Prefab.AddComponent<Room>();
-                Room = ApplyConfig(roomConfig, newRoom);
+                Room = roomConfig.Apply(newRoom);
             }
             
             FixReference = fixReference;
@@ -102,12 +102,12 @@ namespace Jotunn.Entities
             if (prefab != null && prefab.TryGetComponent<Room>(out var room))
             {
                 var existingRoom = room;
-                Room = ApplyConfig(roomConfig, existingRoom);
+                Room = roomConfig.Apply(existingRoom);
             }
             else
             {
                 var newRoom = prefab.AddComponent<Room>();
-                Room = ApplyConfig(roomConfig, newRoom);
+                Room = roomConfig.Apply(newRoom);
             }
             
             FixReference = fixReference;
@@ -120,26 +120,7 @@ namespace Jotunn.Entities
                 m_enabled = Room.m_enabled,
                 m_theme = GetRoomTheme(ThemeName)
             };
-        }
-        
-        /// <summary>
-        ///     Converts the RoomConfig to a Valheim style <see cref="Room"/>.
-        /// </summary>
-        public Room ApplyConfig(RoomConfig roomConfig, Room room)
-        {
-            // Ensure Room values are overwritten only when a value's present.
-            if (roomConfig.Enabled != null) room.m_enabled = roomConfig.Enabled.Value;
-            if (roomConfig.Entrance != null) room.m_entrance = roomConfig.Entrance.Value;
-            if (roomConfig.Endcap != null) room.m_endCap = roomConfig.Endcap.Value;
-            if (roomConfig.Divider != null) room.m_divider = roomConfig.Divider.Value;
-            if (roomConfig.EndcapPrio != null) room.m_endCapPrio = roomConfig.EndcapPrio.Value;
-            if (roomConfig.MinPlaceOrder != null) room.m_minPlaceOrder = roomConfig.MinPlaceOrder.Value;
-            if (roomConfig.Weight != null) room.m_weight = roomConfig.Weight.Value;
-            if (roomConfig.FaceCenter != null) room.m_faceCenter = roomConfig.FaceCenter.Value;
-            if (roomConfig.Perimeter != null) room.m_perimeter = roomConfig.Perimeter.Value;
-
-            return room;
-        }
+        }        
 
         /// <summary>
         ///     Helper method to determine if a prefab with a given name is a custom room created with Jötunn.
