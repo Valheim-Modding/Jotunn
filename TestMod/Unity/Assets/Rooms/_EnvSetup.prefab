@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6661140965027373643
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3824739491401947023}
+  - component: {fileID: 7782305863987208909}
+  m_Layer: 0
+  m_Name: _EnvSetup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3824739491401947023
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6661140965027373643}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7782305863987208909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6661140965027373643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1142149537, guid: 52c4b06948a177c458ef084877fa2c4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sortOrder: 0
+  m_locations: []
+  m_vegetation: []
+  m_environments:
+  - m_name: DolmenExample
+    m_default: 0
+    m_isWet: 0
+    m_isFreezing: 0
+    m_isFreezingAtNight: 0
+    m_isCold: 0
+    m_isColdAtNight: 0
+    m_alwaysDark: 1
+    m_ambColorNight: {r: 0.3137255, g: 0.3137255, b: 0.3137255, a: 0}
+    m_ambColorDay: {r: 0.3137255, g: 0.3137255, b: 0.3137255, a: 0}
+    m_fogColorNight: {r: 0.1764706, g: 0.18039216, b: 0.21568629, a: 0}
+    m_fogColorMorning: {r: 0.1764706, g: 0.18039216, b: 0.21568629, a: 0}
+    m_fogColorDay: {r: 0.1764706, g: 0.18039216, b: 0.21568629, a: 0}
+    m_fogColorEvening: {r: 0.1764706, g: 0.18039216, b: 0.21568629, a: 0}
+    m_fogColorSunNight: {r: 0.1764706, g: 0.18039216, b: 0.21568629, a: 0}
+    m_fogColorSunMorning: {r: 0.1764706, g: 0.18039216, b: 0.21568629, a: 0}
+    m_fogColorSunDay: {r: 0.1764706, g: 0.18039216, b: 0.21568629, a: 0}
+    m_fogColorSunEvening: {r: 0.1764706, g: 0.18039216, b: 0.21568629, a: 0}
+    m_fogDensityNight: 0.1
+    m_fogDensityMorning: 0.1
+    m_fogDensityDay: 0.1
+    m_fogDensityEvening: 0.1
+    m_sunColorNight: {r: 0, g: 0, b: 0, a: 0}
+    m_sunColorMorning: {r: 0, g: 0, b: 0, a: 0}
+    m_sunColorDay: {r: 0, g: 0, b: 0, a: 0}
+    m_sunColorEvening: {r: 0, g: 0, b: 0, a: 0}
+    m_lightIntensityDay: 0
+    m_lightIntensityNight: 0
+    m_sunAngle: 60
+    m_windMin: 0
+    m_windMax: 0
+    m_envObject: {fileID: 0}
+    m_psystems: []
+    m_psystemsOutsideOnly: 0
+    m_rainCloudAlpha: 0
+    m_ambientLoop: {fileID: 0}
+    m_ambientVol: 0
+    m_ambientList: 
+    m_musicMorning: '-'
+    m_musicEvening: '-'
+    m_musicDay: '-'
+    m_musicNight: '-'
+  m_biomeEnvironments: []
+  m_events: []
+  m_clutter: []
+  m_biomeFolded: 
+  m_vegetationFolded: 
+  m_locationFolded: 

@@ -60,6 +60,7 @@
     <Compile Include="GradientChanger.cs" />
     <Compile Include="PatchInit\TestPatchInitialization.cs" />
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
+    <Compile Include="TestModDungeon.cs" />
     <Compile Include="TestRPCs.cs" />
     <Compile Include="TestReferences.cs" />
     <Compile Include="TestMod.cs" />
@@ -75,6 +76,7 @@
     <EmbeddedResource Include="AssetsEmbedded\cheatsword" />
     <EmbeddedResource Include="AssetsEmbedded\custom_locations" />
     <EmbeddedResource Include="AssetsEmbedded\creatures" />
+    <EmbeddedResource Include="AssetsEmbedded\dolmenexample" />
     <None Include="Assets\jotunnlibtest" />
     <EmbeddedResource Include="AssetsEmbedded\capeironbackpack" />
     <None Include="Assets\recipes.json" />
