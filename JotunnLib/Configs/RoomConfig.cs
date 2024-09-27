@@ -69,7 +69,7 @@ namespace Jotunn.Configs
         {
             ThemeName = themeName;
         }
-        
+
         /// <summary>
         ///     Create a new <see cref="RoomConfig"/>
         /// </summary>

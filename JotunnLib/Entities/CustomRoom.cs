@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Jotunn.Configs;
 using Jotunn.Managers;
 using SoftReferenceableAssets;
@@ -59,9 +55,9 @@ namespace Jotunn.Entities
         {
             Prefab = assetBundle.LoadAsset<GameObject>(assetName);
             Name = Prefab.name;
-            
+
             ThemeName = roomConfig.ThemeName;
-            
+
             if (Prefab != null && Prefab.TryGetComponent<Room>(out var room))
             {
                 var existingRoom = room;
@@ -72,9 +68,9 @@ namespace Jotunn.Entities
                 var newRoom = Prefab.AddComponent<Room>();
                 Room = roomConfig.Apply(newRoom);
             }
-            
+
             FixReference = fixReference;
-            
+
             // DungeonGenerator.PlaceRoom*() utilize soft references directly, thus registering the assets here.
             RoomData = new DungeonDB.RoomData()
             {
@@ -96,9 +92,9 @@ namespace Jotunn.Entities
         {
             Prefab = prefab;
             Name = prefab.name;
-            
+
             ThemeName = roomConfig.ThemeName;
-            
+
             if (prefab != null && prefab.TryGetComponent<Room>(out var room))
             {
                 var existingRoom = room;
@@ -109,9 +105,9 @@ namespace Jotunn.Entities
                 var newRoom = prefab.AddComponent<Room>();
                 Room = roomConfig.Apply(newRoom);
             }
-            
+
             FixReference = fixReference;
-            
+
             // DungeonGenerator.PlaceRoom*() utilize soft references directly, thus registering the assets here.
             RoomData = new DungeonDB.RoomData()
             {
@@ -153,8 +149,8 @@ namespace Jotunn.Entities
             {
                 return theme;
             }
+
             return Room.Theme.None;
         }
-        
     }
 }

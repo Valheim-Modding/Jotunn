@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers.MockSystem;
@@ -29,7 +27,7 @@ namespace Jotunn.Managers
         ///     If you want to execute just once you will need to unregister from the event after execution.
         /// </summary>
         public static event Action OnVanillaRoomsAvailable;
-        
+
         /// <summary>
         ///     Event that gets fired after all custom rooms are registered to the <see cref="DungeonDB"/>.  Your code will execute
         ///     every time a main scene is started (on joining a game). <br />
@@ -49,8 +47,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Container for Jötunn's DungeonRooms in the DontDestroyOnLoad scene.
         /// </summary>
-        internal GameObject DungeonRoomContainer;
-
+        private GameObject DungeonRoomContainer;
 
         /// <summary>
         ///     Hide .ctor
@@ -61,7 +58,6 @@ namespace Jotunn.Managers
         {
             ((IManager)Instance).Init();
         }
-
 
         /// <summary>
         ///     Creates the spawner container and registers all hooks.
@@ -95,12 +91,12 @@ namespace Jotunn.Managers
                     __result = result;
                     return false;
                 }
+
                 return true;
             }
 
             [HarmonyPatch(typeof(DungeonGenerator), nameof(DungeonGenerator.SetupAvailableRooms)), HarmonyPostfix]
             private static void OnDungeonGeneratorSetupAvailableRooms(DungeonGenerator __instance) => Instance.OnDungeonGeneratorSetupAvailableRooms(__instance);
-            
         }
 
         /// <summary>
@@ -145,7 +141,7 @@ namespace Jotunn.Managers
         /// <returns>The <see cref="CustomRoom"/> if found.</returns>
         public CustomRoom GetRoom(string name)
         {
-            return Rooms.ContainsKey(name) ? Rooms[name] : null;
+            return Rooms.TryGetValue(name, out var room) ? room : null;
         }
 
         /// <summary>
@@ -172,6 +168,7 @@ namespace Jotunn.Managers
             {
                 throw new ArgumentException("Cannot be null", nameof(prefab));
             }
+
             if (string.IsNullOrEmpty(themeName))
             {
                 throw new ArgumentException("Cannot be null or empty", nameof(themeName));
@@ -196,6 +193,7 @@ namespace Jotunn.Managers
             {
                 dgt = dg.gameObject.AddComponent<DungeonGeneratorTheme>();
             }
+
             dgt.m_themeName = themeName;
             themeList.Add(themeName);
 
@@ -217,10 +215,12 @@ namespace Jotunn.Managers
             {
                 throw new ArgumentException("Cannot be null", nameof(assetBundle));
             }
+
             if (string.IsNullOrEmpty(prefabName))
             {
                 throw new ArgumentException("Cannot be null or empty", nameof(prefabName));
             }
+
             var env = assetBundle.LoadAsset<GameObject>(prefabName);
             loadedEnvironments.Add(prefabName, env);
         }
@@ -295,6 +295,7 @@ namespace Jotunn.Managers
                         toDelete.Add(customRoom.Name);
                     }
                 }
+
                 foreach (string name in toDelete)
                 {
                     Rooms.Remove(name);
@@ -342,7 +343,8 @@ namespace Jotunn.Managers
                         Logger.LogDebug($"Adding Room with name {room.Name} and theme {room.ThemeName}");
                         DungeonGenerator.m_availableRooms.Add(room.RoomData);
                     }
-                } else
+                }
+                else
                 {
                     Logger.LogWarning($"DungeonManager's SetupAvailableRooms was invoked without a valid DungeonGeneratorTheme or DungeonGenerator.m_themes value.  Something may be wrong with {self.name}'s generator.");
                 }
@@ -358,7 +360,7 @@ namespace Jotunn.Managers
         {
             OnVanillaRoomsAvailable?.SafeInvoke();
         }
-        
+
         private void InvokeOnRoomsRegistered()
         {
             OnRoomsRegistered?.SafeInvoke();
@@ -379,6 +381,7 @@ namespace Jotunn.Managers
             {
                 return room.RoomData;
             }
+
             return null;
         }
     }
