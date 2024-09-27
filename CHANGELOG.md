@@ -1,6 +1,7 @@
 # Changelog
 
 ## Version 2.21.0
+* Added DungeonManager, CustomRoom and RoomConfig for custom dungeons (thx probablykory & warp)
 * Added GameVersions utility to check for specific game versions
 * Added ConfigManagerUtils for soft access to common ConfigurationManager functionality
 * Added PieceManager.AddPieceCategory(string name) and PieceManager.RemovePieceCategory(string name)
