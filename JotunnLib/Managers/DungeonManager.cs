@@ -124,7 +124,7 @@ namespace Jotunn.Managers
 
             if (Rooms.ContainsKey(customRoom.Name))
             {
-                Jotunn.Logger.LogWarning($"Room {customRoom.Name} already exists");
+                Logger.LogWarning(customRoom.SourceMod, $"Room {customRoom.Name} already exists");
                 return false;
             }
 
@@ -178,7 +178,7 @@ namespace Jotunn.Managers
             if (dg == null)
             {
                 Logger.LogError($"Cannot find DungeonGenerator component in prefab {prefab.name}.");
-                throw new ArgumentException("Prefab must contain a DungeonGenerator component", "prefab");
+                throw new ArgumentException("Prefab must contain a DungeonGenerator component", nameof(prefab));
             }
 
             DungeonGeneratorTheme dgt;
@@ -267,12 +267,12 @@ namespace Jotunn.Managers
                 hashToName.Clear();
 
                 List<string> toDelete = new List<string>();
-                Logger.LogInfo(string.Format("Registering {0} custom rooms", Rooms.Count));
+                Logger.LogInfo($"Registering {Rooms.Count} custom rooms");
                 foreach (CustomRoom customRoom in Rooms.Values)
                 {
                     try
                     {
-                        Logger.LogDebug(string.Format("Adding custom room {0} with {1} theme", customRoom.Name, customRoom.ThemeName));
+                        Logger.LogDebug($"Adding custom room {customRoom.Name} with {customRoom.ThemeName} theme");
                         if (customRoom.FixReference)
                         {
                             customRoom.Prefab.FixReferences(true);
@@ -286,12 +286,12 @@ namespace Jotunn.Managers
                     }
                     catch (MockResolveException ex)
                     {
-                        Logger.LogWarning(string.Format("Skipping Room {0}: could not resolve mock {1} {2}", customRoom, ex.MockType.Name, ex.FailedMockName));
+                        Logger.LogWarning(customRoom.SourceMod, $"Skipping Room {customRoom}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
                         toDelete.Add(customRoom.Name);
                     }
                     catch (Exception ex2)
                     {
-                        Logger.LogWarning(string.Format("Exception caught while adding Room: {0}", ex2));
+                        Logger.LogWarning(customRoom.SourceMod, $"Exception caught while adding Room: {ex2}");
                         toDelete.Add(customRoom.Name);
                     }
                 }
@@ -310,7 +310,7 @@ namespace Jotunn.Managers
 
         private void OnDungeonGeneratorSetupAvailableRooms(DungeonGenerator self)
         {
-            DungeonGeneratorTheme proxy = self?.gameObject.GetComponent<DungeonGeneratorTheme>();
+            DungeonGeneratorTheme proxy = self.gameObject.GetComponent<DungeonGeneratorTheme>();
 
             if (DungeonGenerator.m_availableRooms != null)
             {
@@ -346,7 +346,7 @@ namespace Jotunn.Managers
                 }
                 else
                 {
-                    Logger.LogWarning($"DungeonManager's SetupAvailableRooms was invoked without a valid DungeonGeneratorTheme or DungeonGenerator.m_themes value.  Something may be wrong with {self.name}'s generator.");
+                    Logger.LogWarning($"DungeonManager's SetupAvailableRooms was invoked without a valid DungeonGeneratorTheme or DungeonGenerator.m_themes value. Something may be wrong with {self.name}'s generator.");
                 }
 
                 if (DungeonGenerator.m_availableRooms.Count <= 0)
