@@ -3,6 +3,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Bootstrap;
 using HarmonyLib;
+using UnityEngine;
 
 namespace Jotunn.Utils
 {
@@ -18,6 +19,7 @@ namespace Jotunn.Utils
 
         private static PropertyInfo displayingWindowInfo;
         private static MethodInfo buildSettingListMethodInfo;
+        private static PropertyInfo settingWindowRect;
 
         static ConfigManagerUtils()
         {
@@ -26,6 +28,7 @@ namespace Jotunn.Utils
                 Plugin = configManagerInfo.Instance;
                 displayingWindowInfo = AccessTools.Property(Plugin.GetType(), "DisplayingWindow");
                 buildSettingListMethodInfo = AccessTools.Method(Plugin.GetType(), "BuildSettingList");
+                settingWindowRect = AccessTools.Property(Plugin.GetType(), "SettingWindowRect");
             }
             else if (Chainloader.PluginInfos.TryGetValue("_shudnal.ConfigurationManager", out configManagerInfo) && configManagerInfo.Instance)
             {
@@ -43,6 +46,15 @@ namespace Jotunn.Utils
         {
             get => Plugin && (bool)displayingWindowInfo.GetValue(Plugin);
             set => displayingWindowInfo?.SetValue(Plugin, value);
+        }
+
+        /// <summary>
+        ///     The current rect of the config manager window<br />
+        ///     Safe to use even if ConfigurationManager is not installed, will return <see cref="Rect.zero">Rect.zero</see> if not installed.
+        /// </summary>
+        public static Rect SettingWindowRect
+        {
+            get => Plugin ? (Rect)settingWindowRect.GetValue(Plugin) : Rect.zero;
         }
 
         /// <summary>
