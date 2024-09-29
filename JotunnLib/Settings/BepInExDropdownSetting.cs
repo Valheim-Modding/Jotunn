@@ -16,14 +16,6 @@ namespace Jotunn.Settings
         private static GUIStyle dropDownStyle;
         private static GUIStyle listStyle;
 
-        private static PropertyInfo SettingWindowRect { get; }
-
-        static BepInExDropdownSetting()
-        {
-            var configManagerType = AccessTools.TypeByName("ConfigurationManager.ConfigurationManager, ConfigurationManager");
-            SettingWindowRect = AccessTools.Property(configManagerType, "SettingWindowRect");
-        }
-
         public BepInExDropdownSetting(BepInPlugin sourceMod, string section, string key, T defaultValue, IEnumerable<T> values, string description, int order, bool adminOnly = true) : base(sourceMod, section, key, defaultValue, description, order, adminOnly)
         {
             this.values = new List<T>(values);
@@ -61,8 +53,7 @@ namespace Jotunn.Settings
             {
                 var attributes = entry.GetConfigurationManagerAttributes();
                 var contents = ((List<T>)attributes.autoCompleteList).ConvertAll(x => new GUIContent(x.ToString())).ToArray();
-
-                var settingWindowRect = (Rect)SettingWindowRect.GetValue(ConfigManagerUtils.Plugin);
+                var settingWindowRect = ConfigManagerUtils.SettingWindowRect;
 
                 combobox = new ComboBox(dispRect, buttonText, contents, listStyle, dropDownStyle, settingWindowRect.yMax);
                 comboboxes.Add(entry, combobox);
