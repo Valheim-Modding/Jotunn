@@ -20,7 +20,10 @@ namespace Jotunn.Utils
         public ModModule(ZPackage pkg)
         {
             name = pkg.ReadString();
-            version = new System.Version(pkg.ReadInt(), pkg.ReadInt(), pkg.ReadInt());
+            int major = pkg.ReadInt();
+            int minor = pkg.ReadInt();
+            int build = pkg.ReadInt();
+            version = build >= 0 ? new System.Version(major, minor, build) : new System.Version(major, minor);
             compatibilityLevel = (CompatibilityLevel)pkg.ReadInt();
             versionStrictness = (VersionStrictness)pkg.ReadInt();
         }
@@ -53,7 +56,14 @@ namespace Jotunn.Utils
 
         public string GetVersionString()
         {
-            return $"{version.Major}.{version.Minor}.{version.Build}";
+            if (version.Build >= 0)
+            {
+                return $"{version.Major}.{version.Minor}.{version.Build}";
+            }
+            else
+            {
+                return $"{version.Major}.{version.Minor}";
+            }
         }
 
         /// <summary>
