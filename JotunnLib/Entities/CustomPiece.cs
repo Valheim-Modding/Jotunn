@@ -391,7 +391,7 @@ namespace Jotunn.Entities
             return valid;
         }
 
-        public void BindSettings()
+        internal void BindSettings()
         {
             SettingsEnabled?.Bind();
             CategorySetting?.UpdateBinding(SettingsEnabled?.Value ?? false);
