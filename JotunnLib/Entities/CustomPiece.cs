@@ -2,6 +2,7 @@
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
+using Jotunn.Settings;
 using Jotunn.Utils;
 using UnityEngine;
 
@@ -26,7 +27,21 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Name of the <see cref="global::PieceTable"/> this custom piece belongs to.
         /// </summary>
-        public string PieceTable { get; set; }
+        public string PieceTable
+        {
+            get => pieceTable;
+            set
+            {
+                var oldPieceTable = pieceTable;
+                pieceTable = value;
+
+                if (Piece && !string.IsNullOrEmpty(pieceTable))
+                {
+                    PieceManager.Instance.RemoveFromPieceTable(Piece, oldPieceTable);
+                    PieceManager.Instance.AddToPieceTable(Piece, pieceTable);
+                }
+            }
+        }
 
         /// <summary>
         ///     Name of the category this custom piece belongs to.<br />
@@ -50,7 +65,13 @@ namespace Jotunn.Entities
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
-        
+
+        public Setting<bool> SettingsEnabled { get; set; }
+
+        public Setting<string> CategorySetting { get; set; }
+
+        public Setting<string> PieceTableSetting { get; set; }
+
         /// <summary>
         ///     Indicator if references from configs should get replaced
         /// </summary>
@@ -64,6 +85,7 @@ namespace Jotunn.Entities
         private string fallbackPieceName;
 
         private string category;
+        private string pieceTable;
 
         /// <summary>
         ///     Custom piece from a prefab.<br />
@@ -82,6 +104,7 @@ namespace Jotunn.Entities
             Piece = piecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
             FixReference = fixReference;
+            CreateSettings();
         }
 
         /// <summary>
@@ -101,8 +124,9 @@ namespace Jotunn.Entities
             Category = pieceConfig.Category;
 
             pieceConfig.Apply(piecePrefab);
+            CreateSettings();
         }
-        
+
         /// <summary>
         ///     Custom piece from a prefab with a <see cref="PieceConfig"/> attached.<br />
         ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
@@ -120,6 +144,7 @@ namespace Jotunn.Entities
             Category = pieceConfig.Category;
 
             pieceConfig.Apply(piecePrefab);
+            CreateSettings();
         }
 
         /// <summary>
@@ -147,6 +172,7 @@ namespace Jotunn.Entities
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
             FixReference = fixReference;
+            CreateSettings();
         }
 
         /// <summary>
@@ -174,8 +200,9 @@ namespace Jotunn.Entities
             Category = pieceConfig.Category;
 
             pieceConfig.Apply(PiecePrefab);
+            CreateSettings();
         }
-        
+
         /// <summary>
         ///     Custom piece from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="PieceConfig"/> attached.<br />
         ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
@@ -201,6 +228,7 @@ namespace Jotunn.Entities
             Category = pieceConfig.Category;
 
             pieceConfig.Apply(PiecePrefab);
+            CreateSettings();
         }
 
         /// <summary>
@@ -226,6 +254,7 @@ namespace Jotunn.Entities
             Piece = PiecePrefab.AddComponent<Piece>();
             Piece.m_name = name;
             PieceTable = pieceTable;
+            CreateSettings();
         }
 
         /// <summary>
@@ -251,6 +280,7 @@ namespace Jotunn.Entities
             Category = pieceConfig.Category;
 
             pieceConfig.Apply(PiecePrefab);
+            CreateSettings();
         }
 
         /// <summary>
@@ -275,6 +305,7 @@ namespace Jotunn.Entities
 
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
+            CreateSettings();
         }
 
         /// <summary>
@@ -300,6 +331,23 @@ namespace Jotunn.Entities
             Category = pieceConfig.Category;
 
             pieceConfig.Apply(PiecePrefab);
+            CreateSettings();
+        }
+
+        private void CreateSettings()
+        {
+            SettingsEnabled = new BepInExSetting<bool>(SourceMod, PiecePrefab.name, "Enabled", false, $"Enable settings for {PiecePrefab.name}", 10);
+            SettingsEnabled.OnChanged += () =>
+            {
+                BindSettings();
+                ConfigManagerUtils.BuildSettingList();
+            };
+
+            CategorySetting = new BepInExDropdownSetting<string>(SourceMod, PiecePrefab.name, "Category", Category, PieceCategories.GetNames().Keys, $"Tool Category of {PiecePrefab.name}", 9);
+            CategorySetting.OnChanged += () => Category = CategorySetting.Value;
+
+            PieceTableSetting = new BepInExDropdownSetting<string>(SourceMod, PiecePrefab.name, "Tool", PieceTables.GetDisplayName(PieceTable), PieceTables.GetNames().Keys, $"Tool of of {PiecePrefab.name}", 8);
+            PieceTableSetting.OnChanged += () => PieceTable = PieceTableSetting.Value;
         }
 
         /// <summary>
@@ -316,20 +364,24 @@ namespace Jotunn.Entities
                 Logger.LogError(SourceMod, $"CustomPiece '{this}' has no prefab");
                 valid = false;
             }
+
             if (PiecePrefab && !PiecePrefab.IsValid())
             {
                 valid = false;
             }
+
             if (!Piece)
             {
                 Logger.LogError(SourceMod, $"CustomPiece '{this}' has no Piece component");
                 valid = false;
             }
+
             if (Piece && !Piece.m_icon)
             {
                 Logger.LogError(SourceMod, $"CustomPiece '{this}' has no icon");
                 valid = false;
             }
+
             if (string.IsNullOrEmpty(PieceTable))
             {
                 Logger.LogError(SourceMod, $"CustomPiece '{this}' has no PieceTable");
@@ -337,6 +389,13 @@ namespace Jotunn.Entities
             }
 
             return valid;
+        }
+
+        public void BindSettings()
+        {
+            SettingsEnabled?.Bind();
+            CategorySetting?.UpdateBinding(SettingsEnabled?.Value ?? false);
+            PieceTableSetting?.UpdateBinding(SettingsEnabled?.Value ?? false);
         }
 
         /// <summary>

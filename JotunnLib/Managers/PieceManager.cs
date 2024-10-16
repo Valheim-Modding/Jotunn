@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using BepInEx;
+using BepInEx.Bootstrap;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -131,6 +132,9 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
             private static void InvokeOnPiecesRegistered(ObjectDB __instance) => Instance.InvokeOnPiecesRegistered(__instance);
 
+            [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake)), HarmonyPostfix]
+            public static void BindSettings() => Instance.BindSettings();
+
             [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned)), HarmonyPostfix]
             private static void ReloadKnownRecipes(Player __instance) => Instance.ReloadKnownRecipes(__instance);
 
@@ -250,6 +254,56 @@ namespace Jotunn.Managers
             }
 
             return null;
+        }
+
+        /// <summary>
+        ///     Add a <see cref="Piece"/> to a <see cref="PieceTable"/> by name.
+        /// </summary>
+        /// <param name="piece"></param>
+        /// <param name="table"></param>
+        /// <returns>true if the piece was added to the table</returns>
+        public bool AddToPieceTable(Piece piece, string table)
+        {
+            if (!piece || string.IsNullOrEmpty(table))
+            {
+                return false;
+            }
+
+            var pieceTable = GetPieceTable(table);
+            if (!pieceTable)
+            {
+                return false;
+            }
+
+            if (pieceTable.m_pieces.Contains(piece.gameObject))
+            {
+                return false;
+            }
+
+            pieceTable.m_pieces.Add(piece.gameObject);
+            return true;
+        }
+
+        /// <summary>
+        ///     Remove a <see cref="Piece"/> from a <see cref="PieceTable"/> by name.
+        /// </summary>
+        /// <param name="piece"></param>
+        /// <param name="table"></param>
+        /// <returns>true if the piece was removed from the table</returns>
+        public bool RemoveFromPieceTable(Piece piece, string table)
+        {
+            if (!piece || string.IsNullOrEmpty(table))
+            {
+                return false;
+            }
+
+            var pieceTable = GetPieceTable(table);
+            if (!pieceTable)
+            {
+                return false;
+            }
+
+            return pieceTable.m_pieces.Remove(piece.gameObject);
         }
 
         /// <summary>
@@ -466,6 +520,34 @@ namespace Jotunn.Managers
             }
         }
 
+        private void BindSettings()
+        {
+            Dictionary<BepInPlugin, bool> saveOnConfigSet = new Dictionary<BepInPlugin, bool>();
+
+            foreach (var piece in Pieces.Values)
+            {
+                if (!saveOnConfigSet.ContainsKey(piece.SourceMod))
+                {
+                    PluginInfo plugin = Chainloader.PluginInfos[piece.SourceMod.GUID];
+                    saveOnConfigSet[piece.SourceMod] = plugin.Instance.Config.SaveOnConfigSet;
+                    plugin.Instance.Config.SaveOnConfigSet = false;
+                }
+
+                piece.BindSettings();
+            }
+
+            foreach (var sourceMod in saveOnConfigSet.Keys)
+            {
+                PluginInfo plugin = Chainloader.PluginInfos[sourceMod.GUID];
+                plugin.Instance.Config.SaveOnConfigSet = saveOnConfigSet[sourceMod];
+
+                if (plugin.Instance.Config.SaveOnConfigSet)
+                {
+                    plugin.Instance.Config.Save();
+                }
+            }
+        }
+
         /// <summary>
         ///     Loop all items in the game and get all PieceTables used (vanilla and custom ones).
         /// </summary>
@@ -571,18 +653,6 @@ namespace Jotunn.Managers
                 throw new Exception($"Prefab {prefab.name} has no Piece component attached");
             }
 
-            var table = GetPieceTable(pieceTable);
-            if (table == null)
-            {
-                throw new Exception($"Could not find PieceTable {pieceTable}");
-            }
-
-            if (table.m_pieces.Contains(prefab))
-            {
-                Logger.LogDebug($"Already added piece {prefab.name}");
-                return;
-            }
-
             var name = prefab.name;
             var hash = name.GetStableHashCode();
 
@@ -596,13 +666,18 @@ namespace Jotunn.Managers
                 PrefabManager.Instance.RegisterToZNetScene(prefab);
             }
 
+            if (!AddToPieceTable(piece, pieceTable))
+            {
+                if (!GetPieceTable(pieceTable))
+                {
+                    Logger.LogWarning($"Could not find PieceTable {pieceTable}");
+                }
+            }
+
             if (!string.IsNullOrEmpty(category))
             {
                 piece.m_category = AddPieceCategory(category);
             }
-
-            table.m_pieces.Add(prefab);
-            Logger.LogDebug($"Added piece {prefab.name} | Token: {piece.TokenName()}");
         }
 
         private void RegisterCustomData(ObjectDB self)
