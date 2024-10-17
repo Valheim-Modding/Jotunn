@@ -874,8 +874,6 @@ namespace Jotunn.Managers
                     pluginGUIDs.Add(pluginGUID);
                 }
 
-                Logger.LogDebug($"Received {configIdentifier} {section} {key} {serializedValue}");
-
                 ConfigFile config = GetConfigFile(configIdentifier);
 
                 if (config != null)
@@ -885,7 +883,6 @@ namespace Jotunn.Managers
                         var entry = config[section, key];
                         if (entry.IsSyncable())
                         {
-                            Logger.LogDebug($"Setting config value {configIdentifier}.{section}.{key} to {serializedValue}");
                             entry.BoxedValue = TomlTypeConverter.ConvertToValue(serializedValue, entry.SettingType);
 
                             // Set buttons after receive
@@ -927,7 +924,6 @@ namespace Jotunn.Managers
             pkg.Write(num);
             foreach (var entry in values)
             {
-                Logger.LogDebug($"{entry.Item1} {entry.Item2} {entry.Item3} {entry.Item4}");
                 pkg.Write(entry.Item1);
                 pkg.Write(entry.Item2);
                 pkg.Write(entry.Item3);

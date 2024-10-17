@@ -7,6 +7,7 @@
 * Added PieceManager.AddPieceCategory(string name) and PieceManager.RemovePieceCategory(string name)
 * Deprecated PieceManager.AddPieceCategory(string table, string name) and PieceManager.RemovePieceCategory(string table, string name), use the new overloads without the table parameter
 * Fixed parsing of mod version data for compatibility with only a major.minor part
+* Fixed excessive debug logging in the SynchronizationManager
 
 ## Version 2.20.3
 * Fixed explicit `AdminOnly = false` config entries being locked for editing. Introduced in 2.20.2, `AdminOnly = true` was not affected
