@@ -210,12 +210,31 @@ namespace Jotunn.Managers
         /// <param name="loadMode"></param>
         private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
+            // main menu
             if (scene.name == "start")
             {
                 PlayerIsAdmin = true;
                 UnlockConfigurationEntries();
                 ResetAdminConfigs();
                 CacheConfigurationValues();
+            }
+
+            // load into world
+            if (scene.name == "main")
+            {
+                InitAdminConfigs();
+
+                if (IsServer())
+                {
+                    PlayerIsAdmin = true;
+                    UnlockConfigurationEntries();
+                }
+                else
+                {
+                    PlayerIsAdmin = false;
+                    LockConfigurationEntries();
+                    SetToDefaultConfigEntries();
+                }
             }
         }
 
@@ -622,7 +641,7 @@ namespace Jotunn.Managers
         /// </summary>
         private static bool ConfigEntryBase_GetSerializedValue(ConfigEntryBase __instance, ref string __result)
         {
-            if (!__instance.IsSyncable() || GUIUtils.IsHeadless || __instance.GetLocalValue() == null)
+            if (IsServer() || !__instance.IsSyncable())
             {
                 return true;
             }
@@ -636,11 +655,12 @@ namespace Jotunn.Managers
         /// </summary>
         private static bool ConfigEntryBase_SetSerializedValue(ConfigEntryBase __instance, string value)
         {
-            if (GUIUtils.IsHeadless || __instance.GetLocalValue() == null)
-            {
-                return true;
-            }
-            return false;
+            return IsServer() || !__instance.IsSyncable();
+        }
+
+        private static bool IsServer()
+        {
+            return ZNet.instance && ZNet.instance.IsServer();
         }
 
         /// <summary>
@@ -784,6 +804,23 @@ namespace Jotunn.Managers
             localValues.Clear();
         }
 
+        private void SetToDefaultConfigEntries()
+        {
+            foreach (var config in GetConfigFiles())
+            {
+                foreach (var configDefinition in config.Keys)
+                {
+                    var configEntry = config[configDefinition.Section, configDefinition.Key];
+                    var configAttribute = configEntry.GetConfigurationManagerAttributes();
+
+                    if (configAttribute?.IsAdminOnly == true)
+                    {
+                        configEntry.BoxedValue = configEntry.DefaultValue;
+                    }
+                }
+            }
+        }
+
         private const byte INITIAL_CONFIG = 64;
 
         private IEnumerator ConfigRPC_OnClientReceive(long sender, ZPackage package)
@@ -791,11 +828,6 @@ namespace Jotunn.Managers
             InvokeOnSyncingConfiguration();
 
             byte packageFlags = package.ReadByte();
-
-            if ((packageFlags & INITIAL_CONFIG) != 0)
-            {
-                InitAdminConfigs();
-            }
 
             package.SetPos(0);
             ApplyConfigZPackage(package, out bool initial, out HashSet<string> pluginGUIDs);
