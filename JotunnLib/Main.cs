@@ -21,7 +21,7 @@ namespace Jotunn
         /// <summary>
         ///     The current version of the Jotunn library.
         /// </summary>
-        public const string Version = "2.20.3";
+        public const string Version = "2.21.0";
 
         /// <summary>
         ///     The name of the library.
