@@ -6,6 +6,7 @@
 * Added ConfigManagerUtils for soft access to common ConfigurationManager functionality
 * Added PieceManager.AddPieceCategory(string name) and PieceManager.RemovePieceCategory(string name)
 * Deprecated PieceManager.AddPieceCategory(string table, string name) and PieceManager.RemovePieceCategory(string table, string name), use the new overloads without the table parameter
+* Changed the version check of Jotunn to require the exact same version, if installed on both server and client
 * Fixed parsing of mod version data for compatibility with only a major.minor part
 * Fixed excessive debug logging in the SynchronizationManager
 

@@ -15,7 +15,7 @@ namespace Jotunn
     [BepInPlugin(ModGuid, ModName, Version)]
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.maxsch.valheim.LocalizationCache", BepInDependency.DependencyFlags.SoftDependency)]
-    [NetworkCompatibility(CompatibilityLevel.VersionCheckOnly, VersionStrictness.Minor)]
+    [NetworkCompatibility(CompatibilityLevel.VersionCheckOnly, VersionStrictness.Patch)]
     public class Main : BaseUnityPlugin
     {
         /// <summary>
