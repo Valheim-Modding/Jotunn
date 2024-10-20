@@ -4,8 +4,8 @@
 * Added DungeonManager, CustomRoom and RoomConfig for custom dungeons (thx probablykory & warp)
 * Added GameVersions utility to check for specific game versions
 * Added ConfigManagerUtils for soft access to common ConfigurationManager functionality
-* Added PieceManager.AddPieceCategory(string name) and PieceManager.RemovePieceCategory(string name)
-* Deprecated PieceManager.AddPieceCategory(string table, string name) and PieceManager.RemovePieceCategory(string table, string name), use the new overloads without the table parameter
+* Added PieceManager.AddPieceCategory(string name) + RemovePieceCategory
+* Deprecated PieceManager.AddPieceCategory(string table, string name) + RemovePieceCategory, use the new overloads
 * Changed the version check of Jotunn to require the exact same version, if installed on both server and client
 * Fixed AdminOnly configs were not locked if the server doesn't load Jotunn
 * Fixed SynchronizationManager.PlayerIsAdmin was always true if the server doesn't load Jotunn
