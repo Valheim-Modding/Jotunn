@@ -1,0 +1,332 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Inputs </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Inputs ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="inputs">Inputs</h1>
+
+<p><em>Inputs</em> (or &quot;Buttons&quot;) in Valheim are virtual mappings of strings to either keyboard/mouse or gamepad inputs. Custom buttons can be registered through the <a class="xref" href="../api/Jotunn.Managers.InputManager.html">InputManager</a> singleton using Jötunn's abstraction <a class="xref" href="../api/Jotunn.Configs.ButtonConfig.html">ButtonConfig</a>.</p>
+<p>The code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<h2 id="creating-custom-inputs">Creating custom inputs</h2>
+<p>First, define <a class="xref" href="../api/Jotunn.Configs.ButtonConfig.html">ButtonConfig</a> members in your mod class for all buttons you want to use in your mod. Having a reference to the defined buttons makes it easier for us to poll for button presses. These can also be used to add custom <a href="#creating-custom-keyhints">KeyHints</a> for your buttons to the game later on.</p>
+<p>You can have key bindings defined &quot;on the fly&quot; which binds a specific key to an artificial button name. To be more versatile you can have the custom binding be defined in a BepInEx configuration file and let the user change it to his preference.</p>
+<p>Jötunn supports multiple types of key bindings. You can use Unity's &quot;KeyCode&quot; or BepInEx' KeyboardShortcut and/or a GamepadButton, which is provided via Jötunn's <a class="xref" href="../api/Jotunn.Managers.InputManager.GamepadButton.html">InputManager</a>.</p>
+<pre><code class="lang-cs">// Fixed buttons
+private ButtonConfig ShowGUIButton;
+private ButtonConfig RaiseSkillButton;
+
+// Variable button backed by a KeyCode and a GamepadButton config
+private ConfigEntry&lt;KeyCode&gt; EvilSwordSpecialConfig;
+private ConfigEntry&lt;InputManager.GamepadButton&gt; EvilSwordGamepadConfig;
+private ButtonConfig EvilSwordSpecialButton;
+
+// Variable BepInEx Shortcut backed by a config
+private ConfigEntry&lt;KeyboardShortcut&gt; ShortcutConfig;
+private ButtonConfig ShortcutButton;
+</code></pre>
+<p>For the configuration backed button, you will need to create the configuration binding <em>before</em> creating and adding the actual button. For more information on configuration bindings see <a href="config.html">our configuration tutorial</a>.</p>
+<pre><code class="lang-cs">// Create configuration values
+private void CreateConfigValues()
+{
+    Config.SaveOnConfigSet = true;
+
+    // Add a client side custom input key for the EvilSword
+    EvilSwordSpecialConfig = Config.Bind(&quot;Client config&quot;, &quot;EvilSword Special Attack&quot;, KeyCode.B, new ConfigDescription(&quot;Key to unleash evil with the Evil Sword&quot;));
+    // Also add an alternative Gamepad button for the EvilSword
+    EvilSwordGamepadConfig = Config.Bind(&quot;Client config&quot;, &quot;EvilSword Special Attack Gamepad&quot;, InputManager.GamepadButton.ButtonSouth,
+        new ConfigDescription(&quot;Button to unleash evil with the Evil Sword&quot;));
+
+    // BepInEx' KeyboardShortcut class is supported, too
+    ShortcutConfig = Config.Bind(&quot;Client config&quot;, &quot;Keycodes with modifiers&quot;,
+        new KeyboardShortcut(KeyCode.L, KeyCode.LeftControl, KeyCode.LeftAlt),
+        new ConfigDescription(&quot;Secret key combination&quot;));
+}
+</code></pre>
+<p>To actually register your custom inputs to the game, instantiate all <a class="xref" href="../api/Jotunn.Configs.ButtonConfig.html">ButtonConfig's</a> and add them to Jötunn's <a class="xref" href="../api/Jotunn.Managers.InputManager.html">InputManager</a>. Note that the configuration backed button uses the reference to the ConfigEntry member instead of directly assigning a KeyCode value.</p>
+<pre><code class="lang-cs">// Add custom key bindings
+private void AddInputs()
+{
+    // Add key bindings on the fly
+    ShowGUIButton = new ButtonConfig
+    {
+        Name = &quot;JotunnModExample_Menu&quot;,
+        Key = KeyCode.Insert,
+        ActiveInCustomGUI = true  // Enable this button in custom GUI
+    };
+    InputManager.Instance.AddButton(PluginGUID, ShowGUIButton);
+
+    RaiseSkillButton = new ButtonConfig
+    {
+        Name = &quot;JotunnExampleMod_RaiseSkill&quot;,
+        Key = KeyCode.RightControl,
+        ActiveInGUI = true,    // Enable this button in vanilla GUI (e.g. the console)
+        ActiveInCustomGUI = true  // Enable this button in custom GUI
+    };
+    InputManager.Instance.AddButton(PluginGUID, RaiseSkillButton);
+
+
+    // Add key bindings backed by a config value
+    // Also adds the alternative Config for the gamepad button
+    // The HintToken is used for the custom KeyHint of the EvilSword
+    EvilSwordSpecialButton = new ButtonConfig
+    {
+        Name = &quot;EvilSwordSpecialAttack&quot;,
+        Config = EvilSwordSpecialConfig,        // Keyboard input
+        GamepadConfig = EvilSwordGamepadConfig, // Gamepad input
+        HintToken = &quot;$evilsword_beevil&quot;,        // Displayed KeyHint
+        BlockOtherInputs = true   // Blocks all other input for this Key / Button
+    };
+    InputManager.Instance.AddButton(PluginGUID, EvilSwordSpecialButton);
+
+    // Supply your KeyboardShortcut configs to ShortcutConfig instead.
+    ShortcutButton = new ButtonConfig
+    {
+        Name = &quot;SecretShortcut&quot;,
+        ShortcutConfig = ShortcutConfig,
+        HintToken = &quot;$lulzcut&quot;
+    };
+    InputManager.Instance.AddButton(PluginGUID, ShortcutButton);
+}
+</code></pre>
+<p>Note that <code>AddButton</code> takes your PluginGUID as the first parameter. This is how Jötunn tries to avoid conflicts between multiple plugins which might create the same button. Internally the GUID of the mod is appended to the button's name. That means you can be sure that you receive your defined button when polling for it using your button config reference and other mods can't overwrite your binding when adding a button with the same name.</p>
+<p>Now, to use our input, we can use the <code>ZInput</code> class provided by Valheim.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>When you set BlockOtherInputs = true in your ButtonConfig, every call to ZInput checking for your custom key will prevent other mods or the base game from receiving those key events - even if you don't actually react to it. It is important that you only call any ZInput.GetButton method for those buttons, if you actually intend to react to it. That functionality is intended for custom input also using GamepadButton, since gamepad input is very limited. <strong>If you don't use GamepadButton, don't set BlockOtherInputs = true</strong>.</p>
+</div>
+<pre><code class="lang-cs">// Called every frame
+private void Update()
+{
+    // Since our Update function in our BepInEx mod class will load BEFORE Valheim loads,
+    // we need to check that ZInput is ready to use first.
+    if (ZInput.instance != null)
+    {
+        // Check if our button is pressed. This will only return true ONCE, right after our button is pressed.
+        // If we hold the button down, it won't spam toggle our menu.
+        if (ZInput.GetButtonDown(ShowGUIButton.Name))
+        {
+            TogglePanel();
+        }
+
+        // Raise the test skill
+        if (Player.m_localPlayer != null &amp;&amp; ZInput.GetButtonDown(RaiseSkillButton.Name))
+        {
+            Player.m_localPlayer.RaiseSkill(TestSkill);
+        }
+
+        // Use the name of the ButtonConfig to identify the button pressed
+        // without knowing what key the user bound to this button in his configuration.
+        // Our button is configured to block all other input, so we just want to query
+        // ZInput when our custom item is equipped.
+        if (EvilSwordSpecialButton != null &amp;&amp; MessageHud.instance != null &amp;&amp; 
+            Player.m_localPlayer != null &amp;&amp; Player.m_localPlayer.m_visEquipment.m_rightItem == &quot;EvilSword&quot;)
+        {
+            if (ZInput.GetButton(EvilSwordSpecialButton.Name) &amp;&amp; MessageHud.instance.m_msgQeue.Count == 0)
+            {
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, &quot;$evilsword_beevilmessage&quot;);
+            }
+        }
+
+        // KeyboardShortcuts are also injected into the ZInput system
+        if (ShortcutButton != null &amp;&amp; MessageHud.instance != null)
+        {
+            if (ZInput.GetButtonDown(ShortcutButton.Name) &amp;&amp; MessageHud.instance.m_msgQeue.Count == 0)
+            {
+                MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, &quot;$lulzcut_message&quot;);
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="creating-custom-keyhints">Creating custom KeyHints</h2>
+<p>Key hints are displayed in Valheim when you equip weapons or tools to show which keys execute a certain action. With Jötunn you can add your own key hints for your custom weapons and tools by the means of the same <a class="xref" href="../api/Jotunn.Configs.ButtonConfig.html">ButtonConfig</a> class you can use to define custom key bindings. You need to create a <a class="xref" href="../api/Jotunn.Configs.KeyHintConfig.html">KeyHintConfig</a> with one or more instances of <a class="xref" href="../api/Jotunn.Configs.ButtonConfig.html">ButtonConfig</a> in it and add it to the <a class="xref" href="../api/Jotunn.Managers.KeyHintManager.html">KeyHintManager</a>. In our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a> we use the custom key bindings from the EvilSword to display a key hint for it and also override vanilla Valheim key hint messages.</p>
+<p>Note the use of the special Axis &quot;Mouse ScrollWheel&quot; to override the Valheim scroll icon text.</p>
+<pre><code class="lang-cs">// Implementation of key hints replacing vanilla keys and using custom keys.
+// KeyHints appear in the same order in which they are defined in the config.
+private void KeyHintsEvilSword()
+{
+    // Create custom KeyHints for the item
+    KeyHintConfig KHC = new KeyHintConfig
+    {
+        Item = &quot;EvilSword&quot;,
+        ButtonConfigs = new[]
+        {
+            // Override vanilla &quot;Attack&quot; key text
+            new ButtonConfig { Name = &quot;Attack&quot;, HintToken = &quot;$evilsword_shwing&quot; },
+            // User our custom button defined earlier, syncs with the backing config value
+            EvilSwordSpecialButton,
+            // Override vanilla &quot;Mouse ScrollWheel&quot; text
+            new ButtonConfig { Name = &quot;Scroll&quot;, Axis = &quot;Mouse ScrollWheel&quot;, HintToken = &quot;$evilsword_scroll&quot; }
+        }
+    };
+    KeyHintManager.Instance.AddKeyHint(KHC);
+}
+</code></pre>
+<p>The resulting KeyHints look like this for Keyboard and Gamepad input respectively</p>
+<p><img src="../Documentation/images/data/EvilSwordKeyHints.png" alt="Custom Keyboard Key Hints"> <img src="../Documentation/images/data/EvilSwordKeyHintsButton.png" alt="Custom Gamepad Key Hints"></p>
+<p>Note that all texts are tokenized and translated ingame. The translations are also provided by Jötunn. Read the <a href="localization.html">tutorial on Localizations</a> for more information on that topic.</p>
+<h3 id="other-use-cases">Other use cases</h3>
+<p>It is also possible to have &quot;empty&quot; KeyHints which override the vanilla hints to none or KeyHints per item and building piece for tools.</p>
+<pre><code class="lang-cs">// Override &quot;default&quot; KeyHint with an empty config
+KeyHintConfig KHC_base = new KeyHintConfig
+{
+    Item = &quot;BlueprintTestRune&quot;
+};
+KeyHintManager.Instance.AddKeyHint(KHC_base);
+
+// Add custom KeyHints for specific pieces
+KeyHintConfig KHC_make = new KeyHintConfig
+{
+    Item = &quot;BlueprintTestRune&quot;,
+    Piece = &quot;make_testblueprint&quot;,
+    ButtonConfigs = new[]
+    {
+        // Override vanilla &quot;Attack&quot; key text
+        new ButtonConfig { Name = &quot;Attack&quot;, HintToken = &quot;$bprune_make&quot; }
+    }
+};
+KeyHintManager.Instance.AddKeyHint(KHC_make);
+
+KeyHintConfig KHC_piece = new KeyHintConfig
+{
+    Item = &quot;BlueprintTestRune&quot;,
+    Piece = &quot;piece_testblueprint&quot;,
+    ButtonConfigs = new[]
+    {
+        // Override vanilla &quot;Attack&quot; key text
+        new ButtonConfig { Name = &quot;Attack&quot;, HintToken = &quot;$bprune_piece&quot; }
+    }
+};
+KeyHintManager.Instance.AddKeyHint(KHC_piece);
+</code></pre>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/inputs.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

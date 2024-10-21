@@ -1,0 +1,316 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CreatureConfig
+ </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CreatureConfig
+ ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Jotunn.Configs.CreatureConfig">
+
+
+
+  <h1 id="Jotunn_Configs_CreatureConfig" data-uid="Jotunn.Configs.CreatureConfig" class="text-break">Class CreatureConfig
+</h1>
+  <div class="markdown level0 summary">Configuration class for adding custom creature spawns.<br>
+Use this in a constructor of <a class="xref" href="Jotunn.Entities.CustomCreature.html">CustomCreature</a></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">CreatureConfig</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Jotunn.html">Jotunn</a>.<a class="xref" href="Jotunn.Configs.html">Configs</a></h6>
+  <h6><strong>Assembly</strong>: Jotunn.dll</h6>
+  <h5 id="Jotunn_Configs_CreatureConfig_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class CreatureConfig</code></pre>
+  </div>
+  <h3 id="fields">Fields
+</h3>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_Consumables" data-uid="Jotunn.Configs.CreatureConfig.Consumables">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.Consumables.html">Consumables</a>
+        </td>
+        <td class="markdown level1 summary">String array of items this creature can consume to use in the MonsterAI component.<br>
+Jötunn will try to resolve all strings to ItemDrop at runtime.<br>
+An existing consumeItems table will be replaced.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_DropConfigs" data-uid="Jotunn.Configs.CreatureConfig.DropConfigs">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.DropConfigs.html">DropConfigs</a>
+        </td>
+        <td class="markdown level1 summary">Array of <a class="xref" href="Jotunn.Configs.DropConfig.html">DropConfigs</a> to use for this creature's CharacterDrop.<br>
+A CharacterDrop component will automatically be added if not present.<br>
+The drop table of an existing component will be replaced.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_SpawnConfigs" data-uid="Jotunn.Configs.CreatureConfig.SpawnConfigs">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.SpawnConfigs.html">SpawnConfigs</a>
+        </td>
+        <td class="markdown level1 summary">Array of <a class="xref" href="Jotunn.Configs.SpawnConfig.html">SpawnConfigs</a> used for world spawns of your custom creature.<br>
+Leave empty if you don't want your creature to spawn in the world automatically.<br></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+</h3>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_Faction" data-uid="Jotunn.Configs.CreatureConfig.Faction">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.Faction.html#Jotunn_Configs_CreatureConfig_Faction">Faction</a>
+        </td>
+        <td class="markdown level1 summary">Character.Faction of this creature.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_Group" data-uid="Jotunn.Configs.CreatureConfig.Group">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.Group.html#Jotunn_Configs_CreatureConfig_Group">Group</a>
+        </td>
+        <td class="markdown level1 summary">Group tag of this creature.<br>
+Creatures in the same group don't attack each other, regardless of faction.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_Name" data-uid="Jotunn.Configs.CreatureConfig.Name">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.Name.html#Jotunn_Configs_CreatureConfig_Name">Name</a>
+        </td>
+        <td class="markdown level1 summary">The unique name for your custom creature. May be tokenized.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_UseCumulativeLevelEffects" data-uid="Jotunn.Configs.CreatureConfig.UseCumulativeLevelEffects">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.UseCumulativeLevelEffects.html#Jotunn_Configs_CreatureConfig_UseCumulativeLevelEffects">UseCumulativeLevelEffects</a>
+        </td>
+        <td class="markdown level1 summary">If set to true, LevelEffects stack the "EnableObject" action for all levels
+instead of only activating the GameObject of the highest level matched.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_AddConsumable_System_String_" data-uid="Jotunn.Configs.CreatureConfig.AddConsumable(System.String)">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.AddConsumable.html#Jotunn_Configs_CreatureConfig_AddConsumable_System_String_">AddConsumable(string)</a>
+        </td>
+        <td class="markdown level1 summary">Appends a new consumable to the array of existing ones.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_AddDropConfig_Jotunn_Configs_DropConfig_" data-uid="Jotunn.Configs.CreatureConfig.AddDropConfig(Jotunn.Configs.DropConfig)">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.AddDropConfig.html#Jotunn_Configs_CreatureConfig_AddDropConfig_Jotunn_Configs_DropConfig_">AddDropConfig(DropConfig)</a>
+        </td>
+        <td class="markdown level1 summary">Appends a new <a class="xref" href="Jotunn.Configs.DropConfig.html">DropConfig</a> to the array of existing ones.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_AddSpawnConfig_Jotunn_Configs_SpawnConfig_" data-uid="Jotunn.Configs.CreatureConfig.AddSpawnConfig(Jotunn.Configs.SpawnConfig)">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.AddSpawnConfig.html#Jotunn_Configs_CreatureConfig_AddSpawnConfig_Jotunn_Configs_SpawnConfig_">AddSpawnConfig(SpawnConfig)</a>
+        </td>
+        <td class="markdown level1 summary">Appends a new <a class="xref" href="Jotunn.Configs.SpawnConfig.html">SpawnConfig</a> to the array of existing ones.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_Apply_GameObject_" data-uid="Jotunn.Configs.CreatureConfig.Apply(GameObject)">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.Apply.html#Jotunn_Configs_CreatureConfig_Apply_GameObject_">Apply(GameObject)</a>
+        </td>
+        <td class="markdown level1 summary">Apply this config's values to a creature GameObject.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_GetConsumeItems" data-uid="Jotunn.Configs.CreatureConfig.GetConsumeItems">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.GetConsumeItems.html#Jotunn_Configs_CreatureConfig_GetConsumeItems">GetConsumeItems()</a>
+        </td>
+        <td class="markdown level1 summary">Creates an array of ItemDrop mocks for the consumeItem list of the creature.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_GetDrops" data-uid="Jotunn.Configs.CreatureConfig.GetDrops">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.GetDrops.html#Jotunn_Configs_CreatureConfig_GetDrops">GetDrops()</a>
+        </td>
+        <td class="markdown level1 summary">Converts the <a class="xref" href="Jotunn.Configs.DropConfig.html">DropConfigs</a> to Valheim style CharacterDrop.Drop array.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Configs_CreatureConfig_GetSpawns" data-uid="Jotunn.Configs.CreatureConfig.GetSpawns">
+          <a class="xref" href="Jotunn.Configs.CreatureConfig.GetSpawns.html#Jotunn_Configs_CreatureConfig_GetSpawns">GetSpawns()</a>
+        </td>
+        <td class="markdown level1 summary">Converts the <a class="xref" href="Jotunn.Configs.SpawnConfig.html">SpawnConfigs</a> to Valheim style SpawnSystem.SpawnData array.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="Jotunn.PrefabExtension.FixReferences.html#Jotunn_PrefabExtension_FixReferences_System_Object_">PrefabExtension.FixReferences(object)</a>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/new/prod/apiSpec/new?filename=Jotunn_Configs_CreatureConfig.md&amp;value=---%0Auid%3A%20Jotunn.Configs.CreatureConfig%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Configs/CreatureConfig.cs/#L13" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,540 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Creatures </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Creatures ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="creatures">Creatures</h1>
+
+<p>A <em>Creature</em> is a prefab representing an enemy, animal or NPC in Valheim.
+Creatures can be used in various spawning classes where certain conditions have to be fulfilled to instantiate those prefabs into the game.
+Jötunn provides an API for validating and adding custom creature prefabs to the game via the <a class="xref" href="../api/Jotunn.Entities.CustomCreature.html">CustomCreature</a> class using the <a class="xref" href="../api/Jotunn.Managers.CreatureManager.html">CreatureManager</a>.
+Basic spawn conditions can be defined by adding <a class="xref" href="../api/Jotunn.Configs.SpawnConfig.html">spawn configurations</a> to those custom creature prefabs as well as drop lists using <a class="xref" href="../api/Jotunn.Configs.DropConfig.html">drop configs</a>.</p>
+<p><strong>Note</strong>: The Unity screens and code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<h2 id="creating-creature-prefabs">Creating Creature Prefabs</h2>
+<p>A prefab has to match certain criteria and has to follow a certain layout to be recognized as a creature prefab by Valheim.
+Those requirements are absoultely mandatory as part of the game code. A minimal creature prefab layout looks like this:</p>
+<p><img src="../Documentation/images/data/creaturePrefab.png" alt="creature prefab"></p>
+<p>The base prefab consists of the prefab root GameObject and at least two child objects for the eye position and the visual part of the prefab (the armature and model).</p>
+<h3 id="base-components">Base Components</h3>
+<p>The root GameObject of the prefab has several mandatory components attached:</p>
+<p><img src="../Documentation/images/data/creatureComponentsBase.png" alt="creature base components"></p>
+<p>Instead of using the <code>Character</code> and <code>AnimalAI</code> components you can also use a combination of <code>Humanoid</code> and <code>MonsterAI</code>.
+The first combination is used for &quot;passive mobs&quot; like deers or other animals.
+The latter combination is used for mobs which can attack the player like Boars or Skeletons.</p>
+<h3 id="eyepos">EyePos</h3>
+<p>The first child GO of the creature prefab is <code>EyePos</code> and does not have any mandatory components itself but is a mandatory reference used in the <code>Character</code> component:</p>
+<p><img src="../Documentation/images/data/creatureComponentsEyePos.png" alt="creature eye pos child"></p>
+<h3 id="visual">Visual</h3>
+<p>The second child GO <code>Visual</code> also has some mandatory components.
+Those are normally not attached at this level of the prefab structure as the <code>Visual</code> part is usually holding the armature and model of a prefab which each consist of further GOs when using more complex creature prefabs.
+To keep it simple for this minimal example, the mandatory components as well as the model components are attached to this single child GO as follows:</p>
+<p><img src="../Documentation/images/data/creatureComponentsVisual.png" alt="creature visual child"></p>
+<p>When validating the creature prefab the game looks for the <code>Animator</code> and <code>CharacterAnimEvent</code> component at any level of the prefab's GO hierarchy.</p>
+<h3 id="additional-considerations">Additional Considerations</h3>
+<p>There are some &quot;gotcha&quot;'s when creating more complex creatures.</p>
+<ul>
+<li>Certain child GameObjects have to be added to the <code>character</code> layer for the game's collision and attack calculations (and probably more use cases). Jötunn will set the base GO and the first level of child GOs to this layer automatically for you. There is also the static <a class="xref" href="../api/Jotunn.Managers.CreatureManager.CharacterLayer.html">CreatureManager.CharacterLayer</a> field for mods to assign this layer in code.</li>
+<li>Creatures wanting to use Valheim's <code>Tameable</code> or <code>Procreation</code> components must have <code>Humanoid</code> and <code>MonsterAI</code> components attached.</li>
+</ul>
+<h2 id="adding-custom-creature-prefabs">Adding Custom Creature Prefabs</h2>
+<p>After preparing the creature prefab using the minimal requirements, we will load and import the prefab as a <a class="xref" href="../api/Jotunn.Entities.CustomCreature.html">CustomCreature</a>.
+This can be done as early as the mods Awake() call. All loaded creature prefabs added to the <a class="xref" href="../api/Jotunn.Managers.CreatureManager.html">CreatureManager</a> are kept between world loads.
+The most basic use case is to only add a prefab using as a custom creature and define if Jötunn should <a href="asset-mocking.html">resolve mock references</a>.
+In our example we opted to have more advanced uses to show all of Jötunn's possibilities. This example does:</p>
+<ul>
+<li>Create a new custom item to be used as the drop and consume item (see the <a href="items.html">item tutorial</a> for more information on how to do that)</li>
+<li>Load an &quot;animal&quot; creature and add it to the game using drop and spawn configs by providing a <a class="xref" href="../api/Jotunn.Configs.CreatureConfig.html">CreatureConfig</a></li>
+<li>Load an &quot;enemy&quot; creature and add it to the game using consume and spawn configs by providing a <a class="xref" href="../api/Jotunn.Configs.CreatureConfig.html">CreatureConfig</a>.</li>
+<li>Add localization for all added entities (see the <a href="localization.html">localization tutorial</a> for more information on that topic)</li>
+</ul>
+<pre><code class="lang-cs">private void Awake()
+{
+    // Create custom creatures and spawns
+    AddCustomCreaturesAndSpawns();
+}
+
+// Add custom made creatures using world spawns and drop lists
+private void AddCustomCreaturesAndSpawns()
+{
+    AssetBundle creaturesAssetBundle = AssetUtils.LoadAssetBundleFromResources(&quot;creatures&quot;);
+    try
+    {
+        // Load LulzCube test texture and sprite
+        var lulztex = AssetUtils.LoadTexture(&quot;JotunnModExample/Assets/test_tex.jpg&quot;);
+        var lulzsprite = Sprite.Create(lulztex, new Rect(0f, 0f, lulztex.width, lulztex.height), Vector2.zero);
+
+        // Create an optional drop/consume item for this creature
+        CreateDropConsumeItem(lulzsprite, lulztex);
+
+        // Load and create a custom animal creature
+        CreateAnimalCreature(creaturesAssetBundle, lulztex);
+                
+        // Load and create a custom monster creature
+        CreateMonsterCreature(creaturesAssetBundle, lulztex);
+                
+        // Add localization for all stuff added
+        Localization.AddTranslation(&quot;English&quot;, new Dictionary&lt;string, string&gt;
+        {
+            {&quot;item_lulzanimalparts&quot;, &quot;Parts of a Lulz Animal&quot;},
+            {&quot;item_lulzanimalparts_desc&quot;, &quot;Remains of a LulzAnimal. It still giggles when touched.&quot;},
+            {&quot;creature_lulzanimal&quot;, &quot;Lulz Animal&quot;},
+            {&quot;creature_lulzmonster&quot;, &quot;Lulz Monster&quot;}
+        });
+    }
+    catch (Exception ex)
+    {
+        Logger.LogWarning($&quot;Exception caught while adding custom creatures: {ex}&quot;);
+    }
+    finally
+    {
+        creaturesAssetBundle.Unload(false);
+    }
+}
+
+private void CreateDropConsumeItem(Sprite lulzsprite, Texture2D lulztex)
+{
+    // Create a little lulz cube as the drop and consume item for both creatures
+    ItemConfig lulzCubeConfig = new ItemConfig();
+    lulzCubeConfig.Name = &quot;$item_lulzanimalparts&quot;;
+    lulzCubeConfig.Description = &quot;$item_lulzanimalparts_desc&quot;;
+    lulzCubeConfig.Icon = lulzsprite;
+
+    var lulzItem = new CustomItem(&quot;item_lul&quot;, true, lulzCubeConfig);
+    lulzItem.ItemDrop.m_itemData.m_shared.m_maxStackSize = 20;
+    lulzItem.ItemPrefab.AddComponent&lt;Rigidbody&gt;();
+
+    // Set our lulzcube test texture on the first material found
+    lulzItem.ItemPrefab.GetComponentInChildren&lt;MeshRenderer&gt;().material.mainTexture = lulztex;
+
+    // Make it smol
+    lulzItem.ItemPrefab.GetComponent&lt;ZNetView&gt;().m_syncInitialScale = true;
+    lulzItem.ItemPrefab.transform.localScale = new Vector3(0.33f, 0.33f, 0.33f);
+
+    // Add to the ItemManager
+    ItemManager.Instance.AddItem(lulzItem);
+}
+        
+private void CreateAnimalCreature(AssetBundle creaturesAssetBundle, Texture2D lulztex)
+{
+    // Load creature prefab from AssetBundle
+    var lulzAnimalPrefab = creaturesAssetBundle.LoadAsset&lt;GameObject&gt;(&quot;LulzAnimal&quot;);
+
+    // Set our lulzcube test texture on the first material found
+    lulzAnimalPrefab.GetComponentInChildren&lt;MeshRenderer&gt;().material.mainTexture = lulztex;
+
+    // Create a custom creature using our drop item and spawn configs
+    var lulzAnimalConfig = new CreatureConfig();
+    lulzAnimalConfig.Name = &quot;$creature_lulzanimal&quot;;
+    lulzAnimalConfig.Faction = Character.Faction.AnimalsVeg;
+    lulzAnimalConfig.AddDropConfig(new DropConfig
+    {
+        Item = &quot;item_lul&quot;,
+        Chance = 100f,
+        LevelMultiplier = false,
+        MinAmount = 1,
+        MaxAmount = 3,
+        //OnePerPlayer = true
+    });
+    lulzAnimalConfig.AddSpawnConfig(new SpawnConfig
+    {
+        Name = &quot;Jotunn_LulzAnimalSpawn1&quot;,
+        SpawnChance = 100f,
+        SpawnInterval = 1f,
+        SpawnDistance = 1f,
+        MaxSpawned = 10,
+        Biome = Heightmap.Biome.Meadows
+    });
+    lulzAnimalConfig.AddSpawnConfig(new SpawnConfig
+    {
+        Name = &quot;Jotunn_LulzAnimalSpawn2&quot;,
+        SpawnChance = 50f,
+        SpawnInterval = 2f,
+        SpawnDistance = 2f,
+        MaxSpawned = 5,
+        Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
+    });
+
+    // Add it to the manager
+    CreatureManager.Instance.AddCreature(new CustomCreature(lulzAnimalPrefab, false, lulzAnimalConfig));
+}
+
+private void CreateMonsterCreature(AssetBundle creaturesAssetBundle, Texture2D lulztex)
+{
+    // Load creature prefab from AssetBundle
+    var lulzMonsterPrefab = creaturesAssetBundle.LoadAsset&lt;GameObject&gt;(&quot;LulzMonster&quot;);
+
+    // Set our lulzcube test texture on the first material found
+    lulzMonsterPrefab.GetComponentInChildren&lt;MeshRenderer&gt;().material.mainTexture = lulztex;
+
+    // Create a custom creature using our consume item and spawn configs
+    var lulzMonsterConfig = new CreatureConfig();
+    lulzMonsterConfig.Name = &quot;$creature_lulzmonster&quot;;
+    lulzMonsterConfig.Faction = Character.Faction.ForestMonsters;
+    lulzMonsterConfig.UseCumulativeLevelEffects = true;
+    lulzMonsterConfig.AddConsumable(&quot;item_lul&quot;);
+    lulzMonsterConfig.AddSpawnConfig(new SpawnConfig
+    {
+        Name = &quot;Jotunn_LulzMonsterSpawn1&quot;,
+        SpawnChance = 100f,
+        MaxSpawned = 1,
+        Biome = Heightmap.Biome.Meadows
+    });
+    lulzMonsterConfig.AddSpawnConfig(new SpawnConfig
+    {
+        Name = &quot;Jotunn_LulzMonsterSpawn2&quot;,
+        SpawnChance = 50f,
+        MaxSpawned = 1,
+        Biome = ZoneManager.AnyBiomeOf(Heightmap.Biome.BlackForest, Heightmap.Biome.Plains)
+    });
+
+    // Add it to the manager
+    CreatureManager.Instance.AddCreature(new CustomCreature(lulzMonsterPrefab, true, lulzMonsterConfig));
+}
+</code></pre>
+<h2 id="modifying-and-cloning-vanilla-creatures">Modifying and Cloning Vanilla Creatures</h2>
+<p>You can get vanilla creatures and either clone them or modify the original to change any aspect of that creature you want.
+To make sure all vanilla creature prefabs are loaded, use the provided event <a class="xref" href="../api/Jotunn.Managers.CreatureManager.OnVanillaCreaturesAvailable.html">OnVanillaCreaturesAvailable</a>.</p>
+<p>Cloned creatures keep all of their vanilla components except for the spawn configurations.
+This means unless you provide new spawn configurations, a cloned creature does not spawn at all.
+If you don't provide a new DropConfig for the cloned creature, all vanilla drops are kept. Providing a new DropConfig completely overrides all vanilla drops.</p>
+<p>Since creature prefabs are loaded globally and Jötunn keeps all added creatures for the game session after adding them once, you can unsubscribe from the event after its first execution.
+Keep in mind that other mods could alter vanilla cratures, too, so it might be required to modify vanilla creatures on every event execution.</p>
+<pre><code class="lang-cs">private void Awake()
+{
+    // Hook creature manager to get access to vanilla creature prefabs
+    CreatureManager.OnVanillaCreaturesAvailable += ModifyAndCloneVanillaCreatures;
+}
+
+// Modify and clone vanilla creatures
+private void ModifyAndCloneVanillaCreatures()
+{
+    // Clone a vanilla creature with and add new spawn information
+    var lulzetonConfig = new CreatureConfig();
+    lulzetonConfig.AddSpawnConfig(new SpawnConfig
+    {
+        Name = &quot;Jotunn_SkelSpawn1&quot;,
+        SpawnChance = 100,
+        SpawnInterval = 20f,
+        SpawnDistance = 1f,
+        Biome = Heightmap.Biome.Meadows,
+        MinLevel = 3
+    });
+
+    var lulzeton = new CustomCreature(&quot;Lulzeton&quot;, &quot;Skeleton_NoArcher&quot;, lulzetonConfig);
+    var lulzoid = lulzeton.Prefab.GetComponent&lt;Humanoid&gt;();
+    lulzoid.m_walkSpeed = 0.1f;
+    CreatureManager.Instance.AddCreature(lulzeton);
+
+    // Get a vanilla creature prefab and change some values
+    var skeleton = CreatureManager.Instance.GetCreaturePrefab(&quot;Skeleton_NoArcher&quot;);
+    var humanoid = skeleton.GetComponent&lt;Humanoid&gt;();
+    humanoid.m_walkSpeed = 2;
+
+    // Unregister the hook, modified and cloned creatures are kept over the whole game session
+    CreatureManager.OnVanillaCreaturesAvailable -= ModifyAndCloneVanillaCreatures;
+}
+</code></pre>
+<h2 id="drop-configurations">Drop Configurations</h2>
+<p>You can add one or more <a class="xref" href="../api/Jotunn.Configs.DropConfig.html">Drop Configurations</a> to your custom creature.
+Drops are items a creature leaves behind on its death. You must provide a prefab name for the drop as a string, Jötunn resolves that prefab at runtime for you.</p>
+<p>There are also additional properties to further the drops for the creature:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Effect</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MinAmount<br>MaxAmount</td>
+<td>How many of the drop items should be spawned.</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Chance</td>
+<td>The chance of this drop in percent.</td>
+<td>100</td>
+</tr>
+<tr>
+<td>OnePerPlayer</td>
+<td>If true, one instance per active player will be dropped regardless of min/max amount.</td>
+<td>false</td>
+</tr>
+<tr>
+<td>LevelMultiplier</td>
+<td>Should the drop amount be multiplied by the creature level.</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+<h2 id="spawn-configurations">Spawn Configurations</h2>
+<p>While adding creatures with Jötunn you can define one or more basic <a class="xref" href="../api/Jotunn.Configs.SpawnConfig.html">Spawn Configurations</a>.
+Those configurations are added to the world spawn list so your creatures spawn into the world automatically.
+You must at least provide an unique name for your spawn configuration and a spawning biome.</p>
+<p>There are plenty of properties to refine your spawn configuration:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Effect</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WorldSpawnEnabled</td>
+<td>If set to false, Jötunn creates the SpawnData for this config but disables the actual spawn.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>Biome</td>
+<td>Heightmap.Biome for your creature to spawn in. Multiple biomes per spawn config are possible.<br>To get the correct value for a multi-biome spawn, you can use <a class="xref" href="../api/Jotunn.Managers.ZoneManager.AnyBiomeOf.html#Jotunn_Managers_ZoneManager_AnyBiomeOf_Heightmap_Biome___">ZoneManager.AnyBiomeOf</a>.</td>
+<td></td>
+</tr>
+<tr>
+<td>BiomeArea</td>
+<td>Uses the Heightmap.BiomeArea enum to define if the spawn should be in the middle, on the edges or everywhere on the spawning biomes.</td>
+<td>Heightmap.BiomeArea.Everywhere</td>
+</tr>
+<tr>
+<td>MaxSpawned</td>
+<td>How many instances of this creature can be active at the same time (excluding event instances).</td>
+<td>1</td>
+</tr>
+<tr>
+<td>SpawnInterval</td>
+<td>Seconds between new spawn checks.</td>
+<td>4f</td>
+</tr>
+<tr>
+<td>SpawnChance</td>
+<td>Spawn chance each spawn interval in percent.</td>
+<td>100f</td>
+</tr>
+<tr>
+<td>SpawnDistance</td>
+<td>Minimum distance to another instance.</td>
+<td>10f</td>
+</tr>
+<tr>
+<td>MinSpawnRadius<br>MaxSpawnRadius</td>
+<td>Min/max distance from player to spawn at.<br>A specific player is chosen as a target, this setting basically creates a ring around the player, in which a spawn point can be chosen</td>
+<td>0 (equals the global default of 40)<br>0 (equals the global default of 80)</td>
+</tr>
+<tr>
+<td>MinLevel<br>MaxLevel</td>
+<td>Min/max level the creature spawns with.<br>Level is assigned by rolling levelup-chance for each level from min, until max is reached.</td>
+<td>1<br>1</td>
+</tr>
+<tr>
+<td>RequiredGlobalKey</td>
+<td>Only spawn if this key is set.<br>See <a class="xref" href="../api/Jotunn.Utils.GameConstants.GlobalKey.html">GameConstants.GlobalKey</a> for constant values</td>
+<td></td>
+</tr>
+<tr>
+<td>RequiredEnvironments</td>
+<td>Only spawn if one of this environments is active.<br>See <a class="xref" href="../api/Jotunn.Utils.GameConstants.Weather.html">GameConstants.Weather</a> for constant values</td>
+<td></td>
+</tr>
+<tr>
+<td>MinGroupSize<br>MaxGroupSize</td>
+<td>Min/Max number of entities to attempt to spawn at a time.</td>
+<td>1<br>1</td>
+</tr>
+<tr>
+<td>GroupRadius</td>
+<td>Radius of circle, in which to spawn a pack of entities<br>Eg., when group size is 3, all 3 spawns will happen inside a circle indicated by this radius.</td>
+<td>3f</td>
+</tr>
+<tr>
+<td>SpawnAtDay</td>
+<td>Can spawn during day.<br>Note: If not true, creatures with MonsterAI will attempt to despawn at day</td>
+<td>true</td>
+</tr>
+<tr>
+<td>SpawnAtNight</td>
+<td>Can spawn during night</td>
+<td>true</td>
+</tr>
+<tr>
+<td>MinAltitude<br>MaxAltitude</td>
+<td>The min/max altitude (distance to water surface) for the creature to spawn</td>
+<td>-1000f<br>1000f</td>
+</tr>
+<tr>
+<td>MinTilt<br>MaxTilt</td>
+<td>The min/max tilt of terrain required to spawn. Tested multiple times to decide where to spawn entity.</td>
+<td>35f</td>
+</tr>
+<tr>
+<td>MinOceanDepth<br>MaxOceanDepth</td>
+<td>The min/max ocean depth for the creature to spawn. Ignored if min == max.</td>
+<td>0<br>0</td>
+</tr>
+<tr>
+<td>SpawnInForest</td>
+<td>Spawn can happen in forest areas.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>SpawnOutsideForest</td>
+<td>Spawn can happen outside of forest areas.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>HuntPlayer</td>
+<td>Set true to let the AI hunt the player on spawn.</td>
+<td>false</td>
+</tr>
+<tr>
+<td>GroundOffset</td>
+<td>Offset to the ground the creature spawns on</td>
+<td>0.5f</td>
+</tr>
+</tbody>
+</table>
+<p>Jötunn's spawn configuration covers all of the game's default spawning options.
+To have much tighter control of your creature spawns, we recommend using the <a href="https://www.nexusmods.com/valheim/mods/453">SpawnThat! mod</a> by A Sharp Pen.</p>
+<h2 id="consumable-items">Consumable Items</h2>
+<p>Creatures using the <code>MonsterAI</code> component can have <code>ItemDrop</code> references attached to define which items this creature can consume when it encounters it in the world.
+This list is also used to define the items needed to tame the creature (if the <code>Tameable</code> component is also attached).
+You can add prefab strings to the <a class="xref" href="../api/Jotunn.Configs.CreatureConfig.Consumables.html">CreatureConfig.Consumables</a> array and Jötunn will try to resolve the <code>ItemDrop</code> component for you at runtime.</p>
+<h2 id="cumulative-level-effects">Cumulative Level Effects</h2>
+<p>When using the <code>LevelEffects</code> component on a creature prefab, the game only enables the effects for the actual creature level upon spawning a creature with a level higher than 0.
+Besides some material and transform alteration, those level effects also include an additional <code>GameObject</code> you can set per level to be enabled.
+Using Jötunn, you can set <a class="xref" href="../api/Jotunn.Configs.CreatureConfig.UseCumulativeLevelEffects.html#Jotunn_Configs_CreatureConfig_UseCumulativeLevelEffects">CreatureConfig.UseCumulativeLevelEffects</a> for any added custom creature to <code>true</code>.
+This will enable <em>all</em> previous levels <code>GamneObjects</code> as well as the object of your current level upon spawning the creature.
+If you spawn a 3-star creature for example, the objects for level 2 and 1 will also be enabled.</p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/creatures.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

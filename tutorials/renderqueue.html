@@ -1,0 +1,208 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Render Manager </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Render Manager ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="render-manager">Render Manager</h1>
+
+<p>Jötunn's <a class="xref" href="../api/Jotunn.Managers.RenderManager.html">RenderManager</a> allows you to pass a GameObject and let Jötunn render the visual parts into a Sprite for you.</p>
+<p><strong>Note</strong>: The code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<h2 id="creating-a-sprite-as-an-icon-for-a-cloned-prefab">Creating a Sprite as an icon for a cloned prefab</h2>
+<p>In this example, we will clone a tree seed and create an icon for it from a grown tree prefab.
+In order to do this, we will need to reference already instantiated game assets.
+One method of doing so is by using the &quot;vanilla prefabs available&quot; event provided by Jötunn.
+The event is fired when the vanilla items are in memory and thus clonable (more precisely in the start scene before the initial ObjectDB is cloned).</p>
+<pre><code class="lang-cs">private void Awake()
+{
+    // Add a cloned item with a runtime-rendered icon
+    PrefabManager.OnVanillaPrefabsAvailable += AddItemsWithRenderedIcons;
+}
+</code></pre>
+<p>In our method we render an icon of the Beech1 with <a class="xref" href="../api/Jotunn.Managers.RenderManager.Render.html#Jotunn_Managers_RenderManager_Render_Jotunn_Managers_RenderManager_RenderRequest_">RenderManager.Render</a>.
+Here we clone the vanilla BeechSeeds to a new <a class="xref" href="../api/Jotunn.Entities.CustomItem.html">CustomItem</a> (see our <a href="items.html">tutorial on items</a> for more information about cloning vanilla prefabs).</p>
+<pre><code class="lang-cs">// Create rendered icons from prefabs
+private void AddItemsWithRenderedIcons()
+{
+    // use the vanilla beech tree prefab to render our icon from
+    GameObject beech = PrefabManager.Instance.GetPrefab(&quot;Beech1&quot;);
+
+    // rendered the icon
+    Sprite renderedIcon = RenderManager.Instance.Render(beech, RenderManager.IsometricRotation);
+
+    // create the custom item with the icon
+    ItemConfig treeItemConfig = new ItemConfig();
+    treeItemConfig.Name = &quot;$rendered_tree&quot;;
+    treeItemConfig.Description = &quot;$rendered_tree_desc&quot;;
+    treeItemConfig.Icon = renderedIcon;
+    treeItemConfig.AddRequirement(new RequirementConfig(&quot;Wood&quot;, 2, 0, true));
+
+    ItemManager.Instance.AddItem(new CustomItem(&quot;item_MyTree&quot;, &quot;BeechSeeds&quot;, treeItemConfig));
+
+    // You want that to run only once, Jotunn has the item cached for the game session
+    PrefabManager.OnVanillaPrefabsAvailable -= AddItemsWithRenderedIcons;
+}
+</code></pre>
+<p>Note that all texts are tokenized and translated ingame. The translations are also provided by Jötunn. Read the <a href="localization.html">tutorial on Localizations</a> for more information on that topic.</p>
+<p>The resulting item with the rendered icon in game:</p>
+<p><img src="../Documentation/images/data/renderedIcon.png" alt="item with rendered icon"></p>
+<h2 id="caching-icons">Caching Icons</h2>
+<p>Generating icons takes only a short amount of time (a few milliseconds) but when you have a lot of items, it can add up.
+To prevent rendering the images every time, they can be cached and reused at the next game start.</p>
+<p>The simplest way to use caching is to enable the <code>UseCache</code> property of the <a class="xref" href="../api/Jotunn.Managers.RenderManager.RenderRequest.html">RenderRequest</a>.
+The generated sprites will be written to an image file and loaded from the file system instead of being re-rendered again.
+The GameObject name will be used to determine the file name.</p>
+<pre><code class="lang-cs">private void RenderIcons() {
+    GameObject beech = PrefabManager.Instance.GetPrefab(&quot;Beech1&quot;);
+
+    RenderManager.RenderRequest request = new RenderManager.RenderRequest(beech);
+    request.Rotation = RenderManager.IsometricRotation;
+    request.UseCache = true;
+
+    Sprite icon = RenderManager.Instance.Render(request);
+}
+</code></pre>
+<p>This assumes that the GameObject is vanilla and thus generates a new icon when the vanilla version changes.
+To have finer control over this, you can provide your mod metadata so it will generate a new icon when your mod version changes.</p>
+<p>Note that this has to be executed inside your mod's BaseUnityPlugin class, otherwise you will need a reference to your <code>Info.Metadata</code>.</p>
+<pre><code class="lang-cs">private void RenderIcons() {
+    GameObject beech = PrefabManager.Instance.GetPrefab(&quot;Beech1&quot;);
+
+    RenderManager.RenderRequest request = new RenderManager.RenderRequest(beech);
+    request.Rotation = RenderManager.IsometricRotation;
+    request.UseCache = true;
+    request.TargetPlugin = Info.Metadata;
+
+    Sprite icon = RenderManager.Instance.Render(request);
+}
+</code></pre>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/renderqueue.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

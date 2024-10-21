@@ -1,0 +1,381 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>GUI </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="GUI ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="gui">GUI</h1>
+
+<p>To add custom GUI elements to the game it is necessary to add the prefabs or generate the GUI components in code respecting the <a href="https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/index.html">Unity UI guidelines</a>.</p>
+<h2 id="customgui-event-and-gameobjects">CustomGUI event and GameObjects</h2>
+<p>Valheim creates new clones of the whole menu and ingame GUI everytime the scene changes from start to main and vice versa. So if you dont want to create and draw on your own canvas, you have to add your custom stuff to the right path on every scene change, too. Additionally, Valheim implemented a scaling feature for high resolution display (4K output or high DPI screens) and a pixel correction component called the PixelFix. These concepts can be accessed easily through Jötunn. You can subscribe to the event <a class="xref" href="../api/Jotunn.Managers.GUIManager.OnCustomGUIAvailable.html">GUIManager.OnCustomGUIAvailable</a> which gets called everytime the scene changed and Jötunn has created and resolved the current GUI in the scene (previously called <a href="xref:Jotunn.Managers.GUIManager.OnPixelFixCreated">GUIManager.OnPixelFixCreated</a> which is deprecated now). In that event call you can load / create your custom GUI components and add them in the transform hierarchy under either the <a class="xref" href="../api/Jotunn.Managers.GUIManager.CustomGUIBack.html#Jotunn_Managers_GUIManager_CustomGUIBack">GUIManager.CustomGUIBack</a> or the <a class="xref" href="../api/Jotunn.Managers.GUIManager.CustomGUIFront.html#Jotunn_Managers_GUIManager_CustomGUIFront">GUIManager.CustomGUIFront</a> GameObject (the latter being equivalent to the former <a href="xref:Jotunn.Managers.GUIManager.PixelFix">GUIManager.PixelFix</a> GameObject which is now deprecated). The first resides before Valheim's own GUI elements in the transform hierarchy which means the GUI elements added to this GameObject will be drawn <em>before</em> the vanilla GUI and therefore appear <em>behind</em> of it. The latter is drawn <em>after</em> Valheim's GUI elements and therefore your custom GUI will be in <em>front</em> of Valheim's GUI.</p>
+<h2 id="block-input-for-gui">Block input for GUI</h2>
+<p>When drawing GUI elements Valheim does not stop interpreting the Mouse/Keyboard inputs in any way per default. So if you want to interact with your GUI, you would have to interrupt the receiving of input for the player, camera, etc. Jötunn provides a shortcut to enable or disable player and camera input as the convenient method <a class="xref" href="../api/Jotunn.Managers.GUIManager.BlockInput.html#Jotunn_Managers_GUIManager_BlockInput_System_Boolean_">GUIManager.BlockInput(bool)</a>. When passing <code>true</code>, all input to the player is intercepted and the mouse is released from the camera so you can actually click on your custom GUI elements. You <strong>must</strong> call the method passing <code>false</code> again to release the input yourself upon closing your GUI components. Jötunn does not handle the release automatically.</p>
+<h2 id="determine-a-headless-instance">Determine a headless instance</h2>
+<p>A dedicated server running without GUI is commonly referred to as a headless server. Valheim provides methods in ZNet to determine if the current instance is a dedicated server, a &quot;local&quot; server (aka local game that others can connect to) or a client to another server. Jötunn also provides shortcuts to these via <a class="xref" href="../api/Jotunn.ZNetExtension.html">ZNetExtension</a>. Problem is that both approaches require ZNet to be instantiated which is not the case on your mods Awake(). If you need that information early on, the GUIManager provides a method for that: <a class="xref" href="../api/Jotunn.Managers.GUIManager.IsHeadless.html#Jotunn_Managers_GUIManager_IsHeadless">GUIManager.IsHeadless()</a> returns true if the current game instance is a dedicated/headless server without relying on ZNet. Jötunn also does not register GUI or Input hooks in that case to save on unnecessarily allocated resources.</p>
+<h2 id="valheim-style-gui-elements">Valheim style GUI elements</h2>
+<p>The <a class="xref" href="../api/Jotunn.Managers.GUIManager.html">GUIManager</a> provides useful methods to create buttons, text element and more at runtime using the original Valheim assets to create a seamless look for your custom GUI components.</p>
+<p>If you dont want to create new GameObjects from scratch, there is also the possibility to apply Jötunn style to your existing GUI controls. Check out the <a class="xref" href="../api/Jotunn.Managers.GUIManager.html">API docs</a> to learn more.</p>
+<h3 id="colorpicker-and-gradientpicker">ColorPicker and GradientPicker</h3>
+<p><img src="../Documentation/images/data/colorgradientpicker.png" alt="ColorPicker and GradientPicker"></p>
+<p>Jötunn uses a custom made ColorPicker for its ModSettings dialogue which is also available for mods to use. Additionaly there is also a GradientPicker available.</p>
+<p>ColorPickerExample:</p>
+<pre><code class="lang-cs">GUIManager.Instance.CreateColorPicker(
+    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+    r.sharedMaterial.color, // Initial selected color in the picker
+    &quot;Choose your poison&quot;,   // Caption of the picker window
+    SetColor,               // Callback delegate when the color in the picker changes
+    ColorChosen,            // Callback delegate when the window is closed
+    true                    // Whether or not the alpha channel should be editable
+);
+</code></pre>
+<p>GradientPicker example:</p>
+<pre><code class="lang-cs">GUIManager.Instance.CreateGradientPicker(
+    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0),
+    new Gradient(),  // Initial gradient being used
+    &quot;Gradiwut?&quot;,     // Caption of the GradientPicker window
+    SetGradient,     // Callback delegate when the gradient changes
+    GradientFinished // Callback delegate when thw window is closed
+);
+</code></pre>
+<p>A more explanatory example can be found in our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<h3 id="wood-panels">Wood panels</h3>
+<p><img src="../Documentation/images/data/woodpanel.png" alt="Woodpanel"></p>
+<p>Woodpanels, nicely usable as containers for other gui elements. Can automatically add the draggable Component to the panel object (default: true).</p>
+<p>Example:</p>
+<pre><code class="lang-cs">var panel = GUIManager.Instance.CreateWoodpanel(
+    parent: GUIManager.CustomGUIFront.transform, 
+    anchorMin: new Vector2(0.5f, 0.5f), 
+    anchorMax: new Vector2(0.5f, 0.5f), 
+    position: new Vector2(0f, 0f), 
+    width: 400f,
+    height: 300f,
+    draggable: true);
+</code></pre>
+<h3 id="text-elements">Text elements</h3>
+<p><img src="../Documentation/images/data/text-element.png" alt="Text Element"></p>
+<p>To create a text element, provide text, the parent's transform, min and max anchors, the position and it's size (width and height). You can also let Jötunn add a ContentSizeFitter Component so the text element will have its bounds automatically adjusted to its content.</p>
+<p>Example:</p>
+<pre><code class="lang-cs">var textObject = GUIManager.Instance.CreateText(
+    text: &quot;Jötunn, the Valheim Lib&quot;,
+    parent: TestPanel.transform,
+    anchorMin: new Vector2(0.5f, 1f),
+    anchorMax: new Vector2(0.5f, 1f),
+    position: new Vector2(0f, -100f),
+    font: GUIManager.Instance.AveriaSerifBold,
+    fontSize: 30,
+    color: GUIManager.Instance.ValheimOrange,
+    outline: true,
+    outlineColor: Color.black,
+    width: 350f,
+    height: 40f,
+    addContentSizeFitter: false);
+</code></pre>
+<h3 id="buttons">Buttons</h3>
+<p><img src="../Documentation/images/data/test-button.png" alt="GUI Button"></p>
+<p>To create buttons, provide text, the parent's transform, min and max anchors, the position and it's size (width and height).</p>
+<p>Example:</p>
+<pre><code class="lang-cs">var buttonObject = GUIManager.Instance.CreateButton(
+    text: &quot;A Test Button&quot;,
+    parent: TestPanel.transform,
+    anchorMin: new Vector2(0.5f, 0.5f),
+    anchorMax: new Vector2(0.5f, 0.5f),
+    position: new Vector2(0, -250f),
+    width: 250f,
+    height: 60f);
+</code></pre>
+<h3 id="input-fields">Input Fields</h3>
+<p><img src="../Documentation/images/data/test-input.png" alt="Input Field"> <img src="../Documentation/images/data/test-input-filled.png" alt="Input Field with text"></p>
+<p>To create an input field, provide text, the parent's transform, min and max anchors and the position. Optional parameters are the content type (using Unity's builtin types), a placeholder text (can be null), font size (default 16) and the field's actual size (width and height).</p>
+<p>Example:</p>
+<pre><code class="lang-cs">GUIManager.Instance.CreateInputField(
+    parent: TestPanel.transform,
+    anchorMin: new Vector2(0.5f, 0.5f),
+    anchorMax: new Vector2(0.5f, 0.5f),
+    position: new Vector2(250f, -250f),
+    contentType: InputField.ContentType.Standard,
+    placeholderText: &quot;input...&quot;,
+    fontSize: 16,
+    width: 160f,
+    height: 30f);
+</code></pre>
+<h3 id="checkboxes">Checkboxes</h3>
+<p><img src="../Documentation/images/data/checkbox.png" alt="Checkbox"></p>
+<p>Example:</p>
+<pre><code class="lang-cs">var checkbox = GUIManager.Instance.CreateToggle(
+    parent: GUIManager.CustomGUIFront.transform,
+    width: 40f,
+    height: 40f);
+</code></pre>
+<h3 id="dropdown-fields">Dropdown Fields</h3>
+<p><img src="../Documentation/images/data/test-dropdown.png" alt="Input Field"></p>
+<p>To create a dropdown field, provide the parent's transform, min and max anchors, the position and optionally font size (default 16) and the dropdown's actual size (width and height). After creating the object through the GUIManager you need to provide selectable values. For that you get the Dropdown component of the GameObject and feed your options with the AddOptions() method.</p>
+<p>Example:</p>
+<pre><code class="lang-cs">var dropdownObject = GUIManager.Instance.CreateDropDown(
+    parent: TestPanel.transform,
+    anchorMin: new Vector2(0.5f, 0.5f),
+    anchorMax: new Vector2(0.5f, 0.5f),
+    position: new Vector2(-250f, -250f),
+    fontSize: 16,
+    width: 100f,
+    height: 30f);
+dropdownObject.GetComponent&lt;Dropdown&gt;().AddOptions(new List&lt;string&gt;
+{
+    &quot;bla&quot;, &quot;blubb&quot;, &quot;börks&quot;, &quot;blarp&quot;, &quot;harhar&quot;
+});
+</code></pre>
+<h3 id="getting-sprites">Getting sprites</h3>
+<p>Gets sprites from the UIAtlas or IconAtlas by name. You find a list of the sprite names <a href="../data/gui/sprite-list.html">here</a>.</p>
+<pre><code class="lang-cs">var sprite = GUIManager.Instance.GetSprite(&quot;text_field&quot;);
+</code></pre>
+<h3 id="instance-properties">Instance properties</h3>
+<p>The <a class="xref" href="../api/Jotunn.Managers.GUIManager.html">GUIManager</a> also comes with some useful instance properties for your custom assets to resemble the vanilla Valheim style.</p>
+<ul>
+<li>Font AveriaSerif</li>
+<li>Font AveriaSerifBold (the default Valheim font)</li>
+<li>Color ValheimOrange</li>
+<li>ColorBlock ValheimScrollbarHandleColorBlock</li>
+<li>ColorBlock ValheimToggleColorBlock</li>
+<li>ColorBlock ValheimButtonColorBlock</li>
+</ul>
+<h2 id="custom-gui-components">Custom GUI Components</h2>
+<p>Jötunn provides helper Components for mods to use when handling with custom GUI.</p>
+<h3 id="draggable-windows">Draggable windows</h3>
+<p><a class="xref" href="../api/Jotunn.GUI.DragWindowCntrl.html">DragWindowCntrl</a> is a simple Unity Component to make GUI elements draggable with the mouse. Does respect the window limits. To apply it to your own GameObject, simply call the static factory method:</p>
+<pre><code class="lang-cs">// Add the Jötunn draggable Component to the panel
+DragWindowCntrl.ApplyDragWindowCntrl(TestPanel);
+</code></pre>
+<h2 id="example">Example</h2>
+<p>In our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a> we use a <a href="inputs.html">custom button</a> to toggle a simple, draggable panel with the Jötunn provided GUI controls on it. The button also gets a listener added to close the panel again. Also the input is blocked for the player and camera while the panel is active so we can actually use the mouse and cant control the player any more.</p>
+<pre><code class="lang-cs">// Toggle our test panel with button
+private void TogglePanel()
+{
+    // Create the panel if it does not exist
+    if (!TestPanel)
+    {
+        if (GUIManager.Instance == null)
+        {
+            Logger.LogError(&quot;GUIManager instance is null&quot;);
+            return;
+        }
+
+        if (!GUIManager.CustomGUIFront)
+        {
+            Logger.LogError(&quot;GUIManager CustomGUI is null&quot;);
+            return;
+        }
+
+        // Create the panel object
+        TestPanel = GUIManager.Instance.CreateWoodpanel(
+            parent: GUIManager.CustomGUIFront.transform,
+            anchorMin: new Vector2(0.5f, 0.5f),
+            anchorMax: new Vector2(0.5f, 0.5f),
+            position: new Vector2(0, 0),
+            width: 850,
+            height: 600,
+            draggable: false);
+        TestPanel.SetActive(false);
+
+        // Add the Jötunn draggable Component to the panel
+        // Note: This is normally automatically added when using CreateWoodpanel()
+        DragWindowCntrl.ApplyDragWindowCntrl(TestPanel);
+
+        // Create the text object
+        GUIManager.Instance.CreateText(
+            text: &quot;Jötunn, the Valheim Lib&quot;,
+            parent: TestPanel.transform,
+            anchorMin: new Vector2(0.5f, 1f),
+            anchorMax: new Vector2(0.5f, 1f),
+            position: new Vector2(0f, -50f),
+            font: GUIManager.Instance.AveriaSerifBold,
+            fontSize: 30,
+            color: GUIManager.Instance.ValheimOrange,
+            outline: true,
+            outlineColor: Color.black,
+            width: 350f,
+            height: 40f,
+            addContentSizeFitter: false);
+
+        // Create the button object
+        GameObject buttonObject = GUIManager.Instance.CreateButton(
+            text: &quot;A Test Button - long dong schlongsen text&quot;,
+            parent: TestPanel.transform,
+            anchorMin: new Vector2(0.5f, 0.5f),
+            anchorMax: new Vector2(0.5f, 0.5f),
+            position: new Vector2(0, -250f),
+            width: 250f,
+            height: 60f);
+        buttonObject.SetActive(true);
+
+        // Add a listener to the button to close the panel again
+        Button button = buttonObject.GetComponent&lt;Button&gt;();
+        button.onClick.AddListener(TogglePanel);
+
+        // Create a dropdown
+        var dropdownObject = GUIManager.Instance.CreateDropDown(
+            parent: TestPanel.transform,
+            anchorMin: new Vector2(0.5f, 0.5f),
+            anchorMax: new Vector2(0.5f, 0.5f),
+            position: new Vector2(-250f, -250f),
+            fontSize: 16,
+            width: 100f,
+            height: 30f);
+        dropdownObject.GetComponent&lt;Dropdown&gt;().AddOptions(new List&lt;string&gt;
+        {
+            &quot;bla&quot;, &quot;blubb&quot;, &quot;börks&quot;, &quot;blarp&quot;, &quot;harhar&quot;
+        });
+
+        // Create an input field
+        GUIManager.Instance.CreateInputField(
+            parent: TestPanel.transform,
+            anchorMin: new Vector2(0.5f, 0.5f),
+            anchorMax: new Vector2(0.5f, 0.5f),
+            position: new Vector2(250f, -250f),
+            contentType: InputField.ContentType.Standard,
+            placeholderText: &quot;input...&quot;,
+            fontSize: 16,
+            width: 160f,
+            height: 30f);
+    }
+
+    // Switch the current state
+    bool state = !TestPanel.activeSelf;
+
+    // Set the active state of the panel
+    TestPanel.SetActive(state);
+
+    // Toggle input for the player and camera while displaying the GUI
+    GUIManager.BlockInput(state);
+}
+</code></pre>
+<p><img src="../Documentation/images/data/test-complete.png" alt="Test Panel Example"></p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/gui.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

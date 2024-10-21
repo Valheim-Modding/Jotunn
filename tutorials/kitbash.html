@@ -1,0 +1,370 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Kitbash </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Kitbash ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kitbash">Kitbash</h1>
+
+<p><a href="https://en.wikipedia.org/wiki/Kitbashing">Kitbashing</a> refers to using (parts of) existing prefabs to creating a new prefab for use in your mod.</p>
+<h2 id="setup">Setup</h2>
+<p>You will need the ripped Unity project, follow <a href="https://github.com/Valheim-Modding/Wiki/wiki/Valheim-Unity-Project-Guide">these instructions</a> if you have not set this up yet. You only need to follow it up to the ILSpy part which is optional for what we do here.</p>
+<p>Prefabs you want to import from an AssetBundle should not be created in the ripped project, but in your own Unity project, to avoid accidentally importing copyrighted assets!</p>
+<h2 id="kitbashing-the-ripped-unity-project">Kitbashing the ripped Unity project</h2>
+<p>Create an empty GameObject to assemble your master copy.
+This object will be used as reference for position, rotation and scale of the KitbashSourceConfigs.</p>
+<h3 id="simple-kitbash-piece">Simple kitbash piece</h3>
+<p>For the first example, we won't be using AssetBundles, only the ripped Unity project as reference. We use the &quot;empty&quot; CustomPiece as a base, so let's recreate that in Unity.</p>
+<ul>
+<li>Create a new folder in the ripped project, so we don't get confused about what's vanilla and what's not.</li>
+<li>Create an empty GameObject in the ripped project by right-clicking on the hierarchy in any scene/prefab and select <strong>Create empty</strong>. Drag this new GameObject into the new folder for our Kitbashes. The GameObject in the hierarchy will turn blue, remove it from the hierarchy, it is no longer needed here.</li>
+<li>Rename your new GameObject to <code>simple_kitbash</code> and add a Cube (<strong>3D Object &gt; Cube</strong>).</li>
+</ul>
+<p>You should now have something like this:
+<br>
+<img src="../Documentation/images/data/kitbashSimpleKitbashBase.png" alt="Kitbash Simple Kitbash Base"></p>
+<p>We can now start adding other pieces from vanilla assets! Open a prefab and look for the lowest (in the hierarchy) GameObject that has everything that you want. For example, the Ruby:
+<br>
+<img src="../Documentation/images/data/kitbashRubySource.png" alt="Kitbash Ruby Source"></p>
+<p>We don't need every GameObject in this prefab, we only want the visual (MeshRenderer) and usually also any Colliders. For the Ruby this means that we should copy the <code>model</code> gameObject, right click and select <strong>Copy</strong>.</p>
+<p>Create a new <code>KitbashSourceConfig</code> for each time you copy a part, so you don't forget where it came from.</p>
+<pre><code class="lang-cs">new KitbashSourceConfig
+{
+    Name = &quot;eye_1&quot;,
+    SourcePrefab = &quot;Ruby&quot;,
+    SourcePath = &quot;attach/model&quot;
+}
+</code></pre>
+<p>Go back to <code>simple_kitbash</code> and paste the copied GameObject. Unity seems to paste 50 units above the source location, so either zoom out or edit that manually to see the pasted part. Move &amp; scale the GameObject however you want, you can edit all properties of the Transform.</p>
+<p>Once everything is in position, add the position, rotation and scale of the GameObject in the KitbashSourceConfig:
+<br>
+<img src="../Documentation/images/data/kitbashRubyTransform.png" alt="Kitbash Ruby Transform"></p>
+<pre><code class="lang-cs">new KitbashSourceConfig
+{
+    Name = &quot;eye_1&quot;,
+    SourcePrefab = &quot;Ruby&quot;,
+    SourcePath = &quot;attach/model&quot;,
+    Position = new Vector3(0.528f, 0.1613345f, -0.253f),
+    Rotation = Quaternion.Euler(0, 180, 0f),
+    Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+}
+</code></pre>
+<p>You can also have entire trees of GameObjects as the source, for example the Draugr Bow:
+<br>
+<img src="../Documentation/images/data/kitbashDraugrBowSource.png" alt="Kitbash Draugr Bow Source"></p>
+<p>In this case the visuals are in 2 pieces, we need both <code>bow</code> and its child <code>Cube</code> (the drawstring). To do this, we simply use the parent <code>bow</code> as the source, the child will be copied along, just like in the Unity editor.</p>
+<pre><code class="lang-cs">new KitbashSourceConfig
+{
+    Name = &quot;mouth&quot;,
+    SourcePrefab = &quot;draugr_bow&quot;,
+    SourcePath = &quot;attach/bow&quot;,
+}
+</code></pre>
+<p>Again, paste the <code>bow</code> into <code>simple_kitbash</code> and position it until we have created our masterpiece
+<br>
+<img src="../Documentation/images/data/kitbashDraugrBowTransform.png" alt="Kitbash Draugr Bow Transform"></p>
+<pre><code class="lang-cs">new KitbashSourceConfig
+{
+    Name = &quot;mouth&quot;,
+    SourcePrefab = &quot;draugr_bow&quot;,
+    SourcePath = &quot;attach/bow&quot;,
+    Position = new Vector3(0.53336f, -0.315f, -0.001953f),
+    Rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
+    Scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
+}
+</code></pre>
+<p>We now have all the KitbashSourceConfigs we need, so we can put it all together:</p>
+<pre><code class="lang-cs">var simpleKitbashPiece = new CustomPiece(&quot;piece_simple_kitbash&quot;, true, &quot;Hammer&quot;); 
+var piece = simpleKitbashPiece.Piece;
+piece.m_icon = testSprite; 
+simpleKitbashPiece.FixReference = true;
+PieceManager.Instance.AddPiece(simpleKitbashPiece);
+KitbashManager.Instance.AddKitbash(simpleKitbashPiece.PiecePrefab, new KitbashConfig { 
+    layer = &quot;piece&quot;,
+    KitbashSources = new List&lt;KitbashSourceConfig&gt;
+    {
+        new KitbashSourceConfig
+        {
+            Name = &quot;eye_1&quot;,
+            SourcePrefab = &quot;Ruby&quot;,
+            SourcePath = &quot;attach/model&quot;,
+            Position = new Vector3(0.528f, 0.1613345f, -0.253f),
+            Rotation = Quaternion.Euler(0, 180, 0f),
+            Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+        },
+        new KitbashSourceConfig
+        {
+            Name = &quot;eye_2&quot;,
+            SourcePrefab = &quot;Ruby&quot;,
+            SourcePath = &quot;attach/model&quot;,
+            Position = new Vector3(0.528f, 0.1613345f, 0.253f),
+            Rotation = Quaternion.Euler(0, 180, 0f),
+            Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f)
+        },
+        new KitbashSourceConfig
+        {
+            Name = &quot;mouth&quot;,
+            SourcePrefab = &quot;draugr_bow&quot;,
+            SourcePath = &quot;attach/bow&quot;,
+            Position = new Vector3(0.53336f, -0.315f, -0.001953f),
+            Rotation = Quaternion.Euler(-0.06500001f, -2.213f, -272.086f),
+            Scale = new Vector3(0.41221f, 0.41221f, 0.41221f)
+        }
+    }
+}); 
+</code></pre>
+<p>That's it! We can now place our kitbashed piece in game!
+<br>
+<img src="../Documentation/images/data/kitbashSimpleInGame.png" alt="Kitbash Simple In Game"></p>
+<h2 id="advanced-kitbash-piece">Advanced kitbash piece</h2>
+<h3 id="skeleton-prefab">Skeleton prefab</h3>
+<p>We can add a lot more features to the Kitbashed object if we start with a skeleton created in Unity (again in a separate project from the ripped project!)
+<br>
+<img src="../Documentation/images/data/kitbashOdinStatueSkeleton.png" alt="Kitbash Odin Statue Skeleton"></p>
+<p>Here we have prepared quite a few things:</p>
+<ul>
+<li>Collider
+<ul>
+<li>Not all parts that we copy have attached colliders, sometimes we need to prepare additional ones</li>
+</ul>
+</li>
+<li>ZNetView</li>
+<li>Piece
+<ul>
+<li>We don't need to add the required resources here, we can do this in <code>CustomPiece</code> later, or use <a href="asset-mocking.html">JVLmocks_</a></li>
+</ul>
+</li>
+<li>WearNTear</li>
+<li>Animator
+<ul>
+<li>The animator animates an empty GameObject called <code>pivot</code>, we can later add parts to this to make them also rotate along.</li>
+</ul>
+</li>
+</ul>
+<h3 id="loading-the-skeleton">Loading the skeleton</h3>
+<p>See <a href="asset-creation.html#assetbundle">Asset creation - AssetBundle </a> on how to create the AssetBundle</p>
+<pre><code class="lang-cs">AssetBundle kitbashAssetBundle = AssetUtils.LoadAssetBundleFromResources(&quot;kitbash&quot;);
+try
+{ 
+    KitbashObject kitbashObject = KitbashManager.Instance.AddKitbash(kitbashAssetBundle.LoadAsset&lt;GameObject&gt;(&quot;piece_odin_statue&quot;), new KitbashConfig
+    {
+        Layer = &quot;piece&quot;,
+        KitbashSources = new List&lt;KitbashSourceConfig&gt;
+        {
+            ...
+        }
+    }); 
+    //get the kitbashed prefab using kitbashObject.Prefab
+} finally
+{
+    kitbashAssetBundle.Unload(false);
+}
+</code></pre>
+<h3 id="using-exploded-pieces">Using exploded pieces</h3>
+<p>Many of the Pieces in Valheim have a special animation when destroying them, where they break up into many parts, for example, the Spinning Wheel:
+<br>
+<img src="../Documentation/images/data/kitbashSpinningWheelNew.png" alt="Kitbash Spinning Wheel New"></p>
+<p>Disable the <code>New</code> GameObject, and enable the <code>SpinningWheel_Destruction</code> GameObject instead
+<br>
+<img src="../Documentation/images/data/kitbashSpinningWheelExploded.png" alt="Kitbash Spinning Wheel Exploded"></p>
+<p>These parts usually have the Worn version of the material, which distorts the mesh a bit, update all materials to the new version to get a good look at all parts
+<br>
+<img src="../Documentation/images/data/kitbashSpinningWheelExplodedNewMats.png" alt="Kitbash Spinning Wheel Exploded New Mats"></p>
+<p>We can now use these smaller parts for our kitbash, along with the new material:
+<br>
+<img src="../Documentation/images/data/kitbashSpinningWheelWheelPart.png" alt="Kitbash Spinning Wheel Wheel Part"></p>
+<pre><code class="lang-cs">new KitbashSourceConfig
+{
+    SourcePrefab = &quot;piece_spinning_wheel&quot;,
+    SourcePath = &quot;SpinningWheel_Destruction/SpinningWheel_Destruction.002_SpinningWheel_Broken.018&quot;,
+    Materials = new string[]{
+        &quot;SpinningWheel_mat&quot;,
+        &quot;TearChanal_mat&quot;
+    }
+},
+</code></pre>
+<h3 id="materials">Materials</h3>
+<p>Any material can be used, it does not have to be associated with the original mesh (many materials will map terribly though :D)</p>
+<p>Drag &amp; drop Materials onto the mesh to &quot;paint&quot; your kitbashed GameObject
+<br>
+<img src="../Documentation/images/data/kitbashChangeMaterial.png" alt="Kitbash Change Material"></p>
+<p>Add the <code>Materials</code> property to your KitbashSourceConfig:</p>
+<pre><code class="lang-cs">new KitbashSourceConfig
+{
+    Name = &quot;eye_1&quot;,
+    SourcePrefab = &quot;Ruby&quot;,
+    SourcePath = &quot;attach/model&quot;,
+    Position = new Vector3(0.528f, 0.1613345f, -0.253f),
+    Rotation = Quaternion.Euler(0, 180, 0f),
+    Scale = new Vector3(0.02473f, 0.05063999f, 0.05064f),
+    Materials = new string[]{ &quot;antifreezegland&quot; }
+},
+</code></pre>
+<h3 id="target-parent">Target parent</h3>
+<p>If you're using a more complicated skeleton, make sure that the master copy GameObject (in the ripped Unity project) is set up exactly the same as your skeleton in the AssetBundle (notice the gameObjects <code>collider</code>, <code>new</code> and <code>pivot</code>):
+<br>
+<img src="../Documentation/images/data/kitbashSkeletonMasterCopy.png" alt="Kitbash Skeleton Master Copy"></p>
+<p>You can now paste the parts into for example <code>pivot</code> to add the parts to the rotating pivot.
+The Transform values are relative to the parent GameObject, so make sure that all positions are <strong>exactly</strong> the same as your skeleton.</p>
+<p>Use the <code>TargetParentPath</code> property to set the target:</p>
+<pre><code class="lang-cs"> new KitbashSourceConfig
+{
+    SourcePrefab = &quot;guard_stone&quot;,
+    SourcePath = &quot;new/default&quot;,
+    TargetParentPath = &quot;new/pivot&quot;,
+    Position = new Vector3(0, 0.0591f ,0),
+    Rotation = Quaternion.identity,
+    Scale = Vector3.one * 0.2f,
+    Materials = new string[]{
+        &quot;bronze&quot;,
+        &quot;obsidian_nosnow&quot;
+    }
+},
+</code></pre>
+<p>⚠️ If there are multiple materials for a MeshRenderer, make sure to use the correct order!</p>
+<h3 id="collider">Collider</h3>
+<p>The gear, like all (?) exploded parts, has no Collider, so currently, our <code>piece_odin_statue</code> will clip into the table a bit, as only the Ward mesh is used to place it.
+To fix this, we can use a custom Collider, and remove the mesh collider, to save on processing power.</p>
+<p>In the master copy, update the values of the Collider so they match close enough (don't worry too much about pixel perfect accuracy here, try it in game to check how it feels to run into)
+<br>
+<img src="../Documentation/images/data/kitbashCollider.png" alt="Kitbash Collider"></p>
+<p>Once you are happy with the collider, copy the values from your master copy into your skeleton.
+<br>
+<img src="../Documentation/images/data/kitbashColliderSkeleton.png" alt="Kitbash Collider Skeleton"></p>
+<p>We still need to get rid of the MeshCollider that is attached to the <code>new/default</code> of the Ward:</p>
+<pre><code class="lang-cs">kitbashObject.OnKitbashApplied += () =&gt;
+{
+    //We've added a CapsuleCollider to the skeleton, this is no longer needed
+    Object.Destroy(kitbashObject.Prefab.transform.Find(&quot;new/pivot/default&quot;).GetComponent&lt;MeshCollider&gt;());
+};
+</code></pre>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/kitbash.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>RPCs </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="RPCs ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="rpcs">RPCs</h1>
+
+<p><em>RPCs (Remote Procedure Calls)</em> are used to communicate between two or more game instances to invoke asynchronous events or to exchange data between them. Valheim's integrated RPC system works well but has problems with bigger data packages mods might want to send and getting used to it in the first place also takes some time. Jötunn provides an additional layer for the vanilla RPC system which automatically can compress and disassemble larger packages, works with Coroutines to avoid clogging the main game loop and adds some overall simpler abstraction to the vanilla system. You can create your own <a class="xref" href="../api/Jotunn.Entities.CustomRPC.html">CustomRPC</a> classes using the <a class="xref" href="../api/Jotunn.Managers.NetworkManager.html">NetworkManager</a>.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>Mods should not use these CustomRPCs in every situation. When transferring small data packages between item instances, using the built-in RPCs attached to the ZNetView still might be the better choice, for example. CustomRPC are better suited if you want to implement a more complicated message system or transfer bigger sized mod data.</p>
+</div>
+<h2 id="example">Example</h2>
+<p>In this example we will implement a <a href="console-commands.html">custom console command</a> which transfers random data to the server via RPC and reacts on server responses via the same RPC.</p>
+<p><strong>Note</strong>: The code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<h3 id="creating-the-rpc">Creating the RPC</h3>
+<p>To create a custom RPC <a class="xref" href="../api/Jotunn.Managers.NetworkManager.AddRPC.html#Jotunn_Managers_NetworkManager_AddRPC_System_String_Jotunn_Managers_NetworkManager_CoroutineHandler_Jotunn_Managers_NetworkManager_CoroutineHandler_">NetworkManager.AddRPC</a> has to be called. An unique name has to be provided for every custom RPC in a mod. Internally the mod's GUID is also prepended to the name to make sure that different mods using the same name don't interfere with each other. To be able to react when the RPC receives messages from other instances, we have to provide references to methods from the mod using the signature of the <a class="xref" href="../api/Jotunn.Managers.NetworkManager.CoroutineHandler.html">NetworkManager.CoroutineHandler</a>. Custom RPCs have to be registered with the vanilla system on the server as well as all clients. To make sure, the RPC is registered, create it as early as possible in your mod's code, preferably when Awake() is called.</p>
+<pre><code class="lang-cs">// Custom RPC
+public static CustomRPC UselessRPC;
+
+private void Awake()
+{
+    // Create your RPC as early as possible so it gets registered with the game
+    UselessRPC = NetworkManager.Instance.AddRPC(
+        &quot;UselessRPC&quot;, UselessRPCServerReceive, UselessRPCClientReceive);
+}
+</code></pre>
+<h3 id="invoking-rpc-calls">Invoking RPC calls</h3>
+<p>Once the custom RPC is created and the game is connected to a server, we can use <a class="xref" href="../api/Jotunn.Entities.CustomRPC.Initiate.html#Jotunn_Entities_CustomRPC_Initiate">CustomRPC.Initiate</a> to initiate a RPC call with an empty package to the server. This merely invokes the RPC receive on the server side for us to react to. We can also send ZPackage data over while invoking the RPC call by using one of the <a class="xref" href="../api/Jotunn.Entities.CustomRPC.SendPackage.html#Jotunn_Entities_CustomRPC_SendPackage_System_Int64_ZPackage_">CustomRPC.SendPackage</a> methods. In our example we chose to provide a custom console command to invoke the RPC call on the client and to send random data in varying sizes to the server. For this tutorial we focus on the part that actually invokes the RPC and sends over the data to the server. Please refer to the <a href="console-commands.html">tutorial on custom commands</a> for further reading on this topic.</p>
+<pre><code class="lang-cs">public override void Run(string[] args)
+{
+    // Sanitize user's input
+    if (args.Length != 1 || !Sizes.Any(x =&gt; x.Equals(int.Parse(args[0]))))
+    {
+        Console.instance.Print($&quot;Usage: {Name} [{string.Join(&quot;|&quot;, Sizes)}]&quot;);
+        return;
+    }
+
+    // Create a ZPackage and fill it with random bytes
+    ZPackage package = new ZPackage();
+    System.Random random = new System.Random();
+    byte[] array = new byte[int.Parse(args[0]) * 1024 * 1024];
+    random.NextBytes(array);
+    package.Write(array);
+
+    // Invoke the RPC with the server as the target and our random data package as the payload
+    Jotunn.Logger.LogMessage($&quot;Sending {args[0]}MB blob to server.&quot;);
+    UselessRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
+}
+</code></pre>
+<p>Note that every call to SendPackage needs one or more targets to send the call to. Valheim's ZRoutedRpc class provides some shortcuts for common usages, most importantly <code>ZRoutedRpc.Everybody</code> (every instance <em>including your local one</em> receives the call) and <code>ZRouteRpc.GetServerPeerID()</code> which determines the current server target ID.</p>
+<p>Also note that SendPackage can either be called without returning an Enumerator to our method and with that return. In both cases the sending is done via a Coroutine. You can decide if you want to implement the coroutine yourself (please refer to the Unity <a href="https://docs.unity3d.com/2019.4/Documentation/Manual/Coroutines.html">Coroutine scripting manual</a> on how to do that) or let Jötunn handle that for you.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>If you don't handle the coroutine yourself, sending the RPC out might be delayed one or more frames, depending on your package size.</p>
+</div>
+<h3 id="receiving-rpc-calls">Receiving RPC calls</h3>
+<p>The custom RPC calls our provided delegate methods every time a message is received. Jötunn's implementation already determines if the current instance is a client or a server for us and provides a delegate for both. Upon receiving our data package from the client, we delay the handling virtually and broadcast a message to all connected peers using the same custom RPC instance.</p>
+<pre><code class="lang-cs">public static readonly WaitForSeconds OneSecondWait = new WaitForSeconds(1f);
+
+// React to the RPC call on a server
+private IEnumerator UselessRPCServerReceive(long sender, ZPackage package)
+{
+    Jotunn.Logger.LogMessage($&quot;Received blob, processing&quot;);
+
+    string dot = string.Empty;
+    for (int i = 0; i &lt; 5; ++i)
+    {
+        dot += &quot;.&quot;;
+        Jotunn.Logger.LogMessage(dot);
+        yield return OneSecondWait;
+    }
+
+    Jotunn.Logger.LogMessage($&quot;Broadcasting to all clients&quot;);
+    UselessRPC.SendPackage(ZNet.instance.m_peers, new ZPackage(package.GetArray()));
+}
+
+public static readonly WaitForSeconds HalfSecondWait = new WaitForSeconds(0.5f);
+
+// React to the RPC call on a client
+private IEnumerator UselessRPCClientReceive(long sender, ZPackage package)
+{
+    Jotunn.Logger.LogMessage($&quot;Received blob, processing&quot;);
+    yield return null;
+
+    string dot = string.Empty;
+    for (int i = 0; i &lt; 10; ++i)
+    {
+        dot += &quot;.&quot;;
+        Jotunn.Logger.LogMessage(dot);
+        yield return HalfSecondWait;
+    }
+}
+</code></pre>
+<p>The RPC delegates need to be of type <a class="xref" href="../api/Jotunn.Managers.NetworkManager.CoroutineHandler.html">NetworkManager.CoroutineHandler</a>. The return type of this delegate is IEnumerator as the custom RPC receive is internally handled via a Coroutine. This means we need to <code>yield return</code> at least once in our receiving methods. Please refer to the Unity <a href="https://docs.unity3d.com/2019.4/Documentation/Manual/Coroutines.html">Coroutine scripting manual</a> for more information about Coroutines. Jötunn also respects all other Unity <a href="https://docs.unity3d.com/2019.4/Documentation/ScriptReference/YieldInstruction.html">YieldInstructions</a>.</p>
+<h3 id="rpc-states">RPC states</h3>
+<p>Every <a class="xref" href="../api/Jotunn.Entities.CustomRPC.html">CustomRPC</a> instance provides some properties to expose the current state of the RPC:</p>
+<ul>
+<li><strong>IsSending</strong>: True, when the RPC is currently sending data.</li>
+<li><strong>IsReceiving</strong>: True, when the RPC is currently receiving data.</li>
+<li><strong>IsProcessing</strong>: True, when the RPC is currently processing received data. This is always true while executing the registered delegates.</li>
+<li><strong>IsProcessingOther</strong>: True, when the RPC is processing received data outside the current delegate call. This should only be used in the registered delegate methods to determine if this RPC is already processing another package.</li>
+</ul>
+<h2 id="further-rpc-documentation">Further RPC Documentation</h2>
+<p>The Valheim Modding Wiki has <a href="https://github.com/Valheim-Modding/Wiki/wiki/Server-Validated-RPC-System">a general introduction article</a> about RPCs and a handy <a href="https://github.com/Valheim-Modding/Wiki/wiki/RPC-System-Reference-Sheet">RPC reference sheet</a>. Be sure to check these out, too, if you want to learn more about RPCs.</p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/rpcs.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

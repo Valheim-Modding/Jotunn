@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Localization </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Localization ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="localization">Localization</h1>
+
+<p>Localizations are string conversions for language tokens that are bound to in-game objects.
+These language tokens are replaced at runtime by their specified localization, and can be thought of as a key value dataset.
+An example of a localization token may be <code>$item_stoneAxe</code>, which might have multiple localizations to translate into different languages at runtime.</p>
+<p>JVL provides a number of different methods to interface with our localization system, to allow both developers as well as the community at large to provide localizations for both custom items, as well as non supported languages.</p>
+<p><strong>Note</strong>: This example requires <a href="asset-loading.html">assets</a> to be loaded.
+The code snippets are taken from our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod</a>.</p>
+<h2 id="preparing-your-assets">Preparing your assets</h2>
+<p>In order to facilitate our localizations, we must prepare our assets to ensure they are able to accept our localization strings.
+The game follows the convention that language tokens are prefixed with a <code>$</code> to signify the string is a token due for replacement.
+Common properties which accept tokens are things such as names, descriptions, and flavourtext.
+The following name thereafter must be unique, but can follow any format the user desires.</p>
+<p>Convention within the game however states that items follow the <code>$item_{name}</code> <code>$item_{name}_description</code> formats, similarly buildable items are prefixed with <code>$piece_</code> instead.</p>
+<p><strong>Note</strong>: These tokens appear in the m_name or m_description member of the ItemDrop component for example and are not to be used as the prefab name.</p>
+<h2 id="adding-localization">Adding localization</h2>
+<p>Jötunn stores all added custom localization in its own <a class="xref" href="../api/Jotunn.Entities.CustomLocalization.html">CustomLocalization</a> instance per mod.
+No matter if you let Jötunn automatically load your translation files via side loading or added the translations yourself via code.</p>
+<h3 id="format">Format</h3>
+<p>The format for localizations is a standard JSON collection as such:</p>
+<pre><code class="lang-json">{
+  &quot;item_evilsword&quot;: &quot;Sword of Darkness&quot;,
+  &quot;item_evilsword_desc&quot;: &quot;Bringing the light&quot;
+}
+</code></pre>
+<p><strong>Note</strong>: Other than the tokens you supply with your prefabs or Jötunn's configs, the translation keys should not be prefixed with a <code>$</code>.
+Jötunn will replace any <code>$</code> at the beginning of your translation keys while adding them to it's localization system.</p>
+<h3 id="side-loading-localizations">Side loading localizations</h3>
+<p>Localizations can be provide through loading side by side with your plugin.
+The folder structure which will be queried will be <code>Translations/{LanguageName}/{anyname}.json</code>, and can be placed in any sub directory within your plugin.
+An example of a path which will be read for localization at run time may be: <code>BepInEx/plugins/JotunnModExample/Assets/Translations/English/backpack.json</code>.
+All .json files within such a directory will be iterated through and localizations added for each of those languages.</p>
+<p>You can find a list of language names <a href="../data/localization/language-list.html">here</a>.</p>
+<h3 id="hardcoding-localizations">Hardcoding localizations</h3>
+<p>Localizations may also be hardcoded into your plugin.
+This is done by getting your own <a class="xref" href="../api/Jotunn.Entities.CustomLocalization.html">CustomLocalization</a> instance via the <a class="xref" href="../api/Jotunn.Managers.LocalizationManager.GetLocalization.html#Jotunn_Managers_LocalizationManager_GetLocalization">GetLocalization</a> method.
+A new instance will be created if none exists yet.
+This can be done right inside your mod <code>Awake</code> method, all added content gets also added to the game.</p>
+<pre><code class="lang-cs">// Your mod's custom localization
+private CustomLocalization Localization;
+
+private void AddLocalizations()
+{
+    // Get your mod translation instance
+    Localization = LocalizationManager.Instance.GetLocalization();
+
+    // Add translations for our custom skill
+    Localization.AddTranslation(&quot;English&quot;, new Dictionary&lt;string, string&gt;
+    {
+        {&quot;skill_TestingSkill&quot;, &quot;TestLocalizedSkillName&quot; },
+    });
+
+    // Add translations for the custom item in AddClonedItems
+    Localization.AddTranslation(&quot;English&quot;, new Dictionary&lt;string, string&gt;
+    {
+        {&quot;item_evilsword&quot;, &quot;Sword of Darkness&quot;},
+        {&quot;item_evilsword_desc&quot;, &quot;Bringing the light&quot;},
+        {&quot;evilsword_shwing&quot;, &quot;Woooosh&quot;},
+        {&quot;evilsword_scroll&quot;, &quot;*scroll*&quot;},
+        {&quot;evilsword_beevil&quot;, &quot;Be evil&quot;},
+        {&quot;evilsword_beevilmessage&quot;, &quot;:reee:&quot;},
+        {&quot;evilsword_effectname&quot;, &quot;Evil&quot;},
+        {&quot;evilsword_effectstart&quot;, &quot;You feel evil&quot;},
+        {&quot;evilsword_effectstop&quot;, &quot;You feel nice again&quot;},
+    });
+
+    // Add translations for the custom piece in AddPieceCategories
+    Localization.AddTranslation(&quot;English&quot;, new Dictionary&lt;string, string&gt;
+    {
+        { &quot;piece_lul&quot;, &quot;Lulz&quot; },
+        { &quot;piece_lul_description&quot;, &quot;Do it for them&quot; },
+        { &quot;piece_lel&quot;, &quot;Lölz&quot; },
+        { &quot;piece_lel_description&quot;, &quot;Härhärhär&quot; },
+    });
+
+    // Add translations for the custom item in AddVariants
+    Localization.AddTranslation(&quot;English&quot;, new Dictionary&lt;string, string&gt;
+    {
+        { &quot;lulz_shield&quot;, &quot;Lulz Shield&quot; },
+        { &quot;lulz_shield_desc&quot;, &quot;Lough at your enemies&quot; },
+        { &quot;lulz_sword&quot;, &quot;Lulz Sword&quot; },
+        { &quot;lulz_sword_desc&quot;, &quot;Lulz on a stick&quot; },
+    });
+}
+</code></pre>
+<p><img src="../Documentation/images/data/EvilSwordLocalizations.png" alt="Evil Sword Localizations"></p>
+<h3 id="prefabs">Prefabs</h3>
+<p>It is also possible to package <code>TextAsset</code>'s inside of your asset bundles, and to load them into game at runtime via <a class="xref" href="../api/Jotunn.Entities.CustomLocalization.AddJsonFile.html#Jotunn_Entities_CustomLocalization_AddJsonFile_System_String_System_String_">CustomLocalization.AddJsonFile</a>.
+In this example, we use our filenames to provide the language which we wish to add the translations for:</p>
+<pre><code class="lang-cs">private void BlueprintRuneLocalizations()
+{
+    TextAsset[] textAssets = blueprintRuneBundle.LoadAllAssets&lt;TextAsset&gt;();
+    foreach (var textAsset in textAssets)
+    {
+        var lang = textAsset.name.Replace(&quot;.json&quot;, null);
+        Localization.AddJsonFile(lang, textAsset.ToString());
+    }
+}
+</code></pre>
+<p><img src="../Documentation/images/data/blueprintRuneLocalizations.png" alt="Blueprint Rune Localizations"></p>
+<h3 id="example-json-file">Example JSON file</h3>
+<p>This is how the JSON file looks like which is deliverd as a TextAsset in the asset bundle for the Blueprint Rune example:</p>
+<pre><code class="lang-json">{
+  &quot;item_blueprintrune&quot;: &quot;Blueprint Rune&quot;,
+  &quot;item_blueprintrune_desc&quot;: &quot;Used to make copies of structures and rebuild exact copies of them somewhere else.&quot;,
+  &quot;make_blueprint&quot;: &quot;Create new blueprint&quot;,
+  &quot;make_blueprint_desc&quot;: &quot;Creates a new blueprint of a structure.&quot;,
+  &quot;piece_blueprint&quot;: &quot;Blueprint&quot;,
+  &quot;piece_blueprint_desc&quot;: &quot;Creates the structure attached to this blueprint.&quot;
+}
+</code></pre>
+<h2 id="manual-translation-of-tokens">Manual translation of tokens</h2>
+<p>All tokens on your custom entities added to the game via Jötunn will be translated automatically by the game.
+There will be instances, though, when you want to translate tokens yourself (e.g. when displaying custom GUI components).
+<a class="xref" href="../api/Jotunn.Entities.CustomLocalization.html">CustomLocalization</a> offers a <a class="xref" href="../api/Jotunn.Entities.CustomLocalization.TryTranslate.html#Jotunn_Entities_CustomLocalization_TryTranslate_System_String_">TryTranslate</a> method for that.
+By using your mod's own CustomLocalization instance it is assured that your token will be replaced with your own translation and that there will be no compatibility problems with other mods using the same tokens as you.
+If you did not provide a translation for the current players language setting, an english translation is searched.
+If that also does not exist, the word to translate will be fed to Valheim's own Translation class.</p>
+<p>If you did not create your own instance of <a class="xref" href="../api/Jotunn.Entities.CustomLocalization.html">CustomLocalization</a> you can get an automatically created instance with <a class="xref" href="../api/Jotunn.Managers.LocalizationManager.GetLocalization.html#Jotunn_Managers_LocalizationManager_GetLocalization">LocalizationManager.GetLocalization</a>.
+If you provided translation files with your mod that Jötunn loaded automatically, all custom translation will be in there already.</p>
+<h2 id="localization-added-event">&quot;Localization added&quot; event</h2>
+<p>After Jötunn has added all custom Localization to Valheim's own Localization dictionary, it fires an event <a class="xref" href="../api/Jotunn.Managers.LocalizationManager.OnLocalizationAdded.html">LocalizationManager.OnLocalizationAdded</a>.
+You can subscribe to this event if you have code that needs to be sure that all Localization was added before.</p>
+<h2 id="localizable-content-in-jötunn">Localizable content in Jötunn</h2>
+<p>Some content added by Jötunn can be translated.
+The fallback english translation is provided by Jötunn itself.
+But you can add translations for other languages using this tokens:</p>
+<ul>
+<li>jotunn_cat_&lt;category&gt;: <a href="pieces.html#adding-custom-piece-table-categories-to-vanilla-tables">Custom category</a> localization, replace &lt;category&gt; with the lower case name of your added category (e.g. jotunn_cat_mycat).</li>
+</ul>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/localization.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

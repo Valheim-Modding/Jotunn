@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Mock References </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Mock References ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="mock-references">Mock References</h1>
+
+<p>What are mock references? What do they do? What do they solve?</p>
+<p>Mock's are placeholder objects which you create inside of asset bundles, and prepend the specific <code>JVLmock_</code> prefix to the name of an already existing prefab.</p>
+<p>When we load our assets at runtime, any references to mock objects will be recursively resolved until a depth of 5.
+This limit does not include GameObjects in hierarchies, only nested fields and properties of components.
+If the parent GameObject is set to resolve mocks, then all children will be resolved as well.</p>
+<p>When resolving references, we iterate through scene objects attempting to match our objects name with an existing one in the scene, and then duplicate the asset such that we may use it for our own purposes, without needing to copy copyrighted content within our own custom assets!
+Neat right?!
+And better yet, we don't even need to code anything ourselves to do this, just make sure that you set the <code>fixReference</code> bool on any <code>Custom*</code> entities to true and the mock reference will automatically be resolved at runtime.</p>
+<h2 id="mocked-assets">Mocked Assets</h2>
+<p>For this example we took the Cheat Sword of Valheim and added it to the game again as a new item using only mocked assets.
+You can check out the result in our <a href="https://github.com/Valheim-Modding/JotunnModExample">example mod's</a> Unity project.
+Note that the example mod uses its own Unity project for mod assets. Please read the <a href="asset-creation.html">asset creation guide</a> on how to setup such a mod project yourself.</p>
+<p>We'll start by creating a folder that will hold all our new asset, let's call it <code>CheatSword</code>.
+We now want to drag and drop the existing asset from the ripped game project to our custom item project.
+The original asset is called <code>SwordCheat</code>.
+Open the ripped project, search for that prefab and drop onto the newly created folder in your working project.
+Rename the prefab to something different than the vanilla prefab, we used <code>Cheaty</code> as the name.</p>
+<p>Open the prefab by double-clicking it.
+If you followed our <a href="asset-creation.html">asset creation guide</a>, all references to the vanilla scripts should still be there.
+If this is not the case, your prefab now looks something like this:</p>
+<p><img src="../Documentation/images/data/cheaty_missingrefs.png" alt="Missing script refs"></p>
+<p>You will have to fix those script references first.
+Be sure to <strong>always fix the script references for all items that you've brought into the new project</strong> including ItemDrop, etc.
+Doing this manually unfortunately clears out all values previously set on those components.
+To avoid this, you can use the Unity package <a href="https://assetstore.unity.com/packages/tools/utilities/ng-missing-script-recovery-102272">NG Script recovery</a>
+Install it and let NG fix the references.
+We won't go into details of that process, so please read up on NG usage on their website.</p>
+<p>After fixing the script references for the cheat sword (if needed), you will still have stuff missing.
+This is where the mocks come into play.
+For Jötunn to resolve the vanilla assets for you at runtime, we need to create corresponding assets inside our project, reference them inside our components and tell Jötunn to fix those references for us.
+Let's look at the vanilla icon reference in the ItemDrop component for example:</p>
+<p><img src="../Documentation/images/data/cheaty_refsfixed.png" alt="script refs fixed"></p>
+<p>Identify all references on all GameObjects of your prefab gone &quot;Missing&quot; like this.
+In case of the Cheat Sword, those were <code>Icons</code>, <code>Materials</code>, a <code>Mesh</code> and some <code>fx Prefabs</code>.
+Create folders for all of those types and create empty objects using the same type as the previous referenced asset.
+It is important that you name those objects exactly like the vanilla objects you want to reference and prefix those with <code>JVLmock_</code>.
+This is how that looks for our sword:</p>
+<p><img src="../Documentation/images/data/cheaty_mockicon.png" alt="mocked icon"> <img src="../Documentation/images/data/cheaty_mockmaterial.png" alt="mocked materials"></p>
+<p><img src="../Documentation/images/data/cheaty_mockmesh.png" alt="mocked mesh"> <img src="../Documentation/images/data/cheaty_mockprefab.png" alt="mocked prefabs"></p>
+<p>Now assign all mocked objects in the components of your custom prefab instead of the vanilla objects.
+Replace the icon reference with the newly created mock icon, the material reference with the newly created mock material and so on.
+This is how our missing icon reference should look like now for example:</p>
+<p><img src="../Documentation/images/data/cheaty_mocksassigned.png" alt="mocks assigned"></p>
+<p>That's it.
+When importing your prefabs into the game, Jötunn will automatically reference the vanilla objects for you at runtime.
+Please make sure you set <code>fixReference: true</code> when you create your custom entities:</p>
+<pre><code class="lang-cs">private void AddMockedItems()
+{
+    // Load completely mocked &quot;Shit Sword&quot; (Cheat Sword copy)
+    var cheatybundle = AssetUtils.LoadAssetBundleFromResources(&quot;cheatsword&quot;);
+    var cheaty = cheatybundle.LoadAsset&lt;GameObject&gt;(&quot;Cheaty&quot;);
+    ItemManager.Instance.AddItem(new CustomItem(cheaty, fixReference: true));
+    cheatybundle.Unload(false);
+}
+</code></pre>
+<div class="NOTE">
+<h5>Note</h5>
+<p>You don't need to copy vanilla prefabs in order to use mocked references. You can facilitate the system using you own prefabs, too. Just make sure to create a custom entity using that prefab (CustomPrefab, CustomItem, etc) and set the fixReference parameter to true.</p>
+</div>
+<p>If you have been following the Unity Asset Creation guide, you can return back to where you <a href="asset-creation.html#assetbundle">left off</a>.</p>
+<h2 id="shader-mocking">Shader Mocking</h2>
+<p>The only special case is shader mocking for custom materials.
+The asset name isn't their object name, which means that renaming it will not result in a valid mock.</p>
+<p>Instead, create a new stump shader or use the dummy shader from AssetRipper and change the first line to contain the <code>JVLmock_</code> prefix.
+If you don't have dummy shaders but yaml shaders, set AssetRipper to export dummy shaders instead and make a second rip to copy them over.
+Now you can use this shader as normally on your materials and Jötunn will resolve the right Shader for you.
+Properties that are set on the material will be used by the resolved shader.</p>
+<p>This is a mock for the piece shader as an example:</p>
+<pre><code>Shader &quot;JVLmock_Custom/Piece&quot; {
+	Properties {
+		_Color (&quot;Color&quot;, Vector) = (1,1,1,1)
+		_Cutoff (&quot;Alpha Cutoff&quot;, Range(0, 1)) = 0
+		_MainTex (&quot;Albedo (RGB)&quot;, 2D) = &quot;white&quot; {}
+		_MetallicTex (&quot;Metallic&quot;, 2D) = &quot;white&quot; {}
+		_Metallic (&quot;Metallic&quot;, Range(0, 1)) = 0
+		_MetallicAlphaGloss (&quot;Metal smoothness&quot;, Range(0, 1)) = 0
+		[HDR] _MetalColor (&quot;Metal color&quot;, Vector) = (1,1,1,1)
+		_BumpMap (&quot;Normal Map&quot;, 2D) = &quot;bump&quot; {}
+		_BumpScale (&quot;Normal intensity&quot;, Float) = 1
+		_Glossiness (&quot;Smoothness&quot;, Range(0, 1)) = 0.5
+		_EmissionColor (&quot;Emissive&quot;, Vector) = (0,0,0,0)
+		_RippleDistance (&quot;Noise distance&quot;, Float) = 0
+		_RippleFreq (&quot;Noise freq&quot;, Float) = 1
+		_ValueNoise (&quot;ValueNoise&quot;, Float) = 0.5
+		[MaterialToggle] _ValueNoiseVertex (&quot;Value noise per vertex&quot;, Float) = 0
+		[MaterialToggle] _TwoSidedNormals (&quot;Twosided normals&quot;, Float) = 0
+		[Enum(Off,0,Back,2)] _Cull (&quot;Cull&quot;, Float) = 2
+		[MaterialToggle] _AddRain (&quot;Add Rain&quot;, Float) = 1
+		_NoiseTex (&quot;Noise&quot;, 2D) = &quot;white&quot; {}
+	}
+	//DummyShaderTextExporter
+	SubShader{
+		Tags { &quot;RenderType&quot;=&quot;Opaque&quot; }
+		LOD 200
+		CGPROGRAM
+#pragma surface surf Standard
+#pragma target 3.0
+
+		sampler2D _MainTex;
+		fixed4 _Color;
+		struct Input
+		{
+			float2 uv_MainTex;
+		};
+		
+		void surf(Input IN, inout SurfaceOutputStandard o)
+		{
+			fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
+			o.Albedo = c.rgb;
+			o.Alpha = c.a;
+		}
+		ENDCG
+	}
+}
+</code></pre>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/asset-mocking.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

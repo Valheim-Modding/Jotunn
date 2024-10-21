@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Mod Registry &amp; Mod Query </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Mod Registry &amp; Mod Query ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="mod-registry--mod-query">Mod Registry &amp; Mod Query</h1>
+
+<p>Sometimes it is necessary to get prefabs from other mods.
+This is where the Mod Registry and Mod Query provide useful interfaces without having to reference other mods directly.
+The Mod Registry only provides options to access other objects added with Jotunn, while the Mod Query is providing prefabs added by other mods.</p>
+<h2 id="mod-registry">Mod Registry</h2>
+<p>The <a class="xref" href="../api/Jotunn.Utils.ModRegistry.html">ModRegistry</a> is used to get Jotunn entities.
+Depending on what type is wanted, the time where all entities are available may differs.
+For example, console commands are normally added early at each plugins Awake or Start, while custom pieces may be added at <code>PrefabManager.OnVanillaPrefabsAvailable</code> or even later.
+Thus, it is important to test different execution points and look at how other mods handle their insertion.</p>
+<p>As an example we print all locations added by Jotunn mods:</p>
+<pre><code class="lang-cs">Jotunn.Logger.LogInfo($&quot;Jotunn Locations:&quot;);
+foreach (var customLocation in ModRegistry.GetLocations())
+{
+   Jotunn.Logger.LogInfo($&quot;  {customLocation.Name} added by {customLocation.SourceMod.Name}&quot;);
+}
+</code></pre>
+<p>Alternatively it is also possible to target one mod directly:</p>
+<pre><code class="lang-cs">Jotunn.Logger.LogInfo($&quot;Jotunn OtherMod Locations:&quot;);
+foreach (var customLocation in ModRegistry.GetLocations(&quot;other_mod.guid&quot;))
+{
+   Jotunn.Logger.LogInfo($&quot;  {customLocation.Name} added by {customLocation.SourceMod.Name}&quot;);
+}
+</code></pre>
+<h2 id="mod-query">Mod Query</h2>
+<p>The <a class="xref" href="../api/Jotunn.Utils.ModQuery.html">ModQuery</a> is a reliable way to get the source mods of modded prefabs.
+Only prefabs added to the ZNetScene or ObjectDB are indexed.
+Other then the Mod Registry, the Mod Query works for all mods and thus only provides access to the prefab level.
+Jotunn entities cannot be looked up directly.</p>
+<p>There is a small impact in loading time when using the Mod Query, as each non-Jotunn mod must be patched to find out which prefabs the mod adds.
+For a small modpacks, the additional startup time is negligible and for larger modpacks it will be under a few seconds, which is still not much compared to the overall loading time.
+The startup time doesn't increase further if more then one mod uses the Mod Query.</p>
+<p>Nevertheless, the Mod Query needs to be enabled to not waste time if it isn't used.
+This has to be called early in your plugin's Awake or Start.</p>
+<pre><code class="lang-cs">ModQuery.Enable();
+</code></pre>
+<p>After the Mod Query is enabled, modded prefabs can be looked up. Vanilla prefabs are not indexed here.</p>
+<pre><code class="lang-cs">Jotunn.Logger.LogInfo($&quot;Modded prefabs:&quot;);
+foreach (var moddedPrefab in ModQuery.GetPrefabs())
+{
+    Jotunn.Logger.LogInfo($&quot;  {moddedPrefab.Prefab.name} added by {moddedPrefab.SourceMod.Name}&quot;);
+}
+</code></pre>
+<p>Because some mods are adding prefabs really late, this call may also have to delayed, sometimes just before the Player is spawned.</p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/mod-registry.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

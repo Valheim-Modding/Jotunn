@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Step-by-Step Guide </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Step-by-Step Guide ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="step-by-step-guide">Step-by-Step Guide</h1>
+
+<div class="tabGroup" id="tabgroup_1">
+<ul role="tablist">
+<li role="presentation">
+<a href="#tabpanel_1_tabid-1" role="tab" aria-controls="tabpanel_1_tabid-1" data-tab="tabid-1" tabindex="0" aria-selected="true">1. Development Environment</a>
+</li>
+<li role="presentation">
+<a href="#tabpanel_1_tabid-2" role="tab" aria-controls="tabpanel_1_tabid-2" data-tab="tabid-2" tabindex="-1">2. Customising the ModStub project</a>
+</li>
+<li role="presentation">
+<a href="#tabpanel_1_tabid-3" role="tab" aria-controls="tabpanel_1_tabid-3" data-tab="tabid-3" tabindex="-1">3. PreBuild Automations</a>
+</li>
+<li role="presentation">
+<a href="#tabpanel_1_tabid-4" role="tab" aria-controls="tabpanel_1_tabid-4" data-tab="tabid-4" tabindex="-1">4. PostBuild Automations</a>
+</li>
+</ul>
+<section id="tabpanel_1_tabid-1" role="tabpanel" data-tab="tabid-1">
+<h1 id="development-environment">Development Environment</h1>
+<ul>
+<li><p>We begin with installing <a href="https://visualstudio.microsoft.com/de/downloads/">Visual Studio</a> as our IDE. Download the installer and run it on your Computer.</p>
+</li>
+<li><p>Inside the visual studio installer, ensure that <code>.NET Desktop Development</code> and <code>.NET Core Cross-Platform Development</code> are installed, then click on the <code>Individual Components</code> tab and select <code>.NET Framework 4.6.2</code>:<br>
+<img src="../Documentation/images/getting-started/vs-InstallerComponents.png" alt="Components"></p>
+</li>
+<li><p>Fork our <a href="https://github.com/Valheim-Modding/JotunnModStub">ModStub repository</a> using github. You can also <a href="https://github.com/Valheim-Modding/JotunnModStub/generate">use the template function of github</a> to create a new, clean repo under your account. You should have your own copy of the JotunnModStub now. To get your link to the repo click on <code>Code</code> on the front page of your repo and copy the link in it.<br>
+<img src="../Documentation/images/getting-started/gh-ForkedStub.png" alt="Forked github stub"></p>
+</li>
+<li><p>Open Visual Studio and create a new project with <code>Clone a repository</code>. Paste the URL to your newly created repository on github and select a folder on your local hard drive for it.<br>
+<img src="../Documentation/images/getting-started/vs-CloneForkedStub.png" alt="VS Clone forked stub"></p>
+</li>
+</ul>
+<h2 id="bepinex">BepInEx</h2>
+<ul>
+<li>To run or build a mod <a href="https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/">BepInEx</a> must installed.
+Please use the BepInEx pack from Thunderstore as it's configured for Valheim, a release from Github may not work properly.</li>
+</ul>
+</section>
+<section id="tabpanel_1_tabid-2" role="tabpanel" data-tab="tabid-2" aria-hidden="true" hidden="hidden">
+<h1 id="customising-the-modstub-project">Customising the ModStub project</h1>
+<ul>
+<li><p>Once you have your base project, select the solution in the solution explorer, hit F2 to rename the solution as required. Rename your plugin project, an all namespace references, then right click your project settings and ensure the assembly name has also been changed.</p>
+</li>
+<li><p>Rename the <code>PluginGUID</code> <code>PluginName</code>, and <code>PluginVersion</code> to match your intended base release metadata. Your PluginGUID should contain your github username/organisation.</p>
+</li>
+<li><p>Your project base is now ready for use! You can proceed to step 3 to activate the Jötunn PreBuild tasks which add references, publicized dlls to your project. Or select a specific <a href="../tutorials/overview.html">Tutorial</a> to learn more about Jötunn and mod development for Valheim.</p>
+</li>
+</ul>
+<h2 id="optional-use-the-renaming-script">Optional: Use the renaming script</h2>
+<p>Inside your solution folder is a PowerShell script called <code>RenameSolution.ps1</code>. Right-click on it and select 'Run with Powershell' from the context menu. Follow the on-screen instructions to customise your project automatically.</p>
+</section>
+<section id="tabpanel_1_tabid-3" role="tabpanel" data-tab="tabid-3" aria-hidden="true" hidden="hidden">
+<h1 id="prebuild-automations">PreBuild Automations</h1>
+<h2 id="add-project-references">Add project references</h2>
+<p>Jötunn automatically references all dependencies that may be needed for the development process.
+To overwrite paths, create a new file called <code>Environment.props</code> at the project root and place the following contents inside, modify as needed.</p>
+<pre><code class="lang-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;Project ToolsVersion=&quot;Current&quot; xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;
+  &lt;PropertyGroup&gt;
+    &lt;!-- Valheim install folder. This is usually found automatically, uncomment to overwrite.
+         Needs to be your path to the base Valheim folder. --&gt;
+    &lt;!-- &lt;VALHEIM_INSTALL&gt;X:\PathToYourSteamLibary\steamapps\common\Valheim&lt;/VALHEIM_INSTALL&gt;--&gt;
+
+    &lt;!-- BepInEx install folder. This is usually found automatically, uncomment to overwrite.
+         Note the default value $(VALHEIM_INSTALL)\BepInEx requires the VALHEIM_INSTALL property to be set. --&gt;
+    &lt;!-- &lt;BEPINEX_PATH&gt;$(VALHEIM_INSTALL)\BepInEx&lt;/BEPINEX_PATH&gt;--&gt;
+
+    &lt;!-- This is the folder where your build gets copied to when using the post-build automations.
+         Note the default value $(VALHEIM_INSTALL)\BepInEx\plugins requires the VALHEIM_INSTALL property to be set. --&gt;
+    &lt;!-- &lt;MOD_DEPLOYPATH&gt;$(VALHEIM_INSTALL)\BepInEx\plugins&lt;/MOD_DEPLOYPATH&gt;--&gt;
+  &lt;/PropertyGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>This prebuild task will add references to your current project. If you already have setup that references it most certainly will duplicate them.</p>
+</div>
+<h2 id="publicize-valheim-assemblies">Publicize Valheim assemblies</h2>
+<p>Jötunn can automatically create the publicised assemblies for you. To use this feature you must have the <code>Environment.props</code> file from the last step. Additionally you need to create a new file called <code>DoPrebuild.props</code> in your solution directory. If you are using the ModStub the file will already be there so just change <code>ExecutePrebuild</code> to <code>true</code>. If you opt not to utilise this automation, you will need to generate your publicised assemblies, and add them to your projects references manually.</p>
+<pre><code class="lang-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;Project ToolsVersion=&quot;Current&quot; xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;
+  &lt;PropertyGroup&gt;
+    &lt;ExecutePrebuild&gt;true&lt;/ExecutePrebuild&gt;
+  &lt;/PropertyGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>This prebuild task will automate the generation of publicising the game assemblies. By enabling this, you understand that you will be generating new publicised assemblies upon PreBuild <strong>IF</strong> the binaries have been updated since the last time the PreBuild has run.</p>
+</div>
+<h2 id="manual-setup">Manual setup</h2>
+<p>If you decide to disable the prebuild, you will need to:</p>
+<ul>
+<li>Publicized assemblies are manually generated with <a href="https://github.com/CabbageCrow/AssemblyPublicizer">AssemblyPublicizer</a>. Please follow the instructions found on GitHub using the Valheim assembly DLLs found under <code>Valheim/valheim_Data/Managed</code>.</li>
+<li>Reference those publicized assemblies and any of the Unity assemblies you want to use (at the very least <code>UnityEngine.dll</code>) in your mod project.</li>
+</ul>
+</section>
+<section id="tabpanel_1_tabid-4" role="tabpanel" data-tab="tabid-4" aria-hidden="true" hidden="hidden">
+<h1 id="postbuild-automations">PostBuild Automations</h1>
+<p>Included in the ModStub and ModExample repos is a PowerShell script <code>publish.ps1</code>. The script is referenced in the project file as a post build event. Depending on the chosen configuration in Visual Studio the script executes the following actions.</p>
+<h2 id="building-debug">Building Debug</h2>
+<ul>
+<li>The compiled dll file for this project is copied to <code>&lt;ValheimDir&gt;\BepInEx\plugins</code> or the path you configured in your <code>Environment.props</code> file.</li>
+<li>A .mdb file is generated for the compiled project dll and copied to <code>&lt;ValheimDir&gt;\BepInEx\plugins</code> or the path you configured in your <code>Environment.props</code> file.</li>
+</ul>
+<h2 id="building-release">Building Release</h2>
+<ul>
+<li>The README.md in <code>SolutionDir/ProjectDir/README.md</code> is copied to <code>SolutionDir/ProjectDir/package/README.md</code> for packaging.</li>
+<li>The compiled binary is placed inside of <code>SolutionDir/ProjectDir/package/plugins</code></li>
+<li>The contents of <code>SolutionDir/ProjectDir/package/*</code> is archived into a zip, ready for thunderstore upload.</li>
+</ul>
+<h2 id="debugging-with-visual-studio">Debugging with Visual Studio</h2>
+<p>Please see: <a href="https://github.com/Valheim-Modding/Wiki/wiki/Debugging-Plugins-via-IDE">this article</a></p>
+</section>
+</div>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/guides/guide.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

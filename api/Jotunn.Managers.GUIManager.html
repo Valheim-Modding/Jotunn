@@ -1,0 +1,499 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class GUIManager
+ </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class GUIManager
+ ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Jotunn.Managers.GUIManager">
+
+
+
+  <h1 id="Jotunn_Managers_GUIManager" data-uid="Jotunn.Managers.GUIManager" class="text-break">Class GUIManager
+</h1>
+  <div class="markdown level0 summary">Manager for handling anything GUI related. Provides Valheim style 
+GUI elements as well as an anchor for custom GUI prefabs.</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">GUIManager</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Jotunn.html">Jotunn</a>.<a class="xref" href="Jotunn.Managers.html">Managers</a></h6>
+  <h6><strong>Assembly</strong>: Jotunn.dll</h6>
+  <h5 id="Jotunn_Managers_GUIManager_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class GUIManager</code></pre>
+  </div>
+  <h3 id="fields">Fields
+</h3>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_UILayer" data-uid="Jotunn.Managers.GUIManager.UILayer">
+          <a class="xref" href="Jotunn.Managers.GUIManager.UILayer.html">UILayer</a>
+        </td>
+        <td class="markdown level1 summary">Unity layer constant for UI objects.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ValheimBeige" data-uid="Jotunn.Managers.GUIManager.ValheimBeige">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ValheimBeige.html">ValheimBeige</a>
+        </td>
+        <td class="markdown level1 summary">The default Valheim beige color.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ValheimButtonColorBlock" data-uid="Jotunn.Managers.GUIManager.ValheimButtonColorBlock">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ValheimButtonColorBlock.html">ValheimButtonColorBlock</a>
+        </td>
+        <td class="markdown level1 summary">Button color block in Valheim style</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ValheimControlResources" data-uid="Jotunn.Managers.GUIManager.ValheimControlResources">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ValheimControlResources.html">ValheimControlResources</a>
+        </td>
+        <td class="markdown level1 summary">DefaultControls.Resources with default Valheim assets.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ValheimOrange" data-uid="Jotunn.Managers.GUIManager.ValheimOrange">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ValheimOrange.html">ValheimOrange</a>
+        </td>
+        <td class="markdown level1 summary">The default Valheim orange color.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ValheimScrollbarHandleColorBlock" data-uid="Jotunn.Managers.GUIManager.ValheimScrollbarHandleColorBlock">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ValheimScrollbarHandleColorBlock.html">ValheimScrollbarHandleColorBlock</a>
+        </td>
+        <td class="markdown level1 summary">Scrollbar handle color block in default Valheim orange.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ValheimToggleColorBlock" data-uid="Jotunn.Managers.GUIManager.ValheimToggleColorBlock">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ValheimToggleColorBlock.html">ValheimToggleColorBlock</a>
+        </td>
+        <td class="markdown level1 summary">Toggle color block in Valheim style.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ValheimYellow" data-uid="Jotunn.Managers.GUIManager.ValheimYellow">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ValheimYellow.html">ValheimYellow</a>
+        </td>
+        <td class="markdown level1 summary">The default Valheim yellow color.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+</h3>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_AveriaSerif" data-uid="Jotunn.Managers.GUIManager.AveriaSerif">
+          <a class="xref" href="Jotunn.Managers.GUIManager.AveriaSerif.html#Jotunn_Managers_GUIManager_AveriaSerif">AveriaSerif</a>
+        </td>
+        <td class="markdown level1 summary">Valheim's standard font, normal faced.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_AveriaSerifBold" data-uid="Jotunn.Managers.GUIManager.AveriaSerifBold">
+          <a class="xref" href="Jotunn.Managers.GUIManager.AveriaSerifBold.html#Jotunn_Managers_GUIManager_AveriaSerifBold">AveriaSerifBold</a>
+        </td>
+        <td class="markdown level1 summary">Valheim's standard font, bold faced.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CustomGUIBack" data-uid="Jotunn.Managers.GUIManager.CustomGUIBack">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CustomGUIBack.html#Jotunn_Managers_GUIManager_CustomGUIBack">CustomGUIBack</a>
+        </td>
+        <td class="markdown level1 summary">GUI container behind Valheim's GUI elements with automatic scaling for
+high res displays and pixel correction.
+Gets rebuild at every scene change so make sure to add your custom
+GUI prefabs again on each scene change.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CustomGUIFront" data-uid="Jotunn.Managers.GUIManager.CustomGUIFront">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CustomGUIFront.html#Jotunn_Managers_GUIManager_CustomGUIFront">CustomGUIFront</a>
+        </td>
+        <td class="markdown level1 summary">GUI container in front of Valheim's GUI elements with automatic scaling for
+high res displays and pixel correction.
+Gets rebuild at every scene change so make sure to add your custom
+GUI prefabs again on each scene change.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_Instance" data-uid="Jotunn.Managers.GUIManager.Instance">
+          <a class="xref" href="Jotunn.Managers.GUIManager.Instance.html#Jotunn_Managers_GUIManager_Instance">Instance</a>
+        </td>
+        <td class="markdown level1 summary">Singleton instance</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_Norse" data-uid="Jotunn.Managers.GUIManager.Norse">
+          <a class="xref" href="Jotunn.Managers.GUIManager.Norse.html#Jotunn_Managers_GUIManager_Norse">Norse</a>
+        </td>
+        <td class="markdown level1 summary">Valheim's rune-like font, normal faced.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_NorseBold" data-uid="Jotunn.Managers.GUIManager.NorseBold">
+          <a class="xref" href="Jotunn.Managers.GUIManager.NorseBold.html#Jotunn_Managers_GUIManager_NorseBold">NorseBold</a>
+        </td>
+        <td class="markdown level1 summary">Valheim's rune-like font, bold faced.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplyButtonStyle_UnityEngine_UI_Button_System_Int32_" data-uid="Jotunn.Managers.GUIManager.ApplyButtonStyle(UnityEngine.UI.Button,System.Int32)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplyButtonStyle.html#Jotunn_Managers_GUIManager_ApplyButtonStyle_UnityEngine_UI_Button_System_Int32_">ApplyButtonStyle(Button, int)</a>
+        </td>
+        <td class="markdown level1 summary">Apply valheim style to a UnityEngine.UI.Button Component</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplyDropdownStyle_Dropdown_System_Int32_" data-uid="Jotunn.Managers.GUIManager.ApplyDropdownStyle(Dropdown,System.Int32)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplyDropdownStyle.html#Jotunn_Managers_GUIManager_ApplyDropdownStyle_Dropdown_System_Int32_">ApplyDropdownStyle(Dropdown, int)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to a Dropdown component.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplyInputFieldStyle_InputField_System_Int32_" data-uid="Jotunn.Managers.GUIManager.ApplyInputFieldStyle(InputField,System.Int32)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplyInputFieldStyle.html#Jotunn_Managers_GUIManager_ApplyInputFieldStyle_InputField_System_Int32_">ApplyInputFieldStyle(InputField, int)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to an InputField Component.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplyScrollRectStyle_ScrollRect_" data-uid="Jotunn.Managers.GUIManager.ApplyScrollRectStyle(ScrollRect)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplyScrollRectStyle.html#Jotunn_Managers_GUIManager_ApplyScrollRectStyle_ScrollRect_">ApplyScrollRectStyle(ScrollRect)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to a ScrollRect component.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplyScrollbarStyle_Scrollbar_" data-uid="Jotunn.Managers.GUIManager.ApplyScrollbarStyle(Scrollbar)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplyScrollbarStyle.html#Jotunn_Managers_GUIManager_ApplyScrollbarStyle_Scrollbar_">ApplyScrollbarStyle(Scrollbar)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to a Scrollbar component.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplySliderStyle_Slider_" data-uid="Jotunn.Managers.GUIManager.ApplySliderStyle(Slider)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplySliderStyle.html#Jotunn_Managers_GUIManager_ApplySliderStyle_Slider_">ApplySliderStyle(Slider)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to a Slider component.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplySliderStyle_Slider_Vector2_" data-uid="Jotunn.Managers.GUIManager.ApplySliderStyle(Slider,Vector2)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplySliderStyle.html#Jotunn_Managers_GUIManager_ApplySliderStyle_Slider_Vector2_">ApplySliderStyle(Slider, Vector2)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to a Slider component.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplyTextStyle_Text_Color_System_Int32_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.ApplyTextStyle(Text,Color,System.Int32,System.Boolean)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplyTextStyle.html#Jotunn_Managers_GUIManager_ApplyTextStyle_Text_Color_System_Int32_System_Boolean_">ApplyTextStyle(Text, Color, int, bool)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to a Text Component.
+Uses <pre><code class="lang-csharp">GUIManager.Instance.AveriaSerifBold</code></pre> by default</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplyTextStyle_Text_Font_Color_System_Int32_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.ApplyTextStyle(Text,Font,Color,System.Int32,System.Boolean)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplyTextStyle.html#Jotunn_Managers_GUIManager_ApplyTextStyle_Text_Font_Color_System_Int32_System_Boolean_">ApplyTextStyle(Text, Font, Color, int, bool)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to a Text Component</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplyTextStyle_Text_System_Int32_" data-uid="Jotunn.Managers.GUIManager.ApplyTextStyle(Text,System.Int32)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplyTextStyle.html#Jotunn_Managers_GUIManager_ApplyTextStyle_Text_System_Int32_">ApplyTextStyle(Text, int)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to a Text Component.
+Uses <pre><code class="lang-csharp">GUIManager.Instance.AveriaSerifBold</code></pre>, <pre><code class="lang-csharp">Color.white</code></pre> and creates an outline by default</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplyToogleStyle_UnityEngine_UI_Toggle_" data-uid="Jotunn.Managers.GUIManager.ApplyToogleStyle(UnityEngine.UI.Toggle)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplyToogleStyle.html#Jotunn_Managers_GUIManager_ApplyToogleStyle_UnityEngine_UI_Toggle_">ApplyToogleStyle(Toggle)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to a UnityEngine.UI.Toggle component.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_ApplyWoodpanelStyle_Transform_" data-uid="Jotunn.Managers.GUIManager.ApplyWoodpanelStyle(Transform)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.ApplyWoodpanelStyle.html#Jotunn_Managers_GUIManager_ApplyWoodpanelStyle_Transform_">ApplyWoodpanelStyle(Transform)</a>
+        </td>
+        <td class="markdown level1 summary">Apply Valheim style to a woodpanel.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_BlockInput_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.BlockInput(System.Boolean)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.BlockInput.html#Jotunn_Managers_GUIManager_BlockInput_System_Boolean_">BlockInput(bool)</a>
+        </td>
+        <td class="markdown level1 summary">Block all input except GUI</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateButton_System_String_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateButton(System.String,Transform,Vector2,Vector2,Vector2,System.Single,System.Single)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateButton.html#Jotunn_Managers_GUIManager_CreateButton_System_String_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_">CreateButton(string, Transform, Vector2, Vector2, Vector2, float, float)</a>
+        </td>
+        <td class="markdown level1 summary">Create a new button (Valheim style).</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateColorPicker_Vector2_Vector2_Vector2_Color_System_String_Jotunn_GUI_ColorPicker_ColorEvent_Jotunn_GUI_ColorPicker_ColorEvent_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.CreateColorPicker(Vector2,Vector2,Vector2,Color,System.String,Jotunn.GUI.ColorPicker.ColorEvent,Jotunn.GUI.ColorPicker.ColorEvent,System.Boolean)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateColorPicker.html#Jotunn_Managers_GUIManager_CreateColorPicker_Vector2_Vector2_Vector2_Color_System_String_Jotunn_GUI_ColorPicker_ColorEvent_Jotunn_GUI_ColorPicker_ColorEvent_System_Boolean_">CreateColorPicker(Vector2, Vector2, Vector2, Color, string, ColorEvent, ColorEvent, bool)</a>
+        </td>
+        <td class="markdown level1 summary">Creates and displays a Valheim style ColorPicker</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateDropDown_Transform_Vector2_Vector2_Vector2_System_Int32_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateDropDown(Transform,Vector2,Vector2,Vector2,System.Int32,System.Single,System.Single)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateDropDown.html#Jotunn_Managers_GUIManager_CreateDropDown_Transform_Vector2_Vector2_Vector2_System_Int32_System_Single_System_Single_">CreateDropDown(Transform, Vector2, Vector2, Vector2, int, float, float)</a>
+        </td>
+        <td class="markdown level1 summary">Create dropdown field</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateGradientPicker_Vector2_Vector2_Vector2_Gradient_System_String_Jotunn_GUI_GradientPicker_GradientEvent_Jotunn_GUI_GradientPicker_GradientEvent_" data-uid="Jotunn.Managers.GUIManager.CreateGradientPicker(Vector2,Vector2,Vector2,Gradient,System.String,Jotunn.GUI.GradientPicker.GradientEvent,Jotunn.GUI.GradientPicker.GradientEvent)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateGradientPicker.html#Jotunn_Managers_GUIManager_CreateGradientPicker_Vector2_Vector2_Vector2_Gradient_System_String_Jotunn_GUI_GradientPicker_GradientEvent_Jotunn_GUI_GradientPicker_GradientEvent_">CreateGradientPicker(Vector2, Vector2, Vector2, Gradient, string, GradientEvent, GradientEvent)</a>
+        </td>
+        <td class="markdown level1 summary">Creates and displays a Valheim style GradientPicker</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateInputField_Transform_Vector2_Vector2_Vector2_InputField_ContentType_System_String_System_Int32_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateInputField(Transform,Vector2,Vector2,Vector2,InputField.ContentType,System.String,System.Int32,System.Single,System.Single)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateInputField.html#Jotunn_Managers_GUIManager_CreateInputField_Transform_Vector2_Vector2_Vector2_InputField_ContentType_System_String_System_Int32_System_Single_System_Single_">CreateInputField(Transform, Vector2, Vector2, Vector2, ContentType, string, int, float, float)</a>
+        </td>
+        <td class="markdown level1 summary">Create a new InputField (Valheim style).</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateKeyBindField_System_String_Transform_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateKeyBindField(System.String,Transform,System.Single,System.Single)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateKeyBindField.html#Jotunn_Managers_GUIManager_CreateKeyBindField_System_String_Transform_System_Single_System_Single_">CreateKeyBindField(string, Transform, float, float)</a>
+        </td>
+        <td class="markdown level1 summary">Create key binding field</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateScrollView_Transform_System_Boolean_System_Boolean_System_Single_System_Single_ColorBlock_Color_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateScrollView(Transform,System.Boolean,System.Boolean,System.Single,System.Single,ColorBlock,Color,System.Single,System.Single)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateScrollView.html#Jotunn_Managers_GUIManager_CreateScrollView_Transform_System_Boolean_System_Boolean_System_Single_System_Single_ColorBlock_Color_System_Single_System_Single_">CreateScrollView(Transform, bool, bool, float, float, ColorBlock, Color, float, float)</a>
+        </td>
+        <td class="markdown level1 summary">Create a complete scroll view</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateText_System_String_Transform_Vector2_Vector2_Vector2_Font_System_Int32_Color_System_Boolean_Color_System_Single_System_Single_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.CreateText(System.String,Transform,Vector2,Vector2,Vector2,Font,System.Int32,Color,System.Boolean,Color,System.Single,System.Single,System.Boolean)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateText.html#Jotunn_Managers_GUIManager_CreateText_System_String_Transform_Vector2_Vector2_Vector2_Font_System_Int32_Color_System_Boolean_Color_System_Single_System_Single_System_Boolean_">CreateText(string, Transform, Vector2, Vector2, Vector2, Font, int, Color, bool, Color, float, float, bool)</a>
+        </td>
+        <td class="markdown level1 summary">Create a GameObject with a Text (and optional Outline and ContentSizeFitter) component</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateToggle_Transform_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateToggle(Transform,System.Single,System.Single)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateToggle.html#Jotunn_Managers_GUIManager_CreateToggle_Transform_System_Single_System_Single_">CreateToggle(Transform, float, float)</a>
+        </td>
+        <td class="markdown level1 summary">Create toggle field</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateWoodpanel_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_" data-uid="Jotunn.Managers.GUIManager.CreateWoodpanel(Transform,Vector2,Vector2,Vector2,System.Single,System.Single)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateWoodpanel.html#Jotunn_Managers_GUIManager_CreateWoodpanel_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_">CreateWoodpanel(Transform, Vector2, Vector2, Vector2, float, float)</a>
+        </td>
+        <td class="markdown level1 summary">Creates a Valheim style woodpanel which is draggable per default</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_CreateWoodpanel_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_System_Boolean_" data-uid="Jotunn.Managers.GUIManager.CreateWoodpanel(Transform,Vector2,Vector2,Vector2,System.Single,System.Single,System.Boolean)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.CreateWoodpanel.html#Jotunn_Managers_GUIManager_CreateWoodpanel_Transform_Vector2_Vector2_Vector2_System_Single_System_Single_System_Boolean_">CreateWoodpanel(Transform, Vector2, Vector2, Vector2, float, float, bool)</a>
+        </td>
+        <td class="markdown level1 summary">Creates a Valheim style woodpanel, can optionally be draggable</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_GetSprite_System_String_" data-uid="Jotunn.Managers.GUIManager.GetSprite(System.String)">
+          <a class="xref" href="Jotunn.Managers.GUIManager.GetSprite.html#Jotunn_Managers_GUIManager_GetSprite_System_String_">GetSprite(string)</a>
+        </td>
+        <td class="markdown level1 summary">Get a sprite by name.</td>
+      </tr>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_IsHeadless" data-uid="Jotunn.Managers.GUIManager.IsHeadless">
+          <a class="xref" href="Jotunn.Managers.GUIManager.IsHeadless.html#Jotunn_Managers_GUIManager_IsHeadless">IsHeadless()</a>
+        </td>
+        <td class="markdown level1 summary">Detect headless mode (aka dedicated server)</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="events">Events
+</h3>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="Jotunn_Managers_GUIManager_OnCustomGUIAvailable" data-uid="Jotunn.Managers.GUIManager.OnCustomGUIAvailable">
+          <a class="xref" href="Jotunn.Managers.GUIManager.OnCustomGUIAvailable.html">OnCustomGUIAvailable</a>
+        </td>
+        <td class="markdown level1 summary">Event that gets fired every time the Unity scene changed and new CustomGUI 
+objects were created. Subscribe to this event to create your custom GUI objects
+and add them as a child to either <a class="xref" href="Jotunn.Managers.GUIManager.CustomGUIFront.html#Jotunn_Managers_GUIManager_CustomGUIFront">CustomGUIFront</a> or <a class="xref" href="Jotunn.Managers.GUIManager.CustomGUIBack.html#Jotunn_Managers_GUIManager_CustomGUIBack">CustomGUIBack</a>.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="Jotunn.PrefabExtension.FixReferences.html#Jotunn_PrefabExtension_FixReferences_System_Object_">PrefabExtension.FixReferences(object)</a>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/new/prod/apiSpec/new?filename=Jotunn_Managers_GUIManager.md&amp;value=---%0Auid%3A%20Jotunn.Managers.GUIManager%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Managers/GUIManager.cs/#L25" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

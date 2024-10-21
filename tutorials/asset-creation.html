@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Developing Assets with Unity </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Developing Assets with Unity ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="developing-assets-with-unity">Developing Assets with Unity</h1>
+
+<p>New Assets can be created with Unity and imported into Valheim using Jötunn. In this tutorial we will copy Valheim's &quot;Iron Bar&quot; and create a custom material &quot;Steel Bar&quot; to be used as a new item conversion. The final result can be downloaded and examined in our <a href="https://github.com/Valheim-Modding/JotunnModExample">mod example project</a>.</p>
+<h2 id="software-requirements">Software Requirements</h2>
+<p>Creation Tools</p>
+<ul>
+<li><a href="https://visualstudio.microsoft.com/de/downloads/">Visual Studio</a> - Editor for our plugin code</li>
+<li><a href="https://unity3d.com/unity/whats-new/2022.3.17">Unity 2022.3.17</a> - Game engine that Valheim runs in</li>
+</ul>
+<p>Game Mods (install these into your game as our mod has dependencies on them)</p>
+<ul>
+<li><a href="https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/">Jötunn, the Valheim Library</a> - Mod with convenience methods we will use</li>
+</ul>
+<h2 id="summary-of-steps">Summary of Steps</h2>
+<p>To add an item to the game, a mod maker will have to:</p>
+<ul>
+<li>Create an item asset in Unity</li>
+<li>Connect the required Valheim game scripts to the asset so that the game can interact with it</li>
+<li>Build the item into an Asset Bundle for importation into the Visual Studio project where they build the mod</li>
+<li>Retrieve the asset from the bundle in the mod code</li>
+<li>And add that item (and relevant recipes to make it) to the game's object database when it launches</li>
+</ul>
+<h2 id="unity-editor-setup">Unity Editor Setup</h2>
+<p>Valheim uses Unity Version <strong>2022.3.17</strong></p>
+<p>If you don't have Unity already installed, download <a href="https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe">UnityHub</a> from their website or install it with the Visual Studio Installer via <code>Individual Components</code> -&gt; <code>Visual Studio Tools for Unity</code>. You will need an Unity account to register your PC and get a free licence. <a href="https://id.unity.com/account/new">Create the account</a>, login with it in UnityHub and get your licence via <code>Settings</code> -&gt; <code>Licence Management</code>.</p>
+<p>We will want to have two instances of the Unity Editor running, working in two different projects. This helps us separate the original, coyprighted content from the game and our own assets as well as making new rips of updated Valheim versions much easier to handle, since you won't overwrite your custom assets or have to move them to the new rip.</p>
+<h3 id="ripped-game-project">Ripped Game Project</h3>
+<p>To create a ripped project from the original game, follow the <a href="https://github.com/Valheim-Modding/Wiki/wiki/Valheim-Unity-Project-Guide">step-by-step instructions</a> on the Valheim-Modding Wiki.
+After ripping the project you can open this as a reference on the vanilla prefabs or to copy parts of the assets you want to use to your mod stub project.</p>
+<h3 id="mod-stub-project">Mod Stub Project</h3>
+<p>Jötunn provides you with a barebone project stub that also includes a Unity project.
+You can get <a href="https://github.com/Valheim-Modding/JotunnModStub">this project in its entirety</a> from our github.
+If you haven't already setup your dev environment, see our <a href="../guides/guide.html">step-by-step guide</a> on how to do this.</p>
+<p>Before opening the Unity project, copy the following files (especially the .meta files) from your ripped Valheim project at <code>&lt;RippedValheimProject&gt;\Assets\Plugins</code> folder into your stub project's <code>&lt;JotunnModStub&gt;\JotunnModUnity\Assets\Assemblies</code> folder (create that if necessary).<br>
+If you are using the ModStub, you can compile the C# project instead, which will copy the necessary files for you.
+See the <a href="https://github.com/Valheim-Modding/JotunnModStub/blob/d8d48e6337bf842d57f0728d277c28543d016514/JotunnModStub/JotunnModStub.csproj#L83-L108">CopyToUnity Task</a></p>
+<ul>
+<li>all assembly_*.dll files</li>
+<li>PlayFab.dll</li>
+<li>PlayFabParty.dll</li>
+<li>PlatformTools.Core.dll</li>
+<li>PlatformTools.Common.dll</li>
+<li>ConnectedStorage.dll</li>
+<li>gui_framework.dll</li>
+<li>com.rlabrecque.steamworks.net.dll</li>
+<li>SoftReferenceableAssets.dll</li>
+</ul>
+<p>This allows us to exchange prefabs between the two projects without losing the references to the added components.<br>
+You can also copy the dll files from your game folder <code>&lt;ValheimInstall&gt;/valheim_Data/Managed</code> and recover the missing references using e.g. the NG Missing Script Recovery tool.</p>
+<p><strong>Copy the files directly to the new project via the file system - don't import the assemblies via Unity</strong>.</p>
+<p>After you copied the files, open UnityHub, add the JotunnModUnity project and open it.</p>
+<h2 id="working-the-new-asset">Working the New Asset</h2>
+<p>In this use case you only need to edit some line items on the prefab that we are manipulating. So locate the Iron bar made by IronGate in the ripped game project. Highlight the item and press CTRL+D to duplicate it in Unity. Double click the copied Prefab to open it in the inspector. This is our new working base for the Steel Ingot. Now change the values of the ItemData component according to your needs:</p>
+<p><img src="../Documentation/images/data/assetCopiedsteel.png" alt="Copied steel asset"></p>
+<ul>
+<li>The name: as you can see its a token that is prefixed with $ . This dollar     signifies this is a token due for replacement by localised content. In my case I changed the name to $steelbar</li>
+<li>Icons: Its an array that is the same size as the number of variant you'll want for you item, if there is only 1 variant, have a single entry in there and drag and drop your 2D Sprite at the Element 0 field. (IF YOU FORGET THIS YOUR INVENTORY WILL BE VERY ANGRY WITH YOU UPON PICKUP OF THE ITEM)</li>
+<li>Description Token: same thing for the name, mine is $steelbar_description</li>
+<li>Item Type: The item type in use here is extremely important to our in-game use case. Since we are creating a Material that is what I should pick here. The attach override is not important for this example.</li>
+<li>Max Stack size: Determines the maximum the player can have in 1 stack in the inventory</li>
+<li>Weight: The weight factor for a single unity</li>
+<li>Teleportable: Whether or not this item can pass through a teleporter</li>
+</ul>
+<h2 id="porting-the-asset">Porting the Asset</h2>
+<p>Port the item into the new stubbed unity project, with ALL linked assets (mesh, texture, sound, material, etc). You can do this by creating a .unitypackage export from the ripped project and importing that again in the stub project. Do so by right-clicking the Prefab and selecting <code>Export Package</code>. Dont include the scripts in the package since we copied these before. If you want to copy single assets you can also drag and drop them from one unity editor instance to the other. The stub project will be the project from which we make the Asset Bundle to package with our plugin.</p>
+<p>Open the prefab by double-clicking it. If you followed the project stub steps correctly, all references to the vanilla scripts should still be there. If this is not the case, your prefab now looks something like this:</p>
+<p><img src="../Documentation/images/data/cheaty_missingrefs.png" alt="Missing script refs"></p>
+<p>You will have to fix those script references first. Be sure to <strong>always fix the script references for all items that you've brought into the new project</strong> including ItemDrop, etc. Doing this manually unfortunately clears out all values previously set on those components. To avoid this, you can use the Unity package <a href="https://assetstore.unity.com/packages/tools/utilities/ng-missing-script-recovery-102272">NG Script recovery</a>. Install it and let NG fix the references. We won't go into details of that process, so please read up on NG usage on their website.</p>
+<p>Before we actually create our bundle, though, you might be wondering - what should I do with copied vanilla assets if I still want to use them on my prefab? I'd have to be worried about copyright infringement, bad.</p>
+<p>The solution is easy though, as we introduce a <a href="asset-mocking.html">Mock object system</a> in Jötunn. Click the link to learn more about resolving native asset references at runtime.</p>
+<h2 id="assetbundle">AssetBundle</h2>
+<p>Now we want to make our AssetBundle so that we later inject it with our BepInEx plugin dll.</p>
+<p>Let's create an Asset Label for the AssetBundle that we'll call steel:</p>
+<p><img src="../Documentation/images/data/assetBundleLabel.png" alt="Steel bundle label"></p>
+<p>Now, let's use the AssetBundle Browser made by Unity to create our AssetBundle.</p>
+<p>Window -&gt; AssetBundle Browser -&gt; Build Tab -&gt; Build</p>
+<p><img src="../Documentation/images/data/assetBundleBuild.png" alt="Click Build"></p>
+<p>We now want to put our AssetBundle into the Visual Studio project so we can use it later with our custom Jötunn code. Alternatively you can just build your asset bundles directly into the VS project path.</p>
+<h2 id="implementing-your-asset-ingame-using-jvl">Implementing your asset ingame using JVL</h2>
+<p>If you have not done so yet, please ensure you have completed the <a href="../guides/guide.html">relevant visual studio setup</a>.
+You can then follow the <a href="asset-loading.html">Asset importing guide</a>, <a href="items.html">Item Creation</a>, and <a href="localization.html">Localization</a> tutorials.</p>
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/Valheim-Modding/Jotunn/blob/prod/JotunnLib/Documentation/tutorials/asset-creation.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        
+        <span>Generated by <strong>DocFX</strong></span>
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
