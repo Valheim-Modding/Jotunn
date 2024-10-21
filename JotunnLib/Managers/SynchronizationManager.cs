@@ -224,7 +224,7 @@ namespace Jotunn.Managers
             {
                 InitAdminConfigs();
 
-                if (IsServer())
+                if (ZNet.instance && ZNet.instance.IsServer())
                 {
                     PlayerIsAdmin = true;
                     UnlockConfigurationEntries();
@@ -641,7 +641,7 @@ namespace Jotunn.Managers
         /// </summary>
         private static bool ConfigEntryBase_GetSerializedValue(ConfigEntryBase __instance, ref string __result)
         {
-            if (IsServer() || !__instance.IsSyncable())
+            if (ReadWriteConfigFromDisk() || !__instance.IsSyncable() || __instance.GetLocalValue() == null)
             {
                 return true;
             }
@@ -655,12 +655,12 @@ namespace Jotunn.Managers
         /// </summary>
         private static bool ConfigEntryBase_SetSerializedValue(ConfigEntryBase __instance, string value)
         {
-            return IsServer() || !__instance.IsSyncable();
+            return ReadWriteConfigFromDisk() || !__instance.IsSyncable();
         }
 
-        private static bool IsServer()
+        private static bool ReadWriteConfigFromDisk()
         {
-            return ZNet.instance && ZNet.instance.IsServer();
+            return !ZNet.instance || ZNet.instance.IsServer();
         }
 
         /// <summary>

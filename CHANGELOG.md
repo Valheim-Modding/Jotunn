@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.21.1
+* Fixed changing config values in the main menu resulted in an error
+
 ## Version 2.21.0
 * Added DungeonManager, CustomRoom and RoomConfig for custom dungeons (thx probablykory & warp)
 * Added GameVersions utility to check for specific game versions
