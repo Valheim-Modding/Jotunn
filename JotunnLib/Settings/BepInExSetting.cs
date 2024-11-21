@@ -4,6 +4,10 @@ using BepInEx.Configuration;
 
 namespace Jotunn.Settings
 {
+    /// <summary>
+    ///     Base class for in-game BepInEx settings
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class BepInExSetting<T> : Setting<T>
     {
         public string Section { get; set; }
@@ -25,6 +29,9 @@ namespace Jotunn.Settings
             AdminOnly = adminOnly;
         }
 
+        /// <summary>
+        ///     Bind this setting to the BepInEx configuration system
+        /// </summary>
         public override void Bind()
         {
             if (entry != null)
@@ -38,6 +45,9 @@ namespace Jotunn.Settings
             Value = entry.Value;
         }
 
+        /// <summary>
+        ///     Removes this setting from the BepInEx configuration system
+        /// </summary>
         public override void Unbind()
         {
             if (entry == null)

@@ -516,7 +516,7 @@ namespace Jotunn.Managers
                     plugin.Instance.Config.SaveOnConfigSet = false;
                 }
 
-                piece.BindSettings();
+                piece.Settings?.Bind();
             }
 
             foreach (var sourceMod in saveOnConfigSet.Keys)

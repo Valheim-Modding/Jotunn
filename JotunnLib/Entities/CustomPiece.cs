@@ -2,7 +2,6 @@
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
-using Jotunn.Settings;
 using Jotunn.Utils;
 using UnityEngine;
 
@@ -66,11 +65,10 @@ namespace Jotunn.Entities
         /// </summary>
         public bool FixReference { get; set; }
 
-        public Setting<bool> SettingsEnabled { get; set; }
-
-        public Setting<string> CategorySetting { get; set; }
-
-        public Setting<string> PieceTableSetting { get; set; }
+        /// <summary>
+        ///     The in-game settings for this custom piece.
+        /// </summary>
+        public CustomPieceSettings Settings { get; set; }
 
         /// <summary>
         ///     Indicator if references from configs should get replaced
@@ -104,7 +102,7 @@ namespace Jotunn.Entities
             Piece = piecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
             FixReference = fixReference;
-            CreateSettings();
+            Settings = new CustomPieceSettings(this);
         }
 
         /// <summary>
@@ -122,9 +120,8 @@ namespace Jotunn.Entities
             FixReference = false;
             FixConfig = true;
             Category = pieceConfig.Category;
-
             pieceConfig.Apply(piecePrefab);
-            CreateSettings();
+            Settings = new CustomPieceSettings(this);
         }
 
         /// <summary>
@@ -142,9 +139,8 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             FixConfig = true;
             Category = pieceConfig.Category;
-
             pieceConfig.Apply(piecePrefab);
-            CreateSettings();
+            Settings = new CustomPieceSettings(this);
         }
 
         /// <summary>
@@ -172,7 +168,7 @@ namespace Jotunn.Entities
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
             FixReference = fixReference;
-            CreateSettings();
+            Settings = new CustomPieceSettings(this);
         }
 
         /// <summary>
@@ -198,9 +194,8 @@ namespace Jotunn.Entities
             FixReference = false;
             FixConfig = true;
             Category = pieceConfig.Category;
-
             pieceConfig.Apply(PiecePrefab);
-            CreateSettings();
+            Settings = new CustomPieceSettings(this);
         }
 
         /// <summary>
@@ -226,9 +221,8 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             FixConfig = true;
             Category = pieceConfig.Category;
-
             pieceConfig.Apply(PiecePrefab);
-            CreateSettings();
+            Settings = new CustomPieceSettings(this);
         }
 
         /// <summary>
@@ -254,7 +248,7 @@ namespace Jotunn.Entities
             Piece = PiecePrefab.AddComponent<Piece>();
             Piece.m_name = name;
             PieceTable = pieceTable;
-            CreateSettings();
+            Settings = new CustomPieceSettings(this);
         }
 
         /// <summary>
@@ -278,9 +272,8 @@ namespace Jotunn.Entities
             PieceTable = pieceConfig.PieceTable;
             FixConfig = true;
             Category = pieceConfig.Category;
-
             pieceConfig.Apply(PiecePrefab);
-            CreateSettings();
+            Settings = new CustomPieceSettings(this);
         }
 
         /// <summary>
@@ -305,7 +298,7 @@ namespace Jotunn.Entities
 
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
-            CreateSettings();
+            Settings = new CustomPieceSettings(this);
         }
 
         /// <summary>
@@ -329,25 +322,8 @@ namespace Jotunn.Entities
             PieceTable = pieceConfig.PieceTable;
             FixConfig = true;
             Category = pieceConfig.Category;
-
             pieceConfig.Apply(PiecePrefab);
-            CreateSettings();
-        }
-
-        private void CreateSettings()
-        {
-            SettingsEnabled = new BepInExSetting<bool>(SourceMod, PiecePrefab.name, "Enabled", false, $"Enable settings for {PiecePrefab.name}", 10);
-            SettingsEnabled.OnChanged += () =>
-            {
-                BindSettings();
-                ConfigManagerUtils.BuildSettingList();
-            };
-
-            CategorySetting = new BepInExDropdownSetting<string>(SourceMod, PiecePrefab.name, "Category", Category, PieceCategories.GetNames().Keys, $"Tool Category of {PiecePrefab.name}", 9);
-            CategorySetting.OnChanged += () => Category = CategorySetting.Value;
-
-            PieceTableSetting = new BepInExDropdownSetting<string>(SourceMod, PiecePrefab.name, "Tool", PieceTables.GetDisplayName(PieceTable), PieceTables.GetNames().Keys, $"Tool of of {PiecePrefab.name}", 8);
-            PieceTableSetting.OnChanged += () => PieceTable = PieceTableSetting.Value;
+            Settings = new CustomPieceSettings(this);
         }
 
         /// <summary>
@@ -389,13 +365,6 @@ namespace Jotunn.Entities
             }
 
             return valid;
-        }
-
-        internal void BindSettings()
-        {
-            SettingsEnabled?.Bind();
-            CategorySetting?.UpdateBinding(SettingsEnabled?.Value ?? false);
-            PieceTableSetting?.UpdateBinding(SettingsEnabled?.Value ?? false);
         }
 
         /// <summary>
