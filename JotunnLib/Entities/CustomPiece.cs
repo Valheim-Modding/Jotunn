@@ -102,7 +102,7 @@ namespace Jotunn.Entities
             Piece = piecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
             FixReference = fixReference;
-            Settings = new CustomPieceSettings(this);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Jotunn.Entities
             FixConfig = true;
             Category = pieceConfig.Category;
             pieceConfig.Apply(piecePrefab);
-            Settings = new CustomPieceSettings(this);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Jotunn.Entities
             FixConfig = true;
             Category = pieceConfig.Category;
             pieceConfig.Apply(piecePrefab);
-            Settings = new CustomPieceSettings(this);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Jotunn.Entities
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
             FixReference = fixReference;
-            Settings = new CustomPieceSettings(this);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace Jotunn.Entities
             FixConfig = true;
             Category = pieceConfig.Category;
             pieceConfig.Apply(PiecePrefab);
-            Settings = new CustomPieceSettings(this);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace Jotunn.Entities
             FixConfig = true;
             Category = pieceConfig.Category;
             pieceConfig.Apply(PiecePrefab);
-            Settings = new CustomPieceSettings(this);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -248,7 +248,7 @@ namespace Jotunn.Entities
             Piece = PiecePrefab.AddComponent<Piece>();
             Piece.m_name = name;
             PieceTable = pieceTable;
-            Settings = new CustomPieceSettings(this);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace Jotunn.Entities
             FixConfig = true;
             Category = pieceConfig.Category;
             pieceConfig.Apply(PiecePrefab);
-            Settings = new CustomPieceSettings(this);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace Jotunn.Entities
 
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
-            Settings = new CustomPieceSettings(this);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace Jotunn.Entities
             FixConfig = true;
             Category = pieceConfig.Category;
             pieceConfig.Apply(PiecePrefab);
-            Settings = new CustomPieceSettings(this);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>

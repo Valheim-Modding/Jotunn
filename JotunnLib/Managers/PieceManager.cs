@@ -58,6 +58,8 @@ namespace Jotunn.Managers
         private bool categoryRefreshNeeded = true;
         private static string hiddenCategoryMagic = "(HiddenCategory)";
 
+        private readonly HashSet<BepInPlugin> modsWithConfigSettings = new HashSet<BepInPlugin>();
+
         /// <summary>
         ///     Settings of the hammer UI tab selection.
         /// </summary>
@@ -501,6 +503,44 @@ namespace Jotunn.Managers
             {
                 PrefabManager.Instance.RemovePrefab(piece.PiecePrefab.name);
             }
+        }
+
+        /// <summary>
+        ///     Enable the generation of BepInEx config settings for pieces added by this mod.<br />
+        ///     This will be deprecated in a future version, as config settings will be enabled automatically for all Jotunn mods. This is to provide a transitional period.<br /><br />
+        ///     E.g. call in your mod's Awake:
+        ///     <code>
+        ///         PieceManager.Instance.EnableConfigSettings(Info.Metadata);
+        ///     </code>
+        /// </summary>
+        /// <param name="sourceMod">The mod to enable config settings for.</param>
+        public void EnableConfigSettings(BepInPlugin sourceMod)
+        {
+            Debug.Log($"Enabling config settings for {sourceMod.Name}");
+            modsWithConfigSettings.Add(sourceMod);
+        }
+
+        /// <summary>
+        ///     Disable the generation of BepInEx config settings for pieces added by this mod.<br /><br />
+        ///     E.g. call in your mod's Awake:
+        ///     <code>
+        ///         PieceManager.Instance.DisableConfigSettings(Info.Metadata);
+        ///     </code>
+        /// </summary>
+        /// <param name="sourceMod">The mod to disable config settings for.</param>
+        public void DisableConfigSettings(BepInPlugin sourceMod)
+        {
+            modsWithConfigSettings.Remove(sourceMod);
+        }
+
+        /// <summary>
+        ///     Check if the generation of BepInEx config settings for pieces added by this mod is enabled.<br />
+        /// </summary>
+        /// <param name="sourceMod"></param>
+        /// <returns></returns>
+        public bool IsConfigEnabled(BepInPlugin sourceMod)
+        {
+            return modsWithConfigSettings.Contains(sourceMod);
         }
 
         private void BindSettings()
