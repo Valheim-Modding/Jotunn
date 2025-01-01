@@ -651,7 +651,8 @@ namespace Jotunn.Managers
             {
                 if (!GetPieceTable(pieceTable))
                 {
-                    Logger.LogWarning($"Could not find PieceTable {pieceTable}");
+                    Logger.LogWarning(sourceMod, $"Could not find PieceTable {pieceTable}, assigning piece to Hammer instead");
+                    AddToPieceTable(piece, Jotunn.Configs.PieceTables.Hammer);
                 }
             }
 
