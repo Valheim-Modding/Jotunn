@@ -146,5 +146,17 @@ namespace Jotunn.Extensions
 
             return configEntry;
         }
+
+        /// <summary>
+        ///     Sets SaveOnConfigSet to false and returns
+        ///     the Value from before this method was called.
+        /// </summary>
+        /// <returns></returns>
+        public static bool DisableSaveOnConfigSet(this ConfigFile configFile)
+        {
+            bool val = configFile.SaveOnConfigSet;
+            configFile.SaveOnConfigSet = false;
+            return val;
+        }
     }
 }
