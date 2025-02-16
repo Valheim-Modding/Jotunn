@@ -86,9 +86,6 @@ namespace Jotunn.Managers
 
             Main.Harmony.PatchAll(typeof(Patches));
 
-            // Hook start scene to reset config
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-
             if (ConfigManagerUtils.Plugin)
             {
                 var eventinfo = ConfigManagerUtils.Plugin.GetType().GetEvent("DisplayingWindowChanged");
@@ -181,6 +178,10 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.Awake)), HarmonyPostfix]
             private static void ZNet_Awake(ZNet __instance) => Instance.ZNet_Awake(__instance);
 
+            // Hook ZNet.Start for handling lock/unlock of admin configs
+            [HarmonyPatch(typeof(ZNet), nameof(ZNet.Start)), HarmonyPrefix]
+            private static void ZNet_Start() => Instance.SetAdminConfigs_OnZNetStart();
+
             // Hook RPC_PeerInfo for initial retrieval of admin status and configuration
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPrefix]
             private static void ZNet_RPC_Pre_PeerInfo(ZNet __instance, ZRpc rpc, ref PeerInfoBlockingSocket __state) => Instance.ZNet_RPC_Pre_PeerInfo(__instance, rpc, ref __state);
@@ -207,12 +208,10 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Init or reset admin and configuration state
         /// </summary>
-        /// <param name="scene"></param>
-        /// <param name="loadMode"></param>
-        private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
+        private void SetAdminConfigs_OnZNetStart()
         {
             // main menu
-            if (scene.name == "start")
+            if (SceneManager.GetActiveScene().name == "start")
             {
                 PlayerIsAdmin = true;
                 UnlockConfigurationEntries();
@@ -221,7 +220,7 @@ namespace Jotunn.Managers
             }
 
             // load into world
-            if (scene.name == "main")
+            if (SceneManager.GetActiveScene().name == "main")
             {
                 InitAdminConfigs();
 
