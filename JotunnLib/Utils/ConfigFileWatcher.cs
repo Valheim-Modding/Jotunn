@@ -8,7 +8,7 @@ namespace Jotunn.Utils
 {
     internal sealed class ConfigFileWatcher
     {
-        private const long TICKS_PER_SEC = 10000000; // One second
+        private const long TICKS_PER_MILISEC = 10000; // One milisecond
 
         private DateTime lastReadTime = DateTime.MinValue;
         private readonly ConfigFile configFile;
@@ -25,7 +25,7 @@ namespace Jotunn.Utils
         internal ConfigFileWatcher(ConfigFile configFile, long reloadDelay = 1000)
         {
             this.configFile = configFile;
-            this.ReloadDelay = reloadDelay * TICKS_PER_SEC;
+            this.ReloadDelay = reloadDelay * TICKS_PER_MILISEC;
             ConfigFileDir = Directory.GetParent(configFile.ConfigFilePath).FullName;
             ConfigFileName = Path.GetFileName(configFile.ConfigFilePath);
             var watcher = new FileSystemWatcher(ConfigFileDir, ConfigFileName);
