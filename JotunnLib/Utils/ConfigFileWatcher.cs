@@ -6,7 +6,10 @@ using Jotunn.Extensions;
 
 namespace Jotunn.Utils
 {
-    internal sealed class ConfigFileWatcher
+    /// <summary>
+    ///     Watches a <see cref="ConfigFile"/> for changes and raises events when the configuration file is modified.
+    /// </summary>
+    public class ConfigFileWatcher
     {
         private const long TICKS_PER_MILISEC = 10000; // One milisecond
 
@@ -17,12 +20,11 @@ namespace Jotunn.Utils
         private readonly long ReloadDelay;
 
         /// <summary>
-        ///     Create a file watcher to triger reloads of the config file when 
-        ///     it is chaned, created, or renamed.
+        ///     Create a file watcher to trigger reloads of the config file when it is changed, created, or renamed.
         /// </summary>
         /// <param name="configFile"></param>
-        /// <param name="reloadDelay">Time in miliseconds before another event can be fired.</param>
-        internal ConfigFileWatcher(ConfigFile configFile, long reloadDelay = 1000)
+        /// <param name="reloadDelay">Time in milliseconds before another event can be fired.</param>
+        public ConfigFileWatcher(ConfigFile configFile, long reloadDelay = 1000)
         {
             this.configFile = configFile;
             this.ReloadDelay = reloadDelay * TICKS_PER_MILISEC;
@@ -40,7 +42,7 @@ namespace Jotunn.Utils
         /// <summary>
         ///     Event triggered after the file watcher reloads the configuration file.
         /// </summary>
-        internal event Action OnConfigFileReloaded;
+        public event Action OnConfigFileReloaded;
 
         /// <summary>
         ///     Safely invoke the <see cref="OnConfigFileReloaded"/> event
@@ -51,9 +53,8 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
-        ///     Reloads config file if and only if the last write time difers from the last read time.
+        ///     Reloads config file if and only if the last write time differs from the last read time.
         /// </summary>
-        /// <param name="configFile"></param>
         /// <param name="sender"></param>
         /// <param name="eventArgs"></param>
         internal void ReloadConfigFile(object sender, FileSystemEventArgs eventArgs)
