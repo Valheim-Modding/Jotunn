@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using BepInEx.Configuration;
 using BepInEx;
 using Jotunn.Extensions;
@@ -15,6 +16,7 @@ namespace Jotunn.Utils
 
         private DateTime lastReadTime = DateTime.MinValue;
         private readonly ConfigFile configFile;
+        private readonly BepInPlugin sourceMod;
         private readonly string configFileDir;
         private readonly string configFileName;
         private readonly long reloadDelay;
@@ -26,10 +28,17 @@ namespace Jotunn.Utils
         /// <param name="reloadDelay">Time in milliseconds before another event can be fired.</param>
         public ConfigFileWatcher(ConfigFile configFile, long reloadDelay = 1000)
         {
+            sourceMod = BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
+            if (sourceMod == null || sourceMod.GUID == Main.Instance.Info.Metadata.GUID)
+            {
+                sourceMod = BepInExUtils.GetSourceModMetadata();
+            }
+
             this.configFile = configFile;
             this.reloadDelay = reloadDelay * TICKS_PER_MILISEC;
             configFileDir = Directory.GetParent(configFile.ConfigFilePath).FullName;
             configFileName = Path.GetFileName(configFile.ConfigFilePath);
+
             var watcher = new FileSystemWatcher(configFileDir, configFileName);
             watcher.Changed += ReloadConfigFile;
             watcher.Created += ReloadConfigFile;
@@ -68,7 +77,7 @@ namespace Jotunn.Utils
 
             try
             {
-                Logger.LogInfo($"Reloading {configFile.ConfigFilePath}");
+                Logger.LogInfo(sourceMod, $"Reloading {configFile.ConfigFilePath}");
                 bool saveOnConfigSet = configFile.SetSaveOnConfigSet(false); // turn off saving on config entry set
                 configFile.Reload();
                 configFile.SaveOnConfigSet = saveOnConfigSet; // reset config saving state
@@ -77,8 +86,8 @@ namespace Jotunn.Utils
             }
             catch
             {
-                Logger.LogError($"There was an issue loading {configFile.ConfigFilePath}");
-                Logger.LogError("Please check your config entries for spelling and format!");
+                Logger.LogError(sourceMod, $"There was an issue loading {configFile.ConfigFilePath}");
+                Logger.LogError(sourceMod, "Please check your config entries for spelling and format!");
             }
         }
     }
