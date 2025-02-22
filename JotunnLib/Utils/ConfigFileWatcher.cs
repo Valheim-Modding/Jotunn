@@ -11,13 +11,13 @@ namespace Jotunn.Utils
     /// </summary>
     public class ConfigFileWatcher
     {
-        private const long TICKS_PER_MILISEC = 10000; // One milisecond
+        private const long TICKS_PER_MILISEC = 10_000; // One millisecond
 
         private DateTime lastReadTime = DateTime.MinValue;
         private readonly ConfigFile configFile;
-        private readonly string ConfigFileDir;
-        private readonly string ConfigFileName;
-        private readonly long ReloadDelay;
+        private readonly string configFileDir;
+        private readonly string configFileName;
+        private readonly long reloadDelay;
 
         /// <summary>
         ///     Create a file watcher to trigger reloads of the config file when it is changed, created, or renamed.
@@ -27,10 +27,10 @@ namespace Jotunn.Utils
         public ConfigFileWatcher(ConfigFile configFile, long reloadDelay = 1000)
         {
             this.configFile = configFile;
-            this.ReloadDelay = reloadDelay * TICKS_PER_MILISEC;
-            ConfigFileDir = Directory.GetParent(configFile.ConfigFilePath).FullName;
-            ConfigFileName = Path.GetFileName(configFile.ConfigFilePath);
-            var watcher = new FileSystemWatcher(ConfigFileDir, ConfigFileName);
+            this.reloadDelay = reloadDelay * TICKS_PER_MILISEC;
+            configFileDir = Directory.GetParent(configFile.ConfigFilePath).FullName;
+            configFileName = Path.GetFileName(configFile.ConfigFilePath);
+            var watcher = new FileSystemWatcher(configFileDir, configFileName);
             watcher.Changed += ReloadConfigFile;
             watcher.Created += ReloadConfigFile;
             watcher.Renamed += ReloadConfigFile;
@@ -61,7 +61,7 @@ namespace Jotunn.Utils
         {
             DateTime now = DateTime.Now;
             long deltaTime = now.Ticks - lastReadTime.Ticks;
-            if (!File.Exists(configFile.ConfigFilePath) || deltaTime < this.ReloadDelay)
+            if (!File.Exists(configFile.ConfigFilePath) || deltaTime < this.reloadDelay)
             {
                 return;
             }
@@ -69,7 +69,7 @@ namespace Jotunn.Utils
             try
             {
                 Logger.LogInfo($"Reloading {configFile.ConfigFilePath}");
-                bool saveOnConfigSet = configFile.DisableSaveOnConfigSet(); // turn off saving on config entry set
+                bool saveOnConfigSet = configFile.SetSaveOnConfigSet(false); // turn off saving on config entry set
                 configFile.Reload();
                 configFile.SaveOnConfigSet = saveOnConfigSet; // reset config saving state
                 lastReadTime = now;
