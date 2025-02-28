@@ -79,10 +79,10 @@ private void CreateConfigValues()
 
     // Add server config which gets pushed to all clients connecting and can only be edited by admins
     // In local/single player games the player is always considered the admin
-    Config.BindConfig("Server config", "StringValue1", "StringValue", "Server side string", true);
-    Config.BindConfig("Server config", "FloatValue1", 750f, "Server side float", true, floatRange);
-    Config.BindConfig("Server config", "IntegerValue1", 200, "Server side integer", synced: true, acceptableValues: floatRange);
-    Config.BindConfig("Server config", "BoolValue1", false, "Server side bool", true);
+    Config.BindConfig("Server config", "StringValue1", "StringValue", "Server side string", synced: true);
+    Config.BindConfig("Server config", "FloatValue1", 750f, "Server side float", synced: true, acceptableValues: floatRange);
+    Config.BindConfig("Server config", "IntegerValue1", 200, "Server side integer", synced: true);
+    Config.BindConfig("Server config", "BoolValue1", false, "Server side bool", synced: true);
 }
 ```
 
@@ -195,7 +195,7 @@ private void CreateConfigWatcher()
     // Create config file watcher
     ConfigFileWatcher configFileWatcher = new(Config, reloadDelay: 1000);  // set delay before a subsequent reload can trigger in ms
 
-    // Subsrcibe to the event that fires whenever the config is reloaded.
+    // Subscribe to the event that fires whenever the config is reloaded.
     configFileWatcher.OnConfigFileReloaded += () =>
     {
         // code to call a method goes here
