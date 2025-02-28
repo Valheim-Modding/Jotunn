@@ -67,6 +67,27 @@ Local settings will be overriden by the servers values as long as the client is 
 
 Changing the configs at runtime will sync the changes to all clients connected to the server.
 
+## Bind Config Extensions
+
+Jotunn provides the extension methods `BindConfig` and `BindConfigInOrder` for `ConfigFile` to make binding config entries easier. The above example can be replicated using `BindConfig` for convenience.
+
+```cs
+// Create some sample configuration values to check server sync
+private void CreateConfigValues()
+{
+    AcceptableValueRange<float> floatRange = new AcceptableValueRange<float>(0f, 1000f);
+
+    // Add server config which gets pushed to all clients connecting and can only be edited by admins
+    // In local/single player games the player is always considered the admin
+    Config.BindConfig("Server config", "StringValue1", "StringValue", "Server side string", synced: true);
+    Config.BindConfig("Server config", "FloatValue1", 750f, "Server side float", synced: true, acceptableValues: floatRange);
+    Config.BindConfig("Server config", "IntegerValue1", 200, "Server side integer", synced: true);
+    Config.BindConfig("Server config", "BoolValue1", false, "Server side bool", synced: true);
+}
+```
+
+The extension method `BindConfigInOrder` can be used in the same manner as `BindConfig` but it will automatically set the `Order` value in the `ConfigurationManagerAttributes` for that config entry to ensure it will be sorted in the order that the config entry was bound for that config section and it will prefix the config section name with the number of the section based on how many sections have already been bound to this config. It is possible to disable ordering of the config entry by setting `settingOrder: false` and the prefixing of the section name can be disabled by setting `sectionOrder: false`.
+
 ## Admin Only Strictness
 
 Usually, the `IsAdminOnly` flag is enforcing players to be admin on the server to change the configuration.
@@ -163,3 +184,21 @@ Note that `customConfig.Reload()` may be called to initiate a config sync if ent
 
 You can provide localized versions of the menu entry string.
 Please see our [localization tutorial](localization.md#localizable-content-in-jötunn) on how to do this.
+
+## File watcher for ConfigFile
+While many people use the official BepInEx configuration manager to change their mod configurations from in-game. Users also like the ability to make live changes to configuration files and see that data update live and saved when they shut down the game. Updating the in-game config settings when the configuration file is edited on the disk can be achieved by setting up a `FileWatcher` for your `ConfigFile` that triggers events when the file is changed, renamed, or saved. The `ConfigFileWatcher` class provides a convenient way to set up a `FileWatcher` and events with minimal boilerplate code. By default, after triggering a reload event, the `ConfigFileWatcher` will not trigger another reload untill 1000 ms have passed, you can modify this behaviour by changing the `reloadDelay` argument in the `ConfigFileWatcher` constructor.
+
+```cs
+// Create config file watcher as a method within the main plugin class
+private void CreateConfigWatcher()
+{
+    // Create config file watcher
+    ConfigFileWatcher configFileWatcher = new(Config, reloadDelay: 1000);  // set delay before a subsequent reload can trigger in ms
+
+    // Subscribe to the event that fires whenever the config is reloaded.
+    configFileWatcher.OnConfigFileReloaded += () =>
+    {
+        // code to call a method goes here
+    };
+}
+```
