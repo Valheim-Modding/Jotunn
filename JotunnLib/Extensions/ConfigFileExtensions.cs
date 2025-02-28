@@ -21,6 +21,7 @@ namespace Jotunn.Extensions
         ///     Formats section name as "{sectionNumber} - {section}" based on how
         ///     many sections have been bound to this config.
         /// </summary>
+        /// <param name="configFile"></param>
         /// <param name="section"></param>
         /// <returns></returns>
         private static string GetOrderedSectionName(this ConfigFile configFile, string section)
@@ -43,6 +44,7 @@ namespace Jotunn.Extensions
         /// <summary>
         ///     Orders settings within a section.
         /// </summary>
+        /// <param name="configFile"></param>
         /// <param name="section"></param>
         /// <returns></returns>
         private static int GetSettingOrder(this ConfigFile configFile, string section)
