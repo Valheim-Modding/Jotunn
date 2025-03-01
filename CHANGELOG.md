@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.24.0
+* Added the `ConfigFileWatcher` class to setup a watcher for changes in the file system and reload the config (thx Searica)
+* Added overloads to AddRequirement for items, pieces and recipe configs to simplify usage
+* Changed timing of initialisation of Local AdminOnly to ZNet.Start, allowing mods to bind configs during world load (thx Searica)
+* Changed default RequirementConfig recover to true
+
 ## Version 2.23.2
 * Fixed CustomGUIFront and CustomGUIBack offset slightly to the left
 * Fixed Nuget package could not be installed due to changes in the build pipeline
