@@ -86,9 +86,6 @@ namespace Jotunn.Managers
 
             Main.Harmony.PatchAll(typeof(Patches));
 
-            // Hook start scene to reset config
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-
             if (ConfigManagerUtils.Plugin)
             {
                 var eventinfo = ConfigManagerUtils.Plugin.GetType().GetEvent("DisplayingWindowChanged");
@@ -199,43 +196,42 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible)), HarmonyPostfix]
             private static void Menu_IsVisible(ref bool __result) => Instance.Menu_IsVisible(ref __result);
 
-            // Hook Fejd for ConfigReloaded event subscription
             [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake)), HarmonyPrefix]
-            private static void FejdStartup_Awake() => Instance.FejdStartup_Awake();
+            private static void FejdStartup_Awake()
+            {
+                Instance.ResetAdminState();
+                Instance.FejdStartup_Awake();
+            }
+
+            [HarmonyPatch(typeof(ZNet), nameof(ZNet.Start)), HarmonyPrefix]
+            private static void ZNet_Start()
+            {
+                Instance.InitAdminState();
+            }
         }
 
-        /// <summary>
-        ///     Init or reset admin and configuration state
-        /// </summary>
-        /// <param name="scene"></param>
-        /// <param name="loadMode"></param>
-        private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode loadMode)
+        private void ResetAdminState()
         {
-            // main menu
-            if (scene.name == "start")
+            PlayerIsAdmin = true;
+            UnlockConfigurationEntries();
+            ResetAdminConfigs();
+            CacheConfigurationValues();
+        }
+
+        private void InitAdminState()
+        {
+            InitAdminConfigs();
+
+            if (ZNet.instance && ZNet.instance.IsServer())
             {
                 PlayerIsAdmin = true;
                 UnlockConfigurationEntries();
-                ResetAdminConfigs();
-                CacheConfigurationValues();
             }
-
-            // load into world
-            if (scene.name == "main")
+            else
             {
-                InitAdminConfigs();
-
-                if (ZNet.instance && ZNet.instance.IsServer())
-                {
-                    PlayerIsAdmin = true;
-                    UnlockConfigurationEntries();
-                }
-                else
-                {
-                    PlayerIsAdmin = false;
-                    LockConfigurationEntries();
-                    SetToDefaultConfigEntries();
-                }
+                PlayerIsAdmin = false;
+                LockConfigurationEntries();
+                SetToDefaultConfigEntries();
             }
         }
 
