@@ -23,9 +23,9 @@ namespace Jotunn.Configs
         public int AmountPerLevel { get; set; } = 0;
 
         /// <summary>
-        ///     Whether the item is dropped after deconstructing a piece. Defaults to false.
+        ///     Whether the item is dropped after deconstructing a piece. Defaults to true.
         /// </summary>
-        public bool Recover { get; set; } = false;
+        public bool Recover { get; set; } = true;
 
         /// <summary>
         ///     Creates a new requirement config with default values.
@@ -39,7 +39,7 @@ namespace Jotunn.Configs
         /// <param name="amount">The amount of items needed to craft an item/piece</param>
         /// <param name="amountPerLevel">The amount of items needed to upgrade an item. Does not apply to pieces. The basic formular is: Upgrade Amount = Item Level * Amount Per Level</param>
         /// <param name="recover">Whether the item is dropped after deconstructing a piece</param>
-        public RequirementConfig(string item, int amount, int amountPerLevel = 0, bool recover = false)
+        public RequirementConfig(string item, int amount, int amountPerLevel = 0, bool recover = true)
         {
             Item = item;
             Amount = amount;
