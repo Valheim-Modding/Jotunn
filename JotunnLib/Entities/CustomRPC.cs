@@ -22,11 +22,11 @@ namespace Jotunn.Entities
         private const byte FRAGMENTED_PACKAGE = 2;
         private const byte COMPRESSED_PACKAGE = 4;
 
-        private const int CompressMinSize = 10000;
-        private const int PackageSliceSize = 250000;
-        private const int MaximumSendQueueSize = 20000;
+        private static int CompressMinSize = 10000;
+        private static int PackageSliceSize = 250000;
+        private static int MaximumSendQueueSize = 20000;
 
-        private const float Timeout = 30f;
+        private static float Timeout = 30f;
 
         /// <summary>
         ///     Name of the custom RPC as defined at instantiation
