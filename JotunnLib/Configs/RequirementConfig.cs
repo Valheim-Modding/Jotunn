@@ -23,7 +23,7 @@ namespace Jotunn.Configs
         public int AmountPerLevel { get; set; } = 0;
 
         /// <summary>
-        ///     Determines if the used requirement will be rewarded again after dismanteling a piece. Defaults to false.
+        ///     Whether the item is dropped after deconstructing a piece. Defaults to false.
         /// </summary>
         public bool Recover { get; set; } = false;
 
@@ -35,10 +35,10 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Creates a new requirement config with the given values.
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="amount"></param>
-        /// <param name="amountPerLevel"></param>
-        /// <param name="recover"></param>
+        /// <param name="item">The internal item prefab id, see https://valheim-modding.github.io/Jotunn/data/objects/item-list.html or the Valheim Wiki</param>
+        /// <param name="amount">The amount of items needed to craft an item/piece</param>
+        /// <param name="amountPerLevel">The amount of items needed to upgrade an item. Does not apply to pieces. The basic formular is: Upgrade Amount = Item Level * Amount Per Level</param>
+        /// <param name="recover">Whether the item is dropped after deconstructing a piece</param>
         public RequirementConfig(string item, int amount, int amountPerLevel = 0, bool recover = false)
         {
             Item = item;

@@ -33,8 +33,8 @@ private void AddClonedItems()
     evilSwordConfig.Name = "$item_evilsword";
     evilSwordConfig.Description = "$item_evilsword_desc";
     evilSwordConfig.CraftingStation = CraftingStations.Workbench;
-    evilSwordConfig.AddRequirement(new RequirementConfig("Stone", 1));
-    evilSwordConfig.AddRequirement(new RequirementConfig("Wood", 1));
+    evilSwordConfig.AddRequirement("Stone", 1, 1);
+    evilSwordConfig.AddRequirement("Wood", 1, 2);
 
     CustomItem evilSword = new CustomItem("EvilSword", "SwordBlackmetal", evilSwordConfig);
     ItemManager.Instance.AddItem(evilSword);
@@ -71,7 +71,7 @@ private void CreateBlueprintRune()
     // Create and add a custom item
     ItemConfig runeConfig = new ItemConfig();
     runeConfig.Amount = 1;
-    runeConfig.AddRequirement(new RequirementConfig("Stone", 1));
+    runeConfig.AddRequirement("Stone", 1);
 
     // Prefab did not use mocked refs so no need to fix them
     var runeItem = new CustomItem(BlueprintRuneBundle, "BlueprintTestRune", fixReference: false, runeConfig);

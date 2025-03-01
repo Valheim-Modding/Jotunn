@@ -838,8 +838,8 @@ namespace TestMod
 
             var meatConfig = new RecipeConfig();
             meatConfig.Item = "CookedMeat"; // Name of the item prefab to be crafted
-            meatConfig.AddRequirement(new RequirementConfig("Stone", 2));
-            meatConfig.AddRequirement(new RequirementConfig("Wood", 1));
+            meatConfig.AddRequirement("Stone", 2);
+            meatConfig.AddRequirement("Wood", 1);
             ItemManager.Instance.AddRecipe(new CustomRecipe(meatConfig));
         }
 
@@ -950,7 +950,7 @@ namespace TestMod
             // Create and add a custom item
             ItemConfig runeConfig = new ItemConfig();
             runeConfig.Amount = 1;
-            runeConfig.AddRequirement(new RequirementConfig("Stone", 1));
+            runeConfig.AddRequirement("Stone", 1);
             // Prefab did not use mocked refs so no need to fix them
             var runeItem = new CustomItem(BlueprintRuneBundle, "BlueprintTestRune", fixReference: false, runeConfig);
             ItemManager.Instance.AddItem(runeItem);
@@ -966,7 +966,7 @@ namespace TestMod
             placeConfig.PieceTable = "_BlueprintTestTable";
             placeConfig.Category = "Place";
             placeConfig.AllowedInDungeons = true;
-            placeConfig.AddRequirement(new RequirementConfig("Wood", 2));
+            placeConfig.AddRequirement("Wood", 2);
             var placePiece = new CustomPiece(BlueprintRuneBundle, "piece_testblueprint", fixReference: false, placeConfig);
             PieceManager.Instance.AddPiece(placePiece);
 
@@ -1083,7 +1083,7 @@ namespace TestMod
             cylinder.PieceTable = PieceTables.Hammer;
             cylinder.CraftingStation = CraftingStations.Workbench;
             cylinder.Category = PieceCategories.Misc;
-            cylinder.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+            cylinder.AddRequirement("Wood", 2);
 
             PieceManager.Instance.AddPiece(new CustomPiece(pieceBundle, "Cylinder", fixReference: false, cylinder));
         }
@@ -1094,7 +1094,7 @@ namespace TestMod
             rug.Name = "$our_rug_deer_display_name";
             rug.PieceTable = PieceTables.Hammer;
             rug.Category = PieceCategories.Misc;
-            rug.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+            rug.AddRequirement("Wood", 2);
 
             PieceManager.Instance.AddPiece(new CustomPiece("our_rug_deer", "rug_deer", rug));
 
@@ -1314,8 +1314,8 @@ namespace TestMod
                 evilSwordConfig.Name = "$item_evilsword";
                 evilSwordConfig.Description = "$item_evilsword_desc";
                 evilSwordConfig.CraftingStation = CraftingStations.Workbench;
-                evilSwordConfig.AddRequirement(new RequirementConfig("Stone", 1));
-                evilSwordConfig.AddRequirement(new RequirementConfig("Wood", 1));
+                evilSwordConfig.AddRequirement("Stone", 1, 1);
+                evilSwordConfig.AddRequirement("Wood", 1, 2);
 
                 CustomItem evilSword = new CustomItem("EvilSword", "SwordBlackmetal", evilSwordConfig);
                 ItemManager.Instance.AddItem(evilSword);
@@ -1329,8 +1329,8 @@ namespace TestMod
                 recipeConfig.Name = "Recipe_EvilSword2";
                 recipeConfig.Item = "EvilSword";
                 recipeConfig.CraftingStation = CraftingStations.Workbench;
-                recipeConfig.AddRequirement(new RequirementConfig("Stone", 2));
-                recipeConfig.AddRequirement(new RequirementConfig("Wood", 3));
+                recipeConfig.AddRequirement("Stone", 2);
+                recipeConfig.AddRequirement("Wood", 3);
 
                 ItemManager.Instance.AddRecipe(new CustomRecipe(recipeConfig));
 
@@ -1409,7 +1409,7 @@ namespace TestMod
                 ItemConfig shieldConfig = new ItemConfig();
                 shieldConfig.Name = "$lulz_shield";
                 shieldConfig.Description = "$lulz_shield_desc";
-                shieldConfig.AddRequirement(new RequirementConfig("Wood", 1));
+                shieldConfig.AddRequirement("Wood", 1);
                 shieldConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
                 shieldConfig.StyleTex = styleTex;
                 ItemManager.Instance.AddItem(new CustomItem("item_lulzshield", "ShieldWood", shieldConfig));
@@ -1417,7 +1417,7 @@ namespace TestMod
                 ItemConfig swordConfig = new ItemConfig();
                 swordConfig.Name = "$lulz_sword";
                 swordConfig.Description = "$lulz_sword_desc";
-                swordConfig.AddRequirement(new RequirementConfig("Stone", 1));
+                swordConfig.AddRequirement("Stone", 1);
                 swordConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
                 swordConfig.StyleTex = styleTex;
                 ItemManager.Instance.AddItem(new CustomItem("item_lulzsword", "SwordBronze", swordConfig));
@@ -1482,7 +1482,7 @@ namespace TestMod
             treeItemConfig.Icon = renderedIcon;
             treeItemConfig.Weight = 6;
             treeItemConfig.StackSize = 10;
-            treeItemConfig.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+            treeItemConfig.AddRequirement("Wood", 2);
 
             ItemManager.Instance.AddItem(new CustomItem("item_MyTree", "BeechSeeds", treeItemConfig));
 

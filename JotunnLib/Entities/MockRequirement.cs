@@ -12,7 +12,7 @@ namespace Jotunn.Entities
         /// </summary>
         /// <param name="name">Prefab name</param>
         /// <param name="amount">Amount</param>
-        /// <param name="recover">Whether the resource is returned after deconstruction</param>
+        /// <param name="recover">Whether the item is dropped after deconstructing a piece</param>
         /// <returns></returns>
         public static Piece.Requirement Create(string name, int amount = 1, bool recover = true)
         {
@@ -31,7 +31,7 @@ namespace Jotunn.Entities
         ///     Creates a mocked Piece.Requirement array
         /// </summary>
         /// <param name="requirements">List of prefab names and amounts</param>
-        /// <param name="recover">Whether the resources are returned after deconstruction</param>
+        /// <param name="recover">Whether the items are dropped after deconstructing a piece</param>
         /// <returns></returns>
         public static Piece.Requirement[] CreateArray(Dictionary<string, int> requirements, bool recover = true)
         {

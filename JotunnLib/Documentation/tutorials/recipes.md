@@ -31,8 +31,8 @@ private void AddRecipes()
     // Create a custom recipe with a RecipeConfig
     var meatConfig = new RecipeConfig();
     meatConfig.Item = "CookedMeat"; // Name of the item prefab to be crafted
-    meatConfig.AddRequirement(new RequirementConfig("Stone", 2));
-    meatConfig.AddRequirement(new RequirementConfig("Wood", 1));
+    meatConfig.AddRequirement("Stone", 2);
+    meatConfig.AddRequirement("Wood", 1);
     ItemManager.Instance.AddRecipe(new CustomRecipe(meatConfig));
 }
 ```

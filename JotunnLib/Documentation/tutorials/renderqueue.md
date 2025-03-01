@@ -36,7 +36,7 @@ private void AddItemsWithRenderedIcons()
     treeItemConfig.Name = "$rendered_tree";
     treeItemConfig.Description = "$rendered_tree_desc";
     treeItemConfig.Icon = renderedIcon;
-    treeItemConfig.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+    treeItemConfig.AddRequirement("Wood", 2);
 
     ItemManager.Instance.AddItem(new CustomItem("item_MyTree", "BeechSeeds", treeItemConfig));
 

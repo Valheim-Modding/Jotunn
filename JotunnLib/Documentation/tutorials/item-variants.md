@@ -32,7 +32,7 @@ private void AddVariants()
     ItemConfig shieldConfig = new ItemConfig();
     shieldConfig.Name = "$lulz_shield";
     shieldConfig.Description = "$lulz_shield_desc";
-    shieldConfig.AddRequirement(new RequirementConfig("Wood", 1));
+    shieldConfig.AddRequirement("Wood", 1);
     shieldConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
     shieldConfig.StyleTex = styleTex;
     ItemManager.Instance.AddItem(new CustomItem("item_lulzshield", "ShieldWood", shieldConfig));
@@ -40,7 +40,7 @@ private void AddVariants()
     ItemConfig swordConfig = new ItemConfig();
     swordConfig.Name = "$lulz_sword";
     swordConfig.Description = "$lulz_sword_desc";
-    swordConfig.AddRequirement(new RequirementConfig("Stone", 1));
+    swordConfig.AddRequirement("Stone", 1);
     swordConfig.Icons = new Sprite[] { var1, var2, var3, var4 };
     swordConfig.StyleTex = styleTex;
     ItemManager.Instance.AddItem(new CustomItem("item_lulzsword", "SwordBronze", swordConfig));

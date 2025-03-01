@@ -198,5 +198,17 @@ namespace Jotunn.Configs
                 Requirements = Requirements.AddToArray(requirementConfig);
             }
         }
+
+        /// <summary>
+        ///     Appends a new <see cref="RequirementConfig"/> to the array of existing ones.<br />
+        ///     If the item name is null or empty or the amount is less than 1 nothing will be added.
+        /// </summary>
+        /// <param name="item">The internal item prefab id, see https://valheim-modding.github.io/Jotunn/data/objects/item-list.html or the Valheim Wiki</param>
+        /// <param name="amount">The amount of items needed to place this piece</param>
+        /// <param name="recover">Whether the item is dropped after deconstructing a piece</param>
+        public void AddRequirement(string item, int amount, bool recover = true)
+        {
+            AddRequirement(new RequirementConfig(item, amount, 0, recover));
+        }
     }
 }

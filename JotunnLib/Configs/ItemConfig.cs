@@ -289,5 +289,17 @@ namespace Jotunn.Configs
                 Requirements = Requirements.AddToArray(requirementConfig);
             }
         }
+
+        /// <summary>
+        ///     Appends a new <see cref="RequirementConfig"/> to the array of existing ones.<br />
+        ///     If the item name is null or empty or the amount is less than 1 nothing will be added.
+        /// </summary>
+        /// <param name="item">The internal item prefab id, see https://valheim-modding.github.io/Jotunn/data/objects/item-list.html or the Valheim Wiki</param>
+        /// <param name="amount">The amount of items needed to craft this item</param>
+        /// <param name="amountPerLevel">The amount of items needed to upgrade this item. The basic formular is: Upgrade Amount = Item Level * Amount Per Level</param>
+        public void AddRequirement(string item, int amount, int amountPerLevel = 0)
+        {
+            AddRequirement(new RequirementConfig(item, amount, amountPerLevel));
+        }
     }
 }

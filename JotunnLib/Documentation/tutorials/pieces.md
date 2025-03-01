@@ -38,7 +38,7 @@ private void Awake()
     cylinder.PieceTable = PieceTables.Hammer;
     cylinder.CraftingStation = CraftingStations.Workbench;
     cylinder.Category = PieceCategories.Misc;
-    cylinder.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+    cylinder.AddRequirement("Wood", 2);
 
     PieceManager.Instance.AddPiece(new CustomPiece(pieceBundle, "Cylinder", fixReference: false, cylinder));
 }
@@ -60,7 +60,7 @@ private void CreateDeerRugPiece()
     rug.Name = "$our_rug_deer_display_name";
     rug.PieceTable = PieceTableNames.Hammer;
     rug.Category = PieceCategoryNames.Misc;
-    rug.AddRequirement(new RequirementConfig("Wood", 2, 0, true));
+    rug.AddRequirement("Wood", 2);
 
     PieceManager.Instance.AddPiece(new CustomPiece("our_rug_deer", "rug_deer", rug));
 
@@ -146,7 +146,7 @@ private void AddItemsWithConfigs()
     // Create and add a custom item
     ItemConfig runeConfig = new ItemConfig();
     runeConfig.Amount = 1;
-    runeConfig.AddRequirement(new RequirementConfig("Stone", 1));
+    runeConfig.AddRequirement("Stone", 1);
     // Prefab did not use mocked refs so no need to fix them
     var runeItem = new CustomItem(BlueprintRuneBundle, "BlueprintTestRune", fixReference: false, runeConfig);
     ItemManager.Instance.AddItem(runeItem);
@@ -162,7 +162,7 @@ private void AddItemsWithConfigs()
     placeConfig.PieceTable = "_BlueprintTestTable";
     placeConfig.Category = "Place";
     placeConfig.AllowedInDungeons = true;
-    placeConfig.AddRequirement(new RequirementConfig("Wood", 2));
+    placeConfig.AddRequirement("Wood", 2);
     var placePiece = new CustomPiece(BlueprintRuneBundle, "piece_testblueprint", fixReference: false, placeConfig);
     PieceManager.Instance.AddPiece(placePiece);
 }
