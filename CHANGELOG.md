@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.24.1
+* Fixed GUI for Valheim 0.220.3
+
 ## Version 2.24.0
 * Added the `ConfigFileWatcher` class to setup a watcher for changes in the file system and reload the config (thx Searica)
 * Added overloads to AddRequirement for items, pieces and recipe configs to simplify usage

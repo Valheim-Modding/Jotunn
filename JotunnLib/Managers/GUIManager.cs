@@ -493,7 +493,17 @@ namespace Jotunn.Managers
 
             if (gui)
             {
-                CreateCustomGUI(gui);
+                CustomGUIFront = CreateCustomGUI("CustomGUIFront", 2000, gui);
+                CustomGUIFront.transform.SetAsLastSibling();
+                CustomGUIBack = CreateCustomGUI("CustomGUIBack", 0, gui);
+                CustomGUIBack.transform.SetAsFirstSibling();
+
+#pragma warning disable CS0618; CS0612 // Type or member is obsolete; Method is obsolete
+                PixelFix = CustomGUIFront;
+                InvokeOnPixelFixCreated();
+#pragma warning restore CS0618; CS0612 // Type or member is obsolete; Method is obsolete
+
+                InvokeOnCustomGUIAvailable();
                 return true;
             }
 
@@ -525,38 +535,32 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Create GameObjects for mods to append their custom GUI to
         /// </summary>
+        /// <param name="name"></param>
+        /// <param name="sortingOrder"></param>
         /// <param name="parent"></param>
-        private void CreateCustomGUI(Transform parent)
+        private GameObject CreateCustomGUI(string name, int sortingOrder, Transform parent)
         {
-            CustomGUIFront = new GameObject("CustomGUIFront", typeof(RectTransform), typeof(GuiPixelFix));
-            CustomGUIFront.layer = UILayer;
-            CustomGUIFront.transform.SetParent(parent.transform, false);
-            CustomGUIFront.transform.SetAsLastSibling();
-            CustomGUIFront.GetComponent<RectTransform>().anchorMin = Vector2.zero;
-            CustomGUIFront.GetComponent<RectTransform>().anchorMax = Vector2.one;
-            CustomGUIFront.GetComponent<RectTransform>().offsetMin = Vector2.zero;
-            CustomGUIFront.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-            CustomGUIFront.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            GameObject CustomGUI = new GameObject(name, typeof(RectTransform), typeof(GuiPixelFix), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            CustomGUI.layer = UILayer;
+            CustomGUI.transform.SetParent(parent.transform, false);
 
-#pragma warning disable CS0618 // Type or member is obsolete
-            PixelFix = CustomGUIFront;
-#pragma warning restore CS0618 // Type or member is obsolete
+            var rectTransform = CustomGUI.GetComponent<RectTransform>();
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.anchoredPosition = Vector2.zero;
 
-            CustomGUIBack = new GameObject("CustomGUIBack", typeof(RectTransform), typeof(GuiPixelFix));
-            CustomGUIBack.layer = UILayer;
-            CustomGUIBack.transform.SetParent(parent.transform, false);
-            CustomGUIBack.transform.SetAsFirstSibling();
-            CustomGUIBack.GetComponent<RectTransform>().anchorMin = Vector2.zero;
-            CustomGUIBack.GetComponent<RectTransform>().anchorMax = Vector2.one;
-            CustomGUIBack.GetComponent<RectTransform>().offsetMin = Vector2.zero;
-            CustomGUIBack.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-            CustomGUIBack.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            var canvas = CustomGUI.GetComponent<Canvas>();
+            canvas.additionalShaderChannels = AdditionalCanvasShaderChannels.TexCoord1 | AdditionalCanvasShaderChannels.Normal | AdditionalCanvasShaderChannels.Tangent;
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = sortingOrder;
 
-#pragma warning disable CS0612 // Method is obsolete
-            InvokeOnPixelFixCreated();
-#pragma warning restore CS0612 // Method is obsolete
+            var canvasScaler = CustomGUI.GetComponent<CanvasScaler>();
+            canvasScaler.referencePixelsPerUnit = 50;
 
-            InvokeOnCustomGUIAvailable();
+            return CustomGUI;
         }
 
         [Obsolete]
