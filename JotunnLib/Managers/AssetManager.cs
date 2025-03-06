@@ -88,7 +88,7 @@ namespace Jotunn.Managers
             AssetRef assetRef = new AssetRef(BepInExUtils.GetSourceModMetadata(), asset, original);
             assets.Add(assetID, assetRef);
 
-            if (AssetBundleLoader.Instance != null)
+            if (IsReady() && AssetBundleLoader.Instance != null)
             {
                 AddAssetToBundleLoader(AssetBundleLoader.Instance, assetID, assetRef);
             }
