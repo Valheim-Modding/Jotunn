@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.24.2
+* Fixed a black screen and error on the server when connecting via crossplay
+* Fixed an error if no mods are installed on the server
+* Fixed assets being added too early on a dedicated server
+
 ## Version 2.24.1
 * Fixed GUI for Valheim 0.220.3
 
