@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
@@ -31,7 +30,7 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, string> CachedCustomConfigGUIDs = new Dictionary<string, string>();
         private bool ConfigurationManagerWindowShown;
 
-        private ConditionalWeakTable<string, SocketBuffer> socketBuffers = new ConditionalWeakTable<string, SocketBuffer>();
+        private Dictionary<string, SocketBuffer> socketBuffers = new Dictionary<string, SocketBuffer>();
 
         /// <summary>
         ///     Event triggered after configuration has been synced on either the server or client
@@ -276,7 +275,7 @@ namespace Jotunn.Managers
                 if (!string.IsNullOrEmpty(socketEndpoint))
                 {
                     __state = new SocketBuffer();
-                    socketBuffers.Add(socketEndpoint, __state);
+                    socketBuffers[socketEndpoint] = __state;
                 }
             }
         }
