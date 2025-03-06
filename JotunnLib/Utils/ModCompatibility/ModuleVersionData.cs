@@ -245,11 +245,12 @@ namespace Jotunn.Utils
         private static int GetModModuleDataLayoutVersion(List<ModModule> modules)
         {
             // Handle tracking ModModule data layouts 
-            if (modules.Any(x => x.DataLayoutVersion != modules.FirstOrDefault().DataLayoutVersion))
+            if (modules.Any(x => x.DataLayoutVersion != modules.FirstOrDefault()?.DataLayoutVersion))
             {
                 throw new NotSupportedException("DataVersionLayout is not the same for all ModModule instances.");
             }
-            return modules.FirstOrDefault().DataLayoutVersion;
+
+            return modules.FirstOrDefault()?.DataLayoutVersion ?? ModModule.CurrentDataLayoutVersion;
         }
     }
 }
