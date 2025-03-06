@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
@@ -10,7 +11,6 @@ using Jotunn.Entities;
 using Jotunn.Extensions;
 using Jotunn.Utils;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Jotunn.Managers
 {
@@ -30,6 +30,8 @@ namespace Jotunn.Managers
         private HashSet<Tuple<string, string, string, string>> CachedConfigValues = new HashSet<Tuple<string, string, string, string>>();
         private readonly Dictionary<string, string> CachedCustomConfigGUIDs = new Dictionary<string, string>();
         private bool ConfigurationManagerWindowShown;
+
+        private ConditionalWeakTable<string, SocketBuffer> socketBuffers = new ConditionalWeakTable<string, SocketBuffer>();
 
         /// <summary>
         ///     Event triggered after configuration has been synced on either the server or client
@@ -180,10 +182,20 @@ namespace Jotunn.Managers
 
             // Hook RPC_PeerInfo for initial retrieval of admin status and configuration
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPrefix]
-            private static void ZNet_RPC_Pre_PeerInfo(ZNet __instance, ZRpc rpc, ref PeerInfoBlockingSocket __state) => Instance.ZNet_RPC_Pre_PeerInfo(__instance, rpc, ref __state);
+            private static void ZNet_RPC_Pre_PeerInfo(ZNet __instance, ZRpc rpc, ref SocketBuffer __state) => Instance.ZNet_RPC_Pre_PeerInfo(__instance, rpc, ref __state);
 
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPostfix]
-            private static void ZNet_RPC_Post_PeerInfo(ZNet __instance, ZRpc rpc, ref PeerInfoBlockingSocket __state) => Instance.ZNet_RPC_Post_PeerInfo(__instance, rpc, ref __state);
+            private static void ZNet_RPC_Post_PeerInfo(ZNet __instance, ZRpc rpc, ref SocketBuffer __state) => Instance.ZNet_RPC_Post_PeerInfo(__instance, rpc, ref __state);
+
+            [HarmonyPatch(typeof(ZSteamSocket), nameof(ZSteamSocket.VersionMatch))]
+            [HarmonyPatch(typeof(ZPlayFabSocket), nameof(ZPlayFabSocket.VersionMatch))]
+            [HarmonyPrefix]
+            public static bool Socket_VersionMatch(ISocket __instance, bool __runOriginal) => __runOriginal && Instance.Socket_VersionMatch(__instance);
+
+            [HarmonyPatch(typeof(ZSteamSocket), nameof(ZSteamSocket.Send), typeof(ZPackage))]
+            [HarmonyPatch(typeof(ZPlayFabSocket), nameof(ZPlayFabSocket.Send), typeof(ZPackage))]
+            [HarmonyPrefix]
+            public static bool Socket_Send(ISocket __instance, ZPackage pkg, bool __runOriginal) => __runOriginal && Instance.Socket_Send(__instance, pkg);
 
             // Hook SyncedList for admin list changes
             [HarmonyPatch(typeof(SyncedList), nameof(SyncedList.Load)), HarmonyPostfix]
@@ -255,36 +267,22 @@ namespace Jotunn.Managers
             }
         }
 
-        /// <summary>
-        ///     Hook ZNet.RPC_PeerInfo on the server to send initial data
-        /// </summary>
-        /// <param name="self"></param>
-        /// <param name="rpc"></param>
-        /// <param name="__state"></param>
-        private void ZNet_RPC_Pre_PeerInfo(ZNet self, ZRpc rpc, ref PeerInfoBlockingSocket __state)
+        private void ZNet_RPC_Pre_PeerInfo(ZNet znet, ZRpc rpc, ref SocketBuffer __state)
         {
-            PeerInfoBlockingSocket bufferingSocket = null;
-
-            // Create buffering socket
-            if (self.IsServer())
+            // Init buffering socket
+            if (znet.IsServer())
             {
-                bufferingSocket = new PeerInfoBlockingSocket(rpc.GetSocket());
-                rpc.m_socket = bufferingSocket;
-
-                ZNetPeer peer = self.GetPeer(rpc);
-                if (ZNet.m_onlineBackend != OnlineBackendType.Steamworks && peer != null)
+                string socketEndpoint = rpc.GetSocket().GetEndPointString();
+                if (!string.IsNullOrEmpty(socketEndpoint))
                 {
-                    peer.m_socket = bufferingSocket;
+                    __state = new SocketBuffer();
+                    socketBuffers.Add(socketEndpoint, __state);
                 }
             }
-
-            __state = bufferingSocket;
         }
 
-        private void ZNet_RPC_Post_PeerInfo(ZNet self, ZRpc rpc, ref PeerInfoBlockingSocket __state)
+        private void ZNet_RPC_Post_PeerInfo(ZNet self, ZRpc rpc, ref SocketBuffer __state)
         {
-            PeerInfoBlockingSocket bufferingSocket = __state;
-
             // Send initial data
             if (self.IsServer())
             {
@@ -296,48 +294,45 @@ namespace Jotunn.Managers
                     return;
                 }
 
-                IEnumerator SynchronizeInitialData()
+                self.StartCoroutine(SynchronizeInitialData(peer, __state));
+            }
+        }
+
+        private IEnumerator SynchronizeInitialData(ZNetPeer peer, SocketBuffer socketBuffer)
+        {
+            Logger.LogInfo($"Sending initial data to peer #{peer.m_uid}");
+
+            foreach (var tuple in InitialSync)
+            {
+                var targetRPC = tuple.Item1;
+                var packageGenerator = tuple.Item2;
+                var package = packageGenerator(peer);
+                if (package != null && package.Size() > 0)
                 {
-                    Logger.LogInfo($"Sending initial data to peer #{peer.m_uid}");
+                    yield return ZNet.instance.StartCoroutine(targetRPC.SendPackageRoutine(peer.m_uid, package));
+                }
+            }
 
-                    // ReSharper disable once UseDeconstruction
-                    foreach (var tuple in InitialSync)
+            if (socketBuffer != null)
+            {
+                socketBuffer.finished = true;
+                ISocket socket = peer.m_rpc.GetSocket();
+
+                for (var i = 0; i < socketBuffer.packages.Count; i++)
+                {
+                    if (i == socketBuffer.versionMatchPackageIndex)
                     {
-                        var targetRPC = tuple.Item1;
-                        var packageGenerator = tuple.Item2;
-                        var package = packageGenerator(peer);
-                        if (package != null && package.Size() > 0)
-                        {
-                            Logger.LogDebug($"Calling custom RPC {targetRPC}");
-                            yield return ZNet.instance.StartCoroutine(targetRPC.SendPackageRoutine(peer.m_uid, package));
-                        }
+                        socket.VersionMatch();
                     }
 
-                    if (peer.m_rpc.GetSocket() is PeerInfoBlockingSocket currentSocket)
-                    {
-                        peer.m_rpc.m_socket = currentSocket.Original;
-                        peer.m_socket = currentSocket.Original;
-                    }
-
-                    bufferingSocket.finished = true;
-
-                    for (var i = 0; i < bufferingSocket.Package.Count; i++)
-                    {
-                        if (i == bufferingSocket.versionMatchPackageIndex)
-                        {
-                            bufferingSocket.Original.VersionMatch();
-                        }
-                        var package = bufferingSocket.Package[i];
-                        bufferingSocket.Original.Send(package);
-                    }
-
-                    if (bufferingSocket.Package.Count == bufferingSocket.versionMatchPackageIndex)
-                    {
-                        bufferingSocket.Original.VersionMatch();
-                    }
+                    var package = socketBuffer.packages[i];
+                    socket.Send(package);
                 }
 
-                self.StartCoroutine(SynchronizeInitialData());
+                if (socketBuffer.packages.Count == socketBuffer.versionMatchPackageIndex)
+                {
+                    socket.VersionMatch();
+                }
             }
         }
 
@@ -1037,97 +1032,63 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Wrapper Socket which holds up and preserves PeerInfo or RoutedRPC packages until
+        ///     Holds up and preserves PeerInfo or RoutedRPC packages until
         ///     the finished member is set to true. All other packages get sent. This will
         ///     stop the client from completing the login handshake with the server until ready.
         /// </summary>
-        internal class PeerInfoBlockingSocket : ISocket
+        private class SocketBuffer
         {
             public volatile bool finished = false;
             public volatile int versionMatchPackageIndex = -1;
-            public readonly List<ZPackage> Package = new List<ZPackage>();
-            public readonly ISocket Original;
+            public List<ZPackage> packages = new List<ZPackage>();
+        }
 
-            public PeerInfoBlockingSocket(ISocket original)
+        private bool Socket_VersionMatch(ISocket __instance)
+        {
+            string socketEndpoint = __instance.GetEndPointString();
+            if (string.IsNullOrEmpty(socketEndpoint) || !socketBuffers.TryGetValue(socketEndpoint, out var blockingSocket) || blockingSocket.finished)
             {
-                Original = original;
+                return true;
             }
 
-            public bool IsConnected() => Original.IsConnected();
+            blockingSocket.versionMatchPackageIndex = blockingSocket.packages.Count;
+            return false;
+        }
 
-            public ZPackage Recv() => Original.Recv();
-
-            public int GetSendQueueSize() => Original.GetSendQueueSize();
-
-            public int GetCurrentSendRate() => Original.GetCurrentSendRate();
-
-            public bool IsHost() => Original.IsHost();
-
-            public void Dispose() => Original.Dispose();
-
-            public bool GotNewData() => Original.GotNewData();
-
-            public void Close() => Original.Close();
-
-            public string GetEndPointString() => Original.GetEndPointString();
-
-            public void GetAndResetStats(out int totalSent, out int totalRecv) => Original.GetAndResetStats(out totalSent, out totalRecv);
-
-            public void GetConnectionQuality(out float localQuality, out float remoteQuality, out int ping, out float outByteSec, out float inByteSec) => Original.GetConnectionQuality(out localQuality, out remoteQuality, out ping, out outByteSec, out inByteSec);
-
-            public ISocket Accept() => Original.Accept();
-
-            public int GetHostPort() => Original.GetHostPort();
-
-            public bool Flush() => Original.Flush();
-
-            public string GetHostName() => Original.GetHostName();
-
-            public void VersionMatch()
+        private bool Socket_Send(ISocket __instance, ZPackage pkg)
+        {
+            string socketEndpoint = __instance.GetEndPointString();
+            if (string.IsNullOrEmpty(socketEndpoint) || !socketBuffers.TryGetValue(socketEndpoint, out var blockingSocket) || blockingSocket.finished)
             {
-                if (finished)
-                {
-                    Original.VersionMatch();
-                }
-                else
-                {
-                    versionMatchPackageIndex = Package.Count;
-                }
+                return true;
             }
 
-            public void Send(ZPackage pkg)
+            int methodHash = GetMethodHash(pkg);
+            if (methodHash == "PeerInfo".GetStableHashCode() || methodHash == "RoutedRPC".GetStableHashCode() || methodHash == "ZDOData".GetStableHashCode())
             {
-                int methodHash = GetMethodHash(pkg);
-
-                if (!finished && (methodHash == "PeerInfo".GetStableHashCode() ||
-                                  methodHash == "RoutedRPC".GetStableHashCode() ||
-                                  methodHash == "ZDOData".GetStableHashCode()))
-                {
-                    // the original ZPackage gets reused, create a new one
-                    Package.Add(CopyZPackage(pkg));
-                }
-                else
-                {
-                    Original.Send(pkg);
-                }
+                // the original ZPackage gets reused, create a new one
+                blockingSocket.packages.Add(CopyZPackage(pkg));
+                return false;
             }
 
-            internal static int GetMethodHash(ZPackage pkg)
-            {
-                int originalPos = pkg.GetPos();
-                pkg.SetPos(0);
-                int methodHash = pkg.ReadInt();
-                pkg.SetPos(originalPos);
+            return true;
+        }
 
-                return methodHash;
-            }
+        internal static int GetMethodHash(ZPackage pkg)
+        {
+            int originalPos = pkg.GetPos();
+            pkg.SetPos(0);
+            int methodHash = pkg.ReadInt();
+            pkg.SetPos(originalPos);
 
-            internal static ZPackage CopyZPackage(ZPackage pkg)
-            {
-                ZPackage copy = new ZPackage(pkg.GetArray());
-                copy.SetPos(pkg.GetPos());
-                return copy;
-            }
+            return methodHash;
+        }
+
+        internal static ZPackage CopyZPackage(ZPackage pkg)
+        {
+            ZPackage copy = new ZPackage(pkg.GetArray());
+            copy.SetPos(pkg.GetPos());
+            return copy;
         }
     }
 }

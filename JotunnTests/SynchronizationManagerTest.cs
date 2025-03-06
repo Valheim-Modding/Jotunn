@@ -1,5 +1,5 @@
+using Jotunn.Managers;
 using Xunit;
-using static Jotunn.Managers.SynchronizationManager;
 
 namespace Jotunn.Utils
 {
@@ -11,7 +11,7 @@ namespace Jotunn.Utils
             ZPackage package = new ZPackage();
             package.Write(3);
             package.Write("...");
-            int methodHash = PeerInfoBlockingSocket.GetMethodHash(package);
+            int methodHash = SynchronizationManager.GetMethodHash(package);
 
             Assert.Equal(3, methodHash);
         }
@@ -23,7 +23,7 @@ namespace Jotunn.Utils
             package.Write(3);
             package.Write("...");
             int pos = package.GetPos();
-            PeerInfoBlockingSocket.GetMethodHash(package);
+            SynchronizationManager.GetMethodHash(package);
 
             Assert.Equal(pos, package.GetPos());
         }
@@ -34,7 +34,7 @@ namespace Jotunn.Utils
             ZPackage package = new ZPackage();
             package.Write(3);
             package.Write("...");
-            ZPackage copy = PeerInfoBlockingSocket.CopyZPackage(package);
+            ZPackage copy = SynchronizationManager.CopyZPackage(package);
 
             Assert.NotSame(package, copy);
             Assert.Equal(package.GetArray(), copy.GetArray());
