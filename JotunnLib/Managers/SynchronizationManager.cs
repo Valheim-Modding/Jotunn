@@ -255,6 +255,7 @@ namespace Jotunn.Managers
             // I think `InitAdminConfigs` can be moved into the else clause since local configs
             // do not need to cached or reset if this ZNet.instance is the server
             InitAdminConfigs();
+            CacheConfigurationValues();
 
             if (zNet && zNet.IsServer())
             {
@@ -274,7 +275,6 @@ namespace Jotunn.Managers
             PlayerIsAdmin = true;
             UnlockConfigurationEntries();
             ResetAdminConfigs(zNet);
-            CacheConfigurationValues();
         }
 
         /// <summary>
