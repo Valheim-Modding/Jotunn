@@ -213,7 +213,7 @@ namespace Jotunn.Managers
             ///     Return the cached local value of a bep config thats locked
             /// </summary>
             [HarmonyPatch(typeof(ConfigEntryBase), nameof(ConfigEntryBase.GetSerializedValue)), HarmonyPrefix]
-            private void GetCachedValueForSyncedConfigs(ConfigEntryBase __instance, ref string __result)
+            private bool GetCachedValueForSyncedConfigs(ConfigEntryBase __instance, ref string __result)
             {
                 if (ReadWriteConfigFromDisk() || !__instance.IsSyncable() || __instance.GetLocalValue() == null)
                 {
@@ -229,7 +229,7 @@ namespace Jotunn.Managers
             ///     Prevent overwriting bep config value when the setting is locked on config file reload.
             /// </summary>
             [HarmonyPatch(typeof(ConfigEntryBase), nameof(ConfigEntryBase.SetSerializedValue)), HarmonyPrefix]
-            private void BlockSetForSyncedConfigs(ConfigEntryBase __instance, ref string __result)
+            private bool BlockSetForSyncedConfigs(ConfigEntryBase __instance)
             {
                 return ReadWriteConfigFromDisk() || !__instance.IsSyncable();
             }
