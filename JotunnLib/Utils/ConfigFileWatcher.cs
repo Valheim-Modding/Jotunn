@@ -76,10 +76,8 @@ namespace Jotunn.Utils
             }
 
             // Only log file name to avoid exposing user info if it located within AppData (such as when using r2modman)
-            string configFileName = Path.GetFileName(configFile.ConfigFilePath);
             try
             {
-                
                 Logger.LogInfo(sourceMod, $"Reloading {configFileName}");
                 bool saveOnConfigSet = configFile.SetSaveOnConfigSet(false); // turn off saving on config entry set
                 configFile.Reload();
