@@ -75,9 +75,10 @@ namespace Jotunn.Utils
                 return;
             }
 
+            // Only log file name to avoid exposing user info if it located within AppData (such as when using r2modman)
             try
             {
-                Logger.LogInfo(sourceMod, $"Reloading {configFile.ConfigFilePath}");
+                Logger.LogInfo(sourceMod, $"Reloading {configFileName}");
                 bool saveOnConfigSet = configFile.SetSaveOnConfigSet(false); // turn off saving on config entry set
                 configFile.Reload();
                 configFile.SaveOnConfigSet = saveOnConfigSet; // reset config saving state
@@ -86,7 +87,7 @@ namespace Jotunn.Utils
             }
             catch
             {
-                Logger.LogError(sourceMod, $"There was an issue loading {configFile.ConfigFilePath}");
+                Logger.LogError(sourceMod, $"There was an issue loading {configFileName}");
                 Logger.LogError(sourceMod, "Please check your config entries for spelling and format!");
             }
         }
