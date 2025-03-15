@@ -207,32 +207,19 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible)), HarmonyPostfix]
             private static void Menu_IsVisible(ref bool __result) => Instance.Menu_IsVisible(ref __result);
 
-
             /// <summary>
             ///     Harmony patch BepInEx to ensure locked values are not overwritten.
             ///     Return the cached local value of a bep config thats locked
             /// </summary>
             [HarmonyPatch(typeof(ConfigEntryBase), nameof(ConfigEntryBase.GetSerializedValue)), HarmonyPrefix]
-            private static bool GetCachedValueForSyncedConfigs(ConfigEntryBase __instance, ref string __result)
-            {
-                if (ReadWriteConfigFromDisk() || !__instance.IsSyncable() || __instance.GetLocalValue() == null)
-                {
-                    return true;
-                }
-
-                __result = TomlTypeConverter.ConvertToString(__instance.GetLocalValue(), __instance.SettingType);
-                return false;
-            }
+            private static bool GetCachedValueForSyncedConfigs(ConfigEntryBase __instance, ref string __result) => ConfigEntryBase_GetSerializedValue(__instance, ref __result);
 
             /// <summary>
             ///     Harmony patch BepInEx to ensure locked values are not overwritten.
             ///     Prevent overwriting bep config value when the setting is locked on config file reload.
             /// </summary>
             [HarmonyPatch(typeof(ConfigEntryBase), nameof(ConfigEntryBase.SetSerializedValue)), HarmonyPrefix]
-            private static bool BlockSetForSyncedConfigs(ConfigEntryBase __instance)
-            {
-                return ReadWriteConfigFromDisk() || !__instance.IsSyncable();
-            }
+            private static bool BlockSetForSyncedConfigs(ConfigEntryBase __instance) => ConfigEntryBase_SetSerializedValue(__instance);
 
             // Hooks for locking and unlocking synced configs
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.Start)), HarmonyPrefix]
@@ -246,7 +233,7 @@ namespace Jotunn.Managers
             private static void Znet_OnDestroy(ZNet __instance)
             {
                 Instance.UnsubscribeToConfigReload();
-                Instance.ResetAdminState(__instance);               
+                Instance.ResetAdminState(__instance);
             }
         }
 
@@ -781,7 +768,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Prevent overwriting bep config value when the setting is locked on config file reload
         /// </summary>
-        private static bool ConfigEntryBase_SetSerializedValue(ConfigEntryBase __instance, string value)
+        private static bool ConfigEntryBase_SetSerializedValue(ConfigEntryBase __instance)
         {
             return ReadWriteConfigFromDisk() || !__instance.IsSyncable();
         }
