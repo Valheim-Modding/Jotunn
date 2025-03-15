@@ -36,6 +36,22 @@
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\SoftReferenceableAssets_publicized.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="gui_framework">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\gui_framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="PlayFab">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\PlayFab.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="PlayFabParty">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\PlayFabParty.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Splatform">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\Splatform.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="BepInEx">
       <HintPath>$(BEPINEX_PATH)\core\BepInEx.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
