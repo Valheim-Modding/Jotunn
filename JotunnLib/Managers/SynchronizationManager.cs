@@ -87,6 +87,24 @@ namespace Jotunn.Managers
 
             Main.Harmony.PatchAll(typeof(Patches));
 
+            var zSteamSocket = typeof(Game).Assembly.GetType(nameof(ZSteamSocket));
+            if (zSteamSocket != null)
+            {
+                Main.Harmony.Patch(zSteamSocket.GetMethod(nameof(ZSteamSocket.Send), new[] { typeof(ZPackage) }),
+                    prefix: new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.Socket_Send_Prefix))));
+                Main.Harmony.Patch(zSteamSocket.GetMethod(nameof(ZSteamSocket.VersionMatch)),
+                    prefix: new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.Socket_VersionMatch_Prefix))));
+            }
+
+            var zPlayFabSocket = typeof(Game).Assembly.GetType(nameof(ZPlayFabSocket));
+            if (zPlayFabSocket != null)
+            {
+                Main.Harmony.Patch(zPlayFabSocket.GetMethod(nameof(ZPlayFabSocket.Send), new[] { typeof(ZPackage) }),
+                    prefix: new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.Socket_Send_Prefix))));
+                Main.Harmony.Patch(zPlayFabSocket.GetMethod(nameof(ZPlayFabSocket.VersionMatch)),
+                    prefix: new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.Socket_VersionMatch_Prefix))));
+            }
+
             if (ConfigManagerUtils.Plugin)
             {
                 var eventinfo = ConfigManagerUtils.Plugin.GetType().GetEvent("DisplayingWindowChanged");
@@ -186,15 +204,9 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPostfix]
             private static void ZNet_RPC_Post_PeerInfo(ZNet __instance, ZRpc rpc, ref SocketBuffer __state) => Instance.ZNet_RPC_Post_PeerInfo(__instance, rpc, ref __state);
 
-            [HarmonyPatch(typeof(ZSteamSocket), nameof(ZSteamSocket.VersionMatch))]
-            [HarmonyPatch(typeof(ZPlayFabSocket), nameof(ZPlayFabSocket.VersionMatch))]
-            [HarmonyPrefix]
-            public static bool Socket_VersionMatch(ISocket __instance, bool __runOriginal) => __runOriginal && Instance.Socket_VersionMatch(__instance);
+            public static bool Socket_VersionMatch_Prefix(ISocket __instance, bool __runOriginal) => __runOriginal && Instance.Socket_VersionMatch(__instance);
 
-            [HarmonyPatch(typeof(ZSteamSocket), nameof(ZSteamSocket.Send), typeof(ZPackage))]
-            [HarmonyPatch(typeof(ZPlayFabSocket), nameof(ZPlayFabSocket.Send), typeof(ZPackage))]
-            [HarmonyPrefix]
-            public static bool Socket_Send(ISocket __instance, ZPackage pkg, bool __runOriginal) => __runOriginal && Instance.Socket_Send(__instance, pkg);
+            public static bool Socket_Send_Prefix(ISocket __instance, ZPackage pkg, bool __runOriginal) => __runOriginal && Instance.Socket_Send(__instance, pkg);
 
             // Hook SyncedList for admin list changes
             [HarmonyPatch(typeof(SyncedList), nameof(SyncedList.Load)), HarmonyPostfix]
