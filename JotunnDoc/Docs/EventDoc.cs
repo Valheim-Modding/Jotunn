@@ -51,6 +51,10 @@ namespace JotunnDoc.Docs
             ZoneManager.OnClutterRegistered += () => AddEvent(nameof(ZoneManager), nameof(ZoneManager.OnClutterRegistered));
 
             PieceManager.OnPiecesRegistered += () => AddEvent("PieceManager", "OnPiecesRegistered");
+
+            SynchronizationManager.OnConfigurationSynchronized += (_1, _2) => AddEvent(nameof(SynchronizationManager), nameof(SynchronizationManager.OnConfigurationSynchronized));
+            SynchronizationManager.OnSyncingConfiguration += (_1, _2) => AddEvent(nameof(SynchronizationManager), nameof(SynchronizationManager.OnSyncingConfiguration));
+            SynchronizationManager.OnAdminStatusChanged += () => AddEvent(nameof(SynchronizationManager), nameof(SynchronizationManager.OnAdminStatusChanged));
         }
 
         private void AddEvent(string manager, string eventname)
@@ -84,6 +88,7 @@ box Jotunn
     participant ZoneManager
     participant GUIManager
     participant MinimapManager
+    participant SynchronizationManager
 end box
 
 group For each mod
@@ -105,14 +110,30 @@ end group
                 {
                     if (i == 0 || !(events[i - 1] is EventInvoke prevEventInvoke) || $"{prevEventInvoke.type}.{prevEventInvoke.method}" != $"{eventInvoke.type}.{eventInvoke.method}")
                     {
-                        Instance.AddText($"Valheim -> Valheim++: {eventInvoke.type}.{eventInvoke.method}");
+                        if (eventInvoke.manager == nameof(SynchronizationManager) && eventInvoke.method == "InvokeMoveNext")
+                        {
+                            Instance.AddText("group client (only if connecting to a server)");
+                            Instance.AddText($"Valheim -> Valheim++: ZRoutedRpc.HandleRoutedRPC");
+                        }
+                        else
+                        {
+                            Instance.AddText($"Valheim -> Valheim++: {eventInvoke.type}.{eventInvoke.method}");
+                        }
                     }
 
                     Instance.AddText($"    hnote over {eventInvoke.manager}: {eventInvoke.name}");
 
                     if (i == events.Count - 1 || !(events[i + 1] is EventInvoke nextEventInvoke) || $"{nextEventInvoke.type}.{nextEventInvoke.method}" != $"{eventInvoke.type}.{eventInvoke.method}")
                     {
-                        Instance.AddText($"deactivate Valheim\n");
+                        if (eventInvoke.manager == nameof(SynchronizationManager) && eventInvoke.method == "InvokeMoveNext")
+                        {
+                            Instance.AddText($"deactivate Valheim");
+                            Instance.AddText("end group\n");
+                        }
+                        else
+                        {
+                            Instance.AddText($"deactivate Valheim\n");
+                        }
                     }
                 }
             }
