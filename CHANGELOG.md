@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.24.3
+* Fixed config sync reset for local worlds and when configs are written to the disk (thx Searica)
+* Fixed exposing Windows username in Filewatcher logs (thx Searica)
+* Fixed an error with the Microsoft Store version because ZSteamSocket is not available
+* Fixed missing assembly references at build time for dependent mods
+
 ## Version 2.24.2
 * Fixed a black screen and error on the server when connecting via crossplay
 * Fixed an error if no mods are installed on the server
