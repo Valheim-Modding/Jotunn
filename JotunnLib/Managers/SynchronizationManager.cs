@@ -207,33 +207,41 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible)), HarmonyPostfix]
             private static void Menu_IsVisible(ref bool __result) => Instance.Menu_IsVisible(ref __result);
 
-            [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake)), HarmonyPrefix]
-            private static void FejdStartup_Awake()
-            {
-                Instance.ResetAdminState();
-                Instance.FejdStartup_Awake();
-            }
+            /// <summary>
+            ///     Harmony patch BepInEx to ensure locked values are not overwritten.
+            ///     Return the cached local value of a bep config thats locked
+            /// </summary>
+            [HarmonyPatch(typeof(ConfigEntryBase), nameof(ConfigEntryBase.GetSerializedValue)), HarmonyPrefix]
+            private static bool GetCachedValueForSyncedConfigs(ConfigEntryBase __instance, ref string __result) => ConfigEntryBase_GetSerializedValue(__instance, ref __result);
 
+            /// <summary>
+            ///     Harmony patch BepInEx to ensure locked values are not overwritten.
+            ///     Prevent overwriting bep config value when the setting is locked on config file reload.
+            /// </summary>
+            [HarmonyPatch(typeof(ConfigEntryBase), nameof(ConfigEntryBase.SetSerializedValue)), HarmonyPrefix]
+            private static bool BlockSetForSyncedConfigs(ConfigEntryBase __instance) => ConfigEntryBase_SetSerializedValue(__instance);
+
+            // Hooks for locking and unlocking synced configs
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.Start)), HarmonyPrefix]
-            private static void ZNet_Start()
+            private static void ZNet_Start(ZNet __instance)
             {
-                Instance.InitAdminState();
+                Instance.InitAdminState(__instance);
+                Instance.SubscribeToConfigReload();
+            }
+
+            [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnDestroy)), HarmonyPrefix]
+            private static void Znet_OnDestroy(ZNet __instance)
+            {
+                Instance.UnsubscribeToConfigReload();
+                Instance.ResetAdminState(__instance);
             }
         }
 
-        private void ResetAdminState()
+        private void InitAdminState(ZNet zNet)
         {
-            PlayerIsAdmin = true;
-            UnlockConfigurationEntries();
-            ResetAdminConfigs();
             CacheConfigurationValues();
-        }
 
-        private void InitAdminState()
-        {
-            InitAdminConfigs();
-
-            if (ZNet.instance && ZNet.instance.IsServer())
+            if (zNet && zNet.IsServer())
             {
                 PlayerIsAdmin = true;
                 UnlockConfigurationEntries();
@@ -241,9 +249,53 @@ namespace Jotunn.Managers
             else
             {
                 PlayerIsAdmin = false;
+                InitAdminConfigs();
                 LockConfigurationEntries();
                 SetToDefaultConfigEntries();
             }
+        }
+
+        private void ResetAdminState(ZNet zNet)
+        {
+            PlayerIsAdmin = true;
+            UnlockConfigurationEntries();
+            ResetAdminConfigs(zNet);
+        }
+
+        /// <summary>
+        ///     Cache local config values for synced entries.
+        /// </summary>
+        private void InitAdminConfigs()
+        {
+            foreach (var config in GetConfigFiles())
+            {
+                foreach (var configDefinition in config.Keys)
+                {
+                    var configEntry = config[configDefinition.Section, configDefinition.Key];
+                    var configAttribute = configEntry.GetConfigurationManagerAttributes();
+
+                    if (configAttribute?.IsAdminOnly == true && configEntry.BoxedValue != null)
+                    {
+                        localValues[configEntry] = configEntry.BoxedValue;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Reset configs which may have been overwritten with server values to the local value
+        ///     if this machine is not the server.
+        /// </summary>
+        private void ResetAdminConfigs(ZNet zNet)
+        {
+            if (zNet && !zNet.IsServer())
+            {
+                foreach (var localValue in localValues)
+                {
+                    localValue.Key.BoxedValue = localValue.Value;
+                }
+            }
+            localValues.Clear();
         }
 
         /// <summary>
@@ -666,24 +718,25 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Initial cache the config values of dependent plugins and register ourself to config change events
+        ///     Register ourself to config reload events to trigger synchronizing configs
         /// </summary>
-        private void FejdStartup_Awake()
+        private void SubscribeToConfigReload()
         {
             foreach (var config in GetConfigFiles())
             {
                 config.ConfigReloaded += Config_ConfigReloaded;
             }
+        }
 
-            // Harmony patch BepInEx to ensure locked values are not overwritten
-            Main.Harmony.Patch(
-                AccessTools.DeclaredMethod(typeof(ConfigEntryBase), nameof(ConfigEntryBase.GetSerializedValue)),
-                new HarmonyMethod(AccessTools.DeclaredMethod(typeof(SynchronizationManager),
-                    nameof(ConfigEntryBase_GetSerializedValue))));
-            Main.Harmony.Patch(
-                AccessTools.DeclaredMethod(typeof(ConfigEntryBase), nameof(ConfigEntryBase.SetSerializedValue)),
-                new HarmonyMethod(AccessTools.DeclaredMethod(typeof(SynchronizationManager),
-                    nameof(ConfigEntryBase_SetSerializedValue))));
+        /// <summary>
+        ///     Un-Register ourself to config reload events to trigger synchronizing configs
+        /// </summary>
+        private void UnsubscribeToConfigReload()
+        {
+            foreach (var config in GetConfigFiles())
+            {
+                config.ConfigReloaded -= Config_ConfigReloaded;
+            }
         }
 
         /// <summary>
@@ -713,7 +766,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Prevent overwriting bep config value when the setting is locked on config file reload
         /// </summary>
-        private static bool ConfigEntryBase_SetSerializedValue(ConfigEntryBase __instance, string value)
+        private static bool ConfigEntryBase_SetSerializedValue(ConfigEntryBase __instance)
         {
             return ReadWriteConfigFromDisk() || !__instance.IsSyncable();
         }
@@ -724,7 +777,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Cache the synchronizable configuration values for comparison
+        ///     Cache the current synchronizable configuration values for comparison
         /// </summary>
         internal void CacheConfigurationValues()
         {
@@ -829,39 +882,6 @@ namespace Jotunn.Managers
                 // Rebuild config cache
                 CacheConfigurationValues();
             }
-        }
-
-        /// <summary>
-        ///     Cache local config values for synced entries
-        /// </summary>
-        private void InitAdminConfigs()
-        {
-            foreach (var config in GetConfigFiles())
-            {
-                foreach (var configDefinition in config.Keys)
-                {
-                    var configEntry = config[configDefinition.Section, configDefinition.Key];
-                    var configAttribute = configEntry.GetConfigurationManagerAttributes();
-
-                    if (configAttribute?.IsAdminOnly == true && configEntry.BoxedValue != null)
-                    {
-                        localValues[configEntry] = configEntry.BoxedValue;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Reset configs which may have been overwritten with server values to the local value
-        /// </summary>
-        private void ResetAdminConfigs()
-        {
-            foreach (var localValue in localValues)
-            {
-                localValue.Key.BoxedValue = localValue.Value;
-            }
-
-            localValues.Clear();
         }
 
         private void SetToDefaultConfigEntries()
