@@ -236,6 +236,17 @@ namespace Jotunn.Managers
             uint u = (uint)asset.name.GetStableHashCode();
             return new AssetID(u, u, u, u);
         }
+        
+        /// <summary>
+        ///     Generates a unique AssetID, based on the asset name
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <returns>AssetID generated from the string</returns>
+        public static AssetID GenerateAssetID(string asset)
+        {
+            uint u = (uint)asset.GetStableHashCode();
+            return new AssetID(u, u, u, u);
+        }
 
         /// <summary>
         ///     Clones a prefab and registers it in the SoftReference system with the same dependencies as the original asset
