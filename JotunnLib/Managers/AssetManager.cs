@@ -10,6 +10,7 @@ using Jotunn.Utils;
 using SoftReferenceableAssets;
 using UnityEngine;
 using UnityEngine.Audio;
+using AssetBundleManifest = SoftReferenceableAssets.AssetBundleManifest;
 using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
@@ -30,6 +31,9 @@ namespace Jotunn.Managers
         private Dictionary<AssetID, AssetRef> assets = new Dictionary<AssetID, AssetRef>();
 
         private Dictionary<Type, Dictionary<string, AssetID>> mapNameToAssetID;
+
+        private static List<AssetBundleManifest> softReferenceManifests = new List<AssetBundleManifest>();
+
         internal Dictionary<Type, Dictionary<string, AssetID>> MapNameToAssetID => mapNameToAssetID ??= CreateNameToAssetID();
 
         /// <summary>
@@ -83,6 +87,19 @@ namespace Jotunn.Managers
                     .MatchForward(false, new CodeMatch(i => i.Calls(addMethod)))
                     .SetInstruction(new CodeInstruction(OpCodes.Call, addSafeMethod))
                     .InstructionEnumeration();
+            }
+
+            [HarmonyPatch(typeof(AssetBundleDatabase))]
+            [HarmonyPatch(MethodType.Constructor)]
+            [HarmonyPatch(new Type[] { typeof(string[]) })]
+            private static void AssetBundleDatabase_Constructor(AssetBundleDatabase __instance)
+            {
+                FieldInfo fieldInfo = AccessTools.Field(typeof(AssetBundleDatabase), "m_assetBundleManifests");
+                AssetBundleManifest[] manifests = (AssetBundleManifest[])fieldInfo.GetValue(__instance);
+
+                Array.Resize(ref manifests, __instance.m_assetBundleManifests.Length + softReferenceManifests.Count);
+
+                fieldInfo.SetValue(__instance, manifests);
             }
         }
 
