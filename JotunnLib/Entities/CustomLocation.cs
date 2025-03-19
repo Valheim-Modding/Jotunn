@@ -103,6 +103,33 @@ namespace Jotunn.Entities
             FixReference = fixReference;
         }
         
+        public CustomLocation(SoftReference<GameObject> exteriorPrefab, SoftReference<GameObject> interiorPrefab, bool fixReference, LocationConfig locationConfig) : base(Assembly.GetCallingAssembly())
+        {
+            Prefab = exteriorPrefab.Asset;
+            Name = exteriorPrefab.Asset.name;
+
+            if (exteriorPrefab.Asset.TryGetComponent<Location>(out var location))
+            {
+                Location = location;
+            }
+            else
+            {
+                Location = exteriorPrefab.Asset.AddComponent<Location>();
+                Location.m_clearArea = locationConfig.ClearArea;
+                Location.m_exteriorRadius = locationConfig.ExteriorRadius;
+                Location.m_interiorPrefab = interiorPrefab.Asset;
+                Location.m_hasInterior = locationConfig.HasInterior;
+                Location.m_interiorRadius = locationConfig.InteriorRadius;
+                Location.m_interiorEnvironment = locationConfig.InteriorEnvironment;
+            }
+
+            ZoneLocation = locationConfig.GetZoneLocation();
+            ZoneLocation.m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(exteriorPrefab.Asset));
+            ZoneLocation.m_prefabName = exteriorPrefab.Asset.name;
+
+            FixReference = fixReference;
+        }
+        
         /// <summary>
         ///     Helper method to determine if a location prefab with a given name is a custom location created with Jötunn.
         /// </summary>
