@@ -135,6 +135,30 @@ namespace Jotunn.Managers
             return AddAsset(asset, null);
         }
 
+        public static void GenerateSoftRefManifest(AssetBundle bundle, UnityEngine.AssetBundleManifest assetBundleManifest)
+        {
+            if (bundle == null)
+            {
+                Debug.LogError("AssetBundle is null.");
+                return;
+            }
+
+            AssetBundleManifest manifest = new AssetBundleManifest("./Bundles");
+            
+            manifest.AddBundleDependencies(bundle.name, assetBundleManifest.GetAllDependencies(bundle.name));
+
+            string[] assetNames = bundle.GetAllAssetNames();
+            foreach (var asset in assetNames)
+            {
+                AssetID assetId = GenerateAssetID(asset);
+                AssetLocation assetLocation = new AssetLocation(bundle.name, asset);
+                manifest.AddAssetLocation(assetId, assetLocation);
+            }
+
+            bundle.Unload(false);
+            softReferenceManifests.Add(manifest);
+        }
+
         private static void AddAssetToBundleLoader(AssetBundleLoader assetBundleLoader, AssetID assetID, AssetRef assetRef)
         {
             // create fake bundle, since an AssetBundle can't be created at runtime
