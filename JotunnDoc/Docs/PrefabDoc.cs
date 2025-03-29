@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Jotunn.Entities;
 using Jotunn.Managers;
@@ -46,14 +47,14 @@ namespace JotunnDoc.Docs
             var prefabsAM = allPrefabs.Where(p => p.name.Length >= 1 && p.name.ToLower()[0] < 'm');
             var prefabsMZ = allPrefabs.Where(p => p.name.Length >= 1 && p.name.ToLower()[0] >= 'm');
 
-            AddTableHeader("Name", "AssetID", "Components");
+            AddTableHeader("Name", "AssetID", "Components", "Components in Children");
 
             foreach (GameObject obj in prefabsAM)
             {
                 AddPrefabTableRow(obj);
             }
 
-            AddTableHeader("Name", "AssetID", "Components");
+            AddTableHeader("Name", "AssetID", "Components", "Components in Children");
 
             foreach (GameObject obj in prefabsMZ)
             {
@@ -63,20 +64,39 @@ namespace JotunnDoc.Docs
             Save();
         }
 
-        private void AddPrefabTableRow(GameObject prefab) {
-            string components = "<ul>";
-
-            foreach (Component comp in prefab.GetComponents<Component>()) {
-                components += "<li>" + comp.GetType().Name + "</li>";
-            }
-
-            components += "</ul>";
-
+        private void AddPrefabTableRow(GameObject prefab)
+        {
             AddTableRow(
                 prefab.name,
                 AssetManager.Instance.GetAssetID<GameObject>(prefab.name).ToString(),
-                components
+                GenerateComponentList(prefab.GetComponents<Component>()),
+                GenerateChildComponentsList(prefab)
             );
+        }
+
+        private string GenerateComponentList(IEnumerable<Component> components)
+        {
+            string result = "<ul>";
+
+            foreach (Type comp in components.Select(c => c.GetType()).Where(c => c != typeof(Transform)).Distinct())
+            {
+                result += $"<li>{comp.Name}</li>";
+            }
+
+            result += "</ul>";
+            return result;
+        }
+
+        private string GenerateChildComponentsList(GameObject prefab)
+        {
+            List<Component> components = new List<Component>();
+
+            foreach (Transform child in prefab.transform)
+            {
+                components.AddRange(child.GetComponentsInChildren<Component>(true));
+            }
+
+            return GenerateComponentList(components);
         }
     }
 }
