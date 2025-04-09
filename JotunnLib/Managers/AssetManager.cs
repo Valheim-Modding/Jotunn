@@ -32,8 +32,6 @@ namespace Jotunn.Managers
 
         private Dictionary<Type, Dictionary<string, AssetID>> mapNameToAssetID;
 
-        private static List<AssetBundleManifest> softReferenceManifests = new List<AssetBundleManifest>();
-
         internal Dictionary<Type, Dictionary<string, AssetID>> MapNameToAssetID => mapNameToAssetID ??= CreateNameToAssetID();
 
         /// <summary>
@@ -88,19 +86,6 @@ namespace Jotunn.Managers
                     .SetInstruction(new CodeInstruction(OpCodes.Call, addSafeMethod))
                     .InstructionEnumeration();
             }
-
-            [HarmonyPatch(typeof(AssetBundleDatabase))]
-            [HarmonyPatch(MethodType.Constructor)]
-            [HarmonyPatch(new Type[] { typeof(string[]) })]
-            private static void AssetBundleDatabase_Constructor(AssetBundleDatabase __instance)
-            {
-                FieldInfo fieldInfo = AccessTools.Field(typeof(AssetBundleDatabase), "m_assetBundleManifests");
-                AssetBundleManifest[] manifests = (AssetBundleManifest[])fieldInfo.GetValue(__instance);
-
-                Array.Resize(ref manifests, __instance.m_assetBundleManifests.Length + softReferenceManifests.Count);
-
-                fieldInfo.SetValue(__instance, manifests);
-            }
         }
 
         /// <summary>
@@ -152,31 +137,7 @@ namespace Jotunn.Managers
             return AddAsset(asset, null);
         }
 
-        public static void GenerateSoftRefManifest(AssetBundle bundle, UnityEngine.AssetBundleManifest assetBundleManifest)
-        {
-            if (bundle == null)
-            {
-                Debug.LogError("AssetBundle is null.");
-                return;
-            }
-
-            AssetBundleManifest manifest = new AssetBundleManifest("./Bundles");
-            
-            manifest.AddBundleDependencies(bundle.name, assetBundleManifest.GetAllDependencies(bundle.name));
-
-            string[] assetNames = bundle.GetAllAssetNames();
-            foreach (var asset in assetNames)
-            {
-                AssetID assetId = GenerateAssetID(asset);
-                AssetLocation assetLocation = new AssetLocation(bundle.name, asset);
-                manifest.AddAssetLocation(assetId, assetLocation);
-            }
-
-            bundle.Unload(false);
-            softReferenceManifests.Add(manifest);
-        }
-
-        private static void AddAssetToBundleLoader(AssetBundleLoader assetBundleLoader, AssetID assetID, AssetRef assetRef)
+        public static void AddAssetToBundleLoader(AssetBundleLoader assetBundleLoader, AssetID assetID, AssetRef assetRef)
         {
             // create fake bundle, since an AssetBundle can't be created at runtime
             string bundleName = $"JVL_BundleWrapper_{assetRef.asset.name}";
