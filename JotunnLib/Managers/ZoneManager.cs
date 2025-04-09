@@ -254,9 +254,7 @@ namespace Jotunn.Managers
                 Logger.LogWarning(customLocation.SourceMod, $"Location {customLocation.Name} already exists");
                 return false;
             }
-
-            customLocation.Prefab.transform.SetParent(LocationContainer.transform);
-
+            
             // The root prefab needs to be active, otherwise ZNetViews are not prepared correctly
             customLocation.Prefab.SetActive(true);
 
@@ -611,7 +609,7 @@ namespace Jotunn.Managers
         /// <param name="sourceMod"><see cref="BepInPlugin"/> which created the location</param>
         private void RegisterLocationInZoneSystem(ZoneSystem zoneSystem, ZoneLocation zoneLocation, BepInPlugin sourceMod)
         {
-            zoneLocation.m_prefab.Load();
+            //  zoneLocation.m_prefab.Load();
 
             foreach (var znet in global::Utils.GetEnabledComponentsInChildren<ZNetView>(zoneLocation.m_prefab.Asset))
             {
