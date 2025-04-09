@@ -164,6 +164,25 @@ namespace Jotunn.Managers
             container.transform.SetParent(LocationContainer.transform);
             return container;
         }
+        
+        /// <summary>
+        ///     Destroy a child GameObject of LocationContainer with the specified name.
+        /// </summary>
+        /// <param name="name">Name of the location container to destroy</param>
+        public void DestroyLocationContainer(string name)
+        {
+            // Find the container under the LocationContainer by name
+            Transform container = LocationContainer.transform.Find(name);
+    
+            if (container != null)
+            {
+                GameObject.Destroy(container.gameObject);
+            }
+            else
+            {
+                Debug.LogWarning($"LocationContainer with name '{name}' not found.");
+            }
+        }
 
         /// <summary>
         ///     Create a copy that is disabled, so any Components in instantiated child GameObjects will not start their lifecycle.<br />
