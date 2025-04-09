@@ -10,7 +10,6 @@ using Jotunn.Utils;
 using SoftReferenceableAssets;
 using UnityEngine;
 using UnityEngine.Audio;
-using AssetBundleManifest = SoftReferenceableAssets.AssetBundleManifest;
 using Object = UnityEngine.Object;
 
 namespace Jotunn.Managers
@@ -175,7 +174,7 @@ namespace Jotunn.Managers
             return AddAsset(asset, null);
         }
 
-        public static void AddAssetToBundleLoader(AssetBundleLoader assetBundleLoader, AssetID assetID, AssetRef assetRef)
+        private static void AddAssetToBundleLoader(AssetBundleLoader assetBundleLoader, AssetID assetID, AssetRef assetRef)
         {
             // create fake bundle, since an AssetBundle can't be created at runtime
             string bundleName = $"JVL_BundleWrapper_{assetRef.asset.name}";
@@ -241,7 +240,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="asset"></param>
         /// <returns>AssetID generated from the string</returns>
-        public static AssetID GenerateAssetID(string asset)
+        public AssetID GenerateAssetID(string asset)
         {
             uint u = (uint)asset.GetStableHashCode();
             return new AssetID(u, u, u, u);
@@ -447,7 +446,7 @@ namespace Jotunn.Managers
             }
         }
 
-        public struct AssetRef
+        private struct AssetRef
         {
             public BepInPlugin sourceMod;
             public Object asset;
