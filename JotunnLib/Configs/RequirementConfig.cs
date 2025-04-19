@@ -54,9 +54,29 @@ namespace Jotunn.Configs
         /// <returns></returns>
         public Piece.Requirement GetRequirement()
         {
+            ItemDrop resItem;
+
+            if (ObjectDB.instance)
+            {
+                var itemPrefab = ObjectDB.instance.GetItemPrefab(Item);
+                if (itemPrefab && itemPrefab.TryGetComponent(out ItemDrop itemDrop) && itemDrop)
+                {
+                    resItem = itemDrop;
+                }
+                else
+                {
+                    Logger.LogWarning($"Item {Item} not found in ObjectDB.");
+                    resItem = null;
+                }
+            }
+            else
+            {
+                resItem = Mock<ItemDrop>.Create(Item);
+            }
+
             return new Piece.Requirement
             {
-                m_resItem = Mock<ItemDrop>.Create(Item),
+                m_resItem = resItem,
                 m_amount = Amount,
                 m_amountPerLevel = AmountPerLevel,
                 m_recover = Recover
@@ -76,7 +96,11 @@ namespace Jotunn.Configs
             {
                 if (requirement != null && requirement.IsValid())
                 {
-                    reqs.Add(requirement.GetRequirement());
+                    var req = requirement.GetRequirement();
+                    if (req.m_resItem)
+                    {
+                        reqs.Add(req);
+                    }
                 }
             }
 

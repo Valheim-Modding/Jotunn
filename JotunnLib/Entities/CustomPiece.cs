@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
@@ -61,12 +62,28 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
+        ///     The items required to build this custom piece.<br />
+        ///     Updating this value will also update the <see cref="global::Piece.m_resources"/> of the <see cref="global::Piece"/> component.
+        /// </summary>
+        public List<RequirementConfig> Requirements
+        {
+            get => requirements;
+            set
+            {
+                requirements = value;
+                UpdateRequirements();
+            }
+        }
+
+        /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
 
         /// <summary>
         ///     The in-game settings for this custom piece.
+        ///     <br />
+        ///     This is null if the mod does not use configs.
         /// </summary>
         public CustomPieceSettings Settings { get; set; }
 
@@ -84,6 +101,7 @@ namespace Jotunn.Entities
 
         private string category;
         private string pieceTable;
+        private List<RequirementConfig> requirements;
 
         /// <summary>
         ///     Custom piece from a prefab.<br />
@@ -120,6 +138,7 @@ namespace Jotunn.Entities
             FixReference = false;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(piecePrefab);
             Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
@@ -139,6 +158,7 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(piecePrefab);
             Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
@@ -194,6 +214,7 @@ namespace Jotunn.Entities
             FixReference = false;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(PiecePrefab);
             Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
@@ -221,6 +242,7 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(PiecePrefab);
             Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
@@ -272,6 +294,7 @@ namespace Jotunn.Entities
             PieceTable = pieceConfig.PieceTable;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(PiecePrefab);
             Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
@@ -322,6 +345,7 @@ namespace Jotunn.Entities
             PieceTable = pieceConfig.PieceTable;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(PiecePrefab);
             Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
@@ -365,6 +389,17 @@ namespace Jotunn.Entities
             }
 
             return valid;
+        }
+
+        /// <summary>
+        ///     Updates the requirements of this custom piece.<br />
+        /// </summary>
+        public void UpdateRequirements()
+        {
+            if (Piece)
+            {
+                Piece.m_resources = RequirementConfig.GetRequirements(Requirements);
+            }
         }
 
         /// <summary>

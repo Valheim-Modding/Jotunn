@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Jotunn.Configs;
 using Jotunn.Settings;
 using Jotunn.Utils;
@@ -26,6 +27,11 @@ namespace Jotunn.Entities
         public Setting<string> PieceTable { get; set; }
 
         /// <summary>
+        ///     Setting for the requirements of this piece
+        /// </summary>
+        public Setting<List<RequirementConfig>> Requirements { get; set; }
+
+        /// <summary>
         ///     Create a new settings object for a custom piece
         /// </summary>
         /// <param name="piece"></param>
@@ -46,6 +52,9 @@ namespace Jotunn.Entities
 
             PieceTable = new BepInExDropdownSetting<string>(sourceMod, prefabName, "Tool", PieceTables.GetDisplayName(piece.PieceTable), PieceTables.GetNames().Keys, $"Tool prefab", 8);
             PieceTable.OnChanged += () => piece.PieceTable = PieceTable.Value;
+
+            Requirements = new BepInExRequirements(sourceMod, prefabName, "Requirements", piece.Requirements, $"Requirements for {prefabName}", 7);
+            Requirements.OnChanged += () => piece.Requirements = Requirements.Value;
         }
 
         internal void Bind()
@@ -53,6 +62,7 @@ namespace Jotunn.Entities
             SettingsEnabled?.Bind();
             Category?.UpdateBinding(SettingsEnabled?.Value ?? false);
             PieceTable?.UpdateBinding(SettingsEnabled?.Value ?? false);
+            Requirements?.UpdateBinding(SettingsEnabled?.Value ?? false);
         }
     }
 }
