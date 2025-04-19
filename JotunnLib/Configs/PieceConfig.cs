@@ -81,12 +81,17 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
-        public RequirementConfig[] Requirements { get; set; } = Array.Empty<RequirementConfig>();
+        public RequirementConfig[] Requirements
+        {
+            get => requirements.ToArray();
+            set => requirements = new List<RequirementConfig>(value);
+        }
 
         private string pieceTable = string.Empty;
         private string category = string.Empty;
         private string craftingStation = string.Empty;
         private string extendStation = string.Empty;
+        private List<RequirementConfig> requirements = new List<RequirementConfig>(4);
 
         /// <summary>
         ///     Apply this configs values to a piece GameObject.
@@ -182,7 +187,7 @@ namespace Jotunn.Configs
         {
             if (requirementConfig != null && requirementConfig.IsValid())
             {
-                Requirements = Requirements.AddToArray(requirementConfig);
+                requirements.Add(requirementConfig);
             }
         }
 
