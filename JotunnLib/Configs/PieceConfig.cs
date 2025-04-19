@@ -151,20 +151,7 @@ namespace Jotunn.Configs
         ///     Converts the <see cref="RequirementConfig">RequirementConfigs</see> to Valheim style <see cref="Piece.Requirement"/> array.
         /// </summary>
         /// <returns>The Valheim <see cref="Piece.Requirement"/> array</returns>
-        public Piece.Requirement[] GetRequirements()
-        {
-            List<Piece.Requirement> reqs = new List<Piece.Requirement>();
-
-            foreach (RequirementConfig requirement in Requirements)
-            {
-                if (requirement != null && requirement.IsValid())
-                {
-                    reqs.Add(requirement.GetRequirement());
-                }
-            }
-
-            return reqs.ToArray();
-        }
+        public Piece.Requirement[] GetRequirements() => RequirementConfig.GetRequirements(Requirements);
 
         /// <summary>
         ///     Loads a single PieceConfig from a JSON string

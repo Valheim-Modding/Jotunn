@@ -1,4 +1,5 @@
-﻿using Jotunn.Entities;
+﻿using System.Collections.Generic;
+using Jotunn.Entities;
 
 namespace Jotunn.Configs
 {
@@ -60,6 +61,26 @@ namespace Jotunn.Configs
                 m_amountPerLevel = AmountPerLevel,
                 m_recover = Recover
             };
+        }
+
+        /// <summary>
+        ///     Creates a Valheim Piece.Requirement array from the given requirement configs.
+        /// </summary>
+        /// <param name="requirements"></param>
+        /// <returns></returns>
+        public static Piece.Requirement[] GetRequirements(IEnumerable<RequirementConfig> requirements)
+        {
+            List<Piece.Requirement> reqs = new List<Piece.Requirement>();
+
+            foreach (RequirementConfig requirement in requirements)
+            {
+                if (requirement != null && requirement.IsValid())
+                {
+                    reqs.Add(requirement.GetRequirement());
+                }
+            }
+
+            return reqs.ToArray();
         }
 
         /// <summary>
