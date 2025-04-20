@@ -32,6 +32,8 @@ namespace Jotunn.Managers
 
         private Dictionary<string, SocketBuffer> socketBuffers = new Dictionary<string, SocketBuffer>();
 
+        private HashSet<string> modNotLoadedConfigsWarnings = new HashSet<string>();
+
         /// <summary>
         ///     Event triggered after configuration has been synced on either the server or client
         /// </summary>
@@ -1025,7 +1027,10 @@ namespace Jotunn.Managers
                 }
                 else
                 {
-                    Logger.LogWarning($"No config file with Identifier {configIdentifier} is loaded");
+                    if (modNotLoadedConfigsWarnings.Add(configIdentifier))
+                    {
+                        Logger.LogWarning($"No config file with Identifier {configIdentifier} is loaded, cannot apply synced values");
+                    }
                 }
 
                 numberOfEntries--;
