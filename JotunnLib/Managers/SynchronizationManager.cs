@@ -78,31 +78,26 @@ namespace Jotunn.Managers
         {
             Main.LogInit("SynchronizationManager");
 
-            // Register RPCs and the admin watchdog
-            ConfigRPC = NetworkManager.Instance.AddRPC(
-                Main.Instance.Info.Metadata, "ConfigSync", ConfigRPC_OnServerReceive, ConfigRPC_OnClientReceive);
-
-            AdminRPC = NetworkManager.Instance.AddRPC(
-                Main.Instance.Info.Metadata, "AdminStatus", null, AdminRPC_OnClientReceive);
+            AdminRPC = NetworkManager.Instance.AddRPC(Main.Instance.Info.Metadata, "AdminStatus", null, AdminRPC_OnClientReceive);
+            ConfigRPC = NetworkManager.Instance.AddRPC(Main.Instance.Info.Metadata, "ConfigSync", ConfigRPC_OnServerReceive, ConfigRPC_OnClientReceive);
 
             Main.Harmony.PatchAll(typeof(Patches));
+
+            var socketSend = new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.Socket_Send_Prefix)));
+            var socketVersionMatch = new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.Socket_VersionMatch_Prefix)));
 
             var zSteamSocket = typeof(Game).Assembly.GetType(nameof(ZSteamSocket));
             if (zSteamSocket != null)
             {
-                Main.Harmony.Patch(zSteamSocket.GetMethod(nameof(ZSteamSocket.Send), new[] { typeof(ZPackage) }),
-                    prefix: new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.Socket_Send_Prefix))));
-                Main.Harmony.Patch(zSteamSocket.GetMethod(nameof(ZSteamSocket.VersionMatch)),
-                    prefix: new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.Socket_VersionMatch_Prefix))));
+                Main.Harmony.Patch(zSteamSocket.GetMethod(nameof(ZSteamSocket.Send), new[] { typeof(ZPackage) }), prefix: socketSend);
+                Main.Harmony.Patch(zSteamSocket.GetMethod(nameof(ZSteamSocket.VersionMatch)), prefix: socketVersionMatch);
             }
 
             var zPlayFabSocket = typeof(Game).Assembly.GetType(nameof(ZPlayFabSocket));
             if (zPlayFabSocket != null)
             {
-                Main.Harmony.Patch(zPlayFabSocket.GetMethod(nameof(ZPlayFabSocket.Send), new[] { typeof(ZPackage) }),
-                    prefix: new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.Socket_Send_Prefix))));
-                Main.Harmony.Patch(zPlayFabSocket.GetMethod(nameof(ZPlayFabSocket.VersionMatch)),
-                    prefix: new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.Socket_VersionMatch_Prefix))));
+                Main.Harmony.Patch(zPlayFabSocket.GetMethod(nameof(ZPlayFabSocket.Send), new[] { typeof(ZPackage) }), prefix: socketSend);
+                Main.Harmony.Patch(zPlayFabSocket.GetMethod(nameof(ZPlayFabSocket.VersionMatch)), prefix: socketVersionMatch);
             }
 
             if (ConfigManagerUtils.Plugin)
@@ -318,15 +313,16 @@ namespace Jotunn.Managers
         {
             if (self.IsServer())
             {
-                IEnumerator watchdog()
-                {
-                    while (true)
-                    {
-                        yield return new WaitForSeconds(5);
-                        self.m_adminList?.CheckLoad();
-                    }
-                }
-                self.StartCoroutine(watchdog());
+                self.StartCoroutine(AdminListWatchdog(self));
+            }
+        }
+
+        private IEnumerator AdminListWatchdog(ZNet znet)
+        {
+            while (znet && znet.gameObject)
+            {
+                yield return new WaitForSeconds(5);
+                znet.m_adminList?.CheckLoad();
             }
         }
 
