@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using System.Reflection;
 using BepInEx;
-using HarmonyLib;
+using BepInEx.Configuration;
 using Jotunn.Utils;
 using UnityEngine;
 
@@ -11,7 +10,7 @@ namespace Jotunn.Settings
     {
         private List<T> values;
 
-        private static Dictionary<BepInEx.Configuration.ConfigEntryBase, ComboBox> comboboxes = new Dictionary<BepInEx.Configuration.ConfigEntryBase, ComboBox>();
+        private static Dictionary<ConfigEntryBase, ComboBox> comboboxes = new Dictionary<ConfigEntryBase, ComboBox>();
 
         private static GUIStyle dropDownStyle;
         private static GUIStyle listStyle;
@@ -29,7 +28,7 @@ namespace Jotunn.Settings
             return attributes;
         }
 
-        protected virtual void Drawer(BepInEx.Configuration.ConfigEntryBase entry)
+        protected virtual void Drawer(ConfigEntryBase entry)
         {
             if (dropDownStyle == null)
             {
@@ -44,7 +43,13 @@ namespace Jotunn.Settings
                 listStyle.clipping = TextClipping.Overflow;
             }
 
-            entry.BoxedValue = GUILayout.TextField(entry.BoxedValue.ToString(), GUILayout.ExpandWidth(true));
+            bool readOnly = entry.GetConfigurationManagerAttributes()?.ReadOnly ?? false;
+
+            string newValue = GUILayout.TextField(entry.BoxedValue.ToString(), GUILayout.ExpandWidth(true));
+            if (!readOnly)
+            {
+                entry.BoxedValue = newValue;
+            }
 
             var buttonText = new GUIContent("\u25bc");
             var dispRect = GUILayoutUtility.GetRect(buttonText, dropDownStyle, GUILayout.Width(25));
@@ -67,7 +72,10 @@ namespace Jotunn.Settings
             combobox.Show(index =>
             {
                 var attributes = entry.GetConfigurationManagerAttributes();
-                entry.BoxedValue = ((List<T>)attributes.autoCompleteList)[index];
+                if (!readOnly)
+                {
+                    entry.BoxedValue = ((List<T>)attributes.autoCompleteList)[index];
+                }
             });
         }
     }

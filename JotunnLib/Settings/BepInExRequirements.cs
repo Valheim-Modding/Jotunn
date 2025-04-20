@@ -60,6 +60,7 @@ namespace Jotunn.Settings
         {
             GUILayout.BeginVertical();
 
+            bool readOnly = entry.GetConfigurationManagerAttributes()?.ReadOnly ?? false;
             List<RequirementConfig> requirements = new List<RequirementConfig>();
             bool updated = false;
 
@@ -101,7 +102,7 @@ namespace Jotunn.Settings
 
             GUILayout.EndVertical();
 
-            if (updated)
+            if (updated && !readOnly)
             {
                 entryBase.BoxedValue = Serialize(requirements);
             }
