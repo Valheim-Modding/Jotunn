@@ -2,6 +2,7 @@
 
 ## Version 2.24.4
 * Fixed admin list watcher starts every time running a server
+* Fixed admin only config settings are locked by default
 
 ## Version 2.24.3
 * Fixed config sync reset for local worlds and when configs are written to the disk (thx Searica)

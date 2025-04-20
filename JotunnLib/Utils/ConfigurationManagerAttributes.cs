@@ -156,7 +156,7 @@ public sealed class ConfigurationManagerAttributes
         }
     }
 
-    private bool isUnlocked;
+    private bool isUnlocked = true;
 
     private static readonly PropertyInfo[] _myProperties = typeof(ConfigurationManagerAttributes).GetProperties(BindingFlags.Instance | BindingFlags.Public);
     private static readonly FieldInfo[] _myFields = typeof(ConfigurationManagerAttributes).GetFields(BindingFlags.Instance | BindingFlags.Public);

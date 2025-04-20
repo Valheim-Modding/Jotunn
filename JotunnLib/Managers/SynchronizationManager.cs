@@ -69,7 +69,7 @@ namespace Jotunn.Managers
         ///     Clientside indicator if the current player has admin status on
         ///     the current world, always true on local games
         /// </summary>
-        public bool PlayerIsAdmin { get; private set; }
+        public bool PlayerIsAdmin { get; private set; } = true;
 
         /// <summary>
         ///     Manager's main init
