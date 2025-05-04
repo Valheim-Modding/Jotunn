@@ -110,6 +110,30 @@ namespace Jotunn.Entities
         }
         
         /// <summary>
+        ///     Custom location from a prefab with a <see cref="LocationConfig"/> attached. Using SoftReference system.
+        /// </summary>
+        /// <param name="exteriorPrefab">The exterior prefab for this custom location.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="locationConfig">The <see cref="LocationConfig"/> for this custom location.</param>
+        public CustomLocation(string prefabName, bool fixReference, LocationConfig locationConfig) : base(Assembly.GetCallingAssembly())
+        {
+            SoftReference<GameObject> softPrefab = AssetManager.Instance.GetSoftReference<GameObject>(prefabName);
+
+            if (!softPrefab.IsValid)
+            {
+                Logger.LogError($"[CustomLocation] SoftReference invalid for prefab: {prefabName}");
+                return;
+            }
+            
+            Name = prefabName;
+            ZoneLocation = locationConfig.GetZoneLocation();
+            ZoneLocation.m_prefab = softPrefab;
+            ZoneLocation.m_prefabName = prefabName;
+            FixReference = fixReference;
+            SoftReference = true;
+        }
+        
+        /// <summary>
         ///     Helper method to determine if a location prefab with a given name is a custom location created with Jötunn.
         /// </summary>
         /// <param name="prefabName">Name of the prefab to test.</param>
