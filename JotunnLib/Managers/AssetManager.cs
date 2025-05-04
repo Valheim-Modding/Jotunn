@@ -124,44 +124,6 @@ namespace Jotunn.Managers
 
             return assetID;
         }
-        
-        public SoftReference<T> InjectLoadedAsset<T>(T obj) where T : UnityEngine.Object
-        {
-            AssetBundleLoader instance = AssetBundleLoader.Instance;
-            
-            string bundleName = $"JVL_BundleWrapper_{obj.name}";
-            string assetPath = $"JVL/Prefabs/{obj.name}";
-
-            if (!instance.m_bundleNameToLoaderIndex.ContainsKey(bundleName))
-            {
-                int nextIndex = instance.m_bundleLoaders.Length;
-                BundleLoader bundleLoader = new BundleLoader(bundleName, "");
-                bundleLoader.HoldReference();
-                
-                instance.m_bundleLoaders = instance.m_bundleLoaders.AddItem(bundleLoader).ToArray();
-                instance.m_bundleNameToLoaderIndex[bundleName] = nextIndex;
-            }
-
-            AssetID assetID = GenerateAssetID(obj.name);
-            AssetLocation location = new AssetLocation(bundleName, assetPath);
-            AssetLoader loader = new AssetLoader(assetID, location);
-            
-            loader.m_referenceCounter = new ReferenceCounter(2U);
-            loader.m_asset = obj;
-            loader.m_shouldBeLoaded = true;
-
-            int index = instance.m_assetIDToLoaderIndex.Count;
-
-            if (index >= instance.m_assetLoaders.Length)
-            {
-                Array.Resize(ref instance.m_assetLoaders, index + 256);
-            }
-
-            instance.m_assetLoaders[index] = loader;
-            instance.m_assetIDToLoaderIndex[assetID] = index;
-
-            return new SoftReference<T>(assetID) { m_name = obj.name };
-        }
 
         /// <summary>
         ///     Registers a new asset and generates a unique AssetID.<br />
@@ -232,17 +194,6 @@ namespace Jotunn.Managers
         public AssetID GenerateAssetID(Object asset)
         {
             uint u = (uint)asset.name.GetStableHashCode();
-            return new AssetID(u, u, u, u);
-        }
-        
-        /// <summary>
-        ///     Generates a unique AssetID, based on the asset name
-        /// </summary>
-        /// <param name="asset"></param>
-        /// <returns>AssetID generated from the string</returns>
-        public AssetID GenerateAssetID(string asset)
-        {
-            uint u = (uint)asset.GetStableHashCode();
             return new AssetID(u, u, u, u);
         }
 
