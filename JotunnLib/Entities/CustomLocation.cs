@@ -38,6 +38,12 @@ namespace Jotunn.Entities
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
+        
+        /// <summary>
+        ///     Indicator if location is added from SoftReferenceableAssets.<br />
+        ///     Used to delay mocking prefabs until ZoneSystem.SpawnLocation()
+        /// </summary>
+        public bool SoftReference { get; set; }
 
         /// <summary>
         ///     Custom location from a prefab with a <see cref="LocationConfig"/> attached.<br />
