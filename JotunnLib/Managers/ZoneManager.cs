@@ -370,34 +370,6 @@ namespace Jotunn.Managers
         {
             return Locations.Remove(name);
         }
-        
-        /// <summary>
-        ///     Destroy a CustomLocation by its name.<br />
-        ///     Removes the CustomLocation from the manager and from the <see cref="ZoneSystem"/> if instantiated.
-        /// </summary>
-        /// <param name="name">Name of the CustomLocation to search for.</param>
-        public bool DestroyCustomLocation(string name)
-        {
-            if (!Locations.TryGetValue(name, out CustomLocation customLocation))
-            {
-                return false;
-            }
-
-            int hash = name.GetStableHashCode();
-
-            if (ZoneSystem.instance && ZoneSystem.instance.m_locationsByHash.TryGetValue(hash, out ZoneLocation location))
-            {
-                ZoneSystem.instance.m_locationsByHash.Remove(hash);
-                ZoneSystem.instance.m_locations.Remove(location);
-            }
-
-            if (customLocation.Prefab)
-            {
-                Object.Destroy(customLocation.Prefab);
-            }
-
-            return Locations.Remove(name);
-        }
 
         /// <summary>
         ///     Register a CustomVegetation to be added to the ZoneSystem
