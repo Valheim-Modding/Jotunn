@@ -200,25 +200,6 @@ namespace Jotunn.Managers
             container.transform.SetParent(LocationContainer.transform);
             return container;
         }
-        
-        /// <summary>
-        ///     Destroy a child GameObject of LocationContainer with the specified name.
-        /// </summary>
-        /// <param name="name">Name of the location container to destroy</param>
-        public void DestroyLocationContainer(string name)
-        {
-            // Find the container under the LocationContainer by name
-            Transform container = LocationContainer.transform.Find(name);
-    
-            if (container != null)
-            {
-                GameObject.Destroy(container.gameObject);
-            }
-            else
-            {
-                Debug.LogWarning($"LocationContainer with name '{name}' not found.");
-            }
-        }
 
         /// <summary>
         ///     Create a copy that is disabled, so any Components in instantiated child GameObjects will not start their lifecycle.<br />
@@ -368,6 +349,34 @@ namespace Jotunn.Managers
         /// <param name="name">Name of the CustomLocation to search for.</param>
         public bool RemoveCustomLocation(string name)
         {
+            return Locations.Remove(name);
+        }
+        
+        /// <summary>
+        ///     Destroy a CustomLocation by its name.<br />
+        ///     Removes the CustomLocation from the manager and from the <see cref="ZoneSystem"/> if instantiated.
+        /// </summary>
+        /// <param name="name">Name of the CustomLocation to search for.</param>
+        public bool DestroyCustomLocation(string name)
+        {
+            if (!Locations.TryGetValue(name, out CustomLocation customLocation))
+            {
+                return false;
+            }
+
+            int hash = name.GetStableHashCode();
+
+            if (ZoneSystem.instance && ZoneSystem.instance.m_locationsByHash.TryGetValue(hash, out ZoneLocation location))
+            {
+                ZoneSystem.instance.m_locationsByHash.Remove(hash);
+                ZoneSystem.instance.m_locations.Remove(location);
+            }
+
+            if (customLocation.Prefab)
+            {
+                Object.Destroy(customLocation.Prefab);
+            }
+
             return Locations.Remove(name);
         }
 
