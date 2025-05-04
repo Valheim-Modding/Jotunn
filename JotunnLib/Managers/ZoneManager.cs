@@ -290,10 +290,15 @@ namespace Jotunn.Managers
                 Logger.LogWarning(customLocation.SourceMod, $"Location {customLocation.Name} already exists");
                 return false;
             }
-            
-            // The root prefab needs to be active, otherwise ZNetViews are not prepared correctly
-            customLocation.Prefab.SetActive(true);
 
+            // Skip if location uses softReference system.
+            // If using softReference prefab is in assetbundle and therefore not immutable
+            if (!customLocation.SoftReference)
+            {
+                // The root prefab needs to be active, otherwise ZNetViews are not prepared correctly
+                customLocation.Prefab.SetActive(true);
+            }
+            
             Locations.Add(customLocation.Name, customLocation);
             return true;
         }
