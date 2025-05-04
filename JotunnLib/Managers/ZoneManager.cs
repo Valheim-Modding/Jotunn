@@ -561,7 +561,8 @@ namespace Jotunn.Managers
                             $"Adding custom location {customLocation} in {string.Join(", ", GetMatchingBiomes(customLocation.ZoneLocation.m_biome))}");
 
                         // Fix references if needed
-                        if (customLocation.FixReference)
+                        // Skip if customLocation uses softReference system. If use softReference, fixReference is done in SpawnLocation Harmony patch.
+                        if (customLocation.FixReference && !customLocation.SoftReference)
                         {
                             customLocation.Prefab.FixReferences(true);
                             customLocation.FixReference = false;
