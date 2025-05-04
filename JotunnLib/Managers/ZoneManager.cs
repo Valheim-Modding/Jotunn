@@ -646,9 +646,16 @@ namespace Jotunn.Managers
         /// <param name="sourceMod"><see cref="BepInPlugin"/> which created the location</param>
         private void RegisterLocationInZoneSystem(ZoneSystem zoneSystem, ZoneLocation zoneLocation, BepInPlugin sourceMod)
         {
+            zoneLocation.m_prefab.Load();
+            
             foreach (var znet in global::Utils.GetEnabledComponentsInChildren<ZNetView>(zoneLocation.m_prefab.Asset))
             {
                 string prefabName = znet.GetPrefabName();
+                if (prefabName.StartsWith("JVLmock_"))
+                {
+                    continue;
+                }
+                
                 if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
                 {
                     var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
@@ -658,16 +665,21 @@ namespace Jotunn.Managers
                     PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
                 }
             }
-
+            
             RandomSpawn[] randomSpawns = global::Utils.GetEnabledComponentsInChildren<RandomSpawn>(zoneLocation.m_prefab.Asset);
             foreach (var randomSpawn in randomSpawns)
             {
                 randomSpawn.Prepare();
             }
-
+            
             foreach (var znet in randomSpawns.SelectMany(x => x.m_childNetViews))
             {
                 string prefabName = znet.GetPrefabName();
+                if (prefabName.StartsWith("JVLmock_"))
+                {
+                    continue;
+                }
+                
                 if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
                 {
                     var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
