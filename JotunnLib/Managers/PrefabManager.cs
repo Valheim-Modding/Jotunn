@@ -373,6 +373,12 @@ namespace Jotunn.Managers
             if (znet)
             {
                 string name = gameObject.name;
+
+                if (gameObject.name.StartsWith("JVLmock_"))
+                {
+                    return;
+                }
+                
                 int hash = name.GetStableHashCode();
 
                 if (znet.m_namedPrefabs.ContainsKey(hash))
