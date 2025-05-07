@@ -113,11 +113,14 @@
     <Copy SourceFiles="$(VALHEIM_INSTALL)/BepInEx/core/Mono.Cecil.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
     <Copy SourceFiles="$(VALHEIM_INSTALL)/BepInEx/core/MonoMod.Utils.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
     <Copy SourceFiles="$(VALHEIM_INSTALL)/BepInEx/core/MonoMod.RuntimeDetour.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
+    <Copy SourceFiles="$(VALHEIM_MANAGED)/Assembly-CSharp.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
     <Copy SourceFiles="$(VALHEIM_MANAGED)/assembly_valheim.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
     <Copy SourceFiles="$(VALHEIM_MANAGED)/assembly_utils.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
     <Copy SourceFiles="$(VALHEIM_MANAGED)/assembly_postprocessing.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
     <Copy SourceFiles="$(VALHEIM_MANAGED)/assembly_sunshafts.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
     <Copy SourceFiles="$(VALHEIM_MANAGED)/assembly_guiutils.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
+    <Copy SourceFiles="$(VALHEIM_MANAGED)/assembly_lux.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
+    <Copy SourceFiles="$(VALHEIM_MANAGED)/assembly_simplemeshcombine.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
     <Copy SourceFiles="$(VALHEIM_MANAGED)/assembly_googleanalytics.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
     <Copy SourceFiles="$(VALHEIM_MANAGED)/PlayFab.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
     <Copy SourceFiles="$(VALHEIM_MANAGED)/PlayFabParty.dll" DestinationFolder="$(UNITY_FOLDER)/Assets/Assemblies" />
