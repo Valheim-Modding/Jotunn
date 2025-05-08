@@ -374,7 +374,7 @@ namespace Jotunn.Managers
             {
                 string name = gameObject.name;
 
-                if (gameObject.name.StartsWith("JVLmock_"))
+                if (gameObject.name.StartsWith(MockManager.JVLMockPrefix))
                 {
                     return;
                 }

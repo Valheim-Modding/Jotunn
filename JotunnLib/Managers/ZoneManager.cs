@@ -637,7 +637,7 @@ namespace Jotunn.Managers
             foreach (var znet in global::Utils.GetEnabledComponentsInChildren<ZNetView>(zoneLocation.m_prefab.Asset))
             {
                 string prefabName = znet.GetPrefabName();
-                if (prefabName.StartsWith("JVLmock_"))
+                if (prefabName.StartsWith(MockManager.JVLMockPrefix))
                 {
                     continue;
                 }
@@ -661,7 +661,7 @@ namespace Jotunn.Managers
             foreach (var znet in randomSpawns.SelectMany(x => x.m_childNetViews))
             {
                 string prefabName = znet.GetPrefabName();
-                if (prefabName.StartsWith("JVLmock_"))
+                if (prefabName.StartsWith(MockManager.JVLMockPrefix))
                 {
                     continue;
                 }
