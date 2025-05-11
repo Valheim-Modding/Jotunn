@@ -52,7 +52,7 @@ namespace Jotunn.Entities
         {
             if (string.IsNullOrEmpty(word))
             {
-                throw new ArgumentNullException(nameof(word));
+                return string.Empty;
             }
 
             if (!word.StartsWith(LocalizationManager.TokenFirstChar.ToString()))
@@ -63,22 +63,20 @@ namespace Jotunn.Entities
 
             if (word.IndexOfAny(LocalizationManager.ForbiddenCharsArr) != -1)
             {
-                Logger.LogWarning(SourceMod, $"Token '{word}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'.");
-                return null;
+                Logger.LogWarning(SourceMod, $"Token '{word}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'");
+                return $"[{word}]";
             }
 
             var cleanedWord = word.TrimStart(LocalizationManager.TokenFirstChar);
             var playerLang = LocalizationManager.GetPlayerLanguage();
+            var defaultLang = LocalizationManager.DefaultLanguage;
 
-            if (Map.TryGetValue(playerLang, out var playerDictionary) && 
-                playerDictionary.TryGetValue(cleanedWord, out var playerTranslation))
+            if (Map.TryGetValue(playerLang, out var translations) && translations.TryGetValue(cleanedWord, out var translation))
             {
-                return playerTranslation;
+                return translation;
             }
 
-            if (!playerLang.Equals(LocalizationManager.DefaultLanguage) &&
-                Map.TryGetValue(LocalizationManager.DefaultLanguage, out var dictionary) && 
-                dictionary.TryGetValue(cleanedWord, out var translation))
+            if (playerLang != defaultLang && Map.TryGetValue(defaultLang, out translations) && translations.TryGetValue(cleanedWord, out translation))
             {
                 return translation;
             }
@@ -373,7 +371,7 @@ namespace Jotunn.Entities
             }
             if (token.IndexOfAny(LocalizationManager.ForbiddenCharsArr) != -1)
             {
-                Logger.LogWarning(SourceMod, $"Token '{token}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'.");
+                Logger.LogWarning(SourceMod, $"Token '{token}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'");
                 return false;
             }
             return true;
