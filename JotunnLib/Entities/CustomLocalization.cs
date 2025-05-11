@@ -54,6 +54,13 @@ namespace Jotunn.Entities
             {
                 throw new ArgumentNullException(nameof(word));
             }
+
+            if (!word.StartsWith(LocalizationManager.TokenFirstChar.ToString()))
+            {
+                // the word is not a token, return it as is
+                return word;
+            }
+
             if (word.IndexOfAny(LocalizationManager.ForbiddenCharsArr) != -1)
             {
                 Logger.LogWarning(SourceMod, $"Token '{word}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'.");
