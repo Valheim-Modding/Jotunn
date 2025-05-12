@@ -168,7 +168,16 @@ namespace Jotunn.Managers
 
             if (!prefab)
             {
-                throw new MockResolveException($"GameObject with name '{assetName}' was not found.", assetName, mockObjectType);
+                var exception = new MockResolveException($"GameObject with name '{assetName}' was not found.", assetName, mockObjectType);
+                if (!ZNet.instance.IsDedicated())
+                {
+                    throw exception;
+                }
+                else
+                {
+                    Logger.LogDebug(exception);
+                    return null;
+                }
             }
 
             if (childNames.Count > 0)
@@ -177,7 +186,17 @@ namespace Jotunn.Managers
 
                 if (!child || child.name != childNames.Last())
                 {
-                    throw new MockResolveException($"Child '{childNames.Last()}' not found with the specified path.", assetName, childNames, mockObjectType);
+                    var exception = new MockResolveException($"Child '{childNames.Last()}' not found with the specified path.",
+                        assetName, childNames, mockObjectType);
+                    if (!ZNet.instance.IsDedicated())
+                    {
+                        throw exception;
+                    }
+                    else
+                    {
+                        Logger.LogDebug(exception);
+                        return null;
+                    }
                 }
 
                 prefab = child.gameObject;
@@ -188,15 +207,27 @@ namespace Jotunn.Managers
                 return asset;
             }
 
+            MockResolveException mockException;
             if (childNames.Count > 0)
             {
                 var usedPath = prefab.transform.GetPath().TrimStart('/');
-                throw new MockResolveException($"{mockObjectType.Name} not found at child '{usedPath}'.", assetName, childNames, mockObjectType);
+                mockException = new MockResolveException($"{mockObjectType.Name} not found at child '{usedPath}'.", assetName, childNames, mockObjectType);
             }
             else
             {
-                throw new MockResolveException($"{mockObjectType.Name} not found at prefab '{assetName}'.", assetName, mockObjectType);
+                mockException = new MockResolveException($"{mockObjectType.Name} not found at prefab '{assetName}'.", assetName, mockObjectType);
             }
+
+            if (!ZNet.instance.IsDedicated())
+            {
+                throw mockException;
+            }
+            else
+            {
+                Logger.LogDebug(mockException);
+            }
+
+            return null;
         }
 
         private static bool TryGetAsset(Type mockObjectType, string assetName, out Object asset)
