@@ -168,16 +168,9 @@ namespace Jotunn.Managers
 
             if (!prefab)
             {
-                var exception = new MockResolveException($"GameObject with name '{assetName}' was not found.", assetName, mockObjectType);
-                if (!ZNet.instance.IsDedicated())
-                {
-                    throw exception;
-                }
-                else
-                {
-                    Logger.LogDebug(exception);
-                    return null;
-                }
+                MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
+                    $"GameObject with name '{assetName}' was not found.", assetName, "", mockObjectType));
+                return null;
             }
 
             if (childNames.Count > 0)
@@ -186,17 +179,9 @@ namespace Jotunn.Managers
 
                 if (!child || child.name != childNames.Last())
                 {
-                    var exception = new MockResolveException($"Child '{childNames.Last()}' not found with the specified path.",
-                        assetName, childNames, mockObjectType);
-                    if (!ZNet.instance.IsDedicated())
-                    {
-                        throw exception;
-                    }
-                    else
-                    {
-                        Logger.LogDebug(exception);
-                        return null;
-                    }
+                    MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
+                        $"Child '{childNames.Last()}' not found with the specified path.", assetName, childNames, mockObjectType));
+                    return null;
                 }
 
                 prefab = child.gameObject;
@@ -207,24 +192,17 @@ namespace Jotunn.Managers
                 return asset;
             }
 
-            MockResolveException mockException;
             if (childNames.Count > 0)
             {
                 var usedPath = prefab.transform.GetPath().TrimStart('/');
-                mockException = new MockResolveException($"{mockObjectType.Name} not found at child '{usedPath}'.", assetName, childNames, mockObjectType);
-            }
-            else
-            {
-                mockException = new MockResolveException($"{mockObjectType.Name} not found at prefab '{assetName}'.", assetName, mockObjectType);
-            }
 
-            if (!ZNet.instance.IsDedicated())
-            {
-                throw mockException;
+                MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
+                    $"{mockObjectType.Name} not found at child '{usedPath}'.", assetName, childNames, mockObjectType));
             }
             else
             {
-                Logger.LogDebug(mockException);
+                MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
+                    $"{mockObjectType.Name} not found at prefab '{assetName}'.", assetName, "", mockObjectType));
             }
 
             return null;
@@ -533,7 +511,20 @@ namespace Jotunn.Managers
 
                 try
                 {
+                    MockResolveFailure.ClearMockResolveFailures();
                     realTexture = GetRealPrefabFromMock<Texture>(texture);
+
+                    if (MockResolveFailure.MockResolveFailures.Count > 0)
+                    {
+                        everythingFixed = false;
+
+                        if (allVanillaObjectsAvailable)
+                        {
+                            MockResolveFailure.PrintMockResolveFailures();
+                        }
+
+                        continue;
+                    }
                 }
                 catch (MockResolveException ex)
                 {

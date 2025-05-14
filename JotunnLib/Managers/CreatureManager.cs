@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
@@ -229,6 +229,7 @@ namespace Jotunn.Managers
                 {
                     try
                     {
+                        MockResolveFailure.ClearMockResolveFailures();
                         // Always try to fix the physics material component of the capsule collider
                         customCreature.Prefab.GetComponent<CapsuleCollider>()?.FixReferences();
 
@@ -239,6 +240,8 @@ namespace Jotunn.Managers
                             customCreature.FixReference = false;
                             customCreature.FixConfig = false;
                         }
+
+                        MockResolveFailure.PrintMockResolveFailures();
 
                         Logger.LogDebug($"Added creature {customCreature} | Spawns: {customCreature.Spawns.Count}");
                     }

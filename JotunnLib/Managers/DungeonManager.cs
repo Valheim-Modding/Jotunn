@@ -275,8 +275,10 @@ namespace Jotunn.Managers
                         Logger.LogDebug($"Adding custom room {customRoom.Name} with {customRoom.ThemeName} theme");
                         if (customRoom.FixReference)
                         {
+                            MockResolveFailure.ClearMockResolveFailures();
                             customRoom.Prefab.FixReferences(true);
                             customRoom.FixReference = false;
+                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         if (CustomRoom.IsVanillaTheme(customRoom.ThemeName))

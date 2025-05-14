@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
@@ -513,17 +513,22 @@ namespace Jotunn.Managers
             }
         }
 
-        private void RegisterCustomPiece(CustomPiece customPiece) {
+        private void RegisterCustomPiece(CustomPiece customPiece)
+        {
             // Fix references if needed
-            if (customPiece.FixReference || customPiece.FixConfig) {
+            if (customPiece.FixReference || customPiece.FixConfig)
+            {
+                MockResolveFailure.ClearMockResolveFailures();
                 customPiece.PiecePrefab.FixReferences(customPiece.FixReference);
                 customPiece.FixReference = false;
                 customPiece.FixConfig = false;
+                MockResolveFailure.PrintMockResolveFailures();
             }
 
             // Assign vfx_ExtensionConnection for StationExtensions
             var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
-            if (extension != null && !extension.m_connectionPrefab) {
+            if (extension != null && !extension.m_connectionPrefab)
+            {
                 extension.m_connectionPrefab = PrefabManager.Cache.GetPrefab<GameObject>("vfx_ExtensionConnection");
             }
 

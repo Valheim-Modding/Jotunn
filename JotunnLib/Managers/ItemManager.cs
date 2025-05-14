@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
@@ -393,11 +393,13 @@ namespace Jotunn.Managers
                         var itemDrop = customItem.ItemDrop;
                         if (customItem.FixReference || customItem.FixConfig)
                         {
+                            MockResolveFailure.ClearMockResolveFailures();
                             customItem.ItemPrefab.FixReferences(customItem.FixReference);
                             itemDrop.m_itemData.m_shared.FixReferences();
                             customItem.FixVariants();
                             customItem.FixReference = false;
                             customItem.FixConfig = false;
+                            MockResolveFailure.PrintMockResolveFailures();
                         }
                         if (!itemDrop.m_itemData.m_dropPrefab)
                         {
@@ -494,6 +496,7 @@ namespace Jotunn.Managers
                     try
                     {
                         var recipe = customRecipe.Recipe;
+                        MockResolveFailure.ClearMockResolveFailures();
 
                         if (customRecipe.FixReference)
                         {
@@ -509,7 +512,9 @@ namespace Jotunn.Managers
                             }
                             customRecipe.FixRequirementReferences = false;
                         }
+
                         objectDB.m_recipes.Add(recipe);
+                        MockResolveFailure.PrintMockResolveFailures();
 
                         Logger.LogDebug($"Added recipe for {recipe.m_item.TokenName()}");
                     }
@@ -552,8 +557,10 @@ namespace Jotunn.Managers
                         var statusEffect = customStatusEffect.StatusEffect;
                         if (customStatusEffect.FixReference)
                         {
+                            MockResolveFailure.ClearMockResolveFailures();
                             statusEffect.FixReferences();
                             customStatusEffect.FixReference = false;
+                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         objectDB.m_StatusEffects.Add(statusEffect);
@@ -605,8 +612,10 @@ namespace Jotunn.Managers
                         // Fix references if needed
                         if (conversion.FixReference)
                         {
+                            MockResolveFailure.ClearMockResolveFailures();
                             conversion.ItemConversion.FixReferences();
                             conversion.FixReference = false;
+                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         // Sure, make four almost identical classes but dont have a common base class, Iron Gate

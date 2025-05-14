@@ -338,8 +338,10 @@ namespace Jotunn.Managers
                     {
                         if (customPrefab.FixReference)
                         {
+                            MockResolveFailure.ClearMockResolveFailures();
                             customPrefab.Prefab.FixReferences(true);
                             customPrefab.FixReference = false;
+                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         RegisterToZNetScene(customPrefab.Prefab);

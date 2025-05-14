@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -470,8 +470,10 @@ namespace Jotunn.Managers
                         // Fix references if needed
                         if (customClutter.FixReference)
                         {
+                            MockResolveFailure.ClearMockResolveFailures();
                             customClutter.Prefab.FixReferences(true);
                             customClutter.FixReference = false;
+                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         instance.m_clutter.Add(customClutter.Clutter);
@@ -516,8 +518,10 @@ namespace Jotunn.Managers
                         // Fix references if needed
                         if (customLocation.FixReference)
                         {
+                            MockResolveFailure.ClearMockResolveFailures();
                             customLocation.Prefab.FixReferences(true);
                             customLocation.FixReference = false;
+                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         var zoneLocation = customLocation.ZoneLocation;
@@ -564,8 +568,10 @@ namespace Jotunn.Managers
                         // Fix references if needed
                         if (customVegetation.FixReference)
                         {
+                            MockResolveFailure.ClearMockResolveFailures();
                             customVegetation.Prefab.FixReferences(true);
                             customVegetation.FixReference = false;
+                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         self.m_vegetation.Add(customVegetation.Vegetation);
