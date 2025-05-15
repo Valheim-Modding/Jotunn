@@ -13,6 +13,8 @@ namespace Jotunn.Entities
     {
         /// <summary> Map that work as [language][token] = translation. </summary>
         internal Dictionary<string, Dictionary<string, string>> Map { get; }
+        
+        private static HashSet<string> loggedInvalidTokens = new HashSet<string>();
 
         /// <summary>
         ///     Default constructor.
@@ -63,7 +65,11 @@ namespace Jotunn.Entities
 
             if (word.IndexOfAny(LocalizationManager.ForbiddenCharsArr) != -1)
             {
-                Logger.LogWarning(SourceMod, $"Token '{word}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'");
+                if (loggedInvalidTokens.Add(word))
+                {
+                    Logger.LogWarning(SourceMod, $"Token '{word}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'");
+                }
+
                 return $"[{word}]";
             }
 
@@ -371,7 +377,10 @@ namespace Jotunn.Entities
             }
             if (token.IndexOfAny(LocalizationManager.ForbiddenCharsArr) != -1)
             {
-                Logger.LogWarning(SourceMod, $"Token '{token}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'");
+                if (loggedInvalidTokens.Add(token))
+                {
+                    Logger.LogWarning(SourceMod, $"Token '{token}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'");
+                }
                 return false;
             }
             return true;
