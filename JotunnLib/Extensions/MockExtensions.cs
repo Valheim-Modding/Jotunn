@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Jotunn.Managers;
+using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
 
@@ -18,7 +19,9 @@ namespace Jotunn
         /// <param name="objectToFix"></param>
         public static void FixReferences(this object objectToFix)
         {
+            MockResolveFailure.ClearMockResolveFailures();
             MockManager.FixReferences(objectToFix, 0);
+            MockResolveFailure.PrintMockResolveFailures();
         }
 
         /// <summary>
@@ -27,7 +30,9 @@ namespace Jotunn
         /// <param name="gameObject"></param>
         public static void FixReferences(this GameObject gameObject)
         {
-            gameObject.FixReferences(false);
+            MockResolveFailure.ClearMockResolveFailures();
+            gameObject.FixReferencesInternal(false);
+            MockResolveFailure.PrintMockResolveFailures();
         }
 
         /// <summary>
@@ -37,6 +42,19 @@ namespace Jotunn
         /// <param name="gameObject">This GameObject</param>
         /// <param name="recursive">Traverse all child transforms</param>
         public static void FixReferences(this GameObject gameObject, bool recursive)
+        {
+            MockResolveFailure.ClearMockResolveFailures();
+            gameObject.FixReferencesInternal(recursive);
+            MockResolveFailure.PrintMockResolveFailures();
+        }
+
+        /// <summary>
+        ///     Resolves all references for mocks in this GameObject recursively.
+        ///     Can additionally traverse the transforms hierarchy to fix child GameObjects recursively.
+        /// </summary>
+        /// <param name="gameObject">This GameObject</param>
+        /// <param name="recursive">Traverse all child transforms</param>
+        private static void FixReferencesInternal(this GameObject gameObject, bool recursive)
         {
             foreach (var component in gameObject.GetComponents<Component>())
             {
@@ -63,7 +81,7 @@ namespace Jotunn
                 }
                 else
                 {
-                    child.gameObject.FixReferences(true);
+                    child.gameObject.FixReferencesInternal(true);
                 }
             }
 

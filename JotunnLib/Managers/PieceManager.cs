@@ -6,7 +6,6 @@ using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
-using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using TMPro;
 using UnityEngine;
@@ -489,11 +488,6 @@ namespace Jotunn.Managers
                 {
                     RegisterCustomPiece(customPiece);
                 }
-                catch (MockResolveException ex)
-                {
-                    Logger.LogWarning(customPiece?.SourceMod, $"Skipping piece {customPiece}: {ex.Message}");
-                    toDelete.Add(customPiece);
-                }
                 catch (Exception ex)
                 {
                     Logger.LogWarning(customPiece?.SourceMod, $"Error caught while adding piece {customPiece}: {ex}");
@@ -518,11 +512,9 @@ namespace Jotunn.Managers
             // Fix references if needed
             if (customPiece.FixReference || customPiece.FixConfig)
             {
-                MockResolveFailure.ClearMockResolveFailures();
                 customPiece.PiecePrefab.FixReferences(customPiece.FixReference);
                 customPiece.FixReference = false;
                 customPiece.FixConfig = false;
-                MockResolveFailure.PrintMockResolveFailures();
             }
 
             // Assign vfx_ExtensionConnection for StationExtensions

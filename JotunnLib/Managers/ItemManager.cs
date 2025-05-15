@@ -5,7 +5,6 @@ using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
-using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -393,13 +392,11 @@ namespace Jotunn.Managers
                         var itemDrop = customItem.ItemDrop;
                         if (customItem.FixReference || customItem.FixConfig)
                         {
-                            MockResolveFailure.ClearMockResolveFailures();
                             customItem.ItemPrefab.FixReferences(customItem.FixReference);
                             itemDrop.m_itemData.m_shared.FixReferences();
                             customItem.FixVariants();
                             customItem.FixReference = false;
                             customItem.FixConfig = false;
-                            MockResolveFailure.PrintMockResolveFailures();
                         }
                         if (!itemDrop.m_itemData.m_dropPrefab)
                         {
@@ -407,11 +404,6 @@ namespace Jotunn.Managers
                         }
 
                         RegisterItemInObjectDB(objectDB, customItem.ItemPrefab, customItem.SourceMod);
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customItem?.SourceMod, $"Skipping item {customItem}: {ex.Message}");
-                        toDelete.Add(customItem);
                     }
                     catch (Exception ex)
                     {
@@ -496,7 +488,6 @@ namespace Jotunn.Managers
                     try
                     {
                         var recipe = customRecipe.Recipe;
-                        MockResolveFailure.ClearMockResolveFailures();
 
                         if (customRecipe.FixReference)
                         {
@@ -514,14 +505,8 @@ namespace Jotunn.Managers
                         }
 
                         objectDB.m_recipes.Add(recipe);
-                        MockResolveFailure.PrintMockResolveFailures();
 
                         Logger.LogDebug($"Added recipe for {recipe.m_item.TokenName()}");
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customRecipe?.SourceMod, $"Skipping recipe {customRecipe}: {ex.Message}");
-                        toDelete.Add(customRecipe);
                     }
                     catch (Exception ex)
                     {
@@ -557,20 +542,13 @@ namespace Jotunn.Managers
                         var statusEffect = customStatusEffect.StatusEffect;
                         if (customStatusEffect.FixReference)
                         {
-                            MockResolveFailure.ClearMockResolveFailures();
                             statusEffect.FixReferences();
                             customStatusEffect.FixReference = false;
-                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         objectDB.m_StatusEffects.Add(statusEffect);
 
                         Logger.LogDebug($"Added status effect {customStatusEffect}");
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customStatusEffect?.SourceMod, $"Skipping status effect {customStatusEffect}: {ex.Message}");
-                        toDelete.Add(customStatusEffect);
                     }
                     catch (Exception ex)
                     {
@@ -612,10 +590,8 @@ namespace Jotunn.Managers
                         // Fix references if needed
                         if (conversion.FixReference)
                         {
-                            MockResolveFailure.ClearMockResolveFailures();
                             conversion.ItemConversion.FixReferences();
                             conversion.FixReference = false;
-                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         // Sure, make four almost identical classes but dont have a common base class, Iron Gate
@@ -678,11 +654,6 @@ namespace Jotunn.Managers
                         }
 
                         Logger.LogDebug($"Added item conversion {conversion}");
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(conversion?.SourceMod, $"Skipping item conversion {conversion}: {ex.Message}");
-                        toDelete.Add(conversion);
                     }
                     catch (Exception ex)
                     {

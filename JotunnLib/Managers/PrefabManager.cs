@@ -4,7 +4,6 @@ using System.Linq;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Entities;
-using Jotunn.Managers.MockSystem;
 using SoftReferenceableAssets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -338,18 +337,11 @@ namespace Jotunn.Managers
                     {
                         if (customPrefab.FixReference)
                         {
-                            MockResolveFailure.ClearMockResolveFailures();
                             customPrefab.Prefab.FixReferences(true);
                             customPrefab.FixReference = false;
-                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         RegisterToZNetScene(customPrefab.Prefab);
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customPrefab?.SourceMod, $"Skipping prefab {customPrefab}: {ex.Message}");
-                        toDelete.Add(customPrefab);
                     }
                     catch (Exception ex)
                     {

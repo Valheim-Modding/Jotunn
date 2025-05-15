@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using Jotunn.Entities;
-using Jotunn.Managers.MockSystem;
 using UnityEngine;
 
 namespace Jotunn.Managers
@@ -229,7 +228,6 @@ namespace Jotunn.Managers
                 {
                     try
                     {
-                        MockResolveFailure.ClearMockResolveFailures();
                         // Always try to fix the physics material component of the capsule collider
                         customCreature.Prefab.GetComponent<CapsuleCollider>()?.FixReferences();
 
@@ -241,14 +239,7 @@ namespace Jotunn.Managers
                             customCreature.FixConfig = false;
                         }
 
-                        MockResolveFailure.PrintMockResolveFailures();
-
                         Logger.LogDebug($"Added creature {customCreature} | Spawns: {customCreature.Spawns.Count}");
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customCreature?.SourceMod, $"Skipping creature {customCreature}: {ex.Message}");
-                        toDelete.Add(customCreature);
                     }
                     catch (Exception ex)
                     {

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -453,6 +452,7 @@ namespace Jotunn.Managers
 
         private static void FixQueuedMaterials()
         {
+            MockResolveFailure.ClearMockResolveFailures();
             // if the cache is already initialized, some later loaded textures are not found
             PrefabManager.Cache.Clear<Texture>();
             allVanillaObjectsAvailable = true;
@@ -462,6 +462,8 @@ namespace Jotunn.Managers
                 queuedToFixMaterials.Remove(material);
                 FixMaterial(material);
             }
+
+            MockResolveFailure.PrintMockResolveFailures();
         }
 
         private static void FixMaterial(Material material)
@@ -497,6 +499,7 @@ namespace Jotunn.Managers
         private static bool FixTextures(Material material)
         {
             bool everythingFixed = true;
+            int currentFailures = MockResolveFailure.MockResolveFailures.Count;
 
             foreach (int prop in material.GetTexturePropertyNameIDs())
             {
@@ -507,33 +510,12 @@ namespace Jotunn.Managers
                     continue;
                 }
 
-                Texture realTexture;
+                Texture realTexture = GetRealPrefabFromMock<Texture>(texture);
 
-                try
+                if (MockResolveFailure.MockResolveFailures.Count > currentFailures)
                 {
-                    MockResolveFailure.ClearMockResolveFailures();
-                    realTexture = GetRealPrefabFromMock<Texture>(texture);
-
-                    if (MockResolveFailure.MockResolveFailures.Count > 0)
-                    {
-                        everythingFixed = false;
-
-                        if (allVanillaObjectsAvailable)
-                        {
-                            MockResolveFailure.PrintMockResolveFailures();
-                        }
-
-                        continue;
-                    }
-                }
-                catch (MockResolveException ex)
-                {
-                    if (allVanillaObjectsAvailable)
-                    {
-                        Logger.LogWarning(ex.Message);
-                    }
-
                     everythingFixed = false;
+                    currentFailures = MockResolveFailure.MockResolveFailures.Count;
                     continue;
                 }
 

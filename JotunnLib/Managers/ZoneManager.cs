@@ -6,7 +6,6 @@ using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
-using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -470,18 +469,11 @@ namespace Jotunn.Managers
                         // Fix references if needed
                         if (customClutter.FixReference)
                         {
-                            MockResolveFailure.ClearMockResolveFailures();
                             customClutter.Prefab.FixReferences(true);
                             customClutter.FixReference = false;
-                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         instance.m_clutter.Add(customClutter.Clutter);
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customClutter?.SourceMod, $"Skipping clutter {customClutter}: {ex.Message}");
-                        toDelete.Add(customClutter.Name);
                     }
                     catch (Exception ex)
                     {
@@ -518,20 +510,13 @@ namespace Jotunn.Managers
                         // Fix references if needed
                         if (customLocation.FixReference)
                         {
-                            MockResolveFailure.ClearMockResolveFailures();
                             customLocation.Prefab.FixReferences(true);
                             customLocation.FixReference = false;
-                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         var zoneLocation = customLocation.ZoneLocation;
 
                         RegisterLocationInZoneSystem(self, zoneLocation, customLocation.SourceMod);
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customLocation?.SourceMod, $"Skipping location {customLocation}: {ex.Message}");
-                        toDelete.Add(customLocation.Name);
                     }
                     catch (Exception ex)
                     {
@@ -568,18 +553,11 @@ namespace Jotunn.Managers
                         // Fix references if needed
                         if (customVegetation.FixReference)
                         {
-                            MockResolveFailure.ClearMockResolveFailures();
                             customVegetation.Prefab.FixReferences(true);
                             customVegetation.FixReference = false;
-                            MockResolveFailure.PrintMockResolveFailures();
                         }
 
                         self.m_vegetation.Add(customVegetation.Vegetation);
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customVegetation?.SourceMod, $"Skipping vegetation {customVegetation}: {ex.Message}");
-                        toDelete.Add(customVegetation.Name);
                     }
                     catch (Exception ex)
                     {
