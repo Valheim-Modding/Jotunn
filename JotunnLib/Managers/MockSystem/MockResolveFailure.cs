@@ -11,7 +11,7 @@ namespace Jotunn.Managers.MockSystem
         /// <summary>
         ///     Accumulated list of the tracked MockResolveFailure.
         /// </summary>
-        public static List<MockResolveFailure> MockResolveFailures { get; private set; }
+        public static List<MockResolveFailure> MockResolveFailures { get; } = new List<MockResolveFailure>();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="MockResolveFailure" /> class.
@@ -66,34 +66,11 @@ namespace Jotunn.Managers.MockSystem
         }
 
         /// <summary>
-        ///     Resets the tracked list of MockResolveFailure.
-        /// </summary>
-        public static void ClearMockResolveFailures()
-        {
-            if (MockResolveFailures != null)
-            {
-                MockResolveFailures.Clear();
-            }
-            else
-            {
-                MockResolveFailures = new List<MockResolveFailure>();
-            }
-        }
-
-        /// <summary>
-        ///     Adds a new MockResolveFailure to the tracked list.
-        /// </summary>
-        public static void AddMockResolveFailure(MockResolveFailure failure)
-        {
-            MockResolveFailures.Add(failure);
-        }
-
-        /// <summary>
         ///     Prints warning messages for all the tracked MockResolveFailure.
         /// </summary>
         public static void PrintMockResolveFailures()
         {
-            if (MockResolveFailures == null || MockResolveFailures.Count == 0)
+            if (MockResolveFailures.Count == 0)
             {
                 return;
             }

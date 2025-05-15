@@ -19,7 +19,7 @@ namespace Jotunn
         /// <param name="objectToFix"></param>
         public static void FixReferences(this object objectToFix)
         {
-            MockResolveFailure.ClearMockResolveFailures();
+            MockResolveFailure.MockResolveFailures.Clear();
             MockManager.FixReferences(objectToFix, 0);
             MockResolveFailure.PrintMockResolveFailures();
         }
@@ -30,7 +30,7 @@ namespace Jotunn
         /// <param name="gameObject"></param>
         public static void FixReferences(this GameObject gameObject)
         {
-            MockResolveFailure.ClearMockResolveFailures();
+            MockResolveFailure.MockResolveFailures.Clear();
             gameObject.FixReferencesInternal(false);
             MockResolveFailure.PrintMockResolveFailures();
         }
@@ -43,7 +43,7 @@ namespace Jotunn
         /// <param name="recursive">Traverse all child transforms</param>
         public static void FixReferences(this GameObject gameObject, bool recursive)
         {
-            MockResolveFailure.ClearMockResolveFailures();
+            MockResolveFailure.MockResolveFailures.Clear();
             gameObject.FixReferencesInternal(recursive);
             MockResolveFailure.PrintMockResolveFailures();
         }

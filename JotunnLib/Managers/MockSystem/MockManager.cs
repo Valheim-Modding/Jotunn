@@ -167,8 +167,7 @@ namespace Jotunn.Managers
 
             if (!prefab)
             {
-                MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
-                    $"GameObject with name '{assetName}' was not found.", assetName, "", mockObjectType));
+                MockResolveFailure.MockResolveFailures.Add(new MockResolveFailure($"GameObject with name '{assetName}' was not found.", assetName, "", mockObjectType));
                 return null;
             }
 
@@ -178,8 +177,7 @@ namespace Jotunn.Managers
 
                 if (!child || child.name != childNames.Last())
                 {
-                    MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
-                        $"Child '{childNames.Last()}' not found with the specified path.", assetName, childNames, mockObjectType));
+                    MockResolveFailure.MockResolveFailures.Add(new MockResolveFailure($"Child '{childNames.Last()}' not found with the specified path.", assetName, childNames, mockObjectType));
                     return null;
                 }
 
@@ -194,14 +192,11 @@ namespace Jotunn.Managers
             if (childNames.Count > 0)
             {
                 var usedPath = prefab.transform.GetPath().TrimStart('/');
-
-                MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
-                    $"{mockObjectType.Name} not found at child '{usedPath}'.", assetName, childNames, mockObjectType));
+                MockResolveFailure.MockResolveFailures.Add(new MockResolveFailure($"{mockObjectType.Name} not found at child '{usedPath}'.", assetName, childNames, mockObjectType));
             }
             else
             {
-                MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
-                    $"{mockObjectType.Name} not found at prefab '{assetName}'.", assetName, "", mockObjectType));
+                MockResolveFailure.MockResolveFailures.Add(new MockResolveFailure($"{mockObjectType.Name} not found at prefab '{assetName}'.", assetName, "", mockObjectType));
             }
 
             return null;
@@ -452,7 +447,7 @@ namespace Jotunn.Managers
 
         private static void FixQueuedMaterials()
         {
-            MockResolveFailure.ClearMockResolveFailures();
+            MockResolveFailure.MockResolveFailures.Clear();
             // if the cache is already initialized, some later loaded textures are not found
             PrefabManager.Cache.Clear<Texture>();
             allVanillaObjectsAvailable = true;
