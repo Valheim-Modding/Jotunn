@@ -13,6 +13,8 @@ namespace Jotunn.Entities
     {
         /// <summary> Map that work as [language][token] = translation. </summary>
         internal Dictionary<string, Dictionary<string, string>> Map { get; }
+        
+        private static HashSet<string> loggedInvalidTokens = new HashSet<string>();
 
         /// <summary>
         ///     Default constructor.
@@ -52,26 +54,35 @@ namespace Jotunn.Entities
         {
             if (string.IsNullOrEmpty(word))
             {
-                throw new ArgumentNullException(nameof(word));
+                return string.Empty;
             }
+
+            if (!word.StartsWith(LocalizationManager.TokenFirstChar.ToString()))
+            {
+                // the word is not a token, return it as is
+                return word;
+            }
+
             if (word.IndexOfAny(LocalizationManager.ForbiddenCharsArr) != -1)
             {
-                Logger.LogWarning(SourceMod, $"Token '{word}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'.");
-                return null;
+                if (loggedInvalidTokens.Add(word))
+                {
+                    Logger.LogWarning(SourceMod, $"Token '{word}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'");
+                }
+
+                return $"[{word}]";
             }
 
             var cleanedWord = word.TrimStart(LocalizationManager.TokenFirstChar);
             var playerLang = LocalizationManager.GetPlayerLanguage();
+            var defaultLang = LocalizationManager.DefaultLanguage;
 
-            if (Map.TryGetValue(playerLang, out var playerDictionary) && 
-                playerDictionary.TryGetValue(cleanedWord, out var playerTranslation))
+            if (Map.TryGetValue(playerLang, out var translations) && translations.TryGetValue(cleanedWord, out var translation))
             {
-                return playerTranslation;
+                return translation;
             }
 
-            if (!playerLang.Equals(LocalizationManager.DefaultLanguage) &&
-                Map.TryGetValue(LocalizationManager.DefaultLanguage, out var dictionary) && 
-                dictionary.TryGetValue(cleanedWord, out var translation))
+            if (playerLang != defaultLang && Map.TryGetValue(defaultLang, out translations) && translations.TryGetValue(cleanedWord, out translation))
             {
                 return translation;
             }
@@ -366,7 +377,10 @@ namespace Jotunn.Entities
             }
             if (token.IndexOfAny(LocalizationManager.ForbiddenCharsArr) != -1)
             {
-                Logger.LogWarning(SourceMod, $"Token '{token}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'.");
+                if (loggedInvalidTokens.Add(token))
+                {
+                    Logger.LogWarning(SourceMod, $"Token '{token}' must not contain following chars: '{LocalizationManager.ForbiddenChars}'");
+                }
                 return false;
             }
             return true;
