@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Jotunn.Managers;
-using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Jotunn
 {
@@ -21,7 +21,7 @@ namespace Jotunn
         {
             MockResolveFailure.MockResolveFailures.Clear();
             MockManager.FixReferences(objectToFix, 0);
-            MockResolveFailure.PrintMockResolveFailures();
+            MockResolveFailure.PrintMockResolveFailures(objectToFix is Object unityObject && unityObject ? unityObject.name : objectToFix.ToString());
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Jotunn
         {
             MockResolveFailure.MockResolveFailures.Clear();
             gameObject.FixReferencesInternal(false);
-            MockResolveFailure.PrintMockResolveFailures();
+            MockResolveFailure.PrintMockResolveFailures(gameObject ? gameObject.name : string.Empty);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Jotunn
         {
             MockResolveFailure.MockResolveFailures.Clear();
             gameObject.FixReferencesInternal(recursive);
-            MockResolveFailure.PrintMockResolveFailures();
+            MockResolveFailure.PrintMockResolveFailures(gameObject ? gameObject.name : string.Empty);
         }
 
         /// <summary>

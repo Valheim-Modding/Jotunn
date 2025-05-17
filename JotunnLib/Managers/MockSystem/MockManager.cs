@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Jotunn.Extensions;
-using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -167,7 +166,14 @@ namespace Jotunn.Managers
 
             if (!prefab)
             {
-                MockResolveFailure.MockResolveFailures.Add(new MockResolveFailure($"GameObject with name '{assetName}' was not found.", assetName, "", mockObjectType));
+                if (childNames.Count > 0)
+                {
+                    MockResolveFailure.MockResolveFailures.Add(new MockResolveFailure($"GameObject with name '{assetName}' was not found.", assetName, childNames, mockObjectType));
+                }
+                else
+                {
+                    MockResolveFailure.MockResolveFailures.Add(new MockResolveFailure("", assetName, "", mockObjectType));
+                }
                 return null;
             }
 
@@ -458,7 +464,7 @@ namespace Jotunn.Managers
                 FixMaterial(material);
             }
 
-            MockResolveFailure.PrintMockResolveFailures();
+            MockResolveFailure.PrintMockResolveFailures(string.Empty);
         }
 
         private static void FixMaterial(Material material)

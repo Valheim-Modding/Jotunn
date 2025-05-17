@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Jotunn.Managers.MockSystem
+namespace Jotunn
 {
     /// <summary>
     ///     Failure that is tracked for a mock prefab which could not be resolved to a real prefab or other type.
@@ -59,16 +59,16 @@ namespace Jotunn.Managers.MockSystem
         {
             if (string.IsNullOrEmpty(FailedMockPath))
             {
-                return $"Mock {MockType.Name} '{FailedMockName}' could not be resolved. {Message}";
+                return $"Mock '{FailedMockName}' {MockType.Name} could not be resolved. {Message}".Trim();
             }
 
-            return $"Mock {MockType.Name} at '{FailedMockName}' with child path '{FailedMockPath}' could not be resolved. {Message}";
+            return $"Mock {MockType.Name} at '{FailedMockName}' with child path '{FailedMockPath}' could not be resolved. {Message}".Trim();
         }
 
         /// <summary>
         ///     Prints warning messages for all the tracked MockResolveFailure.
         /// </summary>
-        public static void PrintMockResolveFailures()
+        public static void PrintMockResolveFailures(string prefabName)
         {
             if (MockResolveFailures.Count == 0)
             {
@@ -76,7 +76,11 @@ namespace Jotunn.Managers.MockSystem
             }
 
             int maximumPrinted = Math.Min(5, MockResolveFailures.Count);
-            Logger.LogWarning($"{MockResolveFailures.Count} mocks could not be resolved. Details may be truncated.");
+            string prefabNameMessage = string.IsNullOrEmpty(prefabName) ? "" : $"for '{prefabName}'";
+            string truncatedMessage = MockResolveFailures.Count > maximumPrinted ? $"(logging first {maximumPrinted} issues)" : "";
+
+            Logger.LogWarning($"{MockResolveFailures.Count} mocks {prefabNameMessage} could not be resolved. {truncatedMessage}".Replace("  ", " ").Trim());
+
             foreach (var failure in MockResolveFailures.GetRange(0, maximumPrinted))
             {
                 Logger.LogWarning(failure.ConstructMessage());

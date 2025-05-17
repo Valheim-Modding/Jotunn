@@ -489,18 +489,10 @@ namespace Jotunn.Managers
                     {
                         var recipe = customRecipe.Recipe;
 
-                        if (customRecipe.FixReference)
+                        if (customRecipe.FixReference || customRecipe.FixRequirementReferences)
                         {
                             recipe.FixReferences();
                             customRecipe.FixReference = false;
-                        }
-
-                        if (customRecipe.FixRequirementReferences)
-                        {
-                            foreach (var requirement in recipe.m_resources)
-                            {
-                                requirement.FixReferences();
-                            }
                             customRecipe.FixRequirementReferences = false;
                         }
 
@@ -590,7 +582,7 @@ namespace Jotunn.Managers
                         // Fix references if needed
                         if (conversion.FixReference)
                         {
-                            conversion.ItemConversion.FixReferences();
+                            conversion.FixReferences();
                             conversion.FixReference = false;
                         }
 
