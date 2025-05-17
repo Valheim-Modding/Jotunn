@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -6,7 +6,6 @@ using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
-using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -476,11 +475,6 @@ namespace Jotunn.Managers
 
                         instance.m_clutter.Add(customClutter.Clutter);
                     }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customClutter?.SourceMod, $"Skipping clutter {customClutter}: {ex.Message}");
-                        toDelete.Add(customClutter.Name);
-                    }
                     catch (Exception ex)
                     {
                         Logger.LogWarning(customClutter?.SourceMod, $"Exception caught while adding clutter: {ex}");
@@ -524,11 +518,6 @@ namespace Jotunn.Managers
 
                         RegisterLocationInZoneSystem(self, zoneLocation, customLocation.SourceMod);
                     }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customLocation?.SourceMod, $"Skipping location {customLocation}: {ex.Message}");
-                        toDelete.Add(customLocation.Name);
-                    }
                     catch (Exception ex)
                     {
                         Logger.LogWarning(customLocation?.SourceMod, $"Exception caught while adding location: {ex}");
@@ -569,11 +558,6 @@ namespace Jotunn.Managers
                         }
 
                         self.m_vegetation.Add(customVegetation.Vegetation);
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customVegetation?.SourceMod, $"Skipping vegetation {customVegetation}: {ex.Message}");
-                        toDelete.Add(customVegetation.Name);
                     }
                     catch (Exception ex)
                     {

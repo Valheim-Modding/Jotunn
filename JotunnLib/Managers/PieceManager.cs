@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
@@ -6,7 +6,6 @@ using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
-using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using TMPro;
 using UnityEngine;
@@ -489,11 +488,6 @@ namespace Jotunn.Managers
                 {
                     RegisterCustomPiece(customPiece);
                 }
-                catch (MockResolveException ex)
-                {
-                    Logger.LogWarning(customPiece?.SourceMod, $"Skipping piece {customPiece}: {ex.Message}");
-                    toDelete.Add(customPiece);
-                }
                 catch (Exception ex)
                 {
                     Logger.LogWarning(customPiece?.SourceMod, $"Error caught while adding piece {customPiece}: {ex}");
@@ -513,9 +507,11 @@ namespace Jotunn.Managers
             }
         }
 
-        private void RegisterCustomPiece(CustomPiece customPiece) {
+        private void RegisterCustomPiece(CustomPiece customPiece)
+        {
             // Fix references if needed
-            if (customPiece.FixReference || customPiece.FixConfig) {
+            if (customPiece.FixReference || customPiece.FixConfig)
+            {
                 customPiece.PiecePrefab.FixReferences(customPiece.FixReference);
                 customPiece.FixReference = false;
                 customPiece.FixConfig = false;
@@ -523,7 +519,8 @@ namespace Jotunn.Managers
 
             // Assign vfx_ExtensionConnection for StationExtensions
             var extension = customPiece.PiecePrefab.GetComponent<StationExtension>();
-            if (extension != null && !extension.m_connectionPrefab) {
+            if (extension != null && !extension.m_connectionPrefab)
+            {
                 extension.m_connectionPrefab = PrefabManager.Cache.GetPrefab<GameObject>("vfx_ExtensionConnection");
             }
 

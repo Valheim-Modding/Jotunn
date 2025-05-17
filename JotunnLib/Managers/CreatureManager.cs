@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using Jotunn.Entities;
-using Jotunn.Managers.MockSystem;
 using UnityEngine;
 
 namespace Jotunn.Managers
@@ -241,11 +240,6 @@ namespace Jotunn.Managers
                         }
 
                         Logger.LogDebug($"Added creature {customCreature} | Spawns: {customCreature.Spawns.Count}");
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customCreature?.SourceMod, $"Skipping creature {customCreature}: {ex.Message}");
-                        toDelete.Add(customCreature);
                     }
                     catch (Exception ex)
                     {

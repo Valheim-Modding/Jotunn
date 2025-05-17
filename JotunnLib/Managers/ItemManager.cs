@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
-using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -406,11 +405,6 @@ namespace Jotunn.Managers
 
                         RegisterItemInObjectDB(objectDB, customItem.ItemPrefab, customItem.SourceMod);
                     }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customItem?.SourceMod, $"Skipping item {customItem}: {ex.Message}");
-                        toDelete.Add(customItem);
-                    }
                     catch (Exception ex)
                     {
                         Logger.LogWarning(customItem?.SourceMod, $"Error caught while adding item {customItem}: {ex}");
@@ -509,14 +503,10 @@ namespace Jotunn.Managers
                             }
                             customRecipe.FixRequirementReferences = false;
                         }
+
                         objectDB.m_recipes.Add(recipe);
 
                         Logger.LogDebug($"Added recipe for {recipe.m_item.TokenName()}");
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customRecipe?.SourceMod, $"Skipping recipe {customRecipe}: {ex.Message}");
-                        toDelete.Add(customRecipe);
                     }
                     catch (Exception ex)
                     {
@@ -559,11 +549,6 @@ namespace Jotunn.Managers
                         objectDB.m_StatusEffects.Add(statusEffect);
 
                         Logger.LogDebug($"Added status effect {customStatusEffect}");
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customStatusEffect?.SourceMod, $"Skipping status effect {customStatusEffect}: {ex.Message}");
-                        toDelete.Add(customStatusEffect);
                     }
                     catch (Exception ex)
                     {
@@ -669,11 +654,6 @@ namespace Jotunn.Managers
                         }
 
                         Logger.LogDebug($"Added item conversion {conversion}");
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(conversion?.SourceMod, $"Skipping item conversion {conversion}: {ex.Message}");
-                        toDelete.Add(conversion);
                     }
                     catch (Exception ex)
                     {

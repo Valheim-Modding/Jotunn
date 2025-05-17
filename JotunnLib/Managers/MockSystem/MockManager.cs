@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -168,7 +167,9 @@ namespace Jotunn.Managers
 
             if (!prefab)
             {
-                throw new MockResolveException($"GameObject with name '{assetName}' was not found.", assetName, mockObjectType);
+                MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
+                    $"GameObject with name '{assetName}' was not found.", assetName, "", mockObjectType));
+                return null;
             }
 
             if (childNames.Count > 0)
@@ -177,7 +178,9 @@ namespace Jotunn.Managers
 
                 if (!child || child.name != childNames.Last())
                 {
-                    throw new MockResolveException($"Child '{childNames.Last()}' not found with the specified path.", assetName, childNames, mockObjectType);
+                    MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
+                        $"Child '{childNames.Last()}' not found with the specified path.", assetName, childNames, mockObjectType));
+                    return null;
                 }
 
                 prefab = child.gameObject;
@@ -191,12 +194,17 @@ namespace Jotunn.Managers
             if (childNames.Count > 0)
             {
                 var usedPath = prefab.transform.GetPath().TrimStart('/');
-                throw new MockResolveException($"{mockObjectType.Name} not found at child '{usedPath}'.", assetName, childNames, mockObjectType);
+
+                MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
+                    $"{mockObjectType.Name} not found at child '{usedPath}'.", assetName, childNames, mockObjectType));
             }
             else
             {
-                throw new MockResolveException($"{mockObjectType.Name} not found at prefab '{assetName}'.", assetName, mockObjectType);
+                MockResolveFailure.AddMockResolveFailure(new MockResolveFailure(
+                    $"{mockObjectType.Name} not found at prefab '{assetName}'.", assetName, "", mockObjectType));
             }
+
+            return null;
         }
 
         private static bool TryGetAsset(Type mockObjectType, string assetName, out Object asset)
@@ -444,6 +452,7 @@ namespace Jotunn.Managers
 
         private static void FixQueuedMaterials()
         {
+            MockResolveFailure.ClearMockResolveFailures();
             // if the cache is already initialized, some later loaded textures are not found
             PrefabManager.Cache.Clear<Texture>();
             allVanillaObjectsAvailable = true;
@@ -453,6 +462,8 @@ namespace Jotunn.Managers
                 queuedToFixMaterials.Remove(material);
                 FixMaterial(material);
             }
+
+            MockResolveFailure.PrintMockResolveFailures();
         }
 
         private static void FixMaterial(Material material)
@@ -488,6 +499,7 @@ namespace Jotunn.Managers
         private static bool FixTextures(Material material)
         {
             bool everythingFixed = true;
+            int currentFailures = MockResolveFailure.MockResolveFailures.Count;
 
             foreach (int prop in material.GetTexturePropertyNameIDs())
             {
@@ -498,20 +510,12 @@ namespace Jotunn.Managers
                     continue;
                 }
 
-                Texture realTexture;
+                Texture realTexture = GetRealPrefabFromMock<Texture>(texture);
 
-                try
+                if (MockResolveFailure.MockResolveFailures.Count > currentFailures)
                 {
-                    realTexture = GetRealPrefabFromMock<Texture>(texture);
-                }
-                catch (MockResolveException ex)
-                {
-                    if (allVanillaObjectsAvailable)
-                    {
-                        Logger.LogWarning(ex.Message);
-                    }
-
                     everythingFixed = false;
+                    currentFailures = MockResolveFailure.MockResolveFailures.Count;
                     continue;
                 }
 

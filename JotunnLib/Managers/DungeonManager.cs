@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using Jotunn.Entities;
-using Jotunn.Managers.MockSystem;
 using Jotunn.Utils;
 using UnityEngine;
 
@@ -283,11 +282,6 @@ namespace Jotunn.Managers
                         {
                             RegisterRoomInDungeonDB(customRoom);
                         }
-                    }
-                    catch (MockResolveException ex)
-                    {
-                        Logger.LogWarning(customRoom.SourceMod, $"Skipping Room {customRoom}: could not resolve mock {ex.MockType.Name} {ex.FailedMockName}");
-                        toDelete.Add(customRoom.Name);
                     }
                     catch (Exception ex2)
                     {
