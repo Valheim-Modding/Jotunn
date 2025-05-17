@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Extensions;
@@ -55,6 +57,26 @@ namespace Jotunn.Managers
                 {
                     AddAssetToBundleLoader(__instance, prefab.Key, prefab.Value);
                 }
+            }
+
+            public static void AddSafe(Dictionary<string, AssetID> pathsMappedToAssetId, string key, AssetID value)
+            {
+                if (key != null && !pathsMappedToAssetId.ContainsKey(key))
+                {
+                    pathsMappedToAssetId.Add(key, value);
+                }
+            }
+
+            [HarmonyPatch(typeof(AssetBundleLoader), nameof(AssetBundleLoader.GetAllAssetPathsMappedToAssetID)), HarmonyTranspiler]
+            private static IEnumerable<CodeInstruction> AssetBundleLoader_GetAllAssetPathsMappedToAssetID(IEnumerable<CodeInstruction> instructions)
+            {
+                // replace pathsMappedToAssetId.Add() with our AddSafe()
+                MethodInfo addMethod = AccessTools.Method(typeof(Dictionary<string, AssetID>), nameof(Dictionary<string, AssetID>.Add));
+                MethodInfo addSafeMethod = AccessTools.Method(typeof(Patches), nameof(Patches.AddSafe));
+                return new CodeMatcher(instructions)
+                    .MatchForward(false, new CodeMatch(i => i.Calls(addMethod)))
+                    .SetInstruction(new CodeInstruction(OpCodes.Call, addSafeMethod))
+                    .InstructionEnumeration();
             }
         }
 
