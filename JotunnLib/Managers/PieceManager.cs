@@ -53,7 +53,7 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private readonly Dictionary<string, Piece.PieceCategory> OtherPieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private readonly Dictionary<Piece.PieceCategory, string> vanillaLabels = new Dictionary<Piece.PieceCategory, string>();
-        private static bool categoryRefreshNeeded = false;
+        private bool categoryRefreshNeeded = true;
         private static string hiddenCategoryMagic = "(HiddenCategory)";
 
         /// <summary>
@@ -104,16 +104,16 @@ namespace Jotunn.Managers
 
         private static class Patches
         {
-            [HarmonyPatch(typeof(Player), nameof(Player.SetPlaceMode)), HarmonyPostfix]
+            [HarmonyPatch(typeof(Player), nameof(Player.SetPlaceMode)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
             public static void Player_SetPlaceMode() => Instance.RefreshCategories();
 
             [HarmonyPatch(typeof(Hud), nameof(Hud.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
             private static void Hud_Awake() => Instance.RefreshCategories();
 
-            [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateBuild)), HarmonyPrefix]
+            [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateBuild)), HarmonyPrefix, HarmonyPriority(Priority.Low)]
             private static void Hud_UpdateBuild() => Instance.RefreshCategoriesIfNeeded();
 
-            [HarmonyPatch(typeof(Hud), nameof(Hud.LateUpdate)), HarmonyPostfix]
+            [HarmonyPatch(typeof(Hud), nameof(Hud.LateUpdate)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
             private static void Hud_LateUpdate() => Instance.RefreshCategoriesIfNeeded();
 
             [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Low)]
@@ -882,6 +882,11 @@ namespace Jotunn.Managers
 
             int maxHorizontalTabs = Mathf.Max((int)(categoryRoot.rect.width / tabSize.x), 1);
             int visibleTabs = pieceTable.m_categories.Count;
+
+            if (firstTab.parent.TryGetComponent<GridLayoutGroup>(out var gridLayoutGroup))
+            {
+                gridLayoutGroup.constraintCount = maxHorizontalTabs;
+            }
 
             float tabAnchorX = (-tabSize.x * maxHorizontalTabs) / 2f + tabSize.x / 2f;
             float tabAnchorY = (tabSize.y + verticalSpacing) * Mathf.Floor((float)(visibleTabs - 1) / maxHorizontalTabs) + 5f;

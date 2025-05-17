@@ -5,6 +5,7 @@
 * Improved mock warnings to be aggregated, showing up to 5 issues per object (thanks OrianaVenture)
 * Improved consistency of return values for CustomLocalization.TryTranslate
 * Fixed an incompatibility with mods using blaxxun's LocationManager that insert null or duplicate values into AssetBundleLoader.m_assetLoaders
+* Fixed hammer HUD tabs not using full available width with other mods that add custom categories
 * Fixed admin list watcher starts every time running a server
 * Fixed admin-only config settings being locked by default
 * Fixed CustomLocalization.TryTranslate logging warnings for strings that are already localized
