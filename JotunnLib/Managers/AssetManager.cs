@@ -59,6 +59,12 @@ namespace Jotunn.Managers
                 }
             }
 
+            [HarmonyPatch(typeof(AssetBundleLoader), nameof(AssetBundleLoader.InitializeDataSide)), HarmonyPrefix]
+            private static void AssetBundleLoader_InitializeDataSide(ref bool allAssetsLoadable)
+            {
+                allAssetsLoadable = true;
+            }
+
             public static void AddSafe(Dictionary<string, AssetID> pathsMappedToAssetId, string key, AssetID value)
             {
                 if (key != null && !pathsMappedToAssetId.ContainsKey(key))

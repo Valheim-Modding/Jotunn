@@ -4,6 +4,7 @@
 * Changed unresolved mocks to log a warning without skipping the associated CustomEntity being added to the game (thanks OrianaVenture)
 * Improved mock warnings to be aggregated, showing up to 5 issues per object (thanks OrianaVenture)
 * Improved consistency of return values for CustomLocalization.TryTranslate
+* Fixed mocks not being resolved on a dedicated server
 * Fixed an incompatibility with mods using blaxxun's LocationManager that insert null or duplicate values into AssetBundleLoader.m_assetLoaders
 * Fixed hammer HUD tabs not using full available width with other mods that add custom categories
 * Fixed admin list watcher starts every time running a server
