@@ -1,9 +1,14 @@
 # Changelog
 
-## Version 2.24.4
+## Version 2.25.0
+* Changed unresolved mocks to log a warning without skipping the associated CustomEntity being added to the game (thanks OrianaVenture)
+* Improved mock warnings to be aggregated, showing up to 5 issues per object (thanks OrianaVenture)
+* Improved consistency of return values for CustomLocalization.TryTranslate
 * Fixed admin list watcher starts every time running a server
-* Fixed admin only config settings are locked by default
-* Fixed log spam if a mod trues to syncs configs and is not installed at the client
+* Fixed admin-only config settings being locked by default
+* Fixed CustomLocalization.TryTranslate logging warnings for strings that are already localized
+* Fixed log spam from localization tokens with invalid characters by logging only the first occurrence
+* Fixed log spam if configs are synced to a client that doesn't have the mod installed
 
 ## Version 2.24.3
 * Fixed config sync reset for local worlds and when configs are written to the disk (thx Searica)
