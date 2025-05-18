@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using BepInEx;
 using HarmonyLib;
@@ -625,15 +626,25 @@ namespace Jotunn.Managers
 
         #region Internal Custom Categories Handling
 
-        private static int MaxCategory() => Enum.GetValues(typeof(Piece.PieceCategory)).Length - 1;
+        private static int MaxCategory()
+        {
+            var cats = Enum.GetValues(typeof(Piece.PieceCategory)).Length - 1;
+            // offset all categories after Piece.PieceCategory.All=100 by one
+            return cats < (int)PieceUtils.VanillaAllPieceCategory ? cats : cats + 1;
+        }
 
         private static IEnumerable<CodeInstruction> TranspileMaxCategory(IEnumerable<CodeInstruction> instructions, int maxOffset)
         {
-            int number = PieceUtils.VanillaMaxPieceCategory + maxOffset;
+            int number = (int)PieceUtils.VanillaMaxPieceCategory + maxOffset;
 
             foreach (CodeInstruction instruction in instructions)
             {
-                if (instruction.LoadsConstant(number))
+                if (instruction.opcode == OpCodes.Call && instruction.operand is MethodInfo methodInfo && methodInfo.Name.Contains("MaxCategory"))
+                {
+                    // other mods may have an old implementaion of MaxCategory, override them
+                    yield return new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(PieceManager), nameof(MaxCategory)));
+                }
+                else if (instruction.LoadsConstant(number))
                 {
                     yield return new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(PieceManager), nameof(MaxCategory)));
 
@@ -706,7 +717,7 @@ namespace Jotunn.Managers
         private static void ReorderAllCategoryPieces(PieceTable pieceTable)
         {
             List<Piece> pieces = pieceTable.m_pieces.Select(i => i.GetComponent<Piece>()).ToList();
-            List<Piece> piecesWithAllCategory = pieces.FindAll(i => i && i.m_category == Piece.PieceCategory.All);
+            List<Piece> piecesWithAllCategory = pieces.FindAll(i => i && i.m_category == PieceUtils.VanillaAllPieceCategory);
 
             foreach (List<Piece> availablePieces in pieceTable.m_availablePieces)
             {
@@ -804,6 +815,12 @@ namespace Jotunn.Managers
 
             // create a new category
             category = (Piece.PieceCategory)categories.Count - 1;
+            if (category >= PieceUtils.VanillaAllPieceCategory)
+            {
+                // after Piece.PieceCategory.MaxCategory=100 we have to shift all categories by one
+                category += 1;
+            }
+
             PieceCategories[name] = category;
             var token = GetCategoryToken(name);
             LocalizationManager.Instance.JotunnLocalization.AddTranslation(token, name);
@@ -923,7 +940,7 @@ namespace Jotunn.Managers
 
         private void UpdatePieceTableCategories(PieceTable pieceTable, HashSet<Piece.PieceCategory> visibleCategories)
         {
-            for (int i = 0; i < PieceUtils.VanillaMaxPieceCategory; i++)
+            for (int i = 0; i < (int)PieceUtils.VanillaMaxPieceCategory; i++)
             {
                 Piece.PieceCategory category = (Piece.PieceCategory)i;
 

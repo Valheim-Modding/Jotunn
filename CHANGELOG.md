@@ -6,6 +6,7 @@
 * Improved consistency of return values for CustomLocalization.TryTranslate
 * Fixed mocks not being resolved on a dedicated server
 * Fixed an incompatibility with mods using blaxxun's LocationManager that insert null or duplicate values into AssetBundleLoader.m_assetLoaders
+* Fixed custom categories not being created after PieceCategory ID 100 was reached
 * Fixed hammer HUD tabs not using full available width with other mods that add custom categories
 * Fixed admin list watcher starts every time running a server
 * Fixed admin-only config settings being locked by default

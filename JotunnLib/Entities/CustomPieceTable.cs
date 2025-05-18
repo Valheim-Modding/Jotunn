@@ -52,7 +52,7 @@ namespace Jotunn.Entities
             if (PieceTable != null)
             {
                 List<string> categories = new List<string>();
-                for (int i = 0; i < PieceUtils.VanillaMaxPieceCategory; i++)
+                for (int i = 0; i < (int)PieceUtils.VanillaMaxPieceCategory; i++)
                 {
                     categories.Add(Enum.GetName(typeof(Piece.PieceCategory), i));
                 }
