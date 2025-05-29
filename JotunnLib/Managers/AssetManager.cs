@@ -32,6 +32,9 @@ namespace Jotunn.Managers
         private Dictionary<Type, Dictionary<string, AssetID>> mapNameToAssetID;
         internal Dictionary<Type, Dictionary<string, AssetID>> MapNameToAssetID => mapNameToAssetID ??= CreateNameToAssetID();
 
+        private GameObject ResolvedAssetsContainer;
+        private Dictionary<AssetID, MockResolutionContext> assetsToResolve = new Dictionary<AssetID, MockResolutionContext>();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>
@@ -45,6 +48,11 @@ namespace Jotunn.Managers
         void IManager.Init()
         {
             Main.LogInit(nameof(AssetManager));
+
+            ResolvedAssetsContainer = new GameObject("Resolved Assets");
+            ResolvedAssetsContainer.transform.parent = Main.RootObject.transform;
+            ResolvedAssetsContainer.SetActive(false);
+
             Main.Harmony.PatchAll(typeof(Patches));
         }
 
@@ -83,6 +91,32 @@ namespace Jotunn.Managers
                     .MatchForward(false, new CodeMatch(i => i.Calls(addMethod)))
                     .SetInstruction(new CodeInstruction(OpCodes.Call, addSafeMethod))
                     .InstructionEnumeration();
+            }
+
+            [HarmonyPatch(typeof(AssetLoader), nameof(AssetLoader.HoldReference)), HarmonyPostfix]
+            private static void AssetLoader_HoldReference(ref AssetLoader __instance)
+            {
+                if (__instance.ReferenceCount == 1)
+                {
+                    if (Instance.assetsToResolve.TryGetValue(__instance.m_assetID, out var mockedAsset))
+                    {
+                        __instance.Load();
+                        mockedAsset.InstantiateAndResolveAsset(__instance.m_asset);
+                        __instance.m_asset = mockedAsset.Asset;
+                    }
+                }
+            }
+
+            [HarmonyPatch(typeof(AssetLoader), nameof(AssetLoader.Release)), HarmonyPostfix]
+            private static void AssetLoader_Release(ref AssetLoader __instance)
+            {
+                if (__instance.ReferenceCount == 0)
+                {
+                    if (Instance.assetsToResolve.TryGetValue(__instance.m_assetID, out var mockedAsset))
+                    {
+                        mockedAsset.DestroyAsset();
+                    }
+                }
             }
         }
 
@@ -133,6 +167,20 @@ namespace Jotunn.Managers
         public AssetID AddAsset(Object asset)
         {
             return AddAsset(asset, null);
+        }
+
+        /// <summary>
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
+        ///     Must be called before the asset is loaded the first time.
+        /// </summary>
+        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for</param>
+        /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
+        public void ResolveMocksOnLoad(AssetID assetID, Transform parent = null)
+        {
+            if (!assetsToResolve.ContainsKey(assetID))
+            {
+                assetsToResolve.Add(assetID, new MockResolutionContext(parent ?? ResolvedAssetsContainer.transform));
+            }
         }
 
         private static void AddAssetToBundleLoader(AssetBundleLoader assetBundleLoader, AssetID assetID, AssetRef assetRef)
@@ -407,6 +455,46 @@ namespace Jotunn.Managers
                 this.sourceMod = sourceMod;
                 this.asset = asset;
                 this.originalID = original && Instance.IsReady() ? Instance.GetAssetID(original.GetType(), original.name) : default;
+            }
+        }
+
+        internal class MockResolutionContext
+        {
+            public Object Asset { get; private set; }
+            public Transform Parent { get; private set; }
+
+            public MockResolutionContext(Transform parent)
+            {
+                this.Parent = parent;
+            }
+
+            public bool IsResolved => (bool)Asset;
+
+            public void InstantiateAndResolveAsset(Object realAsset)
+            {
+                if (!Asset)
+                {
+                    Asset = Object.Instantiate(realAsset, Parent);
+                    Asset.name = realAsset.name;
+
+                    if (Asset is GameObject gameObject)
+                    {
+                        gameObject.FixReferences(true);
+                    }
+                    else
+                    {
+                        Asset.FixReferences();
+                    }
+                }
+            }
+
+            public void DestroyAsset()
+            {
+                if (Asset)
+                {
+                    Object.Destroy(Asset);
+                    Asset = null;
+                }
             }
         }
     }

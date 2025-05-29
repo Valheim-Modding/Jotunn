@@ -109,36 +109,6 @@ namespace Jotunn.Managers
                 Instance.RegisterLocations(__instance);
                 Instance.RegisterVegetation(__instance);
             }
-            
-            [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SpawnLocation)), HarmonyPrefix]
-            private static void ZoneSystem_PlaceLocations_Prefix(ZoneSystem __instance, ZoneLocation location, int seed, Vector3 pos, Quaternion rot, ZoneSystem.SpawnMode mode, List<GameObject> spawnedGhostObjects)
-            {
-                if (CustomLocation.IsCustomLocation(location.m_prefab.Name))
-                {
-                    CustomLocation customLocation = Instance.GetCustomLocation(location.m_prefab.Name);
-                    if (customLocation.FixReference && customLocation.SoftReference)
-                    {
-                        location.m_prefab.Load();
-                        GameObject mockLocationContainer = Object.Instantiate(location.m_prefab.Asset, Instance.LocationContainer.transform);
-                        mockLocationContainer.FixReferences(true);
-                        location.m_prefab.m_loadedAsset = mockLocationContainer;
-                        Object.Destroy(mockLocationContainer);
-                    }
-                }
-            }
-
-            [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SpawnLocation)), HarmonyPostfix]
-            private static void ZoneSystem_SpawnLocation_Postfix(ZoneSystem __instance, ZoneLocation location, int seed, Vector3 pos, Quaternion rot, ZoneSystem.SpawnMode mode, List<GameObject> spawnedGhostObjects)
-            {
-                if (CustomLocation.IsCustomLocation(location.m_prefab.Name))
-                {
-                    CustomLocation customLocation = Instance.GetCustomLocation(location.m_prefab.Name);
-                    if (customLocation.FixReference && customLocation.SoftReference)
-                    {
-                        location.m_prefab.Release();
-                    }
-                }
-            }
 
             [HarmonyPatch(typeof(ClutterSystem), nameof(ClutterSystem.Awake)), HarmonyPostfix]
             private static void ClutterSystem_Awake(ClutterSystem __instance) => Instance.ClutterSystem_Awake(__instance);
