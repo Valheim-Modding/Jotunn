@@ -7,8 +7,8 @@ namespace Jotunn.Settings
     /// <summary>
     ///     Base class for in-game BepInEx settings
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TSerialized"></typeparam>
+    /// <typeparam name="T">The type of the setting value</typeparam>
+    /// <typeparam name="TSerialized">The type of the serialized value in the BepInEx configuration system, i.e. what is written to the config file</typeparam>
     public abstract class BepInExSetting<T, TSerialized> : Setting<T>
     {
         /// <summary>
@@ -41,19 +41,23 @@ namespace Jotunn.Settings
         /// </summary>
         public bool AdminOnly { get; set; }
 
+        /// <summary>
+        ///     The BepInEx configuration entry for this setting.<br />
+        ///     This is created when <see cref="Bind"/> is called
+        /// </summary>
         protected ConfigEntry<TSerialized> entry;
 
         /// <summary>
         ///     Creates a new BepInExSetting object.<br />
         ///     Does not create the setting in the BepInEx configuration system yet, <see cref="Bind"/> must be called.
         /// </summary>
-        /// <param name="sourceMod"></param>
-        /// <param name="section"></param>
-        /// <param name="key"></param>
-        /// <param name="defaultValue"></param>
-        /// <param name="description"></param>
-        /// <param name="order"></param>
-        /// <param name="adminOnly"></param>
+        /// <param name="sourceMod">The mod that adds this setting</param>
+        /// <param name="section">Section/category/group of the setting. Settings are grouped by this</param>
+        /// <param name="key">Name of the setting</param>
+        /// <param name="defaultValue">Value of the setting if the setting was not created yet</param>
+        /// <param name="description">Text describing the function of the setting and any notes or warnings</param>
+        /// <param name="order">Order of the setting on the settings list relative to other settings in a category. 0 by default, higher number is higher on the list</param>
+        /// <param name="adminOnly">Whether the config is only writable by admins and gets overwritten on connecting clients</param>
         public BepInExSetting(BepInPlugin sourceMod, string section, string key, T defaultValue, string description, int order, bool adminOnly = true) : base(sourceMod)
         {
             Section = section;
@@ -133,7 +137,7 @@ namespace Jotunn.Settings
     /// <summary>
     ///     Base class for in-game BepInEx settings
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of the setting value</typeparam>
     public class BepInExSetting<T> : BepInExSetting<T, T>
     {
         /// <inheritdoc/>

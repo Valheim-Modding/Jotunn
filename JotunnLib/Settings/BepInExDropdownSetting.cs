@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace Jotunn.Settings
 {
+    /// <summary>
+    ///     A setting that allows the user to select a value from a dropdown list
+    /// </summary>
+    /// <typeparam name="T">The type of the values in the dropdown</typeparam>
     public class BepInExDropdownSetting<T> : BepInExSetting<T>
     {
         private List<T> values;
@@ -15,11 +19,28 @@ namespace Jotunn.Settings
         private static GUIStyle dropDownStyle;
         private static GUIStyle listStyle;
 
+        /// <summary>
+        ///     Creates a new BepInExSetting object.<br />
+        ///     Does not create the setting in the BepInEx configuration system yet, Bind must be called.
+        /// </summary>
+        /// <param name="sourceMod">The mod that adds this setting</param>
+        /// <param name="section">Section/category/group of the setting. Settings are grouped by this</param>
+        /// <param name="key">Name of the setting</param>
+        /// <param name="defaultValue">Value of the setting if the setting was not created yet</param>
+        /// <param name="values">List of values to choose from in the dropdown</param>
+        /// <param name="description">Text describing the function of the setting and any notes or warnings</param>
+        /// <param name="order">Order of the setting on the settings list relative to other settings in a category. 0 by default, higher number is higher on the list</param>
+        /// <param name="adminOnly">Whether the config is only writable by admins and gets overwritten on connecting clients</param>
         public BepInExDropdownSetting(BepInPlugin sourceMod, string section, string key, T defaultValue, IEnumerable<T> values, string description, int order, bool adminOnly = true) : base(sourceMod, section, key, defaultValue, description, order, adminOnly)
         {
             this.values = new List<T>(values);
         }
 
+        /// <summary>
+        ///     Generates the attributes for the setting.<br />
+        ///     This is used to create the custom drawer for the setting in the configuration manager.
+        /// </summary>
+        /// <returns></returns>
         protected override ConfigurationManagerAttributes GenerateAttributes()
         {
             ConfigurationManagerAttributes attributes = base.GenerateAttributes();
@@ -28,6 +49,10 @@ namespace Jotunn.Settings
             return attributes;
         }
 
+        /// <summary>
+        ///     Custom drawer for the setting in the configuration manager
+        /// </summary>
+        /// <param name="entry">The configuration entry to draw</param>
         protected virtual void Drawer(ConfigEntryBase entry)
         {
             if (dropDownStyle == null)
