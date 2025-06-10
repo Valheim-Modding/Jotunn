@@ -6,6 +6,7 @@ using BepInEx;
 using UnityEngine;
 using JotunnDoc.Docs;
 using System.IO;
+using System.Text;
 using HarmonyLib;
 
 namespace JotunnDoc
@@ -63,6 +64,24 @@ namespace JotunnDoc
             text = Regex.Replace(text, @"[^\u0000-\u007F]+", string.Empty);
 
             return text;
+        }
+
+        public static string Localize(ItemDrop item)
+        {
+            return Localize(item?.m_itemData?.m_shared?.m_name);
+        }
+
+        public static string MakeList(IEnumerable<string> elements)
+        {
+            StringBuilder list = new StringBuilder("<ul>");
+
+            foreach (string element in elements)
+            {
+                list.Append($"<li>{element}</li>");
+            }
+
+            list.Append("</ul>");
+            return list.ToString();
         }
 
         public static void StartDelayed(Action action)
