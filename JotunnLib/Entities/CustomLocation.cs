@@ -125,7 +125,7 @@ namespace Jotunn.Entities
             }
 
             var parent = ZoneManager.Instance.LocationContainer.transform;
-            AssetManager.Instance.ResolveMocksOnLoad(softReferencePrefab.m_assetID, parent, OnLocationResolve);
+            AssetManager.Instance.ResolveMocksOnLoad(softReferencePrefab, parent, OnLocationResolve);
             Name = softReferencePrefab.Name;
             ZoneLocation = locationConfig.GetZoneLocation();
             ZoneLocation.m_prefab = softReferencePrefab;
@@ -134,9 +134,9 @@ namespace Jotunn.Entities
             SoftReference = true;
         }
 
-        private void OnLocationResolve(Object asset)
+        private void OnLocationResolve(GameObject gameObject)
         {
-            if (asset is GameObject gameObject && gameObject.TryGetComponent<ZoneSystem.ZoneLocation>(out var zoneLocation))
+            if (gameObject.TryGetComponent<ZoneSystem.ZoneLocation>(out var zoneLocation))
             {
                 ZoneManager.Instance.PrepareLocation(zoneLocation, SourceMod);
             }

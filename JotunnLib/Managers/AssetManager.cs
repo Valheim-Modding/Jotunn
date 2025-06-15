@@ -173,7 +173,7 @@ namespace Jotunn.Managers
         ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
         ///     Must be called before the asset is loaded the first time.
         /// </summary>
-        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for</param>
+        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for on load</param>
         public void ResolveMocksOnLoad(AssetID assetID)
         {
             ResolveMocksOnLoad(assetID, null, null);
@@ -183,7 +183,7 @@ namespace Jotunn.Managers
         ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
         ///     Must be called before the asset is loaded the first time.
         /// </summary>
-        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for</param>
+        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for on load</param>
         /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
         public void ResolveMocksOnLoad(AssetID assetID, Transform parent)
         {
@@ -194,12 +194,29 @@ namespace Jotunn.Managers
         ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
         ///     Must be called before the asset is loaded the first time.
         /// </summary>
-        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for</param>
+        /// <param name="softReference">The <see cref="SoftReference{T}"/> to instantiate and resolve mocks for on load</param>
         /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
-        /// <param name="resolveCallback">Callback when the asset was resolved and instantiated</param>
+        /// <param name="resolveCallback">Adds a callback when the asset was resolved and instantiated</param>
+        public void ResolveMocksOnLoad<T>(SoftReference<T> softReference, Transform parent, Action<T> resolveCallback) where T : Object
+        {
+            ResolveMocksOnLoad(softReference.m_assetID, parent, (asset) => resolveCallback?.Invoke(asset as T));
+        }
+
+        /// <summary>
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
+        ///     Must be called before the asset is loaded the first time.
+        /// </summary>
+        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for on load</param>
+        /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
+        /// <param name="resolveCallback">Adds a callback when the asset was resolved and instantiated</param>
         public void ResolveMocksOnLoad(AssetID assetID, Transform parent, Action<Object> resolveCallback)
         {
-            if (!assetsToResolve.ContainsKey(assetID))
+            if (assetsToResolve.TryGetValue(assetID, out var context))
+            {
+                context.Parent = parent ?? context.Parent ?? ResolvedAssetsContainer.transform;
+                context.ResolveCallback += resolveCallback;
+            }
+            else
             {
                 assetsToResolve.Add(assetID, new MockResolutionContext(parent ?? ResolvedAssetsContainer.transform, resolveCallback));
             }
@@ -483,13 +500,13 @@ namespace Jotunn.Managers
         internal class MockResolutionContext
         {
             public Object Asset { get; private set; }
-            public Transform Parent { get; private set; }
-            public Action<Object> ResolveCallback { get; private set; }
+            public Transform Parent { get; set; }
+            public Action<Object> ResolveCallback { get; set; }
 
             public MockResolutionContext(Transform parent, Action<Object> resolveCallback)
             {
                 this.Parent = parent;
-                this.ResolveCallback = resolveCallback;
+                this.ResolveCallback += resolveCallback;
             }
 
             public bool IsResolved => (bool)Asset;
