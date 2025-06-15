@@ -174,12 +174,34 @@ namespace Jotunn.Managers
         ///     Must be called before the asset is loaded the first time.
         /// </summary>
         /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for</param>
+        public void ResolveMocksOnLoad(AssetID assetID)
+        {
+            ResolveMocksOnLoad(assetID, null, null);
+        }
+
+        /// <summary>
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
+        ///     Must be called before the asset is loaded the first time.
+        /// </summary>
+        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for</param>
         /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
-        public void ResolveMocksOnLoad(AssetID assetID, Transform parent = null)
+        public void ResolveMocksOnLoad(AssetID assetID, Transform parent)
+        {
+            ResolveMocksOnLoad(assetID, parent, null);
+        }
+
+        /// <summary>
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
+        ///     Must be called before the asset is loaded the first time.
+        /// </summary>
+        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for</param>
+        /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
+        /// <param name="resolveCallback">Callback when the asset was resolved and instantiated</param>
+        public void ResolveMocksOnLoad(AssetID assetID, Transform parent, Action<Object> resolveCallback)
         {
             if (!assetsToResolve.ContainsKey(assetID))
             {
-                assetsToResolve.Add(assetID, new MockResolutionContext(parent ?? ResolvedAssetsContainer.transform));
+                assetsToResolve.Add(assetID, new MockResolutionContext(parent ?? ResolvedAssetsContainer.transform, resolveCallback));
             }
         }
 
@@ -462,30 +484,36 @@ namespace Jotunn.Managers
         {
             public Object Asset { get; private set; }
             public Transform Parent { get; private set; }
+            public Action<Object> ResolveCallback { get; private set; }
 
-            public MockResolutionContext(Transform parent)
+            public MockResolutionContext(Transform parent, Action<Object> resolveCallback)
             {
                 this.Parent = parent;
+                this.ResolveCallback = resolveCallback;
             }
 
             public bool IsResolved => (bool)Asset;
 
             public void InstantiateAndResolveAsset(Object realAsset)
             {
-                if (!Asset)
+                if (IsResolved)
                 {
-                    Asset = Object.Instantiate(realAsset, Parent);
-                    Asset.name = realAsset.name;
-
-                    if (Asset is GameObject gameObject)
-                    {
-                        gameObject.FixReferences(true);
-                    }
-                    else
-                    {
-                        Asset.FixReferences();
-                    }
+                    return;
                 }
+
+                Asset = Object.Instantiate(realAsset, Parent);
+                Asset.name = realAsset.name;
+
+                if (Asset is GameObject gameObject)
+                {
+                    gameObject.FixReferences(true);
+                }
+                else
+                {
+                    Asset.FixReferences();
+                }
+
+                ResolveCallback?.Invoke(Asset);
             }
 
             public void DestroyAsset()
@@ -493,8 +521,9 @@ namespace Jotunn.Managers
                 if (Asset)
                 {
                     Object.Destroy(Asset);
-                    Asset = null;
                 }
+
+                Asset = null;
             }
         }
     }

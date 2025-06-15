@@ -4,6 +4,7 @@ using Jotunn.Configs;
 using Jotunn.Managers;
 using SoftReferenceableAssets;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Jotunn.Entities
 {
@@ -122,8 +123,9 @@ namespace Jotunn.Entities
                 Logger.LogError($"SoftReference invalid for prefab: {softReferencePrefab.Name}");
                 return;
             }
-            
-            AssetManager.Instance.ResolveMocksOnLoad(softReferencePrefab.m_assetID, ZoneManager.Instance.LocationContainer.transform);
+
+            var parent = ZoneManager.Instance.LocationContainer.transform;
+            AssetManager.Instance.ResolveMocksOnLoad(softReferencePrefab.m_assetID, parent, OnLocationResolve);
             Name = softReferencePrefab.Name;
             ZoneLocation = locationConfig.GetZoneLocation();
             ZoneLocation.m_prefab = softReferencePrefab;
@@ -131,7 +133,15 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             SoftReference = true;
         }
-        
+
+        private void OnLocationResolve(Object asset)
+        {
+            if (asset is GameObject gameObject && gameObject.TryGetComponent<ZoneSystem.ZoneLocation>(out var zoneLocation))
+            {
+                ZoneManager.Instance.PrepareLocation(zoneLocation, SourceMod);
+            }
+        }
+
         /// <summary>
         ///     Helper method to determine if a location prefab with a given name is a custom location created with Jötunn.
         /// </summary>
