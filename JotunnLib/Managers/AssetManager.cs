@@ -93,14 +93,13 @@ namespace Jotunn.Managers
                     .InstructionEnumeration();
             }
 
-            [HarmonyPatch(typeof(AssetLoader), nameof(AssetLoader.HoldReference)), HarmonyPostfix]
-            private static void AssetLoader_HoldReference(ref AssetLoader __instance)
+            [HarmonyPatch(typeof(AssetLoader), nameof(AssetLoader.InvokeCallbacks)), HarmonyPrefix]
+            private static void SwapResolvedAsset(ref AssetLoader __instance, LoadResult result)
             {
-                if (__instance.ReferenceCount == 1)
+                if (result == LoadResult.Succeeded)
                 {
                     if (Instance.assetsToResolve.TryGetValue(__instance.m_assetID, out var mockedAsset))
                     {
-                        __instance.Load();
                         mockedAsset.InstantiateAndResolveAsset(__instance.m_asset);
                         __instance.m_asset = mockedAsset.Asset;
                     }
@@ -363,7 +362,7 @@ namespace Jotunn.Managers
         /// <param name="name">Asset name to search for</param>
         /// <typeparam name="T">Asset type to search for</typeparam>
         /// <returns></returns>
-        public SoftReference<T> GetSoftReference<T>(string name) where T: Object
+        public SoftReference<T> GetSoftReference<T>(string name) where T : Object
         {
             AssetID assetID = GetAssetID<T>(name);
             return assetID.IsValid ? new SoftReference<T>(assetID) : default;
