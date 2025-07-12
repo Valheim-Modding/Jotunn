@@ -37,6 +37,11 @@ namespace Jotunn.Managers
         private Dictionary<AssetID, MockResolutionContext> assetsToResolve = new Dictionary<AssetID, MockResolutionContext>();
 
         /// <summary>
+        ///     Event that is invoked when the soft referenceable system is ready to be used.
+        /// </summary>
+        public static event Action OnSoftReferenceableAssetsReady;
+
+        /// <summary>
         ///     Hide .ctor
         /// </summary>
         private AssetManager() { }
@@ -66,6 +71,8 @@ namespace Jotunn.Managers
                 {
                     AddAssetToBundleLoader(__instance, prefab.Key, prefab.Value);
                 }
+
+                OnSoftReferenceableAssetsReady?.SafeInvoke();
             }
 
             [HarmonyPatch(typeof(AssetBundleLoader), nameof(AssetBundleLoader.InitializeDataSide)), HarmonyPrefix]
