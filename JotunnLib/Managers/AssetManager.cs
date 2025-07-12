@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -279,6 +280,17 @@ namespace Jotunn.Managers
         public AssetID GenerateAssetID(Object asset)
         {
             uint u = (uint)asset.name.GetStableHashCode();
+            return new AssetID(u, u, u, u);
+        }
+        
+        /// <summary>
+        ///     Generates a unique AssetID, from a given string
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <returns>AssetID generated from the prefab's name</returns>
+        public AssetID GenerateAssetID(string asset)
+        {
+            uint u = (uint)asset.GetStableHashCode();
             return new AssetID(u, u, u, u);
         }
 
