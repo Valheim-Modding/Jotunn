@@ -288,7 +288,7 @@ namespace Jotunn.Managers
         /// </summary>
         /// <param name="asset"></param>
         /// <returns>AssetID generated from the prefab's name</returns>
-        public static AssetID GenerateAssetID(string asset)
+        public AssetID GenerateAssetID(string asset)
         {
             uint u = (uint)asset.GetStableHashCode();
             return new AssetID(u, u, u, u);
