@@ -80,6 +80,42 @@ private void AddMockedItems()
 
 If you have been following the Unity Asset Creation guide, you can return back to where you [left off](asset-creation.md#assetbundle).
 
+## Soft Referenceable Assets
+
+If your mod is using [Soft Referenceable Assets](https://www.valheimgame.com/support/modding-faq-for-the-asset-bundle-update-0-217-40/) you can also use mocks inside the custom assets and use `AssetManager.Instance.ResolveMocksOnLoad` to resolve them at runtime.
+Note this has to be called before the asset is loaded the first time.
+You can also register a callback to further work with the asset after it has been loaded.
+
+```cs
+using Jotunn.Managers;
+using SoftReferenceableAssets;
+
+void Awake()
+{
+    AssetManager.OnSoftReferenceableAssetsReady += OnSoftReferenceableAssetsReady;
+}
+
+void OnSoftReferenceableAssetsReady()
+{
+    // just resolve the mocks for a specific prefab
+    AssetID assetID = AssetManager.Instance.GetAssetID<GameObject>("CustomPrefabName");
+    AssetManager.Instance.ResolveMocksOnLoad(assetID);
+
+    // or resolve mocks and register a callback
+    var softReferencePrefab = AssetManager.Instance.GetSoftReference<GameObject>("CustomPrefabName");
+    AssetManager.Instance.ResolveMocksOnLoad(softReferencePrefab, null, (prefab) =>
+    {
+        Logger.LogInfo($"Resolved mocks for prefab {prefab.name}");
+    });
+}
+```
+
+> [!NOTE]
+> This only works for assets that are loaded via the SoftReference system.
+> If you reference the asset directly in Unity, you will get the original asset and not the mocked one.
+> This is due to limitations of the Unity Engine, as assets in AssetBundles are not fully mutable.
+> Instead of referencing it directly, you can use a mock of your asset at other places to load it through the SoftReference system.
+
 ## Shader Mocking
 The only special case is shader mocking for custom materials.
 The asset name isn't their object name, which means that renaming it will not result in a valid mock.

@@ -177,7 +177,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
+        ///     Registers an asset to be instantiated and have its mock references resolved on load.<br/>
         ///     Must be called before the asset is loaded the first time.
         /// </summary>
         /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for on load</param>
@@ -187,7 +187,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<br/>
         ///     Must be called before the asset is loaded the first time.
         /// </summary>
         /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for on load</param>
@@ -198,8 +198,9 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
-        ///     Must be called before the asset is loaded the first time.
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<br/>
+        ///     Must be called before the asset is loaded the first time.<br/>
+        ///     The callback will be invoked when the asset is already resolved and instantiated. Multiple callbacks can be registed for the same asset.<br/>
         /// </summary>
         /// <param name="softReference">The <see cref="SoftReference{T}"/> to instantiate and resolve mocks for on load</param>
         /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
@@ -210,8 +211,9 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
-        ///     Must be called before the asset is loaded the first time.
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<br/>
+        ///     Must be called before the asset is loaded the first time.<br/>
+        ///     The callback will be invoked when the asset is already resolved and instantiated. Multiple callbacks can be registed for the same asset.<br/>
         /// </summary>
         /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for on load</param>
         /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
@@ -548,7 +550,7 @@ namespace Jotunn.Managers
                     Asset.FixReferences();
                 }
 
-                ResolveCallback?.Invoke(Asset);
+                ResolveCallback?.SafeInvoke(Asset);
             }
 
             public void DestroyAsset()
