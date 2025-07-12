@@ -4,6 +4,7 @@ using Jotunn.Configs;
 using Jotunn.Managers;
 using SoftReferenceableAssets;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Jotunn.Entities
 {
@@ -38,6 +39,12 @@ namespace Jotunn.Entities
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
+        
+        /// <summary>
+        ///     Indicator if location is added from SoftReferenceableAssets.<br />
+        ///     Used to delay mocking prefabs until ZoneSystem.SpawnLocation()
+        /// </summary>
+        public bool SoftReference { get; set; }
 
         /// <summary>
         ///     Custom location from a prefab with a <see cref="LocationConfig"/> attached.<br />
@@ -103,6 +110,38 @@ namespace Jotunn.Entities
             FixReference = fixReference;
         }
         
+        /// <summary>
+        ///     Custom location from a prefab with a <see cref="LocationConfig"/> attached. Using SoftReference system.
+        /// </summary>
+        /// <param name="softReferencePrefab">The exterior prefab for this custom location.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="locationConfig">The <see cref="LocationConfig"/> for this custom location.</param>
+        public CustomLocation(SoftReference<GameObject> softReferencePrefab, bool fixReference, LocationConfig locationConfig) : base(Assembly.GetCallingAssembly())
+        {
+            if (!softReferencePrefab.IsValid)
+            {
+                Logger.LogError($"SoftReference invalid for prefab: {softReferencePrefab.Name}");
+                return;
+            }
+
+            var parent = ZoneManager.Instance.LocationContainer.transform;
+            AssetManager.Instance.ResolveMocksOnLoad(softReferencePrefab, parent, OnLocationResolve);
+            Name = softReferencePrefab.Name;
+            ZoneLocation = locationConfig.GetZoneLocation();
+            ZoneLocation.m_prefab = softReferencePrefab;
+            ZoneLocation.m_prefabName = softReferencePrefab.Name;
+            FixReference = fixReference;
+            SoftReference = true;
+        }
+
+        private void OnLocationResolve(GameObject gameObject)
+        {
+            if (gameObject.TryGetComponent<ZoneSystem.ZoneLocation>(out var zoneLocation))
+            {
+                ZoneManager.Instance.PrepareLocation(zoneLocation, SourceMod);
+            }
+        }
+
         /// <summary>
         ///     Helper method to determine if a location prefab with a given name is a custom location created with Jötunn.
         /// </summary>

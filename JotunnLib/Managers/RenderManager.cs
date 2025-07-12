@@ -451,8 +451,18 @@ namespace Jotunn.Managers
             HashSet<Type> visitedNodes = new HashSet<Type>();
             HashSet<Type> recursionStack = new HashSet<Type>();
 
+            if (!tranform || !tranform.gameObject)
+            {
+                return result;
+            }
+
             foreach (Component component in tranform.gameObject.GetComponents<Component>())
             {
+                if (!component)
+                {
+                    continue;
+                }
+
                 if (!TopologicalSortUtil(component.GetType(), visitedNodes, recursionStack, result))
                 {
                     Logger.LogWarning($"Cycles detected in component dependencies for type {component.GetType()}. Unable to determine deletion order for {tranform}.");

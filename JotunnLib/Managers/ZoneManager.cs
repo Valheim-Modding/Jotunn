@@ -236,11 +236,14 @@ namespace Jotunn.Managers
                 return false;
             }
 
-            customLocation.Prefab.transform.SetParent(LocationContainer.transform);
-
-            // The root prefab needs to be active, otherwise ZNetViews are not prepared correctly
-            customLocation.Prefab.SetActive(true);
-
+            // Skip if location uses softReference system.
+            // If using softReference prefab is in assetbundle and therefore not immutable
+            if (!customLocation.SoftReference)
+            {
+                // The root prefab needs to be active, otherwise ZNetViews are not prepared correctly
+                customLocation.Prefab.SetActive(true);
+            }
+            
             Locations.Add(customLocation.Name, customLocation);
             return true;
         }
@@ -504,24 +507,25 @@ namespace Jotunn.Managers
                 {
                     try
                     {
-                        Logger.LogDebug(
-                            $"Adding custom location {customLocation} in {string.Join(", ", GetMatchingBiomes(customLocation.ZoneLocation.m_biome))}");
+                        Logger.LogDebug($"Adding custom location {customLocation} in {string.Join(", ", GetMatchingBiomes(customLocation.ZoneLocation.m_biome))}");
 
-                        // Fix references if needed
-                        if (customLocation.FixReference)
+                        if (customLocation.FixReference && !customLocation.SoftReference)
                         {
                             customLocation.Prefab.FixReferences(true);
                             customLocation.FixReference = false;
                         }
 
-                        var zoneLocation = customLocation.ZoneLocation;
+                        if (!customLocation.SoftReference)
+                        {
+                            PrepareLocation(customLocation.ZoneLocation, customLocation.SourceMod);
+                        }
 
-                        RegisterLocationInZoneSystem(self, zoneLocation, customLocation.SourceMod);
+                        RegisterLocationInZoneSystem(self, customLocation.ZoneLocation);
                     }
                     catch (Exception ex)
                     {
                         Logger.LogWarning(customLocation?.SourceMod, $"Exception caught while adding location: {ex}");
-                        toDelete.Add(customLocation.Name);
+                        toDelete.Add(customLocation?.Name);
                     }
                 }
 
@@ -581,30 +585,19 @@ namespace Jotunn.Managers
         ///     No mock references are fixed.
         /// </summary>
         /// <param name="zoneLocation"><see cref="ZoneLocation"/> to add to the <see cref="ZoneSystem"/></param>
-        public void RegisterLocationInZoneSystem(ZoneLocation zoneLocation) =>
-            RegisterLocationInZoneSystem(ZoneSystem.instance, zoneLocation, BepInExUtils.GetSourceModMetadata());
+        public void RegisterLocationInZoneSystem(ZoneLocation zoneLocation)
+        {
+            PrepareLocation(zoneLocation, BepInExUtils.GetSourceModMetadata());
+            RegisterLocationInZoneSystem(ZoneSystem.instance, zoneLocation);
+        }
 
-        /// <summary>
-        ///     Internal method for adding a ZoneLocation to a specific ZoneSystem.
-        /// </summary>
-        /// <param name="zoneSystem"><see cref="ZoneSystem"/> the location should be added to</param>
-        /// <param name="zoneLocation"><see cref="ZoneLocation"/> to add</param>
-        /// <param name="sourceMod"><see cref="BepInPlugin"/> which created the location</param>
-        private void RegisterLocationInZoneSystem(ZoneSystem zoneSystem, ZoneLocation zoneLocation, BepInPlugin sourceMod)
+        internal void PrepareLocation(ZoneLocation zoneLocation, BepInPlugin sourceMod)
         {
             zoneLocation.m_prefab.Load();
 
             foreach (var znet in global::Utils.GetEnabledComponentsInChildren<ZNetView>(zoneLocation.m_prefab.Asset))
             {
-                string prefabName = znet.GetPrefabName();
-                if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
-                {
-                    var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
-                    prefab.name = prefabName;
-                    CustomPrefab customPrefab = new CustomPrefab(prefab, sourceMod);
-                    PrefabManager.Instance.AddPrefab(customPrefab);
-                    PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
-                }
+                RegisterUnknownPrefab(sourceMod, znet);
             }
 
             RandomSpawn[] randomSpawns = global::Utils.GetEnabledComponentsInChildren<RandomSpawn>(zoneLocation.m_prefab.Asset);
@@ -615,17 +608,30 @@ namespace Jotunn.Managers
 
             foreach (var znet in randomSpawns.SelectMany(x => x.m_childNetViews))
             {
-                string prefabName = znet.GetPrefabName();
-                if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
-                {
-                    var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
-                    prefab.name = prefabName;
-                    CustomPrefab customPrefab = new CustomPrefab(prefab, sourceMod);
-                    PrefabManager.Instance.AddPrefab(customPrefab);
-                    PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
-                }
+                RegisterUnknownPrefab(sourceMod, znet);
+            }
+        }
+
+        private static void RegisterUnknownPrefab(BepInPlugin sourceMod, ZNetView znet) {
+            string prefabName = znet.GetPrefabName();
+
+            if (prefabName.StartsWith(MockManager.JVLMockPrefix))
+            {
+                return;
             }
 
+            if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(prefabName.GetStableHashCode()))
+            {
+                var prefab = Object.Instantiate(znet.gameObject, PrefabManager.Instance.PrefabContainer.transform);
+                prefab.name = prefabName;
+                CustomPrefab customPrefab = new CustomPrefab(prefab, sourceMod);
+                PrefabManager.Instance.AddPrefab(customPrefab);
+                PrefabManager.Instance.RegisterToZNetScene(customPrefab.Prefab);
+            }
+        }
+
+        private void RegisterLocationInZoneSystem(ZoneSystem zoneSystem, ZoneLocation zoneLocation)
+        {
             if (!zoneSystem.m_locationsByHash.ContainsKey(zoneLocation.Hash))
             {
                 zoneSystem.m_locationsByHash.Add(zoneLocation.Hash, zoneLocation);

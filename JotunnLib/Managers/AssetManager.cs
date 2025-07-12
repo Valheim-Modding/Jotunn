@@ -32,6 +32,9 @@ namespace Jotunn.Managers
         private Dictionary<Type, Dictionary<string, AssetID>> mapNameToAssetID;
         internal Dictionary<Type, Dictionary<string, AssetID>> MapNameToAssetID => mapNameToAssetID ??= CreateNameToAssetID();
 
+        private GameObject ResolvedAssetsContainer;
+        private Dictionary<AssetID, MockResolutionContext> assetsToResolve = new Dictionary<AssetID, MockResolutionContext>();
+
         /// <summary>
         ///     Hide .ctor
         /// </summary>
@@ -45,6 +48,11 @@ namespace Jotunn.Managers
         void IManager.Init()
         {
             Main.LogInit(nameof(AssetManager));
+
+            ResolvedAssetsContainer = new GameObject("Resolved Assets");
+            ResolvedAssetsContainer.transform.parent = Main.RootObject.transform;
+            ResolvedAssetsContainer.SetActive(false);
+
             Main.Harmony.PatchAll(typeof(Patches));
         }
 
@@ -83,6 +91,31 @@ namespace Jotunn.Managers
                     .MatchForward(false, new CodeMatch(i => i.Calls(addMethod)))
                     .SetInstruction(new CodeInstruction(OpCodes.Call, addSafeMethod))
                     .InstructionEnumeration();
+            }
+
+            [HarmonyPatch(typeof(AssetLoader), nameof(AssetLoader.InvokeCallbacks)), HarmonyPrefix]
+            private static void SwapResolvedAsset(ref AssetLoader __instance, LoadResult result)
+            {
+                if (result == LoadResult.Succeeded)
+                {
+                    if (Instance.assetsToResolve.TryGetValue(__instance.m_assetID, out var mockedAsset))
+                    {
+                        mockedAsset.InstantiateAndResolveAsset(__instance.m_asset);
+                        __instance.m_asset = mockedAsset.Asset;
+                    }
+                }
+            }
+
+            [HarmonyPatch(typeof(AssetLoader), nameof(AssetLoader.Release)), HarmonyPostfix]
+            private static void AssetLoader_Release(ref AssetLoader __instance)
+            {
+                if (__instance.ReferenceCount == 0)
+                {
+                    if (Instance.assetsToResolve.TryGetValue(__instance.m_assetID, out var mockedAsset))
+                    {
+                        mockedAsset.DestroyAsset();
+                    }
+                }
             }
         }
 
@@ -133,6 +166,59 @@ namespace Jotunn.Managers
         public AssetID AddAsset(Object asset)
         {
             return AddAsset(asset, null);
+        }
+
+        /// <summary>
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
+        ///     Must be called before the asset is loaded the first time.
+        /// </summary>
+        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for on load</param>
+        public void ResolveMocksOnLoad(AssetID assetID)
+        {
+            ResolveMocksOnLoad(assetID, null, null);
+        }
+
+        /// <summary>
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
+        ///     Must be called before the asset is loaded the first time.
+        /// </summary>
+        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for on load</param>
+        /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
+        public void ResolveMocksOnLoad(AssetID assetID, Transform parent)
+        {
+            ResolveMocksOnLoad(assetID, parent, null);
+        }
+
+        /// <summary>
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
+        ///     Must be called before the asset is loaded the first time.
+        /// </summary>
+        /// <param name="softReference">The <see cref="SoftReference{T}"/> to instantiate and resolve mocks for on load</param>
+        /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
+        /// <param name="resolveCallback">Adds a callback when the asset was resolved and instantiated</param>
+        public void ResolveMocksOnLoad<T>(SoftReference<T> softReference, Transform parent, Action<T> resolveCallback) where T : Object
+        {
+            ResolveMocksOnLoad(softReference.m_assetID, parent, (asset) => resolveCallback?.Invoke(asset as T));
+        }
+
+        /// <summary>
+        ///     Registers an asset to be instantiated under the given parent and have its mock references resolved on load.<b/>
+        ///     Must be called before the asset is loaded the first time.
+        /// </summary>
+        /// <param name="assetID">The <see cref="AssetID"/> of the asset to instantiate and resolve mocks for on load</param>
+        /// <param name="parent">Optional transform under which the asset will be instantiated, otherwise a default container is used</param>
+        /// <param name="resolveCallback">Adds a callback when the asset was resolved and instantiated</param>
+        public void ResolveMocksOnLoad(AssetID assetID, Transform parent, Action<Object> resolveCallback)
+        {
+            if (assetsToResolve.TryGetValue(assetID, out var context))
+            {
+                context.Parent = parent ?? context.Parent ?? ResolvedAssetsContainer.transform;
+                context.ResolveCallback += resolveCallback;
+            }
+            else
+            {
+                assetsToResolve.Add(assetID, new MockResolutionContext(parent ?? ResolvedAssetsContainer.transform, resolveCallback));
+            }
         }
 
         private static void AddAssetToBundleLoader(AssetBundleLoader assetBundleLoader, AssetID assetID, AssetRef assetRef)
@@ -276,7 +362,7 @@ namespace Jotunn.Managers
         /// <param name="name">Asset name to search for</param>
         /// <typeparam name="T">Asset type to search for</typeparam>
         /// <returns></returns>
-        public SoftReference<T> GetSoftReference<T>(string name) where T: Object
+        public SoftReference<T> GetSoftReference<T>(string name) where T : Object
         {
             AssetID assetID = GetAssetID<T>(name);
             return assetID.IsValid ? new SoftReference<T>(assetID) : default;
@@ -407,6 +493,53 @@ namespace Jotunn.Managers
                 this.sourceMod = sourceMod;
                 this.asset = asset;
                 this.originalID = original && Instance.IsReady() ? Instance.GetAssetID(original.GetType(), original.name) : default;
+            }
+        }
+
+        internal class MockResolutionContext
+        {
+            public Object Asset { get; private set; }
+            public Transform Parent { get; set; }
+            public Action<Object> ResolveCallback { get; set; }
+
+            public MockResolutionContext(Transform parent, Action<Object> resolveCallback)
+            {
+                this.Parent = parent;
+                this.ResolveCallback += resolveCallback;
+            }
+
+            public bool IsResolved => (bool)Asset;
+
+            public void InstantiateAndResolveAsset(Object realAsset)
+            {
+                if (IsResolved)
+                {
+                    return;
+                }
+
+                Asset = Object.Instantiate(realAsset, Parent);
+                Asset.name = realAsset.name;
+
+                if (Asset is GameObject gameObject)
+                {
+                    gameObject.FixReferences(true);
+                }
+                else
+                {
+                    Asset.FixReferences();
+                }
+
+                ResolveCallback?.Invoke(Asset);
+            }
+
+            public void DestroyAsset()
+            {
+                if (Asset)
+                {
+                    Object.Destroy(Asset);
+                }
+
+                Asset = null;
             }
         }
     }
