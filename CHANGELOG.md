@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 2.26.0
+* Added CustomLocation loading via the SoftReferenceableAssets system to only load locations when needed. This requires special setup of the assets (thx warp)
+* Added AssetManager.GenerateAssetID(string) overload (thx warp)
+* Added AssetManager.ResolveMocksOnLoad to resolve all mocks when the SoftReference asset is loaded
+* Added AssetManager.OnSoftReferenceableAssetsReady event
+* Fixed PrefabManager.RegisterToZNetScene to skip mocks from being registered to the ZNetScene (thx warp)
+* Fixed errors when rendering broken prefabs via the RenderManager
+
 ## Version 2.25.0
 * Changed unresolved mocks to log a warning without skipping the associated CustomEntity being added to the game (thanks OrianaVenture)
 * Improved mock warnings to be aggregated, showing up to 5 issues per object (thanks OrianaVenture)
