@@ -36,13 +36,14 @@ namespace JotunnDoc.Docs
             foreach (var pair in pieceTables)
             {
                 AddHeader(2, pair.Key);
-                AddTableHeader("Piece", "AssetID", "Token", "English Name", "Description", "Resources required");
+                AddTableHeader("Piece", "AssetID", "Token", "English Name", "Description", "Resources required", "Material Type");
 
                 foreach (GameObject obj in pair.Value.m_pieces.Where(x => PieceManager.Instance.GetPiece(x.name) == null))
                 {
                     Piece piece = obj.GetComponent<Piece>();
+                    WearNTear wearNTear = obj.GetComponent<WearNTear>();
 
-                    if (piece == null)
+                    if (!piece)
                     {
                         continue;
                     }
@@ -64,7 +65,9 @@ namespace JotunnDoc.Docs
                         piece.m_name,
                         JotunnDoc.Localize(piece.m_name),
                         JotunnDoc.Localize(piece.m_description),
-                        resources);
+                        resources,
+                        wearNTear ? wearNTear.m_materialType.ToString() : string.Empty
+                    );
                 }
             }
 
