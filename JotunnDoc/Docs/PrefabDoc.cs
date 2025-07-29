@@ -47,14 +47,14 @@ namespace JotunnDoc.Docs
             var prefabsAM = allPrefabs.Where(p => p.name.Length >= 1 && p.name.ToLower()[0] < 'm');
             var prefabsMZ = allPrefabs.Where(p => p.name.Length >= 1 && p.name.ToLower()[0] >= 'm');
 
-            AddTableHeader("Name", "AssetID", "Components", "Components in Children");
+            AddTableHeader("Name", "AssetID", "Token", "English Name", "Components", "Components in Children");
 
             foreach (GameObject obj in prefabsAM)
             {
                 AddPrefabTableRow(obj);
             }
 
-            AddTableHeader("Name", "AssetID", "Components", "Components in Children");
+            AddTableHeader("Name", "AssetID", "Token", "English Name", "Components", "Components in Children");
 
             foreach (GameObject obj in prefabsMZ)
             {
@@ -66,9 +66,14 @@ namespace JotunnDoc.Docs
 
         private void AddPrefabTableRow(GameObject prefab)
         {
+            string token = GetTokenOfPrefab(prefab);
+            string englishName = string.IsNullOrEmpty(token) ? string.Empty : JotunnDoc.Localize(token);
+
             AddTableRow(
                 prefab.name,
                 AssetManager.Instance.GetAssetID<GameObject>(prefab.name).ToString(),
+                token,
+                englishName,
                 GenerateComponentList(prefab.GetComponents<Component>()),
                 GenerateChildComponentsList(prefab)
             );
@@ -97,6 +102,28 @@ namespace JotunnDoc.Docs
             }
 
             return GenerateComponentList(components);
+        }
+
+        private string GetTokenOfPrefab(GameObject prefab)
+        {
+            if (prefab.TryGetComponent(out Piece piece) && !string.IsNullOrEmpty(piece.m_name)) return piece.m_name;
+            if (prefab.TryGetComponent(out ItemDrop itemDrop) && itemDrop?.m_itemData?.m_shared != null && !string.IsNullOrEmpty(itemDrop.m_itemData.m_shared.m_name)) return itemDrop.m_itemData.m_shared.m_name;
+            if (prefab.TryGetComponent(out Character character) && !string.IsNullOrEmpty(character.m_name)) return character.m_name;
+            if (prefab.TryGetComponent(out Trader trader) && !string.IsNullOrEmpty(trader.m_name)) return trader.m_name;
+            if (prefab.TryGetComponent(out HoverText hoverText) && !string.IsNullOrEmpty(hoverText.m_text)) return hoverText.m_text;
+            if (prefab.TryGetComponent(out Aoe aoe) && !string.IsNullOrEmpty(aoe.m_name)) return aoe.m_name;
+            if (prefab.TryGetComponent(out Hoverable hoverable))
+            {
+                try
+                {
+                    return hoverable.GetHoverName();
+                }
+                catch (Exception e)
+                {
+                    // ignore
+                }
+            }
+            return string.Empty;
         }
     }
 }
