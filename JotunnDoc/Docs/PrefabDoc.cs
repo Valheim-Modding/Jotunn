@@ -44,21 +44,19 @@ namespace JotunnDoc.Docs
             allPrefabs.RemoveAll(x => CustomPrefab.IsCustomPrefab(x.name));
             allPrefabs = allPrefabs.OrderBy(x => x.name).ToList();
 
-            var prefabsAM = allPrefabs.Where(p => p.name.Length >= 1 && p.name.ToLower()[0] < 'm');
-            var prefabsMZ = allPrefabs.Where(p => p.name.Length >= 1 && p.name.ToLower()[0] >= 'm');
+            int splitCount = 3;
+            int chunkSize = (int)Math.Ceiling((double)allPrefabs.Count / splitCount);
 
-            AddTableHeader("Name", "AssetID", "Token", "English Name", "Components", "Components in Children");
-
-            foreach (GameObject obj in prefabsAM)
+            for (int i = 0; i < splitCount; i++)
             {
-                AddPrefabTableRow(obj);
-            }
+                var chunk = allPrefabs.Skip(i * chunkSize).Take(chunkSize);
 
-            AddTableHeader("Name", "AssetID", "Token", "English Name", "Components", "Components in Children");
+                AddTableHeader("Name", "AssetID", "Token", "English Name", "Components", "Components in Children");
 
-            foreach (GameObject obj in prefabsMZ)
-            {
-                AddPrefabTableRow(obj);
+                foreach (GameObject obj in chunk)
+                {
+                    AddPrefabTableRow(obj);
+                }
             }
 
             Save();
