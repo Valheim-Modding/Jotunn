@@ -260,12 +260,14 @@ namespace Jotunn.Managers
 
         private static bool IsMockName(string name, out string assetName, out List<string> childNames)
         {
+            name = name.Trim();
+
             if (name.StartsWith(JVLMockPrefix, StringComparison.Ordinal))
             {
                 var mockTarget = name.Substring(JVLMockPrefix.Length);
                 var splitNames = mockTarget.Split(new[] { JVLMockSeparator }, StringSplitOptions.RemoveEmptyEntries);
                 assetName = splitNames[0];
-                childNames = splitNames.Skip(1).ToList();
+                childNames = splitNames.Skip(1).Select(splitName => splitName.Trim()).ToList();
                 return true;
             }
 
@@ -288,14 +290,14 @@ namespace Jotunn.Managers
             // Cut off the suffix in the name to correctly query the original
             if (objectType == typeof(Material))
             {
-                return name.RemoveSuffix(" (Instance)");
+                return name.RemoveSuffix("(Instance)");
             }
             else if (objectType == typeof(Mesh))
             {
-                return name.RemoveSuffix(" Instance");
+                return name.RemoveSuffix("Instance");
             }
 
-            return name;
+            return name.Trim();
         }
 
         private static void FixMemberReferences(MemberBase member, object objectToFix, int depth)

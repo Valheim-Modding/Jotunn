@@ -21,7 +21,9 @@ namespace Jotunn
         {
             MockResolveFailure.MockResolveFailures.Clear();
             MockManager.FixReferences(objectToFix, 0);
-            MockResolveFailure.PrintMockResolveFailures(objectToFix is Object unityObject && unityObject ? unityObject.name : objectToFix.ToString());
+            Object unityObject = objectToFix as Object;
+            string assetName = unityObject ? unityObject.name : objectToFix.ToString();
+            MockResolveFailure.PrintMockResolveFailures(assetName);
         }
 
         /// <summary>
@@ -32,7 +34,8 @@ namespace Jotunn
         {
             MockResolveFailure.MockResolveFailures.Clear();
             gameObject.FixReferencesInternal(false);
-            MockResolveFailure.PrintMockResolveFailures(gameObject ? gameObject.name : string.Empty);
+            string assetName = gameObject ? gameObject.name : string.Empty;
+            MockResolveFailure.PrintMockResolveFailures(assetName);
         }
 
         /// <summary>
@@ -45,7 +48,8 @@ namespace Jotunn
         {
             MockResolveFailure.MockResolveFailures.Clear();
             gameObject.FixReferencesInternal(recursive);
-            MockResolveFailure.PrintMockResolveFailures(gameObject ? gameObject.name : string.Empty);
+            string assetName = gameObject ? gameObject.name : string.Empty;
+            MockResolveFailure.PrintMockResolveFailures(assetName);
         }
 
         /// <summary>

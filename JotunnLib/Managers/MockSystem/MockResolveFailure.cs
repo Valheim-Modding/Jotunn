@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using BepInEx;
+using Jotunn.Utils;
 
 namespace Jotunn
 {
@@ -75,15 +77,16 @@ namespace Jotunn
                 return;
             }
 
+            BepInPlugin sourceMod = ModQuery.GetPrefab(prefabName)?.SourceMod;
             int maximumPrinted = Math.Min(5, MockResolveFailures.Count);
             string prefabNameMessage = string.IsNullOrEmpty(prefabName) ? "" : $"for '{prefabName}'";
             string truncatedMessage = MockResolveFailures.Count > maximumPrinted ? $"(logging first {maximumPrinted} issues)" : "";
 
-            Logger.LogWarning($"{MockResolveFailures.Count} mocks {prefabNameMessage} could not be resolved. {truncatedMessage}".Replace("  ", " ").Trim());
+            Logger.LogWarning(sourceMod, $"{MockResolveFailures.Count} mocks {prefabNameMessage} could not be resolved. {truncatedMessage}".Replace("  ", " ").Trim());
 
             foreach (var failure in MockResolveFailures.GetRange(0, maximumPrinted))
             {
-                Logger.LogWarning(failure.ConstructMessage());
+                Logger.LogWarning(sourceMod, failure.ConstructMessage());
             }
         }
     }
