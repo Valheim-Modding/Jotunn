@@ -37,4 +37,8 @@
   </ItemGroup>
   <Import Project="$(SolutionDir)JotunnLib\BuildProps\Paths.props" />
   <Import Project="$(SolutionDir)JotunnLib\BuildProps\JotunnLibRefsCorlib.props" />
+  <Target Name="CopyAfterBuild" AfterTargets="Build">
+    <Message Text="Copying JotunnBuildTask.dll to libraries" Importance="high" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)libraries" />
+  </Target>
 </Project>
