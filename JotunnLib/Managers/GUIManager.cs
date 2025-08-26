@@ -300,6 +300,7 @@ namespace Jotunn.Managers
             Main.Harmony.PatchAll(typeof(Patches));
             InitializeAssets();
             SceneManager.sceneLoaded += (Scene scene, LoadSceneMode loadMode) => InitializeAssets();
+            SceneManager.sceneLoaded += (Scene scene, LoadSceneMode loadMode) => Instance.TryCreateGUI();
         }
 
         private static class Patches
@@ -481,8 +482,14 @@ namespace Jotunn.Managers
 
         private bool TryCreateGUI()
         {
-            GUIInStart = SceneManager.GetActiveScene().name == "start";
+            Scene activeScene = SceneManager.GetActiveScene();
+            GUIInStart = activeScene.name == "start";
             ResetInputBlock();
+
+            if (!activeScene.isLoaded)
+            {
+                return false;
+            }
 
             if (CustomGUIFront && CustomGUIBack)
             {
