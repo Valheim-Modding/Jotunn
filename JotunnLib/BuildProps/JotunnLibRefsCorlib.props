@@ -36,8 +36,8 @@
       <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\SoftReferenceableAssets_publicized.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="gui_framework">
-      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\gui_framework.dll</HintPath>
+    <Reference Include="gui_framework_publicized">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\publicized_assemblies\gui_framework_publicized.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="PlayFab">

@@ -92,6 +92,7 @@ namespace JotunnBuildTask
                 List<string> assemblyNames = new List<string>();
                 assemblyNames.AddRange(Directory.GetFiles(managedFolder, "assembly_*.dll"));
                 assemblyNames.AddRange(Directory.GetFiles(managedFolder, "SoftReferenceableAssets.dll"));
+                assemblyNames.AddRange(Directory.GetFiles(managedFolder, "gui_framework.dll"));
 
                 // Loop assemblies and check if the hash has changed
                 foreach (var assembly in assemblyNames)
