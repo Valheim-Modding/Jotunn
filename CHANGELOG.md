@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.26.1
+* Added gui_framework.dll to PrebuildTask publicize and reference it in the JotunnLibRefsCorlib.props
+* Fixed GUI initialization for Valheim 0.221.3, backwards compatible
+* Fixed mock names not being sanitized in some cases
+
 ## Version 2.26.0
 * Added CustomLocation loading via the SoftReferenceableAssets system to only load locations when needed. This requires special setup of the assets (thx warp)
 * Added AssetManager.GenerateAssetID(string) overload (thx warp)
