@@ -217,8 +217,8 @@ namespace Jotunn.Managers
             }
 
             byte[] bytesPNG = File.ReadAllBytes(path);
-            Texture2D texture = new Texture2D(1, 1);
-            texture.LoadImage(bytesPNG);
+            Texture2D texture = new Texture2D(2, 2);
+            AssetUtils.LoadImageMethod.Invoke(null, new object[] { texture, bytesPNG });
 
             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one / 2f);
             return true;

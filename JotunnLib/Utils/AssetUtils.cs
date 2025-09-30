@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Reflection;
 using System.Linq;
 using BepInEx;
+using HarmonyLib;
 
 namespace Jotunn.Utils
 {
@@ -16,6 +17,17 @@ namespace Jotunn.Utils
         ///     Path separator for AssetBundles
         /// </summary>
         public const char AssetBundlePathSeparator = '$';
+
+        /// <summary>
+        ///     Method reference to <see cref="ImageConversion.LoadImage(Texture2D, byte[])" />.
+        ///     Workaround for compiling a net 4.x mod against the nestandard 2.1 method:
+        ///     <code>
+        ///         byte[] textureData;
+        ///         Texture2D texture = new Texture2D(2, 2);
+        ///         LoadImageMethod.Invoke(null, new object[] { texture, textureData });
+        ///     </code>
+        /// </summary>
+        public static MethodInfo LoadImageMethod => AccessTools.Method(typeof(ImageConversion), nameof(ImageConversion.LoadImage), new Type[] { typeof(Texture2D), typeof(byte[]) });
 
         /// <summary>
         ///     Loads a <see cref="Texture2D"/> from file at runtime.
@@ -45,7 +57,7 @@ namespace Jotunn.Utils
 
             byte[] fileData = File.ReadAllBytes(path);
             Texture2D tex = new Texture2D(2, 2);
-            tex.LoadImage(fileData);
+            LoadImageMethod.Invoke(null, new object[] { tex, fileData });
             return tex;
         }
 

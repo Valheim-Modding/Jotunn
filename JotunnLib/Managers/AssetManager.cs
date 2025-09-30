@@ -482,7 +482,8 @@ namespace Jotunn.Managers
                 case "controller":
                     return typeof(RuntimeAnimatorController);
                 case "physicmaterial":
-                    return typeof(PhysicMaterial);
+                case "physicsmaterial":
+                    return typeof(PhysicsMaterial);
                 case "shader":
                     return typeof(Shader);
                 case "anim":
