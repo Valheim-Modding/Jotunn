@@ -34,8 +34,11 @@ Valheim -> Valheim++: ClutterSystem.Awake
     hnote over ZoneManager: OnClutterRegistered
 deactivate Valheim
 
-Valheim -> Valheim++: FejdStartup.SetupGui
+Valheim -> Valheim++: SceneManager.Internal_SceneLoaded
     hnote over GUIManager: OnCustomGUIAvailable
+deactivate Valheim
+
+Valheim -> Valheim++: FejdStartup.SetupGui
     hnote over LocalizationManager: OnLocalizationAdded
 deactivate Valheim
 
@@ -65,7 +68,7 @@ Valheim -> Valheim++: ClutterSystem.Awake
     hnote over ZoneManager: OnClutterRegistered
 deactivate Valheim
 
-Valheim -> Valheim++: Game.Start
+Valheim -> Valheim++: SceneManager.Internal_SceneLoaded
     hnote over GUIManager: OnCustomGUIAvailable
 deactivate Valheim
 
