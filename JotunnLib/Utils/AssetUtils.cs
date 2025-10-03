@@ -20,14 +20,9 @@ namespace Jotunn.Utils
 
         /// <summary>
         ///     Method reference to <see cref="ImageConversion.LoadImage(Texture2D, byte[])" />.
-        ///     Workaround for compiling a net 4.x mod against the nestandard 2.1 method:
-        ///     <code>
-        ///         byte[] textureData;
-        ///         Texture2D texture = new Texture2D(2, 2);
-        ///         LoadImageMethod.Invoke(null, new object[] { texture, textureData });
-        ///     </code>
+        ///     Workaround for compiling a net 4.x mod against the nestandard 2.1 method reference.
         /// </summary>
-        public static MethodInfo LoadImageMethod => AccessTools.Method(typeof(ImageConversion), nameof(ImageConversion.LoadImage), new Type[] { typeof(Texture2D), typeof(byte[]) });
+        private static MethodInfo LoadImageMethod { get; } = AccessTools.Method(typeof(ImageConversion), nameof(ImageConversion.LoadImage), new Type[] { typeof(Texture2D), typeof(byte[]) });
 
         /// <summary>
         ///     Loads a <see cref="Texture2D"/> from file at runtime.
@@ -56,9 +51,31 @@ namespace Jotunn.Utils
             }
 
             byte[] fileData = File.ReadAllBytes(path);
+            return LoadImage(fileData);
+        }
+
+        /// <summary>
+        ///     Wrapper for https://docs.unity3d.com/ScriptReference/ImageConversion.LoadImage.html,
+        ///     creates a new <see cref="Texture2D"/>.
+        /// </summary>
+        /// <param name="data">The byte array containing the image data to load.</param>
+        /// <returns>A new texture with the loaded image if the data can be loaded, null otherwise</returns>
+        public static Texture2D LoadImage(byte[] data)
+        {
             Texture2D tex = new Texture2D(2, 2);
-            LoadImageMethod.Invoke(null, new object[] { tex, fileData });
-            return tex;
+            bool success = LoadImage(tex, data);
+            return success ? tex : null;
+        }
+
+        /// <summary>
+        ///     Wrapper for https://docs.unity3d.com/ScriptReference/ImageConversion.LoadImage.html.
+        /// </summary>
+        /// <param name="texture">The texture to load the image into.</param>
+        /// <param name="data">The byte array containing the image data to load.</param>
+        /// <returns>true if the data can be loaded, false otherwise</returns>
+        public static bool LoadImage(Texture2D texture, byte[] data)
+        {
+            return (bool)LoadImageMethod.Invoke(null, new object[] { texture, data });
         }
 
         /// <summary>
