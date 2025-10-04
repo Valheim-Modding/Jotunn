@@ -108,6 +108,12 @@ namespace Jotunn.Managers
                 {
                     if (Instance.assetsToResolve.TryGetValue(__instance.m_assetID, out var mockedAsset))
                     {
+                        if (!__instance.m_asset)
+                        {
+                            Logger.LogWarning($"AssetLoader.m_asset == null for AssetID {__instance.m_assetID} at path {__instance.m_assetPathInBundle}, skipping mocking");
+                            return;
+                        }
+
                         mockedAsset.InstantiateAndResolveAsset(__instance.m_asset);
                         __instance.m_asset = mockedAsset.Asset;
                     }
