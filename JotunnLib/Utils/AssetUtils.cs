@@ -79,6 +79,87 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
+        ///     Creates a readable copy of a rectangular region from a <see cref="Texture2D"/>.
+        /// </summary>
+        /// <param name="texture">Source texture.</param>
+        /// <param name="textureRect">Region of the texture to copy.</param>
+        /// <returns>A readable <see cref="Texture2D"/> of the specified region, or null if the texture is null.</returns>
+        public static Texture2D DuplicateTexture(Texture2D texture, Rect textureRect)
+        {
+            if (!texture)
+            {
+                return null;
+            }
+
+            // The resulting sprite dimensions
+            int width = (int)textureRect.width;
+            int height = (int)textureRect.height;
+
+            // The location of the target icon in the texture
+            int x = (int)textureRect.x;
+            int y = (int)textureRect.y;
+
+            RenderTexture previous = RenderTexture.active;
+
+            // Our RenderTexture for displaying the whole sprite atlas.
+            // Be sure to match format of your texture or else it may display strangely
+            // such as a darker image than the original.
+            RenderTexture renderTex = RenderTexture.GetTemporary(
+                texture.width,
+                texture.height,
+                0,
+                RenderTextureFormat.Default,
+                RenderTextureReadWrite.sRGB
+            );
+
+            Graphics.Blit(texture, renderTex);
+            RenderTexture.active = renderTex;
+
+            // Create a copy of the target icon texture that is readable
+            Texture2D readableTexture = new Texture2D(width, height);
+            readableTexture.ReadPixels(new Rect(x, y, width, height), 0, 0);
+            readableTexture.Apply();
+
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(renderTex);
+
+            return readableTexture;
+        }
+
+        /// <summary>
+        ///     Creates a readable copy of a <see cref="Texture2D"/>.
+        /// </summary>
+        /// <param name="texture">Source texture.</param>
+        /// <returns>A readable copy of the texture, or null if the texture is null.</returns>
+        public static Texture2D DuplicateTexture(Texture2D texture)
+        {
+            return DuplicateTexture(texture, new Rect(0, 0, texture.width, texture.height));
+        }
+
+        /// <summary>
+        ///     Creates a readable copy of a <see cref="Sprite"/>'s texture region.
+        ///     If the sprite is part of an atlas, only its texture rectangle is copied.<br/>
+        ///     Use <c>AssetUtils.DuplicateTexture(sprite.texture)</c> to copy the full texture.
+        /// </summary>
+        /// <param name="sprite">Source sprite.</param>
+        /// <returns>A readable <see cref="Texture2D"/> of the sprite’s texture region, or null if the texture is null.</returns>
+        public static Texture2D DuplicateTexture(Sprite sprite)
+        {
+            return DuplicateTexture(sprite.texture, sprite.textureRect);
+        }
+
+        /// <summary>
+        ///     Creates a readable copy of a <see cref="Sprite"/>.
+        /// </summary>
+        /// <param name="sprite">Source sprite.</param>
+        /// <returns>A new <see cref="Sprite"/> with a readable copy of its texture region, or null if the texture is null.</returns>
+        public static Sprite DuplicateSprite(Sprite sprite)
+        {
+            Texture2D tex = DuplicateTexture(sprite);
+            return tex ? Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f)) : null;
+        }
+
+        /// <summary>
         ///     Loads a <see cref="Sprite"/> from file at runtime.
         /// </summary>
         /// <param name="spritePath">Texture path relative to "plugins" BepInEx folder</param>
