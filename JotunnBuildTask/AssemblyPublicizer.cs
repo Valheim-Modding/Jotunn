@@ -12,6 +12,9 @@ namespace JotunnBuildTask
         ///     Publicize a dll
         /// </summary>
         /// <param name="input">Input assembly</param>
+        /// <param name="hash"></param>
+        /// <param name="publicizedFolder"></param>
+        /// <param name="ValheimPath"></param>
         /// <returns></returns>
         public static bool PublicizeDll(string input, string hash, string publicizedFolder, string ValheimPath)
         {

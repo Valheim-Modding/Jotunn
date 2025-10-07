@@ -54,7 +54,7 @@ See the [CopyToUnity Task](https://github.com/Valheim-Modding/JotunnModStub/blob
 - SoftReferenceableAssets.dll
 
 This allows us to exchange prefabs between the two projects without losing the references to the added components.\
-You can also copy the dll files from your game folder `<ValheimInstall>/valheim_Data/Managed` and recover the missing references using e.g. the NG Missing Script Recovery tool.
+You can also copy the dll files from your game folder `<ValheimInstall>/Valheim_Data/Managed` and recover the missing references using e.g. the NG Missing Script Recovery tool.
 
 **Copy the files directly to the new project via the file system - don't import the assemblies via Unity**.
 

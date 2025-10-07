@@ -79,7 +79,7 @@
 
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <StartAction>Program</StartAction>
-    <StartProgram>$(VALHEIM_INSTALL)\valheim.exe</StartProgram>
+    <StartProgram>$(VALHEIM_INSTALL)\Valheim.exe</StartProgram>
     <StartArguments>-console</StartArguments>
     <StartWorkingDirectory>$(VALHEIM_INSTALL)</StartWorkingDirectory>
   </PropertyGroup>
@@ -98,7 +98,7 @@
   </Target>
 
   <PropertyGroup>
-    <VALHEIM_MANAGED>$(VALHEIM_INSTALL)/valheim_Data/Managed</VALHEIM_MANAGED>
+    <VALHEIM_MANAGED>$(VALHEIM_INSTALL)/Valheim_Data/Managed</VALHEIM_MANAGED>
     <UNITY_FOLDER>$(SolutionDir)JotunnLib/Unity</UNITY_FOLDER>
   </PropertyGroup>
 

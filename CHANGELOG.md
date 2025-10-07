@@ -4,6 +4,7 @@
 * Added `AssetUtils.LoadImage` wrapper to resolve .netstandard 2.1 compile issues
 * Added `AssetUtils.DuplicateTexture` to create a readable copy of a texture
 * Fixed an error if an AssetLoader loads a null m_asset while resolving mocks. It now logs a waning with the bundle path
+* Fixed recent rename of valheim_Data to Valheim_Data in the PrebuildTask and core refs for case-sensitive file systems (e.g. Linux)
 
 ## Version 2.26.1
 * Added gui_framework.dll to PrebuildTask publicize and reference it in the JotunnLibRefsCorlib.props

@@ -14,9 +14,8 @@ namespace JotunnBuildTask
         public string ValheimPath { get; set; }
 
         internal const string ValheimServerData = "valheim_server_Data";
-        internal const string ValheimData = "valheim_Data";
+        internal const string ValheimData = "Valheim_Data";
         internal const string Managed = "Managed";
-        internal const string UnstrippedCorlib = "unstripped_corlib";
         internal const string PublicizedAssemblies = "publicized_assemblies";
         internal const string Bepinex = "BepInEx";
         internal const string Plugins = "plugins";
@@ -69,11 +68,11 @@ namespace JotunnBuildTask
             {
                 // Get managed folder of valheim or valheim_dedicated
                 string managedFolder = string.Empty;
-                if (Directory.Exists(Path.Combine(ValheimPath, ValheimData, Managed)))
+                if (Directory.Exists(Path.Combine(ValheimPath, ValheimData, Managed)) && string.IsNullOrEmpty(managedFolder))
                 {
                     managedFolder = Path.Combine(ValheimPath, ValheimData, Managed);
                 }
-                if (Directory.Exists(Path.Combine(ValheimPath, ValheimServerData, Managed)))
+                if (Directory.Exists(Path.Combine(ValheimPath, ValheimServerData, Managed)) && string.IsNullOrEmpty(managedFolder))
                 {
                     managedFolder = Path.Combine(ValheimPath, ValheimServerData, Managed);
                 }

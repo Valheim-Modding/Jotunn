@@ -20,7 +20,7 @@ You can generate these dependencies manually and add them to your project, or le
 
 ## Manual dependency generation
 
-Publicized assemblies are manually generated with [AssemblyPublicizer](https://github.com/CabbageCrow/AssemblyPublicizer). Please follow the instructions found on GitHub using the Valheim assembly DLLs found under `Valheim/valheim_Data/Managed`.
+Publicized assemblies are manually generated with [AssemblyPublicizer](https://github.com/CabbageCrow/AssemblyPublicizer). Please follow the instructions found on GitHub using the Valheim assembly DLLs found under `Valheim/Valheim_Data/Managed`.
 
 ## Activate PreBuild automations
 

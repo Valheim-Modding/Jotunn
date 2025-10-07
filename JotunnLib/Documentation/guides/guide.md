@@ -81,7 +81,7 @@ Jötunn can automatically create the publicised assemblies for you. To use this 
 ## Manual setup
 
 If you decide to disable the prebuild, you will need to:
-* Publicized assemblies are manually generated with [AssemblyPublicizer](https://github.com/CabbageCrow/AssemblyPublicizer). Please follow the instructions found on GitHub using the Valheim assembly DLLs found under `Valheim/valheim_Data/Managed`.
+* Publicized assemblies are manually generated with [AssemblyPublicizer](https://github.com/CabbageCrow/AssemblyPublicizer). Please follow the instructions found on GitHub using the Valheim assembly DLLs found under `Valheim/Valheim_Data/Managed`.
 * Reference those publicized assemblies and any of the Unity assemblies you want to use (at the very least `UnityEngine.dll`) in your mod project.
 
 # [4. PostBuild Automations](#tab/tabid-4)
