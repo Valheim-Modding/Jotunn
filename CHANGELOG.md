@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.27.0
+* Added `AssetUtils.LoadImage` wrapper to resolve .netstandard 2.1 compile issues
+* Added `AssetUtils.DuplicateTexture` to create a readable copy of a texture
+* Fixed an error if an AssetLoader loads a null m_asset while resolving mocks. It now logs a waning with the bundle path
+
 ## Version 2.26.1
 * Added gui_framework.dll to PrebuildTask publicize and reference it in the JotunnLibRefsCorlib.props
 * Fixed GUI initialization for Valheim 0.221.3, backwards compatible
@@ -7,9 +12,9 @@
 
 ## Version 2.26.0
 * Added CustomLocation loading via the SoftReferenceableAssets system to only load locations when needed. This requires special setup of the assets (thx warp)
-* Added AssetManager.GenerateAssetID(string) overload (thx warp)
-* Added AssetManager.ResolveMocksOnLoad to resolve all mocks when the SoftReference asset is loaded
-* Added AssetManager.OnSoftReferenceableAssetsReady event
+* Added `AssetManager.GenerateAssetID(string)` overload (thx warp)
+* Added `AssetManager.ResolveMocksOnLoad` to resolve all mocks when the SoftReference asset is loaded
+* Added `AssetManager.OnSoftReferenceableAssetsReady` event
 * Fixed PrefabManager.RegisterToZNetScene to skip mocks from being registered to the ZNetScene (thx warp)
 * Fixed errors when rendering broken prefabs via the RenderManager
 
