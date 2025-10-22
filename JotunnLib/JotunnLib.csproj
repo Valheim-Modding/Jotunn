@@ -162,4 +162,8 @@
     <EmbeddedResource Include="Unity\AssetBundles\jotunn" />
     <EmbeddedResource Include="Unity\AssetBundles\minimapmanager" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Unity\AssetBundles\StandaloneWindows\" />
+  </ItemGroup>
 </Project>
