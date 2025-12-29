@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.27.1
+* Fixed the Vulkan compile target of internal AssetBundles (thx MidnightsFX)
+* Fixed an issue where unloaded SoftReference location assets were still released, causing errors on access (thx warp)
+
 ## Version 2.27.0
 * Added `AssetUtils.LoadImage` wrapper to resolve .netstandard 2.1 compile issues
 * Added `AssetUtils.DuplicateTexture` to create a readable copy of a texture
