@@ -77,5 +77,5 @@ Done! You should now have all of your required dependencies resolved, such as Be
 Don't forget to add dependency tags for bepin and compatibility! This will certify your mod throws an error if ever installed without Jötunn. Click for more information about [NetworkCompatibilty](../tutorials/networkcompatibility.md).
 ```cs
 [BepInDependency(Jotunn.Main.ModGuid)]
-[NetworkCompatibilty(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
 ```
