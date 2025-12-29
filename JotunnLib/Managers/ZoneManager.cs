@@ -638,7 +638,11 @@ namespace Jotunn.Managers
                 zoneSystem.m_locations.Add(zoneLocation);
             }
 
-            zoneLocation.m_prefab.Release();
+            // Only release if the asset is currently loaded (meaning PrepareLocation called Load)
+            if (zoneLocation.m_prefab.IsLoaded)
+            {
+                zoneLocation.m_prefab.Release();
+            }
         }
 
         private static void InvokeOnVanillaLocationsAvailable() => OnVanillaLocationsAvailable?.SafeInvoke();
