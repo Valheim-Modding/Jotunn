@@ -169,7 +169,7 @@ namespace Jotunn.Managers
 
                 foreach (var skill in CustomSkills.Values)
                 {
-                    Localization.instance.AddWord($"skill_{skill.UID}", skill.LocalizedName);
+                    LocalizationManager.Instance.JotunnLocalization.AddTranslation($"skill_{skill.UID}", skill.LocalizedName);
                     self.m_skills.Add(skill.ToSkillDef());
                     Logger.LogDebug($"Registered skill {skill.Name} | ID: {skill.Identifier}");
                 }
