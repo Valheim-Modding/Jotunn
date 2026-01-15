@@ -98,7 +98,6 @@
   </Target>
 
   <PropertyGroup>
-    <VALHEIM_MANAGED>$(VALHEIM_INSTALL)/Valheim_Data/Managed</VALHEIM_MANAGED>
     <UNITY_FOLDER>$(SolutionDir)JotunnLib/Unity</UNITY_FOLDER>
   </PropertyGroup>
 
