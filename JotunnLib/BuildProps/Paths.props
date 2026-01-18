@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(SolutionDir)Environment.props" Condition="Exists('$(SolutionDir)Environment.props')" />
+  <Import Project="$(SolutionDir)Environment.props" Condition="'$(SolutionDir)' != '' AND Exists('$(SolutionDir)Environment.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)../../Environment.props" Condition="'$(SolutionDir)' == '' AND Exists('$(MSBuildThisFileDirectory)../../Environment.props')" />
   <Import Project="$(SolutionDir)DoPrebuild.props" Condition="Exists('$(SolutionDir)DoPrebuild.props') And '$(ExecutePrebuild)' == ''" />
   <Choose>
     <When Condition="($(OS) == 'Unix' OR $(OS) == 'OSX') AND $(VALHEIM_INSTALL) == ''">
@@ -21,5 +22,9 @@
   </Choose>
   <PropertyGroup Condition="$(BEPINEX_PATH)=='' AND $(VALHEIM_INSTALL) != ''">
     <BEPINEX_PATH>$(VALHEIM_INSTALL)\BepInEx</BEPINEX_PATH>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(VALHEIM_MANAGED)=='' AND $(VALHEIM_INSTALL) != ''">
+    <VALHEIM_MANAGED Condition="Exists('$(VALHEIM_INSTALL)/Valheim_Data/Managed')">$(VALHEIM_INSTALL)/Valheim_Data/Managed</VALHEIM_MANAGED>
+    <VALHEIM_MANAGED Condition="$(VALHEIM_MANAGED)=='' AND Exists('$(VALHEIM_INSTALL)/valheim_Data/Managed')">$(VALHEIM_INSTALL)/valheim_Data/Managed</VALHEIM_MANAGED>
   </PropertyGroup>
 </Project>
