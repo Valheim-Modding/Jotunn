@@ -14,6 +14,7 @@ namespace Jotunn {
             IsUnityObject = MemberType.IsSameOrSubclass(typeof(Object));
             IsClass = MemberType.IsClass;
             HasGetMethod = true;
+            HasSetMethod = true;
             EnumeratedType = MemberType.GetEnumeratedType();
             IsEnumerableOfUnityObjects = EnumeratedType?.IsSameOrSubclass(typeof(Object)) == true;
             IsEnumeratedClass = EnumeratedType?.IsClass == true;
