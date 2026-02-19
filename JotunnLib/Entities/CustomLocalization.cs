@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using Jotunn.Managers;
@@ -15,6 +16,17 @@ namespace Jotunn.Entities
         internal Dictionary<string, Dictionary<string, string>> Map { get; }
         
         private static HashSet<string> loggedInvalidTokens = new HashSet<string>();
+
+        private static bool? _yamlDotNetAvailable;
+
+        /// <summary>
+        ///     Returns true if YamlDotNet is loaded in the current AppDomain.
+        ///     Placed here (not on LocalizationManager) so it can be called without triggering
+        ///     LocalizationManager's static constructor, which requires the game runtime.
+        /// </summary>
+        internal static bool IsYamlDotNetAvailable() =>
+            _yamlDotNetAvailable ??= AppDomain.CurrentDomain.GetAssemblies()
+                .Any(a => a.GetName().Name == "YamlDotNet");
 
         /// <summary>
         ///     Default constructor.
@@ -192,7 +204,7 @@ namespace Jotunn.Entities
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            
+
             var fileContent = File.ReadAllText(path);
 
             if (fileContent is null)
@@ -200,16 +212,26 @@ namespace Jotunn.Entities
                 throw new ArgumentNullException(nameof(fileContent));
             }
 
-            if (isJson)
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            string format;
+
+            if (ext == ".yaml" || ext == ".yml")
+            {
+                AddYamlFile(Path.GetFileName(Path.GetDirectoryName(path)), fileContent);
+                format = "YAML";
+            }
+            else if (isJson)
             {
                 AddJsonFile(Path.GetFileName(Path.GetDirectoryName(path)), fileContent);
+                format = "JSON";
             }
             else
             {
                 AddLanguageFile(fileContent);
+                format = "";
             }
 
-            Logger.LogDebug($"Added {(isJson ? "Json" : "")} language file: {Path.GetFileName(path)}");
+            Logger.LogDebug($"Added {format} language file: {Path.GetFileName(path)}");
         }
 
         /// <summary> Add a json language file (match crowdin format). </summary>
@@ -255,6 +277,73 @@ namespace Jotunn.Entities
                 }
 
                 AddTranslationToMap(language, cleanedToken, translation);
+            }
+        }
+
+        /// <summary> Add a YAML language file. Keys are flat string-to-string mappings. </summary>
+        /// <param name="language"> Language for the yaml file, for example, "English" </param>
+        /// <param name="fileContent"> Entire file as string </param>
+        public void AddYamlFile(string language, string fileContent)
+        {
+            if (!IsYamlDotNetAvailable())
+            {
+                Logger.LogWarning(SourceMod,
+                    $"Cannot load YAML localization for '{language}': YamlDotNet is not loaded. " +
+                    "Mods using .yaml/.yml localization must include YamlDotNet.dll as a dependency.");
+                return;
+            }
+
+            if (!ValidateLanguage(language))
+            {
+                return;
+            }
+
+            ParseAndAddYaml(language, fileContent);
+        }
+
+        // Isolated in its own method so the JIT only resolves YamlDotNet types when actually called.
+        private void ParseAndAddYaml(string language, string fileContent)
+        {
+            Dictionary<string, string> yaml;
+
+            try
+            {
+                yaml = new YamlDotNet.Serialization.DeserializerBuilder()
+                    .IgnoreFields()
+                    .Build()
+                    .Deserialize<Dictionary<string, string>>(fileContent);
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning(SourceMod, $"Could not read {language} YAML localization: {e.Message}");
+                return;
+            }
+
+            if (yaml == null)
+            {
+                return;
+            }
+
+            if (!Map.ContainsKey(language))
+            {
+                Map.Add(language, new Dictionary<string, string>());
+            }
+
+            foreach (var tv in yaml)
+            {
+                var cleanedToken = tv.Key.TrimStart(LocalizationManager.TokenFirstChar);
+
+                if (!ValidateToken(cleanedToken))
+                {
+                    continue;
+                }
+
+                if (!ValidateTranslation(tv.Value))
+                {
+                    continue;
+                }
+
+                AddTranslationToMap(language, cleanedToken, tv.Value);
             }
         }
 

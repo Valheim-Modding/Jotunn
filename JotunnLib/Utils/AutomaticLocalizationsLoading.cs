@@ -15,6 +15,7 @@ namespace Jotunn.Utils
         {
             var jsonFormat = new HashSet<FileInfo>();
             var unityFormat = new HashSet<FileInfo>();
+            var yamlFormat = new HashSet<FileInfo>();
 
             // Json format community files
             foreach (var fileInfo in GetTranslationFiles(Paths.LanguageTranslationsFolder, CommunityTranslationFileName))
@@ -30,6 +31,16 @@ namespace Jotunn.Utils
             foreach (var fileInfo in GetTranslationFiles(Paths.LanguageTranslationsFolder, "*.language"))
             {
                 unityFormat.Add(fileInfo);
+            }
+
+            foreach (var fileInfo in GetTranslationFiles(Paths.LanguageTranslationsFolder, "*.yaml"))
+            {
+                yamlFormat.Add(fileInfo);
+            }
+
+            foreach (var fileInfo in GetTranslationFiles(Paths.LanguageTranslationsFolder, "*.yml"))
+            {
+                yamlFormat.Add(fileInfo);
             }
 
             foreach (var fileInfo in jsonFormat)
@@ -55,6 +66,27 @@ namespace Jotunn.Utils
                 catch (Exception ex)
                 {
                     Logger.LogWarning($"Exception caught while loading localization file {fileInfo}: {ex}");
+                }
+            }
+
+            if (yamlFormat.Count > 0 && !Entities.CustomLocalization.IsYamlDotNetAvailable())
+            {
+                Logger.LogWarning($"Found {yamlFormat.Count} YAML localization file(s) but YamlDotNet is not loaded. " +
+                    "Mods using .yaml/.yml localization must include YamlDotNet.dll as a dependency.");
+            }
+            else
+            {
+                foreach (var fileInfo in yamlFormat)
+                {
+                    try
+                    {
+                        var mod = BepInExUtils.GetPluginInfoFromPath(fileInfo)?.Metadata;
+                        LocalizationManager.Instance.GetLocalization(mod ?? Main.Instance.Info.Metadata).AddFileByPath(fileInfo.FullName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning($"Exception caught while loading localization file {fileInfo}: {ex}");
+                    }
                 }
             }
         }
