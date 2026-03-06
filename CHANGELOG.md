@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.28.0
+* Added YAML localization file support (thx warp)
+* Added macOS development support and an overridable VALHEIM_MANAGED variable (thx warp)
+* Fixed skill names lost in UI after language change (thx warp)
+* Fixed errors with read-only properties in mock resolution (thx warp)
+
 ## Version 2.27.1
 * Fixed the Vulkan compile target of internal AssetBundles (thx MidnightsFX)
 * Fixed an issue where unloaded SoftReference location assets were still released, causing errors on access (thx warp)
