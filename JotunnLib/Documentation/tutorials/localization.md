@@ -27,11 +27,36 @@ No matter if you let Jötunn automatically load your translation files via side 
 
 ### Format
 
-The format for localizations is a standard JSON collection as such:
+Jötunn supports two translation file formats.
+
+**JSON** (Crowdin-compatible):
 ```json
 {
   "item_evilsword": "Sword of Darkness",
   "item_evilsword_desc": "Bringing the light"
+}
+```
+
+**YAML** (`.yaml` / `.yml`):
+```yaml
+item_evilsword: Sword of Darkness
+item_evilsword_desc: Bringing the light
+```
+
+**YAML dependency**: YAML files require [YamlDotNet](https://thunderstore.io/c/valheim/p/ValheimModding/YamlDotNet/) in order to be loaded.
+If a YAML file is encountered without YamlDotNet being loaded, Jötunn will log a warning and skip the file.
+Include the dependency in your Thunderstore `manifest.json` like this:
+```json
+{
+  "name": "JotunnModStub",
+  "description": "",
+  "version_number": "0.0.1",
+  "website_url": "",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2333",
+    "ValheimModding-Jotunn-2.27.1",
+    "ValheimModding-YamlDotNet-16.3.1"
+  ]
 }
 ```
 
@@ -40,10 +65,10 @@ Jötunn will replace any `$` at the beginning of your translation keys while add
 
 ### Side loading localizations
 
-Localizations can be provide through loading side by side with your plugin.
-The folder structure which will be queried will be `Translations/{LanguageName}/{anyname}.json`, and can be placed in any sub directory within your plugin.
-An example of a path which will be read for localization at run time may be: `BepInEx/plugins/JotunnModExample/Assets/Translations/English/backpack.json`. 
-All .json files within such a directory will be iterated through and localizations added for each of those languages.
+Localizations can be provided through loading side by side with your plugin.
+The folder structure which will be queried will be `Translations/{LanguageName}/{anyname}.json` (or `.yaml` / `.yml`), and can be placed in any sub directory within your plugin.
+An example of a path which will be read for localization at run time may be: `BepInEx/plugins/JotunnModExample/Assets/Translations/English/backpack.json`.
+All `.json`, `.yaml`, and `.yml` files within such a directory will be iterated through and localizations added for each of those languages.
 
 You can find a list of language names [here](../data/localization/language-list.md).
 
@@ -108,7 +133,7 @@ private void AddLocalizations()
 
 ### Prefabs
 
-It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime via [CustomLocalization.AddJsonFile](xref:Jotunn.Entities.CustomLocalization.AddJsonFile(System.String,System.String)).
+It is also possible to package `TextAsset`'s inside of your asset bundles, and to load them into game at runtime via [CustomLocalization.AddJsonFile](xref:Jotunn.Entities.CustomLocalization.AddJsonFile(System.String,System.String)) or [CustomLocalization.AddYamlFile](xref:Jotunn.Entities.CustomLocalization.AddYamlFile(System.String,System.String)).
 In this example, we use our filenames to provide the language which we wish to add the translations for:
 
 ```cs
