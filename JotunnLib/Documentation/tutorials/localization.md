@@ -27,7 +27,7 @@ No matter if you let Jötunn automatically load your translation files via side 
 
 ### Format
 
-Jötunn supports three translation file formats.
+Jötunn supports two translation file formats.
 
 **JSON** (Crowdin-compatible):
 ```json
@@ -43,6 +43,23 @@ item_evilsword: Sword of Darkness
 item_evilsword_desc: Bringing the light
 ```
 
+**YAML dependency**: YAML files require [YamlDotNet](https://thunderstore.io/c/valheim/p/ValheimModding/YamlDotNet/) in order to be loaded.
+If a YAML file is encountered without YamlDotNet being loaded, Jötunn will log a warning and skip the file.
+Include the dependency in your Thunderstore `manifest.json` like this:
+```json
+{
+  "name": "JotunnModStub",
+  "description": "",
+  "version_number": "0.0.1",
+  "website_url": "",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2333",
+    "ValheimModding-Jotunn-2.27.1",
+    "ValheimModding-YamlDotNet-16.3.1"
+  ]
+}
+```
+
 **Note**: Other than the tokens you supply with your prefabs or Jötunn's configs, the translation keys should not be prefixed with a `$`.
 Jötunn will replace any `$` at the beginning of your translation keys while adding them to it's localization system.
 
@@ -52,8 +69,6 @@ Localizations can be provided through loading side by side with your plugin.
 The folder structure which will be queried will be `Translations/{LanguageName}/{anyname}.json` (or `.yaml` / `.yml`), and can be placed in any sub directory within your plugin.
 An example of a path which will be read for localization at run time may be: `BepInEx/plugins/JotunnModExample/Assets/Translations/English/backpack.json`.
 All `.json`, `.yaml`, and `.yml` files within such a directory will be iterated through and localizations added for each of those languages.
-
-**YAML dependency**: YAML files require `YamlDotNet.dll` to be present at runtime. Jötunn does not ship YamlDotNet itself — mods using `.yaml`/`.yml` translation files must declare it as a dependency in their Thunderstore `manifest.json`. If YAML files are found but YamlDotNet is not loaded, Jötunn will log a warning and skip those files.
 
 You can find a list of language names [here](../data/localization/language-list.md).
 
