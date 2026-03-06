@@ -311,7 +311,7 @@ namespace Jotunn.Managers
                 return;
             }
 
-            if (member.IsUnityObject && member.HasGetMethod)
+            if (member.IsUnityObject && member.HasGetMethod && member.HasSetMethod)
             {
                 var target = (Object)member.GetValue(objectToFix);
                 var realPrefab = GetRealPrefabFromMock(target, member.MemberType);
@@ -324,7 +324,7 @@ namespace Jotunn.Managers
                     TryFixMaterial(material);
                 }
             }
-            else if (member.IsEnumeratedClass && member.IsEnumerableOfUnityObjects)
+            else if (member.IsEnumeratedClass && member.IsEnumerableOfUnityObjects && member.HasSetMethod)
             {
                 var isArray = member.MemberType.IsArray;
                 var isList = member.MemberType.IsGenericType && member.MemberType.GetGenericTypeDefinition() == typeof(List<>);

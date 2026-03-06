@@ -4,6 +4,7 @@ namespace Jotunn {
     internal abstract class MemberBase
     {
         public bool HasGetMethod { get; protected set; }
+        public bool HasSetMethod { get; protected set; }
         public Type MemberType { get; protected set; }
         public Type EnumeratedType { get; protected set; }
         public bool IsUnityObject { get; protected set; }
