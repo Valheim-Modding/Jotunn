@@ -6,7 +6,7 @@ New Assets can be created with Unity and imported into Valheim using Jötunn. In
 
 Creation Tools
 * [Visual Studio](https://visualstudio.microsoft.com/de/downloads/) - Editor for our plugin code
-* [Unity 6000.0.46](https://unity3d.com/unity/whats-new/6000.0.46) - Game engine that Valheim runs in
+* [Unity 6000.0.61](https://unity3d.com/unity/whats-new/6000.0.61) - Game engine that Valheim runs in
 
 Game Mods (install these into your game as our mod has dependencies on them)
 * [Jötunn, the Valheim Library](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/) - Mod with convenience methods we will use
@@ -22,7 +22,7 @@ To add an item to the game, a mod maker will have to:
 
 ## Unity Editor Setup
 
-Valheim uses Unity Version **6000.0.46**
+Valheim uses Unity Version **6000.0.61**
 
 If you don't have Unity already installed, download [UnityHub](https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe) from their website or install it with the Visual Studio Installer via `Individual Components` -> `Visual Studio Tools for Unity`. You will need an Unity account to register your PC and get a free licence. [Create the account](https://id.unity.com/account/new), login with it in UnityHub and get your licence via `Settings` -> `Licence Management`.
 
