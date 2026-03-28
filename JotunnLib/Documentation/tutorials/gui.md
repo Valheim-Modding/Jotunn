@@ -177,8 +177,12 @@ var sprite = GUIManager.Instance.GetSprite("text_field");
 
 The [GUIManager](xref:Jotunn.Managers.GUIManager) also comes with some useful instance properties for your custom assets to resemble the vanilla Valheim style.
 
-- Font AveriaSerif
 - Font AveriaSerifBold (the default Valheim font)
+- Font AveriaSerif (default font normal faced)
+- Font NorseBold ("Runic" font in bold)
+- Font Norse ("Runic" font normal faced)
+- TMP_FontAsset TMP_AveriaSansLibre ("Valheim" font as a TMPro asset)
+- TMP_FontAsset TMP_Norse ("Runic" font as a TMPro asset)
 - Color ValheimOrange
 - ColorBlock ValheimScrollbarHandleColorBlock
 - ColorBlock ValheimToggleColorBlock

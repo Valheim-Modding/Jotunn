@@ -6,6 +6,7 @@ using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.GUI;
 using Jotunn.Utils;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -164,6 +165,16 @@ namespace Jotunn.Managers
         ///     Valheim's rune-like font, bold faced.
         /// </summary>
         public Font NorseBold { get; private set; }
+        
+        /// <summary>
+        ///     Valheim's standard font as a TMPro FontAsset
+        /// </summary>
+        public TMP_FontAsset TMP_AveriaSansLibre { get; private set; }
+        
+        /// <summary>
+        ///     Valheim's rune-like font as a TMPro FontAsset
+        /// </summary>
+        public TMP_FontAsset TMP_Norse { get; private set; }
 
         /// <summary>
         ///     <see cref="DefaultControls.Resources"/> with default Valheim assets.
@@ -381,11 +392,15 @@ namespace Jotunn.Managers
                     AveriaSerifBold = PrefabManager.Cache.GetPrefab<Font>("AveriaSerifLibre-Bold");
                     Norse = PrefabManager.Cache.GetPrefab<Font>("Norse");
                     NorseBold = PrefabManager.Cache.GetPrefab<Font>("Norsebold");
+                    TMP_AveriaSansLibre = PrefabManager.Cache.GetPrefab<TMP_FontAsset>("Valheim-AveriaSansLibre");
+                    TMP_Norse = PrefabManager.Cache.GetPrefab<TMP_FontAsset>("Valheim-Norse");
 
                     AssertMissingAsset(AveriaSerif, nameof(AveriaSerif), nameof(Font));
                     AssertMissingAsset(AveriaSerifBold, nameof(AveriaSerifBold), nameof(Font));
                     AssertMissingAsset(Norse, nameof(Norse), nameof(Font));
                     AssertMissingAsset(NorseBold, nameof(NorseBold), nameof(Font));
+                    AssertMissingAsset(TMP_AveriaSansLibre, nameof(TMP_AveriaSansLibre), nameof(TMP_FontAsset));
+                    AssertMissingAsset(TMP_Norse, nameof(TMP_Norse), nameof(TMP_FontAsset));
 
                     // DefaultControls.Resources pack
                     AssetBundle jotunnBundle = AssetUtils.LoadAssetBundleFromResources("jotunn", typeof(Main).Assembly);

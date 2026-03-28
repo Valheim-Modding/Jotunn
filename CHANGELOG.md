@@ -1,4 +1,6 @@
 # Changelog
+## Version 2.28.1
+* Added TMPro FontAssets shortcuts to the GUIManager
 
 ## Version 2.28.0
 * Added YAML localization file support (thx warp)
