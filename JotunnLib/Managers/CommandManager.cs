@@ -129,7 +129,7 @@ namespace Jotunn.Managers
                 {
                     command.Name,
                     command.Help,
-                    (Terminal.ConsoleEvent)((args) => command.Run(args.Args.Skip(1).ToArray())),
+                    (Terminal.ConsoleEvent)((args) => command.Run(args.Args.Skip(1).ToArray(), args.Context)),
                     command.IsCheat,
                     command.IsNetwork,
                     command.OnlyServer,

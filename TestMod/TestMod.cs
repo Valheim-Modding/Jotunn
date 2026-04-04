@@ -812,6 +812,7 @@ namespace TestMod
             CommandManager.Instance.AddConsoleCommand(new RemoveCategoryTabCommand());
             CommandManager.Instance.AddConsoleCommand(new ResetCartographyCommand());
             CommandManager.Instance.AddConsoleCommand(new AdminCheckCommand());
+            CommandManager.Instance.AddConsoleCommand(new EchoCommand());
         }
 
         // Register new skills
