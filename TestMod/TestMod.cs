@@ -102,7 +102,6 @@ namespace TestMod
             AddItemsWithConfigs();
             AddMockedItems();
             AddKitbashedPieces();
-            AddPieceCategories();
             AddInvalidEntities();
             AddConePiece();
             AddCustomClutter();
@@ -121,6 +120,9 @@ namespace TestMod
 
             // Create a custom item with rendered icons
             PrefabManager.OnVanillaPrefabsAvailable += AddItemsWithRenderedIcons;
+            
+            // Create pieces with shaders available and custom categories
+            PrefabManager.OnVanillaPrefabsAvailable += AddPieceCategories;
 
             // Create custom locations and vegetation
             PrefabManager.OnVanillaPrefabsAvailable += AddCustomLocationsAndVegetation;
@@ -129,7 +131,7 @@ namespace TestMod
             ZoneManager.OnVanillaClutterAvailable += ModifyVanillaClutter;
 
             // Create custom creatures and spawns
-            AddCustomCreaturesAndSpawns();
+            CreatureManager.OnVanillaCreaturesAvailable += AddCustomCreaturesAndSpawns;
             // Hook creature manager to get access to vanilla creature prefabs
             CreatureManager.OnVanillaCreaturesAvailable += ModifyAndCloneVanillaCreatures;
 
@@ -158,7 +160,7 @@ namespace TestMod
             SetVersion();
 
             // lulzthing for the win!
-            CreatureManager.OnVanillaCreaturesAvailable += () =>
+            PrefabManager.OnVanillaPrefabsAvailable += () =>
             {
                 var fab = PrefabManager.Instance.GetPrefab("piece_lel");
                 ZNetView.m_forceDisableInit = true;
@@ -1242,6 +1244,7 @@ namespace TestMod
             if (CP.PiecePrefab)
             {
                 var prefab = CP.PiecePrefab;
+                prefab.GetComponent<MeshRenderer>().material.shader = PrefabManager.Cache.GetPrefab<Shader>("Custom/Piece");
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
 
                 PieceManager.Instance.AddPiece(CP);
@@ -1261,6 +1264,7 @@ namespace TestMod
             if (CP.PiecePrefab)
             {
                 var prefab = CP.PiecePrefab;
+                prefab.GetComponent<MeshRenderer>().material.shader = PrefabManager.Cache.GetPrefab<Shader>("Custom/Piece");
                 prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
                 prefab.GetComponent<MeshRenderer>().material.color = Color.grey;
 
@@ -1680,6 +1684,7 @@ namespace TestMod
             lulzItem.ItemPrefab.AddComponent<Rigidbody>();
 
             // Set our lulzcube test texture on the first material found
+            lulzItem.ItemPrefab.GetComponentInChildren<MeshRenderer>().material.shader = PrefabManager.Cache.GetPrefab<Shader>("Custom/Piece");
             lulzItem.ItemPrefab.GetComponentInChildren<MeshRenderer>().material.mainTexture = lulztex;
 
             // Make it smol

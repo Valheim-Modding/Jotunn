@@ -88,6 +88,7 @@ namespace TestMod
                 Category = "Lulzies."  // Test custom category
             });
             PieceManager.Instance.AddPiece(CP);
+            CP.PiecePrefab.GetComponent<MeshRenderer>().material.shader = PrefabManager.Cache.GetPrefab<Shader>("Custom/Piece");
             CP.PiecePrefab.GetComponent<MeshRenderer>().material.mainTexture = var4.texture;
 
             // Whoops, what a test...
