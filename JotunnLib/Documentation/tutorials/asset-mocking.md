@@ -1,4 +1,4 @@
-﻿# Mock References
+# Mock References
 
 What are mock references? What do they do? What do they solve?
 
@@ -79,6 +79,27 @@ private void AddMockedItems()
 > You don't need to copy vanilla prefabs in order to use mocked references. You can facilitate the system using you own prefabs, too. Just make sure to create a custom entity using that prefab (CustomPrefab, CustomItem, etc) and set the fixReference parameter to true.
 
 If you have been following the Unity Asset Creation guide, you can return back to where you [left off](asset-creation.md#assetbundle).
+
+### Abstractly Named Assets
+
+Some game assets you may wish to mock can not be easily targeted because they are not strongly named, or have multiple components of the same type that can be targeted. You can target children of a strongly named asset using the format ``JVLmock_AssetName__HierarchyName`` using double underscores to specify the child path.
+
+For example, it is common for mesh objects to be named ``default`` and thus cannot be directly targeted. The mesh of the Thistle prefab can be targeted by creating a placeholder mesh cube and naming it ``JVLmock_Thistle__attach``.
+
+![thistle hierarchy](../images/data/thistle_hierarchy.png)
+
+Another example, some assets may have multiple like components making it harder to target the one you want, you can specify a longer path name when necessary such as ``JVLmock_goblin_totempole__Worn__high`` specifying as many children in the hierarchy as needed.
+
+![goblintotem hierarchy](../images/data/goblintotem_hierarchy.png)
+
+### GameObject Mocking in Hierarchy
+
+If the GameObject asset is strongly named you can use empty game objects (or objects with just a visual mesh and material for manipulation) to represent these in your unity project (rather than mocking the individual components). This is especially useful when creating Locations or Dungeons that have a large amount of objects to mock to replace with vanilla GameObjects.
+
+![mocking in hierarchy](../images/data/mocking_in_hierarchy.png)
+![mocking in hierarchy2](../images/data/mocking_in_hierarchy2.png)
+
+Remember that including vanilla assets in your project defeats the purpose of mocking! Be sure to remove them from your asset bundles.
 
 ## Soft Referenceable Assets
 
