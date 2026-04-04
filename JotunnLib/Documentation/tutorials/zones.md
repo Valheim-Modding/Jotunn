@@ -152,7 +152,7 @@ Jötunn uses the [LocationConfig](xref:Jotunn.Configs.LocationConfig) combined w
 
 Use `ZoneManager.Instance.GetZoneLocation` to get a reference to the `ZoneLocation`.
 
-You can add prefabs to the `m_locationPrefab` to add them wherever this location is placed:
+Since the SoftReferencable system was added to the game you can not add prefabs to the `m_locationPrefab` anymore but only edit the `ZoneLocation` properties.
 
 ```cs
 void Awake()
@@ -163,14 +163,11 @@ void Awake()
 void ModifyEikthyrAltar()
 {
     var eikhtyrLocation = ZoneManager.Instance.GetZoneLocation("Eikthyrnir");
-    var lulzCubePrefab = PrefabManager.Instance.GetPrefab("piece_lul");
-
-    var eikhtyrCube = Instantiate(lulzCubePrefab, eikhtyrLocation.m_prefab.transform);
-    eikhtyrCube.transform.localPosition = new Vector3(-8.52f, 5.37f, -0.92f);
+    eikhtyrLocation.m_exteriorRadius = 20f; //More space around the altar
+    
+    // Not unregistering this hook, it needs to run every world load
 }
 ```
-
-![Modified Eikthyr Location](../images/data/modifyEikthyrLocation.png)
 
 ### Creating copies of existing locations
 
@@ -188,6 +185,17 @@ void CreateClonedEikthyrAltar()
     CustomLocation myEikthyrLocation = ZoneManager.Instance.CreateClonedLocation("MyEikthyrAltar", "Eikthyrnir");
     myEikthyrLocation.ZoneLocation.m_exteriorRadius = 1f; // Easy to place :D
     myEikthyrLocation.ZoneLocation.m_quantity = 20; // MOAR
+    
+    myEikthyrLocation.ZoneLocation.m_prefab.Load(); // load and keep loaded, since we modify it
+    
+    // Stack of lulzcubes to easily spot the instances
+    for (int i = 0; i < 40; i++)
+    {
+        var lulzCube = Instantiate(lulzCubePrefab, myEikthyrLocation.ZoneLocation.m_prefab.Asset.transform);
+        lulzCube.name = lulzCubePrefab.name;
+        lulzCube.transform.localPosition = new Vector3(0, i + 3, 0);
+        lulzCube.transform.localRotation = Quaternion.Euler(0, i * 30, 0);
+    }
 
     // unsubscribe to only execute once, the cloned location is saved in the ZoneManager
     ZoneManager.OnVanillaLocationsAvailable -= CreateClonedEikthyrAltar;
