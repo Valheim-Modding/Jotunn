@@ -56,7 +56,7 @@ private void Awake()
 ```
 
 ### Getting the Terminal context
-If you need to know from which Terminal your command was executed from, you can also overwrite `Run(string[] args, Terminal context)` from the base class. This will give you the `Terminal` instance, which is either the Console or the Chat of Valheim. Note that you will have to use `context.AddString()` for output on the calling Terminal instead of directly writing to `Console.instance`.
+If you need to know from which Terminal your command was executed from, you can override `Run(string[] args, Terminal context)` from the base class instead. This will give you the `Terminal` instance, which is either the Console or the Chat of Valheim. Note that you will have to use `context.AddString()` for output on the calling Terminal instead of directly writing to `Console.instance`.
 
 ```cs
 public class EchoCommand : ConsoleCommand
