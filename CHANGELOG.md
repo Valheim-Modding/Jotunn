@@ -1,5 +1,6 @@
 # Changelog
-## Version 2.28.1
+## Version 2.29.0
+* Added new method in ConsoleCommand to take a Terminal context parameter, so mods can write output to either Console or Chat depending on where the command was executed from. Backwards compatible. For more info on that see https://valheim-modding.github.io/Jotunn/tutorials/console-commands.html
 * Added TMPro FontAssets shortcuts to the GUIManager
 
 ## Version 2.28.0

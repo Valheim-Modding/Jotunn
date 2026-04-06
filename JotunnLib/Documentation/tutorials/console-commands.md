@@ -54,3 +54,25 @@ private void Awake()
     CommandManager.Instance.AddConsoleCommand(new BetterSpawnCommand());
 }
 ```
+
+### Getting the Terminal context
+If you need to know from which Terminal your command was executed from, you can override `Run(string[] args, Terminal context)` from the base class instead. This will give you the `Terminal` instance, which is either the Console or the Chat of Valheim. Note that you will have to use `context.AddString()` for output on the calling Terminal instead of directly writing to `Console.instance`.
+
+```cs
+public class EchoCommand : ConsoleCommand
+{
+    public override string Name => "echo";
+
+    public override string Help => "Echoes all text entered to the console or chat";
+
+    public override void Run(string[] args, Terminal context)
+    {
+        if (args.Length < 1)
+        {
+            context.AddString("Usage: echo <text>");
+        }
+
+        context.AddString(string.Join(" ", args, 0, args.Length));
+    }
+}
+```

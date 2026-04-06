@@ -23,12 +23,12 @@ namespace Jotunn.Entities
         public virtual bool IsCheat => false;
 
         /// <summary>
-        ///     If true, this command will be allowed in networked play.
+        ///     If true, this command will only be allowed in networked play.
         /// </summary>
         public virtual bool IsNetwork => false;
 
         /// <summary>
-        ///     If true, and IsNetwork is true, this command will be allowed in networked play, but only for the server.
+        ///     If true, and IsNetwork is true, this command will only be allowed in networked play, but only for the server.
         /// </summary>
         public virtual bool OnlyServer => false;
 
@@ -41,8 +41,25 @@ namespace Jotunn.Entities
         ///     The function that will be called when the user runs your console command, with space-delimited arguments.
         /// </summary>
         /// <param name="args">The arguments the user types, with spaces being the delimiter.</param>
-        public abstract void Run(string[] args);
+        public virtual void Run(string[] args)
+        {
+            
+        }
 
+        /// <summary>
+        ///     The function that will be called when the user runs your console command, with space-delimited arguments and
+        ///     a context <see cref="Terminal"/> object (Console or Chat). Use context?.AddString() to write to the respective
+        ///     output.
+        /// </summary>
+        /// <param name="args">The arguments the user types, with spaces being the delimiter.</param>
+        /// <param name="context">Terminal from which this command is run (Console or Chat window)</param>
+        public virtual void Run(string[] args, Terminal context)
+        {
+            // CommandManager always wires this method to the vanilla Terminal commands
+            // so we call the one without context one for backward compatibility
+            Run(args);
+        }
+        
         /// <summary>
         ///     Override this function to return a list of strings that are valid options for your command
         /// </summary>
