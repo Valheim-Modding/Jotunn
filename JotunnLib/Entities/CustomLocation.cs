@@ -95,17 +95,19 @@ namespace Jotunn.Entities
             else
             {
                 Location = exteriorPrefab.AddComponent<Location>();
-                Location.m_clearArea = locationConfig.ClearArea;
-                Location.m_exteriorRadius = locationConfig.ExteriorRadius;
+                if (locationConfig.ClearArea.HasValue) Location.m_clearArea = locationConfig.ClearArea.Value;
+                if (locationConfig.ExteriorRadius.HasValue) Location.m_exteriorRadius = locationConfig.ExteriorRadius.Value;
                 Location.m_interiorPrefab = interiorPrefab;
                 Location.m_hasInterior = locationConfig.HasInterior;
-                Location.m_interiorRadius = locationConfig.InteriorRadius;
+                if (locationConfig.InteriorRadius.HasValue) Location.m_interiorRadius = locationConfig.InteriorRadius.Value;
                 Location.m_interiorEnvironment = locationConfig.InteriorEnvironment;
             }
 
             ZoneLocation = locationConfig.GetZoneLocation();
             ZoneLocation.m_prefab = new SoftReference<GameObject>(AssetManager.Instance.AddAsset(exteriorPrefab));
             ZoneLocation.m_prefabName = exteriorPrefab.name;
+
+            SyncZoneLocationFromComponent(Location, locationConfig);
 
             FixReference = fixReference;
         }
@@ -124,6 +126,7 @@ namespace Jotunn.Entities
                 return;
             }
 
+            _locationConfig = locationConfig;
             var parent = ZoneManager.Instance.LocationContainer.transform;
             AssetManager.Instance.ResolveMocksOnLoad(softReferencePrefab, parent, OnLocationResolve);
             Name = softReferencePrefab.Name;
@@ -134,12 +137,31 @@ namespace Jotunn.Entities
             SoftReference = true;
         }
 
+        private readonly LocationConfig _locationConfig;
+
         private void OnLocationResolve(GameObject gameObject)
         {
+            if (gameObject.TryGetComponent<Location>(out var location))
+            {
+                SyncZoneLocationFromComponent(location, _locationConfig);
+            }
+
             if (gameObject.TryGetComponent<ZoneSystem.ZoneLocation>(out var zoneLocation))
             {
                 ZoneManager.Instance.PrepareLocation(zoneLocation, SourceMod);
             }
+        }
+
+        private void SyncZoneLocationFromComponent(Location location, LocationConfig locationConfig)
+        {
+            if (location == null || ZoneLocation == null)
+            {
+                return;
+            }
+
+            if (!locationConfig.ExteriorRadius.HasValue) ZoneLocation.m_exteriorRadius = location.m_exteriorRadius;
+            if (!locationConfig.InteriorRadius.HasValue) ZoneLocation.m_interiorRadius = location.m_interiorRadius;
+            if (!locationConfig.ClearArea.HasValue) ZoneLocation.m_clearArea = location.m_clearArea;
         }
 
         /// <summary>

@@ -44,8 +44,9 @@ namespace Jotunn.Configs
 
         /// <summary>
         ///     Radius of the location. Terrain delta is calculated within this circle.
+        ///     If null, falls back to the prefab's <see cref="Location"/> component value when one exists.
         /// </summary>
-        public float ExteriorRadius { get; set; } = 10f;
+        public float? ExteriorRadius { get; set; }
 
         /// <summary>
         ///     Attempt to place in the central zone first
@@ -129,9 +130,10 @@ namespace Jotunn.Configs
         public bool HasInterior { get; set; }
 
         /// <summary>
-        ///     Radius of the interior attached to the location
+        ///     Radius of the interior attached to the location.
+        ///     If null, falls back to the prefab's <see cref="Location"/> component value when one exists.
         /// </summary>
-        public float InteriorRadius { get; set; }
+        public float? InteriorRadius { get; set; }
 
         /// <summary>
         ///     Environment string used by the interior
@@ -159,9 +161,10 @@ namespace Jotunn.Configs
         public bool IconAlways { get; set; }
 
         /// <summary>
-        ///     Enable to forbid Vegetation from spawning inside the circle defined by <see cref="ExteriorRadius"/>
+        ///     Enable to forbid Vegetation from spawning inside the circle defined by <see cref="ExteriorRadius"/>.
+        ///     If null, falls back to the prefab's <see cref="Location"/> component value when one exists.
         /// </summary>
-        public bool ClearArea { get; set; }
+        public bool? ClearArea { get; set; }
 
         /// <summary>
         ///     Create a new <see cref="LocationConfig"/>
@@ -218,9 +221,9 @@ namespace Jotunn.Configs
                 m_biomeArea = BiomeArea,
                 m_quantity = Quantity,
                 m_prioritized = Priotized,
-                m_interiorRadius = InteriorRadius,
-                m_exteriorRadius = ExteriorRadius,
-                m_clearArea = ClearArea,
+                m_interiorRadius = InteriorRadius ?? 0f,
+                m_exteriorRadius = ExteriorRadius ?? 10f,
+                m_clearArea = ClearArea ?? false,
                 m_centerFirst = CenterFirst,
                 m_forestTresholdMin = ForestTresholdMin,
                 m_forestTresholdMax = ForestTrasholdMax,
