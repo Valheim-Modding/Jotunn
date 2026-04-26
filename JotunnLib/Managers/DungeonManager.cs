@@ -46,7 +46,7 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Container for Jötunn's DungeonRooms in the DontDestroyOnLoad scene.
         /// </summary>
-        private GameObject DungeonRoomContainer;
+        internal GameObject DungeonRoomContainer;
 
         /// <summary>
         ///     Hide .ctor
@@ -127,8 +127,12 @@ namespace Jotunn.Managers
                 return false;
             }
 
-            customRoom.Prefab.transform.SetParent(DungeonRoomContainer.transform);
-            customRoom.Prefab.SetActive(true);
+            if (!customRoom.SoftReference)
+            {
+                customRoom.Prefab.transform.SetParent(DungeonRoomContainer.transform);
+                customRoom.Prefab.SetActive(true);
+            }
+
             Rooms.Add(customRoom.Name, customRoom);
             return true;
         }
@@ -230,7 +234,7 @@ namespace Jotunn.Managers
 
             foreach (CustomRoom room in Rooms.Values)
             {
-                int stableHashCode = room.Prefab.name.GetStableHashCode();
+                int stableHashCode = room.Name.GetStableHashCode();
                 if (hashToName.ContainsKey(stableHashCode))
                 {
                     Logger.LogWarning($"Room {room.Name} is already registered with hash {stableHashCode}");
@@ -272,7 +276,7 @@ namespace Jotunn.Managers
                     try
                     {
                         Logger.LogDebug($"Adding custom room {customRoom.Name} with {customRoom.ThemeName} theme");
-                        if (customRoom.FixReference)
+                        if (customRoom.FixReference && !customRoom.SoftReference)
                         {
                             customRoom.Prefab.FixReferences(true);
                             customRoom.FixReference = false;
@@ -314,7 +318,7 @@ namespace Jotunn.Managers
                     Logger.LogDebug($"This dungeon generator has a custom theme = {proxy.m_themeName}, adding available rooms");
 
                     var selectedRooms = Rooms.Values
-                        .Where(r => r.Room.m_enabled)
+                        .Where(r => r.RoomData.m_enabled)
                         .Where(r => r.ThemeName == proxy.m_themeName);
 
                     foreach (var room in selectedRooms)
@@ -329,7 +333,7 @@ namespace Jotunn.Managers
                     Logger.LogDebug($"Adding additional rooms of type {self.m_themes} to available rooms");
 
                     var selectedRooms = Rooms.Values
-                        .Where(r => r.Room.m_enabled)
+                        .Where(r => r.RoomData.m_enabled)
                         .Where(r => Enum.TryParse(r.ThemeName, false, out Room.Theme theme) ? theme != Room.Theme.None && self.m_themes.HasFlag(theme) : false);
 
                     foreach (var room in selectedRooms)

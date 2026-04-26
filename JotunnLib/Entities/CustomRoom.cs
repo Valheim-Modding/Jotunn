@@ -39,6 +39,12 @@ namespace Jotunn.Entities
         public string ThemeName { get; set; }
 
         /// <summary>
+        ///     Indicator if room is added from SoftReferenceableAssets.<br />
+        ///     Used to delay mocking prefabs until DungeonGenerator loads the room.
+        /// </summary>
+        public bool SoftReference { get; set; }
+
+        /// <summary>
         ///     Associated <see cref="DungeonDB.RoomData"/> holding data used during generation.
         /// </summary>
         public DungeonDB.RoomData RoomData { get; private set; }
@@ -116,7 +122,44 @@ namespace Jotunn.Entities
                 m_enabled = Room.m_enabled,
                 m_theme = GetRoomTheme(ThemeName)
             };
-        }        
+        }
+
+        /// <summary>
+        ///     Custom room from a SoftReference prefab with a <see cref="RoomConfig"/> attached. Using SoftReference system.<br />
+        ///     The prefab is not loaded until the DungeonGenerator needs it during generation.
+        /// </summary>
+        /// <param name="softReferencePrefab">A <see cref="SoftReference{T}"/> to the room prefab registered in a SoftRef manifest.</param>
+        /// <param name="fixReference">If true references for <see cref="Entities.Mock{T}"/> objects get resolved at runtime by Jötunn.</param>
+        /// <param name="roomConfig">The config for this custom room.</param>
+        public CustomRoom(SoftReference<GameObject> softReferencePrefab, bool fixReference, RoomConfig roomConfig) : base(Assembly.GetCallingAssembly())
+        {
+            if (!softReferencePrefab.IsValid)
+            {
+                Logger.LogError($"SoftReference invalid for room prefab: {softReferencePrefab.Name}");
+                return;
+            }
+
+            AssetManager.Instance.ResolveMocksOnLoad(softReferencePrefab, DungeonManager.Instance.DungeonRoomContainer.transform, OnRoomResolve);
+
+            Name = softReferencePrefab.Name;
+            ThemeName = roomConfig.ThemeName;
+            FixReference = fixReference;
+            SoftReference = true;
+
+            RoomData = new DungeonDB.RoomData()
+            {
+                m_prefab = softReferencePrefab,
+                m_loadedRoom = null,
+                m_enabled = roomConfig.Enabled ?? true,
+                m_theme = GetRoomTheme(ThemeName)
+            };
+        }
+
+        private void OnRoomResolve(GameObject gameObject)
+        {
+            // Mock references resolved by MockResolutionContext.
+            // Room component lazy-loaded by vanilla's RoomData.RoomInPrefab.
+        }
 
         /// <summary>
         ///     Helper method to determine if a prefab with a given name is a custom room created with Jötunn.
