@@ -95,11 +95,11 @@ namespace Jotunn.Entities
             else
             {
                 Location = exteriorPrefab.AddComponent<Location>();
-                if (locationConfig.ClearArea.HasValue) Location.m_clearArea = locationConfig.ClearArea.Value;
-                if (locationConfig.ExteriorRadius.HasValue) Location.m_exteriorRadius = locationConfig.ExteriorRadius.Value;
+                if (locationConfig.HasClearArea) Location.m_clearArea = locationConfig.ClearArea;
+                if (locationConfig.HasExteriorRadius) Location.m_exteriorRadius = locationConfig.ExteriorRadius;
                 Location.m_interiorPrefab = interiorPrefab;
                 Location.m_hasInterior = locationConfig.HasInterior;
-                if (locationConfig.InteriorRadius.HasValue) Location.m_interiorRadius = locationConfig.InteriorRadius.Value;
+                if (locationConfig.HasInteriorRadius) Location.m_interiorRadius = locationConfig.InteriorRadius;
                 Location.m_interiorEnvironment = locationConfig.InteriorEnvironment;
             }
 
@@ -159,9 +159,9 @@ namespace Jotunn.Entities
                 return;
             }
 
-            if (!locationConfig.ExteriorRadius.HasValue) ZoneLocation.m_exteriorRadius = location.m_exteriorRadius;
-            if (!locationConfig.InteriorRadius.HasValue) ZoneLocation.m_interiorRadius = location.m_interiorRadius;
-            if (!locationConfig.ClearArea.HasValue) ZoneLocation.m_clearArea = location.m_clearArea;
+            if (!locationConfig.HasExteriorRadius) ZoneLocation.m_exteriorRadius = location.m_exteriorRadius;
+            if (!locationConfig.HasInteriorRadius) ZoneLocation.m_interiorRadius = location.m_interiorRadius;
+            if (!locationConfig.HasClearArea) ZoneLocation.m_clearArea = location.m_clearArea;
         }
 
         /// <summary>

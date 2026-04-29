@@ -42,11 +42,23 @@ namespace Jotunn.Configs
         [Obsolete("This property is unused by Valheim.")]
         public float ChanceToSpawn { get; set; } = 10f;
 
+        private float? _exteriorRadius;
+
         /// <summary>
         ///     Radius of the location. Terrain delta is calculated within this circle.
-        ///     If null, falls back to the prefab's <see cref="Location"/> component value when one exists.
+        ///     If left unset, falls back to the prefab's <see cref="Location"/> component value when one exists.
+        ///     Defaults to 10f when no value has been set and no component is present.
         /// </summary>
-        public float? ExteriorRadius { get; set; }
+        public float ExteriorRadius
+        {
+            get => _exteriorRadius ?? 10f;
+            set => _exteriorRadius = value;
+        }
+
+        /// <summary>
+        ///     True when the caller explicitly assigned a value to <see cref="ExteriorRadius"/>.
+        /// </summary>
+        internal bool HasExteriorRadius => _exteriorRadius.HasValue;
 
         /// <summary>
         ///     Attempt to place in the central zone first
@@ -129,11 +141,22 @@ namespace Jotunn.Configs
         /// </summary>
         public bool HasInterior { get; set; }
 
+        private float? _interiorRadius;
+
         /// <summary>
         ///     Radius of the interior attached to the location.
-        ///     If null, falls back to the prefab's <see cref="Location"/> component value when one exists.
+        ///     If left unset, falls back to the prefab's <see cref="Location"/> component value when one exists.
         /// </summary>
-        public float? InteriorRadius { get; set; }
+        public float InteriorRadius
+        {
+            get => _interiorRadius ?? 0f;
+            set => _interiorRadius = value;
+        }
+
+        /// <summary>
+        ///     True when the caller explicitly assigned a value to <see cref="InteriorRadius"/>.
+        /// </summary>
+        internal bool HasInteriorRadius => _interiorRadius.HasValue;
 
         /// <summary>
         ///     Environment string used by the interior
@@ -160,11 +183,22 @@ namespace Jotunn.Configs
         /// </summary>
         public bool IconAlways { get; set; }
 
+        private bool? _clearArea;
+
         /// <summary>
         ///     Enable to forbid Vegetation from spawning inside the circle defined by <see cref="ExteriorRadius"/>.
-        ///     If null, falls back to the prefab's <see cref="Location"/> component value when one exists.
+        ///     If left unset, falls back to the prefab's <see cref="Location"/> component value when one exists.
         /// </summary>
-        public bool? ClearArea { get; set; }
+        public bool ClearArea
+        {
+            get => _clearArea ?? false;
+            set => _clearArea = value;
+        }
+
+        /// <summary>
+        ///     True when the caller explicitly assigned a value to <see cref="ClearArea"/>.
+        /// </summary>
+        internal bool HasClearArea => _clearArea.HasValue;
 
         /// <summary>
         ///     Create a new <see cref="LocationConfig"/>
@@ -221,9 +255,9 @@ namespace Jotunn.Configs
                 m_biomeArea = BiomeArea,
                 m_quantity = Quantity,
                 m_prioritized = Priotized,
-                m_interiorRadius = InteriorRadius ?? 0f,
-                m_exteriorRadius = ExteriorRadius ?? 10f,
-                m_clearArea = ClearArea ?? false,
+                m_interiorRadius = InteriorRadius,
+                m_exteriorRadius = ExteriorRadius,
+                m_clearArea = ClearArea,
                 m_centerFirst = CenterFirst,
                 m_forestTresholdMin = ForestTresholdMin,
                 m_forestTresholdMax = ForestTrasholdMax,
