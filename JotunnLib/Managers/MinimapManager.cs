@@ -333,7 +333,7 @@ namespace Jotunn.Managers
                     if (Overlays.Values.Any(x => !x.IgnoreFog && x.Dirty) ||
                         Drawings.Values.Any(x => x.FogEnabled && x.FogDirty))
                     {
-                        Graphics.CopyTexture(Minimap.instance.m_fogTexture, FogFilter);
+                        BlitCopy(Minimap.instance.m_fogTexture, FogFilter);
                     }
                     if (Drawings.Values.Any(x => x.FogDirty))
                     {
@@ -391,7 +391,7 @@ namespace Jotunn.Managers
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
             
-            Graphics.CopyTexture(TransparentTex, OverlayTex);
+            BlitCopy(TransparentTex, OverlayTex);
             foreach (var overlay in Overlays.Values.OrderBy(x => x.IgnoreFog ? 1 : 0))
             {
                 if (overlay.Enabled)
@@ -414,7 +414,7 @@ namespace Jotunn.Managers
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
 
-            Graphics.CopyTexture(Minimap.instance.m_mapTexture, MainTex);
+            BlitCopy(Minimap.instance.m_mapTexture, MainTex);
             foreach (var overlay in Drawings.Values)
             {
                 if (overlay.Enabled && overlay.MainEnabled)
@@ -436,7 +436,7 @@ namespace Jotunn.Managers
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
 
-            Graphics.CopyTexture(Minimap.instance.m_heightTexture, HeightFilter);
+            BlitCopy(Minimap.instance.m_heightTexture, HeightFilter, RenderTextureFormat.RFloat);
             foreach (var overlay in Drawings.Values)
             {
                 if (overlay.Enabled && overlay.HeightEnabled)
@@ -459,7 +459,7 @@ namespace Jotunn.Managers
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
 
-            Graphics.CopyTexture(Minimap.instance.m_forestMaskTexture, ForestFilter);
+            BlitCopy(Minimap.instance.m_forestMaskTexture, ForestFilter);
             foreach (var overlay in Drawings.Values)
             {
                 if (overlay.Enabled && overlay.ForestEnabled)
@@ -551,10 +551,10 @@ namespace Jotunn.Managers
             ComposeForestMaterial.SetTexture("_VanillaTex", ForestFilter);
             ComposeFogMaterial.SetTexture("_VanillaTex", FogFilter);
 
-            Graphics.CopyTexture(Minimap.instance.m_mapTexture, MainTex);
-            Graphics.CopyTexture(Minimap.instance.m_heightTexture, HeightFilter);
-            Graphics.CopyTexture(Minimap.instance.m_forestMaskTexture, ForestFilter);
-            Graphics.CopyTexture(Minimap.instance.m_fogTexture, FogFilter);
+            BlitCopy(Minimap.instance.m_mapTexture, MainTex);
+            BlitCopy(Minimap.instance.m_heightTexture, HeightFilter, RenderTextureFormat.RFloat);
+            BlitCopy(Minimap.instance.m_forestMaskTexture, ForestFilter);
+            BlitCopy(Minimap.instance.m_fogTexture, FogFilter);
 
             // Set own textures to the vanilla materials
             Minimap.instance.m_mapLargeShader.SetTexture("_MainTex", MainTex);
@@ -594,8 +594,8 @@ namespace Jotunn.Managers
             bundle.Unload(false);
 
             // Copy vanilla textures
-            Graphics.CopyTexture(TransparentTex, OverlayTex);
-            Graphics.CopyTexture(Minimap.instance.m_fogTexture, FogFilter);
+            BlitCopy(TransparentTex, OverlayTex);
+            BlitCopy(Minimap.instance.m_fogTexture, FogFilter);
 
             // Create custom overlay GOs
             OverlayLarge = new GameObject("CustomLayerLarge");
@@ -750,6 +750,18 @@ namespace Jotunn.Managers
             {
                 drawing.SetTextureDirty(__instance);
             }
+        }
+
+        private static void BlitCopy(Texture src, Texture2D dst, RenderTextureFormat fmt = RenderTextureFormat.ARGB32)
+        {
+            var tmp = RenderTexture.GetTemporary(dst.width, dst.height, 0, fmt);
+            Graphics.Blit(src, tmp);
+            var prev = RenderTexture.active;
+            RenderTexture.active = tmp;
+            dst.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+            dst.Apply();
+            RenderTexture.active = prev;
+            RenderTexture.ReleaseTemporary(tmp);
         }
 
         private void SetFogDirty()
@@ -1096,14 +1108,7 @@ namespace Jotunn.Managers
                     wrapMode = TextureWrapMode.Clamp,
                     name = Name
                 };
-                if (t.format != TextureFormat.RGB24)
-                {
-                    Graphics.CopyTexture(Instance.TransparentTex, t);
-                }
-                else
-                {
-                    Graphics.CopyTexture(Minimap.instance.m_mapTexture, t);
-                }
+                BlitCopy(Instance.TransparentTex, t);
                 return t;
             }
         }
