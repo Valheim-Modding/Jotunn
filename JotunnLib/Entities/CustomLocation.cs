@@ -15,6 +15,8 @@ namespace Jotunn.Entities
     /// </summary>
     public class CustomLocation : CustomEntity
     {
+        private readonly LocationConfig _locationConfig;
+
         /// <summary>
         ///     The exterior prefab for this custom location.
         /// </summary>
@@ -87,6 +89,7 @@ namespace Jotunn.Entities
         {
             Prefab = exteriorPrefab;
             Name = exteriorPrefab.name;
+            _locationConfig = locationConfig;
 
             if (exteriorPrefab.TryGetComponent<Location>(out var location))
             {
@@ -136,8 +139,6 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             SoftReference = true;
         }
-
-        private readonly LocationConfig _locationConfig;
 
         private void OnLocationResolve(GameObject gameObject)
         {
