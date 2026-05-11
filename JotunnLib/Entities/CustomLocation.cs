@@ -98,11 +98,11 @@ namespace Jotunn.Entities
             else
             {
                 Location = exteriorPrefab.AddComponent<Location>();
-                if (locationConfig.HasClearArea) Location.m_clearArea = locationConfig.ClearArea;
-                if (locationConfig.HasExteriorRadius) Location.m_exteriorRadius = locationConfig.ExteriorRadius;
+                Location.m_clearArea = locationConfig.ClearArea;
+                Location.m_exteriorRadius = locationConfig.ExteriorRadius;
                 Location.m_interiorPrefab = interiorPrefab;
                 Location.m_hasInterior = locationConfig.HasInterior;
-                if (locationConfig.HasInteriorRadius) Location.m_interiorRadius = locationConfig.InteriorRadius;
+                Location.m_interiorRadius = locationConfig.InteriorRadius;
                 Location.m_interiorEnvironment = locationConfig.InteriorEnvironment;
             }
 
