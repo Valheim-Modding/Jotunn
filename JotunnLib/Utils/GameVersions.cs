@@ -1,6 +1,3 @@
-﻿using System;
-using System.Diagnostics;
-using System.Reflection;
 using HarmonyLib;
 
 namespace Jotunn.Utils
@@ -27,8 +24,8 @@ namespace Jotunn.Utils
 
         private static uint GetNetworkVersion()
         {
-            // use Reflection because Version.m_networkVersion is a constant field, i.e. evaluated at compile time
-            return (uint)AccessTools.Field(typeof(Version), nameof(Version.m_networkVersion)).GetValue(null);
+            // Use reflection because Version.c_networkVersion is a constant field, i.e. evaluated at compile time
+            return (uint) AccessTools.Field(typeof(Version), nameof(Version.c_networkVersion)).GetValue(null);
         }
     }
 }
