@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 
 namespace Jotunn.Utils
@@ -24,8 +25,12 @@ namespace Jotunn.Utils
 
         private static uint GetNetworkVersion()
         {
+            Logger.LogInfo("GetNetworkVersion");
             // Use reflection because Version.c_networkVersion is a constant field, i.e. evaluated at compile time
-            return (uint) AccessTools.Field(typeof(Version), nameof(Version.c_networkVersion)).GetValue(null);
+            var field = AccessTools.Field(typeof(Version), nameof(Version.c_networkVersion))
+                ?? AccessTools.Field(typeof(Version), "m_networkVersion") // older Valheim version
+                ?? throw new Exception("Could not find network version field in Version class");
+            return (uint)field.GetValue(null);
         }
     }
 }
