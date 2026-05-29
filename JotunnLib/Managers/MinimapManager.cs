@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -527,10 +527,10 @@ namespace Jotunn.Managers
             watch.Start();
             Logger.LogDebug("Setting up MapDrawings");
 
-            MainTex = new Texture2D(TextureSize, TextureSize, TextureFormat.RGB24, mipChain: false);
-            HeightFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RFloat, mipChain: false);
-            ForestFilter = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
-            FogFilter ??= new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
+            MainTex = new Texture2D(TextureSize, TextureSize, Minimap.instance.m_mapTexture.format, mipChain: false);
+            HeightFilter = new Texture2D(TextureSize, TextureSize, Minimap.instance.m_heightTexture.format, mipChain: false);
+            ForestFilter = new Texture2D(TextureSize, TextureSize, Minimap.instance.m_forestMaskTexture.format, mipChain: false);
+            FogFilter ??= new Texture2D(TextureSize, TextureSize, Minimap.instance.m_fogTexture.format, mipChain: false);
 
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
 
@@ -578,7 +578,7 @@ namespace Jotunn.Managers
 
             // Create intermediate textures to draw on
             OverlayTex = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
-            FogFilter ??= new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: false);
+            FogFilter ??= new Texture2D(TextureSize, TextureSize, Minimap.instance.m_fogTexture.format, mipChain: false);
 
             var bundle = AssetUtils.LoadAssetBundleFromResources("minimapmanager", typeof(MinimapManager).Assembly);
 
