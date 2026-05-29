@@ -9,14 +9,13 @@ namespace Jotunn.Utils
 {
     internal class ExtEquipment : MonoBehaviour
     {
-        const int RightItemVariantHash = -1781447240;       // RightItemVariant
-        const int RightBackItemVariantHash = -1623696695;   // RightBackItemVariant
-        const int ChestItemVariantHash = -1180934665;       // ChestItemVariant
+        private static int RightItemVariantHash = "RightItemVariant".GetStableHashCode();
+        private static int RightBackItemVariantHash = "RightBackItemVariant".GetStableHashCode();
+        private static int ChestItemVariantHash = "ChestItemVariant".GetStableHashCode();
 
         private static bool Enabled;
 
-        private static readonly Dictionary<VisEquipment, ExtEquipment> Instances =
-            new Dictionary<VisEquipment, ExtEquipment>();
+        private static readonly Dictionary<VisEquipment, ExtEquipment> Instances = new Dictionary<VisEquipment, ExtEquipment>();
 
         public static void Enable()
         {
@@ -198,7 +197,7 @@ namespace Jotunn.Utils
             {
                 instance.NewRightBackItemVariant = instance.MyHumanoid.m_hiddenRightItem.m_variant;
                 if (__instance.m_nview && __instance.m_nview.GetZDO() is ZDO zdo)
-                {                    
+                {
                     zdo.Set(RightBackItemVariantHash, (itemHash != 0) ? instance.NewRightBackItemVariant : 0);
                 }
             }
