@@ -142,6 +142,8 @@ namespace Jotunn.Entities
 
         private void OnLocationResolve(GameObject gameObject)
         {
+            gameObject.SetActive(true);
+
             if (gameObject.TryGetComponent<Location>(out var location))
             {
                 SyncZoneLocationFromComponent(location, _locationConfig);
