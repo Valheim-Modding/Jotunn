@@ -1,4 +1,11 @@
 # Changelog
+
+## Version 2.29.1
+* Fixed ZoneLocation radii and clear area not being synced from prefab's location component (thx warp)
+* Fixed SoftReference location proxy spawning of inactive prefabs causing duplicate objects (thx warp)
+* Fixed minimap texture missmatch for map drawing (thx MidnightsFX)
+* Fixed network version lookup for future game versions
+
 ## Version 2.29.0
 * Added new method in ConsoleCommand to take a Terminal context parameter, so mods can write output to either Console or Chat depending on where the command was executed from. Backwards compatible. For more info on that see https://valheim-modding.github.io/Jotunn/tutorials/console-commands.html
 * Added TMPro FontAssets shortcuts to the GUIManager
