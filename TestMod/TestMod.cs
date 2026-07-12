@@ -62,6 +62,8 @@ namespace TestMod
         private ConfigEntry<KeyboardShortcut> ServerShortcutConfig;
         private ButtonConfig ServerShortcutButton;
 
+        private ButtonConfig LateInputButton;
+
         private ConfigEntry<bool> EnableVersionMismatch;
         private static ConfigEntry<bool> EnableExtVersionMismatch;
 
@@ -134,6 +136,9 @@ namespace TestMod
             CreatureManager.OnVanillaCreaturesAvailable += AddCustomCreaturesAndSpawns;
             // Hook creature manager to get access to vanilla creature prefabs
             CreatureManager.OnVanillaCreaturesAvailable += ModifyAndCloneVanillaCreatures;
+
+            // Add a custom input after vanilla prefabs are available
+            PrefabManager.OnVanillaPrefabsAvailable += AddLateIputs;
 
             // Test config sync event
             SynchronizationManager.OnConfigurationSynchronized += (obj, attr) =>
@@ -227,6 +232,14 @@ namespace TestMod
                     if (ZInput.GetButtonDown(ServerShortcutButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, "Server Shortcut pressed");
+                    }
+                }
+
+                if (LateInputButton != null)
+                {
+                    if (ZInput.GetButtonDown(LateInputButton.Name))
+                    {
+                        Jotunn.Logger.LogInfo("LateInputButton pressed");
                     }
                 }
 
@@ -759,6 +772,12 @@ namespace TestMod
             InputManager.Instance.AddButton(ModGUID, ServerKeyCodeButton);
             ServerShortcutButton = new ButtonConfig { Name = "ServerShortcut", ShortcutConfig = ServerShortcutConfig };
             InputManager.Instance.AddButton(ModGUID, ServerShortcutButton);
+        }
+
+        private void AddLateIputs()
+        {
+            LateInputButton = new ButtonConfig { Name = "TestMod_LateInput", Key = KeyCode.End, ActiveInCustomGUI = true };
+            InputManager.Instance.AddButton(ModGUID, LateInputButton);
         }
 
         // Adds localizations with configs

@@ -290,6 +290,8 @@ namespace Jotunn.Managers
                 if (string.IsNullOrEmpty(key))
                 {
                     key = buttonConfig.Name;
+                    string missingKey = ZInput.instance.GetBoundKeyString(buttonConfig.Name, false);
+                    Logger.LogDebug($"Missing key for {buttonConfig.Name}: {missingKey}");
                 }
                 if (key[0].Equals(LocalizationManager.TokenFirstChar))
                 {
@@ -421,7 +423,7 @@ namespace Jotunn.Managers
                 if (!self.m_keyHintsEnabled || !Player.m_localPlayer || Player.m_localPlayer.IsDead() ||
                     Chat.instance.IsChatDialogWindowVisible() || Game.IsPaused() || InventoryGui.instance != null &&
                     (InventoryGui.instance.IsSkillsPanelOpen || InventoryGui.instance.IsTrophisPanelOpen ||
-                     InventoryGui.instance.IsTextPanelOpen || InventoryGui.instance.m_animator.GetBool("visible")))
+                        InventoryGui.instance.IsTextPanelOpen || InventoryGui.instance.m_animator.GetBool("visible")))
                 {
                     return false;
                 }

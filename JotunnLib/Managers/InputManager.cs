@@ -279,6 +279,11 @@ namespace Jotunn.Managers
 
             buttonConfig.Name += "!" + modGuid;
             Buttons.Add(buttonConfig.Name, buttonConfig);
+
+            if (ZInput.m_instance != null)
+            {
+                RegisterButton(ZInput.instance, buttonConfig.Name, buttonConfig);
+            }
         }
 
         private void RegisterCustomInputs(ZInput self)
@@ -289,34 +294,46 @@ namespace Jotunn.Managers
 
                 foreach (var pair in Buttons)
                 {
-                    var btn = pair.Value;
-
-                    if (!string.IsNullOrEmpty(btn.Axis))
-                    {
-                        self.AddButton(btn.Name, GetAxisPath(btn.Axis), false, true, true, btn.RepeatDelay, btn.RepeatInterval);
-                    }
-                    else if (btn.Key != KeyCode.None)
-                    {
-                        self.AddButton(btn.Name, ZInput.KeyCodeToPath(btn.Key), false, true, true, btn.RepeatDelay, btn.RepeatInterval);
-                    }
-                    else if (btn.Shortcut.MainKey != KeyCode.None)
-                    {
-                        self.AddButton(btn.Name, ZInput.KeyCodeToPath(btn.Shortcut.MainKey), false, true, true, btn.RepeatDelay, btn.RepeatInterval);
-                    }
-
-                    if (btn.GamepadButton != GamepadButton.None)
-                    {
-                        GamepadInput input = GetGamepadInput(btn.GamepadButton);
-
-                        if (input != GamepadInput.None)
-                        {
-                            var joyBtnName = $"Joy!{btn.Name}";
-                            self.AddButton(joyBtnName, GetGamepadInputPath(input), false, true, true, btn.RepeatDelay, btn.RepeatInterval);
-                        }
-                    }
-
-                    Logger.LogDebug($"Registered input {pair.Key}");
+                    RegisterButton(self, pair.Key, pair.Value);
                 }
+            }
+        }
+
+        private static void RegisterButton(ZInput self, string key, ButtonConfig btn)
+        {
+            bool added = false;
+
+            if (!string.IsNullOrEmpty(btn.Axis))
+            {
+                self.AddButton(btn.Name, GetAxisPath(btn.Axis), false, true, true, btn.RepeatDelay, btn.RepeatInterval);
+                added = true;
+            }
+            else if (btn.Key != KeyCode.None)
+            {
+                self.AddButton(btn.Name, ZInput.KeyCodeToPath(btn.Key), false, true, true, btn.RepeatDelay, btn.RepeatInterval);
+                added = true;
+            }
+            else if (btn.Shortcut.MainKey != KeyCode.None)
+            {
+                self.AddButton(btn.Name, ZInput.KeyCodeToPath(btn.Shortcut.MainKey), false, true, true, btn.RepeatDelay, btn.RepeatInterval);
+                added = true;
+            }
+
+            if (btn.GamepadButton != GamepadButton.None)
+            {
+                GamepadInput input = GetGamepadInput(btn.GamepadButton);
+
+                if (input != GamepadInput.None)
+                {
+                    var joyBtnName = $"Joy!{btn.Name}";
+                    self.AddButton(joyBtnName, GetGamepadInputPath(input), false, true, true, btn.RepeatDelay, btn.RepeatInterval);
+                    added = true;
+                }
+            }
+
+            if (!added)
+            {
+                Logger.LogWarning($"Could not register input {key} because it has no valid input set");
             }
         }
 
@@ -356,7 +373,7 @@ namespace Jotunn.Managers
             {
                 return false;
             }
-            
+
             return TakeInput(button);
         }
 
