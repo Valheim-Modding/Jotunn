@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 2.29.2
+* Fixed `InputManager.AddButton` not registering the button if ZInput was already initialized
+
 ## Version 2.29.1
 * Fixed ZoneLocation radii and clear area not being synced from prefab's location component (thx warp)
 * Fixed SoftReference location proxy spawning of inactive prefabs causing duplicate objects (thx warp)
