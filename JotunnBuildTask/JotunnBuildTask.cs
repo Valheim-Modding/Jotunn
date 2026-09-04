@@ -146,13 +146,13 @@ namespace JotunnBuildTask
                             // Try to publicize
                             if (!AssemblyPublicizer.PublicizeDll(assembly, hash, publicizedFolder, ValheimPath))
                             {
+                                Log.LogError($"Could not publicize {assembly}");
                                 return false;
                             }
                         }
                         catch (Exception ex)
                         {
-                            System.Console.WriteLine($"Error occured on {assembly}");
-                            System.Console.WriteLine(ex.Message);
+                            Log.LogError($"Error occurred on {assembly}: {ex.Message}");
                             return false;
                         }
                     }
@@ -162,7 +162,7 @@ namespace JotunnBuildTask
             }
             catch (Exception e)
             {
-                System.Console.WriteLine(e.Message);
+                Log.LogError(e.Message);
                 return false;
             }
         }
