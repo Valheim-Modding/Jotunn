@@ -214,11 +214,11 @@ namespace Jotunn.DebugUtils
 
             _zoneAltitudeValue.text = $"<color=#ffe082>{altitude:0}</color>";
 
-            Vector2i sector = ZoneSystem.GetZone(position);
+            Vector2s sector = ZoneSystem.GetZone(position);
 
             _zoneSectorValue.text = $"<color=#ffe082>{sector.x}</color>, <color=#a5d6a7>{sector.y}</color>";
 
-            int sectorIndex = ZDOMan.instance.SectorToIndex(sector);
+            int sectorIndex = (int)ZoneSystem.SectorToIndex(sector).Sector;
             long zdoCount =
                 sectorIndex >= 0 && ZDOMan.instance.m_objectsBySector[sectorIndex] != null
                     ? ZDOMan.instance.m_objectsBySector[sectorIndex].Count

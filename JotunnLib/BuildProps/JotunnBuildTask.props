@@ -4,7 +4,7 @@
   <UsingTask TaskName="JotunnBuildTask" AssemblyFile="$(SolutionDir)libraries\JotunnBuildTask.dll"/>
   <Target Name="JotunnBuildTaskRunner" AfterTargets="BeforeBuild" Condition="'$(ExecutePrebuild)' == 'true' And Exists('$(VALHEIM_INSTALL)')" >
     <Message Importance="High" Text="Executing Jotunn Prebuild Task"/>
-    <JotunnBuildTask ValheimPath="$(VALHEIM_INSTALL)" />
+    <JotunnBuildTask ValheimPath="$(VALHEIM_INSTALL)" ManagedPath="$(VALHEIM_MANAGED)" />
   </Target>
   <Target Name="NoJotunnEnvProps" AfterTargets="BeforeBuild" Condition="!Exists('$(VALHEIM_INSTALL)')">
     <Message Importance="High" Text="Cannot execute Jotunn prebuild task because VALHEIM_INSTALL is not set." />

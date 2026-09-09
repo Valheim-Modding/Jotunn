@@ -13,6 +13,8 @@ namespace JotunnBuildTask
         [Required]
         public string ValheimPath { get; set; }
 
+        public string ManagedPath { get; set; }
+
         internal const string ValheimServerData = "valheim_server_Data";
         internal const string ValheimData = "Valheim_Data";
         internal const string Managed = "Managed";
@@ -20,6 +22,28 @@ namespace JotunnBuildTask
         internal const string Bepinex = "BepInEx";
         internal const string Plugins = "plugins";
         internal const string Publicized = "publicized";
+
+        private string GetManagedFolder()
+        {
+            if (Directory.Exists(ManagedPath))
+            {
+                return ManagedPath;
+            }
+
+            string clientManagedFolder = Path.Combine(ValheimPath, ValheimData, Managed);
+            if (Directory.Exists(clientManagedFolder))
+            {
+                return clientManagedFolder;
+            }
+
+            string serverManagedFolder = Path.Combine(ValheimPath, ValheimServerData, Managed);
+            if (Directory.Exists(serverManagedFolder))
+            {
+                return serverManagedFolder;
+            }
+
+            throw new Exception($"Could not find a managed assemblies folder at {ManagedPath} or below {ValheimPath}");
+        }
 
         private bool HasSameHash(string assembly, string publicizedAssembly, out string hash)
         {
@@ -67,19 +91,7 @@ namespace JotunnBuildTask
             try
             {
                 // Get managed folder of valheim or valheim_dedicated
-                string managedFolder = string.Empty;
-                if (Directory.Exists(Path.Combine(ValheimPath, ValheimData, Managed)) && string.IsNullOrEmpty(managedFolder))
-                {
-                    managedFolder = Path.Combine(ValheimPath, ValheimData, Managed);
-                }
-                if (Directory.Exists(Path.Combine(ValheimPath, ValheimServerData, Managed)) && string.IsNullOrEmpty(managedFolder))
-                {
-                    managedFolder = Path.Combine(ValheimPath, ValheimServerData, Managed);
-                }
-                if (string.IsNullOrEmpty(managedFolder))
-                {
-                    throw new Exception($"{ValheimPath} does not include {ValheimData} or {ValheimServerData}");
-                }
+                string managedFolder = GetManagedFolder();
 
                 // Get publicized folder
                 string publicizedFolder = Path.Combine(managedFolder, PublicizedAssemblies);
@@ -103,7 +115,7 @@ namespace JotunnBuildTask
                         try
                         {
                             // Try to publicize
-                            if (!AssemblyPublicizer.PublicizeDll(assembly, hash, publicizedFolder, ValheimPath))
+                            if (!AssemblyPublicizer.PublicizeDll(assembly, hash, publicizedFolder, managedFolder))
                             {
                                 return false;
                             }

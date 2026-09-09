@@ -14,9 +14,9 @@ namespace JotunnBuildTask
         /// <param name="input">Input assembly</param>
         /// <param name="hash"></param>
         /// <param name="publicizedFolder"></param>
-        /// <param name="ValheimPath"></param>
+        /// <param name="managedFolder"></param>
         /// <returns></returns>
-        public static bool PublicizeDll(string input, string hash, string publicizedFolder, string ValheimPath)
+        public static bool PublicizeDll(string input, string hash, string publicizedFolder, string managedFolder)
         {
             if (!File.Exists(input))
             {
@@ -33,17 +33,9 @@ namespace JotunnBuildTask
                 assemblyDefinition = AssemblyDefinition.ReadAssembly(input);
                 BaseAssemblyResolver assemblyResolver = (BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver;
 
-                string managedFolder = Path.Combine(ValheimPath, JotunnBuildTask.ValheimData, JotunnBuildTask.Managed);
-                string serverManagedFolder = Path.Combine(ValheimPath, JotunnBuildTask.ValheimServerData, JotunnBuildTask.Managed);
-
                 if (Directory.Exists(managedFolder))
                 {
                     assemblyResolver.AddSearchDirectory(managedFolder);
-                }
-
-                if (Directory.Exists(serverManagedFolder))
-                {
-                    assemblyResolver.AddSearchDirectory(serverManagedFolder);
                 }
             }
             catch (Exception exception)
