@@ -88,9 +88,8 @@ if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     Copy-Item -Path "$ProjectPath\..\README.md" -Destination "$thunder\"
     Copy-Item -Path "$ProjectPath\..\CHANGELOG.md" -Destination "$thunder\"
     Copy-Item -Path "$ProjectPath\manifest.json" -Destination "$thunder\manifest.json"
-    Remove-Item -Path "$package\Thunderstore\$name-$version.zip" -Force
     Copy-Item -Path "$(Get-Location)\resources\JVL_Logo_256x256.png" -Destination "$thunder\icon.png"
-    Invoke-Expression "& `"$(Get-Location)\libraries\7za.exe`" a `"$package\Thunderstore\$name-$version.zip`" `"$thunder\*`""
+    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore\$name-$version.zip" -Force
     $thunder.Delete($true)
 
     Write-Host "Packaging for NexusMods"
@@ -103,8 +102,7 @@ if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$nexus\Jotunn\"
     Copy-Item -Path "$ProjectPath\..\README.md" -Destination "$nexus\Jotunn\"
     Copy-Item -Path "$ProjectPath\..\CHANGELOG.md" -Destination "$nexus\Jotunn\"
-    Remove-Item -Path "$package\Nexusmods\$name-$version.zip" -Force
-    Invoke-Expression "& `"$(Get-Location)\libraries\7za.exe`" a `"$package\Nexusmods\$name-$version.zip`" `"$nexus\*`""
+    Compress-Archive -Path "$nexus\*" -DestinationPath "$package\Nexusmods\$name-$version.zip" -Force
     $nexus.Delete($true)
 }
 
