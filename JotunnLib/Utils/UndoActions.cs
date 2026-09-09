@@ -160,7 +160,7 @@ namespace Jotunn.Utils
                 compiler.m_lastOpPoint = Vector3.zero;
                 compiler.m_lastOpRadius = 0f;
                 compiler.Save();
-                compiler.m_hmap.Poke(false);
+                compiler.m_hmap.Poke();
             }
 
             public static BinarySearchDictionary<TKey, TValue> CloneBinarySearchDictionary<TKey, TValue>(BinarySearchDictionary<TKey, TValue> dict) where TKey : IComparable<TKey>

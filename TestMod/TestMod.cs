@@ -33,6 +33,7 @@ namespace TestMod
         private const string ModName = "Jotunn Test Mod #1";
         private const string ModVersion = "0.1.0";
         private const string JotunnTestModConfigSection = "JotunnTest";
+        private static readonly int EvilSwordHash = "EvilSword".GetStableHashCode();
 
         private Sprite TestSprite;
         private Texture2D TestTex;
@@ -211,7 +212,7 @@ namespace TestMod
 
                 // Use the name of the ButtonConfig to identify the button pressed
                 if (EvilSwordSpecialButton != null && MessageHud.instance != null &&
-                    Player.m_localPlayer != null && Player.m_localPlayer.m_visEquipment.m_rightItem == "EvilSword")
+                    Player.m_localPlayer != null && Player.m_localPlayer.m_visEquipment.m_rightItem == EvilSwordHash)
                 {
                     if (ZInput.GetButton(EvilSwordSpecialButton.Name) && MessageHud.instance.m_msgQeue.Count == 0)
                     {

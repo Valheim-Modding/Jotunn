@@ -25,7 +25,7 @@ namespace Jotunn.Utils
         private static uint GetNetworkVersion()
         {
             // Use reflection because networkVersion is a constant field, i.e. evaluated at compile time
-            var field = typeof(Version).GetField(nameof(Version.m_networkVersion))
+            var field = typeof(Version).GetField("m_networkVersion")
                 ?? typeof(Version).GetField("c_networkVersion") // Valheim 0.221.13+
                 ?? throw new Exception("Could not find network version field in Version class");
             return (uint)field.GetValue(null);

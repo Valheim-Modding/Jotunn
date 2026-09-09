@@ -24,7 +24,7 @@ namespace TestMod.ConsoleCommands
             }
             Minimap.instance.m_pins = playerpins;
 
-            Minimap.instance.m_exploredOthers = new bool[Minimap.instance.m_exploredOthers.Length];
+            Minimap.instance.m_exploredOthers.SetAll(false);
             if (Minimap.instance.m_sharedMapHint)
             {
                 UnityEngine.Object.Destroy(Minimap.instance.m_sharedMapHint);
