@@ -21,6 +21,55 @@ namespace JotunnBuildTask
         internal const string Plugins = "plugins";
         internal const string Publicized = "publicized";
 
+        /// <summary>
+        ///     Names of the game data folders to look for, in order of precedence.
+        ///     The client folder wins over the dedicated server folder.
+        /// </summary>
+        private static readonly string[] DataFolders = { ValheimData, ValheimServerData };
+
+        /// <summary>
+        ///     Get the Managed folders of a Valheim installation, in order of precedence.
+        /// </summary>
+        /// <remarks>
+        ///     The data folder names are matched case-insensitively: the client folder is named
+        ///     Valheim_Data on Windows but valheim_Data on Linux. Both spellings resolve on the
+        ///     case-insensitive filesystems of Windows and macOS, so a case-sensitive lookup only
+        ///     ever fails on Linux.
+        /// </remarks>
+        /// <param name="valheimPath">Root folder of the Valheim installation</param>
+        /// <returns>Existing Managed folders, most preferred first. Empty if none were found.</returns>
+        internal static List<string> GetManagedFolders(string valheimPath)
+        {
+            List<string> managedFolders = new List<string>();
+
+            if (!Directory.Exists(valheimPath))
+            {
+                return managedFolders;
+            }
+
+            string[] subFolders = Directory.GetDirectories(valheimPath);
+
+            foreach (var dataFolder in DataFolders)
+            {
+                foreach (var subFolder in subFolders)
+                {
+                    if (!string.Equals(Path.GetFileName(subFolder), dataFolder, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    string managedFolder = Path.Combine(subFolder, Managed);
+
+                    if (Directory.Exists(managedFolder))
+                    {
+                        managedFolders.Add(managedFolder);
+                    }
+                }
+            }
+
+            return managedFolders;
+        }
+
         private bool HasSameHash(string assembly, string publicizedAssembly, out string hash)
         {
             hash = MD5HashFile(assembly);
@@ -67,18 +116,10 @@ namespace JotunnBuildTask
             try
             {
                 // Get managed folder of valheim or valheim_dedicated
-                string managedFolder = string.Empty;
-                if (Directory.Exists(Path.Combine(ValheimPath, ValheimData, Managed)) && string.IsNullOrEmpty(managedFolder))
-                {
-                    managedFolder = Path.Combine(ValheimPath, ValheimData, Managed);
-                }
-                if (Directory.Exists(Path.Combine(ValheimPath, ValheimServerData, Managed)) && string.IsNullOrEmpty(managedFolder))
-                {
-                    managedFolder = Path.Combine(ValheimPath, ValheimServerData, Managed);
-                }
+                string managedFolder = GetManagedFolders(ValheimPath).FirstOrDefault();
                 if (string.IsNullOrEmpty(managedFolder))
                 {
-                    throw new Exception($"{ValheimPath} does not include {ValheimData} or {ValheimServerData}");
+                    throw new Exception($"{ValheimPath} does not include a {ValheimData} or {ValheimServerData} folder containing a {Managed} folder");
                 }
 
                 // Get publicized folder
@@ -105,13 +146,13 @@ namespace JotunnBuildTask
                             // Try to publicize
                             if (!AssemblyPublicizer.PublicizeDll(assembly, hash, publicizedFolder, ValheimPath))
                             {
+                                Log.LogError($"Could not publicize {assembly}");
                                 return false;
                             }
                         }
                         catch (Exception ex)
                         {
-                            System.Console.WriteLine($"Error occured on {assembly}");
-                            System.Console.WriteLine(ex.Message);
+                            Log.LogError($"Error occurred on {assembly}: {ex.Message}");
                             return false;
                         }
                     }
@@ -121,7 +162,7 @@ namespace JotunnBuildTask
             }
             catch (Exception e)
             {
-                System.Console.WriteLine(e.Message);
+                Log.LogError(e.Message);
                 return false;
             }
         }

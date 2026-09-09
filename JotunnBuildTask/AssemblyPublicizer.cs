@@ -33,17 +33,9 @@ namespace JotunnBuildTask
                 assemblyDefinition = AssemblyDefinition.ReadAssembly(input);
                 BaseAssemblyResolver assemblyResolver = (BaseAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver;
 
-                string managedFolder = Path.Combine(ValheimPath, JotunnBuildTask.ValheimData, JotunnBuildTask.Managed);
-                string serverManagedFolder = Path.Combine(ValheimPath, JotunnBuildTask.ValheimServerData, JotunnBuildTask.Managed);
-
-                if (Directory.Exists(managedFolder))
+                foreach (var managedFolder in JotunnBuildTask.GetManagedFolders(ValheimPath))
                 {
                     assemblyResolver.AddSearchDirectory(managedFolder);
-                }
-
-                if (Directory.Exists(serverManagedFolder))
-                {
-                    assemblyResolver.AddSearchDirectory(serverManagedFolder);
                 }
             }
             catch (Exception exception)
