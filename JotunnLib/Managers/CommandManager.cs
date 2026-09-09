@@ -117,6 +117,7 @@ namespace Jotunn.Managers
                 typeof(bool),
                 typeof(bool),
                 typeof(bool),
+                typeof(bool), // hideBehindDevCommands
                 typeof(Terminal.ConsoleOptionsFetcher),
                 typeof(bool),
                 typeof(bool),
@@ -135,6 +136,7 @@ namespace Jotunn.Managers
                     command.OnlyServer,
                     command.IsSecret,
                     false, // allowInDevBuild
+                    false, // hideBehindDevCommands
                     (Terminal.ConsoleOptionsFetcher)command.CommandOptionList,
                     false, // alwaysRefreshTabOptions
                     false, // remoteCommand

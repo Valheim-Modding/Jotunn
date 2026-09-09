@@ -4,7 +4,6 @@ using Jotunn.Configs;
 using Jotunn.Managers;
 using SoftReferenceableAssets;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Jotunn.Entities
 {
@@ -125,7 +124,7 @@ namespace Jotunn.Entities
         {
             if (!softReferencePrefab.IsValid)
             {
-                Logger.LogError($"SoftReference invalid for prefab: {softReferencePrefab.Name}");
+                Logger.LogError($"SoftReference invalid for location prefab AssetID {softReferencePrefab.m_assetID}");
                 return;
             }
 
@@ -149,10 +148,7 @@ namespace Jotunn.Entities
                 SyncZoneLocationFromComponent(location, _locationConfig);
             }
 
-            if (gameObject.TryGetComponent<ZoneSystem.ZoneLocation>(out var zoneLocation))
-            {
-                ZoneManager.Instance.PrepareLocation(zoneLocation, SourceMod);
-            }
+            ZoneManager.Instance.PrepareLocation(ZoneLocation, SourceMod);
         }
 
         private void SyncZoneLocationFromComponent(Location location, LocationConfig locationConfig)

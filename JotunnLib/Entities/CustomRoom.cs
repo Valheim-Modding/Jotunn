@@ -135,7 +135,7 @@ namespace Jotunn.Entities
         {
             if (!softReferencePrefab.IsValid)
             {
-                Logger.LogError($"SoftReference invalid for room prefab: {softReferencePrefab.Name}");
+                Logger.LogError($"SoftReference invalid for room prefab AssetID {softReferencePrefab.m_assetID}");
                 return;
             }
 

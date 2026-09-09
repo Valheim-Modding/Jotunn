@@ -230,6 +230,17 @@ namespace Jotunn.Managers
         /// <returns>true if the custom location could be added to the manager</returns>
         public bool AddCustomLocation(CustomLocation customLocation)
         {
+            if (customLocation == null)
+            {
+                throw new ArgumentNullException(nameof(customLocation));
+            }
+
+            if (string.IsNullOrEmpty(customLocation.Name) || customLocation.ZoneLocation == null)
+            {
+                Logger.LogWarning(customLocation.SourceMod, "Cannot add an invalid custom location");
+                return false;
+            }
+
             if (Locations.ContainsKey(customLocation.Name))
             {
                 Logger.LogWarning(customLocation.SourceMod, $"Location {customLocation.Name} already exists");
