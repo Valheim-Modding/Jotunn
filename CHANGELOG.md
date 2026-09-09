@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.30.0
+* Updated the majority of systems for Valheim 1.0.7 (thx warp)
+* Piece categories are not updated yet, Valheim overhauled the system completely. Custom pieces show up in the build menu, but don't have a category associated
+* Fixed the PreBuild task case-insensitively (thx joeyparrish)
+
 ## Version 2.29.2
 * Fixed `InputManager.AddButton` not registering the button if ZInput was already initialized
 
