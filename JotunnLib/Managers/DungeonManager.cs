@@ -111,6 +111,12 @@ namespace Jotunn.Managers
                 throw new ArgumentException("Cannot be null", nameof(customRoom));
             }
 
+            if (string.IsNullOrEmpty(customRoom.Name) || customRoom.RoomData == null)
+            {
+                Logger.LogWarning(customRoom.SourceMod, "Cannot add an invalid custom room");
+                return false;
+            }
+
             if (string.IsNullOrEmpty(customRoom.ThemeName))
             {
                 throw new ArgumentException($"ThemeName of this room must have a value.", nameof(customRoom));
