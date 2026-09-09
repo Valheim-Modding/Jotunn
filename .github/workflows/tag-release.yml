@@ -54,8 +54,6 @@ jobs:
         run: |
           wget -O bepinex.zip "https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2333/"
           unzip bepinex.zip -d ~/BepInExRaw
-          # app_info_update is required: on a fresh steamcmd, app_update fails
-          # with "Failed to install app '896660' (Missing configuration)".
           steamcmd +force_install_dir ~/VHINSTALL +login anonymous +app_info_update 1 +app_update 896660 validate +exit
           mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/Valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
