@@ -31,9 +31,10 @@ namespace JotunnDoc.Docs
             var imageDirectory = Path.Combine(DocumentationDirConfig.Value, "images/items");
             Directory.CreateDirectory(imageDirectory);
 
-            foreach (GameObject obj in ObjectDB.instance.m_items.Where(x => !CustomItem.IsCustomItem(x.name)))
+            foreach (GameObject obj in ObjectDB.instance.m_items.Where(x => x && !CustomItem.IsCustomItem(x.name)))
             {
                 ItemDrop item = obj.GetComponent<ItemDrop>();
+                if (!item) continue;
                 ItemDrop.ItemData.SharedData shared = item.m_itemData.m_shared;
                 
                 bool hasSprite = RequestSprite(Path.Combine(imageDirectory, $"{obj.name}.png"), obj, RenderManager.IsometricRotation);

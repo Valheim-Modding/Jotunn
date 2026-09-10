@@ -41,7 +41,7 @@ namespace JotunnDoc.Docs
             allPrefabs.AddRange(ZNetScene.instance.m_prefabs);
             allPrefabs.AddRange(ZoneSystem.instance.m_locations.Where(x => x.m_prefab.IsValid).Select(x => x.m_prefab.Asset));
 
-            allPrefabs.RemoveAll(x => CustomPrefab.IsCustomPrefab(x.name));
+            allPrefabs.RemoveAll(x => !x || CustomPrefab.IsCustomPrefab(x.name));
             allPrefabs = allPrefabs.OrderBy(x => x.name).ToList();
 
             int splitCount = 3;
@@ -81,7 +81,7 @@ namespace JotunnDoc.Docs
         {
             string result = "<ul>";
 
-            foreach (Type comp in components.Select(c => c.GetType()).Where(c => c != typeof(Transform)).Distinct())
+            foreach (Type comp in components.Where(c => c).Select(c => c.GetType()).Where(c => c != typeof(Transform)).Distinct())
             {
                 result += $"<li>{comp.Name}</li>";
             }
