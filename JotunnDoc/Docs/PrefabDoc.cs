@@ -44,7 +44,7 @@ namespace JotunnDoc.Docs
             allPrefabs.RemoveAll(x => !x || CustomPrefab.IsCustomPrefab(x.name));
             allPrefabs = allPrefabs.OrderBy(x => x.name).ToList();
 
-            int splitCount = 3;
+            int splitCount = 4;
             int chunkSize = (int)Math.Ceiling((double)allPrefabs.Count / splitCount);
 
             for (int i = 0; i < splitCount; i++)
