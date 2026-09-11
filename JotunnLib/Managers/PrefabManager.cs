@@ -381,7 +381,7 @@ namespace Jotunn.Managers
                 
                 int hash = name.GetStableHashCode();
 
-                if (znet.m_namedPrefabs.ContainsKey(hash))
+                if (znet.m_namedPrefabs.TryGetValue(hash, out GameObject registeredPrefab))
                 {
                     Logger.LogDebug($"Prefab {name} already in ZNetScene");
                 }
@@ -396,9 +396,42 @@ namespace Jotunn.Managers
                         znet.m_nonNetViewPrefabs.Add(gameObject);
                     }
                     znet.m_namedPrefabs.Add(hash, gameObject);
+                    registeredPrefab = gameObject;
                     Logger.LogDebug($"Added prefab {name}");
                 }
+
+                if (registeredPrefab == gameObject)
+                {
+                    RegisterTerrainOp(gameObject);
+                }
             }
+        }
+
+        private static void RegisterTerrainOp(GameObject gameObject)
+        {
+            ObjectDB objectDB = ObjectDB.instance;
+            TerrainOp terrainOp = gameObject.GetComponent<TerrainOp>();
+            if (!objectDB || !terrainOp)
+            {
+                return;
+            }
+
+            int hash = objectDB.GetPrefabHash(gameObject);
+            if (objectDB.m_terrainOpsByHash.TryGetValue(hash, out TerrainOp registeredTerrainOp))
+            {
+                if (registeredTerrainOp != terrainOp)
+                {
+                    Logger.LogWarning($"TerrainOp prefab hash collision for {gameObject.name} ({hash})");
+                }
+                return;
+            }
+
+            if (!objectDB.m_terrainOps.Contains(terrainOp))
+            {
+                objectDB.m_terrainOps.Add(terrainOp);
+            }
+            objectDB.m_terrainOpsByHash.Add(hash, terrainOp);
+            Logger.LogDebug($"Added TerrainOp {gameObject.name} to ObjectDB");
         }
 
         /// <summary>
