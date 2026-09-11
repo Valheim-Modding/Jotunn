@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -36,7 +37,7 @@ namespace JotunnDoc.Docs
             foreach (var pair in pieceTables)
             {
                 AddHeader(2, pair.Key);
-                AddTableHeader("Piece", "AssetID", "Token", "English Name", "Description", "Resources required", "Material Type");
+                AddTableHeader("Piece", "AssetID", "Token", "English Name", "Description", "Resources required", "Material Type", "Piece Category", "Hammer Categories");
 
                 foreach (GameObject obj in pair.Value.m_pieces.Where(x => PieceManager.Instance.GetPiece(x.name) == null))
                 {
@@ -66,13 +67,34 @@ namespace JotunnDoc.Docs
                         JotunnDoc.Localize(piece.m_name),
                         JotunnDoc.Localize(piece.m_description),
                         resources,
-                        wearNTear ? wearNTear.m_materialType.ToString() : string.Empty
+                        wearNTear ? wearNTear.m_materialType.ToString() : string.Empty,
+                        piece.m_category.ToString(),
+                        string.Join(", ", GetUsageTagDisplayNames(piece.m_usage))
                     );
                 }
             }
 
             Save();
         }
+
+        private static Dictionary<Piece.UsageTagFlags, string> usageTagDisplayNames =
+            Enum.GetValues(typeof(Piece.UsageTagFlags))
+                .Cast<Piece.UsageTagFlags>()
+                .ToDictionary(
+                    usageTag => usageTag,
+                    usageTag => usageTag
+                        .GetAttributeOfType<DisplayNameAttribute>()
+                        .DisplayName
+                );
+
+        private static List<string> GetUsageTagDisplayNames(Piece.UsageTagFlags usageTags)
+        {
+            return usageTagDisplayNames
+                .Where(entry => (usageTags & entry.Key) == entry.Key)
+                .Select(entry => Localization.instance.Localize(entry.Value))
+                .ToList();
+        }
+
         private static string GetNameBox(string name, bool hasSprite)
         {
             StringBuilder sb = new StringBuilder(name);
