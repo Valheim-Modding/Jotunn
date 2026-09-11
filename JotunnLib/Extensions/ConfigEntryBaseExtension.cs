@@ -124,7 +124,7 @@ namespace Jotunn
 
         internal static ConfigurationManagerAttributes GetConfigurationManagerAttributes(this ConfigEntryBase configEntry)
         {
-            return (ConfigurationManagerAttributes)configEntry.Description.Tags.FirstOrDefault(x => x is ConfigurationManagerAttributes);
+            return (ConfigurationManagerAttributes)configEntry?.Description?.Tags?.FirstOrDefault(x => x is ConfigurationManagerAttributes);
         }
     }
 }

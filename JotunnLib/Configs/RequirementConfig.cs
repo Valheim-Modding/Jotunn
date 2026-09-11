@@ -1,4 +1,5 @@
-﻿using Jotunn.Entities;
+﻿using System.Collections.Generic;
+using Jotunn.Entities;
 
 namespace Jotunn.Configs
 {
@@ -53,13 +54,57 @@ namespace Jotunn.Configs
         /// <returns></returns>
         public Piece.Requirement GetRequirement()
         {
+            ItemDrop resItem;
+
+            if (ObjectDB.instance)
+            {
+                var itemPrefab = ObjectDB.instance.GetItemPrefab(Item);
+                if (itemPrefab && itemPrefab.TryGetComponent(out ItemDrop itemDrop) && itemDrop)
+                {
+                    resItem = itemDrop;
+                }
+                else
+                {
+                    Logger.LogWarning($"Item {Item} not found in ObjectDB.");
+                    resItem = null;
+                }
+            }
+            else
+            {
+                resItem = Mock<ItemDrop>.Create(Item);
+            }
+
             return new Piece.Requirement
             {
-                m_resItem = Mock<ItemDrop>.Create(Item),
+                m_resItem = resItem,
                 m_amount = Amount,
                 m_amountPerLevel = AmountPerLevel,
                 m_recover = Recover
             };
+        }
+
+        /// <summary>
+        ///     Creates a Valheim Piece.Requirement array from the given requirement configs.
+        /// </summary>
+        /// <param name="requirements"></param>
+        /// <returns></returns>
+        public static Piece.Requirement[] GetRequirements(IEnumerable<RequirementConfig> requirements)
+        {
+            List<Piece.Requirement> reqs = new List<Piece.Requirement>();
+
+            foreach (RequirementConfig requirement in requirements)
+            {
+                if (requirement != null && requirement.IsValid())
+                {
+                    var req = requirement.GetRequirement();
+                    if (req.m_resItem)
+                    {
+                        reqs.Add(req);
+                    }
+                }
+            }
+
+            return reqs.ToArray();
         }
 
         /// <summary>

@@ -89,6 +89,8 @@ namespace TestMod
             Localization = LocalizationManager.Instance.GetLocalization();
             LocalizationManager.Instance.AddLocalization(Localization);
 
+            PieceManager.Instance.EnableConfigSettings(Info.Metadata);
+
             // Create stuff
             CreateConfigValues();
             CreateCustomConfig();
