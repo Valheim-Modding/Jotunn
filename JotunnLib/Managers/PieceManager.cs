@@ -247,6 +247,96 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
+        ///     Optimistically guess the <see cref="Piece.UsageTagFlags"/> for a given <see cref="Piece"/> by the piece category, attached components, prefab name and localized name.
+        /// </summary>
+        /// <param name="piece"></param>
+        /// <returns>All vanilla <see cref="Piece.UsageTagFlags"/> that match</returns>
+        public Piece.UsageTagFlags FindUsageTagFlags(Piece piece)
+        {
+            var flags = piece.m_category switch
+            {
+                Piece.PieceCategory.Misc => Piece.UsageTagFlags.Misc,
+                Piece.PieceCategory.Crafting => Piece.UsageTagFlags.Crafting,
+                Piece.PieceCategory.BuildingWorkbench => Piece.UsageTagFlags.Building,
+                Piece.PieceCategory.BuildingStonecutter => Piece.UsageTagFlags.Building,
+                Piece.PieceCategory.Furniture => Piece.UsageTagFlags.Furniture,
+                Piece.PieceCategory.DeepNorth => (Piece.UsageTagFlags)0,
+                Piece.PieceCategory.Feasts => Piece.UsageTagFlags.Feasts,
+                Piece.PieceCategory.Food => Piece.UsageTagFlags.Food,
+                Piece.PieceCategory.Meads => Piece.UsageTagFlags.Meads,
+                _ => (Piece.UsageTagFlags)0
+            };
+
+            var prefabName = piece.name.ToLower();
+            var localizedName = Localization.instance.Localize(piece.m_name).ToLower();
+
+            if (piece.GetComponent<Container>() || piece.GetComponent<ItemStand>())
+                flags |= Piece.UsageTagFlags.Storage;
+
+            if (piece.GetComponent<Door>())
+                flags |= Piece.UsageTagFlags.Doors;
+
+            if (piece.GetComponent<Fireplace>() || HasNameKeyword(prefabName, localizedName, "torch", "lantern"))
+                flags |= Piece.UsageTagFlags.Lighting;
+
+            if (piece.m_category != Piece.PieceCategory.Crafting && (
+                piece.GetComponent<CraftingStation>() ||
+                piece.GetComponent<StationExtension>() ||
+                piece.GetComponent<CookingStation>() ||
+                piece.GetComponent<Smelter>() ||
+                piece.GetComponent<Fermenter>() ||
+                piece.GetComponent<Beehive>() ||
+                piece.GetComponent<WispSpawner>() ||
+                piece.GetComponent<SapCollector>()
+            ))
+            {
+                flags |= Piece.UsageTagFlags.Crafting;
+            }
+
+            if (piece.GetComponent<Vagon>() || piece.GetComponent<Ship>() || piece.GetComponent<TeleportWorld>())
+                flags |= Piece.UsageTagFlags.Transport;
+
+            if (piece.GetComponent<Sign>())
+                flags |= Piece.UsageTagFlags.Decor;
+
+            if (piece.m_comfort > 0)
+                flags |= Piece.UsageTagFlags.Furniture;
+
+            if (HasNameKeyword(prefabName, localizedName, "stair", "ladder", "ramp"))
+                flags |= Piece.UsageTagFlags.Stairs;
+
+            if (HasNameKeyword(prefabName, localizedName, "wall", "window", "fence"))
+                flags |= Piece.UsageTagFlags.Wall;
+
+            if (HasNameKeyword(prefabName, localizedName, "pile", "stack"))
+                flags |= Piece.UsageTagFlags.Stacks;
+
+            if (HasNameKeyword(prefabName, localizedName, "floor", "slap"))
+                flags |= Piece.UsageTagFlags.Floor;
+
+            if (HasNameKeyword(prefabName, localizedName, "roof"))
+                flags |= Piece.UsageTagFlags.Roof;
+
+            if (HasNameKeyword(prefabName, localizedName, "beam", "pole", "pillar", "arch", "sharpstakes"))
+                flags |= Piece.UsageTagFlags.Building;
+
+            return flags;
+        }
+
+        private bool HasNameKeyword(string prefabName, string localizedName, params string[] keywords)
+        {
+            foreach (var keyword in keywords)
+            {
+                if (prefabName.IndexOf(keyword, StringComparison.Ordinal) >= 0 || localizedName.IndexOf(keyword, StringComparison.Ordinal) >= 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         ///     Add a new <see cref="Piece.PieceCategory"/> by name. A new category
         ///     gets assigned a random integer for internal use. If you pass a vanilla category
         ///     the actual integer value of the enum is returned.
@@ -580,6 +670,11 @@ namespace Jotunn.Managers
             if (!string.IsNullOrEmpty(category))
             {
                 piece.m_category = AddPieceCategory(category);
+            }
+
+            if (piece.m_usage == 0)
+            {
+                piece.m_usage = FindUsageTagFlags(piece);
             }
 
             table.m_pieces.Add(prefab);
