@@ -54,6 +54,7 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private readonly Dictionary<string, Piece.PieceCategory> OtherPieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private readonly Dictionary<Piece.PieceCategory, string> vanillaLabels = new Dictionary<Piece.PieceCategory, string>();
+        private readonly Dictionary<ByUsagePieceList, Dictionary<int, CustomUsageTag>> customAvailableTags = new Dictionary<ByUsagePieceList, Dictionary<int, CustomUsageTag>>();
         private bool categoryRefreshNeeded = true;
         private static string hiddenCategoryMagic = "(HiddenCategory)";
 
@@ -144,6 +145,21 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(Enum), nameof(Enum.GetNames)), HarmonyPostfix]
             private static void EnumGetNamesPatch(Type enumType, ref string[] __result) => Instance.EnumGetNamesPatch(enumType, ref __result);
+
+            [HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.UpdateAvailableTags)), HarmonyPostfix]
+            private static void ByUsagePieceList_UpdateAvailableTags_Patch(ByUsagePieceList __instance, PieceTable pieceTable) => Instance.UpdateCustomAvailableTags(__instance, pieceTable);
+
+            [HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetTagDisplayName)), HarmonyPrefix]
+            private static void ByUsagePieceList_GetTagDisplayName_Patch(ByUsagePieceList __instance, ref bool __runOriginal, int index, ref string __result) => Instance.GetCustomCategoryDisplayName(__instance, ref __runOriginal, index, ref __result);
+
+            [HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetAvailablePiecesWithTag)), HarmonyPostfix]
+            private static void ByUsagePieceList_GetAvailablePiecesWithTag_Patch(ByUsagePieceList __instance, int tagId, PieceTable pieceTable, IList<Piece> resultOut) => Instance.GetPiecesWithCustomCategories(__instance, tagId, pieceTable, resultOut);
+
+            [HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetTagById)), HarmonyPrefix]
+            private static void ByUsagePieceList_GetTagById_Patch(ByUsagePieceList __instance, ref bool __runOriginal, int id, ref Piece.UsageTagFlags __result) => Instance.PatchGetTagById(__instance, ref __runOriginal, id, ref __result);
+            
+            [HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetAvailablePiecesWithTag)), HarmonyTranspiler]
+            private static IEnumerable<CodeInstruction> ByUsagePieceList_GetAvailablePiecesWithTag_Transpiler(IEnumerable<CodeInstruction> instructions) => Instance.ReplaceWithSafeGetTagById(instructions);
         }
 
         /// <summary>
@@ -679,6 +695,131 @@ namespace Jotunn.Managers
 
             table.m_pieces.Add(prefab);
             Logger.LogDebug($"Added piece {prefab.name} | Token: {piece.TokenName()}");
+        }
+
+        private struct CustomUsageTag
+        {
+            public string Name { get; set; }
+            public Piece.PieceCategory Category { get; set; }
+
+            public CustomUsageTag(string name, Piece.PieceCategory category)
+            {
+                Name = name;
+                Category = category;
+            }
+        }
+
+        private void UpdateCustomAvailableTags(ByUsagePieceList self, PieceTable pieceTable)
+        {
+            if (pieceTable == null)
+            {
+                return;
+            }
+
+            var categoryToName = new Dictionary<Piece.PieceCategory, string>();
+            foreach (var pair in PieceCategories)
+            {
+                categoryToName[pair.Value] = pair.Key;
+            }
+
+            var tagIndexByCategory = new Dictionary<Piece.PieceCategory, int>();
+            var tags = new Dictionary<int, CustomUsageTag>();
+
+            foreach (Piece piece in pieceTable.m_availablePieces)
+            {
+                if (tagIndexByCategory.ContainsKey(piece.m_category))
+                {
+                    continue;
+                }
+
+                if (!categoryToName.TryGetValue(piece.m_category, out var categoryName))
+                {
+                    continue;
+                }
+
+                int tagIndex = self.m_usageTags.Length + self.m_availableTags.Count;
+                tagIndexByCategory[piece.m_category] = tagIndex;
+                self.m_availableTags.Add(tagIndex);
+                tags[tagIndex] = new CustomUsageTag(categoryName, piece.m_category);
+            }
+
+            customAvailableTags[self] = tags;
+        }
+
+        private void GetCustomCategoryDisplayName(ByUsagePieceList self, ref bool __runOriginal, int index, ref string __result)
+        {
+            if (!customAvailableTags.TryGetValue(self, out var tags))
+            {
+                return;
+            }
+
+            int tagId = self.m_availableTags[index];
+            if (!tags.TryGetValue(tagId, out var tag))
+            {
+                return;
+            }
+
+            __result = tag.Name;
+            __runOriginal = false;
+        }
+
+        private void GetPiecesWithCustomCategories(ByUsagePieceList self, int tagId, PieceTable pieceTable, IList<Piece> resultOut)
+        {
+            if (!customAvailableTags.TryGetValue(self, out var tags))
+            {
+                return;
+            }
+
+            if (!tags.TryGetValue(tagId, out var tag))
+            {
+                return;
+            }
+
+            foreach (var piece in pieceTable.m_availablePieces)
+            {
+                if (piece.m_category == tag.Category && !resultOut.Contains(piece))
+                {
+                    resultOut.Add(piece);
+                }
+            }
+        }
+
+        private void PatchGetTagById(ByUsagePieceList self, ref bool __runOriginal, int id, ref Piece.UsageTagFlags __result)
+        {
+            if (id < 0 || id >= self.m_usageTags.Length)
+            {
+                __runOriginal = false;
+                // stay in sync with SafeGetTagById
+                __result = (Piece.UsageTagFlags)(-1);
+            }
+        }
+
+        private IEnumerable<CodeInstruction> ReplaceWithSafeGetTagById(IEnumerable<CodeInstruction> instructions)
+        {
+            var GetTagByIdMethod = AccessTools.Method(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetTagById));
+            var SafeGetTagByIdMethod = AccessTools.Method(typeof(PieceManager), nameof(SafeGetTagById));
+
+            foreach (var instruction in instructions)
+            {
+                if (instruction.Calls(GetTagByIdMethod))
+                {
+                    instruction.opcode = OpCodes.Call;
+                    instruction.operand = SafeGetTagByIdMethod;
+                }
+
+                yield return instruction;
+            }
+        }
+
+        private static Piece.UsageTagFlags SafeGetTagById(ByUsagePieceList self, int id)
+        {
+            if (id < 0 || id >= self.m_usageTags.Length)
+            {
+                // we need to return all flags, because vanilla does a HasFlag check that always returns true on a 0 flag
+                return (Piece.UsageTagFlags)(-1);
+            }
+
+            return self.m_usageTags[id];
         }
 
         private void RegisterCustomData(ObjectDB self)
