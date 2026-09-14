@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Jotunn.Configs;
 using Jotunn.Managers;
@@ -26,7 +27,21 @@ namespace Jotunn.Entities
         /// <summary>
         ///     Name of the <see cref="global::PieceTable"/> this custom piece belongs to.
         /// </summary>
-        public string PieceTable { get; set; }
+        public string PieceTable
+        {
+            get => pieceTable;
+            set
+            {
+                var oldPieceTable = pieceTable;
+                pieceTable = value;
+
+                if (Piece && !string.IsNullOrEmpty(pieceTable))
+                {
+                    PieceManager.Instance.RemoveFromPieceTable(Piece, oldPieceTable);
+                    PieceManager.Instance.AddToPieceTable(Piece, pieceTable);
+                }
+            }
+        }
 
         /// <summary>
         ///     Name of the category this custom piece belongs to.<br />
@@ -47,10 +62,31 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
+        ///     The items required to build this custom piece.<br />
+        ///     Updating this value will also update the <see cref="global::Piece.m_resources"/> of the <see cref="global::Piece"/> component.
+        /// </summary>
+        public List<RequirementConfig> Requirements
+        {
+            get => requirements;
+            set
+            {
+                requirements = value;
+                UpdateRequirements();
+            }
+        }
+
+        /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
-        
+
+        /// <summary>
+        ///     The in-game settings for this custom piece.
+        ///     <br />
+        ///     This is null if the mod does not use configs.
+        /// </summary>
+        public CustomPieceSettings Settings { get; set; }
+
         /// <summary>
         ///     Indicator if references from configs should get replaced
         /// </summary>
@@ -64,6 +100,8 @@ namespace Jotunn.Entities
         private string fallbackPieceName;
 
         private string category;
+        private string pieceTable;
+        private List<RequirementConfig> requirements;
 
         /// <summary>
         ///     Custom piece from a prefab.<br />
@@ -82,6 +120,7 @@ namespace Jotunn.Entities
             Piece = piecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
             FixReference = fixReference;
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -99,10 +138,11 @@ namespace Jotunn.Entities
             FixReference = false;
             FixConfig = true;
             Category = pieceConfig.Category;
-
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(piecePrefab);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
-        
+
         /// <summary>
         ///     Custom piece from a prefab with a <see cref="PieceConfig"/> attached.<br />
         ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
@@ -118,8 +158,9 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             FixConfig = true;
             Category = pieceConfig.Category;
-
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(piecePrefab);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -147,6 +188,7 @@ namespace Jotunn.Entities
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
             FixReference = fixReference;
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -172,10 +214,11 @@ namespace Jotunn.Entities
             FixReference = false;
             FixConfig = true;
             Category = pieceConfig.Category;
-
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(PiecePrefab);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
-        
+
         /// <summary>
         ///     Custom piece from a prefab loaded from an <see cref="AssetBundle"/> with a <see cref="PieceConfig"/> attached.<br />
         ///     The members and references from the <see cref="PieceConfig"/> will be referenced by Jötunn at runtime.
@@ -199,8 +242,9 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             FixConfig = true;
             Category = pieceConfig.Category;
-
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(PiecePrefab);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -226,6 +270,7 @@ namespace Jotunn.Entities
             Piece = PiecePrefab.AddComponent<Piece>();
             Piece.m_name = name;
             PieceTable = pieceTable;
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -249,8 +294,9 @@ namespace Jotunn.Entities
             PieceTable = pieceConfig.PieceTable;
             FixConfig = true;
             Category = pieceConfig.Category;
-
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(PiecePrefab);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -275,6 +321,7 @@ namespace Jotunn.Entities
 
             Piece = PiecePrefab.GetComponent<Piece>();
             PieceTable = pieceTable;
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -298,8 +345,9 @@ namespace Jotunn.Entities
             PieceTable = pieceConfig.PieceTable;
             FixConfig = true;
             Category = pieceConfig.Category;
-
+            Requirements = new List<RequirementConfig>(pieceConfig.Requirements);
             pieceConfig.Apply(PiecePrefab);
+            Settings = PieceManager.Instance.IsConfigEnabled(SourceMod) ? new CustomPieceSettings(this) : null;
         }
 
         /// <summary>
@@ -316,20 +364,24 @@ namespace Jotunn.Entities
                 Logger.LogError(SourceMod, $"CustomPiece '{this}' has no prefab");
                 valid = false;
             }
+
             if (PiecePrefab && !PiecePrefab.IsValid())
             {
                 valid = false;
             }
+
             if (!Piece)
             {
                 Logger.LogError(SourceMod, $"CustomPiece '{this}' has no Piece component");
                 valid = false;
             }
+
             if (Piece && !Piece.m_icon)
             {
                 Logger.LogError(SourceMod, $"CustomPiece '{this}' has no icon");
                 valid = false;
             }
+
             if (string.IsNullOrEmpty(PieceTable))
             {
                 Logger.LogError(SourceMod, $"CustomPiece '{this}' has no PieceTable");
@@ -337,6 +389,17 @@ namespace Jotunn.Entities
             }
 
             return valid;
+        }
+
+        /// <summary>
+        ///     Updates the requirements of this custom piece.<br />
+        /// </summary>
+        public void UpdateRequirements()
+        {
+            if (Piece)
+            {
+                Piece.m_resources = RequirementConfig.GetRequirements(Requirements);
+            }
         }
 
         /// <summary>

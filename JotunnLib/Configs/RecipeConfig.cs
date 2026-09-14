@@ -80,20 +80,7 @@ namespace Jotunn.Configs
         ///     Converts the RequirementConfigs to Valheim style Piece.Requirements
         /// </summary>
         /// <returns>The Valheim Piece.Requirement array</returns>
-        public Piece.Requirement[] GetRequirements()
-        {
-            List<Piece.Requirement> reqs = new List<Piece.Requirement>();
-
-            foreach (RequirementConfig requirement in Requirements)
-            {
-                if (requirement != null && requirement.IsValid())
-                {
-                    reqs.Add(requirement.GetRequirement());
-                }
-            }
-
-            return reqs.ToArray();
-        }
+        public Piece.Requirement[] GetRequirements() => RequirementConfig.GetRequirements(Requirements);
 
         /// <summary>
         ///     Converts the RecipeConfig to a Valheim style Recipe.

@@ -81,12 +81,17 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Array of <see cref="RequirementConfig"/>s for all crafting materials it takes to craft the recipe.
         /// </summary>
-        public RequirementConfig[] Requirements { get; set; } = Array.Empty<RequirementConfig>();
+        public RequirementConfig[] Requirements
+        {
+            get => requirements.ToArray();
+            set => requirements = new List<RequirementConfig>(value);
+        }
 
         private string pieceTable = string.Empty;
         private string category = string.Empty;
         private string craftingStation = string.Empty;
         private string extendStation = string.Empty;
+        private List<RequirementConfig> requirements = new List<RequirementConfig>(4);
 
         /// <summary>
         ///     Apply this configs values to a piece GameObject.
@@ -151,20 +156,7 @@ namespace Jotunn.Configs
         ///     Converts the <see cref="RequirementConfig">RequirementConfigs</see> to Valheim style <see cref="Piece.Requirement"/> array.
         /// </summary>
         /// <returns>The Valheim <see cref="Piece.Requirement"/> array</returns>
-        public Piece.Requirement[] GetRequirements()
-        {
-            List<Piece.Requirement> reqs = new List<Piece.Requirement>();
-
-            foreach (RequirementConfig requirement in Requirements)
-            {
-                if (requirement != null && requirement.IsValid())
-                {
-                    reqs.Add(requirement.GetRequirement());
-                }
-            }
-
-            return reqs.ToArray();
-        }
+        public Piece.Requirement[] GetRequirements() => RequirementConfig.GetRequirements(Requirements);
 
         /// <summary>
         ///     Loads a single PieceConfig from a JSON string
@@ -195,7 +187,7 @@ namespace Jotunn.Configs
         {
             if (requirementConfig != null && requirementConfig.IsValid())
             {
-                Requirements = Requirements.AddToArray(requirementConfig);
+                requirements.Add(requirementConfig);
             }
         }
 

@@ -27,6 +27,8 @@ namespace TestMod
         
         public void Awake()
         {
+            PieceManager.Instance.EnableConfigSettings(Info.Metadata);
+
             CommandManager.Instance.AddConsoleCommand(new CHCommands_zones());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_zonesmain());
             CommandManager.Instance.AddConsoleCommand(new CHCommands_flatten());

@@ -905,7 +905,13 @@ namespace Jotunn.Managers
 
                 foreach (var configDefinition in config.Keys)
                 {
-                    var configEntry = config[configDefinition.Section, configDefinition.Key];
+                    if (!config.ContainsKey(configDefinition))
+                    {
+                        // this case can happen because of the BepInEx implentation of config Keys
+                        continue;
+                    }
+
+                    var configEntry = config[configDefinition];
                     var configAttribute = configEntry.GetConfigurationManagerAttributes();
 
                     if (configAttribute?.IsAdminOnly == true)
