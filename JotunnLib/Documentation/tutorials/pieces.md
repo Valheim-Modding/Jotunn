@@ -107,6 +107,10 @@ With [PieceConfig's](xref:Jotunn.Configs.PieceConfig) it is possible to add your
 Pieces of a custom category are shown under an own tag button in the build menu, named after the category.
 For this example we create "empty" pieces (GameObjects with just a cube model and a Piece component) and add them to a new category "Lulzies" on the Hammer.
 
+> [!NOTE]
+> The vanilla category `All` doesn't show a piece under every tag anymore, it only appears under the *All* tag of the build menu.
+> Use `PieceConfig.Usage` to control where a piece shows up.
+
 ```cs
 // Implementation of custom pieces from an "empty" prefab with new piece categories
 private void AddPieceCategories()

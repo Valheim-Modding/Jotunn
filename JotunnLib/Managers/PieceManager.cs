@@ -786,7 +786,8 @@ namespace Jotunn.Managers
                 return;
             }
 
-            __result = tag.Name;
+            // the button localizes the display name, so the category token is used to allow translations
+            __result = $"${GetCategoryToken(tag.Name)}";
             __runOriginal = false;
         }
 
