@@ -30,7 +30,9 @@ namespace Jotunn.Entities
 
         /// <summary>
         ///     Name of the category this custom piece belongs to.<br />
-        ///     When setting this value, Piece.m_category will be updated as well.
+        ///     When setting this value, Piece.m_category will be updated as well.<br />
+        ///     Pieces of a custom category are shown under an own tag in the build menu,
+        ///     next to the vanilla tags defined by <see cref="Usage"/>.
         /// </summary>
         public string Category
         {

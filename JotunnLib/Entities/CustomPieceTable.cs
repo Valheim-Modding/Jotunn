@@ -10,10 +10,8 @@ namespace Jotunn.Entities
 {
     /// <summary>
     ///     Main interface for adding custom piece tables to the game.<br />
-    ///     All custom piece tables have to be wrapped inside this class 
-    ///     to add it to Jötunns <see cref="PieceManager"/>.<br />
-    ///     Add strings to <see cref="Categories"/> to use custom categories on your
-    ///     piece table. All categories will be replaced so list vanilla categories, too.
+    ///     All custom piece tables have to be wrapped inside this class
+    ///     to add it to Jötunns <see cref="PieceManager"/>.
     /// </summary>
     public class CustomPieceTable : CustomEntity
     {
@@ -28,10 +26,10 @@ namespace Jotunn.Entities
         public PieceTable PieceTable { get; }
 
         /// <summary>
-        ///     String array of categories used on the <see cref="global::PieceTable"/>. 
-        ///     Will be ignored when m_useCategories is false.<br />
-        ///     All categories provided here will be used and displayed on the <see cref="Hud"/>.
+        ///     String array of categories used on the <see cref="global::PieceTable"/>.<br />
+        ///     All categories listed here are registered when the table is added.
         /// </summary>
+        [Obsolete("Piece tables don't own categories since Valheim 1.0. Categories are registered when a piece uses them, set PieceConfig.Category instead")]
         public string[] Categories { get; set; } = Array.Empty<string>();
 
         /// <summary>
@@ -64,7 +62,9 @@ namespace Jotunn.Entities
                     categories.Add(Enum.GetName(typeof(Piece.PieceCategory), i));
                 }
 
+#pragma warning disable CS0618 // Type or member is obsolete
                 Categories = categories.ToArray();
+#pragma warning restore CS0618 // Type or member is obsolete
             }
         }
 
@@ -78,7 +78,9 @@ namespace Jotunn.Entities
             PieceTablePrefab = pieceTablePrefab;
             config.Apply(pieceTablePrefab);
             PieceTable = pieceTablePrefab.GetComponent<PieceTable>();
+#pragma warning disable CS0618 // Type or member is obsolete
             Categories = config.GetCategories();
+#pragma warning restore CS0618 // Type or member is obsolete
             GuessUsage = config.GuessUsage;
         }
 
@@ -92,7 +94,9 @@ namespace Jotunn.Entities
             PieceTablePrefab = new GameObject(name);
             PieceTable = PieceTablePrefab.AddComponent<PieceTable>();
             config.Apply(PieceTablePrefab);
+#pragma warning disable CS0618 // Type or member is obsolete
             Categories = config.GetCategories();
+#pragma warning restore CS0618 // Type or member is obsolete
             GuessUsage = config.GuessUsage;
         }
 
@@ -114,7 +118,9 @@ namespace Jotunn.Entities
             PieceTablePrefab = prefab;
             config.Apply(PieceTablePrefab);
             PieceTable = PieceTablePrefab.GetComponent<PieceTable>();
+#pragma warning disable CS0618 // Type or member is obsolete
             Categories = config.GetCategories();
+#pragma warning restore CS0618 // Type or member is obsolete
             GuessUsage = config.GuessUsage;
         }
 

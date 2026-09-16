@@ -962,12 +962,9 @@ namespace TestMod
         // Add new Items with item Configs
         private void AddItemsWithConfigs()
         {
-            // Add a custom piece table with custom categories
+            // Add a custom piece table, the categories are created by the pieces below
             PieceTableConfig runeTable = new PieceTableConfig();
             runeTable.CanRemovePieces = false;
-            runeTable.UseCategories = false;
-            runeTable.UseCustomCategories = true;
-            runeTable.CustomCategories = new string[] { "Make", "Place" };
             PieceManager.Instance.AddPieceTable(new CustomPieceTable(BlueprintRuneBundle, "_BlueprintTestTable", runeTable));
 
             // Create and add a custom item

@@ -190,7 +190,9 @@ namespace Jotunn.Managers
             }
 
             // Create all custom categories on that table
+#pragma warning disable CS0618 // Type or member is obsolete
             foreach (var category in customPieceTable.Categories)
+#pragma warning restore CS0618 // Type or member is obsolete
             {
                 AddPieceCategory(category);
             }
@@ -375,7 +377,9 @@ namespace Jotunn.Managers
         /// <summary>
         ///     Add a new <see cref="Piece.PieceCategory"/> by name. A new category
         ///     gets assigned a random integer for internal use. If you pass a vanilla category
-        ///     the actual integer value of the enum is returned.
+        ///     the actual integer value of the enum is returned.<br />
+        ///     Since Valheim 1.0 pieces of a custom category are shown under an own tag
+        ///     in the build menu, next to the vanilla <see cref="Piece.UsageTagFlags"/> tags.
         /// </summary>
         /// <param name="name">Name of the category.</param>
         /// <returns>int value of the vanilla or custom category</returns>
@@ -430,14 +434,17 @@ namespace Jotunn.Managers
         [Obsolete("Use RemovePieceCategory(string name) instead")]
         public void RemovePieceCategory(string table, string name)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             RemovePieceCategory(name);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
-        ///     Remove a <see cref="Piece.PieceCategory"/> from a table by name.
-        ///     This does noting if a piece is still assigned to the category, remove it before calling this.
+        ///     Remove a <see cref="Piece.PieceCategory"/> by name.<br />
+        ///     The category id stays registered, only a refresh of the displayed categories is triggered.
         /// </summary>
         /// <param name="name">Name of the category.</param>
+        [Obsolete("Categories can't be removed, this method only triggers a category refresh")]
         public void RemovePieceCategory(string name)
         {
             categoryRefreshNeeded = true;
