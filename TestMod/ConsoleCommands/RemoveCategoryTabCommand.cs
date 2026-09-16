@@ -18,7 +18,9 @@ namespace TestMod.ConsoleCommands
                 return;
             }
 
+#pragma warning disable CS0618 // Type or member is obsolete
             PieceManager.Instance.RemovePieceCategory(args[0], args[1]);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public override List<string> CommandOptionList()

@@ -393,3 +393,6 @@ JotunnLib/version.props
 
 # local launch Settings
 JotunnLib/Properties/launchSettings.json
+
+# build task artifact, built by the JotunnBuildTask project
+libraries/JotunnBuildTask.dll

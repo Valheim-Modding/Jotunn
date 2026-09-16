@@ -187,4 +187,4 @@ Some content added by Jötunn can be translated.
 The fallback english translation is provided by Jötunn itself.
 But you can add translations for other languages using this tokens:
 
-* jotunn_cat_\<category\>: [Custom category](pieces.md#adding-custom-piece-table-categories-to-vanilla-tables) localization, replace \<category\> with the lower case name of your added category (e.g. jotunn_cat_mycat).
+* jotunn_cat_\<category\>: [Custom category](pieces.md#adding-pieces-to-custom-categories) localization, replace \<category\> with the lower case name of your added category (e.g. jotunn_cat_mycat).

@@ -45,10 +45,10 @@ namespace Jotunn.Configs
         }
 
         /// <summary>
-        ///     The name of the category this piece will appear on. If categories are disabled on the 
-        ///     target <see cref="global::PieceTable"/>, this setting will be ignored.<br />
-        ///     If categories are enabled but the given category can't be found, a new 
-        ///     <see cref="Piece.PieceCategory"/> will be added to the table.
+        ///     The name of the category this piece belongs to.<br />
+        ///     If the given category can't be found, a new <see cref="Piece.PieceCategory"/> is created.
+        ///     Pieces of a custom category are shown under an own tag in the build menu,
+        ///     next to the vanilla tags defined by <see cref="Usage"/>.
         /// </summary>
         public string Category
         {

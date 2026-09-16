@@ -5,10 +5,13 @@ This includes things such as plant sapplings, the workbench, and walls.
 In order for a prefab to be a _piece_, it must have the `Piece` component attached to the prefab.
 
 _Piece Tables_ in Valheim are connecting the buildable pieces to the tools used for building.
-They also define the build categories and if a tool can remove pieces again.
-In vanilla Valheim you only can use four building categories or none on a piece table.
-Jötunn adds the ability to use custom categories on vanilla tools or completely own categories on custom tool items.
+They also define if a tool can remove pieces again.
 In order for a prefab to be a _piece table_, it must have the `PieceTable` component attached to the prefab.
+
+Since Valheim 1.0 the build menu doesn't group pieces by piece table categories anymore.
+Instead every piece carries a set of usage tags (`Piece.UsageTagFlags`) and the menu shows one tag button per tag in use.
+Jötunn keeps the piece categories working on top of that: a piece with a custom category gets its own tag button, named after the category.
+Piece tables themselves don't own categories any longer, the corresponding `PieceTableConfig` and `CustomPieceTable` members are deprecated.
 
 Custom pieces and piece tables are handled by the [PieceManager](xref:Jotunn.Managers.PieceManager) singleton.
 
@@ -78,10 +81,35 @@ To read more about localization/translation head over to the [localization tutor
 > [!NOTE]
 > A `PieceConfig` has an empty array of requirements by default and doesn't change original requirements of that piece unless requirements were explicitely added to the `PieceConfig` object. So in case you really want to remove all requirements from a specific piece (for example a cloned vanilla piece), you have to do it manually: `CustomPiece.Piece.m_resources = Array.Empty<Piece.Requirement>();`
 
-## Adding custom piece table categories to vanilla tables
+## Hammer tags
 
-With [PieceConfig's](xref:Jotunn.Configs.PieceConfig) it is possible to add your pieces to a vanilla or even custom piece table category.
+The build menu groups pieces by their usage tags.
+Set them explicitly with `PieceConfig.Usage`, see [PieceUsages](xref:Jotunn.Configs.PieceUsages) for the valid names.
+
+```cs
+PieceConfig chest = new PieceConfig();
+chest.PieceTable = PieceTables.Hammer;
+chest.Usage = new[] { PieceUsages.Storage, PieceUsages.Furniture };
+```
+
+If `Usage` is left empty, Jötunn guesses tags from the piece's category, its components and its name, so your pieces show up somewhere sensible without any extra work.
+To opt out of that guessing for a custom piece table, set `PieceTableConfig.GuessUsage` to `false`.
+Pieces on that table then keep exactly the usage tags defined on their prefabs.
+
+```cs
+PieceTableConfig runeTable = new PieceTableConfig();
+runeTable.GuessUsage = false;
+```
+
+## Adding pieces to custom categories
+
+With [PieceConfig's](xref:Jotunn.Configs.PieceConfig) it is possible to add your pieces to a vanilla or to an own category.
+Pieces of a custom category are shown under an own tag button in the build menu, named after the category.
 For this example we create "empty" pieces (GameObjects with just a cube model and a Piece component) and add them to a new category "Lulzies" on the Hammer.
+
+> [!NOTE]
+> The vanilla category `All` doesn't show a piece under every tag anymore, it only appears under the *All* tag of the build menu.
+> Use `PieceConfig.Usage` to control where a piece shows up.
 
 ```cs
 // Implementation of custom pieces from an "empty" prefab with new piece categories
@@ -105,8 +133,7 @@ private void AddPieceCategories()
 }
 ```
 
-The result is a new category added to the piece table of the Hammer:<br />
-![Custom Vanilla Categories](../images/data/customVanillaCategories.png)
+The result is a new tag in the build menu of the Hammer, listing all pieces of that category.
 
 One of the pieces placed in the world:<br />
 ![Piece Stub Placed](../images/data/pieceStubPlaced.png)
@@ -124,23 +151,24 @@ private void CreateRunePieceTable()
 }
 ```
 
-## Creating completely new categories using PieceTableConfigs
+## Custom categories on a custom piece table
 
-While adding pieces with custom categories to existing piece tables (such as the Hammer), you can also create custom items with piece tables using only custom categories.
+Custom categories also work on custom piece tables.
 For that you will need to use [PieceTableConfig's](xref:Jotunn.Configs.PieceTableConfig) when creating a [CustomPieceTable](xref:Jotunn.Entities.CustomPieceTable).
 This example is not used in our example mod but in our TestMod for Jötunn.
 Keep that in mind as you will not find the code in the example mod.
 We are still using the piece table of the example `Blueprint Rune` but this time add the custom pieces to own categories.
 
+> [!NOTE]
+> The table itself doesn't declare its categories, they are created by the pieces using them.
+> `PieceTableConfig.UseCategories`, `UseCustomCategories`, `CustomCategories` and `CustomPieceTable.Categories` are deprecated since Valheim 1.0 and have no effect on the build menu anymore.
+
 ```cs
 private void AddItemsWithConfigs()
 {
-    // Add a custom piece table with custom categories
+    // Add a custom piece table, the categories are created by the pieces below
     PieceTableConfig runeTable = new PieceTableConfig();
     runeTable.CanRemovePieces = false;
-    runeTable.UseCategories = false;
-    runeTable.UseCustomCategories = true;
-    runeTable.CustomCategories = new string[] { "Make", "Place" };
     PieceManager.Instance.AddPieceTable(new CustomPieceTable(BlueprintRuneBundle, "_BlueprintTestTable", runeTable));
 
     // Create and add a custom item
@@ -168,8 +196,7 @@ private void AddItemsWithConfigs()
 }
 ```
 
-The result is a tool with two completely custom categories:<br />
-![Custom Piece Tables Categories](../images/data/customTableCategories.png)
+The result is a tool with two tags in the build menu, one per custom category.
 
 ## Translating your custom categories
 

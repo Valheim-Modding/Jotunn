@@ -55,7 +55,9 @@ namespace Jotunn.Configs
         public static string Feasts => nameof(Piece.PieceCategory.Feasts);
 
         /// <summary>
-        ///     All piece categories
+        ///     All piece categories.<br />
+        ///     Since Valheim 1.0 this doesn't show the piece under every tag in the build menu anymore,
+        ///     use <see cref="PieceConfig.Usage"/> to define where a piece shows up.
         /// </summary>
         public static string All => nameof(Piece.PieceCategory.All);
 

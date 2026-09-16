@@ -13,17 +13,20 @@ namespace Jotunn.Configs
         /// <summary>
         ///     Indicator if the <see cref="PieceTable"/> uses the vanilla categories. Defaults to <c>true</c>.
         /// </summary>
+        [Obsolete("Piece tables don't own categories since Valheim 1.0, this setting has no effect")]
         public bool UseCategories { get; set; } = true;
 
         /// <summary>
         ///     Indicator if the <see cref="PieceTable"/> uses custom categories. Defaults to <c>false</c>.
         /// </summary>
+        [Obsolete("Piece tables don't own categories since Valheim 1.0, set PieceConfig.Category on the pieces instead")]
         public bool UseCustomCategories { get; set; } = false;
 
         /// <summary>
-        ///     Array of custom categories the <see cref="PieceTable"/> uses. 
+        ///     Array of custom categories the <see cref="PieceTable"/> uses.
         ///     Will be ignored when <see cref="UseCustomCategories"/> is false.
         /// </summary>
+        [Obsolete("Piece tables don't own categories since Valheim 1.0, set PieceConfig.Category on the pieces instead")]
         public string[] CustomCategories { get; set; } = Array.Empty<string>();
 
         /// <summary>
@@ -38,11 +41,12 @@ namespace Jotunn.Configs
         public bool GuessUsage { get; set; } = true;
 
         /// <summary>
-        ///     Creates the final categories array for this <see cref="PieceTable"/>. 
+        ///     Creates the final categories array for this <see cref="PieceTable"/>.
         ///     Adds vanilla categories when <see cref="UseCategories"/> is true.
         ///     Adds custom categories when <see cref="UseCustomCategories"/> is true.
         /// </summary>
         /// <returns>Array of category strings.</returns>
+        [Obsolete("Piece tables don't own categories since Valheim 1.0, set PieceConfig.Category on the pieces instead")]
         public string[] GetCategories()
         {
             List<string> categories = new List<string>();
