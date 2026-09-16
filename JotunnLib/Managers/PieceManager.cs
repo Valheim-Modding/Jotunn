@@ -632,7 +632,7 @@ namespace Jotunn.Managers
             }
 
             // Assign the piece to the actual PieceTable if not already in there
-            RegisterPieceInPieceTable(customPiece.PiecePrefab, customPiece.PieceTable, null, customPiece.SourceMod);
+            RegisterPieceInPieceTable(customPiece.PiecePrefab, customPiece.PieceTable, null, customPiece.Usage, customPiece.SourceMod);
         }
 
         /// <summary>
@@ -645,12 +645,12 @@ namespace Jotunn.Managers
         /// <param name="pieceTable">Prefab or item name of the PieceTable</param>
         /// <param name="category">Optional category string, does not create new custom categories</param>
         public void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category = null) =>
-            RegisterPieceInPieceTable(prefab, pieceTable, category, BepInExUtils.GetSourceModMetadata());
+            RegisterPieceInPieceTable(prefab, pieceTable, category, new string[0], BepInExUtils.GetSourceModMetadata());
 
         /// <summary>
         ///     Internal method for adding a prefab to a piece table.
         /// </summary>
-        private void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category, BepInPlugin sourceMod)
+        private void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category, string[] usage, BepInPlugin sourceMod)
         {
             var piece = prefab.GetComponent<Piece>();
             if (piece == null)
@@ -688,7 +688,11 @@ namespace Jotunn.Managers
                 piece.m_category = AddPieceCategory(category);
             }
 
-            if (piece.m_usage == 0)
+            if (usage != null && usage.Length > 0)
+            {
+                piece.m_usage = PieceUtils.UsageTagFlagsFromStrings(usage);
+            }
+            else if (piece.m_usage == 0)
             {
                 piece.m_usage = FindUsageTagFlags(piece);
             }
