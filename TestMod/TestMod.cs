@@ -804,7 +804,9 @@ namespace TestMod
                 { "piece_lul", "Lulz" },
                 { "piece_lul_description", "Do it for them" },
                 { "piece_lel", "Lölz" },
-                { "piece_lel_description", "Härhärhär" }
+                { "piece_lel_description", "Härhärhär" },
+                { "piece_lol", "Lolz" },
+                { "piece_lol_description", "In every category at once" }
             });
 
             // Add translations for the custom variant in AddClonedItems
@@ -965,6 +967,7 @@ namespace TestMod
             // Add a custom piece table, the categories are created by the pieces below
             PieceTableConfig runeTable = new PieceTableConfig();
             runeTable.CanRemovePieces = false;
+            runeTable.GuessUsage = false; // Test opting out, the pieces only show up under their category tag
             PieceManager.Instance.AddPieceTable(new CustomPieceTable(BlueprintRuneBundle, "_BlueprintTestTable", runeTable));
 
             // Create and add a custom item
@@ -1256,7 +1259,8 @@ namespace TestMod
                 Icon = TestSprite,
                 PieceTable = PieceTables.Hammer,
                 // ExtendStation = CraftingStations.Workbench, // Test station extension
-                Category = "Lulzies."  // Test custom category
+                Category = "Lulzies.",  // Test custom category
+                Usage = new[] { PieceUsages.Decor, PieceUsages.Seasonal }  // Test explicit hammer tags
             });
 
             if (CP.PiecePrefab)
@@ -1276,7 +1280,7 @@ namespace TestMod
                 Icon = TestSprite,
                 PieceTable = PieceTables.Hammer,
                 ExtendStation = CraftingStations.Workbench, // Test station extension
-                Category = "Lulzies."  // Test custom category
+                Category = "Lulzies."  // Test custom category, the hammer tags are guessed by Jötunn
             });
 
             if (CP.PiecePrefab)
@@ -1288,6 +1292,25 @@ namespace TestMod
 
                 PieceManager.Instance.AddPiece(CP);
                 AddCategorySetting(CP);
+            }
+
+            CP = new CustomPiece("piece_lol", true, new PieceConfig
+            {
+                Name = "$piece_lol",
+                Description = "$piece_lol_description",
+                Icon = TestSprite,
+                PieceTable = PieceTables.Hammer,
+                Category = PieceCategories.All  // Test the vanilla "All" category, it has no effect on the build menu, the piece only shows under the "All" tag
+            });
+
+            if (CP.PiecePrefab)
+            {
+                var prefab = CP.PiecePrefab;
+                prefab.GetComponent<MeshRenderer>().material.shader = PrefabManager.Cache.GetPrefab<Shader>("Custom/Piece");
+                prefab.GetComponent<MeshRenderer>().material.mainTexture = TestTex;
+                prefab.GetComponent<MeshRenderer>().material.color = Color.green;
+
+                PieceManager.Instance.AddPiece(CP);
             }
         }
 
