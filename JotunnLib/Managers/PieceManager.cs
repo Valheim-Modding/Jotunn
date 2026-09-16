@@ -263,11 +263,12 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Optimistically guess the <see cref="Piece.UsageTagFlags"/> for a given <see cref="Piece"/> by the piece category, attached components, prefab name and localized name.
+        ///     Optimistically guess the <see cref="Piece.UsageTagFlags"/> for a given <see cref="Piece"/> by the piece category, and optionally by attached components, prefab name and localized name.
         /// </summary>
-        /// <param name="piece"></param>
+        /// <param name="piece">The <see cref="Piece"/> to find the usage tags for.</param>
+        /// <param name="guessUsage">If true, Jötunn will try to guess the usage tags for pieces that have no usage tags set.</param>
         /// <returns>All vanilla <see cref="Piece.UsageTagFlags"/> that match</returns>
-        public Piece.UsageTagFlags FindUsageTagFlags(Piece piece)
+        public Piece.UsageTagFlags FindUsageTagFlags(Piece piece, bool guessUsage)
         {
             var flags = piece.m_category switch
             {
@@ -282,6 +283,11 @@ namespace Jotunn.Managers
                 Piece.PieceCategory.Meads => Piece.UsageTagFlags.Meads,
                 _ => (Piece.UsageTagFlags)0
             };
+
+            if (!guessUsage)
+            {
+                return flags;
+            }
 
             var prefabName = piece.name.ToLower();
             var localizedName = Localization.instance.Localize(piece.m_name).ToLower();
@@ -692,9 +698,9 @@ namespace Jotunn.Managers
             {
                 piece.m_usage = PieceUtils.UsageTagFlagsFromStrings(usage);
             }
-            else if (piece.m_usage == 0 && GuessesUsage(table))
+            else if (piece.m_usage == 0)
             {
-                piece.m_usage = FindUsageTagFlags(piece);
+                piece.m_usage = FindUsageTagFlags(piece, GuessesUsage(table));
             }
 
             table.m_pieces.Add(prefab);
