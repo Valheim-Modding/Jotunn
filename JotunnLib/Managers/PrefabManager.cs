@@ -381,7 +381,7 @@ namespace Jotunn.Managers
                 
                 int hash = name.GetStableHashCode();
 
-                if (znet.m_namedPrefabs.TryGetValue(hash, out GameObject registeredPrefab))
+                if (znet.m_namedPrefabs.ContainsKey(hash))
                 {
                     Logger.LogDebug($"Prefab {name} already in ZNetScene");
                 }
@@ -396,32 +396,30 @@ namespace Jotunn.Managers
                         znet.m_nonNetViewPrefabs.Add(gameObject);
                     }
                     znet.m_namedPrefabs.Add(hash, gameObject);
-                    registeredPrefab = gameObject;
                     Logger.LogDebug($"Added prefab {name}");
                 }
 
-                if (registeredPrefab == gameObject)
+                if (gameObject.TryGetComponent(out TerrainOp terrainOp))
                 {
-                    RegisterTerrainOp(gameObject);
+                    RegisterTerrainOp(terrainOp);
                 }
             }
         }
 
-        private static void RegisterTerrainOp(GameObject gameObject)
+        private static void RegisterTerrainOp(TerrainOp terrainOp)
         {
             ObjectDB objectDB = ObjectDB.instance;
-            TerrainOp terrainOp = gameObject.GetComponent<TerrainOp>();
-            if (!objectDB || !terrainOp)
+            if (!objectDB)
             {
                 return;
             }
 
-            int hash = objectDB.GetPrefabHash(gameObject);
+            int hash = objectDB.GetPrefabHash(terrainOp.gameObject);
             if (objectDB.m_terrainOpsByHash.TryGetValue(hash, out TerrainOp registeredTerrainOp))
             {
                 if (registeredTerrainOp != terrainOp)
                 {
-                    Logger.LogWarning($"TerrainOp prefab hash collision for {gameObject.name} ({hash})");
+                    Logger.LogWarning($"TerrainOp prefab hash collision for {terrainOp.gameObject.name} ({hash})");
                 }
                 return;
             }
@@ -431,7 +429,6 @@ namespace Jotunn.Managers
                 objectDB.m_terrainOps.Add(terrainOp);
             }
             objectDB.m_terrainOpsByHash.Add(hash, terrainOp);
-            Logger.LogDebug($"Added TerrainOp {gameObject.name} to ObjectDB");
         }
 
         /// <summary>
