@@ -692,13 +692,23 @@ namespace Jotunn.Managers
             {
                 piece.m_usage = PieceUtils.UsageTagFlagsFromStrings(usage);
             }
-            else if (piece.m_usage == 0)
+            else if (piece.m_usage == 0 && GuessesUsage(table))
             {
                 piece.m_usage = FindUsageTagFlags(piece);
             }
 
             table.m_pieces.Add(prefab);
             Logger.LogDebug($"Added piece {prefab.name} | Token: {piece.TokenName()}");
+        }
+
+        /// <summary>
+        ///     Determines if usage tags may be guessed for pieces added to a table.
+        ///     Only custom tables can opt out, vanilla tables always guess.
+        /// </summary>
+        private bool GuessesUsage(PieceTable table)
+        {
+            var customPieceTable = PieceTables.FirstOrDefault(x => x.PieceTable == table);
+            return customPieceTable == null || customPieceTable.GuessUsage;
         }
 
         private struct CustomUsageTag

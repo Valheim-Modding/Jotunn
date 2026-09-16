@@ -32,6 +32,12 @@ namespace Jotunn.Configs
         public bool CanRemovePieces { get; set; } = true;
 
         /// <summary>
+        ///     Indicator if Jötunn guesses the hammer usage tags for pieces added to this
+        ///     <see cref="PieceTable"/> which have no usage tags set. Defaults to <c>true</c>.
+        /// </summary>
+        public bool GuessUsage { get; set; } = true;
+
+        /// <summary>
         ///     Creates the final categories array for this <see cref="PieceTable"/>. 
         ///     Adds vanilla categories when <see cref="UseCategories"/> is true.
         ///     Adds custom categories when <see cref="UseCustomCategories"/> is true.
