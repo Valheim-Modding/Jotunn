@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.30.1
+* Added custom piece categories to the new build menu, pieces of a custom category are shown under an own tag
+* Added `PieceConfig.Usage` to set the build menu tags of a piece, Jötunn guesses them from the piece if left empty
+* Added `PieceTableConfig.GuessUsage` to opt out of that guessing per piece table
+* Deprecated the piece table category API, piece tables don't own categories since Valheim 1.0
+
 ## Version 2.30.0
 * Updated the majority of systems for Valheim 1.0.7 (thx warp)
 * Piece categories are not updated yet, Valheim overhauled the system completely. Custom pieces show up in the build menu, but don't have a category associated
