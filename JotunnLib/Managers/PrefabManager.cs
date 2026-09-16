@@ -398,7 +398,37 @@ namespace Jotunn.Managers
                     znet.m_namedPrefabs.Add(hash, gameObject);
                     Logger.LogDebug($"Added prefab {name}");
                 }
+
+                if (gameObject.TryGetComponent(out TerrainOp terrainOp))
+                {
+                    RegisterTerrainOp(terrainOp);
+                }
             }
+        }
+
+        private static void RegisterTerrainOp(TerrainOp terrainOp)
+        {
+            ObjectDB objectDB = ObjectDB.instance;
+            if (!objectDB)
+            {
+                return;
+            }
+
+            int hash = objectDB.GetPrefabHash(terrainOp.gameObject);
+            if (objectDB.m_terrainOpsByHash.TryGetValue(hash, out TerrainOp registeredTerrainOp))
+            {
+                if (registeredTerrainOp != terrainOp)
+                {
+                    Logger.LogWarning($"TerrainOp prefab hash collision for {terrainOp.gameObject.name} ({hash})");
+                }
+                return;
+            }
+
+            if (!objectDB.m_terrainOps.Contains(terrainOp))
+            {
+                objectDB.m_terrainOps.Add(terrainOp);
+            }
+            objectDB.m_terrainOpsByHash.Add(hash, terrainOp);
         }
 
         /// <summary>
