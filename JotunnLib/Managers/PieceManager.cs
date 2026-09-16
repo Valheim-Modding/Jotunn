@@ -116,6 +116,7 @@ namespace Jotunn.Managers
             public static void PieceTable_UpdateAvailable_Postfix(PieceTable __instance)
             {
                 AdjustPieceTableArray(__instance);
+                Instance.UpdatePieceTableCategories(__instance);
             }
 
             [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), HarmonyTranspiler]
@@ -945,6 +946,65 @@ namespace Jotunn.Managers
         {
             Array.Resize(ref pieceTable.m_selectedPiece, pieceTable.m_availablePiecesByCategory.Count);
             Array.Resize(ref pieceTable.m_lastSelectedPiece, pieceTable.m_availablePiecesByCategory.Count);
+        }
+
+        /// <summary>
+        ///     Mirrors every category used by the table into <see cref="PieceTable.m_categories"/>.
+        ///     The category tabs are gone, but vanilla still gates SetCategory, NextCategory,
+        ///     PrevCategory and GetSelectedCategory on a non-empty list.
+        /// </summary>
+        private void UpdatePieceTableCategories(PieceTable pieceTable)
+        {
+            List<Piece.PieceCategory> categories = new List<Piece.PieceCategory>();
+
+            foreach (Piece piece in pieceTable.m_enabledPieces)
+            {
+                // pieces of the All category are added to every other category, they have no own entry
+                if (piece && piece.m_category != PieceUtils.VanillaAllPieceCategory && !categories.Contains(piece.m_category))
+                {
+                    categories.Add(piece.m_category);
+                }
+            }
+
+            categories.Sort();
+
+            if (pieceTable.m_categories.SequenceEqual(categories))
+            {
+                return;
+            }
+
+            // keep the labels of already known categories, the vanilla ones are only defined in the prefab
+            Dictionary<Piece.PieceCategory, string> labels = new Dictionary<Piece.PieceCategory, string>();
+
+            for (int i = 0; i < pieceTable.m_categories.Count && i < pieceTable.m_categoryLabels.Count; i++)
+            {
+                labels[pieceTable.m_categories[i]] = pieceTable.m_categoryLabels[i];
+            }
+
+            pieceTable.m_categories.Clear();
+            pieceTable.m_categoryLabels.Clear();
+
+            foreach (Piece.PieceCategory category in categories)
+            {
+                pieceTable.m_categories.Add(category);
+                pieceTable.m_categoryLabels.Add(labels.TryGetValue(category, out string label) ? label : GetCategoryLabel(category));
+            }
+        }
+
+        /// <summary>
+        ///     Label for a category without an existing entry, only custom categories have a known token.
+        /// </summary>
+        private string GetCategoryLabel(Piece.PieceCategory category)
+        {
+            foreach (var entry in PieceCategories)
+            {
+                if (entry.Value == category)
+                {
+                    return $"${GetCategoryToken(entry.Key)}";
+                }
+            }
+
+            return string.Empty;
         }
 
         private string GetCategoryToken(string name)
