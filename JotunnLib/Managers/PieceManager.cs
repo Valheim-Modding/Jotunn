@@ -54,6 +54,7 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, Piece.PieceCategory> PieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private readonly Dictionary<string, Piece.PieceCategory> OtherPieceCategories = new Dictionary<string, Piece.PieceCategory>();
         private readonly Dictionary<Piece.PieceCategory, string> vanillaLabels = new Dictionary<Piece.PieceCategory, string>();
+        private readonly Dictionary<ByUsagePieceList, Dictionary<int, CustomUsageTag>> customAvailableTags = new Dictionary<ByUsagePieceList, Dictionary<int, CustomUsageTag>>();
         private bool categoryRefreshNeeded = true;
         private static string hiddenCategoryMagic = "(HiddenCategory)";
 
@@ -144,6 +145,21 @@ namespace Jotunn.Managers
 
             [HarmonyPatch(typeof(Enum), nameof(Enum.GetNames)), HarmonyPostfix]
             private static void EnumGetNamesPatch(Type enumType, ref string[] __result) => Instance.EnumGetNamesPatch(enumType, ref __result);
+
+            [HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.UpdateAvailableTags)), HarmonyPostfix]
+            private static void ByUsagePieceList_UpdateAvailableTags_Patch(ByUsagePieceList __instance, PieceTable pieceTable) => Instance.UpdateCustomAvailableTags(__instance, pieceTable);
+
+            [HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetTagDisplayName)), HarmonyPrefix]
+            private static void ByUsagePieceList_GetTagDisplayName_Patch(ByUsagePieceList __instance, ref bool __runOriginal, int index, ref string __result) => Instance.GetCustomCategoryDisplayName(__instance, ref __runOriginal, index, ref __result);
+
+            [HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetAvailablePiecesWithTag)), HarmonyPostfix]
+            private static void ByUsagePieceList_GetAvailablePiecesWithTag_Patch(ByUsagePieceList __instance, int tagId, PieceTable pieceTable, IList<Piece> resultOut) => Instance.GetPiecesWithCustomCategories(__instance, tagId, pieceTable, resultOut);
+
+            [HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetTagById)), HarmonyPrefix]
+            private static void ByUsagePieceList_GetTagById_Patch(ByUsagePieceList __instance, ref bool __runOriginal, int id, ref Piece.UsageTagFlags __result) => Instance.PatchGetTagById(__instance, ref __runOriginal, id, ref __result);
+            
+            [HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetAvailablePiecesWithTag)), HarmonyTranspiler]
+            private static IEnumerable<CodeInstruction> ByUsagePieceList_GetAvailablePiecesWithTag_Transpiler(IEnumerable<CodeInstruction> instructions) => Instance.ReplaceWithSafeGetTagById(instructions);
         }
 
         /// <summary>
@@ -244,6 +260,102 @@ namespace Jotunn.Managers
         public List<PieceTable> GetPieceTables()
         {
             return PieceTableMap.Values.ToList();
+        }
+
+        /// <summary>
+        ///     Optimistically guess the <see cref="Piece.UsageTagFlags"/> for a given <see cref="Piece"/> by the piece category, and optionally by attached components, prefab name and localized name.
+        /// </summary>
+        /// <param name="piece">The <see cref="Piece"/> to find the usage tags for.</param>
+        /// <param name="guessUsage">If true, Jötunn will try to guess the usage tags for pieces that have no usage tags set.</param>
+        /// <returns>All vanilla <see cref="Piece.UsageTagFlags"/> that match</returns>
+        public Piece.UsageTagFlags FindUsageTagFlags(Piece piece, bool guessUsage)
+        {
+            var flags = piece.m_category switch
+            {
+                Piece.PieceCategory.Misc => Piece.UsageTagFlags.Misc,
+                Piece.PieceCategory.Crafting => Piece.UsageTagFlags.Crafting,
+                Piece.PieceCategory.BuildingWorkbench => Piece.UsageTagFlags.Building,
+                Piece.PieceCategory.BuildingStonecutter => Piece.UsageTagFlags.Building,
+                Piece.PieceCategory.Furniture => Piece.UsageTagFlags.Furniture,
+                Piece.PieceCategory.DeepNorth => (Piece.UsageTagFlags)0,
+                Piece.PieceCategory.Feasts => Piece.UsageTagFlags.Feasts,
+                Piece.PieceCategory.Food => Piece.UsageTagFlags.Food,
+                Piece.PieceCategory.Meads => Piece.UsageTagFlags.Meads,
+                _ => (Piece.UsageTagFlags)0
+            };
+
+            if (!guessUsage)
+            {
+                return flags;
+            }
+
+            var prefabName = piece.name.ToLower();
+            var localizedName = Localization.instance.Localize(piece.m_name).ToLower();
+
+            if (piece.GetComponent<Container>() || piece.GetComponent<ItemStand>())
+                flags |= Piece.UsageTagFlags.Storage;
+
+            if (piece.GetComponent<Door>())
+                flags |= Piece.UsageTagFlags.Doors;
+
+            if (piece.GetComponent<Fireplace>() || HasNameKeyword(prefabName, localizedName, "torch", "lantern"))
+                flags |= Piece.UsageTagFlags.Lighting;
+
+            if (piece.m_category != Piece.PieceCategory.Crafting && (
+                piece.GetComponent<CraftingStation>() ||
+                piece.GetComponent<StationExtension>() ||
+                piece.GetComponent<CookingStation>() ||
+                piece.GetComponent<Smelter>() ||
+                piece.GetComponent<Fermenter>() ||
+                piece.GetComponent<Beehive>() ||
+                piece.GetComponent<WispSpawner>() ||
+                piece.GetComponent<SapCollector>()
+            ))
+            {
+                flags |= Piece.UsageTagFlags.Crafting;
+            }
+
+            if (piece.GetComponent<Vagon>() || piece.GetComponent<Ship>() || piece.GetComponent<TeleportWorld>())
+                flags |= Piece.UsageTagFlags.Transport;
+
+            if (piece.GetComponent<Sign>())
+                flags |= Piece.UsageTagFlags.Decor;
+
+            if (piece.m_comfort > 0)
+                flags |= Piece.UsageTagFlags.Furniture;
+
+            if (HasNameKeyword(prefabName, localizedName, "stair", "ladder", "ramp"))
+                flags |= Piece.UsageTagFlags.Stairs;
+
+            if (HasNameKeyword(prefabName, localizedName, "wall", "window", "fence"))
+                flags |= Piece.UsageTagFlags.Wall;
+
+            if (HasNameKeyword(prefabName, localizedName, "pile", "stack"))
+                flags |= Piece.UsageTagFlags.Stacks;
+
+            if (HasNameKeyword(prefabName, localizedName, "floor", "slap"))
+                flags |= Piece.UsageTagFlags.Floor;
+
+            if (HasNameKeyword(prefabName, localizedName, "roof"))
+                flags |= Piece.UsageTagFlags.Roof;
+
+            if (HasNameKeyword(prefabName, localizedName, "beam", "pole", "pillar", "arch", "sharpstakes"))
+                flags |= Piece.UsageTagFlags.Building;
+
+            return flags;
+        }
+
+        private bool HasNameKeyword(string prefabName, string localizedName, params string[] keywords)
+        {
+            foreach (var keyword in keywords)
+            {
+                if (prefabName.IndexOf(keyword, StringComparison.Ordinal) >= 0 || localizedName.IndexOf(keyword, StringComparison.Ordinal) >= 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -526,7 +638,7 @@ namespace Jotunn.Managers
             }
 
             // Assign the piece to the actual PieceTable if not already in there
-            RegisterPieceInPieceTable(customPiece.PiecePrefab, customPiece.PieceTable, null, customPiece.SourceMod);
+            RegisterPieceInPieceTable(customPiece.PiecePrefab, customPiece.PieceTable, null, customPiece.Usage, customPiece.SourceMod);
         }
 
         /// <summary>
@@ -539,12 +651,12 @@ namespace Jotunn.Managers
         /// <param name="pieceTable">Prefab or item name of the PieceTable</param>
         /// <param name="category">Optional category string, does not create new custom categories</param>
         public void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category = null) =>
-            RegisterPieceInPieceTable(prefab, pieceTable, category, BepInExUtils.GetSourceModMetadata());
+            RegisterPieceInPieceTable(prefab, pieceTable, category, new string[0], BepInExUtils.GetSourceModMetadata());
 
         /// <summary>
         ///     Internal method for adding a prefab to a piece table.
         /// </summary>
-        private void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category, BepInPlugin sourceMod)
+        private void RegisterPieceInPieceTable(GameObject prefab, string pieceTable, string category, string[] usage, BepInPlugin sourceMod)
         {
             var piece = prefab.GetComponent<Piece>();
             if (piece == null)
@@ -582,8 +694,152 @@ namespace Jotunn.Managers
                 piece.m_category = AddPieceCategory(category);
             }
 
+            if (usage != null && usage.Length > 0)
+            {
+                piece.m_usage = PieceUtils.UsageTagFlagsFromStrings(usage);
+            }
+            else if (piece.m_usage == 0)
+            {
+                piece.m_usage = FindUsageTagFlags(piece, GuessesUsage(table));
+            }
+
             table.m_pieces.Add(prefab);
             Logger.LogDebug($"Added piece {prefab.name} | Token: {piece.TokenName()}");
+        }
+
+        /// <summary>
+        ///     Determines if usage tags may be guessed for pieces added to a table.
+        ///     Only custom tables can opt out, vanilla tables always guess.
+        /// </summary>
+        private bool GuessesUsage(PieceTable table)
+        {
+            var customPieceTable = PieceTables.FirstOrDefault(x => x.PieceTable == table);
+            return customPieceTable == null || customPieceTable.GuessUsage;
+        }
+
+        private struct CustomUsageTag
+        {
+            public string Name { get; set; }
+            public Piece.PieceCategory Category { get; set; }
+
+            public CustomUsageTag(string name, Piece.PieceCategory category)
+            {
+                Name = name;
+                Category = category;
+            }
+        }
+
+        private void UpdateCustomAvailableTags(ByUsagePieceList self, PieceTable pieceTable)
+        {
+            if (pieceTable == null)
+            {
+                return;
+            }
+
+            var categoryToName = new Dictionary<Piece.PieceCategory, string>();
+            foreach (var pair in PieceCategories)
+            {
+                categoryToName[pair.Value] = pair.Key;
+            }
+
+            var tagIndexByCategory = new Dictionary<Piece.PieceCategory, int>();
+            var tags = new Dictionary<int, CustomUsageTag>();
+
+            foreach (Piece piece in pieceTable.m_availablePieces)
+            {
+                if (tagIndexByCategory.ContainsKey(piece.m_category))
+                {
+                    continue;
+                }
+
+                if (!categoryToName.TryGetValue(piece.m_category, out var categoryName))
+                {
+                    continue;
+                }
+
+                int tagIndex = self.m_usageTags.Length + self.m_availableTags.Count;
+                tagIndexByCategory[piece.m_category] = tagIndex;
+                self.m_availableTags.Add(tagIndex);
+                tags[tagIndex] = new CustomUsageTag(categoryName, piece.m_category);
+            }
+
+            customAvailableTags[self] = tags;
+        }
+
+        private void GetCustomCategoryDisplayName(ByUsagePieceList self, ref bool __runOriginal, int index, ref string __result)
+        {
+            if (!customAvailableTags.TryGetValue(self, out var tags))
+            {
+                return;
+            }
+
+            int tagId = self.m_availableTags[index];
+            if (!tags.TryGetValue(tagId, out var tag))
+            {
+                return;
+            }
+
+            __result = tag.Name;
+            __runOriginal = false;
+        }
+
+        private void GetPiecesWithCustomCategories(ByUsagePieceList self, int tagId, PieceTable pieceTable, IList<Piece> resultOut)
+        {
+            if (!customAvailableTags.TryGetValue(self, out var tags))
+            {
+                return;
+            }
+
+            if (!tags.TryGetValue(tagId, out var tag))
+            {
+                return;
+            }
+
+            foreach (var piece in pieceTable.m_availablePieces)
+            {
+                if (piece.m_category == tag.Category && !resultOut.Contains(piece))
+                {
+                    resultOut.Add(piece);
+                }
+            }
+        }
+
+        private void PatchGetTagById(ByUsagePieceList self, ref bool __runOriginal, int id, ref Piece.UsageTagFlags __result)
+        {
+            if (id < 0 || id >= self.m_usageTags.Length)
+            {
+                __runOriginal = false;
+                // stay in sync with SafeGetTagById
+                __result = (Piece.UsageTagFlags)(-1);
+            }
+        }
+
+        private IEnumerable<CodeInstruction> ReplaceWithSafeGetTagById(IEnumerable<CodeInstruction> instructions)
+        {
+            var GetTagByIdMethod = AccessTools.Method(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetTagById));
+            var SafeGetTagByIdMethod = AccessTools.Method(typeof(PieceManager), nameof(SafeGetTagById));
+
+            foreach (var instruction in instructions)
+            {
+                if (instruction.Calls(GetTagByIdMethod))
+                {
+                    instruction.opcode = OpCodes.Call;
+                    instruction.operand = SafeGetTagByIdMethod;
+                }
+
+                yield return instruction;
+            }
+        }
+
+        private static Piece.UsageTagFlags SafeGetTagById(ByUsagePieceList self, int id)
+        {
+            if (id < 0 || id >= self.m_usageTags.Length)
+            {
+                // we need to return all flags, because vanilla does a HasFlag check that always returns true on a 0 flag
+                return (Piece.UsageTagFlags)(-1);
+            }
+
+            return self.m_usageTags[id];
         }
 
         private void RegisterCustomData(ObjectDB self)

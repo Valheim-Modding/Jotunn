@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers;
@@ -56,6 +57,17 @@ namespace Jotunn.Configs
         }
 
         /// <summary>
+        ///     Hammer categories where this piece can be selected.<br />
+        ///     See <see cref="PieceUsages"/> for valid values.<br />
+        ///     If left empty, Jötunn will guess appropriate tags from the piece's category, components and name.
+        /// </summary>
+        public string[] Usage
+        {
+            get => usage;
+            set => usage = value == null ? Array.Empty<string>() : value.Select(PieceUsages.GetInternalName).ToArray();
+        }
+
+        /// <summary>
         ///     The name of the crafting station prefab which needs to be in close proximity to build this piece.
         /// </summary>
         public string CraftingStation
@@ -87,6 +99,7 @@ namespace Jotunn.Configs
         private string category = string.Empty;
         private string craftingStation = string.Empty;
         private string extendStation = string.Empty;
+        private string[] usage = Array.Empty<string>();
 
         /// <summary>
         ///     Apply this configs values to a piece GameObject.

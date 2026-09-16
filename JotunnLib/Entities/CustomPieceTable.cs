@@ -34,6 +34,13 @@ namespace Jotunn.Entities
         /// </summary>
         public string[] Categories { get; set; } = Array.Empty<string>();
 
+        /// <summary>
+        ///     Indicator if Jötunn guesses the hammer usage tags for pieces added to this
+        ///     <see cref="global::PieceTable"/> which have no usage tags set. Defaults to <c>true</c>.<br />
+        ///     Set to <c>false</c> to keep the usage tags defined on the piece prefabs untouched.
+        /// </summary>
+        public bool GuessUsage { get; set; } = true;
+
         private string PieceTableName
         {
             get => PieceTablePrefab ? PieceTablePrefab.name : fallbackPieceTableName;
@@ -72,6 +79,7 @@ namespace Jotunn.Entities
             config.Apply(pieceTablePrefab);
             PieceTable = pieceTablePrefab.GetComponent<PieceTable>();
             Categories = config.GetCategories();
+            GuessUsage = config.GuessUsage;
         }
 
         /// <summary>
@@ -85,6 +93,7 @@ namespace Jotunn.Entities
             PieceTable = PieceTablePrefab.AddComponent<PieceTable>();
             config.Apply(PieceTablePrefab);
             Categories = config.GetCategories();
+            GuessUsage = config.GuessUsage;
         }
 
         /// <summary>
@@ -106,6 +115,7 @@ namespace Jotunn.Entities
             config.Apply(PieceTablePrefab);
             PieceTable = PieceTablePrefab.GetComponent<PieceTable>();
             Categories = config.GetCategories();
+            GuessUsage = config.GuessUsage;
         }
 
         /// <summary>

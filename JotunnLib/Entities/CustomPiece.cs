@@ -47,6 +47,13 @@ namespace Jotunn.Entities
         }
 
         /// <summary>
+        ///     Hammer categories where this custom piece can be selected.<br />
+        ///     See <see cref="Configs.PieceUsages"/> for valid values.<br />
+        ///     If left empty, Jötunn will guess appropriate tags from the piece's category, components and name.
+        /// </summary>
+        public string[] Usage { get; set; }
+
+        /// <summary>
         ///     Indicator if references from <see cref="Entities.Mock{T}"/>s will be replaced at runtime.
         /// </summary>
         public bool FixReference { get; set; }
@@ -99,6 +106,7 @@ namespace Jotunn.Entities
             FixReference = false;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Usage = pieceConfig.Usage;
 
             pieceConfig.Apply(piecePrefab);
         }
@@ -118,6 +126,7 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Usage = pieceConfig.Usage;
 
             pieceConfig.Apply(piecePrefab);
         }
@@ -172,6 +181,7 @@ namespace Jotunn.Entities
             FixReference = false;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Usage = pieceConfig.Usage;
 
             pieceConfig.Apply(PiecePrefab);
         }
@@ -199,6 +209,7 @@ namespace Jotunn.Entities
             FixReference = fixReference;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Usage = pieceConfig.Usage;
 
             pieceConfig.Apply(PiecePrefab);
         }
@@ -249,6 +260,7 @@ namespace Jotunn.Entities
             PieceTable = pieceConfig.PieceTable;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Usage = pieceConfig.Usage;
 
             pieceConfig.Apply(PiecePrefab);
         }
@@ -298,6 +310,7 @@ namespace Jotunn.Entities
             PieceTable = pieceConfig.PieceTable;
             FixConfig = true;
             Category = pieceConfig.Category;
+            Usage = pieceConfig.Usage;
 
             pieceConfig.Apply(PiecePrefab);
         }

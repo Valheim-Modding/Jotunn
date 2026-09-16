@@ -35,6 +35,11 @@ namespace Jotunn.Configs
         public static string Furniture => nameof(Piece.PieceCategory.Furniture);
 
         /// <summary>
+        ///     Piece 'DeepNorth' category
+        /// </summary>
+        public static string DeepNorth => nameof(Piece.PieceCategory.DeepNorth);
+
+        /// <summary>
         ///     Piece 'Food' category
         /// </summary>
         public static string Food => nameof(Piece.PieceCategory.Food);
@@ -108,6 +113,7 @@ namespace Jotunn.Configs
             { nameof(Building), Building },
             { nameof(HeavyBuild), HeavyBuild },
             { nameof(Furniture), Furniture },
+            { nameof(DeepNorth), DeepNorth },
             { nameof(Feasts), Feasts },
             { nameof(Food), Food },
             { nameof(Mead), Mead },
