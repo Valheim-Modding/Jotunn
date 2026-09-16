@@ -6,6 +6,7 @@
 * Added `PieceTableConfig.GuessUsage` to opt out of that guessing per piece table
 * Deprecated the piece table category API, piece tables don't own categories since Valheim 1.0
 * Fixed selecting a piece placing the piece of another category, the category list of a piece table is kept up to date again
+* Fixed TerrainOp not being registed into the new ObjectDB.m_terrainOps / ObjectDB.m_terrainOpsByHash (thx MaikiOS)
 
 ## Version 2.30.0
 * Updated the majority of systems for Valheim 1.0.7 (thx warp)
