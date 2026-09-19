@@ -95,8 +95,19 @@ namespace Jotunn.Managers
                 // replace pathsMappedToAssetId.Add() with our AddSafe()
                 MethodInfo addMethod = AccessTools.Method(typeof(Dictionary<string, AssetID>), nameof(Dictionary<string, AssetID>.Add));
                 MethodInfo addSafeMethod = AccessTools.Method(typeof(Patches), nameof(Patches.AddSafe));
-                return new CodeMatcher(instructions)
-                    .MatchForward(false, new CodeMatch(i => i.Calls(addMethod)))
+                CodeMatcher matcher = new CodeMatcher(instructions)
+                    .MatchForward(false, new CodeMatch(i => i.Calls(addMethod)));
+
+                // Another mod may have already replaced the Add() call (e.g. with an equivalent duplicate-safe one).
+                // SetInstruction would throw on an invalid match and permanently break this manager's static constructor.
+                if (!matcher.IsValid)
+                {
+                    Logger.LogWarning("Could not find Dictionary.Add in AssetBundleLoader.GetAllAssetPathsMappedToAssetID, " +
+                                      "another mod may have already replaced it. Leaving the method unchanged.");
+                    return matcher.InstructionEnumeration();
+                }
+
+                return matcher
                     .SetInstruction(new CodeInstruction(OpCodes.Call, addSafeMethod))
                     .InstructionEnumeration();
             }
