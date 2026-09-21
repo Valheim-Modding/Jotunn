@@ -370,10 +370,12 @@ namespace Jotunn.Managers
         {
             string name = gameObject.name;
 
-            if (gameObject.name.StartsWith(MockManager.JVLMockPrefix))
+#pragma warning disable CS0618 // Type or member is obsolete
+            if (name.StartsWith(MockManager.JVLMockPrefix, StringComparison.Ordinal) || name.StartsWith(MockManager.MockPrefix, StringComparison.Ordinal))
             {
                 return;
             }
+#pragma warning restore CS0618 // Type or member is obsolete
 
             ZNetScene znet = ZNetScene.instance;
 
