@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.30.2
+* Fixed Deep North assets overriding previous vanilla assets for mocking (thx OrianaVenture)
+* Fixed legacy build menu not being supported by the category changes from 2.30.1
+
 ## Version 2.30.1
 * Added custom piece categories to the new build menu, pieces of a custom category are shown under an own tag
 * Added `PieceConfig.Usage` to set the build menu tags of a piece, Jötunn guesses them from the piece if left empty
