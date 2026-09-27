@@ -1131,6 +1131,14 @@ namespace Jotunn.Managers
         /// </summary>
         private void RefreshCategories()
         {
+            // CreateCategoryTabs sets up the placement ghost via UpdateAvailablePiecesList. With the table's
+            // categories still missing, the selected piece resolves to null and no ghost would be created.
+            if (Player.m_localPlayer && Player.m_localPlayer.m_buildPieces)
+            {
+                PieceTable buildPieces = Player.m_localPlayer.m_buildPieces;
+                UpdatePieceTableCategories(buildPieces, CategoriesInPieceTable(buildPieces));
+            }
+
             // make sure all category tabs are already created correctly
             CreateCategoryTabs();
 
