@@ -1,8 +1,8 @@
 # Changelog
 
 ## Version 2.30.3
-* Fixed release zips using backslashes in their paths, which broke extracting them on Linux and macOS
 * Fixed custom categories not showing the ghost when first equipped after a game start
+* Fixed release zips using backslashes in their paths, which broke extracting them on Linux and macOS
 
 ## Version 2.30.2
 * Fixed Deep North assets overriding previous vanilla assets for mocking (thx OrianaVenture)

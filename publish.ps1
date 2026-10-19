@@ -25,6 +25,7 @@ Push-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
 # breaks extraction on Linux and macOS (#492). Zip with "/" separators instead.
 function New-ZipFromDirectory([string]$Source, [string]$Destination) {
     Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+    $Destination = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Destination)
     if (Test-Path -Path "$Destination") {Remove-Item -Path "$Destination" -Force}
     $root = (Resolve-Path -Path "$Source").Path.TrimEnd('\', '/')
     $zip = [System.IO.Compression.ZipFile]::Open("$Destination", 'Create')
@@ -33,6 +34,11 @@ function New-ZipFromDirectory([string]$Source, [string]$Destination) {
             $entry = $_.FullName.Substring($root.Length + 1).Replace('\', '/')
             [void][System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $entry)
         }
+    }
+    catch {
+        $zip.Dispose()
+        Remove-Item -Path "$Destination" -Force -ErrorAction SilentlyContinue
+        throw
     }
     finally {
         $zip.Dispose()
