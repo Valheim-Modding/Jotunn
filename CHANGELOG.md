@@ -1,6 +1,7 @@
 # Changelog
 
 ## Version 2.30.3
+* Fixed release zips using backslashes in their paths, which broke extracting them on Linux and macOS
 * Fixed custom categories not showing the ghost when first equipped after a game start
 
 ## Version 2.30.2
