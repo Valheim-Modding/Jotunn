@@ -162,6 +162,11 @@ namespace Jotunn.Managers
 
             Prefabs.Add(name, customPrefab);
             AssetManager.Instance.AddAsset(customPrefab.Prefab, null);
+
+            if (!CustomTerrainOpsCache.ContainsKey(name.GetStableHashCode()) && customPrefab.Prefab.TryGetComponent(out TerrainOp terrainOp))
+            {
+                CustomTerrainOpsCache.Add(name.GetStableHashCode(), terrainOp);
+            }
         }
 
         /// <summary>
