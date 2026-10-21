@@ -30,6 +30,12 @@ namespace Jotunn.Utils
         public static event Action OnServerVersionDataReceived;
 
         /// <summary>
+        ///     Checks whether there is valid server version data available.
+        /// </summary>
+        /// <returns></returns>
+        public static bool HaveValidServerVersionData() => LastServerVersionData.IsValid(); 
+
+        /// <summary>
         ///     Safely invoke the <see cref="OnServerVersionDataReceived"/> event.
         /// </summary>
         private static void InvokeOnServerVersionDataReceiveed()
@@ -216,6 +222,7 @@ namespace Jotunn.Utils
             else
             {
                 LastServerVersionData = new ServerVersionData(data);
+                Logger.LogInfo("Recieved Server Version Data!");
                 InvokeOnServerVersionDataReceiveed();
             }
         }

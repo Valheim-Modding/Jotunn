@@ -236,6 +236,7 @@ namespace Jotunn.Managers
             {
                 Instance.InitAdminState(__instance);
                 Instance.SubscribeToConfigReload();
+                ModCompatibility.OnServerVersionDataReceived += Instance.UpdateAdminConfigs;
             }
 
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnDestroy)), HarmonyPrefix]
@@ -243,6 +244,7 @@ namespace Jotunn.Managers
             {
                 Instance.UnsubscribeToConfigReload();
                 Instance.ResetAdminState(__instance);
+                ModCompatibility.OnServerVersionDataReceived -= Instance.UpdateAdminConfigs;
             }
         }
 
@@ -259,7 +261,7 @@ namespace Jotunn.Managers
             {
                 PlayerIsAdmin = false;
                 InitAdminConfigs();
-                LockConfigurationEntries();
+                LockConfigurationEntries(forceLock: true);
                 SetToDefaultConfigEntries();
             }
         }
@@ -287,6 +289,42 @@ namespace Jotunn.Managers
                     {
                         localValues[configEntry] = configEntry.BoxedValue;
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        ///     If SynchronizationManager actually should not manage the config value once we have 
+        ///     certainty about whether they are on the server or not, then reset the value to the 
+        ///     local value and unlock the config entry.
+        /// </summary>
+        private void UpdateAdminConfigs()
+        {
+            if (!ZNet.instance || ZNet.instance.IsServer() || !ModCompatibility.HaveValidServerVersionData())
+            {
+                return;
+            }
+
+            ConfigurationManagerAttributes configAttributes;
+            List<ConfigEntryBase> removeConfigs = new List<ConfigEntryBase>();
+            foreach (var localValue in localValues)
+            {
+                if (!ShouldManageConfig(localValue.Key.ConfigFile))
+                {
+                    localValue.Key.BoxedValue = localValue.Value;
+                    configAttributes = localValue.Key.GetConfigurationManagerAttributes();
+                    if (configAttributes?.IsAdminOnly == true)
+                    {
+                        configAttributes.IsUnlocked = true;
+                    }
+                    removeConfigs.Add(localValue.Key);
+                }
+            }
+            if (removeConfigs.Count > 0)
+            {
+                foreach (var configEntry in removeConfigs)
+                {
+                    localValues.Remove(configEntry);
                 }
             }
         }
@@ -504,7 +542,9 @@ namespace Jotunn.Managers
             }
             else
             {
-                LockConfigurationEntries();
+                // already forced everything to be locked on init admin state
+                // so no only update locks if we need too
+                LockConfigurationEntries(forceLock: false);
             }
             yield break;
         }
@@ -647,7 +687,7 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Unlock configuration entries.
+        ///     Unlock configuration entries without considering whether they should actively be managed or not.
         /// </summary>
         private void UnlockConfigurationEntries()
         {
@@ -667,13 +707,17 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Lock configuration entries.
+        ///     Lock configuration entries based on whether the corresponding config should
+        ///     be managed by SynchronizationManager. Should be called with `forceLock: true`
+        ///     when locking config entries prior to connecting to a server as the mod version
+        ///     data on the server is unknown at that point in time.
         /// </summary>
-        private void LockConfigurationEntries()
+        /// <param name="forceLock">Whether to force all AdminOnly config entries to be locked regardless of whether they should managed.</param>
+        private void LockConfigurationEntries(bool forceLock = false)
         {
             foreach (var config in GetConfigFiles())
             {
-                if (!ShouldManageConfig(config))
+                if (!forceLock && !ShouldManageConfig(config))
                 {
                     continue;
                 }
@@ -734,10 +778,7 @@ namespace Jotunn.Managers
         {
             foreach (var config in GetConfigFiles())
             {
-                if (ShouldManageConfig(config))
-                {
-                    config.ConfigReloaded += Config_ConfigReloaded;
-                }
+                config.ConfigReloaded += Config_ConfigReloaded;
             }
         }
 
@@ -748,10 +789,7 @@ namespace Jotunn.Managers
         {
             foreach (var config in GetConfigFiles())
             {
-                if (ShouldManageConfig(config))
-                {
-                    config.ConfigReloaded -= Config_ConfigReloaded;
-                }
+                config.ConfigReloaded -= Config_ConfigReloaded;
             }
         }
 
@@ -841,7 +879,7 @@ namespace Jotunn.Managers
             {
                 if (!ShouldManageConfig(config))
                 {
-                    continue;   
+                    continue;
                 }
 
                 string configIdentifier = GetFileIdentifier(config);
@@ -878,6 +916,7 @@ namespace Jotunn.Managers
                     {
                         // Fire event that admin config will be changed locally, since the RPC does not come back to the sender
                         InvokeOnSyncingConfiguration();
+
                         ConfigRPC.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
 
                         // Get IDs of plugins that received data
@@ -905,15 +944,17 @@ namespace Jotunn.Managers
             }
         }
 
+        /// <summary>
+        ///     Sets all AdminOnly config entries to default values. These changes will
+        ///     be undone for mods that SynchronizationManager should not be managing via
+        ///     the UpdateAdminConfigs method and via the for all configs that should be 
+        ///     managed, these changes will be reset by the ResetAdminConfigs method when 
+        ///     disconnecting from the server.
+        /// </summary>
         private void SetToDefaultConfigEntries()
         {
             foreach (var config in GetConfigFiles())
             {
-                if (!ShouldManageConfig(config))
-                {
-                    continue;
-                }
-
                 foreach (var configDefinition in config.Keys)
                 {
                     var configEntry = config[configDefinition.Section, configDefinition.Key];
@@ -1007,12 +1048,21 @@ namespace Jotunn.Managers
                 var section = configPkg.ReadString();
                 var key = configPkg.ReadString();
                 var serializedValue = configPkg.ReadString();
+                
+
+                ConfigFile config = GetConfigFile(configIdentifier);
+                if (!ShouldManageConfig(config))
+                {
+                    numberOfEntries--;
+                    continue;
+                }
+
                 if (GetPluginGUID(configIdentifier, out string pluginGUID))
                 {
                     pluginGUIDs.Add(pluginGUID);
                 }
 
-                ConfigFile config = GetConfigFile(configIdentifier);
+                Logger.LogInfo($"Appyling config z package for {config.ConfigFilePath}");
 
                 if (config != null)
                 {
