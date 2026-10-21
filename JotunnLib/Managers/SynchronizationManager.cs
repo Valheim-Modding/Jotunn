@@ -839,6 +839,11 @@ namespace Jotunn.Managers
             var valuesToSend = new HashSet<Tuple<string, string, string, string>>();
             foreach (var config in GetConfigFiles())
             {
+                if (!ShouldManageConfig(config))
+                {
+                    continue;   
+                }
+
                 string configIdentifier = GetFileIdentifier(config);
 
                 foreach (var cd in config.Keys)
