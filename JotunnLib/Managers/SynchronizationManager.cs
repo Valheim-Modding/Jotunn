@@ -734,7 +734,10 @@ namespace Jotunn.Managers
         {
             foreach (var config in GetConfigFiles())
             {
-                config.ConfigReloaded += Config_ConfigReloaded;
+                if (ShouldManageConfig(config))
+                {
+                    config.ConfigReloaded += Config_ConfigReloaded;
+                }
             }
         }
 
@@ -745,7 +748,10 @@ namespace Jotunn.Managers
         {
             foreach (var config in GetConfigFiles())
             {
-                config.ConfigReloaded -= Config_ConfigReloaded;
+                if (ShouldManageConfig(config))
+                {
+                    config.ConfigReloaded -= Config_ConfigReloaded;
+                }
             }
         }
 
