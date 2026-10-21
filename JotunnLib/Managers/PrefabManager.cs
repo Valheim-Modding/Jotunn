@@ -17,10 +17,17 @@ namespace Jotunn.Managers
     public class PrefabManager : IManager
     {
         private static PrefabManager _instance;
+        
         /// <summary>
         ///     The singleton instance of this manager.
         /// </summary>
         public static PrefabManager Instance => _instance ??= new PrefabManager();
+
+        /// <summary>
+        ///     Cache of all custom terrain ops that have been added so that they can be kept registered whenever
+        ///     changes to the ObjectDB occur.
+        /// </summary>
+        private static readonly Dictionary<int, TerrainOp> CustomTerrainOpsCache = new Dictionary<int, TerrainOp>();
 
         /// <summary>
         ///     Hide .ctor
