@@ -104,6 +104,9 @@ namespace Jotunn.Managers
             // some assets from locations may only be available now, clear the cache to resolve later mocks correctly
             [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations)), HarmonyPrefix, HarmonyPriority(Priority.High)]
             private static void ZoneSystem_ClearPrefabCache(ZoneSystem __instance) => Cache.Clear();
+
+            [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.UpdateRegisters)), HarmonyPostfix, HarmonyPriority(Priority.High)]
+            private static void ObjectDB_UpdateCustomTerrainOps(ObjectDB __instance) => Instance.RegisterCustomTerrainOps();
         }
 
         /// <summary>
@@ -414,34 +417,54 @@ namespace Jotunn.Managers
                 }
             }
 
-            ObjectDB objectDB = ObjectDB.instance;
-
-            if (objectDB)
+            // Some mods use the RegisterToZNetScene directly without ever calling AddPrefab, so need to catch GameObjects that have a
+            // TerrainOp component here as well to make sure they stay registered.
+            if (!CustomTerrainOpsCache.ContainsKey(gameObject.name.GetStableHashCode()) && gameObject.TryGetComponent(out TerrainOp terrainOp))
             {
-                if (gameObject.TryGetComponent(out TerrainOp terrainOp))
-                {
-                    RegisterTerrainOp(objectDB, terrainOp);
-                }
+                int nameHash = gameObject.name.GetStableHashCode();
+                CustomTerrainOpsCache.Add(nameHash, terrainOp);
+                RegisterTerrainOp(nameHash, terrainOp);
             }
         }
 
-        private static void RegisterTerrainOp(ObjectDB objectDB, TerrainOp terrainOp)
+        /// <summary>
+        ///     Ensure custom TerrainOp prefabs are registered in ObjectDB so that they can be deserialized correctly. 
+        ///     Added this because they appear to get removed during gameplay sometimes. Hopefully this covers all cases
+        ///     of them being removed and restores them to prevent deserialization errors. This method is always triggered
+        ///     when the ObjectDB updates to prevent issues with removal during gameplay that seem to randomly occur 
+        ///     during testing but without a known code path that triggers them. May be due to other mods triggering changes
+        ///     to the ObjectDB outside of vanilla code paths.
+        /// </summary>
+        private void RegisterCustomTerrainOps()
         {
-            int hash = objectDB.GetPrefabHash(terrainOp.gameObject);
-            if (objectDB.m_terrainOpsByHash.TryGetValue(hash, out TerrainOp registeredTerrainOp))
+            foreach (KeyValuePair<int, TerrainOp> kvp in CustomTerrainOpsCache)
+            {
+                RegisterTerrainOp(kvp.Key, kvp.Value);
+            }
+        }
+
+        private static void RegisterTerrainOp(int nameHash, TerrainOp terrainOp)
+        {
+            if (ObjectDB.instance.m_terrainOpsByHash.TryGetValue(nameHash, out TerrainOp registeredTerrainOp))
             {
                 if (registeredTerrainOp != terrainOp)
                 {
-                    Logger.LogWarning($"TerrainOp prefab hash collision for {terrainOp.gameObject.name} ({hash})");
+                    Logger.LogWarning($"TerrainOp prefab hash collision for {terrainOp.name} ({nameHash}); keeping the registered prefab");
                 }
-                return;
             }
-
-            if (!objectDB.m_terrainOps.Contains(terrainOp))
+            else
             {
-                objectDB.m_terrainOps.Add(terrainOp);
+                ObjectDB.instance.m_terrainOpsByHash.Add(nameHash, terrainOp);
             }
-            objectDB.m_terrainOpsByHash.Add(hash, terrainOp);
+                
+            // Might be able to drop this guard check since ObjectDB.UpdateRegisters clears m_terrainOpsByHash 
+            // and repopulates it based on what is inside m_terrainOps. Have left it in for now just to be
+            // extra safe though and to handle late registration via RegisterToZNetScene
+            if (!ObjectDB.instance.m_terrainOps.Contains(terrainOp))
+            {
+                ObjectDB.instance.m_terrainOps.Add(terrainOp);
+            }
+            Logger.LogDebug($"Registered TerrainOp {terrainOp.name} ({nameHash}) in ObjectDB");
         }
 
         /// <summary>
