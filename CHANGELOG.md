@@ -2,6 +2,7 @@
 
 ## Version 2.30.3
 * Fixed custom categories not showing the ghost when first equipped after a game start
+* Fixed a NullReferenceException in cumulative level effects when a ragdoll of a 2+ star creature is created, which prevented the creature from dying
 
 ## Version 2.30.2
 * Fixed Deep North assets overriding previous vanilla assets for mocking (thx OrianaVenture)

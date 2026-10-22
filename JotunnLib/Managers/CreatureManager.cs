@@ -288,7 +288,8 @@ namespace Jotunn.Managers
         /// </summary>
         private void EnableCumulativeLevelEffects(LevelEffects self, int level)
         {
-            if (level <= 2)
+            // Ragdolls also call SetupLevelVisualization but their LevelEffects never have a character set
+            if (level <= 2 || !self.m_character)
             {
                 return;
             }
