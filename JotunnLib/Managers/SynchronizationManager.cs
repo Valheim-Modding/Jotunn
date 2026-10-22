@@ -1116,23 +1116,20 @@ namespace Jotunn.Managers
                 var key = configPkg.ReadString();
                 var serializedValue = configPkg.ReadString();
                 
-
-                ConfigFile config = GetConfigFile(configIdentifier);
-                if (IsShouldManageValid() && !ShouldManageConfig(config))
-                {
-                    numberOfEntries--;
-                    continue;
-                }
-
                 if (GetPluginGUID(configIdentifier, out string pluginGUID))
                 {
                     pluginGUIDs.Add(pluginGUID);
                 }
-
-                Logger.LogInfo($"Appyling config z package for {config.ConfigFilePath}");
+                ConfigFile config = GetConfigFile(configIdentifier);
 
                 if (config != null)
                 {
+                    if (IsShouldManageValid() && !ShouldManageConfig(config))
+                    {
+                        numberOfEntries--;
+                        continue;
+                    }
+
                     if (config.Keys.Contains(new ConfigDefinition(section, key)))
                     {
                         var entry = config[section, key];
