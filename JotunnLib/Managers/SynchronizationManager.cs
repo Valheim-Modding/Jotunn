@@ -1008,16 +1008,20 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Sets all AdminOnly config entries to default values. These changes will
-        ///     be undone for mods that SynchronizationManager should not be managing via
-        ///     the UpdateAdminConfigs method and via the for all configs that should be 
-        ///     managed, these changes will be reset by the ResetAdminConfigs method when 
-        ///     disconnecting from the server.
+        ///     Set AdminOnly config entries to default values for all configs aside from those we 
+        ///     know should not be managed. These changes will undone for mods that SynchronizationManager 
+        ///     later learns it should not be managing via the <see cref="UpdateAdminConfigsShouldManage"/> method. 
+        ///     For all configs that  should be managed, these changes will be reset by the <see cref="ResetAdminConfigs "/> 
+        ///     method when disconnecting from the server.
         /// </summary>
         private void SetToDefaultConfigEntries()
         {
             foreach (var config in GetConfigFiles())
             {
+                if (IsShouldManageValid() && !ShouldManageConfig(config))
+                {
+                    continue;
+                }
                 foreach (var configDefinition in config.Keys)
                 {
                     var configEntry = config[configDefinition.Section, configDefinition.Key];
