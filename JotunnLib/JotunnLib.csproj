@@ -22,6 +22,7 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <GenerateResourceNeverLockTypeAssemblies>true</GenerateResourceNeverLockTypeAssemblies>
   </PropertyGroup>
+  <Import Project="ModPackageTool.targets" Condition="Exists('ModPackageTool.targets')" />
   <ItemGroup>
     <Compile Remove="Unity\Assets\Plugins\**" />
     <Compile Remove="Unity\Library\**" />

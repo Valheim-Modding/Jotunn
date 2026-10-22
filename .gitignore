@@ -393,3 +393,6 @@ JotunnLib/version.props
 
 # local launch Settings
 JotunnLib/Properties/launchSettings.json
+
+# ignore local postbuild scripts from contributors
+ModPackageTool.targets
