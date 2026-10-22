@@ -840,7 +840,7 @@ namespace Jotunn.Managers
         /// </summary>
         private static bool ConfigEntryBase_SetSerializedValue(ConfigEntryBase __instance)
         {
-            return ReadWriteConfigFromDisk() || !__instance.IsSyncable();
+            return ReadWriteConfigFromDisk() || !__instance.IsSyncable() || (ModCompatibility.HaveValidServerVersionData() && !Instance.ShouldManageConfig(__instance.ConfigFile));
         }
 
         private static bool ReadWriteConfigFromDisk()
