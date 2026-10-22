@@ -28,6 +28,8 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, ConfigFile> CustomConfigs = new Dictionary<string, ConfigFile>();
         private HashSet<Tuple<string, string, string, string>> CachedConfigValues = new HashSet<Tuple<string, string, string, string>>();
         private readonly Dictionary<string, string> CachedCustomConfigGUIDs = new Dictionary<string, string>();
+        private readonly Dictionary<ConfigFile, bool> CachedConfigManagementState = new Dictionary<ConfigFile, bool> { };
+
         private bool ConfigurationManagerWindowShown;
 
         private Dictionary<string, SocketBuffer> socketBuffers = new Dictionary<string, SocketBuffer>();
@@ -189,6 +191,12 @@ namespace Jotunn.Managers
             AddInitialSynchronization(rpc, peer => packageGenerator());
         }
 
+
+        private void ResetCachedConfigManagementStates()
+        {
+            Instance.CachedConfigManagementState.Clear();
+        }
+
         private static class Patches
         {
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.Awake)), HarmonyPostfix]
@@ -234,17 +242,21 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.Start)), HarmonyPrefix]
             private static void ZNet_Start(ZNet __instance)
             {
+                Instance.ResetCachedConfigManagementStates();
                 Instance.InitAdminState(__instance);
                 Instance.SubscribeToConfigReload();
                 ModCompatibility.OnServerVersionDataReceived += Instance.UpdateAdminConfigs;
+                ModCompatibility.OnServerVersionDataReceived += Instance.ResetCachedConfigManagementStates;
             }
 
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnDestroy)), HarmonyPrefix]
             private static void Znet_OnDestroy(ZNet __instance)
             {
+                Instance.ResetCachedConfigManagementStates();
                 Instance.UnsubscribeToConfigReload();
                 Instance.ResetAdminState(__instance);
                 ModCompatibility.OnServerVersionDataReceived -= Instance.UpdateAdminConfigs;
+                ModCompatibility.OnServerVersionDataReceived -= Instance.ResetCachedConfigManagementStates;
             }
         }
 
@@ -584,17 +596,23 @@ namespace Jotunn.Managers
         /// <returns></returns>
         private bool ShouldManageConfig(ConfigFile config)
         {
-            if (!GetPluginGUID(config, out var pluginGUID))
+            if (CachedConfigManagementState.TryGetValue(config, out var state))
             {
-                return false;
+                return state;
             }
-
-            if (!BepInExUtils.GetDependentPlugins().TryGetValue(pluginGUID, out var plugin))
+            else if (!GetPluginGUID(config, out var pluginGUID))
             {
-                return false;
+                CachedConfigManagementState.Add(config, false);
             }
-
-            return ShouldManageConfig(plugin);
+            else if (!BepInExUtils.GetDependentPlugins().TryGetValue(pluginGUID, out var plugin))
+            {
+                CachedConfigManagementState.Add(config, false);
+            }
+            else
+            {
+                CachedConfigManagementState.Add(config, ShouldManageConfig(plugin));
+            }
+            return CachedConfigManagementState[config];
         }
 
         /// <summary>
