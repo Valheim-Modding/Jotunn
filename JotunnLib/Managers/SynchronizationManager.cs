@@ -30,6 +30,14 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, string> CachedCustomConfigGUIDs = new Dictionary<string, string>();
         private readonly Dictionary<ConfigFile, bool> CachedConfigManagementState = new Dictionary<ConfigFile, bool> { };
 
+        /// <summary>
+        ///     Whether to allow checking whether a config file should be managed for AdminOnly config entries even if 
+        ///     we do not have valid mod version data from the server. This is used allow returning control to local 
+        ///     configs for mods that should not be managed because they are not on the server when Jotunn itself is 
+        ///     not on the server and we never get version data from the server as a result.
+        /// </summary>
+        private bool AllowShouldManageCheckWithoutVersionData = false;
+
         private bool ConfigurationManagerWindowShown;
 
         private Dictionary<string, SocketBuffer> socketBuffers = new Dictionary<string, SocketBuffer>();
@@ -242,22 +250,50 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.Start)), HarmonyPrefix]
             private static void ZNet_Start(ZNet __instance)
             {
+                Instance.AllowShouldManageCheckWithoutVersionData = false;
                 Instance.ResetCachedConfigManagementStates();
                 Instance.InitAdminState(__instance);
                 Instance.SubscribeToConfigReload();
-                ModCompatibility.OnServerVersionDataReceived += Instance.UpdateAdminConfigs;
+                ModCompatibility.OnServerVersionDataReceived += Instance.UpdateAdminConfigsShouldManage;
                 ModCompatibility.OnServerVersionDataReceived += Instance.ResetCachedConfigManagementStates;
             }
 
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnDestroy)), HarmonyPrefix]
             private static void Znet_OnDestroy(ZNet __instance)
             {
+                Instance.AllowShouldManageCheckWithoutVersionData = false;
                 Instance.ResetCachedConfigManagementStates();
                 Instance.UnsubscribeToConfigReload();
                 Instance.ResetAdminState(__instance);
-                ModCompatibility.OnServerVersionDataReceived -= Instance.UpdateAdminConfigs;
+                ModCompatibility.OnServerVersionDataReceived -= Instance.UpdateAdminConfigsShouldManage;
                 ModCompatibility.OnServerVersionDataReceived -= Instance.ResetCachedConfigManagementStates;
             }
+
+            /// <summary>
+            ///     Very late update to admin configs to allow for returning control to the
+            ///     local configs that should not be managed in the event that Jotunn is not
+            ///     on the server and mod version data is never received.
+            /// </summary>
+            [HarmonyPatch(typeof(Game), nameof(Game.SpawnPlayer)), HarmonyPrefix]
+            private static void UpdateAdmingConfigsIfJotunnNotOnServer()
+            {
+                if (ModCompatibility.HaveValidServerVersionData())
+                {
+                    return;
+                }
+                Instance.AllowShouldManageCheckWithoutVersionData = true;
+                Instance.UpdateAdminConfigsShouldManage();
+            }
+        }
+
+        /// <summary>
+        ///     Checks whether there is a valid copy of mod version data from the server
+        ///     or if AllowShouldManageCheckWithoutVersionData is true.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsShouldManageValid()
+        {
+            return ModCompatibility.HaveValidServerVersionData() || Instance.AllowShouldManageCheckWithoutVersionData;
         }
 
         private void InitAdminState(ZNet zNet)
@@ -273,7 +309,7 @@ namespace Jotunn.Managers
             {
                 PlayerIsAdmin = false;
                 InitAdminConfigs();
-                LockConfigurationEntries(forceLock: true);
+                LockConfigurationEntries();
                 SetToDefaultConfigEntries();
             }
         }
@@ -310,9 +346,14 @@ namespace Jotunn.Managers
         ///     certainty about whether they are on the server or not, then reset the value to the 
         ///     local value and unlock the config entry.
         /// </summary>
-        private void UpdateAdminConfigs()
+        private void UpdateAdminConfigsShouldManage()
         {
-            if (!ZNet.instance || ZNet.instance.IsServer() || !ModCompatibility.HaveValidServerVersionData())
+            if (!ZNet.instance || ZNet.instance.IsServer())
+            {
+                return;
+            }
+
+            if (!Instance.IsShouldManageValid())
             {
                 return;
             }
@@ -554,9 +595,7 @@ namespace Jotunn.Managers
             }
             else
             {
-                // already forced everything to be locked on init admin state
-                // so no only update locks if we need too
-                LockConfigurationEntries(forceLock: false);
+                LockConfigurationEntries();
             }
             yield break;
         }
@@ -726,16 +765,14 @@ namespace Jotunn.Managers
 
         /// <summary>
         ///     Lock configuration entries based on whether the corresponding config should
-        ///     be managed by SynchronizationManager. Should be called with `forceLock: true`
-        ///     when locking config entries prior to connecting to a server as the mod version
-        ///     data on the server is unknown at that point in time.
+        ///     be managed by SynchronizationManager but if the ShouldManage check is 
+        ///     not yet valid, then simply lock everything.
         /// </summary>
-        /// <param name="forceLock">Whether to force all AdminOnly config entries to be locked regardless of whether they should managed.</param>
-        private void LockConfigurationEntries(bool forceLock = false)
+        private void LockConfigurationEntries()
         {
             foreach (var config in GetConfigFiles())
             {
-                if (!forceLock && !ShouldManageConfig(config))
+                if (Instance.IsShouldManageValid() && !ShouldManageConfig(config))
                 {
                     continue;
                 }
@@ -836,11 +873,14 @@ namespace Jotunn.Managers
         }
 
         /// <summary>
-        ///     Prevent overwriting bep config value when the setting is locked on config file reload
+        ///     Prevent overwriting bep config value when the setting is locked on config file reload if the config file it
+        ///     is attached to should be managed by Synchronization manager.
         /// </summary>
         private static bool ConfigEntryBase_SetSerializedValue(ConfigEntryBase __instance)
         {
-            return ReadWriteConfigFromDisk() || !__instance.IsSyncable() || (ModCompatibility.HaveValidServerVersionData() && !Instance.ShouldManageConfig(__instance.ConfigFile));
+            return (
+                ReadWriteConfigFromDisk() || !__instance.IsSyncable() || (Instance.IsShouldManageValid() && !Instance.ShouldManageConfig(__instance.ConfigFile))
+            );
         }
 
         private static bool ReadWriteConfigFromDisk()
@@ -867,6 +907,11 @@ namespace Jotunn.Managers
             var entries = new HashSet<Tuple<string, string, string, string>>();
             foreach (var config in GetConfigFiles())
             {
+                if (IsShouldManageValid() && !ShouldManageConfig(config))
+                {
+                    continue;
+                }
+
                 string configIdentifier = GetFileIdentifier(config);
 
                 foreach (var cd in config.Keys)
@@ -895,7 +940,7 @@ namespace Jotunn.Managers
             var valuesToSend = new HashSet<Tuple<string, string, string, string>>();
             foreach (var config in GetConfigFiles())
             {
-                if (!ShouldManageConfig(config))
+                if (IsShouldManageValid() && !ShouldManageConfig(config))
                 {
                     continue;
                 }
@@ -1069,7 +1114,7 @@ namespace Jotunn.Managers
                 
 
                 ConfigFile config = GetConfigFile(configIdentifier);
-                if (!ShouldManageConfig(config))
+                if (IsShouldManageValid() && !ShouldManageConfig(config))
                 {
                     numberOfEntries--;
                     continue;
