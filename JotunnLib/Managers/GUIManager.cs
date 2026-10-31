@@ -1375,7 +1375,6 @@ namespace Jotunn.Managers
             }
 
             sfx.m_sfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_button");
-            sfx.m_selectSfxPrefab = PrefabManager.Cache.GetPrefab<GameObject>("sfx_gui_select");
 
             // Colors
             go.GetComponent<Button>().colors = ValheimButtonColorBlock;

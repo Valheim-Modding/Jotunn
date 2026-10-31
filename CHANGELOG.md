@@ -1,6 +1,7 @@
 # Changelog
 
 ## Version 2.30.3
+* Fixed buttons styled by Jötunn playing two sounds per click since Valheim 1.0
 * Fixed custom categories not showing the ghost when first equipped after a game start
 * Fixed release zips using backslashes in their paths, which some extraction tools could not handle
 
