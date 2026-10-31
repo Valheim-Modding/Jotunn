@@ -21,6 +21,30 @@
 # Make sure Get-Location is the script path
 Push-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
+# Compress-Archive in Windows PowerShell writes "\" into entry names, which
+# breaks extraction on Linux and macOS (#492). Zip with "/" separators instead.
+function New-ZipFromDirectory([string]$Source, [string]$Destination) {
+    Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+    $Destination = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Destination)
+    if (Test-Path -Path "$Destination") {Remove-Item -Path "$Destination" -Force}
+    $root = (Resolve-Path -Path "$Source").Path.TrimEnd('\', '/')
+    $zip = [System.IO.Compression.ZipFile]::Open("$Destination", 'Create')
+    try {
+        Get-ChildItem -Path "$root" -Recurse -File | % {
+            $entry = $_.FullName.Substring($root.Length + 1).Replace('\', '/')
+            [void][System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $entry)
+        }
+    }
+    catch {
+        $zip.Dispose()
+        Remove-Item -Path "$Destination" -Force -ErrorAction SilentlyContinue
+        throw
+    }
+    finally {
+        $zip.Dispose()
+    }
+}
+
 # Test some preliminaries
 ("$TargetPath",
  "$ValheimPath",
@@ -89,7 +113,7 @@ if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     Copy-Item -Path "$ProjectPath\..\CHANGELOG.md" -Destination "$thunder\"
     Copy-Item -Path "$ProjectPath\manifest.json" -Destination "$thunder\manifest.json"
     Copy-Item -Path "$(Get-Location)\resources\JVL_Logo_256x256.png" -Destination "$thunder\icon.png"
-    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore\$name-$version.zip" -Force
+    New-ZipFromDirectory -Source "$thunder" -Destination "$package\Thunderstore\$name-$version.zip"
     $thunder.Delete($true)
 
     Write-Host "Packaging for NexusMods"
@@ -102,7 +126,7 @@ if($Target.Equals("Release") -and $name.Equals("Jotunn")) {
     Copy-Item -Path "$TargetPath\$name.dll.mdb" -Destination "$nexus\Jotunn\"
     Copy-Item -Path "$ProjectPath\..\README.md" -Destination "$nexus\Jotunn\"
     Copy-Item -Path "$ProjectPath\..\CHANGELOG.md" -Destination "$nexus\Jotunn\"
-    Compress-Archive -Path "$nexus\*" -DestinationPath "$package\Nexusmods\$name-$version.zip" -Force
+    New-ZipFromDirectory -Source "$nexus" -Destination "$package\Nexusmods\$name-$version.zip"
     $nexus.Delete($true)
 }
 
