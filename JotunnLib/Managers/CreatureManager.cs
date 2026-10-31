@@ -293,6 +293,12 @@ namespace Jotunn.Managers
                 return;
             }
 
+            // LevelEffects also runs on some ragdolls, which have no Character or ZNetView.
+            if (self == null || self.m_character == null || self.m_character.m_nview == null)
+            {
+                return;
+            }
+
             if (!Creatures.Any(x => x.Prefab.name == self.m_character.m_nview.GetPrefabName() && x.UseCumulativeLevelEffects))
             {
                 return;
