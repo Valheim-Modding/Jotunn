@@ -22,6 +22,19 @@ namespace Jotunn.Utils
         private static Dictionary<Type, PluginInfo> TypeToPluginInfoCache { get; } = new Dictionary<Type, PluginInfo>();
 
         /// <summary>
+        ///     Assemblies without a registered plugin, with the number of registered plugins at the time.
+        ///     A miss is only trusted while that number is unchanged: BepInEx loads a plugin's assembly before it
+        ///     registers the plugin, so code running in between (static initializers, preloader hooks) gets a miss
+        ///     that stops being true one step later.
+        /// </summary>
+        private static Dictionary<Assembly, int> AssemblyMissCache { get; } = new Dictionary<Assembly, int>();
+
+        /// <summary>
+        ///     Assemblies already checked for an unregistered plugin when falling back to Jotunn, so it is warned about once.
+        /// </summary>
+        private static HashSet<Assembly> FallbackCheckedAssemblies { get; } = new HashSet<Assembly>();
+
+        /// <summary>
         ///     Cache loaded plugins which depend on Jotunn.
         /// </summary>
         /// <returns></returns>
@@ -135,7 +148,7 @@ namespace Jotunn.Utils
         ///     Get <see cref="PluginInfo"/> from an <see cref="Assembly"/>
         /// </summary>
         /// <param name="assembly"><see cref="Assembly"/> of the plugin</param>
-        /// <returns></returns>
+        /// <returns>The plugin's <see cref="PluginInfo"/>, or null if no registered plugin lives in that assembly (yet)</returns>
         public static PluginInfo GetPluginInfoFromAssembly(Assembly assembly)
         {
             if (AssemblyToPluginInfoCache.TryGetValue(assembly, out var pluginInfo))
@@ -143,16 +156,23 @@ namespace Jotunn.Utils
                 return pluginInfo;
             }
 
+            int registeredPlugins = BepInEx.Bootstrap.Chainloader.PluginInfos.Count;
+            if (AssemblyMissCache.TryGetValue(assembly, out int registeredAtMiss) && registeredAtMiss == registeredPlugins)
+            {
+                return null;
+            }
+
             foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
             {
                 if (assembly.GetType(GetPluginInfoTypeName(info)) != null)
                 {
                     AssemblyToPluginInfoCache[assembly] = info;
+                    AssemblyMissCache.Remove(assembly);
                     return info;
                 }
             }
 
-            AssemblyToPluginInfoCache[assembly] = null;
+            AssemblyMissCache[assembly] = registeredPlugins;
             return null;
         }
 
@@ -179,7 +199,47 @@ namespace Jotunn.Utils
 
             return GetPluginInfoFromType(callingType)?.Metadata ??
                    GetPluginInfoFromAssembly(callingType.Assembly)?.Metadata ??
-                   Main.Instance.Info.Metadata;
+                   FallbackToJotunn(callingType);
+        }
+
+        private static BepInPlugin FallbackToJotunn(Type callingType)
+        {
+            // A mod calling Jotunn before BepInEx registered its plugin is silently attributed to Jotunn, RPC names
+            // included, which breaks networking between machines that disagree. Say so once, to the mod's author.
+            Assembly assembly = callingType?.Assembly;
+            if (assembly != null && FallbackCheckedAssemblies.Add(assembly))
+            {
+                Type pluginType = GetDeclaredPluginType(assembly);
+                if (pluginType != null)
+                {
+                    string caller = callingType == pluginType
+                        ? $"Plugin {pluginType.FullName} used Jotunn before BepInEx registered it"
+                        : $"{callingType.FullName} used Jotunn before BepInEx registered its plugin {pluginType.FullName}";
+                    Logger.LogWarning($"{caller}, so what it adds now is attributed to Jotunn instead of that mod. This is usually " +
+                                      "a static field initializer on the plugin class calling a Jotunn manager; please move that call into Awake.");
+                }
+            }
+
+            return Main.Instance.Info.Metadata;
+        }
+
+        private static Type GetDeclaredPluginType(Assembly assembly)
+        {
+            Type[] types;
+            try
+            {
+                types = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                types = e.Types;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            return types.FirstOrDefault(type => type != null && type.IsDefined(typeof(BepInPlugin), false));
         }
 
         private static IEnumerable<BaseUnityPlugin> GetLoadedPlugins()
