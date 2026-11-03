@@ -18,10 +18,30 @@ namespace Jotunn.Utils
     /// </summary>
     public static class ModCompatibility
     {
+
         /// <summary>
         ///     Stores the last server message.
         /// </summary>
         private static ServerVersionData LastServerVersionData = new ServerVersionData();
+
+        /// <summary>
+        ///     Event triggered after a client receives mod version data from the server.
+        /// </summary>
+        public static event Action OnServerVersionDataReceived;
+
+        /// <summary>
+        ///     Checks whether there is valid server version data available.
+        /// </summary>
+        /// <returns></returns>
+        public static bool HaveValidServerVersionData() => LastServerVersionData.IsValid(); 
+
+        /// <summary>
+        ///     Safely invoke the <see cref="OnServerVersionDataReceived"/> event.
+        /// </summary>
+        private static void InvokeOnServerVersionDataReceiveed()
+        {
+            OnServerVersionDataReceived?.SafeInvoke();
+        }
 
         private static readonly Dictionary<string, ZPackage> ClientVersions = new Dictionary<string, ZPackage>();
 
@@ -197,10 +217,13 @@ namespace Jotunn.Utils
                                       "Mods are not compatible");
                     sender.Invoke("Error", (int)ZNet.ConnectionStatus.ErrorVersion);
                 }
+
             }
             else
             {
                 LastServerVersionData = new ServerVersionData(data);
+                Logger.LogInfo("Recieved Server Version Data!");
+                InvokeOnServerVersionDataReceiveed();
             }
         }
         
