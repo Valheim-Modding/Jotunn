@@ -463,6 +463,10 @@ namespace Jotunn.Managers
                 {
                     return false;
                 }
+                else if (newPath.StartsWith("Assets/world/Props/DeepNorth"))
+                {
+                    return true;
+                }
 
                 Logger.LogWarning($"Ambiguous asset name for path. old: {oldPath}, new: {newPath}, using old path");
             }
