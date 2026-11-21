@@ -1,5 +1,32 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <!-- BepInEx assemblies -->
+    <Reference Include="0Harmony">
+      <HintPath>$(BEPINEX_PATH)/core/0Harmony.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>$(BEPINEX_PATH)/core/BepInEx.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="BepInEx.Preloader">
+      <HintPath>$(BEPINEX_PATH)/core/BepInEx.Preloader.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="HarmonyXInterop">
+      <HintPath>$(BEPINEX_PATH)/core/HarmonyXInterop.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>$(BEPINEX_PATH)/core/Mono.Cecil.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="MonoMod.Utils">
+      <HintPath>$(BEPINEX_PATH)/core/MonoMod.Utils.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+
+    <!-- Publicized assemblies (cf. JotunnBuildTask\JotunnBuildTask.cs ) -->
     <Reference Include="assembly_googleanalytics_publicized">
       <HintPath>$(VALHEIM_MANAGED)/publicized_assemblies/assembly_googleanalytics_publicized.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -32,12 +59,55 @@
       <HintPath>$(VALHEIM_MANAGED)/publicized_assemblies/assembly_valheim_publicized.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="gui_framework_publicized">
+      <HintPath>$(VALHEIM_MANAGED)/publicized_assemblies/gui_framework_publicized.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="SoftReferenceableAssets_publicized">
       <HintPath>$(VALHEIM_MANAGED)/publicized_assemblies/SoftReferenceableAssets_publicized.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="gui_framework_publicized">
-      <HintPath>$(VALHEIM_MANAGED)/publicized_assemblies/gui_framework_publicized.dll</HintPath>
+
+    <!-- All remaining assemblies
+    Listed by running the following command in the `valheim_Data\Managed` directory:
+
+    ```
+    ls -1 \
+      -I "publicized_assemblies" \
+      -I "assembly_*.dll" \
+      -I "SoftReferenceableAssets.dll" \
+      -I "gui_framework.dll" \
+      -I "System*.dll" \
+      -I "mscorlib.dll" \
+      -I "netstandard.dll"
+    ```
+
+    List of exclusions (`-I`):
+      - Publicized assemblies (already included above)
+      - .NET default assemblies (System / mscorlib / netstandard)
+    -->
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(VALHEIM_MANAGED)/Assembly-CSharp.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Autodesk.Fbx.BuildTestAssets">
+      <HintPath>$(VALHEIM_MANAGED)/Autodesk.Fbx.BuildTestAssets.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Autodesk.Fbx">
+      <HintPath>$(VALHEIM_MANAGED)/Autodesk.Fbx.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="MagicaClothV2">
+      <HintPath>$(VALHEIM_MANAGED)/MagicaClothV2.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Security">
+      <HintPath>$(VALHEIM_MANAGED)/Mono.Security.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(VALHEIM_MANAGED)/Newtonsoft.Json.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="PlayFab">
@@ -48,52 +118,88 @@
       <HintPath>$(VALHEIM_MANAGED)/PlayFabParty.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="SingularityGroup.HotReload.Runtime.Public">
+      <HintPath>$(VALHEIM_MANAGED)/SingularityGroup.HotReload.Runtime.Public.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Splatform.Steam">
+      <HintPath>$(VALHEIM_MANAGED)/Splatform.Steam.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="Splatform">
       <HintPath>$(VALHEIM_MANAGED)/Splatform.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>$(BEPINEX_PATH)/core/BepInEx.dll</HintPath>
+    <Reference Include="Unity.AI.Navigation">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.AI.Navigation.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="0Harmony">
-      <HintPath>$(BEPINEX_PATH)/core/0Harmony.dll</HintPath>
+    <Reference Include="Unity.Burst.Unsafe">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.Burst.Unsafe.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="BepInEx.Preloader">
-      <HintPath>$(BEPINEX_PATH)/core/BepInEx.Preloader.dll</HintPath>
+    <Reference Include="Unity.Burst">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.Burst.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="HarmonyXInterop">
-      <HintPath>$(BEPINEX_PATH)/core/HarmonyXInterop.dll</HintPath>
+    <Reference Include="Unity.Collections.LowLevel.ILSupport">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.Collections.LowLevel.ILSupport.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>$(BEPINEX_PATH)/core/Mono.Cecil.dll</HintPath>
+    <Reference Include="Unity.Collections">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.Collections.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="MonoMod.Utils">
-      <HintPath>$(BEPINEX_PATH)/core/MonoMod.Utils.dll</HintPath>
+    <Reference Include="Unity.Formats.Fbx.Runtime">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.Formats.Fbx.Runtime.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Security">
-      <HintPath>$(VALHEIM_MANAGED)/Mono.Security.dll</HintPath>
+    <Reference Include="Unity.InputSystem.ForUI">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.InputSystem.ForUI.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.InputSystem.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.Mathematics.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Unity.MemoryProfiler">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.MemoryProfiler.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Unity.Profiling.Core">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.Profiling.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Unity.ScriptableBuildPipeline">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.ScriptableBuildPipeline.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>$(VALHEIM_MANAGED)/Unity.TextMeshPro.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="UnityEngine.AccessibilityModule">
-      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.AccessibilityModule.dll</HintPath>
+    <Reference Include="Unity.Timeline">
+      <HintPath>$(VALHEIM_MANAGED)/Unity.Timeline.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.AIModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.AMDModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.AMDModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.ARModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.ARModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.AccessibilityModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.AccessibilityModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.AndroidJNIModule">
@@ -124,6 +230,10 @@
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.ClusterRendererModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="UnityEngine.ContentLoadModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.ContentLoadModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.CoreModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -132,32 +242,52 @@
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.CrashReportingModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="UnityEngine.DSPGraphModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.DSPGraphModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="UnityEngine.DirectorModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.DirectorModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="UnityEngine.DSPGraphModule">
-      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.DSPGraphModule.dll</HintPath>
+    <Reference Include="UnityEngine.GIModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.GIModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.GameCenterModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.GameCenterModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="UnityEngine.GraphicsStateCollectionSerializerModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.GraphicsStateCollectionSerializerModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="UnityEngine.GridModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.GridModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.HierarchyCoreModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.HierarchyCoreModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.HotReloadModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.HotReloadModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.IMGUIModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.IdentifiersModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.IdentifiersModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.ImageConversionModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.IMGUIModule.dll</HintPath>
+    <Reference Include="UnityEngine.InputForUIModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.InputForUIModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
@@ -168,16 +298,28 @@
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.InputModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Unity.InputSystem">
-      <HintPath>$(VALHEIM_MANAGED)/Unity.InputSystem.dll</HintPath>
+    <Reference Include="UnityEngine.InsightsModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.InsightsModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-      <Reference Include="UnityEngine.JSONSerializeModule">
+    <Reference Include="UnityEngine.JSONSerializeModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.JSONSerializeModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.LocalizationModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.LocalizationModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.MarshallingModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.MarshallingModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.MultiplayerModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.MultiplayerModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.NVIDIAModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.NVIDIAModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
@@ -196,16 +338,28 @@
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.PhysicsModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="UnityEngine.ProfilerModule">
-      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.ProfilerModule.dll</HintPath>
+    <Reference Include="UnityEngine.PropertiesModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.PropertiesModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.ScreenCaptureModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.ScreenCaptureModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="UnityEngine.ShaderVariantAnalyticsModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.ShaderVariantAnalyticsModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="UnityEngine.SharedInternalsModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.SharedInternalsModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.SpatialTracking">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.SpatialTracking.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.SpriteMaskModule">
@@ -228,12 +382,24 @@
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.SubsystemsModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="UnityEngine.TLSModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.TLSModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="UnityEngine.TerrainModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.TerrainModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.TerrainPhysicsModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.TerrainPhysicsModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreFontEngineModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.TextCoreFontEngineModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreTextEngineModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.TextCoreTextEngineModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
@@ -244,11 +410,7 @@
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.TilemapModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="UnityEngine.TLSModule">
-      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.TLSModule.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="UnityEngine.UI">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.UI.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -264,12 +426,24 @@
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.UmbraModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsCommonModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.UnityAnalyticsCommonModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="UnityEngine.UnityAnalyticsModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.UnityAnalyticsModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UnityConnectModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.UnityConnectModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.UnityConsentModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.UnityConsentModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.UnityCurlModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.UnityCurlModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.UnityTestProtocolModule">
@@ -296,28 +470,48 @@
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="UnityEngine.VehiclesModule">
-      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.VehiclesModule.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="UnityEngine.VFXModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.VFXModule.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="UnityEngine.VideoModule">
-      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.VideoModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UnityEngine.VRModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.VRModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="UnityEngine.VehiclesModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.VehiclesModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.VideoModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine.VirtualTexturingModule">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.VirtualTexturingModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="UnityEngine.WindModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.WindModule.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="UnityEngine.XR.LegacyInputHelpers">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="UnityEngine.XRModule">
       <HintPath>$(VALHEIM_MANAGED)/UnityEngine.XRModule.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(VALHEIM_MANAGED)/UnityEngine.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="com.rlabrecque.steamworks.net">
+      <HintPath>$(VALHEIM_MANAGED)/com.rlabrecque.steamworks.net.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="com.unity.switch2.graphicsscalingkit">
+      <HintPath>$(VALHEIM_MANAGED)/com.unity.switch2.graphicsscalingkit.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
