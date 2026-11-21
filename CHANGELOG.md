@@ -5,6 +5,7 @@
 * Fixed styled buttons playing the click sound twice (thx bpavlina)
 * Fixed error on cumulative level effects on ragdolls without a character view (thx tvongaza)
 * Fixed release zips using backslashes in their paths, which some extraction tools could not handle (thx bpavlina)
+* Fixed "Ambiguous asset name" warnings when Deep North assets shadow older vanilla assets
 
 ## Version 2.30.2
 * Fixed Deep North assets overriding previous vanilla assets for mocking (thx OrianaVenture)
