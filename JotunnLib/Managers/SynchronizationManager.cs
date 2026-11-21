@@ -216,6 +216,11 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(Menu), nameof(Menu.IsVisible)), HarmonyPostfix]
             private static void Menu_IsVisible(ref bool __result) => Instance.Menu_IsVisible(ref __result);
 
+            // Since Valheim 1.0 the mouse is captured unless Menu.IsActive() (GameCamera.UpdateMouseCapture),
+            // so the config manager window needs to count as active menu, too
+            [HarmonyPatch(typeof(Menu), nameof(Menu.IsActive)), HarmonyPostfix]
+            private static void Menu_IsActive(ref bool __result) => Instance.Menu_IsVisible(ref __result);
+
             /// <summary>
             ///     Harmony patch BepInEx to ensure locked values are not overwritten.
             ///     Return the cached local value of a bep config thats locked
