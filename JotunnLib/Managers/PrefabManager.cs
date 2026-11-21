@@ -27,7 +27,7 @@ namespace Jotunn.Managers
         ///     Cache of all custom terrain ops that have been added so that they can be kept registered whenever
         ///     changes to the ObjectDB occur.
         /// </summary>
-        private static readonly Dictionary<int, TerrainOp> CustomTerrainOpsCache = new Dictionary<int, TerrainOp>();
+        private static readonly Dictionary<string, TerrainOp> CustomTerrainOps = new Dictionary<string, TerrainOp>();
 
         /// <summary>
         ///     Hide .ctor
@@ -166,9 +166,9 @@ namespace Jotunn.Managers
             Prefabs.Add(name, customPrefab);
             AssetManager.Instance.AddAsset(customPrefab.Prefab, null);
 
-            if (!CustomTerrainOpsCache.ContainsKey(name.GetStableHashCode()) && customPrefab.Prefab.TryGetComponent(out TerrainOp terrainOp))
+            if (!CustomTerrainOps.ContainsKey(name) && customPrefab.Prefab.TryGetComponent(out TerrainOp terrainOp))
             {
-                CustomTerrainOpsCache.Add(name.GetStableHashCode(), terrainOp);
+                CustomTerrainOps.Add(name, terrainOp);
             }
         }
 
@@ -419,11 +419,10 @@ namespace Jotunn.Managers
 
             // Some mods use the RegisterToZNetScene directly without ever calling AddPrefab, so need to catch GameObjects that have a
             // TerrainOp component here as well to make sure they stay registered.
-            if (!CustomTerrainOpsCache.ContainsKey(gameObject.name.GetStableHashCode()) && gameObject.TryGetComponent(out TerrainOp terrainOp))
+            if (!CustomTerrainOps.ContainsKey(gameObject.name) && gameObject.TryGetComponent(out TerrainOp terrainOp))
             {
-                int nameHash = gameObject.name.GetStableHashCode();
-                CustomTerrainOpsCache.Add(nameHash, terrainOp);
-                RegisterTerrainOp(nameHash, terrainOp);
+                CustomTerrainOps.Add(gameObject.name, terrainOp);
+                RegisterTerrainOp(gameObject.name, terrainOp);
             }
         }
 
@@ -437,14 +436,15 @@ namespace Jotunn.Managers
         /// </summary>
         private void RegisterCustomTerrainOps()
         {
-            foreach (KeyValuePair<int, TerrainOp> kvp in CustomTerrainOpsCache)
+            foreach (KeyValuePair<string, TerrainOp> kvp in CustomTerrainOps)
             {
                 RegisterTerrainOp(kvp.Key, kvp.Value);
             }
         }
 
-        private static void RegisterTerrainOp(int nameHash, TerrainOp terrainOp)
+        private static void RegisterTerrainOp(string name, TerrainOp terrainOp)
         {
+            int nameHash = name.GetStableHashCode();
             if (ObjectDB.instance.m_terrainOpsByHash.TryGetValue(nameHash, out TerrainOp registeredTerrainOp))
             {
                 if (registeredTerrainOp != terrainOp)
@@ -456,7 +456,7 @@ namespace Jotunn.Managers
             {
                 ObjectDB.instance.m_terrainOpsByHash.Add(nameHash, terrainOp);
             }
-                
+
             // Might be able to drop this guard check since ObjectDB.UpdateRegisters clears m_terrainOpsByHash 
             // and repopulates it based on what is inside m_terrainOps. Have left it in for now just to be
             // extra safe though and to handle late registration via RegisterToZNetScene
