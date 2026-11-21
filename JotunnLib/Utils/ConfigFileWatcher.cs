@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using BepInEx.Configuration;
 using BepInEx;
 using Jotunn.Extensions;
@@ -12,20 +13,24 @@ namespace Jotunn.Utils
     /// </summary>
     public class ConfigFileWatcher
     {
-        private const long TICKS_PER_MILISEC = 10_000; // One millisecond
-
-        private DateTime lastReadTime = DateTime.MinValue;
         private readonly ConfigFile configFile;
         private readonly BepInPlugin sourceMod;
         private readonly string configFileDir;
         private readonly string configFileName;
-        private readonly long reloadDelay;
+        private readonly System.Timers.Timer reloadTimer;
+
+        // Must be kept referenced: the running watcher only holds a weak reference to it,
+        // so an unreferenced FileSystemWatcher is garbage collected and silently stops raising events.
+        private readonly FileSystemWatcher watcher;
 
         /// <summary>
         ///     Create a file watcher to trigger reloads of the config file when it is changed, created, or renamed.
         /// </summary>
         /// <param name="configFile"></param>
-        /// <param name="reloadDelay">Time in milliseconds before another event can be fired.</param>
+        /// <param name="reloadDelay">
+        ///     Time in milliseconds without further changes before the file is reloaded.
+        ///     Every change restarts the delay, so a file written in several steps is only reloaded once it is complete.
+        /// </param>
         public ConfigFileWatcher(ConfigFile configFile, long reloadDelay = 1000)
         {
             sourceMod = BepInExUtils.GetPluginInfoFromAssembly(Assembly.GetCallingAssembly())?.Metadata;
@@ -35,17 +40,66 @@ namespace Jotunn.Utils
             }
 
             this.configFile = configFile;
-            this.reloadDelay = reloadDelay * TICKS_PER_MILISEC;
-            configFileDir = Directory.GetParent(configFile.ConfigFilePath).FullName;
-            configFileName = Path.GetFileName(configFile.ConfigFilePath);
+            reloadTimer = new System.Timers.Timer(Math.Max(1, reloadDelay));
+            reloadTimer.AutoReset = false;
+            reloadTimer.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+            reloadTimer.Elapsed += (sender, eventArgs) => ReloadConfigFile();
 
-            var watcher = new FileSystemWatcher(configFileDir, configFileName);
-            watcher.Changed += ReloadConfigFile;
-            watcher.Created += ReloadConfigFile;
-            watcher.Renamed += ReloadConfigFile;
+            // Watch the real file: on Linux the FileSystemWatcher does not follow symlinks,
+            // neither a symlinked config folder nor a symlinked config file
+            string configFilePath = ResolveSymlinks(configFile.ConfigFilePath);
+            configFileDir = Directory.GetParent(configFilePath).FullName;
+            configFileName = Path.GetFileName(configFilePath);
+
+            watcher = new FileSystemWatcher(configFileDir, configFileName);
+            watcher.Changed += ScheduleReload;
+            watcher.Created += ScheduleReload;
+            watcher.Renamed += ScheduleReload;
             watcher.IncludeSubdirectories = true;
             watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
             watcher.EnableRaisingEvents = true;
+        }
+
+        [DllImport("libc", EntryPoint = "realpath", SetLastError = true)]
+        private static extern IntPtr RealPath(string path, IntPtr resolvedPath);
+
+        [DllImport("libc", EntryPoint = "free")]
+        private static extern void Free(IntPtr pointer);
+
+        /// <summary>
+        ///     Resolves all symlinks of an existing path on Unix systems (Linux, macOS).
+        ///     Returns the path unchanged on Windows or if it can not be resolved.
+        /// </summary>
+        private static string ResolveSymlinks(string path)
+        {
+            if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
+            {
+                return path;
+            }
+
+            try
+            {
+                IntPtr resolved = RealPath(path, IntPtr.Zero);
+
+                if (resolved == IntPtr.Zero)
+                {
+                    return path;
+                }
+
+                try
+                {
+                    return Marshal.PtrToStringAnsi(resolved);
+                }
+                finally
+                {
+                    Free(resolved);
+                }
+            }
+            catch (Exception)
+            {
+                // libc not available
+                return path;
+            }
         }
 
         /// <summary>
@@ -62,15 +116,21 @@ namespace Jotunn.Utils
         }
 
         /// <summary>
-        ///     Reloads config file if and only if the last write time differs from the last read time.
+        ///     (Re)starts the reload delay. Reloading only after the file stayed unchanged for the whole delay
+        ///     avoids loading a half written file and missing the final state of a file written in several steps.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="eventArgs"></param>
-        internal void ReloadConfigFile(object sender, FileSystemEventArgs eventArgs)
+        private void ScheduleReload(object sender, FileSystemEventArgs eventArgs)
         {
-            DateTime now = DateTime.Now;
-            long deltaTime = now.Ticks - lastReadTime.Ticks;
-            if (!File.Exists(configFile.ConfigFilePath) || deltaTime < this.reloadDelay)
+            reloadTimer.Stop();
+            reloadTimer.Start();
+        }
+
+        /// <summary>
+        ///     Reloads the config file, if it exists.
+        /// </summary>
+        internal void ReloadConfigFile()
+        {
+            if (!File.Exists(configFile.ConfigFilePath))
             {
                 return;
             }
@@ -82,7 +142,6 @@ namespace Jotunn.Utils
                 bool saveOnConfigSet = configFile.SetSaveOnConfigSet(false); // turn off saving on config entry set
                 configFile.Reload();
                 configFile.SaveOnConfigSet = saveOnConfigSet; // reset config saving state
-                lastReadTime = now;
                 InvokeOnConfigFileReloaded(); // fire event
             }
             catch
