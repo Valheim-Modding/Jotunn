@@ -33,6 +33,12 @@ namespace Jotunn.Utils
                 displayingWindowInfo = AccessTools.Property(Plugin.GetType(), "DisplayingWindow");
                 buildSettingListMethodInfo = AccessTools.Method(Plugin.GetType(), "BuildSettingList");
             }
+            else if (Chainloader.PluginInfos.TryGetValue("lordrasmus.jotunnconfigmanager", out configManagerInfo) && configManagerInfo.Instance)
+            {
+                Plugin = configManagerInfo.Instance;
+                displayingWindowInfo = AccessTools.Property(Plugin.GetType(), "DisplayingWindow");
+                buildSettingListMethodInfo = AccessTools.Method(Plugin.GetType(), "BuildSettingList");
+            }
         }
 
         /// <summary>
