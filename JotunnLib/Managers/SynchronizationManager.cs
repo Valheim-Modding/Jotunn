@@ -30,7 +30,7 @@ namespace Jotunn.Managers
         private readonly Dictionary<string, string> CachedCustomConfigGUIDs = new Dictionary<string, string>();
         private bool ConfigurationManagerWindowShown;
 
-        private Dictionary<string, SocketBuffer> socketBuffers = new Dictionary<string, SocketBuffer>();
+        private readonly SocketBufferRegistry socketBuffers = new SocketBufferRegistry();
 
         private HashSet<string> modNotLoadedConfigsWarnings = new HashSet<string>();
 
@@ -201,6 +201,16 @@ namespace Jotunn.Managers
             [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyPostfix]
             private static void ZNet_RPC_Post_PeerInfo(ZNet __instance, ZRpc rpc, ref SocketBuffer __state) => Instance.ZNet_RPC_Post_PeerInfo(__instance, rpc, ref __state);
 
+            // Postfix is skipped when RPC_PeerInfo throws; drop the buffer so it stops capturing sends
+            [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo)), HarmonyFinalizer]
+            private static void ZNet_RPC_Final_PeerInfo(ZRpc rpc, Exception __exception, SocketBuffer __state)
+            {
+                if (__exception != null)
+                {
+                    Instance.socketBuffers.Remove(rpc?.GetSocket(), __state);
+                }
+            }
+
             public static bool Socket_VersionMatch_Prefix(ISocket __instance, bool __runOriginal) => __runOriginal && Instance.Socket_VersionMatch(__instance);
 
             public static bool Socket_Send_Prefix(ISocket __instance, ZPackage pkg, bool __runOriginal) => __runOriginal && Instance.Socket_Send(__instance, pkg);
@@ -243,6 +253,7 @@ namespace Jotunn.Managers
             {
                 Instance.UnsubscribeToConfigReload();
                 Instance.ResetAdminState(__instance);
+                Instance.socketBuffers.Clear();
             }
         }
 
@@ -333,11 +344,12 @@ namespace Jotunn.Managers
             // Init buffering socket
             if (znet.IsServer())
             {
-                string socketEndpoint = rpc.GetSocket().GetEndPointString();
-                if (!string.IsNullOrEmpty(socketEndpoint))
+                ISocket socket = rpc.GetSocket();
+                // A repeated PeerInfo from an already joined peer must not replace its buffer
+                bool alreadyReady = znet.GetPeer(rpc)?.IsReady() ?? false;
+                if (!alreadyReady && !string.IsNullOrEmpty(socket?.GetEndPointString()))
                 {
-                    __state = new SocketBuffer();
-                    socketBuffers[socketEndpoint] = __state;
+                    __state = socketBuffers.Start(socket);
                 }
             }
         }
@@ -352,6 +364,7 @@ namespace Jotunn.Managers
                 if (peer == null || !peer.IsReady())
                 {
                     Logger.LogInfo($"Peer has disconnected. Skipping initial data send.");
+                    socketBuffers.Remove(rpc.GetSocket(), __state);
                     return;
                 }
 
@@ -363,37 +376,45 @@ namespace Jotunn.Managers
         {
             Logger.LogInfo($"Sending initial data to peer #{peer.m_uid}");
 
-            foreach (var tuple in InitialSync)
+            // finally: an exception (generator or flush) must not leave the join buffer capturing forever
+            try
             {
-                var targetRPC = tuple.Item1;
-                var packageGenerator = tuple.Item2;
-                var package = packageGenerator(peer);
-                if (package != null && package.Size() > 0)
+                foreach (var tuple in InitialSync)
                 {
-                    yield return ZNet.instance.StartCoroutine(targetRPC.SendPackageRoutine(peer.m_uid, package));
+                    var targetRPC = tuple.Item1;
+                    var packageGenerator = tuple.Item2;
+                    var package = packageGenerator(peer);
+                    if (package != null && package.Size() > 0)
+                    {
+                        yield return ZNet.instance.StartCoroutine(targetRPC.SendPackageRoutine(peer.m_uid, package));
+                    }
                 }
-            }
 
-            if (socketBuffer != null)
-            {
-                socketBuffer.finished = true;
-                ISocket socket = peer.m_rpc.GetSocket();
-
-                for (var i = 0; i < socketBuffer.packages.Count; i++)
+                if (socketBuffer != null)
                 {
-                    if (i == socketBuffer.versionMatchPackageIndex)
+                    socketBuffer.finished = true;
+                    ISocket socket = peer.m_rpc.GetSocket();
+
+                    for (var i = 0; i < socketBuffer.packages.Count; i++)
+                    {
+                        if (i == socketBuffer.versionMatchPackageIndex)
+                        {
+                            socket.VersionMatch();
+                        }
+
+                        var package = socketBuffer.packages[i];
+                        socket.Send(package);
+                    }
+
+                    if (socketBuffer.packages.Count == socketBuffer.versionMatchPackageIndex)
                     {
                         socket.VersionMatch();
                     }
-
-                    var package = socketBuffer.packages[i];
-                    socket.Send(package);
                 }
-
-                if (socketBuffer.packages.Count == socketBuffer.versionMatchPackageIndex)
-                {
-                    socket.VersionMatch();
-                }
+            }
+            finally
+            {
+                socketBuffers.Remove(peer.m_rpc?.GetSocket(), socketBuffer);
             }
         }
 
@@ -1068,17 +1089,59 @@ namespace Jotunn.Managers
         ///     the finished member is set to true. All other packages get sent. This will
         ///     stop the client from completing the login handshake with the server until ready.
         /// </summary>
-        private class SocketBuffer
+        internal class SocketBuffer
         {
             public volatile bool finished = false;
             public volatile int versionMatchPackageIndex = -1;
             public List<ZPackage> packages = new List<ZPackage>();
         }
 
+        /// <summary>
+        ///     Join buffers keyed by socket instance. Not by end-point string: two clients on one
+        ///     Steam account share the same end-point (SteamID) and would swallow each other's traffic.
+        /// </summary>
+        internal class SocketBufferRegistry
+        {
+            private readonly Dictionary<ISocket, SocketBuffer> buffers = new Dictionary<ISocket, SocketBuffer>(ReferenceComparer.Instance);
+
+            public int Count => buffers.Count;
+
+            public void Clear() => buffers.Clear();
+
+            public SocketBuffer Start(ISocket socket)
+            {
+                var buffer = new SocketBuffer();
+                buffers[socket] = buffer;
+                return buffer;
+            }
+
+            /// <summary>Buffer still collecting for exactly this socket instance, else null.</summary>
+            public SocketBuffer GetActive(ISocket socket)
+            {
+                return socket != null && buffers.TryGetValue(socket, out var buffer) && !buffer.finished ? buffer : null;
+            }
+
+            /// <summary>Removes the entry only if it is still <paramref name="buffer"/> (a newer join may have replaced it).</summary>
+            public void Remove(ISocket socket, SocketBuffer buffer)
+            {
+                if (socket != null && buffer != null && buffers.TryGetValue(socket, out var current) && current == buffer)
+                {
+                    buffers.Remove(socket);
+                }
+            }
+
+            private sealed class ReferenceComparer : IEqualityComparer<ISocket>
+            {
+                public static readonly ReferenceComparer Instance = new ReferenceComparer();
+                public bool Equals(ISocket x, ISocket y) => ReferenceEquals(x, y);
+                public int GetHashCode(ISocket obj) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
+            }
+        }
+
         private bool Socket_VersionMatch(ISocket __instance)
         {
-            string socketEndpoint = __instance.GetEndPointString();
-            if (string.IsNullOrEmpty(socketEndpoint) || !socketBuffers.TryGetValue(socketEndpoint, out var blockingSocket) || blockingSocket.finished)
+            var blockingSocket = socketBuffers.GetActive(__instance);
+            if (blockingSocket == null)
             {
                 return true;
             }
@@ -1089,8 +1152,8 @@ namespace Jotunn.Managers
 
         private bool Socket_Send(ISocket __instance, ZPackage pkg)
         {
-            string socketEndpoint = __instance.GetEndPointString();
-            if (string.IsNullOrEmpty(socketEndpoint) || !socketBuffers.TryGetValue(socketEndpoint, out var blockingSocket) || blockingSocket.finished)
+            var blockingSocket = socketBuffers.GetActive(__instance);
+            if (blockingSocket == null)
             {
                 return true;
             }
