@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
@@ -207,7 +208,7 @@ namespace Jotunn.Managers
             {
                 if (__exception != null)
                 {
-                    Instance.socketBuffers.Remove(rpc?.GetSocket(), __state);
+                    Instance.socketBuffers.Remove(__state);
                 }
             }
 
@@ -364,7 +365,7 @@ namespace Jotunn.Managers
                 if (peer == null || !peer.IsReady())
                 {
                     Logger.LogInfo($"Peer has disconnected. Skipping initial data send.");
-                    socketBuffers.Remove(rpc.GetSocket(), __state);
+                    socketBuffers.Remove(__state);
                     return;
                 }
 
@@ -414,7 +415,7 @@ namespace Jotunn.Managers
             }
             finally
             {
-                socketBuffers.Remove(peer.m_rpc?.GetSocket(), socketBuffer);
+                socketBuffers.Remove(socketBuffer);
             }
         }
 
@@ -1094,14 +1095,17 @@ namespace Jotunn.Managers
             public volatile bool finished = false;
             public volatile int versionMatchPackageIndex = -1;
             public List<ZPackage> packages = new List<ZPackage>();
+            /// <summary>Transport socket this buffer is registered under.</summary>
+            internal ISocket owner;
         }
 
         /// <summary>
-        ///     Join buffers keyed by socket instance. Not by end-point string: two clients on one
+        ///     Join buffers keyed by transport socket instance. Not by end-point string: two clients on one
         ///     Steam account share the same end-point (SteamID) and would swallow each other's traffic.
         /// </summary>
         internal class SocketBufferRegistry
         {
+            private const int MaxWrapperDepth = 8;
             private readonly Dictionary<ISocket, SocketBuffer> buffers = new Dictionary<ISocket, SocketBuffer>(ReferenceComparer.Instance);
 
             public int Count => buffers.Count;
@@ -1110,24 +1114,58 @@ namespace Jotunn.Managers
 
             public SocketBuffer Start(ISocket socket)
             {
-                var buffer = new SocketBuffer();
-                buffers[socket] = buffer;
+                var key = Transport(socket);
+                var buffer = new SocketBuffer { owner = key };
+                buffers[key] = buffer;
                 return buffer;
             }
 
-            /// <summary>Buffer still collecting for exactly this socket instance, else null.</summary>
+            /// <summary>Buffer still collecting for exactly this transport socket instance, else null.</summary>
             public SocketBuffer GetActive(ISocket socket)
             {
                 return socket != null && buffers.TryGetValue(socket, out var buffer) && !buffer.finished ? buffer : null;
             }
 
             /// <summary>Removes the entry only if it is still <paramref name="buffer"/> (a newer join may have replaced it).</summary>
-            public void Remove(ISocket socket, SocketBuffer buffer)
+            public void Remove(SocketBuffer buffer)
             {
-                if (socket != null && buffer != null && buffers.TryGetValue(socket, out var current) && current == buffer)
+                if (buffer?.owner != null && buffers.TryGetValue(buffer.owner, out var current) && current == buffer)
                 {
-                    buffers.Remove(socket);
+                    buffers.Remove(buffer.owner);
                 }
+            }
+
+            /// <summary>
+            ///     ServerSync (embedded in many plugins) swaps ZRpc.m_socket (and ZNetPeer.m_socket off Steam) for a
+            ///     BufferingSocket during RPC_PeerInfo that forwards to its <c>ISocket Original</c> field.
+            ///     Sends reach the patched ZSteamSocket/ZPlayFabSocket as the inner transport, so key by it.
+            ///     Runs once per join, so uncached reflection is fine.
+            /// </summary>
+            internal static ISocket Transport(ISocket socket)
+            {
+                for (int depth = 0; socket != null && depth < MaxWrapperDepth; depth++)
+                {
+                    var inner = WrapperField(socket.GetType())?.GetValue(socket) as ISocket;
+                    if (inner == null || ReferenceEquals(inner, socket))
+                    {
+                        break;
+                    }
+                    socket = inner;
+                }
+                return socket;
+            }
+
+            private static FieldInfo WrapperField(Type type)
+            {
+                for (var t = type; t != null; t = t.BaseType)
+                {
+                    var field = t.GetField("Original", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                    if (field != null && typeof(ISocket).IsAssignableFrom(field.FieldType))
+                    {
+                        return field;
+                    }
+                }
+                return null;
             }
 
             private sealed class ReferenceComparer : IEqualityComparer<ISocket>
@@ -1159,7 +1197,9 @@ namespace Jotunn.Managers
             }
 
             int methodHash = GetMethodHash(pkg);
-            if (methodHash == "PeerInfo".GetStableHashCode() || methodHash == "RoutedRPC".GetStableHashCode() || methodHash == "ZDOData".GetStableHashCode())
+            // The list RPCs are registered by the client inside its RPC_PeerInfo (ZNet.RPC_PeerInfo), so they must not overtake the held PeerInfo
+            if (methodHash == "PeerInfo".GetStableHashCode() || methodHash == "RoutedRPC".GetStableHashCode() || methodHash == "ZDOData".GetStableHashCode() ||
+                methodHash == "PlayerList".GetStableHashCode() || methodHash == "HistoricalPlayerList".GetStableHashCode() || methodHash == "AdminList".GetStableHashCode())
             {
                 // the original ZPackage gets reused, create a new one
                 blockingSocket.packages.Add(CopyZPackage(pkg));

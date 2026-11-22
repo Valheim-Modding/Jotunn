@@ -6,7 +6,7 @@ namespace Jotunn.Utils
     public class SocketBufferRegistryTest
     {
         // Two clients on one Steam account: same end-point string, and even value-equal sockets.
-        private sealed class FakeSocket : ISocket
+        private class FakeSocket : ISocket
         {
             private readonly string endpoint;
             public FakeSocket(string endpoint) => this.endpoint = endpoint;
@@ -33,6 +33,58 @@ namespace Jotunn.Utils
             public bool Flush() => true;
             public string GetHostName() => endpoint;
             public void VersionMatch() { }
+        }
+
+        // Shape of ServerSync's BufferingSocket: forwards everything to a public readonly ISocket Original.
+        private class WrapperSocket : FakeSocket
+        {
+            public readonly ISocket Original;
+            public WrapperSocket(FakeSocket original) : base(original.GetEndPointString()) => Original = original;
+        }
+
+        private sealed class DerivedWrapperSocket : WrapperSocket
+        {
+            public DerivedWrapperSocket(FakeSocket original) : base(original) { }
+        }
+
+        [Fact]
+        public void Wrapper_StartedOnWrapper_CapturesRawTransportOnly()
+        {
+            var registry = new SynchronizationManager.SocketBufferRegistry();
+            var a = new FakeSocket("x");
+            var b = new FakeSocket("x");
+            var wrapper = new WrapperSocket(a);
+
+            var buffer = registry.Start(wrapper);
+
+            Assert.Same(a, buffer.owner);
+            Assert.Same(buffer, registry.GetActive(a));
+            Assert.Null(registry.GetActive(b));
+        }
+
+        [Fact]
+        public void Wrapper_RemoveByOwner_AfterSocketRestored()
+        {
+            var registry = new SynchronizationManager.SocketBufferRegistry();
+            var a = new FakeSocket("x");
+            var buffer = registry.Start(new WrapperSocket(a));
+
+            // rpc.m_socket is back to raw A by now; removal must not depend on it
+            registry.Remove(buffer);
+
+            Assert.Equal(0, registry.Count);
+            Assert.Null(registry.GetActive(a));
+        }
+
+        [Fact]
+        public void Wrapper_NestedAndInheritedField_Unwrapped()
+        {
+            var a = new FakeSocket("x");
+            var nested = new DerivedWrapperSocket(new WrapperSocket(a));
+
+            Assert.Same(a, SynchronizationManager.SocketBufferRegistry.Transport(nested));
+            Assert.Same(a, SynchronizationManager.SocketBufferRegistry.Transport(a));
+            Assert.Null(SynchronizationManager.SocketBufferRegistry.Transport(null));
         }
 
         [Fact]
@@ -73,7 +125,7 @@ namespace Jotunn.Utils
             buffer.finished = true;
             Assert.Null(registry.GetActive(a));
 
-            registry.Remove(a, buffer);
+            registry.Remove(buffer);
             Assert.Equal(0, registry.Count);
         }
 
@@ -84,7 +136,7 @@ namespace Jotunn.Utils
             var a = new FakeSocket("x");
             var buffer = registry.Start(a);
 
-            registry.Remove(a, buffer);
+            registry.Remove(buffer);
 
             Assert.Equal(0, registry.Count);
             Assert.Null(registry.GetActive(a));
@@ -98,7 +150,7 @@ namespace Jotunn.Utils
             var old = registry.Start(a);
             var newer = registry.Start(a);
 
-            registry.Remove(a, old);
+            registry.Remove(old);
 
             Assert.Same(newer, registry.GetActive(a));
         }
@@ -107,8 +159,8 @@ namespace Jotunn.Utils
         public void Remove_NullState_NoThrow()
         {
             var registry = new SynchronizationManager.SocketBufferRegistry();
-            registry.Remove(new FakeSocket("x"), null);
-            registry.Remove(null, null);
+            registry.Remove(null);
+            registry.Remove(new SynchronizationManager.SocketBuffer());
             Assert.Equal(0, registry.Count);
         }
     }
