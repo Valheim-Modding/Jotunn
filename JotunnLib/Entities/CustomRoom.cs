@@ -141,7 +141,7 @@ namespace Jotunn.Entities
 
             AssetManager.Instance.ResolveMocksOnLoad(softReferencePrefab, DungeonManager.Instance.DungeonRoomContainer.transform, OnRoomResolve);
 
-            Name = softReferencePrefab.Name;
+            Name = softReferencePrefab.name;
             ThemeName = roomConfig.ThemeName;
             FixReference = fixReference;
             SoftReference = true;
