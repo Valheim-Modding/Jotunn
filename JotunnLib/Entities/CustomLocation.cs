@@ -131,10 +131,10 @@ namespace Jotunn.Entities
             _locationConfig = locationConfig;
             var parent = ZoneManager.Instance.LocationContainer.transform;
             AssetManager.Instance.ResolveMocksOnLoad(softReferencePrefab, parent, OnLocationResolve);
-            Name = softReferencePrefab.Name;
+            Name = softReferencePrefab.name;
             ZoneLocation = locationConfig.GetZoneLocation();
             ZoneLocation.m_prefab = softReferencePrefab;
-            ZoneLocation.m_prefabName = softReferencePrefab.Name;
+            ZoneLocation.m_prefabName = softReferencePrefab.name;
             FixReference = fixReference;
             SoftReference = true;
         }

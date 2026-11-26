@@ -6,6 +6,7 @@
 * Fixed error on cumulative level effects on ragdolls without a character view (thx tvongaza)
 * Fixed release zips using backslashes in their paths, which some extraction tools could not handle (thx bpavlina)
 * Fixed "Ambiguous asset name" warnings when Deep North assets shadow older vanilla assets
+* Fixed `MissingMethodException` for `SoftReference.get_Name` when adding custom locations or rooms from a soft reference, Valheim 1.0.30 renamed the property to `name`
 
 ## Version 2.30.2
 * Fixed Deep North assets overriding previous vanilla assets for mocking (thx OrianaVenture)
