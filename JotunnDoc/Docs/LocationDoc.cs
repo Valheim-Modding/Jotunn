@@ -79,7 +79,7 @@ namespace JotunnDoc.Docs
                             }
                         }
 
-                        bool hasSprite = RequestSprite(Path.Combine(imageDirectory, $"{zoneLocation.m_prefab.Name}.png"), exteriorPrefab, RenderManager.IsometricRotation);
+                        bool hasSprite = RequestSprite(Path.Combine(imageDirectory, $"{zoneLocation.m_prefab.name}.png"), exteriorPrefab, RenderManager.IsometricRotation);
                          
                         AddTableRow(
                             GetNameBox(zoneLocation, hasSprite),
@@ -99,10 +99,10 @@ namespace JotunnDoc.Docs
 
         private static string GetNameBox(ZoneSystem.ZoneLocation zoneLocation, bool hasSprite)
         {
-            StringBuilder sb = new StringBuilder(zoneLocation.m_prefab.Name);
+            StringBuilder sb = new StringBuilder(zoneLocation.m_prefab.name);
             if (hasSprite)
             {
-                sb.Append($"<br><img src=\"../../images/locations/{zoneLocation.m_prefab.Name}.png\">");
+                sb.Append($"<br><img src=\"../../images/locations/{zoneLocation.m_prefab.name}.png\">");
             }
             return sb.ToString();
         }
