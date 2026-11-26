@@ -186,14 +186,14 @@ You can provide localized versions of the menu entry string.
 Please see our [localization tutorial](localization.md#localizable-content-in-jötunn) on how to do this.
 
 ## File watcher for ConfigFile
-While many people use the official BepInEx configuration manager to change their mod configurations from in-game. Users also like the ability to make live changes to configuration files and see that data update live and saved when they shut down the game. Updating the in-game config settings when the configuration file is edited on the disk can be achieved by setting up a `FileWatcher` for your `ConfigFile` that triggers events when the file is changed, renamed, or saved. The `ConfigFileWatcher` class provides a convenient way to set up a `FileWatcher` and events with minimal boilerplate code. By default, after triggering a reload event, the `ConfigFileWatcher` will not trigger another reload untill 1000 ms have passed, you can modify this behaviour by changing the `reloadDelay` argument in the `ConfigFileWatcher` constructor.
+While many people use the official BepInEx configuration manager to change their mod configurations from in-game. Users also like the ability to make live changes to configuration files and see that data update live and saved when they shut down the game. Updating the in-game config settings when the configuration file is edited on the disk can be achieved by setting up a `FileWatcher` for your `ConfigFile` that triggers events when the file is changed, renamed, or saved. The `ConfigFileWatcher` class provides a convenient way to set up a `FileWatcher` and events with minimal boilerplate code. The file is reloaded once it has not changed for 1000 ms, so a file written in several steps is only loaded when it is complete. Every change restarts that delay, you can modify it by changing the `reloadDelay` argument in the `ConfigFileWatcher` constructor.
 
 ```cs
 // Create config file watcher as a method within the main plugin class
 private void CreateConfigWatcher()
 {
     // Create config file watcher
-    ConfigFileWatcher configFileWatcher = new(Config, reloadDelay: 1000);  // set delay before a subsequent reload can trigger in ms
+    ConfigFileWatcher configFileWatcher = new(Config, reloadDelay: 1000);  // time in ms without changes before the file is reloaded
 
     // Subscribe to the event that fires whenever the config is reloaded.
     configFileWatcher.OnConfigFileReloaded += () =>
