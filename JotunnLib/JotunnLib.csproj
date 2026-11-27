@@ -102,7 +102,7 @@
   </Target>
 
   <PropertyGroup>
-    <UNITY_FOLDER>$(SolutionDir)JotunnLib/Unity</UNITY_FOLDER>
+    <UNITY_FOLDER>$(MSBuildProjectDirectory)/Unity</UNITY_FOLDER>
   </PropertyGroup>
 
   <ItemGroup>
