@@ -231,7 +231,7 @@ namespace Jotunn.Utils
         {
             if (resourceAssembly == null)
             {
-                throw new ArgumentNullException("Parameter resourceAssembly can not be null.");
+                throw new ArgumentNullException(nameof(resourceAssembly), "Parameter resourceAssembly can not be null.");
             }
 
             string resourceName = null;
@@ -275,7 +275,7 @@ namespace Jotunn.Utils
         {
             if (resourceAssembly == null)
             {
-                throw new ArgumentNullException("Parameter resourceAssembly can not be null.");
+                throw new ArgumentNullException(nameof(resourceAssembly), "Parameter resourceAssembly can not be null.");
             }
 
             string resourceName = null;
